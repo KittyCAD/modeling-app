@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.30"
+version = "0.2.33"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -16,7 +16,7 @@ async-recursion = "1.1.1"
 async-trait = "0.1.85"
 base64 = "0.22.1"
 chrono = "0.4.38"
-clap = { version = "4.5.23", default-features = false, optional = true, features = [
+clap = { version = "4.5.27", default-features = false, optional = true, features = [
     "std",
     "derive",
 ] }
@@ -113,7 +113,6 @@ base64 = "0.22.1"
 criterion = { version = "0.5.1", features = ["async_tokio"] }
 expectorate = "1.1.0"
 handlebars = "6.3.0"
-iai = "0.1"
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 insta = { version = "1.41.1", features = ["json", "filters", "redactions"] }
 itertools = "0.13.0"
@@ -130,10 +129,6 @@ name = "compiler_benchmark_criterion"
 harness = false
 
 [[bench]]
-name = "compiler_benchmark_iai"
-harness = false
-
-[[bench]]
 name = "digest_benchmark"
 harness = false
 
@@ -143,14 +138,6 @@ harness = false
 required-features = ["lsp-test-util"]
 
 [[bench]]
-name = "lsp_semantic_tokens_benchmark_iai"
-harness = false
-required-features = ["lsp-test-util"]
-
-[[bench]]
 name = "executor_benchmark_criterion"
 harness = false
 
-[[bench]]
-name = "executor_benchmark_iai"
-harness = false

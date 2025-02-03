@@ -12,13 +12,14 @@ import {
   VariableDeclaration,
   Identifier,
   sketchFromKclValue,
+  topLevelRange,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
-  getNodePathFromSourceRange,
   getObjExprProperty,
 } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,
@@ -226,7 +227,7 @@ const commonConstraintInfoHelper = (
         code.slice(input1.start, input1.end),
         stdLibFnName,
         isArr ? abbreviatedInputs[0].arrayInput : abbreviatedInputs[0].objInput,
-        [input1.start, input1.end, true],
+        topLevelRange(input1.start, input1.end),
         pathToFirstArg
       )
     )
@@ -238,7 +239,7 @@ const commonConstraintInfoHelper = (
         code.slice(input2.start, input2.end),
         stdLibFnName,
         isArr ? abbreviatedInputs[1].arrayInput : abbreviatedInputs[1].objInput,
-        [input2.start, input2.end, true],
+        topLevelRange(input2.start, input2.end),
         pathToSecondArg
       )
     )
@@ -271,7 +272,7 @@ const horzVertConstraintInfoHelper = (
       callee.name,
       stdLibFnName,
       undefined,
-      [callee.start, callee.end, true],
+      topLevelRange(callee.start, callee.end),
       pathToCallee
     ),
     constrainInfo(
@@ -280,7 +281,7 @@ const horzVertConstraintInfoHelper = (
       code.slice(firstArg.start, firstArg.end),
       stdLibFnName,
       abbreviatedInput,
-      [firstArg.start, firstArg.end, true],
+      topLevelRange(firstArg.start, firstArg.end),
       pathToFirstArg
     ),
   ]
@@ -938,7 +939,7 @@ export const tangentialArcTo: SketchLineHelper = {
         callee.name,
         'tangentialArcTo',
         undefined,
-        [callee.start, callee.end, true],
+        topLevelRange(callee.start, callee.end),
         pathToCallee
       ),
       constrainInfo(
@@ -947,7 +948,7 @@ export const tangentialArcTo: SketchLineHelper = {
         code.slice(firstArg.elements[0].start, firstArg.elements[0].end),
         'tangentialArcTo',
         0,
-        [firstArg.elements[0].start, firstArg.elements[0].end, true],
+        topLevelRange(firstArg.elements[0].start, firstArg.elements[0].end),
         pathToFirstArg
       ),
       constrainInfo(
@@ -956,7 +957,7 @@ export const tangentialArcTo: SketchLineHelper = {
         code.slice(firstArg.elements[1].start, firstArg.elements[1].end),
         'tangentialArcTo',
         1,
-        [firstArg.elements[1].start, firstArg.elements[1].end, true],
+        topLevelRange(firstArg.elements[1].start, firstArg.elements[1].end),
         pathToSecondArg
       ),
     ]
@@ -1085,7 +1086,7 @@ export const circle: SketchLineHelper = {
         code.slice(radiusDetails.expr.start, radiusDetails.expr.end),
         'circle',
         'radius',
-        [radiusDetails.expr.start, radiusDetails.expr.end, true],
+        topLevelRange(radiusDetails.expr.start, radiusDetails.expr.end),
         pathToRadiusLiteral
       ),
       {
@@ -1094,11 +1095,10 @@ export const circle: SketchLineHelper = {
         isConstrained: isNotLiteralArrayOrStatic(
           centerDetails.expr.elements[0]
         ),
-        sourceRange: [
+        sourceRange: topLevelRange(
           centerDetails.expr.elements[0].start,
-          centerDetails.expr.elements[0].end,
-          true,
-        ],
+          centerDetails.expr.elements[0].end
+        ),
         pathToNode: pathToXArg,
         value: code.slice(
           centerDetails.expr.elements[0].start,
@@ -1116,11 +1116,10 @@ export const circle: SketchLineHelper = {
         isConstrained: isNotLiteralArrayOrStatic(
           centerDetails.expr.elements[1]
         ),
-        sourceRange: [
+        sourceRange: topLevelRange(
           centerDetails.expr.elements[1].start,
-          centerDetails.expr.elements[1].end,
-          true,
-        ],
+          centerDetails.expr.elements[1].end
+        ),
         pathToNode: pathToYArg,
         value: code.slice(
           centerDetails.expr.elements[1].start,
@@ -2098,7 +2097,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
           code.slice(angle.start, angle.end),
           'angledLineThatIntersects',
           'angle',
-          [angle.start, angle.end, true],
+          topLevelRange(angle.start, angle.end),
           pathToAngleProp
         )
       )
@@ -2117,7 +2116,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
           code.slice(offset.start, offset.end),
           'angledLineThatIntersects',
           'offset',
-          [offset.start, offset.end, true],
+          topLevelRange(offset.start, offset.end),
           pathToOffsetProp
         )
       )
@@ -2136,7 +2135,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
         code.slice(tag.start, tag.end),
         'angledLineThatIntersects',
         'intersectTag',
-        [tag.start, tag.end, true],
+        topLevelRange(tag.start, tag.end),
         pathToTagProp
       )
       returnVal.push(info)

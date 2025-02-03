@@ -815,7 +815,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::execution::ContextType::Mock,
             };
 
-            if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new()).await {
+            if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new(&ctx.settings)).await {
                     return Err(miette::Report::new(crate::errors::Report {
                         error: e,
                         filename: format!("{}{}", #fn_name, #index),

@@ -31,8 +31,8 @@ pub struct ChamferData {
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid, tag): (ChamferData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
 
-    let solid = inner_chamfer(data, solid, tag, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_chamfer(data, solid, tag, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Cut a straight transitional edge along a tagged path.
@@ -143,10 +143,8 @@ async fn inner_chamfer(
                 radius: LengthUnit(data.length),
                 tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
                 cut_type: CutType::Chamfer,
-                // We pass in the command id as the face id.
-                // So the resulting face of the fillet will be the same.
-                // This is because that's how most other endpoints work.
-                face_id: Some(id),
+                // We make this a none so that we can remove it in the future.
+                face_id: None,
             }),
         )
         .await?;

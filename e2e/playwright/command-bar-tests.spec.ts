@@ -1,7 +1,8 @@
 import { test, expect } from './zoo-test'
-
-import { getUtils } from './test-utils'
+import * as fsp from 'fs/promises'
+import { executorInputPath, getUtils } from './test-utils'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import path from 'path'
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -42,46 +43,6 @@ test.describe('Command bar tests', () => {
     await page.waitForTimeout(200)
     await expect(page.locator('.cm-activeLine')).toHaveText(
       `extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
-    )
-  })
-
-  // TODO: fix this test after the electron migration
-  test.fixme('Fillet from command bar', async ({ page, homePage }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn('XY')
-    |> startProfileAt([-5, -5], %)
-    |> line([0, 10], %)
-    |> line([10, 0], %)
-    |> line([0, -10], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude001 = extrude(-10, sketch001)`
-      )
-    })
-
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    const selectSegment = () => page.getByText(`line([0, -10], %)`).click()
-
-    await selectSegment()
-    await page.waitForTimeout(100)
-    await page.getByRole('button', { name: 'Fillet' }).click()
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // skip selection
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // accept default radius
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // submit
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-activeLine')).toContainText(
-      `fillet({ radius = ${KCL_DEFAULT_LENGTH}, tags = [seg01] }, %)`
     )
   })
 
@@ -344,5 +305,133 @@ test.describe('Command bar tests', () => {
     await cmdBarButton.click()
     await arcToolCommand.click()
     await expect(arcToolButton).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  test(`Reacts to query param to open "import from URL" command`, async ({
+    page,
+    cmdBar,
+    editor,
+    homePage,
+  }) => {
+    await test.step(`Prepare and navigate to home page with query params`, async () => {
+      const targetURL = `?create-file&name=test&units=mm&code=ZXh0cnVzaW9uRGlzdGFuY2UgPSAxMg%3D%3D&ask-open-desktop`
+      await homePage.expectState({
+        projectCards: [],
+        sortBy: 'last-modified-desc',
+      })
+      await page.goto(page.url() + targetURL)
+      expect(page.url()).toContain(targetURL)
+    })
+
+    await test.step(`Submit the command`, async () => {
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Import file from URL',
+        currentArgKey: 'method',
+        currentArgValue: '',
+        headerArguments: {
+          Method: '',
+          Name: 'test',
+          Code: '1 line',
+        },
+        highlightedHeaderArg: 'method',
+      })
+      await cmdBar.selectOption({ name: 'New Project' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Import file from URL',
+        headerArguments: {
+          Method: 'New project',
+          Name: 'test',
+          Code: '1 line',
+        },
+      })
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
+      await editor.expectEditor.toContain('extrusionDistance = 12')
+    })
+  })
+
+  test(`"import from URL" can add to existing project`, async ({
+    page,
+    cmdBar,
+    editor,
+    homePage,
+    toolbar,
+    context,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const testProjectDir = path.join(dir, 'testProjectDir')
+      await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
+      await Promise.all([
+        fsp.copyFile(
+          executorInputPath('cylinder.kcl'),
+          path.join(testProjectDir, 'main.kcl')
+        ),
+      ])
+    })
+    await test.step(`Prepare and navigate to home page with query params`, async () => {
+      const targetURL = `?create-file&name=test&units=mm&code=ZXh0cnVzaW9uRGlzdGFuY2UgPSAxMg%3D%3D&ask-open-desktop`
+      await homePage.expectState({
+        projectCards: [
+          {
+            fileCount: 1,
+            title: 'testProjectDir',
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+      await page.goto(page.url() + targetURL)
+      expect(page.url()).toContain(targetURL)
+    })
+
+    await test.step(`Submit the command`, async () => {
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Import file from URL',
+        currentArgKey: 'method',
+        currentArgValue: '',
+        headerArguments: {
+          Method: '',
+          Name: 'test',
+          Code: '1 line',
+        },
+        highlightedHeaderArg: 'method',
+      })
+      await cmdBar.selectOption({ name: 'Existing Project' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Import file from URL',
+        currentArgKey: 'projectName',
+        currentArgValue: '',
+        headerArguments: {
+          Method: 'Existing project',
+          Name: 'test',
+          ProjectName: '',
+          Code: '1 line',
+        },
+        highlightedHeaderArg: 'projectName',
+      })
+      await cmdBar.selectOption({ name: 'testProjectDir' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Import file from URL',
+        headerArguments: {
+          Method: 'Existing project',
+          ProjectName: 'testProjectDir',
+          Name: 'test',
+          Code: '1 line',
+        },
+      })
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
+      await editor.expectEditor.toContain('extrusionDistance = 12')
+      await toolbar.openPane('files')
+      await toolbar.expectFileTreeState(['main.kcl', 'test.kcl'])
+    })
   })
 })

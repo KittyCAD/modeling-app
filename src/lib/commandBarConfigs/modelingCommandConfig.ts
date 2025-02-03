@@ -9,7 +9,12 @@ import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
-import { loftValidator, revolveAxisValidator } from './validators'
+import {
+  loftValidator,
+  revolveAxisValidator,
+  shellValidator,
+  sweepValidator,
+} from './validators'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -38,8 +43,8 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
   }
   Sweep: {
-    path: Selections
-    profile: Selections
+    target: Selections
+    trajectory: Selections
   }
   Loft: {
     selection: Selections
@@ -276,7 +281,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -303,37 +308,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description:
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
-    status: 'development',
-    needsReview: true,
+    needsReview: false,
     args: {
-      profile: {
+      target: {
         inputType: 'selection',
-        selectionTypes: ['solid2D'],
+        selectionTypes: ['solid2d'],
         required: true,
         skip: true,
         multiple: false,
-        // TODO: add dry-run validation
-        warningMessage:
-          'The sweep workflow is new and under tested. Please break it and report issues.',
       },
-      path: {
+      trajectory: {
         inputType: 'selection',
         selectionTypes: ['segment', 'path'],
         required: true,
-        skip: true,
+        skip: false,
         multiple: false,
-        // TODO: add dry-run validation
+        validation: sweepValidator,
       },
     },
   },
   Loft: {
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
-    needsReview: true,
+    needsReview: false,
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D'],
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         skip: false,
@@ -351,29 +352,27 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
-        skip: false,
+        validation: shellValidator,
       },
       thickness: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+        // TODO: add dry-run validation on thickness param
       },
     },
   },
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
-    status: 'development',
     needsReview: true,
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
-        warningMessage:
-          'The revolve workflow is new and under tested. Please break it and report issues.',
       },
       axisOrEdge: {
         inputType: 'options',
@@ -573,7 +572,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         inputType: 'selection',
         selectionTypes: [
-          'solid2D',
+          'solid2d',
           'segment',
           'sweepEdge',
           'cap',

@@ -12,7 +12,10 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
-use super::{ast::types::LabelledExpression, token::NumericSuffix};
+use super::{
+    ast::types::{ImportPath, LabelledExpression},
+    token::NumericSuffix,
+};
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
@@ -483,7 +486,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                let x: f64 = token.numeric_value().ok_or_else(|| {
+                let value: f64 = token.numeric_value().ok_or_else(|| {
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
@@ -494,7 +497,13 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                     ));
                 }
 
-                Ok((LiteralValue::Number(x), token))
+                Ok((
+                    LiteralValue::Number {
+                        value,
+                        suffix: token.numeric_suffix(),
+                    },
+                    token,
+                ))
             }
             _ => Err(CompilationError::fatal(token.as_source_range(), "invalid literal")),
         })
@@ -844,13 +853,13 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     };
 
     if sep.token_type == TokenType::Colon {
-        ParseContext::warn(CompilationError::with_suggestion(
-            sep.into(),
-            Some(result.as_source_range()),
-            "Using `:` to initialize objects is deprecated, prefer using `=`.",
-            Some(("Replace `:` with `=`", " =")),
-            Tag::Deprecated,
-        ));
+        ParseContext::warn(
+            CompilationError::err(
+                sep.into(),
+                "Using `:` to initialize objects is deprecated, prefer using `=`.",
+            )
+            .with_suggestion("Replace `:` with `=`", " =", Tag::Deprecated),
+        );
     }
 
     Ok(result)
@@ -1069,9 +1078,19 @@ fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
     let (result, has_arrow) = function_decl.parse_next(i)?;
-    if fn_tok.is_none() && !has_arrow {
-        let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
-        return Err(ErrMode::Cut(err.into()));
+    if fn_tok.is_none() {
+        if has_arrow {
+            ParseContext::warn(
+                CompilationError::err(
+                    result.as_source_range().start_as_range(),
+                    "Missing `fn` in function declaration",
+                )
+                .with_suggestion("Add `fn`", "fn", Tag::None),
+            );
+        } else {
+            let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
+            return Err(ErrMode::Cut(err.into()));
+        }
     }
     Ok(Expr::FunctionExpression(Box::new(result)))
 }
@@ -1113,18 +1132,16 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
         open.module_id,
     );
 
-    let has_arrow = if let Some(arrow) = arrow {
-        ParseContext::warn(CompilationError::with_suggestion(
-            arrow.as_source_range(),
-            Some(result.as_source_range()),
-            "Unnecessary `=>` in function declaration",
-            Some(("Remove `=>`", "")),
-            Tag::Unnecessary,
-        ));
-        true
-    } else {
-        false
-    };
+    let has_arrow =
+        if let Some(arrow) = arrow {
+            ParseContext::warn(
+                CompilationError::err(arrow.as_source_range(), "Unnecessary `=>` in function declaration")
+                    .with_suggestion("Remove `=>`", "", Tag::Unnecessary),
+            );
+            true
+        } else {
+            false
+        };
 
     Ok((result, has_arrow))
 }
@@ -1531,33 +1548,11 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     };
 
     let mut end: usize = path.end;
-    let path_string = match path.inner.value {
-        LiteralValue::String(s) => s,
-        _ => unreachable!(),
-    };
-    if path_string.is_empty() {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                SourceRange::new(path.start, path.end, path.module_id),
-                "import path cannot be empty",
-            )
-            .into(),
-        ));
-    }
-    if path_string
-        .chars()
-        .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
-    {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                SourceRange::new(path.start, path.end, path.module_id),
-                "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
-            )
-            .into(),
-        ));
-    }
 
-    if let ImportSelector::None { alias: ref mut a } = selector {
+    if let ImportSelector::None {
+        alias: ref mut selector_alias,
+    } = selector
+    {
         if let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
             identifier.context(expected("an identifier to alias the import")),
@@ -1565,41 +1560,112 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         .parse_next(i)?
         {
             end = alias.end;
-            *a = Some(alias);
+            *selector_alias = Some(alias);
         }
 
         ParseContext::warn(CompilationError::err(
             SourceRange::new(start, path.end, path.module_id),
             "Importing a whole module is experimental, likely to be buggy, and likely to change",
         ));
+    }
 
-        if a.is_none()
-            && (!path_string.ends_with(".kcl")
-                || path_string.starts_with("_")
-                || path_string.contains('-')
-                || path_string[0..path_string.len() - 4].contains('.'))
-        {
-            return Err(ErrMode::Cut(
-                CompilationError::fatal(
-                    SourceRange::new(path.start, path.end, path.module_id),
-                    "import path is not a valid identifier and must be aliased.".to_owned(),
-                )
-                .into(),
-            ));
-        }
+    let path_string = match path.inner.value {
+        LiteralValue::String(s) => s,
+        _ => unreachable!(),
+    };
+    let path = validate_path_string(
+        path_string,
+        selector.exposes_imported_name(),
+        SourceRange::new(path.start, path.end, path.module_id),
+    )?;
+
+    if matches!(path, ImportPath::Foreign { .. }) && selector.imports_items() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(start, end, module_id),
+                "individual items can only be imported from KCL files",
+            )
+            .into(),
+        ));
     }
 
     Ok(Node::boxed(
         ImportStatement {
             selector,
             visibility,
-            path: path_string,
+            path,
             digest: None,
         },
         start,
         end,
         module_id,
     ))
+}
+
+const FOREIGN_IMPORT_EXTENSIONS: [&str; 8] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "step", "stl"];
+
+/// Validates the path string in an `import` statement.
+///
+/// `var_name` is `true` if the path will be used as a variable name.
+fn validate_path_string(path_string: String, var_name: bool, path_range: SourceRange) -> PResult<ImportPath> {
+    if path_string.is_empty() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "import path cannot be empty").into(),
+        ));
+    }
+
+    if var_name
+        && (path_string.starts_with("_")
+            || path_string.contains('-')
+            || path_string.chars().filter(|c| *c == '.').count() > 1)
+    {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
+        ));
+    }
+
+    let path = if path_string.ends_with(".kcl") {
+        if path_string
+            .chars()
+            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
+        {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
+                )
+                .into(),
+            ));
+        }
+
+        ImportPath::Kcl { filename: path_string }
+    } else if path_string.starts_with("std") {
+        ParseContext::warn(CompilationError::err(
+            path_range,
+            "explicit imports from the standard library are experimental, likely to be buggy, and likely to change.",
+        ));
+
+        ImportPath::Std
+    } else if path_string.contains('.') {
+        let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
+        if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
+            ParseContext::warn(CompilationError::err(
+                path_range,
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+            ))
+        }
+        ImportPath::Foreign { path: path_string }
+    } else {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                path_range,
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+            )
+            .into(),
+        ));
+    };
+
+    Ok(path)
 }
 
 fn import_item(i: &mut TokenSlice) -> PResult<Node<ImportItem>> {
@@ -1825,67 +1891,60 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
 
     ignore_whitespace(i);
 
-    let val = if kind == VariableKind::Fn {
-        let eq = opt(equals).parse_next(i)?;
-        ignore_whitespace(i);
+    let val =
+        if kind == VariableKind::Fn {
+            let eq = opt(equals).parse_next(i)?;
+            ignore_whitespace(i);
 
-        let val = function_decl
-            .map(|t| Box::new(t.0))
-            .map(Expr::FunctionExpression)
-            .context(expected("a KCL function expression, like () { return 1 }"))
-            .parse_next(i);
+            let val = function_decl
+                .map(|t| Box::new(t.0))
+                .map(Expr::FunctionExpression)
+                .context(expected("a KCL function expression, like () { return 1 }"))
+                .parse_next(i);
 
-        if let Some(t) = eq {
-            let ctxt_end = val.as_ref().map(|e| e.end()).unwrap_or(t.end);
-            ParseContext::warn(CompilationError::with_suggestion(
-                t.as_source_range(),
-                Some(SourceRange::new(id.start, ctxt_end, id.module_id)),
-                "Unnecessary `=` in function declaration",
-                Some(("Remove `=`", "")),
-                Tag::Unnecessary,
-            ));
+            if let Some(t) = eq {
+                ParseContext::warn(
+                    CompilationError::err(t.as_source_range(), "Unnecessary `=` in function declaration")
+                        .with_suggestion("Remove `=`", "", Tag::Unnecessary),
+                );
+            }
+
+            val
+        } else {
+            equals(i)?;
+            ignore_whitespace(i);
+
+            let val = expression
+                .try_map(|val| {
+                    // Function bodies can be used if and only if declaring a function.
+                    // Check the 'if' direction:
+                    if matches!(val, Expr::FunctionExpression(_)) {
+                        return Err(CompilationError::fatal(
+                            SourceRange::new(start, dec_end, id.module_id),
+                            format!("Expected a `fn` variable kind, found: `{}`", kind),
+                        ));
+                    }
+                    Ok(val)
+                })
+                .context(expected("a KCL value, which is being bound to a variable"))
+                .parse_next(i);
+
+            if let Some((_, tok)) = decl_token {
+                ParseContext::warn(
+                    CompilationError::err(
+                        tok.as_source_range(),
+                        format!(
+                            "Using `{}` to declare constants is deprecated; no keyword is required",
+                            tok.value
+                        ),
+                    )
+                    .with_suggestion(format!("Remove `{}`", tok.value), "", Tag::Deprecated),
+                );
+            }
+
+            val
         }
-
-        val
-    } else {
-        equals(i)?;
-        ignore_whitespace(i);
-
-        let val = expression
-            .try_map(|val| {
-                // Function bodies can be used if and only if declaring a function.
-                // Check the 'if' direction:
-                if matches!(val, Expr::FunctionExpression(_)) {
-                    return Err(CompilationError::fatal(
-                        SourceRange::new(start, dec_end, id.module_id),
-                        format!("Expected a `fn` variable kind, found: `{}`", kind),
-                    ));
-                }
-                Ok(val)
-            })
-            .context(expected("a KCL value, which is being bound to a variable"))
-            .parse_next(i);
-
-        if let Some((_, tok)) = decl_token {
-            ParseContext::warn(CompilationError::with_suggestion(
-                tok.as_source_range(),
-                Some(SourceRange::new(
-                    id.start,
-                    val.as_ref().map(|e| e.end()).unwrap_or(dec_end),
-                    id.module_id,
-                )),
-                format!(
-                    "Using `{}` to declare constants is deprecated; no keyword is required",
-                    tok.value
-                ),
-                Some((format!("Remove `{}`", tok.value), "")),
-                Tag::Deprecated,
-            ));
-        }
-
-        val
-    }
-    .map_err(|e| e.cut())?;
+        .map_err(|e| e.cut())?;
 
     let end = val.end();
     Ok(Box::new(Node {
@@ -2856,7 +2915,10 @@ mySk1 = startSketchAt([0, 0])"#;
                                 ReturnStatement {
                                     argument: Expr::Literal(Box::new(Node::new(
                                         Literal {
-                                            value: 2u32.into(),
+                                            value: LiteralValue::Number {
+                                                value: 2.0,
+                                                suffix: NumericSuffix::None
+                                            },
                                             raw: "2".to_owned(),
                                             digest: None,
                                         },
@@ -3057,7 +3119,15 @@ mySk1 = startSketchAt([0, 0])"#;
         match &rhs.right {
             BinaryPart::Literal(lit) => {
                 assert!(lit.start == 9 && lit.end == 10);
-                assert!(lit.value == 3u32.into() && &lit.raw == "3" && lit.digest.is_none());
+                assert!(
+                    lit.value
+                        == LiteralValue::Number {
+                            value: 3.0,
+                            suffix: NumericSuffix::None
+                        }
+                        && &lit.raw == "3"
+                        && lit.digest.is_none()
+                );
             }
             _ => panic!(),
         }
@@ -3128,11 +3198,23 @@ mySk1 = startSketchAt([0, 0])"#;
             let BinaryPart::Literal(left) = actual.inner.left else {
                 panic!("should be expression");
             };
-            assert_eq!(left.value, 1u32.into());
+            assert_eq!(
+                left.value,
+                LiteralValue::Number {
+                    value: 1.0,
+                    suffix: NumericSuffix::None
+                }
+            );
             let BinaryPart::Literal(right) = actual.inner.right else {
                 panic!("should be expression");
             };
-            assert_eq!(right.value, 2u32.into());
+            assert_eq!(
+                right.value,
+                LiteralValue::Number {
+                    value: 2.0,
+                    suffix: NumericSuffix::None
+                }
+            );
         }
     }
 
@@ -3449,7 +3531,10 @@ mySk1 = startSketchAt([0, 0])"#;
                 operator: BinaryOperator::Add,
                 left: BinaryPart::Literal(Box::new(Node::new(
                     Literal {
-                        value: 5u32.into(),
+                        value: LiteralValue::Number {
+                            value: 5.0,
+                            suffix: NumericSuffix::None,
+                        },
                         raw: "5".to_owned(),
                         digest: None,
                     },
@@ -3498,7 +3583,10 @@ mySk1 = startSketchAt([0, 0])"#;
                             BinaryExpression {
                                 left: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
-                                        value: 5u32.into(),
+                                        value: LiteralValue::Number {
+                                            value: 5.0,
+                                            suffix: NumericSuffix::None,
+                                        },
                                         raw: "5".to_string(),
                                         digest: None,
                                     },
@@ -3509,7 +3597,10 @@ mySk1 = startSketchAt([0, 0])"#;
                                 operator: BinaryOperator::Add,
                                 right: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
-                                        value: 6u32.into(),
+                                        value: LiteralValue::Number {
+                                            value: 6.0,
+                                            suffix: NumericSuffix::None,
+                                        },
                                         raw: "6".to_string(),
                                         digest: None,
                                     },
@@ -3572,7 +3663,11 @@ mySk1 = startSketchAt([0, 0])"#;
     fn assert_err(p: &str, msg: &str, src_expected: [usize; 2]) {
         let result = crate::parsing::top_level_parse(p);
         let err = result.unwrap_errs().next().unwrap();
-        assert_eq!(err.message, msg);
+        assert!(
+            err.message.starts_with(msg),
+            "Found `{}`, expected `{msg}`",
+            err.message
+        );
         let src_actual = [err.source_range.start(), err.source_range.end()];
         assert_eq!(
             src_expected,
@@ -3938,7 +4033,7 @@ e
     fn bad_imports() {
         assert_err(
             r#"import cube from "../cube.kcl""#,
-            "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
+            "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
             [17, 30],
         );
         assert_err(
@@ -3946,17 +4041,21 @@ e
             "as is not the 'from' keyword",
             [9, 11],
         );
-        assert_err(r#"import a from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
-        assert_err(r#"import * from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
+        assert_err(
+            r#"import a from "dsfs" as b"#,
+            "unsupported import path format",
+            [14, 20],
+        );
+        assert_err(
+            r#"import * from "dsfs" as b"#,
+            "unsupported import path format",
+            [14, 20],
+        );
         assert_err(r#"import a from b"#, "invalid string literal", [14, 15]);
         assert_err(r#"import * "dsfs""#, "\"dsfs\" is not the 'from' keyword", [9, 15]);
         assert_err(r#"import from "dsfs""#, "\"dsfs\" is not the 'from' keyword", [12, 18]);
         assert_err(r#"import "dsfs.kcl" as *"#, "Unexpected token: as", [18, 20]);
-        assert_err(
-            r#"import "dsfs""#,
-            "import path is not a valid identifier and must be aliased.",
-            [7, 13],
-        );
+        assert_err(r#"import "dsfs""#, "unsupported import path format", [7, 13]);
         assert_err(
             r#"import "foo.bar.kcl""#,
             "import path is not a valid identifier and must be aliased.",
@@ -3978,7 +4077,19 @@ e
     fn warn_import() {
         let some_program_string = r#"import "foo.kcl""#;
         let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.obj""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.sldprt""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.bad""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2, "{errs:#?}");
     }
 
     #[test]
@@ -4344,6 +4455,20 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
             r#"fn foo  ()  {
     return 0
 }"#
+        );
+
+        let some_program_string = r#"myMap = map([0..5], (n) => {
+    return n * 2
+})"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2);
+        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
+        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
+        assert_eq!(
+            replaced,
+            r#"myMap = map([0..5], fn(n)  {
+    return n * 2
+})"#
         );
     }
 

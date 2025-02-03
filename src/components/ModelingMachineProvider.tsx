@@ -1,4 +1,4 @@
-import { useMachine } from '@xstate/react'
+import { useMachine, useSelector } from '@xstate/react'
 import React, {
   createContext,
   useEffect,
@@ -11,6 +11,7 @@ import {
   AnyStateMachine,
   ContextFrom,
   Prop,
+  SnapshotFrom,
   StateFrom,
   assign,
   fromPromise,
@@ -82,13 +83,13 @@ import {
   isCursorInFunctionDefinition,
   traverse,
 } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap, reject } from 'lib/trap'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -105,6 +106,8 @@ import {
 } from 'lang/std/artifactGraph'
 import { promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -116,37 +119,44 @@ export const ModelingMachineContext = createContext(
   {} as MachineContext<typeof modelingMachine>
 )
 
+const commandBarIsClosedSelector = (
+  state: SnapshotFrom<typeof commandBarActor>
+) => state.matches('Closed')
+
 export const ModelingMachineProvider = ({
   children,
 }: {
   children: React.ReactNode
 }) => {
   const {
-    auth,
     settings: {
       context: {
-        app: { theme, enableSSAO },
+        app: { theme, enableSSAO, allowOrbitInSketchMode },
         modeling: {
           defaultUnit,
           cameraProjection,
           highlightEdges,
           showScaleGrid,
+          cameraOrbit,
         },
       },
     },
   } = useSettingsAuthContext()
+  const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
-  const token = auth?.context?.token
+  const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
-  const { commandBarState, commandBarSend } = useCommandsContext()
-
+  const isCommandBarClosed = useSelector(
+    commandBarActor,
+    commandBarIsClosedSelector
+  )
   // Settings machine setup
   // const retrievedSettings = useRef(
   // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
@@ -424,7 +434,16 @@ export const ModelingMachineProvider = ({
             }
 
             if (setSelections.selectionType === 'completeSelection') {
-              editorManager.selectRange(setSelections.selection)
+              const codeMirrorSelection = editorManager.createEditorSelection(
+                setSelections.selection
+              )
+              kclEditorActor.send({
+                type: 'setLastSelectionEvent',
+                data: {
+                  codeMirrorSelection,
+                  scrollIntoView: false,
+                },
+              })
               if (!sketchDetails)
                 return {
                   selectionRanges: setSelections.selection,
@@ -573,7 +592,6 @@ export const ModelingMachineProvider = ({
             trimmedPrompt,
             fileMachineSend,
             navigate,
-            commandBarSend,
             context,
             token,
             settings: {
@@ -587,7 +605,7 @@ export const ModelingMachineProvider = ({
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
-          if (!commandBarState.matches('Closed')) return false
+          if (!isCommandBarClosed) return false
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
@@ -708,7 +726,8 @@ export const ModelingMachineProvider = ({
             input.plane
           )
           await kclManager.updateAst(modifiedAst, false)
-          sceneInfra.camControls.enableRotate = false
+          sceneInfra.camControls.enableRotate =
+            sceneInfra.camControls._setting_allowOrbitInSketchMode
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
           await letEngineAnimateAndSyncCamAfter(
@@ -723,6 +742,7 @@ export const ModelingMachineProvider = ({
             zAxis: input.zAxis,
             yAxis: input.yAxis,
             origin: [0, 0, 0],
+            animateTargetId: input.planeId,
           }
         }),
         'animate-to-sketch': fromPromise(
@@ -758,6 +778,7 @@ export const ModelingMachineProvider = ({
               origin: info.sketchDetails.origin.map(
                 (a) => a / sceneInfra._baseUnitMultiplier
               ) as [number, number, number],
+              animateTargetId: info?.sketchDetails?.faceId || '',
             }
           }
         ),
@@ -1483,6 +1504,7 @@ export const ModelingMachineProvider = ({
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
       cameraProjection: cameraProjection.current,
+      cameraOrbit: cameraOrbit.current,
     },
     token
   )
@@ -1512,6 +1534,13 @@ export const ModelingMachineProvider = ({
     editorManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
 
+  // When changing camera modes reset the camera to the default orientation to correct
+  // the up vector otherwise the conconical orientation for the camera modes will be
+  // wrong
+  useEffect(() => {
+    sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+  }, [cameraOrbit.current])
+
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {
       // If we are in sketch mode we need to exit it.
@@ -1532,6 +1561,41 @@ export const ModelingMachineProvider = ({
       )
     }
   }, [engineCommandManager.engineConnection, modelingSend])
+
+  useEffect(() => {
+    // Only trigger this if the state actually changes, if it stays the same do not reload the camera
+    if (
+      previousAllowOrbitInSketchMode.current === allowOrbitInSketchMode.current
+    ) {
+      //no op
+      previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
+      return
+    }
+    const inSketchMode = modelingState.matches('Sketch')
+
+    // If you are in sketch mode and you disable the orbit, return back to the normal view to the target
+    if (!allowOrbitInSketchMode.current) {
+      const targetId = modelingState.context.sketchDetails?.animateTargetId
+      if (inSketchMode && targetId) {
+        letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
+          .then(() => {})
+          .catch((e) => {
+            console.error(
+              'failed to sync engine and client scene after disabling allow orbit in sketch mode'
+            )
+            console.error(e)
+          })
+      }
+    }
+
+    // While you are in sketch mode you should be able to control the enable rotate
+    // Once you exit it goes back to normal
+    if (inSketchMode) {
+      sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
+    }
+
+    previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
+  }, [allowOrbitInSketchMode])
 
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {

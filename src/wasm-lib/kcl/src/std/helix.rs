@@ -39,8 +39,8 @@ pub struct HelixData {
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let data: HelixData = args.get_data()?;
 
-    let helix = inner_helix(data, exec_state, args).await?;
-    Ok(KclValue::Helix(helix))
+    let value = inner_helix(data, exec_state, args).await?;
+    Ok(KclValue::Helix { value })
 }
 
 /// Create a helix.
@@ -50,7 +50,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 5,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Z',
@@ -59,8 +59,8 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('YZ')
-///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> circle({ center = [0, 0], radius = 0.5 }, %)
+///     |> sweep({ path = helixPath }, %)
 /// ```
 ///
 /// ```no_run
@@ -72,7 +72,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 5,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = edge001,
@@ -80,8 +80,8 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
-///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> circle({ center = [0, 0], radius = 0.5 }, %)
+///     |> sweep({ path = helixPath }, %)
 /// ```
 ///
 /// ```no_run
@@ -89,7 +89,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 5,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = {
@@ -103,7 +103,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
 ///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> sweep({ path = helixPath }, %)
 /// ```
 #[stdlib {
     name = "helix",
@@ -117,6 +117,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
         revolutions: data.revolutions,
         angle_start: data.angle_start,
         ccw: data.ccw,
+        units: exec_state.length_unit(),
         meta: vec![args.source_range.into()],
     });
 
@@ -137,7 +138,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             };
 
             args.batch_modeling_cmd(
-                exec_state.next_uuid(),
+                id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
                     radius: LengthUnit(data.radius),
                     is_clockwise: !data.ccw,
@@ -154,7 +155,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
             args.batch_modeling_cmd(
-                exec_state.next_uuid(),
+                id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
                     radius: LengthUnit(data.radius),
                     is_clockwise: !data.ccw,
@@ -193,8 +194,8 @@ pub struct HelixRevolutionsData {
 pub async fn helix_revolutions(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid): (HelixRevolutionsData, Box<Solid>) = args.get_data_and_solid()?;
 
-    let solid = inner_helix_revolutions(data, solid, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_helix_revolutions(data, solid, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Create a helix on a cylinder.

@@ -2,7 +2,9 @@
 
 use std::{path::PathBuf, sync::Arc};
 
+use annotations::AnnotationScope;
 use anyhow::Result;
+use artifact::build_artifact_graph;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 use kcmc::{
@@ -11,8 +13,7 @@ use kcmc::{
     websocket::{ModelingSessionData, OkWebSocketResponseData},
     ImageFormat, ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::{self as kcmc, length_unit::LengthUnit, websocket::WebSocketResponse};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -21,16 +22,22 @@ type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use function_param::FunctionParam;
-pub use kcl_value::{KclObjectFields, KclValue};
+pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine, ZOO_COORD_SYSTEM};
+pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use uuid::Uuid;
 
-mod annotations;
+pub(crate) mod annotations;
 mod artifact;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
 mod function_param;
-mod kcl_value;
+mod import;
+pub(crate) mod kcl_value;
+
+// Re-exports.
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+pub use cad_op::Operation;
 
 use crate::{
     engine::{EngineManager, ExecutionKind},
@@ -38,7 +45,7 @@ use crate::{
     execution::cache::{CacheInformation, CacheResult},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{
-        BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, NonCodeValue,
+        BodyItem, Expr, FunctionExpression, ImportPath, ImportSelector, ItemVisibility, Node, NodeRef, NonCodeValue,
         Program as AstProgram, TagDeclarator, TagNode,
     },
     settings::types::UnitLength,
@@ -48,19 +55,15 @@ use crate::{
     ExecError, KclErrorWithOutputs, Program,
 };
 
-// Re-exports.
-pub use artifact::{Artifact, ArtifactCommand, ArtifactId, ArtifactInner};
-pub use cad_op::Operation;
-
 /// State for executing a program.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecState {
     pub global: GlobalState,
     pub mod_local: ModuleState,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalState {
     /// The stable artifact ID generator.
@@ -75,9 +78,16 @@ pub struct GlobalState {
     /// These are accumulated in the [`ExecutorContext`] but moved here for
     /// convenience of the execution cache.
     pub artifact_commands: Vec<ArtifactCommand>,
+    /// Responses from the engine for `artifact_commands`.  We need to cache
+    /// this so that we can build the artifact graph.  These are accumulated in
+    /// the [`ExecutorContext`] but moved here for convenience of the execution
+    /// cache.
+    pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ModuleState {
     /// Program variable bindings.
@@ -113,34 +123,30 @@ pub struct ExecOutcome {
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
     pub artifact_commands: Vec<ArtifactCommand>,
-}
-
-impl Default for ExecState {
-    fn default() -> Self {
-        Self::new()
-    }
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
 impl ExecState {
-    pub fn new() -> Self {
+    pub fn new(exec_settings: &ExecutorSettings) -> Self {
         ExecState {
-            global: GlobalState::new(),
-            mod_local: ModuleState::default(),
+            global: GlobalState::new(exec_settings),
+            mod_local: ModuleState::new(exec_settings),
         }
     }
 
-    fn reset(&mut self) {
+    fn reset(&mut self, exec_settings: &ExecutorSettings) {
         let mut id_generator = self.global.id_generator.clone();
         // We do not pop the ids, since we want to keep the same id generator.
         // This is for the front end to keep track of the ids.
         id_generator.next_id = 0;
 
-        let mut global = GlobalState::new();
+        let mut global = GlobalState::new(exec_settings);
         global.id_generator = id_generator;
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::default(),
+            mod_local: ModuleState::new(exec_settings),
         };
     }
 
@@ -155,6 +161,7 @@ impl ExecState {
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
+            artifact_graph: self.global.artifact_graph,
         }
     }
 
@@ -171,60 +178,50 @@ impl ExecState {
     }
 
     pub fn add_artifact(&mut self, artifact: Artifact) {
-        let id = artifact.id;
+        let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
     }
 
-    async fn add_module(
-        &mut self,
-        path: std::path::PathBuf,
-        ctxt: &ExecutorContext,
-        source_range: SourceRange,
-    ) -> Result<ModuleId, KclError> {
-        // Need to avoid borrowing self in the closure.
-        let new_module_id = ModuleId::from_usize(self.global.path_to_source_id.len());
-        let mut is_new = false;
-        let id = *self.global.path_to_source_id.entry(path.clone()).or_insert_with(|| {
-            is_new = true;
-            new_module_id
-        });
+    fn add_module(&mut self, id: ModuleId, path: std::path::PathBuf, repr: ModuleRepr) -> ModuleId {
+        debug_assert!(!self.global.path_to_source_id.contains_key(&path));
 
-        if is_new {
-            let source = ctxt.fs.read_to_string(&path, source_range).await?;
-            // TODO handle parsing errors properly
-            let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
+        self.global.path_to_source_id.insert(path.clone(), id);
 
-            let module_info = ModuleInfo {
-                id,
-                path,
-                parsed: Some(parsed),
-            };
-            self.global.module_infos.insert(id, module_info);
-        }
+        let module_info = ModuleInfo { id, repr, path };
+        self.global.module_infos.insert(id, module_info);
 
-        Ok(id)
+        id
+    }
+
+    pub fn length_unit(&self) -> UnitLen {
+        self.mod_local.settings.default_length_units
+    }
+
+    pub fn angle_unit(&self) -> UnitAngle {
+        self.mod_local.settings.default_angle_units
     }
 }
 
 impl GlobalState {
-    fn new() -> Self {
+    fn new(settings: &ExecutorSettings) -> Self {
         let mut global = GlobalState {
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
             artifact_commands: Default::default(),
+            artifact_responses: Default::default(),
+            artifact_graph: Default::default(),
         };
 
-        // TODO(#4434): Use the top-level file's path.
-        let root_path = PathBuf::new();
         let root_id = ModuleId::default();
+        let root_path = settings.current_file.clone().unwrap_or_default();
         global.module_infos.insert(
             root_id,
             ModuleInfo {
                 id: root_id,
                 path: root_path.clone(),
-                parsed: None,
+                repr: ModuleRepr::Root,
             },
         );
         global.path_to_source_id.insert(root_path, root_id);
@@ -232,7 +229,24 @@ impl GlobalState {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+impl ModuleState {
+    fn new(exec_settings: &ExecutorSettings) -> Self {
+        ModuleState {
+            memory: Default::default(),
+            dynamic_state: Default::default(),
+            pipe_value: Default::default(),
+            module_exports: Default::default(),
+            import_stack: Default::default(),
+            operations: Default::default(),
+            settings: MetaSettings {
+                default_length_units: exec_settings.units.into(),
+                default_angle_units: Default::default(),
+            },
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
@@ -240,17 +254,12 @@ pub struct MetaSettings {
     pub default_angle_units: kcl_value::UnitAngle,
 }
 
-impl Default for MetaSettings {
-    fn default() -> Self {
-        MetaSettings {
-            default_length_units: kcl_value::UnitLen::Mm,
-            default_angle_units: kcl_value::UnitAngle::Degrees,
-        }
-    }
-}
-
 impl MetaSettings {
-    fn update_from_annotation(&mut self, annotation: &NonCodeValue, source_range: SourceRange) -> Result<(), KclError> {
+    pub fn update_from_annotation(
+        &mut self,
+        annotation: &NonCodeValue,
+        source_range: SourceRange,
+    ) -> Result<(), KclError> {
         let properties = annotations::expect_properties(annotations::SETTINGS, annotation, source_range)?;
 
         for p in properties {
@@ -368,7 +377,7 @@ impl ProgramMemory {
                 env.bindings
                     .values()
                     .filter_map(|item| match item {
-                        KclValue::Solid(eg) if eg.sketch.id == sketch_id => Some(eg.clone()),
+                        KclValue::Solid { value } if value.sketch.id == sketch_id => Some(value.clone()),
                         _ => None,
                     })
                     .collect::<Vec<_>>()
@@ -482,8 +491,8 @@ impl DynamicState {
     fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
-                if let KclValue::Solid(eg) = item {
-                    self.solid_ids.push(SolidLazyIds::from(eg.as_ref()));
+                if let KclValue::Solid { value } = item {
+                    self.solid_ids.push(SolidLazyIds::from(value.as_ref()));
                 }
             }
         }
@@ -736,6 +745,7 @@ pub struct Helix {
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     pub ccw: bool,
+    pub units: UnitLen,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -757,6 +767,7 @@ pub struct Plane {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
+    pub units: UnitLen,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -772,6 +783,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
                 z_axis: Point3d::new(0.0, 0.0, 1.0),
                 value: PlaneType::XY,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::NegXY => Plane {
@@ -781,6 +793,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
                 z_axis: Point3d::new(0.0, 0.0, -1.0),
                 value: PlaneType::XY,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::XZ => Plane {
@@ -790,6 +803,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(0.0, -1.0, 0.0),
                 value: PlaneType::XZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::NegXZ => Plane {
@@ -799,6 +813,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(0.0, 1.0, 0.0),
                 value: PlaneType::XZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::YZ => Plane {
@@ -808,6 +823,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(1.0, 0.0, 0.0),
                 value: PlaneType::YZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::NegYZ => Plane {
@@ -817,6 +833,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(-1.0, 0.0, 0.0),
                 value: PlaneType::YZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::Plane {
@@ -831,6 +848,7 @@ impl Plane {
                 y_axis: *y_axis,
                 z_axis: *z_axis,
                 value: PlaneType::Custom,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
         }
@@ -877,6 +895,7 @@ pub struct Face {
     pub z_axis: Point3d,
     /// The solid the face is on.
     pub solid: Box<Solid>,
+    pub units: UnitLen,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -995,6 +1014,7 @@ pub struct Sketch {
     /// is sketched on face etc.
     #[serde(skip)]
     pub original_id: uuid::Uuid,
+    pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -1118,6 +1138,7 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -1217,7 +1238,15 @@ pub struct ModuleInfo {
     id: ModuleId,
     /// Absolute path of the module's source file.
     path: std::path::PathBuf,
-    parsed: Option<Node<AstProgram>>,
+    repr: ModuleRepr,
+}
+
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+pub enum ModuleRepr {
+    Root,
+    Kcl(Node<AstProgram>),
+    Foreign(import::PreImportedGeometry),
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
@@ -1744,7 +1773,7 @@ pub struct ExecutorContext {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ExecutorSettings {
-    /// The unit to use in modeling dimensions.
+    /// The project-default unit to use in modeling dimensions.
     pub units: UnitLength,
     /// Highlight edges of 3D objects?
     pub highlight_edges: bool,
@@ -1758,6 +1787,9 @@ pub struct ExecutorSettings {
     /// The directory of the current project.  This is used for resolving import
     /// paths.  If None is given, the current working directory is used.
     pub project_directory: Option<PathBuf>,
+    /// This is the path to the current file being executed.
+    /// We use this for preventing cyclic imports.
+    pub current_file: Option<PathBuf>,
 }
 
 impl Default for ExecutorSettings {
@@ -1769,6 +1801,7 @@ impl Default for ExecutorSettings {
             show_grid: false,
             replay: None,
             project_directory: None,
+            current_file: None,
         }
     }
 }
@@ -1782,6 +1815,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             show_grid: config.settings.modeling.show_scale_grid,
             replay: None,
             project_directory: None,
+            current_file: None,
         }
     }
 }
@@ -1795,6 +1829,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             show_grid: config.settings.modeling.show_scale_grid,
             replay: None,
             project_directory: None,
+            current_file: None,
         }
     }
 }
@@ -1808,6 +1843,25 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             show_grid: modeling.show_scale_grid,
             replay: None,
             project_directory: None,
+            current_file: None,
+        }
+    }
+}
+
+impl ExecutorSettings {
+    /// Add the current file path to the executor settings.
+    pub fn with_current_file(&mut self, current_file: PathBuf) {
+        // We want the parent directory of the file.
+        if current_file.extension() == Some(std::ffi::OsStr::new("kcl")) {
+            self.current_file = Some(current_file.clone());
+            // Get the parent directory.
+            if let Some(parent) = current_file.parent() {
+                self.project_directory = Some(parent.to_path_buf());
+            } else {
+                self.project_directory = Some(std::path::PathBuf::from(""));
+            }
+        } else {
+            self.project_directory = Some(current_file.clone());
         }
     }
 }
@@ -2025,6 +2079,7 @@ impl ExecutorContext {
                 show_grid: false,
                 replay: None,
                 project_directory: None,
+                current_file: None,
             },
             None,
             engine_addr,
@@ -2247,7 +2302,7 @@ impl ExecutorContext {
 
         if cache_result.clear_scene && !self.is_mock() {
             // Pop the execution state, since we are starting fresh.
-            exec_state.reset();
+            exec_state.reset(&self.settings);
 
             // We don't do this in mock mode since there is no engine connection
             // anyways and from the TS side we override memory and don't want to clear it.
@@ -2262,22 +2317,86 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
+        self.execute_and_build_graph(&cache_result.program, exec_state)
             .await
             .map_err(|e| {
                 KclErrorWithOutputs::new(
                     e,
                     exec_state.mod_local.operations.clone(),
-                    self.engine.take_artifact_commands(),
+                    exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
                 )
             })?;
-        // Move the artifact commands to simplify cache management.
+
+        let session_data = self.engine.get_session_data();
+        Ok(session_data)
+    }
+
+    /// Execute an AST's program and build auxiliary outputs like the artifact
+    /// graph.
+    async fn execute_and_build_graph<'a>(
+        &self,
+        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<KclValue>, KclError> {
+        // Don't early return!  We need to build other outputs regardless of
+        // whether execution failed.
+        let exec_result = self
+            .inner_execute(program, exec_state, crate::execution::BodyType::Root)
+            .await;
+        // Move the artifact commands and responses to simplify cache management
+        // and error creation.
         exec_state
             .global
             .artifact_commands
             .extend(self.engine.take_artifact_commands());
-        let session_data = self.engine.get_session_data();
-        Ok(session_data)
+        exec_state.global.artifact_responses.extend(self.engine.responses());
+        // Build the artifact graph.
+        match build_artifact_graph(
+            &exec_state.global.artifact_commands,
+            &exec_state.global.artifact_responses,
+            program,
+            &exec_state.global.artifacts,
+        ) {
+            Ok(artifact_graph) => {
+                exec_state.global.artifact_graph = artifact_graph;
+                exec_result
+            }
+            Err(err) => {
+                // Prefer the exec error.
+                exec_result.and(Err(err))
+            }
+        }
+    }
+
+    async fn handle_annotations(
+        &self,
+        annotations: impl Iterator<Item = (&NonCodeValue, SourceRange)>,
+        scope: AnnotationScope,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        for (annotation, source_range) in annotations {
+            if annotation.annotation_name() == Some(annotations::SETTINGS) {
+                if scope == AnnotationScope::Module {
+                    let old_units = exec_state.length_unit();
+                    exec_state
+                        .mod_local
+                        .settings
+                        .update_from_annotation(annotation, source_range)?;
+                    let new_units = exec_state.length_unit();
+                    if old_units != new_units {
+                        self.engine.set_units(new_units.into(), source_range).await?;
+                    }
+                } else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "Settings can only be modified at the top level scope of a file".to_owned(),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+            }
+            // TODO warn on unknown annotations
+        }
+        Ok(())
     }
 
     /// Execute an AST's program.
@@ -2288,21 +2407,16 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        if let Some((annotation, source_range)) = program
-            .non_code_meta
-            .start_nodes
-            .iter()
-            .filter_map(|n| {
-                n.annotation(annotations::SETTINGS)
-                    .map(|result| (result, n.as_source_range()))
-            })
-            .next()
-        {
-            exec_state
-                .mod_local
-                .settings
-                .update_from_annotation(annotation, source_range)?;
-        }
+        self.handle_annotations(
+            program
+                .non_code_meta
+                .start_nodes
+                .iter()
+                .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
+            AnnotationScope::Module,
+            exec_state,
+        )
+        .await?;
 
         let mut last_expr = None;
         // Iterate over the body of the program.
@@ -2449,33 +2563,68 @@ impl ExecutorContext {
 
     async fn open_module(
         &self,
-        path: &str,
+        path: &ImportPath,
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
-        let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
-            project_dir.join(path)
-        } else {
-            std::path::PathBuf::from(&path)
-        };
+        match path {
+            ImportPath::Kcl { filename } => {
+                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
+                    project_dir.join(filename)
+                } else {
+                    std::path::PathBuf::from(filename)
+                };
 
-        if exec_state.mod_local.import_stack.contains(&resolved_path) {
-            return Err(KclError::ImportCycle(KclErrorDetails {
-                message: format!(
-                    "circular import of modules is not allowed: {} -> {}",
-                    exec_state
-                        .mod_local
-                        .import_stack
-                        .iter()
-                        .map(|p| p.as_path().to_string_lossy())
-                        .collect::<Vec<_>>()
-                        .join(" -> "),
-                    resolved_path.to_string_lossy()
-                ),
+                if exec_state.mod_local.import_stack.contains(&resolved_path) {
+                    return Err(KclError::ImportCycle(KclErrorDetails {
+                        message: format!(
+                            "circular import of modules is not allowed: {} -> {}",
+                            exec_state
+                                .mod_local
+                                .import_stack
+                                .iter()
+                                .map(|p| p.as_path().to_string_lossy())
+                                .collect::<Vec<_>>()
+                                .join(" -> "),
+                            resolved_path.to_string_lossy()
+                        ),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+
+                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
+                    return Ok(*id);
+                }
+
+                let source = self.fs.read_to_string(&resolved_path, source_range).await?;
+                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
+                // TODO handle parsing errors properly
+                let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
+                let repr = ModuleRepr::Kcl(parsed);
+
+                Ok(exec_state.add_module(id, resolved_path, repr))
+            }
+            ImportPath::Foreign { path } => {
+                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
+                    project_dir.join(path)
+                } else {
+                    std::path::PathBuf::from(path)
+                };
+
+                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
+                    return Ok(*id);
+                }
+
+                let geom = import::import_foreign(&resolved_path, None, exec_state, self, source_range).await?;
+                let repr = ModuleRepr::Foreign(geom);
+                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
+                Ok(exec_state.add_module(id, resolved_path, repr))
+            }
+            i => Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Unsupported import: `{i}`"),
                 source_ranges: vec![source_range],
-            }));
+            })),
         }
-        exec_state.add_module(resolved_path.clone(), self, source_range).await
     }
 
     async fn exec_module(
@@ -2485,42 +2634,68 @@ impl ExecutorContext {
         exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, ProgramMemory, Vec<String>), KclError> {
+        let old_units = exec_state.length_unit();
         // TODO It sucks that we have to clone the whole module AST here
         let info = exec_state.global.module_infos[&module_id].clone();
 
-        let mut local_state = ModuleState {
-            import_stack: exec_state.mod_local.import_stack.clone(),
-            ..Default::default()
-        };
-        local_state.import_stack.push(info.path.clone());
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-        let original_execution = self.engine.replace_execution_kind(exec_kind);
+        match &info.repr {
+            ModuleRepr::Root => Err(KclError::ImportCycle(KclErrorDetails {
+                message: format!(
+                    "circular import of modules is not allowed: {} -> {}",
+                    exec_state
+                        .mod_local
+                        .import_stack
+                        .iter()
+                        .map(|p| p.as_path().to_string_lossy())
+                        .collect::<Vec<_>>()
+                        .join(" -> "),
+                    info.path.display()
+                ),
+                source_ranges: vec![source_range],
+            })),
+            ModuleRepr::Kcl(program) => {
+                let mut local_state = ModuleState {
+                    import_stack: exec_state.mod_local.import_stack.clone(),
+                    ..ModuleState::new(&self.settings)
+                };
+                local_state.import_stack.push(info.path.clone());
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                let original_execution = self.engine.replace_execution_kind(exec_kind);
 
-        // The unwrap here is safe since we only elide the AST for the top module.
-        let result = self
-            .inner_execute(&info.parsed.unwrap(), exec_state, crate::execution::BodyType::Root)
-            .await;
+                let result = self
+                    .inner_execute(program, exec_state, crate::execution::BodyType::Root)
+                    .await;
 
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-        self.engine.replace_execution_kind(original_execution);
+                let new_units = exec_state.length_unit();
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                if new_units != old_units {
+                    self.engine.set_units(old_units.into(), Default::default()).await?;
+                }
+                self.engine.replace_execution_kind(original_execution);
 
-        let result = result.map_err(|err| {
-            if let KclError::ImportCycle(_) = err {
-                // It was an import cycle.  Keep the original message.
-                err.override_source_ranges(vec![source_range])
-            } else {
-                KclError::Semantic(KclErrorDetails {
-                    message: format!(
-                        "Error loading imported file. Open it to view more details. {}: {}",
-                        info.path.display(),
-                        err.message()
-                    ),
-                    source_ranges: vec![source_range],
-                })
+                let result = result.map_err(|err| {
+                    if let KclError::ImportCycle(_) = err {
+                        // It was an import cycle.  Keep the original message.
+                        err.override_source_ranges(vec![source_range])
+                    } else {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!(
+                                "Error loading imported file. Open it to view more details. {}: {}",
+                                info.path.display(),
+                                err.message()
+                            ),
+                            source_ranges: vec![source_range],
+                        })
+                    }
+                })?;
+
+                Ok((result, local_state.memory, local_state.module_exports))
             }
-        })?;
-
-        Ok((result, local_state.memory, local_state.module_exports))
+            ModuleRepr::Foreign(geom) => {
+                let geom = send_import_to_engine(geom.clone(), self).await?;
+                Ok((Some(KclValue::ImportedGeometry(geom)), ProgramMemory::new(), Vec::new()))
+            }
+        }
     }
 
     #[async_recursion]
@@ -2541,15 +2716,20 @@ impl ExecutorContext {
                     let (result, _, _) = self
                         .exec_module(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
                         .await?;
-                    result.ok_or_else(|| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!(
-                                "Evaluating module `{}` as part of an assembly did not produce a result",
-                                identifier.name
-                            ),
-                            source_ranges: vec![metadata.source_range, meta[0].source_range],
-                        })
-                    })?
+                    result.unwrap_or_else(|| {
+                        // The module didn't have a return value.  Currently,
+                        // the only way to have a return value is with the final
+                        // statement being an expression statement.
+                        //
+                        // TODO: Make a warning when we support them in the
+                        // execution phase.
+                        let mut new_meta = vec![metadata.to_owned()];
+                        new_meta.extend(meta);
+                        KclValue::KclNone {
+                            value: Default::default(),
+                            meta: new_meta,
+                        }
+                    })
                 } else {
                     value
                 }
@@ -2863,7 +3043,7 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let mut exec_state = ExecState::default();
+        let mut exec_state = ExecState::new(&ctx.settings);
         ctx.run(program.clone().into(), &mut exec_state).await?;
 
         Ok((program, ctx, exec_state))
@@ -3333,6 +3513,35 @@ let shape = layer() |> patternTransform(10, transform, %)
         let ast = r#"let thing = .4 + 7"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(7.4, mem_get_json(exec_state.memory(), "thing").as_f64().unwrap());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_default() {
+        let ast = r#"const inMm = 25.4 * mm()
+const inInches = 1.0 * inch()"#;
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(25.4, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap());
+        assert_eq!(25.4, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_overriden() {
+        let ast = r#"@settings(defaultLengthUnit = inch)
+const inMm = 25.4 * mm()
+const inInches = 1.0 * inch()"#;
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap().round());
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_overriden_in() {
+        let ast = r#"@settings(defaultLengthUnit = in)
+const inMm = 25.4 * mm()
+const inInches = 2.0 * inch()"#;
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap().round());
+        assert_eq!(2.0, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4078,7 +4287,7 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
             .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
         // Execute the program.
-        let mut exec_state = Default::default();
+        let mut exec_state = ExecState::new(&ctx.settings);
         let cache_info = crate::CacheInformation {
             old: None,
             new_ast: old_program.ast.clone(),

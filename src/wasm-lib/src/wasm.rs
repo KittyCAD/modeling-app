@@ -5,7 +5,8 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Point2d, Program,
+    exec::IdGenerator, pretty::NumericSuffix, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId,
+    OldAstState, Point2d, Program,
 };
 use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
@@ -58,6 +59,7 @@ pub async fn clear_scene_and_bust_cache(
 #[wasm_bindgen]
 pub async fn execute(
     program_ast_json: &str,
+    path: Option<String>,
     program_memory_override_str: &str,
     settings: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
@@ -73,14 +75,19 @@ pub async fn execute(
     // You cannot override the memory in non-mock mode.
     let is_mock = program_memory_override.is_some();
 
-    let settings: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
+    let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
+    let mut settings: kcl_lib::ExecutorSettings = config.into();
+    if let Some(path) = path {
+        settings.with_current_file(std::path::PathBuf::from(path));
+    }
+
     let ctx = if is_mock {
-        kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?
+        kcl_lib::ExecutorContext::new_mock(fs_manager, settings).await?
     } else {
-        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?
+        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings).await?
     };
 
-    let mut exec_state = ExecState::default();
+    let mut exec_state = ExecState::new(&ctx.settings);
     let mut old_ast_memory = None;
 
     // Populate from the old exec state if it exists.
@@ -243,6 +250,14 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 
     let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
     Ok(JsValue::from_serde(&program.recast())?)
+}
+
+#[wasm_bindgen]
+pub fn format_number(value: f64, suffix_json: &str) -> Result<String, JsError> {
+    console_error_panic_hook::set_once();
+
+    let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
+    Ok(kcl_lib::pretty::format_number(value, suffix))
 }
 
 #[wasm_bindgen]
@@ -598,4 +613,19 @@ pub fn calculate_circle_from_3_points(ax: f64, ay: f64, bx: f64, by: f64, cx: f6
         center_y: result.center.y,
         radius: result.radius,
     }
+}
+
+/// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
+#[wasm_bindgen]
+pub fn change_kcl_settings(code: &str, settings_str: &str) -> Result<String, String> {
+    console_error_panic_hook::set_once();
+
+    let settings: kcl_lib::MetaSettings = serde_json::from_str(settings_str).map_err(|e| e.to_string())?;
+    let mut program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
+
+    let new_program = program.change_meta_settings(settings).map_err(|e| e.to_string())?;
+
+    let formatted = new_program.recast();
+
+    Ok(formatted)
 }

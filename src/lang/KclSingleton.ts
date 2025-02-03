@@ -22,6 +22,7 @@ import {
   ProgramMemory,
   recast,
   SourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
@@ -322,6 +323,7 @@ export class KclManager {
     await this.ensureWasmInit()
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
+      path: codeManager.currentFilePath || undefined,
       engineCommandManager: this.engineCommandManager,
     })
 
@@ -474,7 +476,7 @@ export class KclManager {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,
-            range: [node.start, node.end, true],
+            range: topLevelRange(node.start, node.end),
           },
         })
       }
@@ -598,7 +600,7 @@ export class KclManager {
         if (start && end) {
           returnVal.graphSelections.push({
             codeRef: {
-              range: [start, end, true],
+              range: topLevelRange(start, end),
               pathToNode: path,
             },
           })

@@ -1,4 +1,5 @@
 import {
+  ArtifactGraph,
   CallExpression,
   Expr,
   Identifier,
@@ -19,10 +20,10 @@ import {
 } from '../modifyAst'
 import {
   getNodeFromPath,
-  getNodePathFromSourceRange,
   hasSketchPipeBeenExtruded,
   traverse,
 } from '../queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
   getTagFromCallExpression,
@@ -31,11 +32,7 @@ import {
 import { err, trap } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
-import {
-  Artifact,
-  ArtifactGraph,
-  getSweepFromSuspectedPath,
-} from 'lang/std/artifactGraph'
+import { Artifact, getSweepFromSuspectedPath } from 'lang/std/artifactGraph'
 import {
   kclManager,
   engineCommandManager,

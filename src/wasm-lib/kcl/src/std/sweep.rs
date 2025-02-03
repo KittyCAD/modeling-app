@@ -39,8 +39,8 @@ pub struct SweepData {
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch): (SweepData, Sketch) = args.get_data_and_sketch()?;
 
-    let solid = inner_sweep(data, sketch, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_sweep(data, sketch, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Extrude a sketch along a path.
@@ -94,7 +94,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 4,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Z',
@@ -104,7 +104,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('YZ')
 ///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> sweep({ path = helixPath }, %)
 /// ```
 #[stdlib {
     name = "sweep",

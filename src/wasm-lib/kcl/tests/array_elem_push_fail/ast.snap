@@ -22,7 +22,10 @@ description: Result of parsing array_elem_push_fail.kcl
                 "start": 7,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 11,
@@ -30,7 +33,10 @@ description: Result of parsing array_elem_push_fail.kcl
                 "start": 10,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2.0
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 14,
@@ -38,7 +44,10 @@ description: Result of parsing array_elem_push_fail.kcl
                 "start": 13,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             ],
             "end": 15,
@@ -79,7 +88,10 @@ description: Result of parsing array_elem_push_fail.kcl
                 "start": 38,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               }
             ],
             "callee": {
@@ -127,7 +139,10 @@ description: Result of parsing array_elem_push_fail.kcl
               "start": 52,
               "type": "Literal",
               "type": "Literal",
-              "value": 3.0
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
             },
             "start": 48,
             "type": "MemberExpression",

@@ -55,6 +55,7 @@ import {
   sourceRangeFromRust,
   resultIsOk,
   SourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -63,7 +64,8 @@ import {
   codeManager,
   editorManager,
 } from 'lib/singletons'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { executeAst, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
@@ -2106,7 +2108,7 @@ export class SceneEntities {
         kclManager.programMemory,
         {
           type: 'sourceRange',
-          sourceRange: [node.start, node.end, true],
+          sourceRange: topLevelRange(node.start, node.end),
         },
         getChangeSketchInput()
       )
@@ -2338,7 +2340,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          editorManager.setHighlightRange([[node.start, node.end, true]])
+          editorManager.setHighlightRange([topLevelRange(node.start, node.end)])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -2619,7 +2621,7 @@ export function sketchFromPathToNode({
   const varDec = _varDec.node
   const result = programMemory.get(varDec?.id?.name || '')
   if (result?.type === 'Solid') {
-    return result.sketch
+    return result.value.sketch
   }
   const sg = sketchFromKclValue(result, varDec?.id?.name)
   if (err(sg)) {

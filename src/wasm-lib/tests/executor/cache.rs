@@ -18,7 +18,7 @@ async fn cache_test(
         .ok_or_else(|| anyhow::anyhow!("No variations provided for test '{}'", test_name))?;
 
     let mut ctx = kcl_lib::ExecutorContext::new_with_client(first.settings.clone(), None, None).await?;
-    let mut exec_state = kcl_lib::ExecState::default();
+    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
 
     let mut old_ast_state = None;
     let mut img_results = Vec::new();
@@ -262,5 +262,11 @@ extrude(4, sketch001)
         "Second should have all the artifact commands of the first, plus more. first={:?}, second={:?}",
         first.2.global.artifact_commands.len(),
         second.2.global.artifact_commands.len()
+    );
+    assert!(
+        first.2.global.artifact_responses.len() < second.2.global.artifact_responses.len(),
+        "Second should have all the artifact responses of the first, plus more. first={:?}, second={:?}",
+        first.2.global.artifact_responses.len(),
+        second.2.global.artifact_responses.len()
     );
 }

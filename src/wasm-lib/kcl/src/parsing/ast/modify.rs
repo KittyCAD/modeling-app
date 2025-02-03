@@ -6,6 +6,7 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 
+use super::types::LiteralValue;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -201,8 +202,8 @@ fn create_start_sketch_on(
         "startProfileAt",
         vec![
             ArrayExpression::new(vec![
-                Literal::new(round_before_recast(start[0]).into()).into(),
-                Literal::new(round_before_recast(start[1]).into()).into(),
+                Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(start[0]))).into(),
+                Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(start[1]))).into(),
             ])
             .into(),
             PipeSubstitution::new().into(),
@@ -221,8 +222,8 @@ fn create_start_sketch_on(
         "line",
         vec![
             ArrayExpression::new(vec![
-                Literal::new(round_before_recast(end[0]).into()).into(),
-                Literal::new(round_before_recast(end[1]).into()).into(),
+                Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(end[0]))).into(),
+                Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(end[1]))).into(),
             ])
             .into(),
             PipeSubstitution::new().into(),
@@ -254,8 +255,8 @@ fn create_start_sketch_on(
             "line",
             vec![
                 ArrayExpression::new(vec![
-                    Literal::new(round_before_recast(line[0]).into()).into(),
-                    Literal::new(round_before_recast(line[1]).into()).into(),
+                    Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(line[0]))).into(),
+                    Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(line[1]))).into(),
                 ])
                 .into(),
                 PipeSubstitution::new().into(),

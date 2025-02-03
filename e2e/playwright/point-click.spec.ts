@@ -803,12 +803,6 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
         })
         await selectSketches()
         await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Selection: '2 faces' },
-          commandName: 'Loft',
-        })
-        await cmdBar.progressCmdBar()
       })
     } else {
       await test.step(`Preselect the two sketches`, async () => {
@@ -817,12 +811,6 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
 
       await test.step(`Go through the command bar flow with preselected sketches`, async () => {
         await toolbar.loftButton.click()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Selection: '2 faces' },
-          commandName: 'Loft',
-        })
         await cmdBar.progressCmdBar()
       })
     }
@@ -949,37 +937,31 @@ sketch002 = startSketchOn('XZ')
     await toolbar.sweepButton.click()
     await cmdBar.expectState({
       commandName: 'Sweep',
-      currentArgKey: 'profile',
+      currentArgKey: 'target',
       currentArgValue: '',
       headerArguments: {
-        Path: '',
-        Profile: '',
+        Target: '',
+        Trajectory: '',
       },
-      highlightedHeaderArg: 'profile',
+      highlightedHeaderArg: 'target',
       stage: 'arguments',
     })
     await clickOnSketch1()
     await cmdBar.expectState({
       commandName: 'Sweep',
-      currentArgKey: 'path',
+      currentArgKey: 'trajectory',
       currentArgValue: '',
       headerArguments: {
-        Path: '',
-        Profile: '1 face',
+        Target: '1 face',
+        Trajectory: '',
       },
-      highlightedHeaderArg: 'path',
+      highlightedHeaderArg: 'trajectory',
       stage: 'arguments',
     })
     await clickOnSketch2()
-    await cmdBar.expectState({
-      commandName: 'Sweep',
-      headerArguments: {
-        Path: '1 face',
-        Profile: '1 face',
-      },
-      stage: 'review',
-    })
+    await page.waitForTimeout(500)
     await cmdBar.progressCmdBar()
+    await page.waitForTimeout(500)
   })
 
   await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
@@ -1006,6 +988,290 @@ sketch002 = startSketchOn('XZ')
   })
 })
 
+test(`Sweep point-and-click failing validation`, async ({
+  context,
+  page,
+  homePage,
+  scene,
+  toolbar,
+  cmdBar,
+}) => {
+  const initialCode = `sketch001 = startSketchOn('YZ')
+  |> circle({
+       center = [0, 0],
+       radius = 500
+     }, %)
+sketch002 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> xLine(-500, %)
+  |> lineTo([-2000, 500], %)
+`
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
+  await scene.waitForExecutionDone()
+
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 700, y: 250 }
+  const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const [clickOnSketch2] = scene.makeMouseHelpers(testPoint.x - 50, testPoint.y)
+
+  await test.step(`Look for sketch001`, async () => {
+    await toolbar.closePane('code')
+    await scene.expectPixelColor([53, 53, 53], testPoint, 15)
+  })
+
+  await test.step(`Go through the command bar flow and fail validation with a toast`, async () => {
+    await toolbar.sweepButton.click()
+    await cmdBar.expectState({
+      commandName: 'Sweep',
+      currentArgKey: 'target',
+      currentArgValue: '',
+      headerArguments: {
+        Target: '',
+        Trajectory: '',
+      },
+      highlightedHeaderArg: 'target',
+      stage: 'arguments',
+    })
+    await clickOnSketch1()
+    await cmdBar.expectState({
+      commandName: 'Sweep',
+      currentArgKey: 'trajectory',
+      currentArgValue: '',
+      headerArguments: {
+        Target: '1 face',
+        Trajectory: '',
+      },
+      highlightedHeaderArg: 'trajectory',
+      stage: 'arguments',
+    })
+    await clickOnSketch2()
+    await page.waitForTimeout(500)
+    await cmdBar.progressCmdBar()
+    await expect(
+      page.getByText('Unable to sweep with the current selection. Reason:')
+    ).toBeVisible()
+  })
+})
+
+test(`Fillet point-and-click`, async ({
+  context,
+  page,
+  homePage,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  // Code samples
+  const initialCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-12, -6], %)
+  |> line([0, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -12], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(-12, sketch001)
+`
+  const firstFilletDeclaration = 'fillet({ radius = 5, tags = [seg01] }, %)'
+  const secondFilletDeclaration =
+    'fillet({       radius = 5,       tags = [getOppositeEdge(seg01)]     }, %)'
+
+  // Locators
+  const firstEdgeLocation = { x: 600, y: 193 }
+  const secondEdgeLocation = { x: 600, y: 383 }
+  const bodyLocation = { x: 630, y: 290 }
+  const [clickOnFirstEdge] = scene.makeMouseHelpers(
+    firstEdgeLocation.x,
+    firstEdgeLocation.y
+  )
+  const [clickOnSecondEdge] = scene.makeMouseHelpers(
+    secondEdgeLocation.x,
+    secondEdgeLocation.y
+  )
+
+  // Colors
+  const edgeColorWhite: [number, number, number] = [248, 248, 248]
+  const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
+  const bodyColor: [number, number, number] = [155, 155, 155]
+  const filletColor: [number, number, number] = [127, 127, 127]
+  const backgroundColor: [number, number, number] = [30, 30, 30]
+  const lowTolerance = 20
+  const highTolerance = 40
+
+  // Setup
+  await test.step(`Initial test setup`, async () => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+
+    // verify modeling scene is loaded
+    await scene.expectPixelColor(
+      backgroundColor,
+      secondEdgeLocation,
+      lowTolerance
+    )
+
+    // wait for stream to load
+    await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+  })
+
+  // Test 1: Command bar flow with preselected edges
+  await test.step(`Select first edge`, async () => {
+    await scene.expectPixelColor(
+      edgeColorWhite,
+      firstEdgeLocation,
+      lowTolerance
+    )
+    await clickOnFirstEdge()
+    await scene.expectPixelColor(
+      edgeColorYellow,
+      firstEdgeLocation,
+      highTolerance // Ubuntu color mismatch can require high tolerance
+    )
+  })
+
+  await test.step(`Apply fillet to the preselected edge`, async () => {
+    await page.waitForTimeout(100)
+    await toolbar.filletButton.click()
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      highlightedHeaderArg: 'selection',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Radius: '',
+      },
+      stage: 'arguments',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      highlightedHeaderArg: 'radius',
+      currentArgKey: 'radius',
+      currentArgValue: '5',
+      headerArguments: {
+        Selection: '1 segment',
+        Radius: '',
+      },
+      stage: 'arguments',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      headerArguments: {
+        Selection: '1 segment',
+        Radius: '5',
+      },
+      stage: 'review',
+    })
+    await cmdBar.progressCmdBar()
+  })
+
+  await test.step(`Confirm code is added to the editor`, async () => {
+    await editor.expectEditor.toContain(firstFilletDeclaration)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: ['|>fillet({radius=5,tags=[seg01]},%)'],
+      highlightedCode: '',
+    })
+  })
+
+  await test.step(`Confirm scene has changed`, async () => {
+    await scene.expectPixelColor(filletColor, firstEdgeLocation, lowTolerance)
+  })
+
+  // Test 2: Command bar flow without preselected edges
+  await test.step(`Open fillet UI without selecting edges`, async () => {
+    await page.waitForTimeout(100)
+    await toolbar.filletButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Radius: '',
+      },
+      highlightedHeaderArg: 'selection',
+      commandName: 'Fillet',
+    })
+  })
+
+  await test.step(`Select second edge`, async () => {
+    await scene.expectPixelColor(
+      edgeColorWhite,
+      secondEdgeLocation,
+      lowTolerance
+    )
+    await clickOnSecondEdge()
+    await scene.expectPixelColor(
+      edgeColorYellow,
+      secondEdgeLocation,
+      highTolerance // Ubuntu color mismatch can require high tolerance
+    )
+  })
+
+  await test.step(`Apply fillet to the second edge`, async () => {
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      highlightedHeaderArg: 'selection',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Radius: '',
+      },
+      stage: 'arguments',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      highlightedHeaderArg: 'radius',
+      currentArgKey: 'radius',
+      currentArgValue: '5',
+      headerArguments: {
+        Selection: '1 sweepEdge',
+        Radius: '',
+      },
+      stage: 'arguments',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      headerArguments: {
+        Selection: '1 sweepEdge',
+        Radius: '5',
+      },
+      stage: 'review',
+    })
+    await cmdBar.progressCmdBar()
+  })
+
+  await test.step(`Confirm code is added to the editor`, async () => {
+    await editor.expectEditor.toContain(secondFilletDeclaration)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: ['radius=5,'],
+      highlightedCode: '',
+    })
+  })
+
+  await test.step(`Confirm scene has changed`, async () => {
+    await scene.expectPixelColor(
+      backgroundColor,
+      secondEdgeLocation,
+      lowTolerance
+    )
+  })
+})
+
 test(`Chamfer point-and-click`, async ({
   context,
   page,
@@ -1015,9 +1281,6 @@ test(`Chamfer point-and-click`, async ({
   toolbar,
   cmdBar,
 }) => {
-  // TODO: fix this test on windows after the electron migration
-  test.skip(process.platform === 'win32', 'Skip on windows')
-
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
@@ -1055,13 +1318,13 @@ extrude001 = extrude(-12, sketch001)
   const highTolerance = 40
 
   // Setup
-  await context.addInitScript((initialCode) => {
-    localStorage.setItem('persistCode', initialCode)
-  }, initialCode)
-  await page.setBodyDimensions({ width: 1000, height: 500 })
-  await homePage.goToModelingScene()
+  await test.step(`Initial test setup`, async () => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
 
-  await test.step(`Verify scene is loaded`, async () => {
     // verify modeling scene is loaded
     await scene.expectPixelColor(
       backgroundColor,
@@ -1089,6 +1352,7 @@ extrude001 = extrude(-12, sketch001)
   })
 
   await test.step(`Apply chamfer to the preselected edge`, async () => {
+    await page.waitForTimeout(100)
     await toolbar.chamferButton.click()
     await cmdBar.expectState({
       commandName: 'Chamfer',
@@ -1108,7 +1372,7 @@ extrude001 = extrude(-12, sketch001)
       currentArgKey: 'length',
       currentArgValue: '5',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Length: '',
       },
       stage: 'arguments',
@@ -1117,7 +1381,7 @@ extrude001 = extrude(-12, sketch001)
     await cmdBar.expectState({
       commandName: 'Chamfer',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Length: '5',
       },
       stage: 'review',
@@ -1140,6 +1404,7 @@ extrude001 = extrude(-12, sketch001)
 
   // Test 2: Command bar flow without preselected edges
   await test.step(`Open chamfer UI without selecting edges`, async () => {
+    await page.waitForTimeout(100)
     await toolbar.chamferButton.click()
     await cmdBar.expectState({
       stage: 'arguments',
@@ -1275,6 +1540,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
         await clickOnCap()
         await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
+        await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
@@ -1295,6 +1561,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
       await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
         await toolbar.shellButton.click()
         await cmdBar.progressCmdBar()
+        await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
@@ -1376,6 +1643,7 @@ extrude001 = extrude(40, sketch001)
     await page.waitForTimeout(500)
     await page.keyboard.up('Shift')
     await cmdBar.progressCmdBar()
+    await page.waitForTimeout(500)
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -1497,5 +1765,231 @@ shellSketchOnFacesCases.forEach((initialCode, index) => {
       await toolbar.closePane('code')
       await scene.expectPixelColor([73, 73, 73], testPoint, 15)
     })
+  })
+})
+
+test(`Shell dry-run validation rejects sweeps`, async ({
+  context,
+  page,
+  homePage,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  const initialCode = `sketch001 = startSketchOn('YZ')
+  |> circle({
+       center = [0, 0],
+       radius = 500
+     }, %)
+sketch002 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> xLine(-2000, %)
+sweep001 = sweep({ path = sketch002 }, sketch001)
+`
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
+  await scene.waitForExecutionDone()
+
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 500, y: 250 }
+  const [clickOnSweep] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+
+  await test.step(`Confirm sweep exists`, async () => {
+    await toolbar.closePane('code')
+    await scene.expectPixelColor([231, 231, 231], testPoint, 15)
+  })
+
+  await test.step(`Go through the Shell flow and fail validation with a toast`, async () => {
+    await toolbar.shellButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Thickness: '',
+      },
+      highlightedHeaderArg: 'selection',
+      commandName: 'Shell',
+    })
+    await clickOnSweep()
+    await page.waitForTimeout(500)
+    await cmdBar.progressCmdBar()
+    await expect(
+      page.getByText('Unable to shell with the current selection. Reason:')
+    ).toBeVisible()
+    await page.waitForTimeout(1000)
+  })
+})
+
+test.describe('Revolve point and click workflows', () => {
+  test('Base case workflow, auto spam continue in command bar', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `
+sketch001 = startSketchOn('XZ')
+|> startProfileAt([-100.0, 100.0], %)
+|> angledLine([0, 200.0], %, $rectangleSegmentA001)
+|> angledLine([segAng(rectangleSegmentA001) - 90, 200], %, $rectangleSegmentB001)
+|> angledLine([
+segAng(rectangleSegmentA001),
+-segLen(rectangleSegmentA001)
+], %, $rectangleSegmentC001)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+extrude001 = extrude(200, sketch001)
+sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
+|> startProfileAt([-66.77, 84.81], %)
+|> angledLine([180, 27.08], %, $rectangleSegmentA002)
+|> angledLine([
+segAng(rectangleSegmentA002) - 90,
+27.8
+], %, $rectangleSegmentB002)
+|> angledLine([
+segAng(rectangleSegmentA002),
+-segLen(rectangleSegmentA002)
+], %, $rectangleSegmentC002)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+`
+
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    // select line of code
+    const codeToSelecton = `segAng(rectangleSegmentA002) - 90,`
+    // revolve
+    await page.getByText(codeToSelecton).click()
+    await toolbar.revolveButton.click()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+
+    const newCodeToFind = `revolve001 = revolve({ angle = 360, axis = 'X' }, sketch002)`
+    expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
+  })
+  test('revolve surface around edge from an extruded solid2d', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `
+sketch001 = startSketchOn('XZ')
+|> startProfileAt([-102.57, 101.72], %)
+|> angledLine([0, 202.6], %, $rectangleSegmentA001)
+|> angledLine([
+segAng(rectangleSegmentA001) - 90,
+202.6
+], %, $rectangleSegmentB001)
+|> angledLine([
+segAng(rectangleSegmentA001),
+-segLen(rectangleSegmentA001)
+], %, $rectangleSegmentC001)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+extrude001 = extrude(50, sketch001)
+sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
+|> circle({
+center = [-11.34, 10.0],
+radius = 8.69
+}, %)
+`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    // select line of code
+    const codeToSelecton = `center = [-11.34, 10.0]`
+    // revolve
+    await page.getByText(codeToSelecton).click()
+    await toolbar.revolveButton.click()
+    await page.getByText('Edge', { exact: true }).click()
+    const lineCodeToSelection = `|> angledLine([0, 202.6], %, $rectangleSegmentA001)`
+    await page.getByText(lineCodeToSelection).click()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+
+    const newCodeToFind = `revolve001 = revolve({angle = 360, axis = getOppositeEdge(rectangleSegmentA001)}, sketch002) `
+    expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
+  })
+  test('revolve sketch circle around line segment from startProfileAt sketch', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `
+    sketch002 = startSketchOn('XY')
+      |> startProfileAt([-2.02, 1.79], %)
+      |> xLine(2.6, %)
+    sketch001 = startSketchOn('-XY')
+      |> startProfileAt([-0.48, 1.25], %)
+      |> angledLine([0, 2.38], %, $rectangleSegmentA001)
+      |> angledLine([segAng(rectangleSegmentA001) - 90, 2.4], %, $rectangleSegmentB001)
+      |> angledLine([
+        segAng(rectangleSegmentA001),
+          -segLen(rectangleSegmentA001)
+      ], %, $rectangleSegmentC001)
+      |> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> close(%)
+    extrude001 = extrude(5, sketch001)
+    sketch003 = startSketchOn(extrude001, 'START')
+      |> circle({
+        center = [-0.69, 0.56],
+        radius = 0.28
+      }, %)
+`
+
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    // select line of code
+    const codeToSelecton = `center = [-0.69, 0.56]`
+    // revolve
+    await page.getByText(codeToSelecton).click()
+    await toolbar.revolveButton.click()
+    await page.getByText('Edge', { exact: true }).click()
+    const lineCodeToSelection = `|> xLine(2.6, %)`
+    await page.getByText(lineCodeToSelection).click()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+
+    const newCodeToFind = `revolve001 = revolve({ angle = 360, axis = seg01 }, sketch003)`
+    expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
   })
 })

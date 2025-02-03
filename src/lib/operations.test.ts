@@ -1,4 +1,4 @@
-import { defaultRustSourceRange } from 'lang/wasm'
+import { defaultSourceRange } from 'lang/wasm'
 import { filterOperations } from './operations'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
@@ -8,7 +8,7 @@ function stdlib(name: string): Operation {
     name,
     unlabeledArg: null,
     labeledArgs: {},
-    sourceRange: defaultRustSourceRange(),
+    sourceRange: defaultSourceRange(),
     isError: false,
   }
 }
@@ -17,10 +17,10 @@ function userCall(name: string): Operation {
   return {
     type: 'UserDefinedFunctionCall',
     name,
-    functionSourceRange: defaultRustSourceRange(),
+    functionSourceRange: defaultSourceRange(),
     unlabeledArg: null,
     labeledArgs: {},
-    sourceRange: defaultRustSourceRange(),
+    sourceRange: defaultSourceRange(),
   }
 }
 function userReturn(): Operation {

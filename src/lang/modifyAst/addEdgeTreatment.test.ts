@@ -8,6 +8,8 @@ import {
   makeDefaultPlanes,
   PipeExpression,
   VariableDeclarator,
+  SourceRange,
+  topLevelRange,
 } from '../wasm'
 import {
   EdgeTreatmentType,
@@ -19,7 +21,8 @@ import {
   ChamferParameters,
   EdgeTreatmentParameters,
 } from './addEdgeTreatment'
-import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
+import { getNodeFromPath } from '../queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
@@ -77,11 +80,10 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     code: string,
     expectedExtrudeSnippet: string
   ): CallExpression | PipeExpression | Error {
-    const extrudeRange: [number, number, boolean] = [
+    const extrudeRange = topLevelRange(
       code.indexOf(expectedExtrudeSnippet),
-      code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length,
-      true,
-    ]
+      code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length
+    )
     const expectedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
     const expectedExtrudeNodeResult = getNodeFromPath<
       VariableDeclarator | CallExpression
@@ -112,11 +114,10 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   const ast = assertParse(code)
 
   // selection
-  const segmentRange: [number, number, boolean] = [
+  const segmentRange = topLevelRange(
     code.indexOf(selectedSegmentSnippet),
-    code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length,
-    true,
-  ]
+    code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length
+  )
   const selection: Selection = {
     codeRef: codeRefFromRange(segmentRange, ast),
   }
@@ -260,12 +261,12 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   const ast = assertParse(code)
 
   // selection
-  const segmentRanges: Array<[number, number, boolean]> = selectionSnippets.map(
-    (selectionSnippet) => [
-      code.indexOf(selectionSnippet),
-      code.indexOf(selectionSnippet) + selectionSnippet.length,
-      true,
-    ]
+  const segmentRanges: Array<SourceRange> = selectionSnippets.map(
+    (selectionSnippet) =>
+      topLevelRange(
+        code.indexOf(selectionSnippet),
+        code.indexOf(selectionSnippet) + selectionSnippet.length
+      )
   )
 
   // executeAst
@@ -596,11 +597,10 @@ extrude001 = extrude(-5, sketch001)
   it('should correctly identify getOppositeEdge and baseEdge edges', () => {
     const ast = assertParse(code)
     const lineOfInterest = `line([7.11, 3.48], %, $seg01)`
-    const range: [number, number, boolean] = [
+    const range = topLevelRange(
       code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length,
-      true,
-    ]
+      code.indexOf(lineOfInterest) + lineOfInterest.length
+    )
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
     const callExp = getNodeFromPath<CallExpression>(
@@ -615,11 +615,10 @@ extrude001 = extrude(-5, sketch001)
   it('should correctly identify getPreviousAdjacentEdge edges', () => {
     const ast = assertParse(code)
     const lineOfInterest = `line([-6.37, 3.88], %, $seg02)`
-    const range: [number, number, boolean] = [
+    const range = topLevelRange(
       code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length,
-      true,
-    ]
+      code.indexOf(lineOfInterest) + lineOfInterest.length
+    )
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
     const callExp = getNodeFromPath<CallExpression>(
@@ -634,11 +633,10 @@ extrude001 = extrude(-5, sketch001)
   it('should correctly identify no edges', () => {
     const ast = assertParse(code)
     const lineOfInterest = `line([-3.29, -13.85], %)`
-    const range: [number, number, boolean] = [
+    const range = topLevelRange(
       code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length,
-      true,
-    ]
+      code.indexOf(lineOfInterest) + lineOfInterest.length
+    )
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
     const callExp = getNodeFromPath<CallExpression>(
@@ -660,13 +658,12 @@ describe('Testing button states', () => {
   ) => {
     const ast = assertParse(code)
 
-    const range: [number, number, boolean] = segmentSnippet
-      ? [
+    const range = segmentSnippet
+      ? topLevelRange(
           code.indexOf(segmentSnippet),
-          code.indexOf(segmentSnippet) + segmentSnippet.length,
-          true,
-        ]
-      : [ast.end, ast.end, true] // empty line in the end of the code
+          code.indexOf(segmentSnippet) + segmentSnippet.length
+        )
+      : topLevelRange(ast.end, ast.end) // empty line in the end of the code
 
     const selectionRanges: Selections = {
       graphSelections: [

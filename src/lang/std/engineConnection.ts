@@ -1,9 +1,7 @@
 import {
-  ArtifactCommand,
-  defaultRustSourceRange,
+  ArtifactGraph,
+  defaultSourceRange,
   ExecState,
-  Program,
-  RustSourceRange,
   SourceRange,
 } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
@@ -17,12 +15,7 @@ import {
   darkModeMatcher,
 } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
-import {
-  ArtifactGraph,
-  EngineCommand,
-  ResponseMap,
-  createArtifactGraph,
-} from 'lang/std/artifactGraph'
+import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
@@ -36,7 +29,6 @@ import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1022,6 +1014,11 @@ class EngineConnection extends EventTarget {
               this.pingPongSpan.pong = new Date()
               break
 
+            case 'modeling_session_data':
+              let api_call_id = resp.data?.session?.api_call_id
+              console.log(`API Call ID: ${api_call_id}`)
+              break
+
             // Only fires on successful authentication.
             case 'ice_server_info':
               let ice_servers = resp.data?.ice_servers
@@ -1309,8 +1306,8 @@ export enum EngineCommandManagerEvents {
 
 interface PendingMessage {
   command: EngineCommand
-  range: RustSourceRange
-  idToRangeMap: { [key: string]: RustSourceRange }
+  range: SourceRange
+  idToRangeMap: { [key: string]: SourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
@@ -1392,6 +1389,7 @@ export class EngineCommandManager extends EventTarget {
           enableSSAO: true,
           showScaleGrid: false,
           cameraProjection: 'perspective',
+          cameraOrbit: 'spherical',
         }
   }
 
@@ -1440,6 +1438,7 @@ export class EngineCommandManager extends EventTarget {
       enableSSAO: true,
       showScaleGrid: false,
       cameraProjection: 'orthographic',
+      cameraOrbit: 'spherical',
     },
     // When passed, use a completely separate connecting code path that simply
     // opens a websocket and this is a function that is called when connected.
@@ -1994,7 +1993,7 @@ export class EngineCommandManager extends EventTarget {
       {
         command,
         idToRangeMap: {},
-        range: defaultRustSourceRange(),
+        range: defaultSourceRange(),
       },
       true // isSceneCommand
     )
@@ -2002,7 +2001,7 @@ export class EngineCommandManager extends EventTarget {
       .catch((e) => {
         // TODO: Previously was never caught, we are not rejecting these pendingCommands but this needs to be handled at some point.
         /*noop*/
-        return null
+        return e
       })
   }
   /**
@@ -2025,9 +2024,9 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(new Error('rangeStr is undefined'))
     if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    const range: RustSourceRange = JSON.parse(rangeStr)
+    const range: SourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
-    const idToRangeMap: { [key: string]: RustSourceRange } =
+    const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger
@@ -2087,25 +2086,8 @@ export class EngineCommandManager extends EventTarget {
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
   }
-  updateArtifactGraph(
-    ast: Node<Program>,
-    artifactCommands: ArtifactCommand[],
-    execStateArtifacts: ExecState['artifacts'],
-    isPartialExecution?: boolean
-  ) {
-    const newGraphArtifacts = createArtifactGraph({
-      artifactCommands,
-      responseMap: this.responseMap,
-      ast,
-      execStateArtifacts,
-    })
-    if (isPartialExecution) {
-      for (let [id, artifact] of newGraphArtifacts) {
-        this.artifactGraph.set(id, artifact)
-      }
-    } else {
-      this.artifactGraph = newGraphArtifacts
-    }
+  updateArtifactGraph(execStateArtifactGraph: ExecState['artifactGraph']) {
+    this.artifactGraph = execStateArtifactGraph
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)

@@ -172,7 +172,7 @@ test(
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('broken-code')).toBeVisible()
       await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
     await test.step('opening broken code project should clear the scene and show the error', async () => {
       // Go back home.
@@ -253,7 +253,7 @@ test(
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('empty')).toBeVisible()
       await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
     await test.step('opening empty code project should clear the scene', async () => {
       // Go back home.
@@ -572,7 +572,7 @@ test(
       fs.utimesSync(`${dir}/lego/main.kcl`, _1995, _1995)
     })
 
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 600 })
 
     page.on('console', console.log)
 
@@ -985,6 +985,126 @@ test.describe(`Project management commands`, () => {
       })
     }
   )
+  test(`Create a new project with a colliding name`, async ({
+    context,
+    homePage,
+    toolbar,
+    cmdBar,
+  }) => {
+    const projectName = 'test-project'
+    await test.step(`Setup`, async () => {
+      await context.folderSetupFn(async (dir) => {
+        const projectDir = path.join(dir, projectName)
+        await Promise.all([fsp.mkdir(projectDir, { recursive: true })])
+        await Promise.all([
+          fsp.copyFile(
+            executorInputPath('router-template-slate.kcl'),
+            path.join(projectDir, 'main.kcl')
+          ),
+        ])
+      })
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: projectName,
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+
+    await test.step('Create a new project with the same name', async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('create project')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Create project',
+        currentArgKey: 'name',
+        currentArgValue: '',
+        headerArguments: {
+          Name: '',
+        },
+        highlightedHeaderArg: 'name',
+      })
+      await cmdBar.argumentInput.fill(projectName)
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Check the project was created with a non-colliding name`, async () => {
+      await toolbar.logoLink.click()
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: projectName + '-1',
+            fileCount: 1,
+          },
+          {
+            title: projectName,
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+
+    await test.step('Create another project with the same name', async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('create project')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Create project',
+        currentArgKey: 'name',
+        currentArgValue: '',
+        headerArguments: {
+          Name: '',
+        },
+        highlightedHeaderArg: 'name',
+      })
+      await cmdBar.argumentInput.fill(projectName)
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Check the second project was created with a non-colliding name`, async () => {
+      await toolbar.logoLink.click()
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: projectName + '-2',
+            fileCount: 1,
+          },
+          {
+            title: projectName + '-1',
+            fileCount: 1,
+          },
+          {
+            title: projectName,
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+  })
+})
+
+test(`Create a few projects using the default project name`, async ({
+  homePage,
+  toolbar,
+}) => {
+  for (let i = 0; i < 12; i++) {
+    await test.step(`Create project ${i}`, async () => {
+      await homePage.expectState({
+        projectCards: Array.from({ length: i }, (_, i) => ({
+          title: `project-${i.toString().padStart(3, '0')}`,
+          fileCount: 1,
+        })).toReversed(),
+        sortBy: 'last-modified-desc',
+      })
+      await homePage.createAndGoToProject()
+      await toolbar.logoLink.click()
+    })
+  }
 })
 
 test(
@@ -1391,7 +1511,7 @@ extrude001 = extrude(200, sketch001)`)
     await page.getByTestId('app-logo').click()
 
     await expect(
-      page.getByRole('button', { name: 'New project' })
+      page.getByRole('button', { name: 'Create project' })
     ).toBeVisible()
 
     for (let i = 1; i <= 10; i++) {
@@ -1405,7 +1525,7 @@ extrude001 = extrude(200, sketch001)`)
 test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, cmdBar, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await Promise.all([
         fsp.mkdir(path.join(dir, 'router-template-slate'), { recursive: true }),
@@ -1443,11 +1563,38 @@ test(
 
     const pointOnModel = { x: 630, y: 280 }
 
-    await test.step('Opening the bracket project should load the stream', async () => {
-      // expect to see the text bracket
-      await expect(page.getByText('bracket')).toBeVisible()
+    await test.step('Opening the bracket project via command palette should load the stream', async () => {
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'bracket',
+            fileCount: 1,
+          },
+          {
+            title: 'router-template-slate',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
 
-      await page.getByText('bracket').click()
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('open project')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Open project',
+        currentArgKey: 'name',
+        currentArgValue: '',
+        headerArguments: {
+          Name: '',
+        },
+        highlightedHeaderArg: 'name',
+      })
+      await cmdBar.argumentInput.fill('brac')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
 
       await u.waitForPageLoad()
 
@@ -1465,10 +1612,10 @@ test(
 
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
 
-    await test.step('Opening the router-template project should load the stream', async () => {
+    await test.step('Opening the router-template project via link should load the stream', async () => {
       // expect to see the text bracket
       await expect(page.getByText('router-template-slate')).toBeVisible()
 
@@ -1485,16 +1632,26 @@ test(
         .toBeLessThan(15)
     })
 
-    await test.step('Opening the router-template project should load the stream', async () => {
+    await test.step('The projects on the home page should still be normal', async () => {
       await page.getByTestId('project-sidebar-toggle').click()
       await expect(
         page.getByRole('button', { name: 'Go to Home' })
       ).toBeVisible()
       await page.getByRole('button', { name: 'Go to Home' }).click()
 
-      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
-      await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'bracket',
+            fileCount: 1,
+          },
+          {
+            title: 'router-template-slate',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
     })
   }
 )
