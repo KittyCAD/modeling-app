@@ -4912,6 +4912,5 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

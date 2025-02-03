@@ -124,8 +124,7 @@ description: Program memory after executing kw_fn_with_defaults.kcl
                 "parent": null
               }
             ],
-            "currentEnv": 0,
-            "return": null
+            "currentEnv": 0
           },
           "__meta": [
             {
@@ -174,6 +173,5 @@ description: Program memory after executing kw_fn_with_defaults.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

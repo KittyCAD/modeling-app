@@ -9,6 +9,7 @@ use crate::{
     execution::{
         annotations,
         cad_op::{OpArg, Operation},
+        memory,
         state::ModuleState,
         BodyType, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory, TagEngineInfo,
         TagIdentifier,
@@ -225,6 +226,14 @@ impl ExecutorContext {
                 }
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
+
+                    if body_type == BodyType::Root {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: "Cannot return from outside a function.".to_owned(),
+                            source_ranges: vec![metadata.source_range],
+                        }));
+                    }
+
                     let value = self
                         .execute_expr(
                             &return_statement.argument,
@@ -233,7 +242,15 @@ impl ExecutorContext {
                             StatementKind::Expression,
                         )
                         .await?;
-                    exec_state.mut_memory().return_ = Some(value);
+                    exec_state
+                        .mut_memory()
+                        .add(memory::RETURN_NAME, value, metadata.source_range)
+                        .map_err(|_| {
+                            KclError::Semantic(KclErrorDetails {
+                                message: "Multiple returns from a single function.".to_owned(),
+                                source_ranges: vec![metadata.source_range],
+                            })
+                        })?;
                     last_expr = None;
                 }
             }
@@ -1149,10 +1166,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
 
             // Find the stale sketch in memory and update it.
-            let cur_env_index = exec_state.memory().current_env.index();
-            if let Some(current_env) = exec_state.mut_memory().environments.get_mut(cur_env_index) {
-                current_env.update_sketch_tags(&value.sketch);
-            }
+            exec_state.mut_memory().update_sketch_tags(&value.sketch);
         }
         _ => {}
     }
@@ -1450,8 +1464,8 @@ impl Node<PipeExpression> {
 fn assign_args_to_params(
     function_expression: NodeRef<'_, FunctionExpression>,
     args: Vec<Arg>,
-    mut fn_memory: ProgramMemory,
-) -> Result<ProgramMemory, KclError> {
+    fn_memory: &mut ProgramMemory,
+) -> Result<(), KclError> {
     let num_args = function_expression.number_of_args();
     let (min_params, max_params) = num_args.into_inner();
     let n = args.len();
@@ -1493,14 +1507,14 @@ fn assign_args_to_params(
             }
         }
     }
-    Ok(fn_memory)
+    Ok(())
 }
 
 fn assign_args_to_params_kw(
     function_expression: NodeRef<'_, FunctionExpression>,
     mut args: crate::std::args::KwArgs,
-    mut fn_memory: ProgramMemory,
-) -> Result<ProgramMemory, KclError> {
+    fn_memory: &mut ProgramMemory,
+) -> Result<(), KclError> {
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
     let source_ranges = vec![function_expression.into()];
@@ -1546,7 +1560,7 @@ fn assign_args_to_params_kw(
             )?;
         }
     }
-    Ok(fn_memory)
+    Ok(())
 }
 
 pub(crate) async fn call_user_defined_function(
@@ -1559,10 +1573,9 @@ pub(crate) async fn call_user_defined_function(
     // Create a new environment to execute the function body in so that local
     // variables shadow variables in the parent scope.  The new environment's
     // parent should be the environment of the closure.
-    let mut body_memory = memory.clone();
-    let body_env = body_memory.new_env_for_call(memory.current_env);
-    body_memory.current_env = body_env;
-    let fn_memory = assign_args_to_params(function_expression, args, body_memory)?;
+    let mut fn_memory = memory.clone();
+    fn_memory.push_new_env_for_call();
+    assign_args_to_params(function_expression, args, &mut fn_memory)?;
 
     // Execute the function body using the memory we just created.
     let (result, fn_memory) = {
@@ -1576,7 +1589,12 @@ pub(crate) async fn call_user_defined_function(
         (result, fn_memory)
     };
 
-    result.map(|_| fn_memory.return_)
+    result.map(|_| {
+        fn_memory
+            .get(memory::RETURN_NAME, function_expression.as_source_range())
+            .ok()
+            .cloned()
+    })
 }
 
 pub(crate) async fn call_user_defined_function_kw(
@@ -1589,10 +1607,9 @@ pub(crate) async fn call_user_defined_function_kw(
     // Create a new environment to execute the function body in so that local
     // variables shadow variables in the parent scope.  The new environment's
     // parent should be the environment of the closure.
-    let mut body_memory = memory.clone();
-    let body_env = body_memory.new_env_for_call(memory.current_env);
-    body_memory.current_env = body_env;
-    let fn_memory = assign_args_to_params_kw(function_expression, args, body_memory)?;
+    let mut fn_memory = memory.clone();
+    fn_memory.push_new_env_for_call();
+    assign_args_to_params_kw(function_expression, args, &mut fn_memory)?;
 
     // Execute the function body using the memory we just created.
     let (result, fn_memory) = {
@@ -1606,7 +1623,12 @@ pub(crate) async fn call_user_defined_function_kw(
         (result, fn_memory)
     };
 
-    result.map(|_| fn_memory.return_)
+    result.map(|_| {
+        fn_memory
+            .get(memory::RETURN_NAME, function_expression.as_source_range())
+            .ok()
+            .cloned()
+    })
 }
 
 /// A function being used as a parameter into a stdlib function.  This is a
@@ -1650,8 +1672,12 @@ impl JsonSchema for FunctionParam<'_> {
 
 #[cfg(test)]
 mod test {
+    use crate::{
+        execution::parse_execute,
+        parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
+    };
+
     use super::*;
-    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Parameter};
 
     #[test]
     fn test_assign_args_to_params() {
@@ -1775,11 +1801,26 @@ mod test {
                 digest: None,
             });
             let args = args.into_iter().map(Arg::synthetic).collect();
-            let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
+            let mut actual = ProgramMemory::new();
+            let actual = assign_args_to_params(func_expr, args, &mut actual).map(|_| actual);
             assert_eq!(
                 actual, expected,
                 "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
             );
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn multiple_returns() {
+        let program = r#"fn foo() {
+  return 0
+  return 42
+}
+
+a = foo()
+"#;
+
+        let result = parse_execute(program).await;
+        assert!(result.unwrap_err().to_string().contains("return"));
     }
 }

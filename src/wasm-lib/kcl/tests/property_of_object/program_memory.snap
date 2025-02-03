@@ -1,8 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
 description: Program memory after executing property_of_object.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -191,6 +189,5 @@ snapshot_kind: text
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

@@ -385,7 +385,6 @@ function emptyRootEnvironment(): Environment {
 export class ProgramMemory {
   private environments: Environment[]
   private currentEnv: EnvironmentRef
-  private return: KclValue | null
 
   /**
    * Empty memory doesn't include prelude definitions.
@@ -395,17 +394,15 @@ export class ProgramMemory {
   }
 
   static fromRaw(raw: RawProgramMemory): ProgramMemory {
-    return new ProgramMemory(raw.environments, raw.currentEnv, raw.return)
+    return new ProgramMemory(raw.environments, raw.currentEnv)
   }
 
   constructor(
     environments: Environment[] = [emptyRootEnvironment()],
-    currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
-    returnVal: KclValue | null = null
+    currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF
   ) {
     this.environments = environments
     this.currentEnv = currentEnv
-    this.return = returnVal
   }
 
   /**
@@ -488,7 +485,7 @@ export class ProgramMemory {
       }
       environments.push({ bindings, parent: env.parent })
     }
-    return new ProgramMemory(environments, this.currentEnv, null)
+    return new ProgramMemory(environments, this.currentEnv)
   }
 
   numEnvironments(): number {
@@ -546,7 +543,6 @@ export class ProgramMemory {
     return {
       environments: this.environments,
       currentEnv: this.currentEnv,
-      return: this.return,
     }
   }
 }
@@ -761,11 +757,7 @@ export function getTangentialArcToInfo({
 export function programMemoryInit(): ProgramMemory | Error {
   try {
     const memory: RawProgramMemory = program_memory_init()
-    return new ProgramMemory(
-      memory.environments,
-      memory.currentEnv,
-      memory.return
-    )
+    return new ProgramMemory(memory.environments, memory.currentEnv)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())

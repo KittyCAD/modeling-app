@@ -1,8 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
 description: Program memory after executing array_elem_push.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -230,6 +228,5 @@ snapshot_kind: text
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

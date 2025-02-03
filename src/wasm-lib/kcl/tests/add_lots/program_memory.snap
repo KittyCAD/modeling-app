@@ -109,8 +109,7 @@ description: Program memory after executing add_lots.kcl
                 "parent": null
               }
             ],
-            "currentEnv": 0,
-            "return": null
+            "currentEnv": 0
           },
           "__meta": [
             {
@@ -1546,6 +1545,5 @@ description: Program memory after executing add_lots.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

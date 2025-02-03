@@ -408,8 +408,7 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "parent": null
               }
             ],
-            "currentEnv": 0,
-            "return": null
+            "currentEnv": 0
           },
           "__meta": [
             {
@@ -643,6 +642,5 @@ description: Program memory after executing function_sketch_with_position.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

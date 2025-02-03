@@ -415,6 +415,5 @@ snapshot_kind: text
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

@@ -2475,8 +2475,7 @@ description: Program memory after executing fillet-and-shell.kcl
                 "parent": null
               }
             ],
-            "currentEnv": 0,
-            "return": null
+            "currentEnv": 0
           },
           "__meta": [
             {
@@ -2761,6 +2760,5 @@ description: Program memory after executing fillet-and-shell.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

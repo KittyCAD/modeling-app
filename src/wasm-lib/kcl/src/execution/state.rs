@@ -256,11 +256,9 @@ impl DynamicState {
     }
 
     fn append(&mut self, memory: &ProgramMemory) {
-        for env in &memory.environments {
-            for item in env.bindings.values() {
-                if let KclValue::Solid { value } = item {
-                    self.solid_ids.push(SolidLazyIds::from(value.as_ref()));
-                }
+        for item in memory.iter_values() {
+            if let KclValue::Solid { value } = item {
+                self.solid_ids.push(SolidLazyIds::from(value.as_ref()));
             }
         }
     }

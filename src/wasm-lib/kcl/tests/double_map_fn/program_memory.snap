@@ -109,8 +109,7 @@ description: Program memory after executing double_map_fn.kcl
                 "parent": null
               }
             ],
-            "currentEnv": 0,
-            "return": null
+            "currentEnv": 0
           },
           "__meta": [
             {
@@ -274,6 +273,5 @@ description: Program memory after executing double_map_fn.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

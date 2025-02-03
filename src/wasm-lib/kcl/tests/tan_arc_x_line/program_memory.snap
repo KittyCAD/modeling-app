@@ -245,6 +245,5 @@ description: Program memory after executing tan_arc_x_line.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

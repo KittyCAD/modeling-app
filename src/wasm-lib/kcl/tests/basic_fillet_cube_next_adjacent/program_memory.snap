@@ -775,6 +775,5 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

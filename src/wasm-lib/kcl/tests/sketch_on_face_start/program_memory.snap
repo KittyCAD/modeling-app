@@ -341,8 +341,7 @@ description: Program memory after executing sketch_on_face_start.kcl
                 "parent": null
               }
             ],
-            "currentEnv": 0,
-            "return": null
+            "currentEnv": 0
           },
           "__meta": [
             {
@@ -1230,6 +1229,5 @@ description: Program memory after executing sketch_on_face_start.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

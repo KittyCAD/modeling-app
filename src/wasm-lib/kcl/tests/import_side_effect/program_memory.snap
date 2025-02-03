@@ -89,8 +89,7 @@ description: Program memory after executing import_side_effect.kcl
                 "parent": null
               }
             ],
-            "currentEnv": 0,
-            "return": null
+            "currentEnv": 0
           },
           "__meta": [
             {
@@ -106,6 +105,5 @@ description: Program memory after executing import_side_effect.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

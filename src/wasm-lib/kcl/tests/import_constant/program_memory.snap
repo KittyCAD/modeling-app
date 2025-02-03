@@ -43,6 +43,5 @@ description: Program memory after executing import_constant.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

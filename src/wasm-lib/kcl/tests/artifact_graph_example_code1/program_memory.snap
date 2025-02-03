@@ -1972,6 +1972,5 @@ description: Program memory after executing artifact_graph_example_code1.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

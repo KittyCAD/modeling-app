@@ -2409,8 +2409,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "parent": null
               }
             ],
-            "currentEnv": 0,
-            "return": null
+            "currentEnv": 0
           },
           "__meta": [
             {
@@ -4154,6 +4153,5 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

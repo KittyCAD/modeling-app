@@ -4495,6 +4495,5 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

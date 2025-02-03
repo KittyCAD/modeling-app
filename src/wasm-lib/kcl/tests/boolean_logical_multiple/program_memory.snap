@@ -124,6 +124,5 @@ description: Program memory after executing boolean_logical_multiple.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

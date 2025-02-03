@@ -163,6 +163,5 @@ description: Program memory after executing array_elem_pop.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

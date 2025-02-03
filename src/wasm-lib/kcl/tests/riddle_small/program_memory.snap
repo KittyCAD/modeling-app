@@ -481,8 +481,7 @@ description: Program memory after executing riddle_small.kcl
                 "parent": null
               }
             ],
-            "currentEnv": 0,
-            "return": null
+            "currentEnv": 0
           },
           "__meta": [
             {
@@ -524,6 +523,5 @@ description: Program memory after executing riddle_small.kcl
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": 0
 }

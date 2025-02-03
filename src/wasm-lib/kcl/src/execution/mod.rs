@@ -160,7 +160,6 @@ pub struct TagEngineInfo {
 #[serde(rename_all = "camelCase")]
 pub enum BodyType {
     Root,
-    Sketch,
     Block,
 }
 
