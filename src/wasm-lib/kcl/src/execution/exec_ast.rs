@@ -903,7 +903,7 @@ impl Node<CallExpressionKw> {
                 };
 
                 // Attempt to call the function.
-                let result = {
+                let mut return_value = {
                     // Don't early-return in this block.
                     let result = func.std_lib_fn()(exec_state, args).await;
 
@@ -917,9 +917,8 @@ impl Node<CallExpressionKw> {
                         exec_state.mod_local.operations.push(op);
                     }
                     result
-                };
+                }?;
 
-                let mut return_value = result?;
                 update_memory_for_tags_of_geometry(&mut return_value, exec_state)?;
 
                 Ok(return_value)
@@ -1035,7 +1034,7 @@ impl Node<CallExpression> {
                     ctx.clone(),
                     exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
                 );
-                let result = {
+                let mut return_value = {
                     // Don't early-return in this block.
                     let result = func.std_lib_fn()(exec_state, args).await;
 
@@ -1049,9 +1048,8 @@ impl Node<CallExpression> {
                         exec_state.mod_local.operations.push(op);
                     }
                     result
-                };
+                }?;
 
-                let mut return_value = result?;
                 update_memory_for_tags_of_geometry(&mut return_value, exec_state)?;
 
                 Ok(return_value)
@@ -1120,15 +1118,27 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     match result {
         KclValue::Sketch { value: ref mut sketch } => {
             for (_, tag) in sketch.tags.iter() {
-                exec_state.mut_memory().update_tag(&tag.value, tag.clone())?;
+                exec_state.mut_memory().update_tag(&tag.value, tag.clone());
             }
         }
         KclValue::Solid { ref mut value } => {
             for v in &value.value {
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
-                    let mut t = if let Some(t) = value.sketch.tags.get(&tag.name) {
-                        t.clone()
+                    let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
+                        let mut t = t.clone();
+                        let Some(ref info) = t.info else {
+                            return Err(KclError::Internal(KclErrorDetails {
+                                message: format!("Tag {} does not have path info", tag.name),
+                                source_ranges: vec![tag.into()],
+                            }));
+                        };
+
+                        let mut info = info.clone();
+                        info.surface = Some(v.clone());
+                        info.sketch = value.id;
+                        t.info = Some(info);
+                        t
                     } else {
                         // It's probably a fillet or a chamfer.
                         // Initialize it.
@@ -1146,22 +1156,10 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         }
                     };
 
-                    let Some(ref info) = t.info else {
-                        return Err(KclError::Semantic(KclErrorDetails {
-                            message: format!("Tag {} does not have path info", tag.name),
-                            source_ranges: vec![tag.into()],
-                        }));
-                    };
-
-                    let mut info = info.clone();
-                    info.surface = Some(v.clone());
-                    info.sketch = value.id;
-                    t.info = Some(info);
-
-                    exec_state.mut_memory().update_tag(&tag.name, t.clone())?;
+                    exec_state.mut_memory().update_tag(&tag.name, tag_id.clone());
 
                     // update the sketch tags.
-                    value.sketch.tags.insert(tag.name.clone(), t);
+                    value.sketch.tags.insert(tag.name.clone(), tag_id);
                 }
             }
 

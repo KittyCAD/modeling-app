@@ -442,11 +442,14 @@ export class ProgramMemory {
     return null
   }
 
-  set(name: string, value: KclValue): Error | null {
+  insert(name: string, value: KclValue): Error | null {
     if (this.environments.length === 0) {
       return new Error('No environment to set memory in')
     }
     const env = this.environments[this.currentEnv]
+    if (!!env.bindings[name]) {
+      return new Error('Key already exists in memory: ' + name)
+    }
     env.bindings[name] = value
     return null
   }

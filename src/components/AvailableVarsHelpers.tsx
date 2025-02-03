@@ -152,7 +152,7 @@ export function useCalc({
       const ast = pResult.program
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
-        const error = _programMem.set(key, {
+        const error = _programMem.insert(key, {
           type: 'String',
           value,
           __meta: [],
