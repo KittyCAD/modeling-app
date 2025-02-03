@@ -64,7 +64,11 @@ import {
 } from './sceneInfra'
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
 import { normaliseAngle, roundOff } from 'lib/utils'
-import { SegmentOverlayPayload } from 'machines/modelingMachine'
+import {
+  SegmentOverlay,
+  SegmentOverlayPayload,
+  SegmentOverlays,
+} from 'machines/modelingMachine'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
 import { editorManager, sceneInfra } from 'lib/singletons'
@@ -315,11 +319,12 @@ class StraightSegment implements SegmentUtils {
     }
     return () =>
       sceneInfra.updateOverlayDetails({
-        arrowGroup,
+        handle: arrowGroup,
         group,
         isHandlesVisible,
         from,
         to,
+        hasThreeDotMenu: true,
       })
   }
 }
@@ -491,12 +496,13 @@ class TangentialArcToSegment implements SegmentUtils {
     )
     return () =>
       sceneInfra.updateOverlayDetails({
-        arrowGroup,
+        handle: arrowGroup,
         group,
         isHandlesVisible,
         from,
         to,
         angle,
+        hasThreeDotMenu: true,
       })
   }
 }
@@ -692,12 +698,13 @@ class CircleSegment implements SegmentUtils {
     }
     return () =>
       sceneInfra.updateOverlayDetails({
-        arrowGroup,
+        handle: arrowGroup,
         group,
         isHandlesVisible,
         from: from,
         to: [center[0], center[1]],
         angle: Math.PI / 4,
+        hasThreeDotMenu: true,
       })
   }
 }
@@ -826,7 +833,6 @@ class CircleThreePointSegment implements SegmentUtils {
     ].map((handle) => group.getObjectByName(handle) as Group)
     handles.forEach((handle, i) => {
       const point = points[i]
-      console.log('point', point, handle)
       if (handle && point) {
         handle.position.set(point[0], point[1], 0)
         handle.scale.set(scale, scale, scale)
@@ -878,15 +884,45 @@ class CircleThreePointSegment implements SegmentUtils {
         scale,
       })
     }
-    return () =>
-      sceneInfra.updateOverlayDetails({
-        arrowGroup: {} as any,
-        group,
-        isHandlesVisible,
-        from: [0, 0],
-        to: [center[0], center[1]],
-        angle: Math.PI / 4,
+    return () => {
+      const overlays: SegmentOverlays = {}
+      const points = [p1, p2, p3]
+      const overlayDetails = handles.map((handle, index) => {
+        const currentPoint = points[index]
+        const angle = Math.atan2(
+          currentPoint[1] - center[1],
+          currentPoint[0] - center[0]
+        )
+        return sceneInfra.updateOverlayDetails({
+          handle,
+          group,
+          isHandlesVisible,
+          from: [0, 0],
+          to: [center[0], center[1]],
+          angle: angle,
+          hasThreeDotMenu: index === 0,
+        })
       })
+      const segmentOverlays: SegmentOverlay[] = []
+      overlayDetails.forEach((payload, index) => {
+        if (payload?.type === 'set-one') {
+          overlays[payload.pathToNodeString] = payload.seg
+          segmentOverlays.push({
+            ...payload.seg[0],
+            filterValue: index === 0 ? 'p1' : index === 1 ? 'p2' : 'p3',
+          })
+        }
+      })
+      const segmentOverlayPayload: SegmentOverlayPayload = {
+        type: 'set-one',
+        pathToNodeString:
+          overlayDetails[0]?.type === 'set-one'
+            ? overlayDetails[0].pathToNodeString
+            : '',
+        seg: segmentOverlays,
+      }
+      return segmentOverlayPayload
+    }
   }
 }
 

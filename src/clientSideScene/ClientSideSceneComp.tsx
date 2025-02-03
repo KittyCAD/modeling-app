@@ -182,12 +182,15 @@ const Overlays = () => {
       style={{ zIndex: '99999999' }}
     >
       {Object.entries(context.segmentOverlays)
-        .filter((a) => a[1].visible)
-        .map(([pathToNodeString, overlay], index) => {
+        .flatMap((a) =>
+          a[1].map((b) => ({ pathToNodeString: a[0], overlay: b }))
+        )
+        .filter((a) => a.overlay.visible)
+        .map(({ pathToNodeString, overlay }, index) => {
           return (
             <Overlay
               overlay={overlay}
-              key={pathToNodeString}
+              key={pathToNodeString + String(index)}
               pathToNodeString={pathToNodeString}
               overlayIndex={index}
             />
@@ -229,7 +232,8 @@ const Overlay = ({
   const constraints = getConstraintInfo(
     callExpression,
     codeManager.code,
-    overlay.pathToNode
+    overlay.pathToNode,
+    overlay.filterValue
   )
 
   const offset = 20 // px
@@ -249,7 +253,6 @@ const Overlay = ({
       state.matches({ Sketch: 'Tangential arc to' }) ||
       state.matches({ Sketch: 'Rectangle tool' })
     )
-
   return (
     <div className={`absolute w-0 h-0`}>
       <div
@@ -307,17 +310,18 @@ const Overlay = ({
           this will likely change soon when we implement multi-profile so we'll leave it for now
           issue: https://github.com/KittyCAD/modeling-app/issues/3910
           */}
-          {callExpression?.callee?.name !== 'circle' && (
-            <SegmentMenu
-              verticalPosition={
-                overlay.windowCoords[1] > window.innerHeight / 2
-                  ? 'top'
-                  : 'bottom'
-              }
-              pathToNode={overlay.pathToNode}
-              stdLibFnName={constraints[0]?.stdLibFnName}
-            />
-          )}
+          {callExpression?.callee?.name !== 'circle' &&
+            callExpression?.callee?.name !== 'circleThreePoint' && (
+              <SegmentMenu
+                verticalPosition={
+                  overlay.windowCoords[1] > window.innerHeight / 2
+                    ? 'top'
+                    : 'bottom'
+                }
+                pathToNode={overlay.pathToNode}
+                stdLibFnName={constraints[0]?.stdLibFnName}
+              />
+            )}
         </div>
       )}
     </div>

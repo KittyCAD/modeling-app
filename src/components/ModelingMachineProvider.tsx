@@ -281,7 +281,11 @@ export const ModelingMachineProvider = ({
         'Set Segment Overlays': assign({
           segmentOverlays: ({ context: { segmentOverlays }, event }) => {
             if (event.type !== 'Set Segment Overlays') return {}
-            if (event.data.type === 'set-many') return event.data.overlays
+            if (event.data.type === 'add-many')
+              return {
+                ...segmentOverlays,
+                ...event.data.overlays,
+              }
             if (event.data.type === 'set-one')
               return {
                 ...segmentOverlays,

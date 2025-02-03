@@ -250,6 +250,7 @@ export interface SketchLineHelper {
   getConstraintInfo: (
     callExp: Node<CallExpression>,
     code: string,
-    pathToNode: PathToNode
+    pathToNode: PathToNode,
+    filterValue?: string
   ) => ConstrainInfo[]
 }

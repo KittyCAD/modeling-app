@@ -27,6 +27,7 @@ export type ToolTip =
   | 'angledLineThatIntersects'
   | 'tangentialArcTo'
   | 'circle'
+  | 'circleThreePoint'
 
 export const toolTips: Array<ToolTip> = [
   'line',

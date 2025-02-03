@@ -71,7 +71,6 @@ import {
   SegmentUtils,
   segmentUtils,
 } from './segments'
-import { CircleThreePoint } from './circleThreePoint'
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,

@@ -161,7 +161,8 @@ const commonConstraintInfoHelper = (
     }
   ],
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  filterValue?: string
 ) => {
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]
@@ -251,7 +252,8 @@ const horzVertConstraintInfoHelper = (
   stdLibFnName: ConstrainInfo['stdLibFnName'],
   abbreviatedInput: AbbreviatedInput,
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  filterValue?: string
 ) => {
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]
@@ -1240,7 +1242,12 @@ export const circleThreePoint: SketchLineHelper = {
   },
   getTag: getTag(),
   addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
+  getConstraintInfo: (
+    callExp: CallExpression,
+    code,
+    pathToNode,
+    filterValue
+  ) => {
     if (callExp.type !== 'CallExpression') return []
     const firstArg = callExp.arguments?.[0]
     if (firstArg.type !== 'ObjectExpression') return []
@@ -1290,9 +1297,9 @@ export const circleThreePoint: SketchLineHelper = {
     const pathToP3XArg: PathToNode = [...pathToP3ArrayExpression, [0, 'index']]
     const pathToP3YArg: PathToNode = [...pathToP3ArrayExpression, [1, 'index']]
 
-    return [
+    const constraints: (ConstrainInfo & { filterValue: string })[] = [
       {
-        stdLibFnName: 'circle',
+        stdLibFnName: 'circleThreePoint',
         type: 'xAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(p1Details.expr.elements[0]),
         sourceRange: [
@@ -1310,9 +1317,10 @@ export const circleThreePoint: SketchLineHelper = {
           index: 0,
           key: 'p1',
         },
+        filterValue: 'p1',
       },
       {
-        stdLibFnName: 'circle',
+        stdLibFnName: 'circleThreePoint',
         type: 'yAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(p1Details.expr.elements[1]),
         sourceRange: [
@@ -1330,9 +1338,10 @@ export const circleThreePoint: SketchLineHelper = {
           index: 1,
           key: 'p1',
         },
+        filterValue: 'p1',
       },
       {
-        stdLibFnName: 'circle',
+        stdLibFnName: 'circleThreePoint',
         type: 'xAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(p2Details.expr.elements[0]),
         sourceRange: [
@@ -1350,9 +1359,10 @@ export const circleThreePoint: SketchLineHelper = {
           index: 0,
           key: 'p2',
         },
+        filterValue: 'p2',
       },
       {
-        stdLibFnName: 'circle',
+        stdLibFnName: 'circleThreePoint',
         type: 'yAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(p2Details.expr.elements[1]),
         sourceRange: [
@@ -1370,9 +1380,10 @@ export const circleThreePoint: SketchLineHelper = {
           index: 1,
           key: 'p2',
         },
+        filterValue: 'p2',
       },
       {
-        stdLibFnName: 'circle',
+        stdLibFnName: 'circleThreePoint',
         type: 'xAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(p3Details.expr.elements[0]),
         sourceRange: [
@@ -1390,9 +1401,10 @@ export const circleThreePoint: SketchLineHelper = {
           index: 0,
           key: 'p3',
         },
+        filterValue: 'p3',
       },
       {
-        stdLibFnName: 'circle',
+        stdLibFnName: 'circleThreePoint',
         type: 'yAbsolute',
         isConstrained: isNotLiteralArrayOrStatic(p3Details.expr.elements[1]),
         sourceRange: [
@@ -1410,8 +1422,19 @@ export const circleThreePoint: SketchLineHelper = {
           index: 1,
           key: 'p3',
         },
+        filterValue: 'p3',
       },
     ]
+    const finalConstraints: ConstrainInfo[] = []
+    constraints.forEach((constraint) => {
+      if (!filterValue) {
+        finalConstraints.push(constraint)
+      }
+      if (filterValue && constraint.filterValue === filterValue) {
+        finalConstraints.push(constraint)
+      }
+    })
+    return finalConstraints
   },
 }
 export const angledLine: SketchLineHelper = {
@@ -2229,14 +2252,16 @@ export function changeSketchArguments(
 export function getConstraintInfo(
   callExpression: Node<CallExpression>,
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  filterValue?: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
   if (!(fnName in sketchLineHelperMap)) return []
   return sketchLineHelperMap[fnName].getConstraintInfo(
     callExpression,
     code,
-    pathToNode
+    pathToNode,
+    filterValue
   )
 }
 

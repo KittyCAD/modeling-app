@@ -85,7 +85,6 @@ import { MachineManager } from 'components/MachineManagerProvider'
 import { addShell } from 'lang/modifyAst/addShell'
 import { KclCommandValue } from 'lib/commandTypes'
 import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
-import { CircleThreePoint } from '../clientSideScene/circleThreePoint'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -153,10 +152,12 @@ export interface SegmentOverlay {
   group: any
   pathToNode: PathToNode
   visible: boolean
+  hasThreeDotMenu: boolean
+  filterValue?: string
 }
 
 export interface SegmentOverlays {
-  [pathToNodeString: string]: SegmentOverlay
+  [pathToNodeString: string]: SegmentOverlay[]
 }
 
 export interface EdgeCutInfo {
@@ -207,7 +208,7 @@ export type SegmentOverlayPayload =
   | {
       type: 'set-one'
       pathToNodeString: string
-      seg: SegmentOverlay
+      seg: SegmentOverlay[]
     }
   | {
       type: 'delete-one'
@@ -215,7 +216,7 @@ export type SegmentOverlayPayload =
     }
   | { type: 'clear' }
   | {
-      type: 'set-many'
+      type: 'add-many'
       overlays: SegmentOverlays
     }
 
