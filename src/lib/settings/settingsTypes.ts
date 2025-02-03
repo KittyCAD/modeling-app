@@ -4,7 +4,6 @@ import { AtLeast, PathValue, Paths } from 'lib/types'
 import { CommandArgumentConfig } from 'lib/commandTypes'
 import { Themes } from 'lib/theme'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
-import { ATTRIBUTE_NAME_ANGLE, ATTRIBUTE_NAME_LENGTH } from 'lib/constants'
 import {
   UnitAngle_type,
   UnitLength_type,
@@ -144,7 +143,11 @@ type RecursiveSettingsPayloads<T> = {
 
 export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>
 
+/**
+ * Annotation names for default units are defined on rust side in
+ * src/wasm-lib/kcl/src/execution/annotations.rs
+ */
 export interface KclSettingsAnnotation {
-  [ATTRIBUTE_NAME_LENGTH]?: UnitLength_type
-  [ATTRIBUTE_NAME_ANGLE]?: UnitAngle_type
+  defaultLengthUnit?: UnitLength_type
+  defaultAngleUnit?: UnitAngle_type
 }
