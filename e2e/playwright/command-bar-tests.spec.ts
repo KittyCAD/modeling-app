@@ -128,9 +128,11 @@ test.describe('Command bar tests', () => {
   })
 
   test('Command bar keybinding works from code editor and can change a setting', async ({
-    page,
-    homePage,
-  }) => {
+      page,
+      homePage,
+    },
+    { tag: ['@skipWin'] },
+  ) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 

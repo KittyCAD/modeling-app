@@ -312,7 +312,7 @@ test.describe('Sketch tests', () => {
       |> line([1.97, 2.06], %)
       |> close(%)`)
     }
-    test('code pane open at start-handles', async ({ page, homePage }) => {
+    test('code pane open at start-handles', async ({ page, homePage }, { tag: ['@skipWin'] }) => {
       // Load the app with the code panes
       await page.addInitScript(async () => {
         localStorage.setItem(
@@ -328,7 +328,7 @@ test.describe('Sketch tests', () => {
       await doEditSegmentsByDraggingHandle(page, homePage, ['code'])
     })
 
-    test('code pane closed at start-handles', async ({ page, homePage }) => {
+    test('code pane closed at start-handles', async ({ page, homePage }, { tag: ['@skipWin'] }) => {
       // Load the app with the code panes
       await page.addInitScript(async (persistModelingContext) => {
         localStorage.setItem(

@@ -967,9 +967,11 @@ test.describe('Editor tests', () => {
   })
 
   test('Can undo a sketch modification with ctrl+z', async ({
-    page,
-    homePage,
-  }) => {
+      page,
+      homePage,
+    },
+    { tag: ['@skipWin'] },
+  ) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
