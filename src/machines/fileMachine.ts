@@ -21,6 +21,7 @@ type FileMachineEvents =
         content?: string
         silent?: boolean
         shouldSetToRename?: boolean
+        targetPathToClone?: string
       }
     }
   | { type: 'Delete file'; data: FileEntry }
@@ -124,6 +125,7 @@ export const fileMachine = setup({
           name: string
           makeDir: boolean
           selectedDirectory: FileEntry
+          targetPathToClone?: string
           content: string
           shouldSetToRename: boolean
         }
@@ -235,6 +237,7 @@ export const fileMachine = setup({
             name: event.data.name,
             makeDir: event.data.makeDir,
             selectedDirectory: context.selectedDirectory,
+            targetPathToClone: event.data.targetPathToClone,
             content: event.data.content ?? '',
             shouldSetToRename: event.data.shouldSetToRename ?? false,
           }

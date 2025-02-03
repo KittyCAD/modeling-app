@@ -122,7 +122,8 @@ export const sidebarPanes: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
-      const { createFile, createFolder, newTreeEntry } = useFileTreeOperations()
+      const { createFile, createFolder, cloneFileOrDir, newTreeEntry } =
+        useFileTreeOperations()
 
       return (
         <>
@@ -143,6 +144,7 @@ export const sidebarPanes: SidebarPane[] = [
             onCreateFolder={(name: string) =>
               createFolder({ dryRun: false, name })
             }
+            onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
             newTreeEntry={newTreeEntry}
           />
         </>
