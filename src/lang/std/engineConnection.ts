@@ -250,6 +250,8 @@ class EngineConnection extends EventTarget {
   mediaStream?: MediaStream
   idleMode: boolean = false
   promise?: Promise<void>
+  sdpAnswer?: Models['RtcSessionDescription_type']
+  triggeredStart = false
 
   onIceCandidate = function (
     this: RTCPeerConnection,
@@ -555,6 +557,7 @@ class EngineConnection extends EventTarget {
    * did not establish.
    */
   connect(reconnecting?: boolean): Promise<void> {
+    const that = this
     return new Promise((resolve) => {
       if (this.isConnecting() || this.isReady()) {
         return
@@ -585,8 +588,38 @@ class EngineConnection extends EventTarget {
           },
         }
 
+        const initiateConnectingExclusive = () => {
+          if (that.triggeredStart) return
+          that.triggeredStart = true
+
+          // Start connecting.
+          that.state = {
+            type: EngineConnectionStateType.Connecting,
+            value: {
+              type: ConnectingType.WebRTCConnecting,
+            },
+          }
+
+          // As soon as this is set, RTCPeerConnection tries to
+          // establish a connection.
+          // @ts-expect-error: Have to ignore because dom.ts doesn't have the right type
+          void that.pc?.setRemoteDescription(that.sdpAnswer)
+
+          that.state = {
+            type: EngineConnectionStateType.Connecting,
+            value: {
+              type: ConnectingType.SetRemoteDescription,
+            },
+          }
+        }
+
         this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
+          console.log('icecandidate', event.candidate)
+
+          // This is null when the ICE gathering state is done.
+          // Windows ONLY uses this to signal it's done!
           if (event.candidate === null) {
+            initiateConnectingExclusive()
             return
           }
 
@@ -597,7 +630,6 @@ class EngineConnection extends EventTarget {
             },
           }
 
-          // Request a candidate to use
           this.send({
             type: 'trickle_ice',
             candidate: {
@@ -607,8 +639,38 @@ class EngineConnection extends EventTarget {
               usernameFragment: event.candidate.usernameFragment || undefined,
             },
           })
+
+          // Sometimes the remote end doesn't report the end of candidates.
+          // They have 3 seconds to.
+          setTimeout(() => {
+            initiateConnectingExclusive()
+          }, 3000)
         }
         this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
+        this.pc?.addEventListener?.(
+          'icegatheringstatechange',
+          function (_event) {
+            console.log('icegatheringstatechange', this.iceGatheringState)
+
+            if (this.iceGatheringState !== 'complete') return
+            initiateConnectingExclusive()
+          }
+        )
+
+        this.pc?.addEventListener?.(
+          'iceconnectionstatechange',
+          function (_event) {
+            console.log('iceconnectionstatechange', this.iceConnectionState)
+            console.log('iceconnectionstatechange', this.iceGatheringState)
+          }
+        )
+        this.pc?.addEventListener?.('negotiationneeded', function (_event) {
+          console.log('negotiationneeded', this.iceConnectionState)
+          console.log('negotiationneeded', this.iceGatheringState)
+        })
+        this.pc?.addEventListener?.('signalingstatechange', function (event) {
+          console.log('signalingstatechange', this.signalingState)
+        })
 
         this.onIceCandidateError = (_event: Event) => {
           const event = _event as RTCPeerConnectionIceErrorEvent
@@ -635,6 +697,8 @@ class EngineConnection extends EventTarget {
                   detail: { conn: this, mediaStream: this.mediaStream! },
                 })
               )
+              break
+            case 'connecting':
               break
             case 'disconnected':
             case 'failed':
@@ -1128,25 +1192,8 @@ class EngineConnection extends EventTarget {
                 },
               }
 
-              // As soon as this is set, RTCPeerConnection tries to
-              // establish a connection.
-              // @ts-ignore
-              // Have to ignore because dom.ts doesn't have the right type
-              void this.pc?.setRemoteDescription(answer)
+              this.sdpAnswer = answer
 
-              this.state = {
-                type: EngineConnectionStateType.Connecting,
-                value: {
-                  type: ConnectingType.SetRemoteDescription,
-                },
-              }
-
-              this.state = {
-                type: EngineConnectionStateType.Connecting,
-                value: {
-                  type: ConnectingType.WebRTCConnecting,
-                },
-              }
               break
 
             case 'trickle_ice':
@@ -1237,6 +1284,7 @@ class EngineConnection extends EventTarget {
     if (closedPc && closedUDC && closedWS) {
       // Do not notify the rest of the program that we have cut off anything.
       this.state = { type: EngineConnectionStateType.Disconnected }
+      this.triggeredStart = false
     }
   }
 }

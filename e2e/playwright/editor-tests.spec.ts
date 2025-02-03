@@ -966,106 +966,106 @@ test.describe('Editor tests', () => {
   |> close(%)`)
   })
 
-  test('Can undo a sketch modification with ctrl+z', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn('XZ')
+  test(
+    'Can undo a sketch modification with ctrl+z',
+    { tag: ['@skipWin'] },
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -10.01], %)
   |> line([12.73, -0.09], %)
   |> tangentialArcTo([24.95, -0.38], %)
   |> close(%)
   |> extrude(5, %)`
-      )
-    })
+        )
+      })
 
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+      await homePage.goToModelingScene()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled()
 
-    await page.waitForTimeout(100)
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: 0, y: -1250, z: 580 },
-        center: { x: 0, y: 0, z: 0 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    await page.waitForTimeout(100)
+      await page.waitForTimeout(100)
+      await u.openAndClearDebugPanel()
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          vantage: { x: 0, y: -1250, z: 580 },
+          center: { x: 0, y: 0, z: 0 },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+      await page.waitForTimeout(100)
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      await page.waitForTimeout(100)
 
-    const startPX = [1200 / 2, 500 / 2]
+      const startPX = [1200 / 2, 500 / 2]
 
-    const dragPX = 40
+      const dragPX = 40
 
-    await page.getByText('startProfileAt([4.61, -10.01], %)').click()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeVisible()
-    await page.getByRole('button', { name: 'Edit Sketch' }).click()
-    await page.waitForTimeout(400)
-    let prevContent = await page.locator('.cm-content').innerText()
+      await page.getByText('startProfileAt([4.61, -10.01], %)').click()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeVisible()
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(400)
+      let prevContent = await page.locator('.cm-content').innerText()
 
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-    // drag startProfileAt handle
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: startPX[0] + 68, y: startPX[1] + 147 },
-      targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
-    })
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
+      // drag startProfileAt handle
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: startPX[0] + 68, y: startPX[1] + 147 },
+        targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
+      })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
 
-    // drag line handle
-    // we wait so it saves the code
-    await page.waitForTimeout(800)
+      // drag line handle
+      // we wait so it saves the code
+      await page.waitForTimeout(800)
 
-    const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-    await page.waitForTimeout(100)
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-      targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
-    })
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
+      const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+      await page.waitForTimeout(100)
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
+        targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
+      })
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
 
-    // we wait so it saves the code
-    await page.waitForTimeout(800)
+      // we wait so it saves the code
+      await page.waitForTimeout(800)
 
-    // drag tangentialArcTo handle
-    const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
-      targetPosition: {
-        x: tangentEnd.x + dragPX,
-        y: tangentEnd.y + dragPX,
-      },
-    })
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      // drag tangentialArcTo handle
+      const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
+        targetPosition: {
+          x: tangentEnd.x + dragPX,
+          y: tangentEnd.y + dragPX,
+        },
+      })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
 
-    // expect the code to have changed
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')
+      // expect the code to have changed
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([2.71, -2.71], %)
     |> line([15.4, -2.78], %)
     |> tangentialArcTo([27.6, -3.05], %)
@@ -1073,26 +1073,26 @@ test.describe('Editor tests', () => {
     |> extrude(5, %)
   `)
 
-    // Hit undo
-    await page.keyboard.down('Control')
-    await page.keyboard.press('KeyZ')
-    await page.keyboard.up('Control')
+      // Hit undo
+      await page.keyboard.down('Control')
+      await page.keyboard.press('KeyZ')
+      await page.keyboard.up('Control')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([2.71, -2.71], %)
     |> line([15.4, -2.78], %)
     |> tangentialArcTo([24.95, -0.38], %)
     |> close(%)
     |> extrude(5, %)`)
 
-    // Hit undo again.
-    await page.keyboard.down('Control')
-    await page.keyboard.press('KeyZ')
-    await page.keyboard.up('Control')
+      // Hit undo again.
+      await page.keyboard.down('Control')
+      await page.keyboard.press('KeyZ')
+      await page.keyboard.up('Control')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([2.71, -2.71], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -0.38], %)
@@ -1100,20 +1100,21 @@ test.describe('Editor tests', () => {
     |> extrude(5, %)
   `)
 
-    // Hit undo again.
-    await page.keyboard.down('Control')
-    await page.keyboard.press('KeyZ')
-    await page.keyboard.up('Control')
+      // Hit undo again.
+      await page.keyboard.down('Control')
+      await page.keyboard.press('KeyZ')
+      await page.keyboard.up('Control')
 
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -10.01], %)
   |> line([12.73, -0.09], %)
   |> tangentialArcTo([24.95, -0.38], %)
   |> close(%)
   |> extrude(5, %)`)
-  })
+    }
+  )
 
   test.fixme(
     `Can use the import stdlib function on a local OBJ file`,

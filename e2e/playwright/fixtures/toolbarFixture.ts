@@ -61,6 +61,9 @@ export class ToolbarFixture {
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
     this.fileCreateToast = page.getByText('Successfully created')
+    this.exeIndicator = page.getByTestId(
+      'model-state-indicator-receive-reliable'
+    )
   }
 
   get logoLink() {

@@ -123,9 +123,9 @@ jobs:
       if: steps.download-wasm.outcome == 'failure'
       shell: bash
       run: yarn build:wasm
-    - name: build electron
+    - name: build web
       shell: bash
-      run: yarn tron:package
+      run: yarn tronb:vite:dev
     # - name: Run ubuntu/chrome snapshots
     #   if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
     #   shell: bash
