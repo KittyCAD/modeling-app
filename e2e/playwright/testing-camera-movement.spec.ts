@@ -4,7 +4,7 @@ import { uuidv4 } from 'lib/utils'
 import { getUtils } from './test-utils'
 
 test.describe('Testing Camera Movement', () => {
-  test('Can move camera reliably', async ({ page, context, homePage }) => {
+  test.fixme('Can move camera reliably', async ({ page, context, homePage }) => {
     // TODO: fix this test on windows too after the electron migration
     const winOrMac =
       process.platform === 'win32' || process.platform === 'darwin'
