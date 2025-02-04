@@ -27,7 +27,12 @@ import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+} from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { isOverlap } from 'lib/utils'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
@@ -54,6 +59,13 @@ beforeAll(async () => {
 afterAll(() => {
   engineCommandManager.tearDown()
 })
+
+const dependencies = {
+  kclManager,
+  engineCommandManager,
+  editorManager,
+  codeManager,
+}
 
 const runGetPathToExtrudeForSegmentSelectionTest = async (
   code: string,
@@ -131,7 +143,8 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   const pathResult = getPathToExtrudeForSegmentSelection(
     ast,
     selection,
-    artifactGraph
+    artifactGraph,
+    dependencies
   )
   if (err(pathResult)) return pathResult
   const { pathToExtrudeNode } = pathResult
@@ -289,7 +302,12 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   }
 
   // apply edge treatment to selection
-  const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters)
+  const result = modifyAstWithEdgeTreatmentAndTag(
+    ast,
+    selection,
+    parameters,
+    dependencies
+  )
   if (err(result)) {
     return result
   }

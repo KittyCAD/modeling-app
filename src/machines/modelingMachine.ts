@@ -1830,6 +1830,12 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness } = input
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
 
         // Insert the thickness variable if it exists
         if (
@@ -1855,6 +1861,7 @@ export const modelingMachine = setup({
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
+          dependencies,
         })
         if (err(shellResult)) {
           return err(shellResult)
@@ -1894,12 +1901,19 @@ export const modelingMachine = setup({
           type: EdgeTreatmentType.Fillet,
           radius,
         }
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
 
         // Apply fillet to selection
         const filletResult = await applyEdgeTreatmentToSelection(
           ast,
           selection,
-          parameters
+          parameters,
+          dependencies
         )
         if (err(filletResult)) return filletResult
       }
@@ -1969,12 +1983,19 @@ export const modelingMachine = setup({
           type: EdgeTreatmentType.Chamfer,
           length,
         }
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
 
         // Apply chamfer to selection
         const chamferResult = await applyEdgeTreatmentToSelection(
           ast,
           selection,
-          parameters
+          parameters,
+          dependencies
         )
         if (err(chamferResult)) return chamferResult
       }
