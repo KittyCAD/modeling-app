@@ -30,6 +30,7 @@ import {
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { markOnce } from 'lib/performance'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -47,7 +48,8 @@ export const FileMachineProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { settings, auth } = useSettingsAuthContext()
+  const { settings } = useSettingsAuthContext()
+  const token = useToken()
   const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { project, file } = projectData
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
@@ -297,7 +299,7 @@ export const FileMachineProvider = ({
   const kclCommandMemo = useMemo(
     () =>
       kclCommands({
-        authToken: auth?.context?.token ?? '',
+        authToken: token ?? '',
         projectData,
         settings: {
           defaultUnit: settings?.context?.modeling.defaultUnit.current ?? 'mm',

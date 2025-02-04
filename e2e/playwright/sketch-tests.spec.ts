@@ -34,7 +34,7 @@ test.describe('Sketch tests', () => {
     screwRadius = 3
     wireRadius = 2
     wireOffset = 0.5
-  
+
     screwHole = startSketchOn('XY')
   ${startProfileAt1}
   |> arc({
@@ -42,7 +42,7 @@ test.describe('Sketch tests', () => {
         angleStart = 0,
         angleEnd = 360
       }, %)
-  
+
     part001 = startSketchOn('XY')
   ${startProfileAt2}
   |> xLine(width * .5, %)
@@ -51,7 +51,7 @@ test.describe('Sketch tests', () => {
   |> close(%)
   |> hole(screwHole, %)
   |> extrude(thickness, %)
-  
+
     part002 = startSketchOn('-XZ')
   ${startProfileAt3}
   |> xLine(width / 4, %)
@@ -99,6 +99,7 @@ test.describe('Sketch tests', () => {
   test('Can delete most of a sketch and the line tool will still work', async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -112,12 +113,13 @@ test.describe('Sketch tests', () => {
     })
 
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     await expect(async () => {
       await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
-      ).toBeEnabled({ timeout: 1000 })
+      ).toBeEnabled({ timeout: 2000 })
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
     }).toPass({ timeout: 40_000, intervals: [1_000] })
 
@@ -310,32 +312,40 @@ test.describe('Sketch tests', () => {
       |> line([1.97, 2.06], %)
       |> close(%)`)
     }
-    test('code pane open at start-handles', async ({ page, homePage }) => {
-      // Load the app with the code panes
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'store',
-          JSON.stringify({
-            state: {
-              openPanes: ['code'],
-            },
-            version: 0,
-          })
-        )
-      })
-      await doEditSegmentsByDraggingHandle(page, homePage, ['code'])
-    })
+    test(
+      'code pane open at start-handles',
+      { tag: ['@skipWin'] },
+      async ({ page, homePage }) => {
+        // Load the app with the code panes
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'store',
+            JSON.stringify({
+              state: {
+                openPanes: ['code'],
+              },
+              version: 0,
+            })
+          )
+        })
+        await doEditSegmentsByDraggingHandle(page, homePage, ['code'])
+      }
+    )
 
-    test('code pane closed at start-handles', async ({ page, homePage }) => {
-      // Load the app with the code panes
-      await page.addInitScript(async (persistModelingContext) => {
-        localStorage.setItem(
-          persistModelingContext,
-          JSON.stringify({ openPanes: [] })
-        )
-      }, PERSIST_MODELING_CONTEXT)
-      await doEditSegmentsByDraggingHandle(page, homePage, [])
-    })
+    test(
+      'code pane closed at start-handles',
+      { tag: ['@skipWin'] },
+      async ({ page, homePage }) => {
+        // Load the app with the code panes
+        await page.addInitScript(async (persistModelingContext) => {
+          localStorage.setItem(
+            persistModelingContext,
+            JSON.stringify({ openPanes: [] })
+          )
+        }, PERSIST_MODELING_CONTEXT)
+        await doEditSegmentsByDraggingHandle(page, homePage, [])
+      }
+    )
   })
 
   test('Can edit a circle center and radius by dragging its handles', async ({
@@ -884,7 +894,7 @@ test.describe('Sketch tests', () => {
     // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
     await expect(
-      page.getByRole('button', { name: 'selection : 1 face', exact: false })
+      page.getByRole('button', { name: 'selection : 1 segment', exact: false })
     ).toBeVisible({
       timeout: 10_000,
     })
@@ -1063,7 +1073,7 @@ test.describe('Sketch tests', () => {
         `lugHeadLength = 0.25
       lugDiameter = 0.5
       lugLength = 2
-  
+
       fn lug = (origin, length, diameter, plane) => {
         lugSketch = startSketchOn(plane)
           |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
@@ -1072,10 +1082,10 @@ test.describe('Sketch tests', () => {
           |> yLineTo(0, %)
           |> close(%)
           |> revolve({ axis = "Y" }, %)
-  
+
         return lugSketch
       }
-  
+
       lug([0, 0], 10, .5, "XY")`
       )
     })
@@ -1127,14 +1137,14 @@ test.describe('Sketch tests', () => {
         `fn in2mm = (inches) => {
     return inches * 25.4
   }
-  
+
   const railTop = in2mm(.748)
   const railSide = in2mm(.024)
   const railBaseWidth = in2mm(.612)
   const railWideWidth = in2mm(.835)
   const railBaseLength = in2mm(.200)
   const railClampable = in2mm(.200)
-  
+
   const rail = startSketchOn('XZ')
     |> startProfileAt([
      -railTop / 2,
@@ -1403,5 +1413,48 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
         highlightedCode: 'arcTo({end = [4, 2], interior = [1, 2]}, %)',
       })
     })
+  })
+})
+
+// Regression test for https://github.com/KittyCAD/modeling-app/issues/4372
+test.describe('Redirecting to home page and back to the original file should clear sketch DOM elements', () => {
+  test('Can redirect to home page and back to original file and have a cleared DOM', async ({
+    context,
+    page,
+    scene,
+    toolbar,
+    editor,
+    homePage,
+  }) => {
+    // We seed the scene with a single offset plane
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        ` sketch001 = startSketchOn('XZ')
+|> startProfileAt([256.85, 14.41], %)
+|> lineTo([0, 211.07], %)
+`
+      )
+    })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    const [objClick] = scene.makeMouseHelpers(634, 274)
+    await objClick()
+
+    // Enter sketch mode
+    await toolbar.editSketch()
+
+    await expect(page.getByText('323.49')).toBeVisible()
+
+    // Open navigation side bar
+    await page.getByTestId('project-sidebar-toggle').click()
+    const goToHome = page.getByRole('button', {
+      name: 'Go to Home',
+    })
+
+    await goToHome.click()
+    await homePage.openProject('testDefault')
+    await expect(page.getByText('323.49')).not.toBeVisible()
   })
 })

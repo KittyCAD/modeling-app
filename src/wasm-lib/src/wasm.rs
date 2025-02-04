@@ -5,7 +5,8 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Point2d, Program,
+    exec::IdGenerator, pretty::NumericSuffix, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId,
+    OldAstState, Point2d, Program,
 };
 use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
@@ -249,6 +250,14 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 
     let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
     Ok(JsValue::from_serde(&program.recast())?)
+}
+
+#[wasm_bindgen]
+pub fn format_number(value: f64, suffix_json: &str) -> Result<String, JsError> {
+    console_error_panic_hook::set_once();
+
+    let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
+    Ok(kcl_lib::pretty::format_number(value, suffix))
 }
 
 #[wasm_bindgen]
@@ -604,4 +613,19 @@ pub fn calculate_circle_from_3_points(ax: f64, ay: f64, bx: f64, by: f64, cx: f6
         center_y: result.center.y,
         radius: result.radius,
     }
+}
+
+/// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
+#[wasm_bindgen]
+pub fn change_kcl_settings(code: &str, settings_str: &str) -> Result<String, String> {
+    console_error_panic_hook::set_once();
+
+    let settings: kcl_lib::MetaSettings = serde_json::from_str(settings_str).map_err(|e| e.to_string())?;
+    let mut program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
+
+    let new_program = program.change_meta_settings(settings).map_err(|e| e.to_string())?;
+
+    let formatted = new_program.recast();
+
+    Ok(formatted)
 }

@@ -19,7 +19,8 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useSelector } from '@xstate/react'
 import { copyFileShareLink } from 'lib/links'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { DEV } from 'env'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
+import { useToken } from 'machines/appMachine'
 
 const ProjectSidebarMenu = ({
   project,
@@ -103,13 +104,15 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  const { settings, auth } = useSettingsAuthContext()
+  const { settings } = useSettingsAuthContext()
+  const token = useToken()
   const machineManager = useContext(MachineManagerContext)
   const commands = useSelector(commandBarActor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
+  const shareCommandInfo = { name: 'share-file-link', groupId: 'code' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
       commands.find((c) => c.name === obj.name && c.groupId === obj.groupId)
@@ -191,10 +194,10 @@ function ProjectMenuPopover({
           id: 'share-link',
           Element: 'button',
           children: 'Share link to file',
-          disabled: !DEV,
+          disabled: IS_NIGHTLY_OR_DEBUG || !findCommand(shareCommandInfo),
           onClick: async () => {
             await copyFileShareLink({
-              token: auth?.context.token || '',
+              token: token ?? '',
               code: codeManager.code,
               name: project?.name || '',
               units: settings.context.modeling.defaultUnit.current,

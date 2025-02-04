@@ -2,6 +2,7 @@ import {
   init,
   parse_wasm,
   recast_wasm,
+  format_number,
   execute,
   kcl_lint,
   modify_ast_for_sketch_wasm,
@@ -17,6 +18,7 @@ import {
   default_project_settings,
   base64_decode,
   clear_scene_and_bust_cache,
+  change_kcl_settings,
   reloadModule,
 } from 'lib/wasm_lib_wrapper'
 
@@ -54,6 +56,8 @@ import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
 import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
+import { MetaSettings } from 'wasm-lib/kcl/bindings/MetaSettings'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -90,6 +94,7 @@ export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
 export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
 export type { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+export type { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
 
 export type SyntaxType =
   | 'Program'
@@ -638,6 +643,13 @@ export const recast = (ast: Program): string | Error => {
   return recast_wasm(JSON.stringify(ast))
 }
 
+/**
+ * Format a number with suffix as KCL.
+ */
+export function formatNumber(value: number, suffix: NumericSuffix): string {
+  return format_number(value, JSON.stringify(suffix))
+}
+
 export const makeDefaultPlanes = async (
   engineCommandManager: EngineCommandManager
 ): Promise<DefaultPlanes> => {
@@ -832,5 +844,19 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
   } catch (e) {
     console.error('Caught error decoding base64 string: ' + e)
     return new Error('Caught error decoding base64 string: ' + e)
+  }
+}
+
+/// Change the meta settings for the kcl file.
+/// Returns the new kcl string with the updated settings.
+export function changeKclSettings(
+  kcl: string,
+  settings: MetaSettings
+): string | Error {
+  try {
+    return change_kcl_settings(kcl, JSON.stringify(settings))
+  } catch (e) {
+    console.error('Caught error changing kcl settings: ' + e)
+    return new Error('Caught error changing kcl settings: ' + e)
   }
 }
