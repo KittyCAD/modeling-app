@@ -283,7 +283,18 @@ impl KclValue {
                     None
                 }
             }
-            KclValue::Object { .. } => None,
+            KclValue::Object { value, .. } => {
+                if recurse {
+                    Some(
+                        value
+                            .values()
+                            .flat_map(|value| value.collect_artifact_ids(false).unwrap_or_default())
+                            .collect(),
+                    )
+                } else {
+                    None
+                }
+            }
             KclValue::TagIdentifier(_) => None,
             KclValue::TagDeclarator(_) => None,
             KclValue::Plane { value } => Some(vec![value.artifact_id]),
