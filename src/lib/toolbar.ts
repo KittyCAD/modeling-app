@@ -82,20 +82,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       'break',
       {
-        id: 'extrude',
-        onClick: () =>
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Extrude', groupId: 'modeling' },
-          }),
-        icon: 'extrude',
-        status: 'available',
-        title: 'Extrude',
-        hotkey: 'E',
-        description: 'Pull a sketch into 3D along its normal or perpendicular.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/extrude' }],
-      },
-      {
         id: 'revolve',
         onClick: () =>
           commandBarActor.send({
@@ -115,6 +101,20 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             url: 'https://zoo.dev/docs/kcl-samples/ball-bearing',
           },
         ],
+      },
+      {
+        id: 'extrude',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Extrude', groupId: 'modeling' },
+          }),
+        icon: 'extrude',
+        status: 'available',
+        title: 'Extrude',
+        hotkey: 'E',
+        description: 'Pull a sketch into 3D along its normal or perpendicular.',
+        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/extrude' }],
       },
       {
         id: 'sweep',
