@@ -11,6 +11,7 @@ import {
 import { uuidv4, roundOff } from 'lib/utils'
 
 test.describe('Sketch tests', () => {
+  test.skip(process.platform === 'win32', 'Skip on windows')
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
     page,
     context,

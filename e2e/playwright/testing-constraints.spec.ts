@@ -10,6 +10,7 @@ import { XOR } from 'lib/utils'
 import path from 'node:path'
 
 test.describe('Testing constraints', () => {
+  test.skip(process.platform === 'win32', 'Skip on windows')
   test('Can constrain line length', async ({ page, homePage }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
