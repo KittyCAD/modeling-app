@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing sketch-on-chamfer-two-times-different-order.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -80,12 +81,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "id": "[uuid]",
                 "sourceRange": [
                   356,
-                  426,
+                  405,
                   0
                 ],
                 "tag": {
-                  "end": 425,
-                  "start": 419,
+                  "end": 404,
+                  "start": 398,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -95,13 +96,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  540,
-                  627,
+                  519,
+                  606,
                   0
                 ],
                 "tag": {
-                  "end": 626,
-                  "start": 620,
+                  "end": 605,
+                  "start": 599,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -111,13 +112,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  633,
-                  684,
+                  612,
+                  663,
                   0
                 ],
                 "tag": {
-                  "end": 683,
-                  "start": 677,
+                  "end": 662,
+                  "start": 656,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -203,7 +204,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "id": "[uuid]",
                     "sourceRange": [
                       356,
-                      426,
+                      405,
                       0
                     ]
                   },
@@ -212,8 +213,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     99.94
                   ],
                   "tag": {
-                    "end": 425,
-                    "start": 419,
+                    "end": 404,
+                    "start": 398,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -227,8 +228,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      432,
-                      440,
+                      411,
+                      419,
                       0
                     ]
                   },
@@ -423,7 +424,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         "id": "[uuid]",
                         "sourceRange": [
                           356,
-                          426,
+                          405,
                           0
                         ]
                       },
@@ -432,8 +433,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         99.94
                       ],
                       "tag": {
-                        "end": 425,
-                        "start": 419,
+                        "end": 404,
+                        "start": 398,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -448,12 +449,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "id": "[uuid]",
                       "sourceRange": [
                         356,
-                        426,
+                        405,
                         0
                       ],
                       "tag": {
-                        "end": 425,
-                        "start": 419,
+                        "end": 404,
+                        "start": 398,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -463,8 +464,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__meta": [
                     {
                       "sourceRange": [
-                        419,
-                        425,
+                        398,
+                        404,
                         0
                       ]
                     }
@@ -482,13 +483,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        540,
-                        627,
+                        519,
+                        606,
                         0
                       ],
                       "tag": {
-                        "end": 626,
-                        "start": 620,
+                        "end": 605,
+                        "start": 599,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -498,8 +499,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__meta": [
                     {
                       "sourceRange": [
-                        620,
-                        626,
+                        599,
+                        605,
                         0
                       ]
                     }
@@ -517,13 +518,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        633,
-                        684,
+                        612,
+                        663,
                         0
                       ],
                       "tag": {
-                        "end": 683,
-                        "start": 677,
+                        "end": 662,
+                        "start": 656,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -533,8 +534,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__meta": [
                     {
                       "sourceRange": [
-                        677,
-                        683,
+                        656,
+                        662,
                         0
                       ]
                     }
@@ -571,8 +572,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "length": 50.0,
                 "edgeId": "[uuid]",
                 "tag": {
-                  "end": 626,
-                  "start": 620,
+                  "end": 605,
+                  "start": 599,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 }
@@ -583,8 +584,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "length": 50.0,
                 "edgeId": "[uuid]",
                 "tag": {
-                  "end": 683,
-                  "start": 677,
+                  "end": 662,
+                  "start": 656,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 }
@@ -614,13 +615,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1225,
-                  1273,
+                  1183,
+                  1231,
                   0
                 ],
                 "tag": {
-                  "end": 1272,
-                  "start": 1251,
+                  "end": 1230,
+                  "start": 1209,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -630,13 +631,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1279,
-                  1381,
+                  1237,
+                  1339,
                   0
                 ],
                 "tag": {
-                  "end": 1380,
-                  "start": 1359,
+                  "end": 1338,
+                  "start": 1317,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB001"
                 },
@@ -646,13 +647,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1387,
-                  1507,
+                  1345,
+                  1465,
                   0
                 ],
                 "tag": {
-                  "end": 1506,
-                  "start": 1485,
+                  "end": 1464,
+                  "start": 1443,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC001"
                 },
@@ -662,8 +663,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1513,
-                  1569,
+                  1471,
+                  1506,
                   0
                 ],
                 "tag": null,
@@ -678,8 +679,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1225,
-                      1273,
+                      1183,
+                      1231,
                       0
                     ]
                   },
@@ -688,8 +689,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     278.35
                   ],
                   "tag": {
-                    "end": 1272,
-                    "start": 1251,
+                    "end": 1230,
+                    "start": 1209,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA002"
                   },
@@ -703,8 +704,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1279,
-                      1381,
+                      1237,
+                      1339,
                       0
                     ]
                   },
@@ -713,8 +714,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     278.35
                   ],
                   "tag": {
-                    "end": 1380,
-                    "start": 1359,
+                    "end": 1338,
+                    "start": 1317,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB001"
                   },
@@ -728,8 +729,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1387,
-                      1507,
+                      1345,
+                      1465,
                       0
                     ]
                   },
@@ -738,8 +739,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     146.08
                   ],
                   "tag": {
-                    "end": 1506,
-                    "start": 1485,
+                    "end": 1464,
+                    "start": 1443,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC001"
                   },
@@ -753,8 +754,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1513,
-                      1569,
+                      1471,
+                      1506,
                       0
                     ]
                   },
@@ -773,8 +774,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1575,
-                      1583,
+                      1512,
+                      1520,
                       0
                     ]
                   },
@@ -861,12 +862,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "id": "[uuid]",
                       "sourceRange": [
                         356,
-                        426,
+                        405,
                         0
                       ],
                       "tag": {
-                        "end": 425,
-                        "start": 419,
+                        "end": 404,
+                        "start": 398,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -876,13 +877,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        540,
-                        627,
+                        519,
+                        606,
                         0
                       ],
                       "tag": {
-                        "end": 626,
-                        "start": 620,
+                        "end": 605,
+                        "start": 599,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -892,13 +893,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        633,
-                        684,
+                        612,
+                        663,
                         0
                       ],
                       "tag": {
-                        "end": 683,
-                        "start": 677,
+                        "end": 662,
+                        "start": 656,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -984,7 +985,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                           "id": "[uuid]",
                           "sourceRange": [
                             356,
-                            426,
+                            405,
                             0
                           ]
                         },
@@ -993,8 +994,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                           99.94
                         ],
                         "tag": {
-                          "end": 425,
-                          "start": 419,
+                          "end": 404,
+                          "start": 398,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -1008,8 +1009,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            432,
-                            440,
+                            411,
+                            419,
                             0
                           ]
                         },
@@ -1204,7 +1205,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                               "id": "[uuid]",
                               "sourceRange": [
                                 356,
-                                426,
+                                405,
                                 0
                               ]
                             },
@@ -1213,8 +1214,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                               99.94
                             ],
                             "tag": {
-                              "end": 425,
-                              "start": 419,
+                              "end": 404,
+                              "start": 398,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -1229,12 +1230,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                             "id": "[uuid]",
                             "sourceRange": [
                               356,
-                              426,
+                              405,
                               0
                             ],
                             "tag": {
-                              "end": 425,
-                              "start": 419,
+                              "end": 404,
+                              "start": 398,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -1244,8 +1245,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         "__meta": [
                           {
                             "sourceRange": [
-                              419,
-                              425,
+                              398,
+                              404,
                               0
                             ]
                           }
@@ -1263,13 +1264,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              540,
-                              627,
+                              519,
+                              606,
                               0
                             ],
                             "tag": {
-                              "end": 626,
-                              "start": 620,
+                              "end": 605,
+                              "start": 599,
                               "type": "TagDeclarator",
                               "value": "seg03"
                             },
@@ -1279,8 +1280,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         "__meta": [
                           {
                             "sourceRange": [
-                              620,
-                              626,
+                              599,
+                              605,
                               0
                             ]
                           }
@@ -1298,13 +1299,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              633,
-                              684,
+                              612,
+                              663,
                               0
                             ],
                             "tag": {
-                              "end": 683,
-                              "start": 677,
+                              "end": 662,
+                              "start": 656,
                               "type": "TagDeclarator",
                               "value": "seg04"
                             },
@@ -1314,8 +1315,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         "__meta": [
                           {
                             "sourceRange": [
-                              677,
-                              683,
+                              656,
+                              662,
                               0
                             ]
                           }
@@ -1352,8 +1353,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "length": 50.0,
                       "edgeId": "[uuid]",
                       "tag": {
-                        "end": 626,
-                        "start": 620,
+                        "end": 605,
+                        "start": 599,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       }
@@ -1364,8 +1365,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "length": 50.0,
                       "edgeId": "[uuid]",
                       "tag": {
-                        "end": 683,
-                        "start": 677,
+                        "end": 662,
+                        "start": 656,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       }
@@ -1390,8 +1391,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
-                      1146,
-                      1178,
+                      1104,
+                      1136,
                       0
                     ]
                   }
@@ -1410,8 +1411,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1184,
-                    1219,
+                    1142,
+                    1177,
                     0
                   ]
                 }
@@ -1428,8 +1429,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          1225,
-                          1273,
+                          1183,
+                          1231,
                           0
                         ]
                       },
@@ -1438,8 +1439,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         278.35
                       ],
                       "tag": {
-                        "end": 1272,
-                        "start": 1251,
+                        "end": 1230,
+                        "start": 1209,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA002"
                       },
@@ -1453,13 +1454,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1225,
-                        1273,
+                        1183,
+                        1231,
                         0
                       ],
                       "tag": {
-                        "end": 1272,
-                        "start": 1251,
+                        "end": 1230,
+                        "start": 1209,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA002"
                       },
@@ -1469,8 +1470,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__meta": [
                     {
                       "sourceRange": [
-                        1251,
-                        1272,
+                        1209,
+                        1230,
                         0
                       ]
                     }
@@ -1487,8 +1488,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          1279,
-                          1381,
+                          1237,
+                          1339,
                           0
                         ]
                       },
@@ -1497,8 +1498,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         278.35
                       ],
                       "tag": {
-                        "end": 1380,
-                        "start": 1359,
+                        "end": 1338,
+                        "start": 1317,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentB001"
                       },
@@ -1512,13 +1513,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1279,
-                        1381,
+                        1237,
+                        1339,
                         0
                       ],
                       "tag": {
-                        "end": 1380,
-                        "start": 1359,
+                        "end": 1338,
+                        "start": 1317,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentB001"
                       },
@@ -1528,8 +1529,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__meta": [
                     {
                       "sourceRange": [
-                        1359,
-                        1380,
+                        1317,
+                        1338,
                         0
                       ]
                     }
@@ -1546,8 +1547,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          1387,
-                          1507,
+                          1345,
+                          1465,
                           0
                         ]
                       },
@@ -1556,8 +1557,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         146.08
                       ],
                       "tag": {
-                        "end": 1506,
-                        "start": 1485,
+                        "end": 1464,
+                        "start": 1443,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentC001"
                       },
@@ -1571,13 +1572,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1387,
-                        1507,
+                        1345,
+                        1465,
                         0
                       ],
                       "tag": {
-                        "end": 1506,
-                        "start": 1485,
+                        "end": 1464,
+                        "start": 1443,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentC001"
                       },
@@ -1587,8 +1588,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "__meta": [
                     {
                       "sourceRange": [
-                        1485,
-                        1506,
+                        1443,
+                        1464,
                         0
                       ]
                     }
@@ -1601,8 +1602,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__meta": [
                 {
                   "sourceRange": [
-                    1184,
-                    1219,
+                    1142,
+                    1177,
                     0
                   ]
                 }
@@ -1617,8 +1618,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
             "__meta": [
               {
                 "sourceRange": [
-                  1184,
-                  1219,
+                  1142,
+                  1177,
                   0
                 ]
               }
@@ -1697,8 +1698,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1225,
-                  1273,
+                  1183,
+                  1231,
                   0
                 ]
               },
@@ -1707,8 +1708,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 278.35
               ],
               "tag": {
-                "end": 1272,
-                "start": 1251,
+                "end": 1230,
+                "start": 1209,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -1722,13 +1723,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1225,
-                1273,
+                1183,
+                1231,
                 0
               ],
               "tag": {
-                "end": 1272,
-                "start": 1251,
+                "end": 1230,
+                "start": 1209,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -1738,8 +1739,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "__meta": [
             {
               "sourceRange": [
-                1251,
-                1272,
+                1209,
+                1230,
                 0
               ]
             }
@@ -1757,8 +1758,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  776,
-                  824,
+                  755,
+                  803,
                   0
                 ]
               },
@@ -1767,8 +1768,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 277.34
               ],
               "tag": {
-                "end": 823,
-                "start": 802,
+                "end": 802,
+                "start": 781,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA003"
               },
@@ -1783,8 +1784,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "__meta": [
             {
               "sourceRange": [
+                781,
                 802,
-                823,
                 0
               ]
             }
@@ -1802,8 +1803,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1279,
-                  1381,
+                  1237,
+                  1339,
                   0
                 ]
               },
@@ -1812,8 +1813,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 278.35
               ],
               "tag": {
-                "end": 1380,
-                "start": 1359,
+                "end": 1338,
+                "start": 1317,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB001"
               },
@@ -1827,13 +1828,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1279,
-                1381,
+                1237,
+                1339,
                 0
               ],
               "tag": {
-                "end": 1380,
-                "start": 1359,
+                "end": 1338,
+                "start": 1317,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB001"
               },
@@ -1843,8 +1844,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "__meta": [
             {
               "sourceRange": [
-                1359,
-                1380,
+                1317,
+                1338,
                 0
               ]
             }
@@ -1862,8 +1863,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  830,
-                  931,
+                  809,
+                  910,
                   0
                 ]
               },
@@ -1872,8 +1873,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 277.34
               ],
               "tag": {
-                "end": 930,
-                "start": 909,
+                "end": 909,
+                "start": 888,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB002"
               },
@@ -1888,8 +1889,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "__meta": [
             {
               "sourceRange": [
+                888,
                 909,
-                930,
                 0
               ]
             }
@@ -1907,8 +1908,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1387,
-                  1507,
+                  1345,
+                  1465,
                   0
                 ]
               },
@@ -1917,8 +1918,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 146.08
               ],
               "tag": {
-                "end": 1506,
-                "start": 1485,
+                "end": 1464,
+                "start": 1443,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC001"
               },
@@ -1932,13 +1933,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1387,
-                1507,
+                1345,
+                1465,
                 0
               ],
               "tag": {
-                "end": 1506,
-                "start": 1485,
+                "end": 1464,
+                "start": 1443,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC001"
               },
@@ -1948,8 +1949,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "__meta": [
             {
               "sourceRange": [
-                1485,
-                1506,
+                1443,
+                1464,
                 0
               ]
             }
@@ -1967,8 +1968,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  937,
-                  1057,
+                  916,
+                  1036,
                   0
                 ]
               },
@@ -1977,8 +1978,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 172.53999999999996
               ],
               "tag": {
-                "end": 1056,
-                "start": 1035,
+                "end": 1035,
+                "start": 1014,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC002"
               },
@@ -1993,8 +1994,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "__meta": [
             {
               "sourceRange": [
+                1014,
                 1035,
-                1056,
                 0
               ]
             }
@@ -2073,7 +2074,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "id": "[uuid]",
                 "sourceRange": [
                   356,
-                  426,
+                  405,
                   0
                 ]
               },
@@ -2082,8 +2083,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 99.94
               ],
               "tag": {
-                "end": 425,
-                "start": 419,
+                "end": 404,
+                "start": 398,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2098,12 +2099,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "id": "[uuid]",
               "sourceRange": [
                 356,
-                426,
+                405,
                 0
               ],
               "tag": {
-                "end": 425,
-                "start": 419,
+                "end": 404,
+                "start": 398,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2113,8 +2114,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "__meta": [
             {
               "sourceRange": [
-                419,
-                425,
+                398,
+                404,
                 0
               ]
             }
@@ -2133,13 +2134,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                540,
-                627,
+                519,
+                606,
                 0
               ],
               "tag": {
-                "end": 626,
-                "start": 620,
+                "end": 605,
+                "start": 599,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -2149,8 +2150,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "__meta": [
             {
               "sourceRange": [
-                620,
-                626,
+                599,
+                605,
                 0
               ]
             }
@@ -2169,13 +2170,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                633,
-                684,
+                612,
+                663,
                 0
               ],
               "tag": {
-                "end": 683,
-                "start": 677,
+                "end": 662,
+                "start": 656,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -2185,8 +2186,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "__meta": [
             {
               "sourceRange": [
-                677,
-                683,
+                656,
+                662,
                 0
               ]
             }
@@ -2273,7 +2274,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "id": "[uuid]",
                   "sourceRange": [
                     356,
-                    426,
+                    405,
                     0
                   ]
                 },
@@ -2282,8 +2283,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   99.94
                 ],
                 "tag": {
-                  "end": 425,
-                  "start": 419,
+                  "end": 404,
+                  "start": 398,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2297,8 +2298,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    432,
-                    440,
+                    411,
+                    419,
                     0
                   ]
                 },
@@ -2493,7 +2494,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "id": "[uuid]",
                       "sourceRange": [
                         356,
-                        426,
+                        405,
                         0
                       ]
                     },
@@ -2502,8 +2503,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       99.94
                     ],
                     "tag": {
-                      "end": 425,
-                      "start": 419,
+                      "end": 404,
+                      "start": 398,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2518,12 +2519,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "id": "[uuid]",
                     "sourceRange": [
                       356,
-                      426,
+                      405,
                       0
                     ],
                     "tag": {
-                      "end": 425,
-                      "start": 419,
+                      "end": 404,
+                      "start": 398,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2533,8 +2534,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
-                      419,
-                      425,
+                      398,
+                      404,
                       0
                     ]
                   }
@@ -2552,13 +2553,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      540,
-                      627,
+                      519,
+                      606,
                       0
                     ],
                     "tag": {
-                      "end": 626,
-                      "start": 620,
+                      "end": 605,
+                      "start": 599,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2568,8 +2569,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
-                      620,
-                      626,
+                      599,
+                      605,
                       0
                     ]
                   }
@@ -2587,13 +2588,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      633,
-                      684,
+                      612,
+                      663,
                       0
                     ],
                     "tag": {
-                      "end": 683,
-                      "start": 677,
+                      "end": 662,
+                      "start": 656,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2603,8 +2604,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
-                      677,
-                      683,
+                      656,
+                      662,
                       0
                     ]
                   }
@@ -2635,8 +2636,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1225,
-                    1273,
+                    1183,
+                    1231,
                     0
                   ]
                 },
@@ -2645,8 +2646,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   278.35
                 ],
                 "tag": {
-                  "end": 1272,
-                  "start": 1251,
+                  "end": 1230,
+                  "start": 1209,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -2660,8 +2661,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1279,
-                    1381,
+                    1237,
+                    1339,
                     0
                   ]
                 },
@@ -2670,8 +2671,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   278.35
                 ],
                 "tag": {
-                  "end": 1380,
-                  "start": 1359,
+                  "end": 1338,
+                  "start": 1317,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB001"
                 },
@@ -2685,8 +2686,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1387,
-                    1507,
+                    1345,
+                    1465,
                     0
                   ]
                 },
@@ -2695,8 +2696,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   146.08
                 ],
                 "tag": {
-                  "end": 1506,
-                  "start": 1485,
+                  "end": 1464,
+                  "start": 1443,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC001"
                 },
@@ -2710,8 +2711,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1513,
-                    1569,
+                    1471,
+                    1506,
                     0
                   ]
                 },
@@ -2730,8 +2731,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1575,
-                    1583,
+                    1512,
+                    1520,
                     0
                   ]
                 },
@@ -2818,12 +2819,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "id": "[uuid]",
                     "sourceRange": [
                       356,
-                      426,
+                      405,
                       0
                     ],
                     "tag": {
-                      "end": 425,
-                      "start": 419,
+                      "end": 404,
+                      "start": 398,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2833,13 +2834,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      540,
-                      627,
+                      519,
+                      606,
                       0
                     ],
                     "tag": {
-                      "end": 626,
-                      "start": 620,
+                      "end": 605,
+                      "start": 599,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2849,13 +2850,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      633,
-                      684,
+                      612,
+                      663,
                       0
                     ],
                     "tag": {
-                      "end": 683,
-                      "start": 677,
+                      "end": 662,
+                      "start": 656,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2941,7 +2942,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         "id": "[uuid]",
                         "sourceRange": [
                           356,
-                          426,
+                          405,
                           0
                         ]
                       },
@@ -2950,8 +2951,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         99.94
                       ],
                       "tag": {
-                        "end": 425,
-                        "start": 419,
+                        "end": 404,
+                        "start": 398,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -2965,8 +2966,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          432,
-                          440,
+                          411,
+                          419,
                           0
                         ]
                       },
@@ -3161,7 +3162,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                             "id": "[uuid]",
                             "sourceRange": [
                               356,
-                              426,
+                              405,
                               0
                             ]
                           },
@@ -3170,8 +3171,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                             99.94
                           ],
                           "tag": {
-                            "end": 425,
-                            "start": 419,
+                            "end": 404,
+                            "start": 398,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -3186,12 +3187,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                           "id": "[uuid]",
                           "sourceRange": [
                             356,
-                            426,
+                            405,
                             0
                           ],
                           "tag": {
-                            "end": 425,
-                            "start": 419,
+                            "end": 404,
+                            "start": 398,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -3201,8 +3202,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__meta": [
                         {
                           "sourceRange": [
-                            419,
-                            425,
+                            398,
+                            404,
                             0
                           ]
                         }
@@ -3220,13 +3221,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            540,
-                            627,
+                            519,
+                            606,
                             0
                           ],
                           "tag": {
-                            "end": 626,
-                            "start": 620,
+                            "end": 605,
+                            "start": 599,
                             "type": "TagDeclarator",
                             "value": "seg03"
                           },
@@ -3236,8 +3237,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__meta": [
                         {
                           "sourceRange": [
-                            620,
-                            626,
+                            599,
+                            605,
                             0
                           ]
                         }
@@ -3255,13 +3256,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            633,
-                            684,
+                            612,
+                            663,
                             0
                           ],
                           "tag": {
-                            "end": 683,
-                            "start": 677,
+                            "end": 662,
+                            "start": 656,
                             "type": "TagDeclarator",
                             "value": "seg04"
                           },
@@ -3271,8 +3272,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__meta": [
                         {
                           "sourceRange": [
-                            677,
-                            683,
+                            656,
+                            662,
                             0
                           ]
                         }
@@ -3309,8 +3310,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 626,
-                      "start": 620,
+                      "end": 605,
+                      "start": 599,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     }
@@ -3321,8 +3322,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 683,
-                      "start": 677,
+                      "end": 662,
+                      "start": 656,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     }
@@ -3347,8 +3348,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__meta": [
                 {
                   "sourceRange": [
-                    1146,
-                    1178,
+                    1104,
+                    1136,
                     0
                   ]
                 }
@@ -3367,8 +3368,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1184,
-                  1219,
+                  1142,
+                  1177,
                   0
                 ]
               }
@@ -3385,8 +3386,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1225,
-                        1273,
+                        1183,
+                        1231,
                         0
                       ]
                     },
@@ -3395,8 +3396,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       278.35
                     ],
                     "tag": {
-                      "end": 1272,
-                      "start": 1251,
+                      "end": 1230,
+                      "start": 1209,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
@@ -3410,13 +3411,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1225,
-                      1273,
+                      1183,
+                      1231,
                       0
                     ],
                     "tag": {
-                      "end": 1272,
-                      "start": 1251,
+                      "end": 1230,
+                      "start": 1209,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
@@ -3426,8 +3427,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
-                      1251,
-                      1272,
+                      1209,
+                      1230,
                       0
                     ]
                   }
@@ -3444,8 +3445,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1279,
-                        1381,
+                        1237,
+                        1339,
                         0
                       ]
                     },
@@ -3454,8 +3455,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       278.35
                     ],
                     "tag": {
-                      "end": 1380,
-                      "start": 1359,
+                      "end": 1338,
+                      "start": 1317,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB001"
                     },
@@ -3469,13 +3470,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1279,
-                      1381,
+                      1237,
+                      1339,
                       0
                     ],
                     "tag": {
-                      "end": 1380,
-                      "start": 1359,
+                      "end": 1338,
+                      "start": 1317,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB001"
                     },
@@ -3485,8 +3486,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
-                      1359,
-                      1380,
+                      1317,
+                      1338,
                       0
                     ]
                   }
@@ -3503,8 +3504,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1387,
-                        1507,
+                        1345,
+                        1465,
                         0
                       ]
                     },
@@ -3513,8 +3514,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       146.08
                     ],
                     "tag": {
-                      "end": 1506,
-                      "start": 1485,
+                      "end": 1464,
+                      "start": 1443,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC001"
                     },
@@ -3528,13 +3529,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1387,
-                      1507,
+                      1345,
+                      1465,
                       0
                     ],
                     "tag": {
-                      "end": 1506,
-                      "start": 1485,
+                      "end": 1464,
+                      "start": 1443,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC001"
                     },
@@ -3544,8 +3545,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
-                      1485,
-                      1506,
+                      1443,
+                      1464,
                       0
                     ]
                   }
@@ -3558,8 +3559,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
             "__meta": [
               {
                 "sourceRange": [
-                  1184,
-                  1219,
+                  1142,
+                  1177,
                   0
                 ]
               }
@@ -3576,8 +3577,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    776,
-                    824,
+                    755,
+                    803,
                     0
                   ]
                 },
@@ -3586,8 +3587,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   277.34
                 ],
                 "tag": {
-                  "end": 823,
-                  "start": 802,
+                  "end": 802,
+                  "start": 781,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA003"
                 },
@@ -3601,8 +3602,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    830,
-                    931,
+                    809,
+                    910,
                     0
                   ]
                 },
@@ -3611,8 +3612,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   277.34
                 ],
                 "tag": {
-                  "end": 930,
-                  "start": 909,
+                  "end": 909,
+                  "start": 888,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -3626,8 +3627,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    937,
-                    1057,
+                    916,
+                    1036,
                     0
                   ]
                 },
@@ -3636,8 +3637,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   172.54
                 ],
                 "tag": {
-                  "end": 1056,
-                  "start": 1035,
+                  "end": 1035,
+                  "start": 1014,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -3651,8 +3652,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1063,
-                    1119,
+                    1042,
+                    1077,
                     0
                   ]
                 },
@@ -3671,8 +3672,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1125,
-                    1133,
+                    1083,
+                    1091,
                     0
                   ]
                 },
@@ -3759,12 +3760,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "id": "[uuid]",
                     "sourceRange": [
                       356,
-                      426,
+                      405,
                       0
                     ],
                     "tag": {
-                      "end": 425,
-                      "start": 419,
+                      "end": 404,
+                      "start": 398,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3774,13 +3775,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      540,
-                      627,
+                      519,
+                      606,
                       0
                     ],
                     "tag": {
-                      "end": 626,
-                      "start": 620,
+                      "end": 605,
+                      "start": 599,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3790,13 +3791,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      633,
-                      684,
+                      612,
+                      663,
                       0
                     ],
                     "tag": {
-                      "end": 683,
-                      "start": 677,
+                      "end": 662,
+                      "start": 656,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3882,7 +3883,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         "id": "[uuid]",
                         "sourceRange": [
                           356,
-                          426,
+                          405,
                           0
                         ]
                       },
@@ -3891,8 +3892,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         99.94
                       ],
                       "tag": {
-                        "end": 425,
-                        "start": 419,
+                        "end": 404,
+                        "start": 398,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3906,8 +3907,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          432,
-                          440,
+                          411,
+                          419,
                           0
                         ]
                       },
@@ -4102,7 +4103,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                             "id": "[uuid]",
                             "sourceRange": [
                               356,
-                              426,
+                              405,
                               0
                             ]
                           },
@@ -4111,8 +4112,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                             99.94
                           ],
                           "tag": {
-                            "end": 425,
-                            "start": 419,
+                            "end": 404,
+                            "start": 398,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -4127,12 +4128,12 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                           "id": "[uuid]",
                           "sourceRange": [
                             356,
-                            426,
+                            405,
                             0
                           ],
                           "tag": {
-                            "end": 425,
-                            "start": 419,
+                            "end": 404,
+                            "start": 398,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -4142,8 +4143,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__meta": [
                         {
                           "sourceRange": [
-                            419,
-                            425,
+                            398,
+                            404,
                             0
                           ]
                         }
@@ -4161,13 +4162,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            540,
-                            627,
+                            519,
+                            606,
                             0
                           ],
                           "tag": {
-                            "end": 626,
-                            "start": 620,
+                            "end": 605,
+                            "start": 599,
                             "type": "TagDeclarator",
                             "value": "seg03"
                           },
@@ -4177,8 +4178,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__meta": [
                         {
                           "sourceRange": [
-                            620,
-                            626,
+                            599,
+                            605,
                             0
                           ]
                         }
@@ -4196,13 +4197,13 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            633,
-                            684,
+                            612,
+                            663,
                             0
                           ],
                           "tag": {
-                            "end": 683,
-                            "start": 677,
+                            "end": 662,
+                            "start": 656,
                             "type": "TagDeclarator",
                             "value": "seg04"
                           },
@@ -4212,8 +4213,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       "__meta": [
                         {
                           "sourceRange": [
-                            677,
-                            683,
+                            656,
+                            662,
                             0
                           ]
                         }
@@ -4250,8 +4251,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 626,
-                      "start": 620,
+                      "end": 605,
+                      "start": 599,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     }
@@ -4262,8 +4263,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 683,
-                      "start": 677,
+                      "end": 662,
+                      "start": 656,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     }
@@ -4288,8 +4289,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__meta": [
                 {
                   "sourceRange": [
-                    698,
-                    730,
+                    677,
+                    709,
                     0
                   ]
                 }
@@ -4308,8 +4309,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  736,
-                  770,
+                  715,
+                  749,
                   0
                 ]
               }
@@ -4326,8 +4327,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        776,
-                        824,
+                        755,
+                        803,
                         0
                       ]
                     },
@@ -4336,8 +4337,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       277.34
                     ],
                     "tag": {
-                      "end": 823,
-                      "start": 802,
+                      "end": 802,
+                      "start": 781,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA003"
                     },
@@ -4352,8 +4353,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
+                      781,
                       802,
-                      823,
                       0
                     ]
                   }
@@ -4370,8 +4371,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        830,
-                        931,
+                        809,
+                        910,
                         0
                       ]
                     },
@@ -4380,8 +4381,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       277.34
                     ],
                     "tag": {
-                      "end": 930,
-                      "start": 909,
+                      "end": 909,
+                      "start": 888,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB002"
                     },
@@ -4396,8 +4397,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
+                      888,
                       909,
-                      930,
                       0
                     ]
                   }
@@ -4414,8 +4415,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        937,
-                        1057,
+                        916,
+                        1036,
                         0
                       ]
                     },
@@ -4424,8 +4425,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       172.53999999999996
                     ],
                     "tag": {
-                      "end": 1056,
-                      "start": 1035,
+                      "end": 1035,
+                      "start": 1014,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC002"
                     },
@@ -4440,8 +4441,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "__meta": [
                   {
                     "sourceRange": [
+                      1014,
                       1035,
-                      1056,
                       0
                     ]
                   }
@@ -4454,8 +4455,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
             "__meta": [
               {
                 "sourceRange": [
-                  736,
-                  770,
+                  715,
+                  749,
                   0
                 ]
               }

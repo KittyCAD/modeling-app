@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -1059,7 +1060,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
       },
       {
         "declaration": {
-          "end": 1809,
+          "end": 1788,
           "id": {
             "end": 1545,
             "name": "sketch001",
@@ -1339,52 +1340,24 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                       "name": "endAbsolute"
                     },
                     "arg": {
-                      "elements": [
+                      "arguments": [
                         {
-                          "arguments": [
-                            {
-                              "end": 1748,
-                              "start": 1747,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 1746,
-                            "name": "profileStartX",
-                            "start": 1733,
-                            "type": "Identifier"
-                          },
-                          "end": 1749,
-                          "start": 1733,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "end": 1766,
-                              "start": 1765,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 1764,
-                            "name": "profileStartY",
-                            "start": 1751,
-                            "type": "Identifier"
-                          },
-                          "end": 1767,
-                          "start": 1751,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "end": 1746,
+                          "start": 1745,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
                         }
                       ],
-                      "end": 1768,
+                      "callee": {
+                        "end": 1744,
+                        "name": "profileStart",
+                        "start": 1732,
+                        "type": "Identifier"
+                      },
+                      "end": 1747,
                       "start": 1732,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
+                      "type": "CallExpression",
+                      "type": "CallExpression"
                     }
                   }
                 ],
@@ -1394,7 +1367,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   "start": 1713,
                   "type": "Identifier"
                 },
-                "end": 1769,
+                "end": 1748,
                 "start": 1713,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -1403,20 +1376,20 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               {
                 "arguments": [
                   {
-                    "end": 1782,
-                    "start": 1781,
+                    "end": 1761,
+                    "start": 1760,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1780,
+                  "end": 1759,
                   "name": "close",
-                  "start": 1775,
+                  "start": 1754,
                   "type": "Identifier"
                 },
-                "end": 1783,
-                "start": 1775,
+                "end": 1762,
+                "start": 1754,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1429,9 +1402,9 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 1808,
+                      "end": 1787,
                       "raw": "10",
-                      "start": 1806,
+                      "start": 1785,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1442,19 +1415,19 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1796,
+                  "end": 1775,
                   "name": "extrude",
-                  "start": 1789,
+                  "start": 1768,
                   "type": "Identifier"
                 },
-                "end": 1809,
-                "start": 1789,
+                "end": 1788,
+                "start": 1768,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1809,
+            "end": 1788,
             "start": 1548,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1462,14 +1435,14 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
           "start": 1536,
           "type": "VariableDeclarator"
         },
-        "end": 1809,
+        "end": 1788,
         "kind": "const",
         "start": 1536,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 1810,
+    "end": 1789,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [

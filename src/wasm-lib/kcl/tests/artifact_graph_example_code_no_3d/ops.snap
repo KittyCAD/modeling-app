@@ -27,16 +27,16 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          455,
-          460,
+          434,
+          439,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      441,
-      461,
+      420,
+      440,
       0
     ],
     "type": "StdLibCall",

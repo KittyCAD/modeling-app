@@ -248,7 +248,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     359,
-                    415,
+                    394,
                     0
                   ]
                 },
@@ -267,8 +267,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    421,
-                    428,
+                    400,
+                    407,
                     0
                   ]
                 },
@@ -490,8 +490,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    502,
-                    527,
+                    481,
+                    506,
                     0
                   ]
                 },
@@ -510,8 +510,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    533,
-                    559,
+                    512,
+                    538,
                     0
                   ]
                 },
@@ -535,8 +535,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    565,
-                    597,
+                    544,
+                    576,
                     0
                   ]
                 },
@@ -599,8 +599,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  467,
-                  496,
+                  446,
+                  475,
                   0
                 ]
               }
@@ -611,8 +611,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  467,
-                  496,
+                  446,
+                  475,
                   0
                 ]
               }
