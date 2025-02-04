@@ -69,6 +69,7 @@ import {
   startSketchOnDefault,
 } from 'lang/modifyAst'
 import {
+  CodeRef,
   PathToNode,
   Program,
   VariableDeclaration,
@@ -767,13 +768,17 @@ export const ModelingMachineProvider = ({
               sketchPathToNode: sketchPathToNode || [],
             })
             if (err(sketchPaths)) return Promise.reject(sketchPaths)
-            const noCodeRefErr = new Error('No plane codeRef')
-            if (!('faceCodeRef' in plane)) return Promise.reject(noCodeRefErr)
-            if (!plane.faceCodeRef) return Promise.reject(noCodeRefErr)
+            let codeRef =
+              'faceCodeRef' in plane && plane.faceCodeRef
+                ? plane.faceCodeRef
+                : 'codeRef' in plane && plane.codeRef
+                ? plane.codeRef
+                : null
+            if (!codeRef) return Promise.reject(new Error('No plane codeRef'))
             return {
               sketchEntryNodePath: sketchPathToNode || [],
               sketchNodePaths: sketchPaths,
-              planeNodePath: plane.faceCodeRef.pathToNode,
+              planeNodePath: codeRef.pathToNode,
               zAxis: info.sketchDetails.zAxis || null,
               yAxis: info.sketchDetails.yAxis || null,
               origin: info.sketchDetails.origin.map(

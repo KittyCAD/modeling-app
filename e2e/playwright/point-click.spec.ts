@@ -961,12 +961,12 @@ sketch002 = startSketchOn('XZ')
     await clickOnSketch2()
     await page.waitForTimeout(500)
     await cmdBar.progressCmdBar()
+    await toolbar.openPane('code')
     await page.waitForTimeout(500)
   })
 
   await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
     await scene.expectPixelColor([135, 64, 73], testPoint, 15)
-    await toolbar.openPane('code')
     await editor.expectEditor.toContain(sweepDeclaration)
     await editor.expectState({
       diagnostics: [],
