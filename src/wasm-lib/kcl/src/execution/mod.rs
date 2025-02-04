@@ -4240,7 +4240,7 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
 |> xLine(305.11, %, $seg01)
 |> yLine(-291.85, %)
 |> xLine(-segLen(seg01), %)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> line(endAbsolute = profileStart(%))
 |> close()
 |> extrude(length = 40.14)
 |> shell({
@@ -4269,7 +4269,7 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
 |> xLine(305.11, %, $seg01)
 |> yLine(-291.85, %)
 |> xLine(-segLen(seg01), %)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> line(endAbsolute = profileStart(%))
 |> close()
 |> extrude(length = 40.14)
 |> shell({

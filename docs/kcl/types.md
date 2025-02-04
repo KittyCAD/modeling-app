@@ -97,7 +97,7 @@ startSketchOn('XZ')
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> lineTo(profileStart(%), %)
   |> close(%)
 ```
 
@@ -130,7 +130,7 @@ fn rect(origin) {
          segAng(rectangleSegmentA001),
          -segLen(rectangleSegmentA001)
        ], %, $rectangleSegmentC001)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> lineTo(profileStart(%), %)
     |> close(%)
 }
 
@@ -158,7 +158,7 @@ fn rect(origin) {
          segAng(rectangleSegmentA001),
          -segLen(rectangleSegmentA001)
        ], %, $rectangleSegmentC001)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> lineTo(profileStart(%), %)
     |> close(%)
 }
 

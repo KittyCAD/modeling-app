@@ -9,7 +9,7 @@ sketch003 = startSketchOn('YZ')
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 sketch004 = startSketchOn('-XZ')
   |> startProfileAt([0, 14.36], %)

@@ -228,7 +228,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA002),
          -segLen(rectangleSegmentA002)
        ], %, $rectangleSegmentC001)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()`,
     })
 
@@ -259,7 +259,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA003),
          -segLen(rectangleSegmentA003)
        ], %, $rectangleSegmentC002)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()`,
     })
     await sketchOnAChamfer({
@@ -284,7 +284,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA003),
          -segLen(rectangleSegmentA003)
        ], %, $rectangleSegmentC002)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()`,
     })
     /// last one
@@ -308,7 +308,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA005),
          -segLen(rectangleSegmentA005)
        ], %, $rectangleSegmentC004)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()`,
     })
 
@@ -326,7 +326,7 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA001),
            -segLen(rectangleSegmentA001)
          ], %, $yo)
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+      |> line(endAbsolute = profileStart(%), tag = $seg02)
       |> close()
     extrude001 = extrude(sketch001, length = 100)
       |> chamfer({
@@ -353,7 +353,7 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA005),
            -segLen(rectangleSegmentA005)
          ], %, $rectangleSegmentC004)
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> line(endAbsolute = profileStart(%))
       |> close()
     sketch004 = startSketchOn(extrude001, seg05)
       |> startProfileAt([82.57,322.96], %)
@@ -366,7 +366,7 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA004),
            -segLen(rectangleSegmentA004)
          ], %, $rectangleSegmentC003)
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> line(endAbsolute = profileStart(%))
       |> close()
     sketch003 = startSketchOn(extrude001, seg04)
       |> startProfileAt([-209.64,255.28], %)
@@ -379,7 +379,7 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA003),
            -segLen(rectangleSegmentA003)
          ], %, $rectangleSegmentC002)
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> line(endAbsolute = profileStart(%))
       |> close()
     sketch002 = startSketchOn(extrude001, seg03)
       |> startProfileAt([205.96,254.59], %)
@@ -392,7 +392,7 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA002),
            -segLen(rectangleSegmentA002)
          ], %, $rectangleSegmentC001)
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> line(endAbsolute = profileStart(%))
       |> close()
     `,
         { shouldNormalise: true }
@@ -447,7 +447,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA002),
          -segLen(rectangleSegmentA002)
        ], %, $rectangleSegmentC001)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()`,
     })
     await editor.expectEditor.toContain(
@@ -462,7 +462,7 @@ test.describe('verify sketch on chamfer works', () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $yo)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> line(endAbsolute = profileStart(%), tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
 chamf = chamfer({
@@ -488,7 +488,7 @@ sketch002 = startSketchOn(extrude001, seg03)
        segAng(rectangleSegmentA002),
        -segLen(rectangleSegmentA002)
      ], %, $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 `,
       { shouldNormalise: true }
@@ -1098,7 +1098,7 @@ test(`Fillet point-and-click`, async ({
   |> line(end = [0, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -12])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
@@ -1330,7 +1330,7 @@ test(`Fillet point-and-click delete`, async ({
   |> line(end = [0, 12])
   |> line(end = [24, 0], tag = $seg02)
   |> line(end = [0, -12])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> line(endAbsolute = profileStart(%), tag = $seg01)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
   |> fillet({ radius = 5, tags = [seg01] }, %) // fillet01
@@ -1474,7 +1474,7 @@ test(`Chamfer point-and-click`, async ({
   |> line(end = [0, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -12])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
@@ -1702,7 +1702,7 @@ test(`Chamfer point-and-click delete`, async ({
   |> line(end = [0, 12])
   |> line(end = [24, 0], tag = $seg02)
   |> line(end = [0, -12])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> line(endAbsolute = profileStart(%), tag = $seg01)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
   |> chamfer({ length = 5, tags = [seg01] }, %) // chamfer01
@@ -1945,7 +1945,7 @@ test('Shell point-and-click wall', async ({
   |> xLine(40, %)
   |> yLine(-60, %)
   |> xLine(-40, %)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 extrude001 = extrude(sketch001, length = 40)
   `
@@ -2189,7 +2189,7 @@ sketch001 = startSketchOn('XZ')
 segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
 ], %, $rectangleSegmentC001)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> line(endAbsolute = profileStart(%))
 |> close()
 extrude001 = extrude(sketch001, length = 200)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
@@ -2203,7 +2203,7 @@ segAng(rectangleSegmentA002) - 90,
 segAng(rectangleSegmentA002),
 -segLen(rectangleSegmentA002)
 ], %, $rectangleSegmentC002)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> line(endAbsolute = profileStart(%))
 |> close()
 `
 
@@ -2248,7 +2248,7 @@ segAng(rectangleSegmentA001) - 90,
 segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
 ], %, $rectangleSegmentC001)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> line(endAbsolute = profileStart(%))
 |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
@@ -2298,7 +2298,7 @@ radius = 8.69
         segAng(rectangleSegmentA001),
           -segLen(rectangleSegmentA001)
       ], %, $rectangleSegmentC001)
-      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> line(endAbsolute = profileStart(%))
       |> close()
     extrude001 = extrude(sketch001, length = 5)
     sketch003 = startSketchOn(extrude001, 'START')

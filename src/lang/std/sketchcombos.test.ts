@@ -144,14 +144,14 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
   |> startProfileAt([0, 0], %)
   |> line(end = [5, 5])
   |> line(end = [-2, 5])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()`
 
     const expectedModifiedScript = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line(end = [5, 5], tag = $seg01)
   |> angledLine([112, segLen(seg01)], %)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 `
 

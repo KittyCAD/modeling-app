@@ -56,7 +56,7 @@ test.describe('Command bar tests', () => {
     |> line(end = [0, 10])
     |> line(end = [10, 0])
     |> line(end = [0, -10])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()
   extrude001 = extrude(sketch001, length = -10)`
       )

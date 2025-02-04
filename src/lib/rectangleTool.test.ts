@@ -29,7 +29,7 @@ describe('library rectangleTool helper functions', () => {
 segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
 ], %, $rectangleSegmentC001)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> line(endAbsolute = profileStart(%))
 |> close()
 `
       // Create ast
@@ -82,7 +82,7 @@ segAng(rectangleSegmentA001),
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 `
       const recasted = recast(ast)

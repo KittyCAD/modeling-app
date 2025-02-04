@@ -754,7 +754,7 @@ test.describe('Sketch tests', () => {
     |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
     |> xLine(${roundOff(scale * 139.19)}, %)
     |> yLine(-${roundOff(scale * 139.2)}, %)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()`
 
       await expect(
@@ -854,7 +854,7 @@ test.describe('Sketch tests', () => {
     |> line(end = [1.32, 0.38])
     |> line(end = [1.02, -1.32], tag = $seg01)
     |> line(end = [-1.01, -0.77])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
   |> close()
   `
       )
@@ -912,7 +912,7 @@ test.describe('Sketch tests', () => {
     |> line(end = [1.32, 0.38])
     |> line(end = [1.02, -1.32], tag = $seg01)
     |> line(end = [-1.01, -0.77])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()
   extrude001 = extrude(sketch001, length = 5)
   `
@@ -955,7 +955,7 @@ test.describe('Sketch tests', () => {
     |> line(end = [1.32, 0.38])
     |> line(end = [1.02, -1.32], tag = $seg01)
     |> line(end = [-1.01, -0.77])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()
   extrude001 = extrude(sketch001, length = 5)
   sketch002 = startSketchOn(extrude001, 'END')

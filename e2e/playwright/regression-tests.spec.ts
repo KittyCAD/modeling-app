@@ -23,7 +23,7 @@ test.describe('Regression tests', () => {
   sketch001 = startSketchAt([-0, -0])
     |> line(end = [0, 0])
     |> line(end = [-4.84, -5.29])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()`
       )
     })
@@ -67,7 +67,7 @@ test.describe('Regression tests', () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 extrude001 = extrude(sketch001, length = 50)
 `

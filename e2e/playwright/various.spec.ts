@@ -522,7 +522,7 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
   |> startProfileAt([-12.94, 6.6], %)
   |> line(end = [2.45, -0.2])
   |> line(end = [-2.6, -1.25])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 `)
   )
@@ -560,7 +560,7 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
 |> startProfileAt([-12.83, 6.7], %)
 |> line(end = [${[2.28, 2.35]}, -${0.07}])
 |> line(end = [-3.05, -1.47])
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> line(endAbsolute = profileStart(%))
 |> close()`
 
   await expect(page.locator('.cm-content')).toHaveText(result.regExp)

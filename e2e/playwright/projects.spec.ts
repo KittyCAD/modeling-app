@@ -1464,7 +1464,7 @@ test.fixme(
   |> line(end = [324.07, 27.199], tag = $seg01)
   |> line(end = [118.328, -291.754])
   |> line(end = [-180.04, -202.08])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 extrude001 = extrude(sketch001, length = 200)`)
     await page.waitForTimeout(800)

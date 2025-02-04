@@ -162,7 +162,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   |> startProfileAt([10, 0], %)
 ///   |> line(end = [5, -5])
 ///   |> line(end = [5, 5])
-///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> line(endAbsolute = profileStart(%))
 ///   |> close()
 ///
 /// part001 = revolve({

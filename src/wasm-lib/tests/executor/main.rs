@@ -1372,7 +1372,7 @@ profile001 = plane001
   |> line(end = [235.72, -8.16])
   |> line(end = [13.27, -253.07])
   |> line(end = [-247.97, -19.39])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 
 profile002 = plane001
@@ -1380,7 +1380,7 @@ profile002 = plane001
   |> line(end = [247.96, -4.03])
   |> line(end = [-17.26, -116.79])
   |> line(end = [-235.87, 12.66])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 
 sketch001 = [profile001, profile002]
@@ -1401,7 +1401,7 @@ sketch001 = plane001
   |> line(end = [235.72, -8.16])
   |> line(end = [13.27, -253.07])
   |> line(end = [-247.97, -19.39])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
   |> extrude(length = 10)
 
@@ -1410,7 +1410,7 @@ sketch002 = plane001
   |> line(end = [247.96, -4.03])
   |> line(end = [-17.26, -116.79])
   |> line(end = [-235.87, 12.66])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
   |> extrude(length = 10)
 
@@ -1531,7 +1531,7 @@ async fn kcl_test_shell_with_tag() {
   |> xLine(305.11, %, $seg01)
   |> yLine(-291.85, %)
   |> xLine(-segLen(seg01), %)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
   |> extrude(length = 40.14)
   |> shell({
@@ -1995,7 +1995,7 @@ async fn kcl_test_error_no_auth_websocket() {
   |> xLine(305.11, %, $seg01)
   |> yLine(-291.85, %)
   |> xLine(-segLen(seg01), %)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
   |> extrude(length = 40.14)
   |> shell({

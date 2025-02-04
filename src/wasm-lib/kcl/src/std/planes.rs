@@ -70,7 +70,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> line(endAbsolute = profileStart(%))
 ///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('XY', 150))
@@ -86,7 +86,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> line(endAbsolute = profileStart(%))
 ///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('XZ', 150))
@@ -102,7 +102,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> line(endAbsolute = profileStart(%))
 ///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('YZ', 150))
@@ -118,7 +118,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> line(endAbsolute = profileStart(%))
 ///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('-XZ', -150))

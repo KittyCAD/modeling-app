@@ -81,7 +81,7 @@ sketch001 = startSketchOn(part001, chamfer1)
   |> line(end = [2, 0])
   |> line(end = [0, 2])
   |> line(end = [-2, 0])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
   |> extrude(length = 10)
 ```

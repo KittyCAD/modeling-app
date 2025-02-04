@@ -22,7 +22,7 @@ test.describe('Code pane and errors', () => {
     |> startProfileAt([0, 0], %)
     |> line(end = [10, 0])
     |> line(end = [-5, 10])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()
   extrude001 = extrude(sketch001, length = 5)`
       )

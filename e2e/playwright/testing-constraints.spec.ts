@@ -92,7 +92,7 @@ test.describe('Testing constraints', () => {
     |> xLine(-385.34, %, $seg_what)
     |> yLine(-170.06, %)
     |> xLine(segLen(seg_what), %)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+    |> line(endAbsolute = profileStart(%))`
       )
     })
     const u = await getUtils(page)
@@ -158,7 +158,7 @@ test.describe('Testing constraints', () => {
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(endAbsolute = profileStart(%))`
           )
 
           const isChecked = await createNewVariableCheckbox.isChecked()
@@ -292,7 +292,7 @@ test.describe('Testing constraints', () => {
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(endAbsolute = profileStart(%))`
           )
         })
         const u = await getUtils(page)
@@ -402,7 +402,7 @@ test.describe('Testing constraints', () => {
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(endAbsolute = profileStart(%))`
           )
         })
         const u = await getUtils(page)
@@ -517,7 +517,7 @@ test.describe('Testing constraints', () => {
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(endAbsolute = profileStart(%))`
           )
         })
         const u = await getUtils(page)
@@ -619,7 +619,7 @@ test.describe('Testing constraints', () => {
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(endAbsolute = profileStart(%))`
           )
         })
         const u = await getUtils(page)
@@ -707,7 +707,7 @@ part002 = startSketchOn('XZ')
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
   |> xLine(segLen(seg_what), %)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+  |> line(endAbsolute = profileStart(%))`
           )
         })
         const u = await getUtils(page)
@@ -785,7 +785,7 @@ part002 = startSketchOn('XZ')
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(endAbsolute = profileStart(%))`
           )
         })
         const u = await getUtils(page)
@@ -887,7 +887,7 @@ part002 = startSketchOn('XZ')
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(endAbsolute = profileStart(%))`
           )
         })
         const u = await getUtils(page)
@@ -968,7 +968,7 @@ part002 = startSketchOn('XZ')
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(endAbsolute = profileStart(%))`
           )
         })
         const u = await getUtils(page)

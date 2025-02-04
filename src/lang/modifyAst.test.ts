@@ -749,7 +749,7 @@ sketch003 = startSketchOn('XZ')
   |> startProfileAt([3.82, 13.6], %)
   |> line(end = [-2.94, 2.7])
   |> line(end = [7.7, 0.16])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()`,
         codeAfter: `myVar = 5\n`,
         lineOfInterest: 'line(end = [-2.94, 2.7])',
@@ -794,7 +794,7 @@ sketch001 = startSketchOn('XZ')
   |> line(end = [-11.18, -2.15])
   |> line(end = [5.41, -9.61])
   |> line(end = [-8.54, -2.51])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 const extrude001 = extrude(sketch001, length = 5)
 sketch002 = startSketchOn(extrude001, seg01)
@@ -804,7 +804,7 @@ sketch002 = startSketchOn(extrude001, seg01)
   |> angledLine([-86, segLen(seg02)], %)
   |> line(end = [-3.97, -0.53])
   |> line(end = [0.3, 0.84])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()`,
         codeAfter: `myVar = 5
 sketch001 = startSketchOn('XZ')
@@ -815,7 +815,7 @@ sketch001 = startSketchOn('XZ')
   |> line(end = [-11.18, -2.15])
   |> line(end = [5.41, -9.61])
   |> line(end = [-8.54, -2.51])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 sketch002 = startSketchOn({
        plane = {
@@ -831,7 +831,7 @@ sketch002 = startSketchOn({
   |> angledLine([-86, segLen(seg02)], %)
   |> line(end = [-3.97, -0.53])
   |> line(end = [0.3, 0.84])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 `,
         lineOfInterest: 'line(end = [-11.18, -2.15])',
@@ -850,7 +850,7 @@ sketch001 = startSketchOn('XZ')
   |> line(end = [-11.18, -2.15])
   |> line(end = [5.41, -9.61])
   |> line(end = [-8.54, -2.51])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 const extrude001 = extrude(sketch001, length = 5)
 sketch002 = startSketchOn(extrude001, seg01)
@@ -860,7 +860,7 @@ sketch002 = startSketchOn(extrude001, seg01)
   |> angledLine([-86, segLen(seg02)], %)
   |> line(end = [-3.97, -0.53])
   |> line(end = [0.3, 0.84])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()`,
         codeAfter: `myVar = 5
 sketch001 = startSketchOn('XZ')
@@ -871,7 +871,7 @@ sketch001 = startSketchOn('XZ')
   |> line(end = [-11.18, -2.15])
   |> line(end = [5.41, -9.61])
   |> line(end = [-8.54, -2.51])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 sketch002 = startSketchOn({
        plane = {
@@ -887,7 +887,7 @@ sketch002 = startSketchOn({
   |> angledLine([-86, segLen(seg02)], %)
   |> line(end = [-3.97, -0.53])
   |> line(end = [0.3, 0.84])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = profileStart(%))
   |> close()
 `,
         lineOfInterest: 'startProfileAt([4.46, 5.12], %, $tag)',

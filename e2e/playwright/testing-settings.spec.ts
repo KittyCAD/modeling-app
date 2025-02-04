@@ -717,7 +717,7 @@ test.describe('Testing settings', () => {
     |> line(end = [5, 0])
     |> line(end = [0, 5])
     |> line(end = [-5, 0])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> line(endAbsolute = profileStart(%))
     |> close()
   extrude001 = extrude(sketch001, length = 5)
   `
