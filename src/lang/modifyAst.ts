@@ -682,10 +682,9 @@ export function addHelix({
   length: Expr
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
-  const newHelixName = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
-
-  const newPlane = createVariableDeclaration(
-    newHelixName,
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
+  const variable = createVariableDeclaration(
+    name,
     createCallExpressionStdLib('helix', [
       createObjectExpression({
         revolutions,
@@ -698,7 +697,8 @@ export function addHelix({
     ])
   )
 
-  modifiedAst.body.push(newPlane)
+  // TODO: figure out smart insertion than just appending at the end
+  modifiedAst.body.push(variable)
   const pathToNode: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],
@@ -707,6 +707,7 @@ export function addHelix({
     ['arguments', 'CallExpression'],
     [0, 'index'],
   ]
+
   return {
     modifiedAst,
     pathToNode,

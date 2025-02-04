@@ -817,9 +817,7 @@ test('Helix point-and-click', async ({
     await editor.expectEditor.toContain(expectedOutput)
     await editor.expectState({
       diagnostics: [],
-      activeLines: [
-        '})',
-      ],
+      activeLines: ['})'],
       highlightedCode: '',
     })
     // Red plane is now gone, white helix is there
