@@ -242,8 +242,13 @@ description: Program memory after executing tan_arc_x_line.kcl
           ]
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

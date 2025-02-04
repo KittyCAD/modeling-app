@@ -186,8 +186,13 @@ description: Program memory after executing property_of_object.kcl
           ]
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

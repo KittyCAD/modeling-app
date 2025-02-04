@@ -160,8 +160,13 @@ description: Program memory after executing array_elem_pop.kcl
           ]
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

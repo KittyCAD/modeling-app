@@ -185,8 +185,13 @@ description: Program memory after executing computed_var.kcl
           ]
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

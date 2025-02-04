@@ -883,8 +883,13 @@ description: Program memory after executing sketch_on_face.kcl
           }
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

@@ -1811,8 +1811,13 @@ description: Program memory after executing poop_chute.kcl
           ]
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

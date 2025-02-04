@@ -4492,8 +4492,13 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
           }
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

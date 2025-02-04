@@ -96,36 +96,10 @@ description: Program memory after executing kw_fn_with_defaults.kcl
             "start": 12,
             "type": "FunctionExpression"
           },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  }
-                },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0
-          },
+          "memory": [
+            0,
+            1
+          ],
           "__meta": [
             {
               "sourceRange": [
@@ -170,8 +144,129 @@ description: Program memory after executing kw_fn_with_defaults.kcl
           ]
         }
       },
+      "snapshots": [
+        {
+          "parent_snapshot": null,
+          "data": {
+            "increment": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "twentyOne": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "two": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            }
+          }
+        }
+      ],
       "parent": null
+    },
+    {
+      "bindings": {
+        "__return": {
+          "type": "Number",
+          "value": 2.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                63,
+                64,
+                0
+              ]
+            }
+          ]
+        },
+        "by": {
+          "type": "Number",
+          "value": 1.0,
+          "__meta": []
+        },
+        "x": {
+          "type": "Number",
+          "value": 1.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                63,
+                64,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "snapshots": [],
+      "parent": [
+        0,
+        1
+      ]
+    },
+    {
+      "bindings": {
+        "__return": {
+          "type": "Number",
+          "value": 21.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                88,
+                89,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                96,
+                98,
+                0
+              ]
+            }
+          ]
+        },
+        "by": {
+          "type": "Number",
+          "value": 20.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                96,
+                98,
+                0
+              ]
+            }
+          ]
+        },
+        "x": {
+          "type": "Number",
+          "value": 1.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                88,
+                89,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "snapshots": [],
+      "parent": [
+        0,
+        1
+      ]
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

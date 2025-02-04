@@ -87,132 +87,10 @@ description: Program memory after executing kw_fn.kcl
             "start": 43,
             "type": "FunctionExpression"
           },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  },
-                  "increment": {
-                    "type": "Function",
-                    "expression": {
-                      "body": {
-                        "body": [
-                          {
-                            "argument": {
-                              "end": 33,
-                              "left": {
-                                "end": 29,
-                                "name": "x",
-                                "start": 28,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "operator": "+",
-                              "right": {
-                                "end": 33,
-                                "raw": "1",
-                                "start": 32,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 1.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "start": 28,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            "end": 33,
-                            "start": 21,
-                            "type": "ReturnStatement",
-                            "type": "ReturnStatement"
-                          }
-                        ],
-                        "end": 35,
-                        "start": 17
-                      },
-                      "end": 35,
-                      "params": [
-                        {
-                          "type": "Parameter",
-                          "identifier": {
-                            "end": 15,
-                            "name": "x",
-                            "start": 14,
-                            "type": "Identifier"
-                          },
-                          "labeled": false
-                        }
-                      ],
-                      "start": 12,
-                      "type": "FunctionExpression"
-                    },
-                    "memory": {
-                      "environments": [
-                        {
-                          "bindings": {
-                            "HALF_TURN": {
-                              "type": "Number",
-                              "value": 180.0,
-                              "__meta": []
-                            },
-                            "QUARTER_TURN": {
-                              "type": "Number",
-                              "value": 90.0,
-                              "__meta": []
-                            },
-                            "THREE_QUARTER_TURN": {
-                              "type": "Number",
-                              "value": 270.0,
-                              "__meta": []
-                            },
-                            "ZERO": {
-                              "type": "Number",
-                              "value": 0.0,
-                              "__meta": []
-                            }
-                          },
-                          "parent": null
-                        }
-                      ],
-                      "currentEnv": 0
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          12,
-                          35,
-                          0
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0
-          },
+          "memory": [
+            0,
+            2
+          ],
           "__meta": [
             {
               "sourceRange": [
@@ -279,36 +157,10 @@ description: Program memory after executing kw_fn.kcl
             "start": 12,
             "type": "FunctionExpression"
           },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  }
-                },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0
-          },
+          "memory": [
+            0,
+            1
+          ],
           "__meta": [
             {
               "sourceRange": [
@@ -360,8 +212,141 @@ description: Program memory after executing kw_fn.kcl
           ]
         }
       },
+      "snapshots": [
+        {
+          "parent_snapshot": null,
+          "data": {
+            "increment": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            }
+          }
+        },
+        {
+          "parent_snapshot": null,
+          "data": {
+            "add": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "three": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "two": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            }
+          }
+        }
+      ],
       "parent": null
+    },
+    {
+      "bindings": {
+        "__return": {
+          "type": "Number",
+          "value": 2.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                95,
+                96,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                32,
+                33,
+                0
+              ]
+            }
+          ]
+        },
+        "x": {
+          "type": "Number",
+          "value": 1.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                95,
+                96,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "snapshots": [],
+      "parent": [
+        0,
+        1
+      ]
+    },
+    {
+      "bindings": {
+        "__return": {
+          "type": "Number",
+          "value": 3.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                110,
+                111,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                121,
+                122,
+                0
+              ]
+            }
+          ]
+        },
+        "delta": {
+          "type": "Number",
+          "value": 2.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                121,
+                122,
+                0
+              ]
+            }
+          ]
+        },
+        "x": {
+          "type": "Number",
+          "value": 1.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                110,
+                111,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "snapshots": [],
+      "parent": [
+        0,
+        2
+      ]
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

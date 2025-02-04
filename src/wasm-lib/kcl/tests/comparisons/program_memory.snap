@@ -27,8 +27,13 @@ description: Program memory after executing comparisons.kcl
           "__meta": []
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

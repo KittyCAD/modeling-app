@@ -1599,8 +1599,13 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
           ]
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

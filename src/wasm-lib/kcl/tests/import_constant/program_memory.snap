@@ -40,8 +40,52 @@ description: Program memory after executing import_constant.kcl
           ]
         }
       },
+      "snapshots": [],
+      "parent": null
+    },
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "Number",
+          "value": 180.0,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "Number",
+          "value": 270.0,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "Number",
+          "value": 0.0,
+          "__meta": []
+        },
+        "three": {
+          "type": "Number",
+          "value": 3.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                15,
+                16,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

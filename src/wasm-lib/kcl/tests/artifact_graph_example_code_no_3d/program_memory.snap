@@ -625,8 +625,13 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
           }
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

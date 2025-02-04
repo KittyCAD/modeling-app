@@ -1242,7 +1242,7 @@ description: Program memory after executing sketch_on_face_start.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     86,
-                    105,
+                    108,
                     0
                   ]
                 },
@@ -1261,8 +1261,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    113,
-                    132,
+                    116,
+                    138,
                     0
                   ]
                 },
@@ -1281,8 +1281,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    140,
-                    160,
+                    146,
+                    169,
                     0
                   ]
                 },
@@ -1301,6 +1301,7 @@ description: Program memory after executing sketch_on_face_start.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -1346,6 +1347,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1369,8 +1372,8 @@ description: Program memory after executing sketch_on_face_start.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    192,
-                    193,
+                    201,
+                    202,
                     0
                   ]
                 }
@@ -1382,8 +1385,8 @@ description: Program memory after executing sketch_on_face_start.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    195,
-                    196,
+                    204,
+                    205,
                     0
                   ]
                 }
@@ -1393,8 +1396,8 @@ description: Program memory after executing sketch_on_face_start.kcl
           "__meta": [
             {
               "sourceRange": [
-                191,
-                197,
+                200,
+                206,
                 0
               ]
             }
@@ -1406,8 +1409,8 @@ description: Program memory after executing sketch_on_face_start.kcl
           "__meta": [
             {
               "sourceRange": [
-                199,
-                201,
+                208,
+                210,
                 0
               ]
             }
@@ -1424,7 +1427,7 @@ description: Program memory after executing sketch_on_face_start.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     86,
-                    105,
+                    108,
                     0
                   ]
                 },
@@ -1443,8 +1446,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    113,
-                    132,
+                    116,
+                    138,
                     0
                   ]
                 },
@@ -1463,8 +1466,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    140,
-                    160,
+                    146,
+                    169,
                     0
                   ]
                 },
@@ -1483,6 +1486,7 @@ description: Program memory after executing sketch_on_face_start.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -1528,6 +1532,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
