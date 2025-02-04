@@ -791,13 +791,8 @@ export class SceneEntities {
         // Snapping logic for the profile start handle
         if (intersectsProfileStart) {
           const lastSegment = sketch.paths.slice(-1)[0]
-          const originCoords = createArrayExpression([
-            createCallExpressionStdLib('profileStartX', [
-              createPipeSubstitution(),
-            ]),
-            createCallExpressionStdLib('profileStartY', [
-              createPipeSubstitution(),
-            ]),
+          const originCoords = createCallExpressionStdLib('profileStart', [
+            createPipeSubstitution(),
           ])
           modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,

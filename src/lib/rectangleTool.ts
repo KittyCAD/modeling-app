@@ -73,10 +73,7 @@ export const getRectangleCallExpressions = (
   createCallExpressionStdLibKw('line', null, [
     createLabeledArg(
       'endAbsolute',
-      createArrayExpression([
-        createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
-        createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),
-      ])
+      createCallExpressionStdLib('profileStart', [createPipeSubstitution()])
     ),
   ]), // close the rectangle
   createCallExpressionStdLibKw('close', null, []),
