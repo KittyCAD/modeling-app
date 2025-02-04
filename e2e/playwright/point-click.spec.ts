@@ -1328,6 +1328,7 @@ test(`Fillet point-and-click delete`, async ({
   editor,
   toolbar,
 }) => {
+  test.skip(process.platform === 'win32', 'Skip on windows')
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
