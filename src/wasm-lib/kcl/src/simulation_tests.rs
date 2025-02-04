@@ -4,6 +4,8 @@ use insta::rounded_redaction;
 
 use crate::{
     errors::KclError,
+    exec::ArtifactCommand,
+    execution::{ArtifactGraph, Operation},
     parsing::ast::types::{Node, Program},
     source_range::ModuleId,
 };
@@ -87,11 +89,16 @@ async fn execute(test_name: &str, render_to_png: bool) {
     let exec_res = crate::test_server::execute_and_snapshot_ast(
         ast.into(),
         crate::settings::types::UnitLength::Mm,
-        Some(Path::new("tests").join(test_name)),
+        Some(Path::new("tests").join(test_name).join("input.kcl").to_owned()),
     )
     .await;
     match exec_res {
         Ok((exec_state, png)) => {
+            let fail_path_str = format!("tests/{test_name}/execution_error.snap");
+            let fail_path = Path::new(&fail_path_str);
+            if std::fs::exists(fail_path).unwrap() {
+                panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl/{fail_path_str}")
+            }
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
@@ -104,38 +111,17 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     ".environments[].**[].z[]" => rounded_redaction(4),
                 });
             });
-            assert_snapshot(test_name, "Operations executed", || {
-                insta::assert_json_snapshot!("ops", exec_state.mod_local.operations);
-            });
-            assert_snapshot(test_name, "Artifact commands", || {
-                insta::assert_json_snapshot!("artifact_commands", exec_state.global.artifact_commands, {
-                    "[].command.segment.*.x" => rounded_redaction(4),
-                    "[].command.segment.*.y" => rounded_redaction(4),
-                    "[].command.segment.*.z" => rounded_redaction(4),
-                });
-            });
-            assert_snapshot(test_name, "Artifact graph flowchart", || {
-                let flowchart = exec_state
-                    .global
-                    .artifact_graph
-                    .to_mermaid_flowchart()
-                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
-                // Change the snapshot suffix so that it is rendered as a
-                // Markdown file in GitHub.
-                insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
-            });
-            assert_snapshot(test_name, "Artifact graph mind map", || {
-                let mind_map = exec_state
-                    .global
-                    .artifact_graph
-                    .to_mermaid_mind_map()
-                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
-                // Change the snapshot suffix so that it is rendered as a
-                // Markdown file in GitHub.
-                insta::assert_binary_snapshot!("artifact_graph_mind_map.md", mind_map.as_bytes().to_owned());
-            });
+            assert_common_snapshots(
+                test_name,
+                exec_state.mod_local.operations,
+                exec_state.global.artifact_commands,
+                exec_state.global.artifact_graph,
+            );
         }
         Err(e) => {
+            let ok_path_str = format!("tests/{test_name}/program_memory.snap");
+            let ok_path = Path::new(&ok_path_str);
+            let previously_passed = std::fs::exists(ok_path).unwrap();
             match e.error {
                 crate::errors::ExecError::Kcl(error) => {
                     // Snapshot the KCL error with a fancy graphical report.
@@ -147,23 +133,22 @@ async fn execute(test_name: &str, render_to_png: bool) {
                         kcl_source: read("input.kcl", test_name),
                     };
                     let report = miette::Report::new(report);
+                    if previously_passed {
+                        eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl/{ok_path_str} and other associated passing artifacts");
+                        panic!("{report:?}");
+                    }
                     let report = format!("{:?}", report);
 
                     assert_snapshot(test_name, "Error from executing", || {
                         insta::assert_snapshot!("execution_error", report);
                     });
 
-                    assert_snapshot(test_name, "Operations executed", || {
-                        insta::assert_json_snapshot!("ops", error.operations);
-                    });
-
-                    assert_snapshot(test_name, "Artifact commands", || {
-                        insta::assert_json_snapshot!("artifact_commands", error.artifact_commands, {
-                            "[].command.segment.*.x" => rounded_redaction(4),
-                            "[].command.segment.*.y" => rounded_redaction(4),
-                            "[].command.segment.*.z" => rounded_redaction(4),
-                        });
-                    });
+                    assert_common_snapshots(
+                        test_name,
+                        error.operations,
+                        error.artifact_commands,
+                        error.artifact_graph,
+                    );
                 }
                 e => {
                     // These kinds of errors aren't expected to occur. We don't
@@ -176,8 +161,65 @@ async fn execute(test_name: &str, render_to_png: bool) {
     }
 }
 
+/// Assert snapshots that should happen both when KCL execution succeeds and
+/// when it results in an error.
+fn assert_common_snapshots(
+    test_name: &str,
+    operations: Vec<Operation>,
+    artifact_commands: Vec<ArtifactCommand>,
+    artifact_graph: ArtifactGraph,
+) {
+    assert_snapshot(test_name, "Operations executed", || {
+        insta::assert_json_snapshot!("ops", operations);
+    });
+    assert_snapshot(test_name, "Artifact commands", || {
+        insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
+            "[].command.segment.*.x" => rounded_redaction(4),
+            "[].command.segment.*.y" => rounded_redaction(4),
+            "[].command.segment.*.z" => rounded_redaction(4),
+        });
+    });
+    assert_snapshot(test_name, "Artifact graph flowchart", || {
+        let flowchart = artifact_graph
+            .to_mermaid_flowchart()
+            .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
+        // Change the snapshot suffix so that it is rendered as a Markdown file
+        // in GitHub.
+        insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
+    });
+    assert_snapshot(test_name, "Artifact graph mind map", || {
+        let mind_map = artifact_graph
+            .to_mermaid_mind_map()
+            .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
+        // Change the snapshot suffix so that it is rendered as a Markdown file
+        // in GitHub.
+        insta::assert_binary_snapshot!("artifact_graph_mind_map.md", mind_map.as_bytes().to_owned());
+    });
+}
+
 mod cube {
     const TEST_NAME: &str = "cube";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod cube_with_error {
+    const TEST_NAME: &str = "cube_with_error";
 
     /// Test parsing KCL.
     #[test]
@@ -767,6 +809,27 @@ mod import_cycle1 {
         super::execute(TEST_NAME, false).await
     }
 }
+mod import_function_not_sketch {
+    const TEST_NAME: &str = "import_function_not_sketch";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod import_constant {
     const TEST_NAME: &str = "import_constant";
 
@@ -853,6 +916,27 @@ mod import_whole {
 }
 mod import_side_effect {
     const TEST_NAME: &str = "import_side_effect";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_foreign {
+    const TEST_NAME: &str = "import_foreign";
 
     /// Test parsing KCL.
     #[test]

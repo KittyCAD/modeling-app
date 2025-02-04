@@ -27,23 +27,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          193,
-          194,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          196,
-          197,
+          217,
+          218,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      185,
-      198,
+      200,
+      219,
       0
     ],
     "type": "StdLibCall",
@@ -53,23 +46,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          224,
-          231,
+          245,
+          252,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          233,
-          237,
+          254,
+          258,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      210,
-      238,
+      231,
+      259,
       0
     ],
     "type": "StdLibCall",
@@ -79,23 +72,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          364,
-          365,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          367,
-          368,
+          403,
+          404,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      356,
-      369,
+      386,
+      405,
       0
     ],
     "type": "StdLibCall",

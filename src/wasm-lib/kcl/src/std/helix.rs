@@ -67,7 +67,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a helix around an edge.
 /// helper001 = startSketchOn('XZ')
 ///  |> startProfileAt([0, 0], %)
-///  |> line([0, 10], %, $edge001)
+///  |> line(end = [0, 10], tag = $edge001)
 ///
 /// helixPath = helix({
 ///     angleStart = 0,
@@ -140,7 +140,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
-                    radius: data.radius,
+                    radius: LengthUnit(data.radius),
                     is_clockwise: !data.ccw,
                     length: LengthUnit(length),
                     revolutions: data.revolutions,
@@ -157,7 +157,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
-                    radius: data.radius,
+                    radius: LengthUnit(data.radius),
                     is_clockwise: !data.ccw,
                     length: data.length.map(LengthUnit),
                     revolutions: data.revolutions,
@@ -203,7 +203,7 @@ pub async fn helix_revolutions(exec_state: &mut ExecState, args: Args) -> Result
 /// ```no_run
 /// part001 = startSketchOn('XY')
 ///   |> circle({ center: [5, 5], radius: 10 }, %)
-///   |> extrude(10, %)
+///   |> extrude(length = 10)
 ///   |> helixRevolutions({
 ///     angleStart = 0,
 ///     ccw = true,

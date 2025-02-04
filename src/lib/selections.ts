@@ -18,11 +18,8 @@ import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
-import {
-  getNodeFromPath,
-  getNodePathFromSourceRange,
-  isSingleCursorInPipe,
-} from 'lang/queryAst'
+import { getNodeFromPath, isSingleCursorInPipe } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { CommandArgument } from './commandTypes'
 import {
   DefaultPlaneStr,
@@ -443,10 +440,10 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
-    const nodeMeta = getNodeFromPath<Node<CallExpression>>(
+    const nodeMeta = getNodeFromPath<Node<CallExpression | CallExpression>>(
       updated,
       segmentGroup.userData.pathToNode,
-      'CallExpression'
+      ['CallExpression', 'CallExpressionKw']
     )
     if (err(nodeMeta)) return
     const node = nodeMeta.node
@@ -580,10 +577,9 @@ export function getSelectionTypeDisplayText(
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${type
-          .replace('wall', 'face')
-          .replace('solid2d', 'face')
-          .replace('segment', 'face')}${count > 1 ? 's' : ''}`
+        `${count} ${type.replace('wall', 'face').replace('solid2d', 'face')}${
+          count > 1 ? 's' : ''
+        }`
     )
     .toArray()
     .join(', ')

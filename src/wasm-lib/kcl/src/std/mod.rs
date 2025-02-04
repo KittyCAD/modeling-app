@@ -72,7 +72,6 @@ lazy_static! {
         Box::new(crate::std::shapes::Circle),
         Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
-        Box::new(crate::std::sketch::LineTo),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLineTo),
         Box::new(crate::std::sketch::XLine),

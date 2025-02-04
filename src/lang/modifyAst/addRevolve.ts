@@ -7,6 +7,7 @@ import {
   CallExpression,
   PipeExpression,
   VariableDeclarator,
+  CallExpressionKw,
 } from 'lang/wasm'
 import { Selections } from 'lib/selections'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
@@ -19,7 +20,8 @@ import {
   findUniqueName,
   createVariableDeclaration,
 } from 'lang/modifyAst'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   mutateAstWithTagForSketchSegment,
   getEdgeTagCall,
@@ -50,10 +52,10 @@ export function revolveSketch(
       clonedAst,
       edge.graphSelections[0]?.codeRef.range
     )
-    const lineNode = getNodeFromPath<CallExpression>(
+    const lineNode = getNodeFromPath<CallExpression | CallExpressionKw>(
       clonedAst,
       pathToAxisSelection,
-      'CallExpression'
+      ['CallExpression', 'CallExpressionKw']
     )
     if (err(lineNode)) return lineNode
 

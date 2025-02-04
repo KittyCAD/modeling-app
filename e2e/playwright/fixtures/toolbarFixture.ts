@@ -18,6 +18,7 @@ export class ToolbarFixture {
   filletButton!: Locator
   chamferButton!: Locator
   shellButton!: Locator
+  revolveButton!: Locator
   offsetPlaneButton!: Locator
   startSketchBtn!: Locator
   lineBtn!: Locator
@@ -47,6 +48,7 @@ export class ToolbarFixture {
     this.filletButton = page.getByTestId('fillet3d')
     this.chamferButton = page.getByTestId('chamfer3d')
     this.shellButton = page.getByTestId('shell')
+    this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.startSketchBtn = page.getByTestId('sketch')
     this.lineBtn = page.getByTestId('line')
@@ -60,7 +62,9 @@ export class ToolbarFixture {
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
     this.fileCreateToast = page.getByText('Successfully created')
-    this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
+    this.exeIndicator = page.getByTestId(
+      'model-state-indicator-receive-reliable'
+    )
   }
 
   get logoLink() {

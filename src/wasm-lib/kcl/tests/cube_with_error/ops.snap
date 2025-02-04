@@ -1,0 +1,45 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed cube_with_error.kcl
+snapshot_kind: text
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "cube",
+    "functionSourceRange": [
+      7,
+      363,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      374,
+      390,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          354,
+          360,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      337,
+      361,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]

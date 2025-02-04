@@ -21,10 +21,10 @@ test.describe('Regression tests', () => {
         'persistCode',
         `sketch2 = startSketchOn("XY")
   sketch001 = startSketchAt([-0, -0])
-    |> line([0, 0], %)
-    |> line([-4.84, -5.29], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`
+    |> line(end = [0, 0])
+    |> line(end = [-4.84, -5.29])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()`
       )
     })
 
@@ -67,9 +67,9 @@ test.describe('Regression tests', () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(50, sketch001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 50)
 `
       )
     })
@@ -126,9 +126,9 @@ extrude001 = extrude(50, sketch001)
         'persistCode',
         `sketch001 = startSketchOn('-XZ')
   |> startProfileAt([-6.95, 4.98], %)
-  |> line([25.1, 0.41], %)
-  |> line([0.73, -14.93], %)
-  |> line([-23.44, 0.52], %)`
+  |> line(end = [25.1, 0.41])
+  |> line(end = [0.73, -14.93])
+  |> line(end = [-23.44, 0.52])`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -187,11 +187,11 @@ extrude001 = extrude(50, sketch001)
         'persistCode',
         `part = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 1], %)
-  |> line([1, 0], %)
-  |> line([0, -1], %)
-  |> close(%)
-  |> extrude(1, %)
+  |> line(end = [0, 1])
+  |> line(end = [1, 0])
+  |> line(end = [0, -1])
+  |> close()
+  |> extrude(length = 1)
   |> patternLinear3d({
         axis: [1, 0, 1],
         repetitions: 3,
@@ -255,10 +255,10 @@ extrude001 = extrude(50, sketch001)
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
       |> yLineTo(0, %)
-      |> close(%)
+      |> close()
       |>
   
-    example = extrude(5, exampleSketch)
+    example = extrude(exampleSketch, length = 5)
     shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
         )
       })
@@ -311,7 +311,7 @@ extrude001 = extrude(50, sketch001)
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
       |> yLineTo(0, %)
-      |> close(%)
+      |> close()
   
       thing: "blah"`)
 

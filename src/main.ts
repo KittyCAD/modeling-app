@@ -21,6 +21,7 @@ import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
+import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
 import argvFromYargs from './commandLineArgs'
 
 import * as packageJSON from '../package.json'
@@ -30,27 +31,29 @@ let mainWindow: BrowserWindow | null = null
 // Check the command line arguments for a project path
 const args = parseCLIArgs()
 
-// If it's not set, scream.
-const NODE_ENV = process.env.NODE_ENV || 'production'
-if (!process.env.NODE_ENV)
-  console.warn(
-    '*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to production'
-  )
-// Default prod values
+// @ts-ignore: TS1343
+const viteEnv = import.meta.env
+const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
 
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
-process.env.VITE_KC_API_WS_MODELING_URL ??=
-  'wss://api.zoo.dev/ws/modeling/commands'
-process.env.VITE_KC_API_BASE_URL ??= 'https://api.zoo.dev'
-process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
-process.env.VITE_KC_SKIP_AUTH ??= 'false'
-process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
+// default vite values based on mode
+process.env.NODE_ENV ??= viteEnv.MODE
+process.env.DEV ??= viteEnv.DEV + ''
+process.env.BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
+process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
+process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
+process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
+process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
+process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
+process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
+  viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
 
-const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
+// Likely convenient to keep for debugging
+console.log('process.env', process.env)
 
-/// Register our application to handle all "electron-fiddle://" protocols.
+/// Register our application to handle all "zoo-studio:" protocols.
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [
@@ -65,7 +68,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 registerStartupListeners()
 
-const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
+const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   let newWindow
 
   if (reuse) {
@@ -90,32 +93,75 @@ const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
     })
   }
 
+  // Deep Link: Case of a cold start from Windows or Linux
+  if (
+    !pathToOpen &&
+    process.argv.length > 1 &&
+    process.argv[1].indexOf(ZOO_STUDIO_PROTOCOL + '://') > -1
+  ) {
+    pathToOpen = process.argv[1]
+    console.log('Retrieved deep link from argv', pathToOpen)
+  }
+
+  // Deep Link: Case of a second window opened for macOS
+  // @ts-ignore
+  if (!pathToOpen && global['openUrls'] && global['openUrls'][0]) {
+    // @ts-ignore
+    pathToOpen = global['openUrls'][0]
+    console.log('Retrieved deep link from open-url', pathToOpen)
+  }
+
+  const pathIsCustomProtocolLink =
+    pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
+
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
+    const filteredPath = pathToOpen
+      ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
+      : ''
+    const fullHashBasedUrl = `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/${filteredPath}`
+    newWindow.loadURL(fullHashBasedUrl).catch(reportRejection)
   } else {
-    getProjectPathAtStartup(filePath)
-      .then(async (projectPath) => {
-        const startIndex = path.join(
-          __dirname,
-          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-        )
-
-        if (projectPath === null) {
-          await newWindow.loadFile(startIndex)
-          return
-        }
-
-        console.log('Loading file', projectPath)
-
-        const fullUrl = `/file/${encodeURIComponent(projectPath)}`
-        console.log('Full URL', fullUrl)
-
-        await newWindow.loadFile(startIndex, {
-          hash: fullUrl,
+    if (pathIsCustomProtocolLink && pathToOpen) {
+      // We're trying to open a custom protocol link
+      // TODO: fix the replace %3 thing
+      const urlNoProtocol = pathToOpen
+        .replace(ZOO_STUDIO_PROTOCOL + '://', '')
+        .replaceAll('%3D', '')
+        .replaceAll('%3', '')
+      const filteredPath = decodeURI(urlNoProtocol)
+      const startIndex = path.join(
+        __dirname,
+        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+      )
+      newWindow
+        .loadFile(startIndex, {
+          hash: filteredPath,
         })
-      })
-      .catch(reportRejection)
+        .catch(reportRejection)
+    } else {
+      // otherwise we're trying to open a local file from the command line
+      getProjectPathAtStartup(pathToOpen)
+        .then(async (projectPath) => {
+          const startIndex = path.join(
+            __dirname,
+            `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+          )
+
+          if (projectPath === null) {
+            await newWindow.loadFile(startIndex)
+            return
+          }
+
+          const fullUrl = `/file/${encodeURIComponent(projectPath)}`
+          console.log('Full URL', fullUrl)
+
+          await newWindow.loadFile(startIndex, {
+            hash: fullUrl,
+          })
+        })
+        .catch(reportRejection)
+    }
   }
 
   // Open the DevTools.
@@ -321,7 +367,7 @@ export function getAutoUpdater(): AppUpdater {
 
 app.on('ready', () => {
   // Disable auto updater on non-versioned builds
-  if (packageJSON.version === '0.0.0') {
+  if (packageJSON.version === '0.0.0' && viteEnv.MODE !== 'production') {
     return
   }
 
@@ -438,6 +484,14 @@ function parseCLIArgs(): minimist.ParsedArgs {
 }
 
 function registerStartupListeners() {
+  // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Deep Link: second instance for Windows and Linux
+    const url = commandLine.pop()?.slice(0, -1)
+    console.log('Retrieved deep link from commandLine', url)
+    createWindow(url)
+  })
+
   /**
    * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
    * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
@@ -457,7 +511,7 @@ function registerStartupListeners() {
   })
 
   /**
-   * macOS: react to open-url requests.
+   * macOS: react to open-url requests (including Deep Link on second instances)
    */
   const openUrls: string[] = []
   // @ts-ignore

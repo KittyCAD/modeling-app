@@ -17,7 +17,6 @@ use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
 
-use super::digest::Digest;
 pub use crate::parsing::ast::types::{
     condition::{ElseIf, IfExpression},
     literal_value::LiteralValue,
@@ -26,7 +25,8 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{KclValue, Metadata, TagIdentifier},
+    execution::{annotations, KclValue, Metadata, TagIdentifier},
+    parsing::ast::digest::Digest,
     parsing::PIPE_OPERATOR,
     source_range::{ModuleId, SourceRange},
 };
@@ -253,6 +253,52 @@ impl Node<Program> {
             findings.append(&mut self.lint(rule)?);
         }
         Ok(findings)
+    }
+
+    /// Get the annotations for the meta settings from the kcl file.
+    pub fn get_meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
+        let annotations = self
+            .non_code_meta
+            .start_nodes
+            .iter()
+            .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range())));
+        for (annotation, source_range) in annotations {
+            if annotation.annotation_name() == Some(annotations::SETTINGS) {
+                let mut meta_settings = crate::execution::MetaSettings::default();
+                meta_settings.update_from_annotation(annotation, source_range)?;
+                return Ok(Some(meta_settings));
+            }
+        }
+
+        Ok(None)
+    }
+
+    pub fn change_meta_settings(&mut self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
+        let mut new_program = self.clone();
+        let mut found = false;
+        for node in &mut new_program.non_code_meta.start_nodes {
+            if let Some(annotation) = node.annotation() {
+                if annotation.annotation_name() == Some(annotations::SETTINGS) {
+                    let annotation = NonCodeValue::new_from_meta_settings(&settings);
+                    *node = Node::no_src(NonCodeNode {
+                        value: annotation,
+                        digest: None,
+                    });
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if !found {
+            let annotation = NonCodeValue::new_from_meta_settings(&settings);
+            new_program.non_code_meta.start_nodes.push(Node::no_src(NonCodeNode {
+                value: annotation,
+                digest: None,
+            }));
+        }
+
+        Ok(new_program)
     }
 }
 
@@ -813,6 +859,34 @@ impl Expr {
             _ => false,
         }
     }
+
+    /// Describe this expression's type for a human, for typechecking.
+    /// This is a best-effort function, it's OK to give a shitty string here (but we should work on improving it)
+    pub fn human_friendly_type(&self) -> &'static str {
+        match self {
+            Expr::Literal(node) => match node.inner.value {
+                LiteralValue::Number { .. } => "number",
+                LiteralValue::String(_) => "string (text)",
+                LiteralValue::Bool(_) => "boolean (true/false value)",
+            },
+            Expr::Identifier(_) => "named constant",
+            Expr::TagDeclarator(_) => "tag declarator",
+            Expr::BinaryExpression(_) => "expression",
+            Expr::FunctionExpression(_) => "function definition",
+            Expr::CallExpression(_) => "function call",
+            Expr::CallExpressionKw(_) => "function call",
+            Expr::PipeExpression(_) => "pipeline of function calls",
+            Expr::PipeSubstitution(_) => "left-hand side of a |> pipeline",
+            Expr::ArrayExpression(_) => "array",
+            Expr::ArrayRangeExpression(_) => "array",
+            Expr::ObjectExpression(_) => "object",
+            Expr::MemberExpression(_) => "property of an object/array",
+            Expr::UnaryExpression(_) => "expression",
+            Expr::IfExpression(_) => "if expression",
+            Expr::LabelledExpression(_) => "labelled expression",
+            Expr::None(_) => "none",
+        }
+    }
 }
 
 impl From<Expr> for SourceRange {
@@ -1078,6 +1152,24 @@ impl NonCodeValue {
             _ => None,
         }
     }
+
+    pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> NonCodeValue {
+        let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
+            Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
+            Expr::Identifier(Box::new(Identifier::new(&settings.default_length_units.to_string()))),
+        )];
+
+        if settings.default_angle_units != Default::default() {
+            properties.push(ObjectProperty::new(
+                Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
+                Expr::Identifier(Box::new(Identifier::new(&settings.default_angle_units.to_string()))),
+            ));
+        }
+        NonCodeValue::Annotation {
+            name: Identifier::new(annotations::SETTINGS),
+            properties: Some(properties),
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1256,6 +1348,32 @@ impl ImportSelector {
             ImportSelector::None { alias: Some(alias) } => alias.rename(old_name, new_name),
         }
     }
+
+    pub fn exposes_imported_name(&self) -> bool {
+        matches!(self, ImportSelector::None { alias: None })
+    }
+
+    pub fn imports_items(&self) -> bool {
+        !matches!(self, ImportSelector::None { .. })
+    }
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum ImportPath {
+    Kcl { filename: String },
+    Foreign { path: String },
+    Std,
+}
+
+impl fmt::Display for ImportPath {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => write!(f, "{s}"),
+            ImportPath::Std => write!(f, "std"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1263,7 +1381,7 @@ impl ImportSelector {
 #[serde(tag = "type")]
 pub struct ImportStatement {
     pub selector: ImportSelector,
-    pub path: String,
+    pub path: ImportPath,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
 
@@ -1312,12 +1430,15 @@ impl ImportStatement {
             return Some(alias.name.clone());
         }
 
-        let mut parts = self.path.split('.');
+        let mut parts = match &self.path {
+            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => s.split('.'),
+            _ => return None,
+        };
         let name = parts.next()?;
-        let ext = parts.next()?;
+        let _ext = parts.next()?;
         let rest = parts.next();
 
-        if rest.is_some() || ext != "kcl" {
+        if rest.is_some() {
             return None;
         }
 
@@ -2308,6 +2429,14 @@ impl Node<ObjectProperty> {
 }
 
 impl ObjectProperty {
+    pub fn new(key: Node<Identifier>, value: Expr) -> Node<Self> {
+        Node::no_src(Self {
+            key,
+            value,
+            digest: None,
+        })
+    }
+
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         let value_source_range: SourceRange = self.value.clone().into();
@@ -3726,5 +3855,99 @@ const cylinder = startSketchOn('-XZ')
         };
 
         assert_eq!(l.raw, "false");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_inch() {
+        let some_program_string = r#"@settings(defaultLengthUnit = inch)
+
+startSketchOn('XY')"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.get_meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(
+            meta_settings.default_length_units,
+            crate::execution::kcl_value::UnitLen::Inches
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_inch_to_mm() {
+        let some_program_string = r#"@settings(defaultLengthUnit = inch)
+
+startSketchOn('XY')"#;
+        let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.get_meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(
+            meta_settings.default_length_units,
+            crate::execution::kcl_value::UnitLen::Inches
+        );
+
+        // Edit the ast.
+        let new_program = program
+            .change_meta_settings(crate::execution::MetaSettings {
+                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                ..Default::default()
+            })
+            .unwrap();
+
+        let result = new_program.get_meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(
+            meta_settings.default_length_units,
+            crate::execution::kcl_value::UnitLen::Mm
+        );
+
+        let formatted = new_program.recast(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(defaultLengthUnit = mm)
+
+
+startSketchOn('XY')
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_nothing_to_mm() {
+        let some_program_string = r#"startSketchOn('XY')"#;
+        let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.get_meta_settings().unwrap();
+        assert!(result.is_none());
+
+        // Edit the ast.
+        let new_program = program
+            .change_meta_settings(crate::execution::MetaSettings {
+                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                ..Default::default()
+            })
+            .unwrap();
+
+        let result = new_program.get_meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(
+            meta_settings.default_length_units,
+            crate::execution::kcl_value::UnitLen::Mm
+        );
+
+        let formatted = new_program.recast(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(defaultLengthUnit = mm)
+startSketchOn('XY')
+"#
+        );
     }
 }

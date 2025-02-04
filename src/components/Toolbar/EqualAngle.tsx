@@ -1,10 +1,8 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { getNodeFromPath } from '../../lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   transformSecondarySketchLinesTagFirst,
@@ -57,7 +55,7 @@ export function equalAngleInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
       toolTips.includes(node.callee.name as any)
   )
 

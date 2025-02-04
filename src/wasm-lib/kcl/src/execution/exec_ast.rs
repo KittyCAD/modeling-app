@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use async_recursion::async_recursion;
 
+use super::cad_op::{OpArg, Operation};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -18,8 +19,6 @@ use crate::{
         FunctionKind,
     },
 };
-
-use super::cad_op::{OpArg, Operation};
 
 impl BinaryPart {
     #[async_recursion]

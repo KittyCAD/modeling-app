@@ -80,6 +80,10 @@ export default class CodeManager {
     }))
   }
 
+  get currentFilePath(): string | null {
+    return this._currentFilePath
+  }
+
   updateCurrentFilePath(path: string) {
     this._currentFilePath = path
   }

@@ -30,12 +30,12 @@ patternLinear3d(data: LinearPattern3dData, solid_set: SolidSet) -> [Solid]
 ```js
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
+  |> line(end = [0, 2])
+  |> line(end = [3, 1])
+  |> line(end = [0, -4])
+  |> close()
 
-example = extrude(1, exampleSketch)
+example = extrude(exampleSketch, length = 1)
   |> patternLinear3d({
        axis = [1, 0, 1],
        instances = 7,

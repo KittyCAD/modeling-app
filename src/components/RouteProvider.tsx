@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { markOnce } from 'lib/performance'
+import { useAuthNavigation } from 'hooks/useAuthNavigation'
 import { useAuthState } from 'machines/appMachine'
 import { IndexLoaderData } from 'lib/types'
 import { getAppSettingsFilePath } from 'lib/desktop'
@@ -19,6 +20,7 @@ import { settingsActor } from 'machines/appMachine'
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
+  useAuthNavigation()
   const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const [first, setFirstState] = useState(true)
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
@@ -27,6 +29,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const navigation = useNavigation()
   const navigate = useNavigate()
   const location = useLocation()
+
   const authState = useAuthState()
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.

@@ -27,23 +27,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          172,
-          174,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          176,
-          177,
+          202,
+          204,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      164,
-      178,
+      185,
+      205,
       0
     ],
     "type": "StdLibCall",
@@ -53,23 +46,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          191,
-          264,
+          218,
+          291,
           0
         ]
       },
       "solid": {
         "sourceRange": [
-          266,
-          267,
+          293,
+          294,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      184,
-      268,
+      211,
+      295,
       0
     ],
     "type": "StdLibCall",

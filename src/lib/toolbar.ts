@@ -103,7 +103,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
         icon: 'revolve',
-        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+        status: 'available',
         title: 'Revolve',
         hotkey: 'R',
         description:
@@ -124,7 +124,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Sweep', groupId: 'modeling' },
           }),
         icon: 'sweep',
-        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+        status: 'available',
         title: 'Sweep',
         hotkey: 'W',
         description:

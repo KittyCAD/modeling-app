@@ -259,6 +259,9 @@ pub struct ModelingSettings {
     /// The projection mode the camera should use while modeling.
     #[serde(default, alias = "cameraProjection", skip_serializing_if = "is_default")]
     pub camera_projection: CameraProjectionType,
+    /// The methodology the camera should use to orbit around the model.
+    #[serde(default, alias = "cameraOrbit", skip_serializing_if = "is_default")]
+    pub camera_orbit: CameraOrbitType,
     /// The controls for how to navigate the 3D view.
     #[serde(default, alias = "mouseControls", skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
@@ -415,6 +418,21 @@ pub enum CameraProjectionType {
     Orthographic,
 }
 
+/// The types of camera orbit methods.
+#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum CameraOrbitType {
+    /// Orbit using a spherical camera movement.
+    #[default]
+    #[display("spherical")]
+    Spherical,
+    /// Orbit using a trackball camera movement.
+    #[display("trackball")]
+    Trackball,
+}
+
 /// Settings that affect the behavior of the KCL text editor.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
@@ -543,6 +561,8 @@ mod tests {
     use pretty_assertions::assert_eq;
     use validator::Validate;
 
+    use crate::settings::types::CameraOrbitType;
+
     use super::{
         AppColor, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
         ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
@@ -594,6 +614,7 @@ textWrapping = true
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
                         camera_projection: CameraProjectionType::Orthographic,
+                        camera_orbit: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -656,6 +677,7 @@ includeSettings = false
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
                         camera_projection: Default::default(),
+                        camera_orbit: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -723,6 +745,7 @@ defaultProjectName = "projects-$nnn"
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
                         camera_projection: Default::default(),
+                        camera_orbit: CameraOrbitType::Spherical,
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -802,6 +825,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
                         camera_projection: Default::default(),
+                        camera_orbit: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: true.into(),
                         show_debug_panel: false,

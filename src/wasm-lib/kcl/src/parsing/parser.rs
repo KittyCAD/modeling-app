@@ -12,7 +12,10 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
-use super::{ast::types::LabelledExpression, token::NumericSuffix};
+use super::{
+    ast::types::{ImportPath, LabelledExpression},
+    token::NumericSuffix,
+};
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
@@ -1545,33 +1548,11 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     };
 
     let mut end: usize = path.end;
-    let path_string = match path.inner.value {
-        LiteralValue::String(s) => s,
-        _ => unreachable!(),
-    };
-    if path_string.is_empty() {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                SourceRange::new(path.start, path.end, path.module_id),
-                "import path cannot be empty",
-            )
-            .into(),
-        ));
-    }
-    if path_string
-        .chars()
-        .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
-    {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                SourceRange::new(path.start, path.end, path.module_id),
-                "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
-            )
-            .into(),
-        ));
-    }
 
-    if let ImportSelector::None { alias: ref mut a } = selector {
+    if let ImportSelector::None {
+        alias: ref mut selector_alias,
+    } = selector
+    {
         if let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
             identifier.context(expected("an identifier to alias the import")),
@@ -1579,41 +1560,112 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         .parse_next(i)?
         {
             end = alias.end;
-            *a = Some(alias);
+            *selector_alias = Some(alias);
         }
 
         ParseContext::warn(CompilationError::err(
             SourceRange::new(start, path.end, path.module_id),
             "Importing a whole module is experimental, likely to be buggy, and likely to change",
         ));
+    }
 
-        if a.is_none()
-            && (!path_string.ends_with(".kcl")
-                || path_string.starts_with("_")
-                || path_string.contains('-')
-                || path_string[0..path_string.len() - 4].contains('.'))
-        {
-            return Err(ErrMode::Cut(
-                CompilationError::fatal(
-                    SourceRange::new(path.start, path.end, path.module_id),
-                    "import path is not a valid identifier and must be aliased.".to_owned(),
-                )
-                .into(),
-            ));
-        }
+    let path_string = match path.inner.value {
+        LiteralValue::String(s) => s,
+        _ => unreachable!(),
+    };
+    let path = validate_path_string(
+        path_string,
+        selector.exposes_imported_name(),
+        SourceRange::new(path.start, path.end, path.module_id),
+    )?;
+
+    if matches!(path, ImportPath::Foreign { .. }) && selector.imports_items() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(start, end, module_id),
+                "individual items can only be imported from KCL files",
+            )
+            .into(),
+        ));
     }
 
     Ok(Node::boxed(
         ImportStatement {
             selector,
             visibility,
-            path: path_string,
+            path,
             digest: None,
         },
         start,
         end,
         module_id,
     ))
+}
+
+const FOREIGN_IMPORT_EXTENSIONS: [&str; 8] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "step", "stl"];
+
+/// Validates the path string in an `import` statement.
+///
+/// `var_name` is `true` if the path will be used as a variable name.
+fn validate_path_string(path_string: String, var_name: bool, path_range: SourceRange) -> PResult<ImportPath> {
+    if path_string.is_empty() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "import path cannot be empty").into(),
+        ));
+    }
+
+    if var_name
+        && (path_string.starts_with("_")
+            || path_string.contains('-')
+            || path_string.chars().filter(|c| *c == '.').count() > 1)
+    {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
+        ));
+    }
+
+    let path = if path_string.ends_with(".kcl") {
+        if path_string
+            .chars()
+            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
+        {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
+                )
+                .into(),
+            ));
+        }
+
+        ImportPath::Kcl { filename: path_string }
+    } else if path_string.starts_with("std") {
+        ParseContext::warn(CompilationError::err(
+            path_range,
+            "explicit imports from the standard library are experimental, likely to be buggy, and likely to change.",
+        ));
+
+        ImportPath::Std
+    } else if path_string.contains('.') {
+        let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
+        if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
+            ParseContext::warn(CompilationError::err(
+                path_range,
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+            ))
+        }
+        ImportPath::Foreign { path: path_string }
+    } else {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                path_range,
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+            )
+            .into(),
+        ));
+    };
+
+    Ok(path)
 }
 
 fn import_item(i: &mut TokenSlice) -> PResult<Node<ImportItem>> {
@@ -2534,8 +2586,20 @@ fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         .parse_next(i)
 }
 
-fn typecheck_all(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
-    // Type check the arguments.
+/// Typecheck the arguments in a keyword fn call.
+fn typecheck_all_kw(std_fn: Box<dyn StdLibFn>, args: &[&LabeledArg]) -> PResult<()> {
+    for arg in args {
+        let label = &arg.label;
+        let expr = &arg.arg;
+        if let Some(spec_arg) = std_fn.args(false).iter().find(|spec_arg| spec_arg.name == label.name) {
+            typecheck(spec_arg, &expr)?;
+        }
+    }
+    Ok(())
+}
+
+/// Type check the arguments in a positional fn call.
+fn typecheck_all_positional(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
     for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
         let Some(arg) = &args.get(i) else {
             // The executor checks the number of arguments, so we don't need to check it here.
@@ -2562,7 +2626,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(*arg),
-                        format!("Expected a tag declarator like `$name`, found {:?}", e),
+                        format!(
+                            "Expected a tag declarator like `$name`, found {}",
+                            e.human_friendly_type()
+                        ),
                     )
                     .into(),
                 ));
@@ -2575,7 +2642,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(*arg),
-                        format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                        format!(
+                            "Expected a tag identifier like `tagName`, found {}",
+                            e.human_friendly_type()
+                        ),
                     )
                     .into(),
                 ));
@@ -2613,7 +2683,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
 
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         let just_args: Vec<_> = args.iter().collect();
-        typecheck_all(std_fn, &just_args)?;
+        typecheck_all_positional(std_fn, &just_args)?;
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
@@ -2637,6 +2707,10 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
 
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
     let args = labeled_arguments(i)?;
+    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
+        let just_args: Vec<_> = args.iter().collect();
+        typecheck_all_kw(std_fn, &just_args)?;
+    }
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
@@ -3385,7 +3459,7 @@ mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn pipes_on_pipes_minimal() {
         let test_program = r#"startSketchAt([0, 0])
-        |> lineTo([0, -0], %) // MoveRelative
+        |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
@@ -3611,7 +3685,11 @@ mySk1 = startSketchAt([0, 0])"#;
     fn assert_err(p: &str, msg: &str, src_expected: [usize; 2]) {
         let result = crate::parsing::top_level_parse(p);
         let err = result.unwrap_errs().next().unwrap();
-        assert_eq!(err.message, msg);
+        assert!(
+            err.message.starts_with(msg),
+            "Found `{}`, expected `{msg}`",
+            err.message
+        );
         let src_actual = [err.source_range.start(), err.source_range.end()];
         assert_eq!(
             src_expected,
@@ -3730,8 +3808,8 @@ firstExtrude = startSketchOn('XY')
   |> line([0, 8], %)
   |> line([20, 0], %)
   |> line([0, -8], %)
-  |> close(%)
-  |> extrude(2, %)
+  |> close()
+  |> extrude(length=2)
 
 secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
@@ -3977,7 +4055,7 @@ e
     fn bad_imports() {
         assert_err(
             r#"import cube from "../cube.kcl""#,
-            "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
+            "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
             [17, 30],
         );
         assert_err(
@@ -3985,17 +4063,21 @@ e
             "as is not the 'from' keyword",
             [9, 11],
         );
-        assert_err(r#"import a from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
-        assert_err(r#"import * from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
+        assert_err(
+            r#"import a from "dsfs" as b"#,
+            "unsupported import path format",
+            [14, 20],
+        );
+        assert_err(
+            r#"import * from "dsfs" as b"#,
+            "unsupported import path format",
+            [14, 20],
+        );
         assert_err(r#"import a from b"#, "invalid string literal", [14, 15]);
         assert_err(r#"import * "dsfs""#, "\"dsfs\" is not the 'from' keyword", [9, 15]);
         assert_err(r#"import from "dsfs""#, "\"dsfs\" is not the 'from' keyword", [12, 18]);
         assert_err(r#"import "dsfs.kcl" as *"#, "Unexpected token: as", [18, 20]);
-        assert_err(
-            r#"import "dsfs""#,
-            "import path is not a valid identifier and must be aliased.",
-            [7, 13],
-        );
+        assert_err(r#"import "dsfs""#, "unsupported import path format", [7, 13]);
         assert_err(
             r#"import "foo.bar.kcl""#,
             "import path is not a valid identifier and must be aliased.",
@@ -4017,7 +4099,19 @@ e
     fn warn_import() {
         let some_program_string = r#"import "foo.kcl""#;
         let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.obj""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.sldprt""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.bad""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2, "{errs:#?}");
     }
 
     #[test]
@@ -4207,8 +4301,8 @@ let other_thing = 2 * cos(3)"#;
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
+    |> close()
+    |> extrude(length=h)
 
   return myBox
 }
@@ -4485,6 +4579,7 @@ mod snapshot_tests {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();
+                println!("{}", $test_kcl_program);
                 let tokens = crate::parsing::token::lex($test_kcl_program, module_id).unwrap();
                 print_tokens(tokens.as_slice());
                 ParseContext::init();
@@ -4508,7 +4603,7 @@ mod snapshot_tests {
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
-    |> extrude(10, %)
+    |> extrude(length=10)
 "#
     );
     snapshot_test!(b, "myVar = min(5 , -legLen(5, 4))"); // Space before comma
@@ -4573,7 +4668,7 @@ mod snapshot_tests {
     snapshot_test!(y, "sg = startSketchAt(pos)");
     snapshot_test!(z, "sg = startSketchAt(pos) |> line([0, -scale], %)");
     snapshot_test!(aa, r#"sg = -scale"#);
-    snapshot_test!(ab, "lineTo({ to: [0, -1] })");
+    snapshot_test!(ab, "line(endAbsolute = [0, -1])");
     snapshot_test!(ac, "myArray = [0..10]");
     snapshot_test!(
         ad,
@@ -4593,20 +4688,19 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"mySketch = startSketchAt([0,0])
-        |> lineTo([0, 1], %, $myPath)
-        |> lineTo([1, 1], %)
-        |> lineTo([1, 0], %, $rightPath)
-        |> close(%)"#
+        |> line(endAbsolute = [0, 1], tag = $myPath)
+        |> line(endAbsolute = [1, 1])
+        |> line(endAbsolute = [1, 0], tag = $rightPath)
+        |> close()"#
     );
-    snapshot_test!(ag, "mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)");
+    snapshot_test!(
+        ag,
+        "mySketch = startSketchAt([0,0]) |> line(endAbsolute = [1, 1]) |> close()"
+    );
     snapshot_test!(ah, "myBox = startSketchAt(p)");
     snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
-    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line([0, l], %)"#);
-    snapshot_test!(ak, "lineTo({ to: [0, 1] })");
-    snapshot_test!(al, "lineTo({ to: [0, 1], from: [3, 3] })");
-    snapshot_test!(am, "lineTo({to:[0, 1]})");
-    snapshot_test!(an, "lineTo({ to: [0, 1], from: [3, 3]})");
-    snapshot_test!(ao, "lineTo({ to: [0, 1],from: [3, 3] })");
+    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line(end = [0, l])"#);
+    snapshot_test!(ak, "line(endAbsolute = [0, 1])");
     snapshot_test!(ap, "mySketch = startSketchAt([0,0])");
     snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);

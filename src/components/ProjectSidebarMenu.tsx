@@ -9,7 +9,7 @@ import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
@@ -17,6 +17,9 @@ import Tooltip from './Tooltip'
 import { SnapshotFrom } from 'xstate'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useSelector } from '@xstate/react'
+import { copyFileShareLink } from 'lib/links'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
+import { useSettings, useToken } from 'machines/appMachine'
 
 const ProjectSidebarMenu = ({
   project,
@@ -100,12 +103,15 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const settings = useSettings()
+  const token = useToken()
   const machineManager = useContext(MachineManagerContext)
   const commands = useSelector(commandBarActor, commandsSelector)
 
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
+  const shareCommandInfo = { name: 'share-file-link', groupId: 'code' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
       commands.find((c) => c.name === obj.name && c.groupId === obj.groupId)
@@ -158,7 +164,6 @@ function ProjectMenuPopover({
               data: exportCommandInfo,
             }),
         },
-        'break',
         {
           id: 'make',
           Element: 'button',
@@ -181,6 +186,20 @@ function ProjectMenuPopover({
             commandBarActor.send({
               type: 'Find and select command',
               data: makeCommandInfo,
+            })
+          },
+        },
+        {
+          id: 'share-link',
+          Element: 'button',
+          children: 'Share link to file',
+          disabled: IS_NIGHTLY_OR_DEBUG || !findCommand(shareCommandInfo),
+          onClick: async () => {
+            await copyFileShareLink({
+              token: token ?? '',
+              code: codeManager.code,
+              name: project?.name || '',
+              units: settings.modeling.defaultUnit.current,
             })
           },
         },

@@ -67,11 +67,8 @@ import {
   startSketchOnDefault,
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
-import {
-  artifactIsPlaneWithPaths,
-  getNodePathFromSourceRange,
-  isSingleCursorInPipe,
-} from 'lang/queryAst'
+import { artifactIsPlaneWithPaths, isSingleCursorInPipe } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
@@ -115,7 +112,13 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { theme, enableSSAO, allowOrbitInSketchMode },
-    modeling: { defaultUnit, cameraProjection, highlightEdges, showScaleGrid },
+    modeling: {
+      defaultUnit,
+      cameraProjection,
+      highlightEdges,
+      showScaleGrid,
+      cameraOrbit,
+    },
   } = useSettings()
   const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
@@ -1148,6 +1151,7 @@ export const ModelingMachineProvider = ({
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
       cameraProjection: cameraProjection.current,
+      cameraOrbit: cameraOrbit.current,
     },
     token
   )
@@ -1176,6 +1180,13 @@ export const ModelingMachineProvider = ({
   useEffect(() => {
     editorManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
+
+  // When changing camera modes reset the camera to the default orientation to correct
+  // the up vector otherwise the conconical orientation for the camera modes will be
+  // wrong
+  useEffect(() => {
+    sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+  }, [cameraOrbit.current])
 
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {

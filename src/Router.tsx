@@ -32,7 +32,7 @@ import {
 } from 'lib/routeLoaders'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
-import { BROWSER_PROJECT_NAME } from 'lib/constants'
+import { ASK_TO_OPEN_QUERY_PARAM, BROWSER_PROJECT_NAME } from 'lib/constants'
 import { CoreDumpManager } from 'lib/coredump'
 import { codeManager, engineCommandManager } from 'lib/singletons'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
@@ -44,7 +44,7 @@ import { reportRejection } from 'lib/trap'
 import { RouteProvider } from 'components/RouteProvider'
 import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
 import { useToken } from 'machines/appMachine'
-import { AuthNavigationHandler } from 'components/AuthNavigationHandler'
+import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -52,7 +52,7 @@ const router = createRouter([
   {
     id: PATHS.INDEX,
     element: (
-      <AuthNavigationHandler>
+      <OpenInDesktopAppHandler>
         <RouteProvider>
           <LspProvider>
             <ProjectsContextProvider>
@@ -66,17 +66,26 @@ const router = createRouter([
             </ProjectsContextProvider>
           </LspProvider>
         </RouteProvider>
-      </AuthNavigationHandler>
+      </OpenInDesktopAppHandler>
     ),
     errorElement: <ErrorPage />,
     children: [
       {
         path: PATHS.INDEX,
-        loader: async () => {
+        loader: async ({ request }) => {
           const onDesktop = isDesktop()
-          return onDesktop
-            ? redirect(PATHS.HOME)
-            : redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+          const url = new URL(request.url)
+          if (onDesktop) {
+            return redirect(PATHS.HOME + (url.search || ''))
+          } else {
+            const searchParams = new URLSearchParams(url.search)
+            if (!searchParams.has(ASK_TO_OPEN_QUERY_PARAM)) {
+              return redirect(
+                PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
+              )
+            }
+          }
+          return null
         },
       },
       {

@@ -62,14 +62,14 @@ impl FromStr for NumericSuffix {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "_" => Ok(NumericSuffix::Count),
-            "mm" => Ok(NumericSuffix::Mm),
-            "cm" => Ok(NumericSuffix::Cm),
-            "m" => Ok(NumericSuffix::M),
+            "mm" | "millimeters" => Ok(NumericSuffix::Mm),
+            "cm" | "centimeters" => Ok(NumericSuffix::Cm),
+            "m" | "meters" => Ok(NumericSuffix::M),
             "inch" | "in" => Ok(NumericSuffix::Inch),
-            "ft" => Ok(NumericSuffix::Ft),
-            "yd" => Ok(NumericSuffix::Yd),
-            "deg" => Ok(NumericSuffix::Deg),
-            "rad" => Ok(NumericSuffix::Rad),
+            "ft" | "feet" => Ok(NumericSuffix::Ft),
+            "yd" | "yards" => Ok(NumericSuffix::Yd),
+            "deg" | "degrees" => Ok(NumericSuffix::Deg),
+            "rad" | "radians" => Ok(NumericSuffix::Rad),
             _ => Err(CompilationError::err(SourceRange::default(), "invalid unit of measure")),
         }
     }

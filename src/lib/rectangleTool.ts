@@ -2,19 +2,27 @@ import {
   createArrayExpression,
   createBinaryExpression,
   createCallExpressionStdLib,
+  createCallExpressionStdLibKw,
   createIdentifier,
+  createLabeledArg,
   createLiteral,
   createPipeSubstitution,
   createTagDeclarator,
   createUnaryExpression,
 } from 'lang/modifyAst'
-import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
+import {
+  ArrayExpression,
+  CallExpression,
+  PipeExpression,
+  recast,
+} from 'lang/wasm'
 import { roundOff } from 'lib/utils'
 import {
   isCallExpression,
   isArrayExpression,
   isLiteral,
   isBinaryExpression,
+  isLiteralValueNumber,
 } from 'lang/util'
 
 /**
@@ -25,7 +33,7 @@ import {
  *  |> angledLine([0, 0], %, $a)
  *  |> angledLine([segAng(a) - 90, 0], %, $b)
  *  |> angledLine([segAng(a), -segLen(a)], %, $c)
- *  |> close(%)
+ *  |> close()
  */
 export const getRectangleCallExpressions = (
   rectangleOrigin: [number, number],
@@ -62,14 +70,16 @@ export const getRectangleCallExpressions = (
     createPipeSubstitution(),
     createTagDeclarator(tags[2]),
   ]),
-  createCallExpressionStdLib('lineTo', [
-    createArrayExpression([
-      createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
-      createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),
-    ]),
-    createPipeSubstitution(),
+  createCallExpressionStdLibKw('line', null, [
+    createLabeledArg(
+      'endAbsolute',
+      createArrayExpression([
+        createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
+        createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),
+      ])
+    ),
   ]), // close the rectangle
-  createCallExpressionStdLib('close', [createPipeSubstitution()]),
+  createCallExpressionStdLibKw('close', null, []),
 ]
 
 /**
@@ -140,10 +150,12 @@ export function updateCenterRectangleSketch(
     if (isArrayExpression(arrayExpression)) {
       const literal = arrayExpression.elements[0]
       if (isLiteral(literal)) {
-        callExpression.arguments[0] = createArrayExpression([
-          createLiteral(literal.value),
-          createLiteral(Math.abs(twoX)),
-        ])
+        if (isLiteralValueNumber(literal.value)) {
+          callExpression.arguments[0] = createArrayExpression([
+            createLiteral(literal.value),
+            createLiteral(Math.abs(twoX)),
+          ])
+        }
       }
     }
   }

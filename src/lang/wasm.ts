@@ -2,6 +2,7 @@ import {
   init,
   parse_wasm,
   recast_wasm,
+  format_number,
   execute,
   kcl_lint,
   modify_ast_for_sketch_wasm,
@@ -17,6 +18,7 @@ import {
   default_project_settings,
   base64_decode,
   clear_scene_and_bust_cache,
+  change_kcl_settings,
   reloadModule,
 } from 'lib/wasm_lib_wrapper'
 
@@ -53,7 +55,9 @@ import { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
 import { Artifact } from './std/artifactGraph'
-import { getNodePathFromSourceRange } from './queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
+import { MetaSettings } from 'wasm-lib/kcl/bindings/MetaSettings'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -84,18 +88,22 @@ export type { BinaryExpression } from '../wasm-lib/kcl/bindings/BinaryExpression
 export type { ReturnStatement } from '../wasm-lib/kcl/bindings/ReturnStatement'
 export type { ExpressionStatement } from '../wasm-lib/kcl/bindings/ExpressionStatement'
 export type { CallExpression } from '../wasm-lib/kcl/bindings/CallExpression'
+export type { CallExpressionKw } from '../wasm-lib/kcl/bindings/CallExpressionKw'
+export type { LabeledArg } from '../wasm-lib/kcl/bindings/LabeledArg'
 export type { VariableDeclarator } from '../wasm-lib/kcl/bindings/VariableDeclarator'
 export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
 export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
 export type { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+export type { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
 
 export type SyntaxType =
   | 'Program'
   | 'ExpressionStatement'
   | 'BinaryExpression'
   | 'CallExpression'
+  | 'CallExpressionKw'
   | 'Identifier'
   | 'ReturnStatement'
   | 'VariableDeclaration'
@@ -242,6 +250,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
     // throw e
+    console.error(e.toString())
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,
@@ -566,9 +575,19 @@ export function sketchFromKclValue(
   return result
 }
 
+/**
+ * Execute a KCL program.
+ * @param node The AST of the program to execute.
+ * @param path The full path of the file being executed.  Use `null` for
+ * expressions that don't have a file, like expressions in the command bar.
+ * @param programMemoryOverride If this is not `null`, this will be used as the
+ * initial program memory, and the execution will be engineless (AKA mock
+ * execution).
+ */
 export const executor = async (
   node: Node<Program>,
   engineCommandManager: EngineCommandManager,
+  path?: string,
   programMemoryOverride: ProgramMemory | Error | null = null
 ): Promise<ExecState> => {
   if (programMemoryOverride !== null && err(programMemoryOverride))
@@ -590,6 +609,7 @@ export const executor = async (
     }
     const execOutcome: RustExecOutcome = await execute(
       JSON.stringify(node),
+      path,
       JSON.stringify(programMemoryOverride?.toRaw() || null),
       JSON.stringify({ settings: jsAppSettings }),
       engineCommandManager,
@@ -625,6 +645,13 @@ export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
 
 export const recast = (ast: Program): string | Error => {
   return recast_wasm(JSON.stringify(ast))
+}
+
+/**
+ * Format a number with suffix as KCL.
+ */
+export function formatNumber(value: number, suffix: NumericSuffix): string {
+  return format_number(value, JSON.stringify(suffix))
 }
 
 export const makeDefaultPlanes = async (
@@ -821,5 +848,19 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
   } catch (e) {
     console.error('Caught error decoding base64 string: ' + e)
     return new Error('Caught error decoding base64 string: ' + e)
+  }
+}
+
+/// Change the meta settings for the kcl file.
+/// Returns the new kcl string with the updated settings.
+export function changeKclSettings(
+  kcl: string,
+  settings: MetaSettings
+): string | Error {
+  try {
+    return change_kcl_settings(kcl, JSON.stringify(settings))
+  } catch (e) {
+    console.error('Caught error changing kcl settings: ' + e)
+    return new Error('Caught error changing kcl settings: ' + e)
   }
 }

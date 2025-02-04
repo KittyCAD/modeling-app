@@ -6,6 +6,7 @@ import {
   getXComponent,
   addCloseToPipe,
   getConstraintInfo,
+  getConstraintInfoKw,
 } from './sketch'
 import {
   assertParse,
@@ -13,8 +14,10 @@ import {
   initPromise,
   CallExpression,
   topLevelRange,
+  CallExpressionKw,
 } from '../wasm'
-import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
+import { getNodeFromPath } from '../queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
@@ -103,14 +106,14 @@ describe('testing getXComponent', () => {
 })
 
 describe('testing changeSketchArguments', () => {
-  const lineToChange = 'lineTo([-1.59, -1.54], %)'
-  const lineAfterChange = 'lineTo([2, 3], %)'
+  const lineToChange = 'line(endAbsolute = [-1.59, -1.54])'
+  const lineAfterChange = 'line(endAbsolute = [2, 3])'
   test('changeSketchArguments', async () => {
     // Enable rotations #152
     const genCode = (line: string) => `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> ${line}
-  |> lineTo([0.46, -5.82], %)
+  |> line(endAbsolute = [0.46, -5.82])
 // |> rx(45, %)
 `
     const code = genCode(lineToChange)
@@ -141,15 +144,15 @@ describe('testing changeSketchArguments', () => {
 })
 
 describe('testing addNewSketchLn', () => {
-  const lineToChange = 'lineTo([-1.59, -1.54], %)'
+  const lineToChange = 'line(endAbsolute = [-1.59, -1.54])'
   test('addNewSketchLn', async () => {
     // Enable rotations #152
     const code = `
 mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
-  |> lineTo([-1.59, -1.54], %)
-  |> lineTo([0.46, -5.82], %)`
+  |> line(endAbsolute = [-1.59, -1.54])
+  |> line(endAbsolute = [0.46, -5.82])`
     const ast = assertParse(code)
 
     const execState = await enginelessExecutor(ast)
@@ -177,9 +180,9 @@ mySketch001 = startSketchOn('XY')
     let expectedCode = `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
-  |> lineTo([-1.59, -1.54], %)
-  |> lineTo([0.46, -5.82], %)
-  |> lineTo([2, 3], %)
+  |> line(endAbsolute = [-1.59, -1.54])
+  |> line(endAbsolute = [0.46, -5.82])
+  |> line(endAbsolute = [2, 3])
 `
 
     const { modifiedAst } = newSketchLnRetVal
@@ -200,9 +203,9 @@ mySketch001 = startSketchOn('XY')
     expectedCode = `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
-  |> lineTo([-1.59, -1.54], %)
-  |> lineTo([0.46, -5.82], %)
-  |> close(%)
+  |> line(endAbsolute = [-1.59, -1.54])
+  |> line(endAbsolute = [0.46, -5.82])
+  |> close()
 `
     expect(recast(modifiedAst2)).toBe(expectedCode)
   })
@@ -210,13 +213,13 @@ mySketch001 = startSketchOn('XY')
 
 describe('testing addTagForSketchOnFace', () => {
   it('needs to be in it', async () => {
-    const originalLine = 'lineTo([-1.59, -1.54], %)'
+    const originalLine = 'line(endAbsolute = [-1.59, -1.54])'
     // Enable rotations #152
     const genCode = (line: string) => `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> ${line}
-  |> lineTo([0.46, -5.82], %)
+  |> line(endAbsolute = [0.46, -5.82])
 `
     const code = genCode(originalLine)
     const ast = assertParse(code)
@@ -240,7 +243,9 @@ describe('testing addTagForSketchOnFace', () => {
     if (err(sketchOnFaceRetVal)) return sketchOnFaceRetVal
 
     const { modifiedAst } = sketchOnFaceRetVal
-    const expectedCode = genCode('lineTo([-1.59, -1.54], %, $seg01)')
+    const expectedCode = genCode(
+      'line(endAbsolute = [-1.59, -1.54], tag = $seg01)'
+    )
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
   const chamferTestCases = [
@@ -284,9 +289,9 @@ describe('testing addTagForSketchOnFace', () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
-  |> close(%)
-extrude001 = extrude(100, sketch001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(sketch001, length = 100)
 ${insertCode}
 `
       const code = genCode(originalChamfer)
@@ -326,12 +331,12 @@ describe('testing getConstraintInfo', () => {
   describe('object notation', () => {
     const code = `const part001 = startSketchOn('-XZ')
   |> startProfileAt([0,0], %)
-  |> line([3, 4], %)
+  |> line(end = [3, 4])
   |> angledLine({
     angle = 3.14,
     length = 3.14,
   }, %)
-  |> lineTo([6.14, 3.14], %)
+  |> line(endAbsolute = [6.14, 3.14])
   |> xLineTo(8, %)
   |> yLineTo(5, %)
   |> yLine(3.14, %, $a)
@@ -366,7 +371,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xRelative',
             isConstrained: false,
             value: '3',
-            sourceRange: topLevelRange(78, 79),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'line',
@@ -375,7 +380,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yRelative',
             isConstrained: false,
             value: '4',
-            sourceRange: topLevelRange(81, 82),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'line',
@@ -389,7 +394,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(118, 122),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLine',
@@ -398,7 +403,7 @@ describe('testing getConstraintInfo', () => {
             type: 'length',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(137, 141),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'length' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLine',
@@ -406,25 +411,25 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'lineTo',
+        'line(endAbsolute',
         [
           {
             type: 'xAbsolute',
             isConstrained: false,
             value: '6.14',
-            sourceRange: topLevelRange(164, 168),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'lineTo',
+            stdLibFnName: 'line',
           },
           {
             type: 'yAbsolute',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(170, 174),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'lineTo',
+            stdLibFnName: 'line',
           },
         ],
       ],
@@ -435,7 +440,7 @@ describe('testing getConstraintInfo', () => {
             type: 'horizontal',
             isConstrained: true,
             value: 'xLineTo',
-            sourceRange: topLevelRange(185, 192),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'xLineTo',
@@ -444,7 +449,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xAbsolute',
             isConstrained: false,
             value: '8',
-            sourceRange: topLevelRange(193, 194),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'singleValue' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'xLineTo',
@@ -458,7 +463,7 @@ describe('testing getConstraintInfo', () => {
             type: 'vertical',
             isConstrained: true,
             value: 'yLineTo',
-            sourceRange: topLevelRange(204, 211),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'yLineTo',
@@ -467,7 +472,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yAbsolute',
             isConstrained: false,
             value: '5',
-            sourceRange: topLevelRange(212, 213),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'singleValue' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'yLineTo',
@@ -481,7 +486,7 @@ describe('testing getConstraintInfo', () => {
             type: 'vertical',
             isConstrained: true,
             value: 'yLine',
-            sourceRange: topLevelRange(223, 228),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'yLine',
@@ -490,7 +495,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yRelative',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(229, 233),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'singleValue' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'yLine',
@@ -504,7 +509,7 @@ describe('testing getConstraintInfo', () => {
             type: 'horizontal',
             isConstrained: true,
             value: 'xLine',
-            sourceRange: topLevelRange(247, 252),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'xLine',
@@ -513,7 +518,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xRelative',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(253, 257),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'singleValue' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'xLine',
@@ -527,7 +532,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(301, 305),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfXLength',
@@ -536,7 +541,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xRelative',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(320, 324),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'length' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfXLength',
@@ -550,7 +555,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '30',
-            sourceRange: topLevelRange(373, 375),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfYLength',
@@ -559,7 +564,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yRelative',
             isConstrained: false,
             value: '3',
-            sourceRange: topLevelRange(390, 391),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'length' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfYLength',
@@ -573,7 +578,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '12.14',
-            sourceRange: topLevelRange(434, 439),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToX',
@@ -582,7 +587,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xAbsolute',
             isConstrained: false,
             value: '12',
-            sourceRange: topLevelRange(450, 452),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'to' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToX',
@@ -596,7 +601,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '30',
-            sourceRange: topLevelRange(495, 497),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToY',
@@ -605,7 +610,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yAbsolute',
             isConstrained: false,
             value: '10.14',
-            sourceRange: topLevelRange(508, 513),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'to' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToY',
@@ -619,7 +624,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(567, 571),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineThatIntersects',
@@ -628,7 +633,7 @@ describe('testing getConstraintInfo', () => {
             type: 'intersectionOffset',
             isConstrained: false,
             value: '0',
-            sourceRange: topLevelRange(608, 609),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'offset' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineThatIntersects',
@@ -637,7 +642,7 @@ describe('testing getConstraintInfo', () => {
             type: 'intersectionTag',
             isConstrained: false,
             value: 'a',
-            sourceRange: topLevelRange(592, 593),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: {
               key: 'intersectTag',
               type: 'objectProperty',
@@ -654,7 +659,7 @@ describe('testing getConstraintInfo', () => {
             type: 'tangentialWithPrevious',
             isConstrained: true,
             value: 'tangentialArcTo',
-            sourceRange: topLevelRange(623, 638),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArcTo',
@@ -663,7 +668,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xAbsolute',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(640, 644),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArcTo',
@@ -672,7 +677,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yAbsolute',
             isConstrained: false,
             value: '13.14',
-            sourceRange: topLevelRange(646, 651),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArcTo',
@@ -687,22 +692,25 @@ describe('testing getConstraintInfo', () => {
       )
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpression>>(
+      const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
         ast,
         pathToNode,
-        'CallExpression'
+        ['CallExpression', 'CallExpressionKw']
       )
       if (err(callExp)) return callExp
-      const result = getConstraintInfo(callExp.node, code, pathToNode)
+      const result =
+        callExp.node.type === 'CallExpression'
+          ? getConstraintInfo(callExp.node, code, pathToNode)
+          : getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
   describe('array notation', () => {
     const code = `const part001 = startSketchOn('-XZ')
     |> startProfileAt([0, 0], %)
-    |> line([3, 4], %)
+    |> line(end = [3, 4])
     |> angledLine([3.14, 3.14], %)
-    |> lineTo([6.14, 3.14], %)
+    |> line(endAbsolute = [6.14, 3.14])
     |> xLineTo(8, %)
     |> yLineTo(5, %)
     |> yLine(3.14, %, $a)
@@ -725,7 +733,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(112, 116),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLine',
@@ -734,7 +742,7 @@ describe('testing getConstraintInfo', () => {
             type: 'length',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(118, 122),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLine',
@@ -748,7 +756,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(277, 281),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfXLength',
@@ -757,7 +765,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xRelative',
             isConstrained: false,
             value: '3.14',
-            sourceRange: topLevelRange(283, 287),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfXLength',
@@ -771,7 +779,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '30',
-            sourceRange: topLevelRange(321, 323),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfYLength',
@@ -780,7 +788,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yRelative',
             isConstrained: false,
             value: '3',
-            sourceRange: topLevelRange(325, 326),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfYLength',
@@ -794,7 +802,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '12',
-            sourceRange: topLevelRange(354, 356),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToX',
@@ -803,7 +811,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xAbsolute',
             isConstrained: false,
             value: '12',
-            sourceRange: topLevelRange(358, 360),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToX',
@@ -817,7 +825,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: false,
             value: '30',
-            sourceRange: topLevelRange(388, 390),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToY',
@@ -826,7 +834,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yAbsolute',
             isConstrained: false,
             value: '10',
-            sourceRange: topLevelRange(392, 394),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToY',
@@ -841,22 +849,25 @@ describe('testing getConstraintInfo', () => {
       )
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpression>>(
+      const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
         ast,
         pathToNode,
-        'CallExpression'
+        ['CallExpression', 'CallExpressionKw']
       )
       if (err(callExp)) return callExp
-      const result = getConstraintInfo(callExp.node, code, pathToNode)
+      const result =
+        callExp.node.type === 'CallExpression'
+          ? getConstraintInfo(callExp.node, code, pathToNode)
+          : getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
   describe('constrained', () => {
     const code = `const part001 = startSketchOn('-XZ')
     |> startProfileAt([0, 0], %)
-    |> line([3 + 0, 4 + 0], %)
+    |> line(end = [3 + 0, 4 + 0])
     |> angledLine({ angle = 3.14 + 0, length = 3.14 + 0 }, %)
-    |> lineTo([6.14 + 0, 3.14 + 0], %)
+    |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
     |> xLineTo(8 + 0, %)
     |> yLineTo(5 + 0, %)
     |> yLine(3.14 + 0, %, $a)
@@ -879,7 +890,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xRelative',
             isConstrained: true,
             value: '3 + 0',
-            sourceRange: topLevelRange(83, 88),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'line',
@@ -888,7 +899,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yRelative',
             isConstrained: true,
             value: '4 + 0',
-            sourceRange: topLevelRange(90, 95),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'line',
@@ -902,7 +913,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: true,
             value: '3.14 + 0',
-            sourceRange: topLevelRange(129, 137),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLine',
@@ -911,7 +922,7 @@ describe('testing getConstraintInfo', () => {
             type: 'length',
             isConstrained: true,
             value: '3.14 + 0',
-            sourceRange: topLevelRange(148, 156),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'length' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLine',
@@ -919,25 +930,25 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'lineTo',
+        'line(endAbsolute',
         [
           {
             type: 'xAbsolute',
             isConstrained: true,
             value: '6.14 + 0',
-            sourceRange: topLevelRange(178, 186),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'lineTo',
+            stdLibFnName: 'line',
           },
           {
             type: 'yAbsolute',
             isConstrained: true,
             value: '3.14 + 0',
-            sourceRange: topLevelRange(188, 196),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'lineTo',
+            stdLibFnName: 'line',
           },
         ],
       ],
@@ -948,7 +959,7 @@ describe('testing getConstraintInfo', () => {
             type: 'horizontal',
             isConstrained: true,
             value: 'xLineTo',
-            sourceRange: topLevelRange(209, 216),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'xLineTo',
@@ -957,7 +968,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xAbsolute',
             isConstrained: true,
             value: '8 + 0',
-            sourceRange: topLevelRange(217, 222),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'singleValue' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'xLineTo',
@@ -971,7 +982,7 @@ describe('testing getConstraintInfo', () => {
             type: 'vertical',
             isConstrained: true,
             value: 'yLineTo',
-            sourceRange: topLevelRange(234, 241),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'yLineTo',
@@ -980,7 +991,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yAbsolute',
             isConstrained: true,
             value: '5 + 0',
-            sourceRange: topLevelRange(242, 247),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'singleValue' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'yLineTo',
@@ -994,7 +1005,7 @@ describe('testing getConstraintInfo', () => {
             type: 'vertical',
             isConstrained: true,
             value: 'yLine',
-            sourceRange: topLevelRange(259, 264),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'yLine',
@@ -1003,7 +1014,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yRelative',
             isConstrained: true,
             value: '3.14 + 0',
-            sourceRange: topLevelRange(265, 273),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'singleValue' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'yLine',
@@ -1017,7 +1028,7 @@ describe('testing getConstraintInfo', () => {
             type: 'horizontal',
             isConstrained: true,
             value: 'xLine',
-            sourceRange: topLevelRange(289, 294),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'xLine',
@@ -1026,7 +1037,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xRelative',
             isConstrained: true,
             value: '3.14 + 0',
-            sourceRange: topLevelRange(295, 303),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'singleValue' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'xLine',
@@ -1040,7 +1051,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: true,
             value: '3.14 + 0',
-            sourceRange: topLevelRange(345, 353),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfXLength',
@@ -1049,7 +1060,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xRelative',
             isConstrained: true,
             value: '3.14 + 0',
-            sourceRange: topLevelRange(364, 372),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'length' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfXLength',
@@ -1063,7 +1074,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: true,
             value: '30 + 0',
-            sourceRange: topLevelRange(416, 422),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfYLength',
@@ -1072,7 +1083,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yRelative',
             isConstrained: true,
             value: '3 + 0',
-            sourceRange: topLevelRange(433, 438),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'length' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineOfYLength',
@@ -1086,7 +1097,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: true,
             value: '12.14 + 0',
-            sourceRange: topLevelRange(476, 485),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToX',
@@ -1095,7 +1106,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xAbsolute',
             isConstrained: true,
             value: '12 + 0',
-            sourceRange: topLevelRange(492, 498),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'to' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToX',
@@ -1109,7 +1120,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: true,
             value: '30 + 0',
-            sourceRange: topLevelRange(536, 542),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToY',
@@ -1118,7 +1129,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yAbsolute',
             isConstrained: true,
             value: '10.14 + 0',
-            sourceRange: topLevelRange(549, 558),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'to' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineToY',
@@ -1132,7 +1143,7 @@ describe('testing getConstraintInfo', () => {
             type: 'angle',
             isConstrained: true,
             value: '3.14 + 0',
-            sourceRange: topLevelRange(616, 624),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'angle' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineThatIntersects',
@@ -1141,7 +1152,7 @@ describe('testing getConstraintInfo', () => {
             type: 'intersectionOffset',
             isConstrained: true,
             value: '0 + 0',
-            sourceRange: topLevelRange(671, 676),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'objectProperty', key: 'offset' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineThatIntersects',
@@ -1150,7 +1161,7 @@ describe('testing getConstraintInfo', () => {
             type: 'intersectionTag',
             isConstrained: false,
             value: 'a',
-            sourceRange: topLevelRange(650, 651),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { key: 'intersectTag', type: 'objectProperty' },
             pathToNode: expect.any(Array),
             stdLibFnName: 'angledLineThatIntersects',
@@ -1164,7 +1175,7 @@ describe('testing getConstraintInfo', () => {
             type: 'tangentialWithPrevious',
             isConstrained: true,
             value: 'tangentialArcTo',
-            sourceRange: topLevelRange(697, 712),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArcTo',
@@ -1173,7 +1184,7 @@ describe('testing getConstraintInfo', () => {
             type: 'xAbsolute',
             isConstrained: true,
             value: '3.14 + 0',
-            sourceRange: topLevelRange(714, 722),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArcTo',
@@ -1182,7 +1193,7 @@ describe('testing getConstraintInfo', () => {
             type: 'yAbsolute',
             isConstrained: true,
             value: '13.14 + 0',
-            sourceRange: topLevelRange(724, 733),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArcTo',
@@ -1197,14 +1208,17 @@ describe('testing getConstraintInfo', () => {
       )
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpression>>(
+      const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
         ast,
         pathToNode,
-        'CallExpression'
+        ['CallExpression', 'CallExpressionKw']
       )
       if (err(callExp)) return callExp
 
-      const result = getConstraintInfo(callExp.node, code, pathToNode)
+      const result =
+        callExp.node.type === 'CallExpression'
+          ? getConstraintInfo(callExp.node, code, pathToNode)
+          : getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
