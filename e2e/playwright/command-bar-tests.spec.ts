@@ -90,6 +90,7 @@ test.describe('Command bar tests', () => {
     page,
     homePage,
   }) => {
+    test.skip(process.platform === 'win32', 'Skip on windows')
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 

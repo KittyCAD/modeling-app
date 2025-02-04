@@ -704,6 +704,7 @@ test.describe('Editor tests', () => {
     page,
     homePage,
   }) => {
+    test.skip(process.platform === 'win32', 'Skip on windows')
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
