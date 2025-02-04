@@ -5,7 +5,7 @@ import { getUtils, executorInputPath } from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 
-test.describe('Regression tests', () => {
+test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
   // bugs we found that don't fit neatly into other categories
   test('bad model has inline error #3251', async ({
     context,
@@ -239,12 +239,6 @@ extrude001 = extrude(sketch001, length = 50)
     'Position _ Is Out Of Range... regression test',
     { tag: ['@skipWin'] },
     async ({ context, page, homePage }) => {
-      // SKip on windows, its being weird.
-      test.skip(
-        process.platform === 'win32',
-        'This test is being weird on windows'
-      )
-
       const u = await getUtils(page)
       // const PUR = 400 / 37.5 //pixeltoUnitRatio
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -425,13 +419,6 @@ extrude001 = extrude(sketch001, length = 50)
     'ensure you can not export while an export is already going',
     { tag: ['@skipLinux', '@skipWin'] },
     async ({ page, homePage }) => {
-      // This is being weird on ubuntu and windows.
-      test.skip(
-        // eslint-disable-next-line jest/valid-title
-        process.platform === 'linux' || process.platform === 'win32',
-        'This test is being weird on ubuntu'
-      )
-
       const u = await getUtils(page)
       await test.step('Set up the code and durations', async () => {
         await page.addInitScript(
@@ -560,8 +547,6 @@ extrude001 = extrude(sketch001, length = 50)
     page,
     homePage,
   }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
 
     // Constants and locators
