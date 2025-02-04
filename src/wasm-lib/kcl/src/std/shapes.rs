@@ -23,6 +23,8 @@ use crate::{
     },
 };
 
+use super::sketch::NEW_TAG_KW;
+
 /// A sketch surface or a sketch.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -32,24 +34,14 @@ pub enum SketchOrSurface {
     Sketch(Box<Sketch>),
 }
 
-/// Data for drawing an circle
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-// TODO: make sure the docs on the args below are correct.
-pub struct CircleData {
-    /// The center of the circle.
-    pub center: [f64; 2],
-    /// The circle radius
-    pub radius: f64,
-}
-
 /// Sketch a circle.
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_surface_or_group, tag): (CircleData, SketchOrSurface, Option<TagNode>) =
-        args.get_circle_args()?;
-
-    let sketch = inner_circle(data, sketch_surface_or_group, tag, exec_state, args).await?;
+    let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketchSurfaceOrGroup")?;
+    let center = args.get_kw_arg("center")?;
+    let radius = args.get_kw_arg_opt("radius")?;
+    let diameter = args.get_kw_arg_opt("diameter")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
+    let sketch = inner_circle(sketch_surface_or_group, center, radius, diameter, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -78,10 +70,21 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "circle",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_surface_or_group = { docs = "Which sketch should this circle be drawn on?"},
+        center = { docs = "Center of the circle", include_in_snippet = true},
+        radius = { docs = "Distance from circle's circumference to center. Incompatible with `diameter`.", include_in_snippet = true},
+        diameter = { docs = "Maximum distance between two points on the circle. Incompatible with `radius`."},
+        tag = { docs = "Create a new tag which refers to this circle"},
+    }
 }]
 async fn inner_circle(
-    data: CircleData,
     sketch_surface_or_group: SketchOrSurface,
+    center: [f64; 2],
+    radius: Option<f64>,
+    diameter: Option<f64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -90,8 +93,25 @@ async fn inner_circle(
         SketchOrSurface::SketchSurface(surface) => surface,
         SketchOrSurface::Sketch(group) => group.on,
     };
+    let radius = match (radius, diameter) {
+        (Some(r), None) => r,
+        (None, Some(d)) => d / 2.0,
+        (None, None) => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: "You must supply either `end` or `end_absolute` arguments".to_owned(),
+            }))
+        }
+        (Some(_), Some(_)) => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: "You cannot give both `end` and `end_absolute` params, you have to choose one or the other"
+                    .to_owned(),
+            }))
+        }
+    };
     let sketch = crate::std::sketch::inner_start_profile_at(
-        [data.center[0] + data.radius, data.center[1]],
+        [center[0] + radius, center[1]],
         sketch_surface,
         None,
         exec_state,
@@ -99,7 +119,7 @@ async fn inner_circle(
     )
     .await?;
 
-    let from = [data.center[0] + data.radius, data.center[1]];
+    let from = [center[0] + radius, center[1]];
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
 
@@ -112,8 +132,8 @@ async fn inner_circle(
             segment: PathSegment::Arc {
                 start: angle_start,
                 end: angle_end,
-                center: KPoint2d::from(data.center).map(LengthUnit),
-                radius: data.radius.into(),
+                center: KPoint2d::from(center).map(LengthUnit),
+                radius: radius.into(),
                 relative: false,
             },
         }),
@@ -130,8 +150,8 @@ async fn inner_circle(
                 metadata: args.source_range.into(),
             },
         },
-        radius: data.radius,
-        center: data.center,
+        radius,
+        center,
         ccw: angle_start < angle_end,
     };
 
@@ -191,13 +211,13 @@ async fn inner_circle_three_point(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let center = calculate_circle_center(p1, p2, p3);
+    // It can be the distance to any of the 3 points - they all lay on the circumference.
+    let radius = distance(center.into(), p2.into());
     inner_circle(
-        CircleData {
-            center,
-            // It can be the distance to any of the 3 points - they all lay on the circumference.
-            radius: distance(center.into(), p2.into()),
-        },
         sketch_surface_or_group,
+        center,
+        Some(radius),
+        None,
         tag,
         exec_state,
         args,
