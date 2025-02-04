@@ -6,7 +6,7 @@ import { bracket } from 'lib/exampleKcl'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
 import fsp from 'fs/promises'
 
-test.describe('Code pane and errors', () => {
+test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
     page,
     homePage,
