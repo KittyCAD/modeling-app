@@ -23,6 +23,7 @@ import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
 import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
 import {
   CallExpression,
+  CallExpressionKw,
   PathToNode,
   Program,
   Expr,
@@ -35,7 +36,7 @@ import {
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
-import { getConstraintInfo } from 'lang/std/sketch'
+import { getConstraintInfo, getConstraintInfoKw } from 'lang/std/sketch'
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
@@ -221,10 +222,10 @@ const Overlay = ({
   // It's possible for the pathToNode to request a newer AST node
   // than what's available in the AST at the moment of query.
   // It eventually settles on being updated.
-  const _node1 = getNodeFromPath<Node<CallExpression>>(
+  const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
     kclManager.ast,
     overlay.pathToNode,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
 
   // For that reason, to prevent console noise, we do not use err here.
@@ -234,11 +235,14 @@ const Overlay = ({
   }
   const callExpression = _node1.node
 
-  const constraints = getConstraintInfo(
-    callExpression,
-    codeManager.code,
-    overlay.pathToNode
-  )
+  const constraints =
+    callExpression.type === 'CallExpression'
+      ? getConstraintInfo(callExpression, codeManager.code, overlay.pathToNode)
+      : getConstraintInfoKw(
+          callExpression,
+          codeManager.code,
+          overlay.pathToNode
+        )
 
   const offset = 20 // px
   // We could put a boolean in settings that
@@ -657,10 +661,10 @@ const ConstraintSymbol = ({
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 
-              const _node1 = getNodeFromPath<CallExpression>(
+              const _node1 = getNodeFromPath<CallExpression | CallExpressionKw>(
                 pResult.program!,
                 pathToNode,
-                'CallExpression',
+                ['CallExpression', 'CallExpressionKw'],
                 true
               )
               if (trap(_node1)) return Promise.reject(_node1)

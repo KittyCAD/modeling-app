@@ -199,7 +199,7 @@ test.describe('Testing segment overlays', () => {
         })
       }
     test.setTimeout(120000)
-    test('for segments [line, angledLine, lineTo, xLineTo]', async ({
+    test('for segments [line, angledLine, xLineTo]', async ({
       page,
       editor,
       homePage,
@@ -209,9 +209,9 @@ test.describe('Testing segment overlays', () => {
           'persistCode',
           `part001 = startSketchOn('XZ')
         |> startProfileAt([5 + 0, 20 + 0], %)
-        |> line([0.5, -14 + 0], %)
+        |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
-        |> lineTo([5 + 33, 20 + 11.5 + 0], %)
+        |> line(endAbsolute = [5 + 33, 20 + 11.5 + 0])
         |> xLineTo(5 + 9 - 5, %)
         |> yLineTo(20 + -10.77, %, $a)
         |> xLine(26.04, %)
@@ -279,9 +279,9 @@ test.describe('Testing segment overlays', () => {
       await clickConstrained({
         hoverPos: { x: line.x, y: line.y },
         constraintType: 'yRelative',
-        expectBeforeUnconstrained: '|> line([0.5, -14 + 0], %)',
-        expectAfterUnconstrained: '|> line([0.5, -14], %)',
-        expectFinal: '|> line([0.5, yRel001], %)',
+        expectBeforeUnconstrained: '|> line(end = [0.5, -14 + 0])',
+        expectAfterUnconstrained: '|> line(end = [0.5, -14])',
+        expectFinal: '|> line(end = [0.5, yRel001])',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="0"]',
       })
@@ -289,9 +289,9 @@ test.describe('Testing segment overlays', () => {
       await clickUnconstrained({
         hoverPos: { x: line.x, y: line.y },
         constraintType: 'xRelative',
-        expectBeforeUnconstrained: '|> line([0.5, yRel001], %)',
-        expectAfterUnconstrained: 'line([xRel001, yRel001], %)',
-        expectFinal: '|> line([0.5, yRel001], %)',
+        expectBeforeUnconstrained: '|> line(end = [0.5, yRel001])',
+        expectAfterUnconstrained: 'line(end = [xRel001, yRel001])',
+        expectFinal: '|> line(end = [0.5, yRel001])',
         ang: ang + 180,
         locator: '[data-overlay-index="0"]',
       })
@@ -332,9 +332,10 @@ test.describe('Testing segment overlays', () => {
       await clickConstrained({
         hoverPos: { x: lineTo.x, y: lineTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: 'lineTo([5 + 33, 20 + 11.5 + 0], %)',
-        expectAfterUnconstrained: 'lineTo([5 + 33, 31.5], %)',
-        expectFinal: 'lineTo([5 + 33, yAbs001], %)',
+        expectBeforeUnconstrained:
+          'line(endAbsolute = [5 + 33, 20 + 11.5 + 0])',
+        expectAfterUnconstrained: 'line(endAbsolute = [5 + 33, 31.5])',
+        expectFinal: 'line(endAbsolute = [5 + 33, yAbs001])',
         steps: 8,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="2"]',
@@ -343,9 +344,9 @@ test.describe('Testing segment overlays', () => {
       await clickConstrained({
         hoverPos: { x: lineTo.x, y: lineTo.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: 'lineTo([5 + 33, yAbs001], %)',
-        expectAfterUnconstrained: 'lineTo([38, yAbs001], %)',
-        expectFinal: 'lineTo([xAbs001, yAbs001], %)',
+        expectBeforeUnconstrained: 'line(endAbsolute = [5 + 33, yAbs001])',
+        expectAfterUnconstrained: 'line(endAbsolute = [38, yAbs001])',
+        expectFinal: 'line(endAbsolute = [xAbs001, yAbs001])',
         steps: 8,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="2"]',
@@ -382,9 +383,9 @@ test.describe('Testing segment overlays', () => {
     xAbs002 = 4
     part001 = startSketchOn('XZ')
       |> startProfileAt([0, 0], %)
-      |> line([0.5, yRel001], %)
+      |> line(end = [0.5, yRel001])
       |> angledLine({ angle = angle001, length = len001 }, %)
-      |> lineTo([33, yAbs001], %)
+      |> line(endAbsolute = [33, yAbs001])
       |> xLineTo(xAbs002, %)
       |> yLineTo(-10.77, %, $a)
       |> xLine(26.04, %)
@@ -455,9 +456,9 @@ test.describe('Testing segment overlays', () => {
           'persistCode',
           `part001 = startSketchOn('XZ')
         |> startProfileAt([0, 0], %)
-        |> line([0.5, -14 + 0], %)
+        |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
-        |> lineTo([33, 11.5 + 0], %)
+        |> line(endAbsolute = [33, 11.5 + 0])
         |> xLineTo(9 - 5, %)
         |> yLineTo(-10.77, %, $a)
         |> xLine(26.04, %)
@@ -586,9 +587,9 @@ test.describe('Testing segment overlays', () => {
           'persistCode',
           `part001 = startSketchOn('XZ')
         |> startProfileAt([0, 0], %)
-        |> line([0.5, -14 + 0], %)
+        |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
-        |> lineTo([33, 11.5 + 0], %)
+        |> line(endAbsolute = [33, 11.5 + 0])
         |> xLineTo(9 - 5, %)
         |> yLineTo(-10.77, %, $a)
         |> xLine(26.04, %)
@@ -747,9 +748,9 @@ test.describe('Testing segment overlays', () => {
           'persistCode',
           `part001 = startSketchOn('XZ')
         |> startProfileAt([0, 0], %)
-        |> line([0.5, -14 + 0], %)
+        |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
-        |> lineTo([33, 11.5 + 0], %)
+        |> line(endAbsolute = [33, 11.5 + 0])
         |> xLineTo(9 - 5, %)
         |> yLineTo(-10.77, %, $a)
         |> xLine(26.04, %)
@@ -937,9 +938,9 @@ test.describe('Testing segment overlays', () => {
           'persistCode',
           `part001 = startSketchOn('XZ')
       |> startProfileAt([0, 0], %)
-      |> line([0.5, -14 + 0], %)
+      |> line(end = [0.5, -14 + 0])
       |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
-      |> lineTo([33, 11.5 + 0], %)
+      |> line(endAbsolute = [33, 11.5 + 0])
       |> xLineTo(9 - 5, %)
       |> yLineTo(-10.77, %, $a)
       |> xLine(26.04, %)
@@ -1110,7 +1111,7 @@ test.describe('Testing segment overlays', () => {
       )
       await page.mouse.move(hoverPos.x, hoverPos.y)
 
-      const codeToBeDeleted = 'lineTo([33, 11.5 + 0], %)'
+      const codeToBeDeleted = 'line(endAbsolute = [33, 11.5 + 0])'
       await editor.expectEditor.toContain(codeToBeDeleted, {
         shouldNormalise: true,
       })
@@ -1136,7 +1137,7 @@ test.describe('Testing segment overlays', () => {
       ang = await u.getAngle(`[data-overlay-index="${0}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'line([0.5, -14 + 0], %)',
+        codeToBeDeleted: 'line(end = [0.5, -14 + 0])',
         stdLibFnName: 'line',
         ang: ang + 180,
       })
@@ -1146,7 +1147,7 @@ test.describe('Testing segment overlays', () => {
   })
   test.describe('Testing delete with dependent segments', () => {
     const cases = [
-      'line([22, 2], %, $seg01)',
+      'line(end = [22, 2], tag = $seg01)',
       'angledLine([5, 23.03], %, $seg01)',
       'xLine(23, %, $seg01)',
       'yLine(-8, %, $seg01)',
@@ -1174,7 +1175,7 @@ test.describe('Testing segment overlays', () => {
                 `part001 = startSketchOn('XZ')
           |> startProfileAt([5, 6], %)
           |> ${lineToBeDeleted}
-          |> line([-10, -15], %)
+          |> line(end = [-10, -15])
           |> angledLine([-176, segLen(seg01)], %)        
         ${extraLine ? 'myVar = segLen(seg01)' : ''}`
               )
@@ -1282,45 +1283,45 @@ test.describe('Testing segment overlays', () => {
   test.describe('Testing remove constraints segments', () => {
     const cases = [
       {
-        before: `line([22 + 0, 2 + 0], %, $seg01)`,
-        after: `line([22, 2], %, $seg01)`,
+        before: `line(end = [22 + 0, 2 + 0], tag = $seg01)`,
+        after: `line(end = [22, 2], tag = $seg01)`,
       },
 
       {
         before: `angledLine([5 + 0, 23.03 + 0], %, $seg01)`,
-        after: `line([22.94, 2.01], %, $seg01)`,
+        after: `line(end = [22.94, 2.01], tag = $seg01)`,
       },
       {
         before: `xLine(23 + 0, %, $seg01)`,
-        after: `line([23, 0], %, $seg01)`,
+        after: `line(end = [23, 0], tag = $seg01)`,
       },
       {
         before: `yLine(-8 + 0, %, $seg01)`,
-        after: `line([0, -8], %, $seg01)`,
+        after: `line(end = [0, -8], tag = $seg01)`,
       },
       {
         before: `xLineTo(30 + 0, %, $seg01)`,
-        after: `line([25, 0], %, $seg01)`,
+        after: `line(end = [25, 0], tag = $seg01)`,
       },
       {
         before: `yLineTo(-4 + 0, %, $seg01)`,
-        after: `line([0, -10], %, $seg01)`,
+        after: `line(end = [0, -10], tag = $seg01)`,
       },
       {
         before: `angledLineOfXLength({ angle = 3 + 0, length = 30 + 0 }, %, $seg01)`,
-        after: `line([30, 1.57], %, $seg01)`,
+        after: `line(end = [30, 1.57], tag = $seg01)`,
       },
       {
         before: `angledLineOfYLength({ angle = 3 + 0, length = 1.5 + 0 }, %, $seg01)`,
-        after: `line([28.62, 1.5], %, $seg01)`,
+        after: `line(end = [28.62, 1.5], tag = $seg01)`,
       },
       {
         before: `angledLineToX({ angle = 3 + 0, to = 30 + 0 }, %, $seg01)`,
-        after: `line([25, 1.31], %, $seg01)`,
+        after: `line(end = [25, 1.31], tag = $seg01)`,
       },
       {
         before: `angledLineToY({ angle = 3 + 0, to = 7 + 0 }, %, $seg01)`,
-        after: `line([19.08, 1], %, $seg01)`,
+        after: `line(end = [19.08, 1], tag = $seg01)`,
       },
     ]
 
@@ -1338,7 +1339,7 @@ test.describe('Testing segment overlays', () => {
               `part001 = startSketchOn('XZ')
         |> startProfileAt([5, 6], %)
         |> ${lineToBeDeleted}
-        |> line([-10, -15], %)
+        |> line(end = [-10, -15])
         |> angledLine([-176, segLen(seg01)], %)`
             )
           },

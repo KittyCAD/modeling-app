@@ -714,12 +714,12 @@ test.describe('Testing settings', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
-    |> line([5, 0], %)
-    |> line([0, 5], %)
-    |> line([-5, 0], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude001 = extrude(5, sketch001)
+    |> line(end = [5, 0])
+    |> line(end = [0, 5])
+    |> line(end = [-5, 0])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude001 = extrude(sketch001, length = 5)
   `
       )
     })
