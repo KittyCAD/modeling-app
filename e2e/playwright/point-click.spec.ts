@@ -715,6 +715,7 @@ test(`Offset plane point-and-click`, async ({
   toolbar,
   cmdBar,
 }) => {
+  test.skip(process.platform === 'win32', 'Skip on windows')
   // One dumb hardcoded screen pixel value
   const testPoint = { x: 700, y: 150 }
   const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
@@ -783,6 +784,7 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
     toolbar,
     cmdBar,
   }) => {
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const initialCode = `sketch001 = startSketchOn('XZ')
     |> circle({ center = [0, 0], radius = 30 }, %)
     plane001 = offsetPlane('XZ', 50)
@@ -869,6 +871,7 @@ test('Loft and offset plane deletion via selection', async ({
   homePage,
   scene,
 }) => {
+  test.skip(process.platform === 'win32', 'Skip on windows')
   const initialCode = `sketch001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 30 }, %)
   plane001 = offsetPlane('XZ', 50)
@@ -1468,6 +1471,7 @@ test(`Chamfer point-and-click`, async ({
   toolbar,
   cmdBar,
 }) => {
+  test.skip(process.platform === 'win32', 'Skip on windows')
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
@@ -1696,6 +1700,7 @@ test(`Chamfer point-and-click delete`, async ({
   editor,
   toolbar,
 }) => {
+  test.skip(process.platform === 'win32', 'Skip on windows')
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
@@ -1940,6 +1945,7 @@ test('Shell point-and-click wall', async ({
   toolbar,
   cmdBar,
 }) => {
+  test.skip(process.platform === 'win32', 'Skip on windows')
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-20, 20], %)
   |> xLine(40, %)

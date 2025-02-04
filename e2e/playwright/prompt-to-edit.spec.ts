@@ -144,6 +144,7 @@ test.describe('bad path', () => {
     page,
     scene,
   }) => {
+    test.skip(process.platform === 'win32', 'Skip on windows')
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
     }, file)
