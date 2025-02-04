@@ -10,7 +10,7 @@ import {
 
 import { join } from 'path'
 
-test.describe('Editor tests', () => {
+test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -515,7 +515,6 @@ test.describe('Editor tests', () => {
     page,
     homePage,
   }) => {
-    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -705,7 +704,6 @@ test.describe('Editor tests', () => {
     page,
     homePage,
   }) => {
-    test.skip(process.platform === 'win32', 'Skip on windows')
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -895,7 +893,6 @@ test.describe('Editor tests', () => {
     context,
     homePage,
   }) => {
-    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(

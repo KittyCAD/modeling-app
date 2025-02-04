@@ -5,9 +5,7 @@ import { LineInputsType } from 'lang/std/sketchcombos'
 import { uuidv4 } from 'lib/utils'
 import { EditorFixture } from './fixtures/editorFixture'
 
-test.describe('Testing segment overlays', () => {
-  // TODO: fix this test on windows after the electron migration
-  test.skip(process.platform === 'win32', 'Skip on windows')
+test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
   test.fixme(
     'Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments',
     () => {

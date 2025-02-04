@@ -435,11 +435,6 @@ test.describe('Text-to-CAD tests', () => {
     async ({ page, homePage }) => {
       // Let this test run longer since we've seen it timeout.
       test.setTimeout(180_000)
-      // skip on windows
-      test.skip(
-        process.platform === 'win32',
-        'This test is flaky, skipping for now'
-      )
 
       const u = await getUtils(page)
 

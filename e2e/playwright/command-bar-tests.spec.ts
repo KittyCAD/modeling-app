@@ -4,7 +4,7 @@ import { executorInputPath, getUtils } from './test-utils'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import path from 'path'
 
-test.describe('Command bar tests', () => {
+test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
@@ -90,7 +90,6 @@ test.describe('Command bar tests', () => {
     page,
     homePage,
   }) => {
-    test.skip(process.platform === 'win32', 'Skip on windows')
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
