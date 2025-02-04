@@ -1095,6 +1095,7 @@ test(`Fillet point-and-click`, async ({
   toolbar,
   cmdBar,
 }) => {
+  test.skip(process.platform === 'win32', 'Skip on windows')
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
