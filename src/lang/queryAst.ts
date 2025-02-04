@@ -22,6 +22,9 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   recast,
+  kclSettings,
+  unitLenToUnitLength,
+  unitAngToUnitAngle,
 } from './wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
@@ -33,9 +36,9 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err, Reason } from 'lib/trap'
-import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { codeRefFromRange } from './std/artifactGraph'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -791,4 +794,25 @@ export function getObjExprProperty(
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }
+}
+
+/**
+ * Given KCL, returns the settings annotation object if it exists.
+ */
+export function getSettingsAnnotation(
+  kcl: string | Node<Program>
+): KclSettingsAnnotation | Error {
+  const metaSettings = kclSettings(kcl)
+  if (err(metaSettings)) return metaSettings
+
+  const settings: KclSettingsAnnotation = {}
+  // No settings in the KCL.
+  if (!metaSettings) return settings
+
+  settings.defaultLengthUnit = unitLenToUnitLength(
+    metaSettings.defaultLengthUnits
+  )
+  settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
+
+  return settings
 }

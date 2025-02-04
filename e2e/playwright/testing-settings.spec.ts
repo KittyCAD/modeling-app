@@ -896,4 +896,53 @@ test.describe('Testing settings', () => {
       })
     }
   )
+
+  test(`Change inline units setting`, async ({
+    page,
+    homePage,
+    context,
+    editor,
+  }) => {
+    const initialInlineUnits = 'yd'
+    const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
+    const inlineSettingsString = (s: string) =>
+      `@settings(defaultLengthUnit = ${s})`
+    const unitsIndicator = page.getByRole('button', {
+      name: 'Current units are:',
+    })
+    const unitsChangeButton = (name: string) =>
+      page.getByRole('button', { name, exact: true })
+
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = join(dir, 'project-000')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('cube.kcl'),
+        join(bracketDir, 'main.kcl')
+      )
+    })
+
+    await test.step(`Initial units from settings`, async () => {
+      await homePage.openProject('project-000')
+      await expect(unitsIndicator).toHaveText('Current units are: in')
+    })
+
+    await test.step(`Manually write inline settings`, async () => {
+      await editor.openPane()
+      await editor.replaceCode(
+        `fn cube`,
+        `${inlineSettingsString(initialInlineUnits)}
+fn cube`
+      )
+      await expect(unitsIndicator).toContainText(initialInlineUnits)
+    })
+
+    await test.step(`Change units setting via lower-right control`, async () => {
+      await unitsIndicator.click()
+      await unitsChangeButton(editedInlineUnits.long).click()
+      await expect(
+        page.getByText(`Updated per-file units to ${editedInlineUnits.short}`)
+      ).toBeVisible()
+    })
+  })
 })
