@@ -31,6 +31,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -247,6 +248,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XZ",
                 "origin": {
                   "x": 0.0,
@@ -541,6 +543,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -609,6 +612,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -793,6 +797,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg03",
                 "xAxis": {
                   "x": 1.0,
@@ -812,6 +817,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -1028,6 +1034,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XZ",
                       "origin": {
                         "x": 0.0,
@@ -1322,6 +1329,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1595,6 +1603,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2317,6 +2326,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XZ",
               "origin": {
                 "x": 0.0,
@@ -2611,6 +2621,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -2750,6 +2761,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg03",
               "xAxis": {
                 "x": 1.0,
@@ -2769,6 +2781,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -2985,6 +2998,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XZ",
                     "origin": {
                       "x": 0.0,
@@ -3279,6 +3293,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -3552,6 +3567,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -3691,6 +3707,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg04",
               "xAxis": {
                 "x": 1.0,
@@ -3710,6 +3727,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -3926,6 +3944,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XZ",
                     "origin": {
                       "x": 0.0,
@@ -4220,6 +4239,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -4448,6 +4468,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
