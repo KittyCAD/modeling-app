@@ -1,7 +1,3 @@
-import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
-import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
-import { isDesktop } from 'lib/isDesktop'
-import { err } from 'lib/trap'
 import {
   defaultAppSettings,
   defaultProjectSettings,
@@ -10,9 +6,8 @@ import {
   parseProjectSettings,
   tomlStringify,
 } from 'lang/wasm'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { mouseControlsToCameraSystem } from 'lib/cameraControls'
-import { appThemeToTheme } from 'lib/theme'
+import { BROWSER_PROJECT_NAME } from 'lib/constants'
 import {
   getInitialDefaultDir,
   readAppSettingsFile,
@@ -20,9 +15,14 @@ import {
   writeAppSettingsFile,
   writeProjectSettingsFile,
 } from 'lib/desktop'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { BROWSER_PROJECT_NAME } from 'lib/constants'
+import { isDesktop } from 'lib/isDesktop'
+import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
+import { appThemeToTheme } from 'lib/theme'
+import { err } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 
 /**
  * Convert from a rust settings struct into the JS settings struct.
@@ -320,9 +320,7 @@ export function clearSettingsAtLevel(
     const categoryKey = category as keyof typeof settings
     Object.entries(settingsCategory).forEach(
       ([_, settingValue]: [string, Setting]) => {
-        if (settingValue[level] !== undefined) {
-          settingValue[level] = undefined
-        }
+        settingValue[level] = undefined
       }
     )
   })

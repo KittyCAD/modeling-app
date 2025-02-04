@@ -37,7 +37,7 @@ export function SettingsSearchBar() {
     () => [
       ...Object.entries(settings).flatMap(([category, categorySettings]) =>
         Object.entries(categorySettings).flatMap(([settingName, setting]) => {
-          const s = setting as Setting
+          const s = setting
           return (['project', 'user'] satisfies SettingsLevel[])
             .filter((l) => s.hideOnLevel !== l)
             .map((l) => ({
@@ -45,7 +45,7 @@ export function SettingsSearchBar() {
               name: settingName,
               description: s.description ?? '',
               displayName: decamelize(settingName, { separator: ' ' }),
-              level: l as ExtendedSettingsLevel,
+              level: l,
             }))
         })
       ),

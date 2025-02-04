@@ -43,13 +43,13 @@ const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
   options:
     isProjectAvailable && hideOnLevel !== 'project'
       ? [
-          { name: 'User', value: 'user' as SettingsLevel },
-          {
-            name: 'Project',
-            value: 'project' as SettingsLevel,
-            isCurrent: true,
-          },
-        ]
+        { name: 'User', value: 'user' as SettingsLevel },
+        {
+          name: 'Project',
+          value: 'project' as SettingsLevel,
+          isCurrent: true,
+        },
+      ]
       : [{ name: 'User', value: 'user' as SettingsLevel, isCurrent: true }],
   machineActor: actor,
 })
@@ -131,10 +131,12 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
         'value' in data &&
         'level' in data
       ) {
+        // TS would not let me get this to type properly
         const coercedData = data as unknown as SetEventTypes['data']
         actor.send({ type: `set.${type}`, data: coercedData })
       } else {
-        console.error('Invalid data submitted to settings command')
+        console.error('Invalid data submitted to settings command', data)
+        return new Error('Invalid data submitted to settings command', data)
       }
     },
     args: {
