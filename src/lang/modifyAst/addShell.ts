@@ -75,7 +75,10 @@ export function addShell({
     if (err(extrudeNode) || err(segmentNode)) {
       return new Error("Couldn't find extrude")
     }
-    if (extrudeNode.node.init.type === 'CallExpression') {
+    if (
+      extrudeNode.node.init.type === 'CallExpression' ||
+      extrudeNode.node.init.type === 'CallExpressionKw'
+    ) {
       pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
     } else if (segmentNode.node.init.type === 'PipeExpression') {
       pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode

@@ -1449,13 +1449,12 @@ export const modelingMachine = setup({
       }
     ),
     extrudeAstMod: fromPromise<
-      void,
+      unknown,
       ModelingCommandSchema['Extrude'] | undefined
     >(async ({ input }) => {
       if (!input) return Promise.reject('No input provided')
       const { selection, distance } = input
       let ast = structuredClone(kclManager.ast)
-      let extrudeName: string | undefined = undefined
 
       const pathToNode = getNodePathFromSourceRange(
         ast,
