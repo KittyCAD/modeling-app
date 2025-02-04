@@ -768,12 +768,12 @@ export const ModelingMachineProvider = ({
             })
             if (err(sketchPaths)) return Promise.reject(sketchPaths)
             const noCodeRefErr = new Error('No plane codeRef')
-            if (!('codeRef' in plane)) return Promise.reject(noCodeRefErr)
-            if (!plane.codeRef) return Promise.reject(noCodeRefErr)
+            if (!('faceCodeRef' in plane)) return Promise.reject(noCodeRefErr)
+            if (!plane.faceCodeRef) return Promise.reject(noCodeRefErr)
             return {
               sketchEntryNodePath: sketchPathToNode || [],
               sketchNodePaths: sketchPaths,
-              planeNodePath: plane.codeRef.pathToNode,
+              planeNodePath: plane.faceCodeRef.pathToNode,
               zAxis: info.sketchDetails.zAxis || null,
               yAxis: info.sketchDetails.yAxis || null,
               origin: info.sketchDetails.origin.map(
