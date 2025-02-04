@@ -76,8 +76,8 @@ part001 = startSketchOn('-XZ')
     }, %)
 |> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
 |> xLineTo(ZERO, %)
-|> close(%)
-|> extrude(4, %)`
+|> close()
+|> extrude(length = 4)`
     )
   })
   await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -452,18 +452,18 @@ test('Sketch on face', async ({ page, homePage }) => {
       'persistCode',
       `sketch001 = startSketchOn('XZ')
 |> startProfileAt([3.29, 7.86], %)
-|> line([2.48, 2.44], %)
-|> line([2.66, 1.17], %)
-|> line([3.75, 0.46], %)
-|> line([4.99, -0.46], %)
-|> line([3.3, -2.12], %)
-|> line([2.16, -3.33], %)
-|> line([0.85, -3.08], %)
-|> line([-0.18, -3.36], %)
-|> line([-3.86, -2.73], %)
-|> line([-17.67, 0.85], %)
-|> close(%)
-extrude001 = extrude(5 + 7, sketch001)`
+|> line(end = [2.48, 2.44])
+|> line(end = [2.66, 1.17])
+|> line(end = [3.75, 0.46])
+|> line(end = [4.99, -0.46])
+|> line(end = [3.3, -2.12])
+|> line(end = [2.16, -3.33])
+|> line(end = [0.85, -3.08])
+|> line(end = [-0.18, -3.36])
+|> line(end = [-3.86, -2.73])
+|> line(end = [-17.67, 0.85])
+|> close()
+extrude001 = extrude(sketch001, length = 5 + 7)`
     )
   })
 
@@ -520,10 +520,10 @@ extrude001 = extrude(5 + 7, sketch001)`
   await expect.poll(u.normalisedEditorCode).toContain(
     u.normalisedCode(`sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.94, 6.6], %)
-  |> line([2.45, -0.2], %)
-  |> line([-2.6, -1.25], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [2.45, -0.2])
+  |> line(end = [-2.6, -1.25])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 `)
   )
 
@@ -558,10 +558,10 @@ extrude001 = extrude(5 + 7, sketch001)`
 
   const result = makeTemplate`sketch002 = startSketchOn(extrude001, seg01)
 |> startProfileAt([-12.83, 6.7], %)
-|> line([${[2.28, 2.35]}, -${0.07}], %)
-|> line([-3.05, -1.47], %)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
-|> close(%)`
+|> line(end = [${[2.28, 2.35]}, -${0.07}])
+|> line(end = [-3.05, -1.47])
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> close()`
 
   await expect(page.locator('.cm-content')).toHaveText(result.regExp)
 
@@ -585,6 +585,6 @@ extrude001 = extrude(5 + 7, sketch001)`
   await page.getByRole('button', { name: 'checkmark Submit command' }).click()
 
   const result2 = result.genNext`
-const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
+const sketch002 = extrude(sketch002, length = ${[5, 5]} + 7)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })

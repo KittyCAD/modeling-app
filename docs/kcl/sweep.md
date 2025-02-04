@@ -34,11 +34,11 @@ sweep(data: SweepData, sketch: Sketch) -> Solid
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
   |> startProfileAt([0.05, 0.05], %)
-  |> line([0, 7], %)
+  |> line(end = [0, 7])
   |> tangentialArc({ offset = 90, radius = 5 }, %)
-  |> line([-3, 0], %)
+  |> line(end = [-3, 0])
   |> tangentialArc({ offset = -90, radius = 5 }, %)
-  |> line([0, 7], %)
+  |> line(end = [0, 7])
 
 // Create a hole for the pipe.
 pipeHole = startSketchOn('XY')

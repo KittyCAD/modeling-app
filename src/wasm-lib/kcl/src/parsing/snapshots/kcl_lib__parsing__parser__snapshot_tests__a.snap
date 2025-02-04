@@ -6,7 +6,7 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 137,
+        "end": 141,
         "id": {
           "end": 9,
           "name": "boxSketch",
@@ -226,21 +226,22 @@ expression: actual
             {
               "arguments": [
                 {
-                  "end": 133,
-                  "raw": "10",
-                  "start": 131,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 10.0,
-                    "suffix": "None"
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "length"
+                  },
+                  "arg": {
+                    "end": 140,
+                    "raw": "10",
+                    "start": 138,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
                   }
-                },
-                {
-                  "end": 136,
-                  "start": 135,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
                 }
               ],
               "callee": {
@@ -249,13 +250,14 @@ expression: actual
                 "start": 123,
                 "type": "Identifier"
               },
-              "end": 137,
+              "end": 141,
               "start": 123,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             }
           ],
-          "end": 137,
+          "end": 141,
           "start": 12,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -263,13 +265,13 @@ expression: actual
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 137,
+      "end": 141,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 138,
+  "end": 142,
   "start": 0
 }

@@ -31,12 +31,12 @@ appearance(data: AppearanceData, solid_set: SolidSet) -> SolidSet
 // Add color to an extruded solid.
 exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
-  |> lineTo([10, 0], %)
-  |> lineTo([0, 10], %)
-  |> lineTo([-10, 0], %)
-  |> close(%)
+  |> line(endAbsolute = [10, 0])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [-10, 0])
+  |> close()
 
-example = extrude(5, exampleSketch)
+example = extrude(exampleSketch, length = 5)
   |> appearance({
        color = '#ff0000',
        metalness = 50,
@@ -65,11 +65,11 @@ sketch001 = startSketchOn('XY')
 fn cube(center) {
   return startSketchOn('XY')
     |> startProfileAt([center[0] - 10, center[1] - 10], %)
-    |> lineTo([center[0] + 10, center[1] - 10], %)
-    |> lineTo([center[0] + 10, center[1] + 10], %)
-    |> lineTo([center[0] - 10, center[1] + 10], %)
-    |> close(%)
-    |> extrude(10, %)
+    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+    |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+    |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+    |> close()
+    |> extrude(length = 10)
 }
 
 example0 = cube([0, 0])
@@ -95,11 +95,11 @@ appearance({
 // This example shows setting the appearance _after_ the shell.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)
   |> appearance({
@@ -116,11 +116,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)
 // This example shows setting the appearance _before_ the shell.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
   |> appearance({
        color = '#ff0000',
        metalness = 90,
@@ -137,12 +137,12 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)
 // This example shows _before_ the pattern.
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
+  |> line(end = [0, 2])
+  |> line(end = [3, 1])
+  |> line(end = [0, -4])
+  |> close()
 
-example = extrude(1, exampleSketch)
+example = extrude(exampleSketch, length = 1)
   |> appearance({
        color = '#ff0000',
        metalness = 90,
@@ -162,12 +162,12 @@ example = extrude(1, exampleSketch)
 // This example shows _after_ the pattern.
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
+  |> line(end = [0, 2])
+  |> line(end = [3, 1])
+  |> line(end = [0, -4])
+  |> close()
 
-example = extrude(1, exampleSketch)
+example = extrude(exampleSketch, length = 1)
   |> patternLinear3d({
        axis = [1, 0, 1],
        instances = 7,
@@ -186,10 +186,10 @@ example = extrude(1, exampleSketch)
 // Color the result of a 2D pattern that was extruded.
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([.5, 25], %)
-  |> line([0, 5], %)
-  |> line([-1, 0], %)
-  |> line([0, -5], %)
-  |> close(%)
+  |> line(end = [0, 5])
+  |> line(end = [-1, 0])
+  |> line(end = [0, -5])
+  |> close()
   |> patternCircular2d({
        center = [0, 0],
        instances = 13,
@@ -197,7 +197,7 @@ exampleSketch = startSketchOn('XZ')
        rotateDuplicates = true
      }, %)
 
-example = extrude(1, exampleSketch)
+example = extrude(exampleSketch, length = 1)
   |> appearance({
        color = '#ff0000',
        metalness = 90,
@@ -214,11 +214,11 @@ example = extrude(1, exampleSketch)
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
   |> startProfileAt([0.05, 0.05], %)
-  |> line([0, 7], %)
+  |> line(end = [0, 7])
   |> tangentialArc({ offset = 90, radius = 5 }, %)
-  |> line([-3, 0], %)
+  |> line(end = [-3, 0])
   |> tangentialArc({ offset = -90, radius = 5 }, %)
-  |> line([0, 7], %)
+  |> line(end = [0, 7])
 
 pipeHole = startSketchOn('XY')
   |> circle({ center = [0, 0], radius = 1.5 }, %)

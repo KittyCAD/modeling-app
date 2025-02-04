@@ -9,6 +9,7 @@ import {
   CallExpression,
   Literal,
   BinaryPart,
+  CallExpressionKw,
 } from '../wasm'
 import { LineInputsType } from './sketchcombos'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
@@ -63,7 +64,7 @@ export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
  * @property referencedSegment - An optional path to a referenced segment.
  * @property spliceBetween=false - Defaults to false. Normal behavior is to add a new callExpression to the end of the pipeExpression.
  */
-interface addCall extends ModifyAstBase {
+export interface addCall extends ModifyAstBase {
   segmentInput: SegmentInputs
   replaceExistingCallback?: (
     rawArgs: RawArgs
@@ -166,13 +167,14 @@ export type SimplifiedArgDetails =
   | Omit<ObjectPropertyInput<null>, 'expr' | 'argType'>
   | Omit<ArrayOrObjItemInput<null>, 'expr' | 'argType'>
   | Omit<ArrayInObject<null>, 'expr' | 'argType'>
+
 /**
  * Represents the result of creating a sketch expression (line, tangentialArcTo, angledLine, circle, etc.).
  *
  * @property {Expr} callExp - This is the main result; recasting the expression should give the user the new function call.
  * @property {number} [valueUsedInTransform] - Aside from `callExp`, we also return the number used in the transform, which is useful for constraints.
  * For example, when adding a "horizontal distance" constraint, we don't want the segments to move, just constrain them in place.
- * So the second segment will probably be something like `lineTo([segEndX($firstSegTag) + someLiteral, 123], %)` where `someLiteral` is
+ * So the second segment will probably be something like `line(endAbsolute = [segEndX($firstSegTag) + someLiteral, 123])` where `someLiteral` is
  * the value of the current horizontal distance, That is we calculate the value needed to constrain the second segment without it moving.
  * We can run the ast-mod to get this constraint `valueUsedInTransform` without applying the mod so that we can surface this to the user in a modal.
  * We show them the modal where they can specify the distance they want to constrain to.
@@ -236,6 +238,34 @@ export interface SketchLineHelper {
     | Error
   getConstraintInfo: (
     callExp: Node<CallExpression>,
+    code: string,
+    pathToNode: PathToNode
+  ) => ConstrainInfo[]
+}
+
+export interface SketchLineHelperKw {
+  add: (a: addCall) =>
+    | {
+        modifiedAst: Node<Program>
+        pathToNode: PathToNode
+        valueUsedInTransform?: number
+      }
+    | Error
+  updateArgs: (a: updateArgs) =>
+    | {
+        modifiedAst: Node<Program>
+        pathToNode: PathToNode
+      }
+    | Error
+  getTag: (a: CallExpressionKw) => string | Error
+  addTag: (a: AddTagInfo) =>
+    | {
+        modifiedAst: Node<Program>
+        tag: string
+      }
+    | Error
+  getConstraintInfo: (
+    callExp: Node<CallExpressionKw>,
     code: string,
     pathToNode: PathToNode
   ) => ConstrainInfo[]

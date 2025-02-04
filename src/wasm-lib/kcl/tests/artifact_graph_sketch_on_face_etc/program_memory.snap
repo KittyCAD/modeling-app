@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing artifact_graph_sketch_on_face_etc.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -37,7 +38,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "id": "[uuid]",
                 "sourceRange": [
                   68,
-                  83,
+                  86,
                   0
                 ],
                 "tag": null,
@@ -47,13 +48,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  89,
-                  113,
+                  92,
+                  125,
                   0
                 ],
                 "tag": {
-                  "end": 112,
-                  "start": 106,
+                  "end": 124,
+                  "start": 118,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -63,8 +64,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  119,
-                  166,
+                  131,
+                  187,
                   0
                 ],
                 "tag": null,
@@ -80,7 +81,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "id": "[uuid]",
                     "sourceRange": [
                       68,
-                      83,
+                      86,
                       0
                     ]
                   },
@@ -99,8 +100,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      89,
-                      113,
+                      92,
+                      125,
                       0
                     ]
                   },
@@ -109,8 +110,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     8.0
                   ],
                   "tag": {
-                    "end": 112,
-                    "start": 106,
+                    "end": 124,
+                    "start": 118,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -124,8 +125,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      119,
-                      166,
+                      131,
+                      187,
                       0
                     ]
                   },
@@ -144,8 +145,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      172,
-                      180,
+                      193,
+                      200,
                       0
                     ]
                   },
@@ -221,8 +222,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          89,
-                          113,
+                          92,
+                          125,
                           0
                         ]
                       },
@@ -231,8 +232,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         8.0
                       ],
                       "tag": {
-                        "end": 112,
-                        "start": 106,
+                        "end": 124,
+                        "start": 118,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -246,13 +247,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        89,
-                        113,
+                        92,
+                        125,
                         0
                       ],
                       "tag": {
-                        "end": 112,
-                        "start": 106,
+                        "end": 124,
+                        "start": 118,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -262,8 +263,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__meta": [
                     {
                       "sourceRange": [
-                        106,
-                        112,
+                        118,
+                        124,
                         0
                       ]
                     }
@@ -310,8 +311,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  302,
-                  317,
+                  331,
+                  349,
                   0
                 ],
                 "tag": null,
@@ -321,8 +322,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  323,
-                  339,
+                  355,
+                  374,
                   0
                 ],
                 "tag": null,
@@ -332,8 +333,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  345,
-                  392,
+                  380,
+                  436,
                   0
                 ],
                 "tag": null,
@@ -348,8 +349,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      302,
-                      317,
+                      331,
+                      349,
                       0
                     ]
                   },
@@ -368,8 +369,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      323,
-                      339,
+                      355,
+                      374,
                       0
                     ]
                   },
@@ -388,8 +389,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      345,
-                      392,
+                      380,
+                      436,
                       0
                     ]
                   },
@@ -408,8 +409,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      398,
-                      406,
+                      442,
+                      449,
                       0
                     ]
                   },
@@ -453,7 +454,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "id": "[uuid]",
                       "sourceRange": [
                         68,
-                        83,
+                        86,
                         0
                       ],
                       "tag": null,
@@ -463,13 +464,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        89,
-                        113,
+                        92,
+                        125,
                         0
                       ],
                       "tag": {
-                        "end": 112,
-                        "start": 106,
+                        "end": 124,
+                        "start": 118,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -479,8 +480,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        119,
-                        166,
+                        131,
+                        187,
                         0
                       ],
                       "tag": null,
@@ -496,7 +497,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "id": "[uuid]",
                           "sourceRange": [
                             68,
-                            83,
+                            86,
                             0
                           ]
                         },
@@ -515,8 +516,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            89,
-                            113,
+                            92,
+                            125,
                             0
                           ]
                         },
@@ -525,8 +526,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           8.0
                         ],
                         "tag": {
-                          "end": 112,
-                          "start": 106,
+                          "end": 124,
+                          "start": 118,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -540,8 +541,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            119,
-                            166,
+                            131,
+                            187,
                             0
                           ]
                         },
@@ -560,8 +561,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            172,
-                            180,
+                            193,
+                            200,
                             0
                           ]
                         },
@@ -637,8 +638,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                89,
-                                113,
+                                92,
+                                125,
                                 0
                               ]
                             },
@@ -647,8 +648,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               8.0
                             ],
                             "tag": {
-                              "end": 112,
-                              "start": 106,
+                              "end": 124,
+                              "start": 118,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -662,13 +663,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              89,
-                              113,
+                              92,
+                              125,
                               0
                             ],
                             "tag": {
-                              "end": 112,
-                              "start": 106,
+                              "end": 124,
+                              "start": 118,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -678,8 +679,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__meta": [
                           {
                             "sourceRange": [
-                              106,
-                              112,
+                              118,
+                              124,
                               0
                             ]
                           }
@@ -721,8 +722,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__meta": [
                   {
                     "sourceRange": [
-                      228,
-                      260,
+                      257,
+                      289,
                       0
                     ]
                   }
@@ -741,8 +742,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    266,
-                    296,
+                    295,
+                    325,
                     0
                   ]
                 }
@@ -753,8 +754,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__meta": [
                 {
                   "sourceRange": [
-                    266,
-                    296,
+                    295,
+                    325,
                     0
                   ]
                 }
@@ -769,8 +770,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "__meta": [
               {
                 "sourceRange": [
-                  266,
-                  296,
+                  295,
+                  325,
                   0
                 ]
               }
@@ -787,13 +788,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  525,
-                  550,
+                  577,
+                  611,
                   0
                 ],
                 "tag": {
-                  "end": 549,
-                  "start": 543,
+                  "end": 610,
+                  "start": 604,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -803,8 +804,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  556,
-                  572,
+                  617,
+                  636,
                   0
                 ],
                 "tag": null,
@@ -814,8 +815,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  578,
-                  625,
+                  642,
+                  698,
                   0
                 ],
                 "tag": null,
@@ -830,8 +831,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      525,
-                      550,
+                      577,
+                      611,
                       0
                     ]
                   },
@@ -840,8 +841,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     1.5
                   ],
                   "tag": {
-                    "end": 549,
-                    "start": 543,
+                    "end": 610,
+                    "start": 604,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -855,8 +856,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      556,
-                      572,
+                      617,
+                      636,
                       0
                     ]
                   },
@@ -875,8 +876,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      578,
-                      625,
+                      642,
+                      698,
                       0
                     ]
                   },
@@ -895,8 +896,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      631,
-                      639,
+                      704,
+                      711,
                       0
                     ]
                   },
@@ -939,8 +940,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        302,
-                        317,
+                        331,
+                        349,
                         0
                       ],
                       "tag": null,
@@ -950,8 +951,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        323,
-                        339,
+                        355,
+                        374,
                         0
                       ],
                       "tag": null,
@@ -961,8 +962,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        345,
-                        392,
+                        380,
+                        436,
                         0
                       ],
                       "tag": null,
@@ -977,8 +978,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            302,
-                            317,
+                            331,
+                            349,
                             0
                           ]
                         },
@@ -997,8 +998,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            323,
-                            339,
+                            355,
+                            374,
                             0
                           ]
                         },
@@ -1017,8 +1018,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            345,
-                            392,
+                            380,
+                            436,
                             0
                           ]
                         },
@@ -1037,8 +1038,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            398,
-                            406,
+                            442,
+                            449,
                             0
                           ]
                         },
@@ -1082,7 +1083,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "id": "[uuid]",
                             "sourceRange": [
                               68,
-                              83,
+                              86,
                               0
                             ],
                             "tag": null,
@@ -1092,13 +1093,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              89,
-                              113,
+                              92,
+                              125,
                               0
                             ],
                             "tag": {
-                              "end": 112,
-                              "start": 106,
+                              "end": 124,
+                              "start": 118,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -1108,8 +1109,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              119,
-                              166,
+                              131,
+                              187,
                               0
                             ],
                             "tag": null,
@@ -1125,7 +1126,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                 "id": "[uuid]",
                                 "sourceRange": [
                                   68,
-                                  83,
+                                  86,
                                   0
                                 ]
                               },
@@ -1144,8 +1145,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  89,
-                                  113,
+                                  92,
+                                  125,
                                   0
                                 ]
                               },
@@ -1154,8 +1155,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                 8.0
                               ],
                               "tag": {
-                                "end": 112,
-                                "start": 106,
+                                "end": 124,
+                                "start": 118,
                                 "type": "TagDeclarator",
                                 "value": "seg01"
                               },
@@ -1169,8 +1170,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  119,
-                                  166,
+                                  131,
+                                  187,
                                   0
                                 ]
                               },
@@ -1189,8 +1190,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  172,
-                                  180,
+                                  193,
+                                  200,
                                   0
                                 ]
                               },
@@ -1266,8 +1267,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   "__geoMeta": {
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      89,
-                                      113,
+                                      92,
+                                      125,
                                       0
                                     ]
                                   },
@@ -1276,8 +1277,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                     8.0
                                   ],
                                   "tag": {
-                                    "end": 112,
-                                    "start": 106,
+                                    "end": 124,
+                                    "start": 118,
                                     "type": "TagDeclarator",
                                     "value": "seg01"
                                   },
@@ -1291,13 +1292,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   "faceId": "[uuid]",
                                   "id": "[uuid]",
                                   "sourceRange": [
-                                    89,
-                                    113,
+                                    92,
+                                    125,
                                     0
                                   ],
                                   "tag": {
-                                    "end": 112,
-                                    "start": 106,
+                                    "end": 124,
+                                    "start": 118,
                                     "type": "TagDeclarator",
                                     "value": "seg01"
                                   },
@@ -1307,8 +1308,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "__meta": [
                                 {
                                   "sourceRange": [
-                                    106,
-                                    112,
+                                    118,
+                                    124,
                                     0
                                   ]
                                 }
@@ -1350,8 +1351,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__meta": [
                         {
                           "sourceRange": [
-                            228,
-                            260,
+                            257,
+                            289,
                             0
                           ]
                         }
@@ -1370,8 +1371,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          266,
-                          296,
+                          295,
+                          325,
                           0
                         ]
                       }
@@ -1382,8 +1383,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "__meta": [
                       {
                         "sourceRange": [
-                          266,
-                          296,
+                          295,
+                          325,
                           0
                         ]
                       }
@@ -1398,8 +1399,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__meta": [
                     {
                       "sourceRange": [
-                        266,
-                        296,
+                        295,
+                        325,
                         0
                       ]
                     }
@@ -1411,8 +1412,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__meta": [
                   {
                     "sourceRange": [
-                      454,
-                      486,
+                      506,
+                      538,
                       0
                     ]
                   }
@@ -1431,8 +1432,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    492,
-                    519,
+                    544,
+                    571,
                     0
                   ]
                 }
@@ -1449,8 +1450,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          525,
-                          550,
+                          577,
+                          611,
                           0
                         ]
                       },
@@ -1459,8 +1460,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         1.5
                       ],
                       "tag": {
-                        "end": 549,
-                        "start": 543,
+                        "end": 610,
+                        "start": 604,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1474,13 +1475,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        525,
-                        550,
+                        577,
+                        611,
                         0
                       ],
                       "tag": {
-                        "end": 549,
-                        "start": 543,
+                        "end": 610,
+                        "start": 604,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1490,8 +1491,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__meta": [
                     {
                       "sourceRange": [
-                        543,
-                        549,
+                        604,
+                        610,
                         0
                       ]
                     }
@@ -1504,8 +1505,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__meta": [
                 {
                   "sourceRange": [
-                    492,
-                    519,
+                    544,
+                    571,
                     0
                   ]
                 }
@@ -1520,8 +1521,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "__meta": [
               {
                 "sourceRange": [
-                  492,
-                  519,
+                  544,
+                  571,
                   0
                 ]
               }
@@ -1538,8 +1539,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  758,
-                  775,
+                  839,
+                  859,
                   0
                 ],
                 "tag": null,
@@ -1549,8 +1550,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  781,
-                  799,
+                  865,
+                  886,
                   0
                 ],
                 "tag": null,
@@ -1560,8 +1561,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  805,
-                  852,
+                  892,
+                  948,
                   0
                 ],
                 "tag": null,
@@ -1576,8 +1577,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      758,
-                      775,
+                      839,
+                      859,
                       0
                     ]
                   },
@@ -1596,8 +1597,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      781,
-                      799,
+                      865,
+                      886,
                       0
                     ]
                   },
@@ -1616,8 +1617,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      805,
-                      852,
+                      892,
+                      948,
                       0
                     ]
                   },
@@ -1636,8 +1637,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      858,
-                      866,
+                      954,
+                      961,
                       0
                     ]
                   },
@@ -1680,13 +1681,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        525,
-                        550,
+                        577,
+                        611,
                         0
                       ],
                       "tag": {
-                        "end": 549,
-                        "start": 543,
+                        "end": 610,
+                        "start": 604,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1696,8 +1697,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        556,
-                        572,
+                        617,
+                        636,
                         0
                       ],
                       "tag": null,
@@ -1707,8 +1708,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        578,
-                        625,
+                        642,
+                        698,
                         0
                       ],
                       "tag": null,
@@ -1723,8 +1724,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            525,
-                            550,
+                            577,
+                            611,
                             0
                           ]
                         },
@@ -1733,8 +1734,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           1.5
                         ],
                         "tag": {
-                          "end": 549,
-                          "start": 543,
+                          "end": 610,
+                          "start": 604,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -1748,8 +1749,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            556,
-                            572,
+                            617,
+                            636,
                             0
                           ]
                         },
@@ -1768,8 +1769,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            578,
-                            625,
+                            642,
+                            698,
                             0
                           ]
                         },
@@ -1788,8 +1789,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            631,
-                            639,
+                            704,
+                            711,
                             0
                           ]
                         },
@@ -1832,8 +1833,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              302,
-                              317,
+                              331,
+                              349,
                               0
                             ],
                             "tag": null,
@@ -1843,8 +1844,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              323,
-                              339,
+                              355,
+                              374,
                               0
                             ],
                             "tag": null,
@@ -1854,8 +1855,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              345,
-                              392,
+                              380,
+                              436,
                               0
                             ],
                             "tag": null,
@@ -1870,8 +1871,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  302,
-                                  317,
+                                  331,
+                                  349,
                                   0
                                 ]
                               },
@@ -1890,8 +1891,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  323,
-                                  339,
+                                  355,
+                                  374,
                                   0
                                 ]
                               },
@@ -1910,8 +1911,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  345,
-                                  392,
+                                  380,
+                                  436,
                                   0
                                 ]
                               },
@@ -1930,8 +1931,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  398,
-                                  406,
+                                  442,
+                                  449,
                                   0
                                 ]
                               },
@@ -1975,7 +1976,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   "id": "[uuid]",
                                   "sourceRange": [
                                     68,
-                                    83,
+                                    86,
                                     0
                                   ],
                                   "tag": null,
@@ -1985,13 +1986,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   "faceId": "[uuid]",
                                   "id": "[uuid]",
                                   "sourceRange": [
-                                    89,
-                                    113,
+                                    92,
+                                    125,
                                     0
                                   ],
                                   "tag": {
-                                    "end": 112,
-                                    "start": 106,
+                                    "end": 124,
+                                    "start": 118,
                                     "type": "TagDeclarator",
                                     "value": "seg01"
                                   },
@@ -2001,8 +2002,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   "faceId": "[uuid]",
                                   "id": "[uuid]",
                                   "sourceRange": [
-                                    119,
-                                    166,
+                                    131,
+                                    187,
                                     0
                                   ],
                                   "tag": null,
@@ -2018,7 +2019,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                       "id": "[uuid]",
                                       "sourceRange": [
                                         68,
-                                        83,
+                                        86,
                                         0
                                       ]
                                     },
@@ -2037,8 +2038,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                     "__geoMeta": {
                                       "id": "[uuid]",
                                       "sourceRange": [
-                                        89,
-                                        113,
+                                        92,
+                                        125,
                                         0
                                       ]
                                     },
@@ -2047,8 +2048,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                       8.0
                                     ],
                                     "tag": {
-                                      "end": 112,
-                                      "start": 106,
+                                      "end": 124,
+                                      "start": 118,
                                       "type": "TagDeclarator",
                                       "value": "seg01"
                                     },
@@ -2062,8 +2063,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                     "__geoMeta": {
                                       "id": "[uuid]",
                                       "sourceRange": [
-                                        119,
-                                        166,
+                                        131,
+                                        187,
                                         0
                                       ]
                                     },
@@ -2082,8 +2083,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                     "__geoMeta": {
                                       "id": "[uuid]",
                                       "sourceRange": [
-                                        172,
-                                        180,
+                                        193,
+                                        200,
                                         0
                                       ]
                                     },
@@ -2159,8 +2160,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                         "__geoMeta": {
                                           "id": "[uuid]",
                                           "sourceRange": [
-                                            89,
-                                            113,
+                                            92,
+                                            125,
                                             0
                                           ]
                                         },
@@ -2169,8 +2170,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                           8.0
                                         ],
                                         "tag": {
-                                          "end": 112,
-                                          "start": 106,
+                                          "end": 124,
+                                          "start": 118,
                                           "type": "TagDeclarator",
                                           "value": "seg01"
                                         },
@@ -2184,13 +2185,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                         "faceId": "[uuid]",
                                         "id": "[uuid]",
                                         "sourceRange": [
-                                          89,
-                                          113,
+                                          92,
+                                          125,
                                           0
                                         ],
                                         "tag": {
-                                          "end": 112,
-                                          "start": 106,
+                                          "end": 124,
+                                          "start": 118,
                                           "type": "TagDeclarator",
                                           "value": "seg01"
                                         },
@@ -2200,8 +2201,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                     "__meta": [
                                       {
                                         "sourceRange": [
-                                          106,
-                                          112,
+                                          118,
+                                          124,
                                           0
                                         ]
                                       }
@@ -2243,8 +2244,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__meta": [
                               {
                                 "sourceRange": [
-                                  228,
-                                  260,
+                                  257,
+                                  289,
                                   0
                                 ]
                               }
@@ -2263,8 +2264,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                266,
-                                296,
+                                295,
+                                325,
                                 0
                               ]
                             }
@@ -2275,8 +2276,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "__meta": [
                             {
                               "sourceRange": [
-                                266,
-                                296,
+                                295,
+                                325,
                                 0
                               ]
                             }
@@ -2291,8 +2292,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__meta": [
                           {
                             "sourceRange": [
-                              266,
-                              296,
+                              295,
+                              325,
                               0
                             ]
                           }
@@ -2304,8 +2305,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__meta": [
                         {
                           "sourceRange": [
-                            454,
-                            486,
+                            506,
+                            538,
                             0
                           ]
                         }
@@ -2324,8 +2325,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          492,
-                          519,
+                          544,
+                          571,
                           0
                         ]
                       }
@@ -2342,8 +2343,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                525,
-                                550,
+                                577,
+                                611,
                                 0
                               ]
                             },
@@ -2352,8 +2353,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               1.5
                             ],
                             "tag": {
-                              "end": 549,
-                              "start": 543,
+                              "end": 610,
+                              "start": 604,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -2367,13 +2368,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              525,
-                              550,
+                              577,
+                              611,
                               0
                             ],
                             "tag": {
-                              "end": 549,
-                              "start": 543,
+                              "end": 610,
+                              "start": 604,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -2383,8 +2384,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__meta": [
                           {
                             "sourceRange": [
-                              543,
-                              549,
+                              604,
+                              610,
                               0
                             ]
                           }
@@ -2397,8 +2398,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "__meta": [
                       {
                         "sourceRange": [
-                          492,
-                          519,
+                          544,
+                          571,
                           0
                         ]
                       }
@@ -2413,8 +2414,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__meta": [
                     {
                       "sourceRange": [
-                        492,
-                        519,
+                        544,
+                        571,
                         0
                       ]
                     }
@@ -2426,8 +2427,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__meta": [
                   {
                     "sourceRange": [
-                      687,
-                      719,
+                      768,
+                      800,
                       0
                     ]
                   }
@@ -2446,8 +2447,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    725,
-                    752,
+                    806,
+                    833,
                     0
                   ]
                 }
@@ -2458,8 +2459,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__meta": [
                 {
                   "sourceRange": [
-                    725,
-                    752,
+                    806,
+                    833,
                     0
                   ]
                 }
@@ -2474,8 +2475,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "__meta": [
               {
                 "sourceRange": [
-                  725,
-                  752,
+                  806,
+                  833,
                   0
                 ]
               }
@@ -2494,8 +2495,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  89,
-                  113,
+                  92,
+                  125,
                   0
                 ]
               },
@@ -2504,8 +2505,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 8.0
               ],
               "tag": {
-                "end": 112,
-                "start": 106,
+                "end": 124,
+                "start": 118,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2519,13 +2520,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                89,
-                113,
+                92,
+                125,
                 0
               ],
               "tag": {
-                "end": 112,
-                "start": 106,
+                "end": 124,
+                "start": 118,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2535,8 +2536,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
           "__meta": [
             {
               "sourceRange": [
-                106,
-                112,
+                118,
+                124,
                 0
               ]
             }
@@ -2554,8 +2555,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  525,
-                  550,
+                  577,
+                  611,
                   0
                 ]
               },
@@ -2564,8 +2565,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 1.5
               ],
               "tag": {
-                "end": 549,
-                "start": 543,
+                "end": 610,
+                "start": 604,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2579,13 +2580,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                525,
-                550,
+                577,
+                611,
                 0
               ],
               "tag": {
-                "end": 549,
-                "start": 543,
+                "end": 610,
+                "start": 604,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2595,8 +2596,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
           "__meta": [
             {
               "sourceRange": [
-                543,
-                549,
+                604,
+                610,
                 0
               ]
             }
@@ -2613,7 +2614,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "id": "[uuid]",
                   "sourceRange": [
                     68,
-                    83,
+                    86,
                     0
                   ]
                 },
@@ -2632,8 +2633,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    89,
-                    113,
+                    92,
+                    125,
                     0
                   ]
                 },
@@ -2642,8 +2643,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   8.0
                 ],
                 "tag": {
-                  "end": 112,
-                  "start": 106,
+                  "end": 124,
+                  "start": 118,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2657,8 +2658,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    119,
-                    166,
+                    131,
+                    187,
                     0
                   ]
                 },
@@ -2677,8 +2678,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    172,
-                    180,
+                    193,
+                    200,
                     0
                   ]
                 },
@@ -2754,8 +2755,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        89,
-                        113,
+                        92,
+                        125,
                         0
                       ]
                     },
@@ -2764,8 +2765,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       8.0
                     ],
                     "tag": {
-                      "end": 112,
-                      "start": 106,
+                      "end": 124,
+                      "start": 118,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2779,13 +2780,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      89,
-                      113,
+                      92,
+                      125,
                       0
                     ],
                     "tag": {
-                      "end": 112,
-                      "start": 106,
+                      "end": 124,
+                      "start": 118,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2795,8 +2796,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__meta": [
                   {
                     "sourceRange": [
-                      106,
-                      112,
+                      118,
+                      124,
                       0
                     ]
                   }
@@ -2827,8 +2828,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    302,
-                    317,
+                    331,
+                    349,
                     0
                   ]
                 },
@@ -2847,8 +2848,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    323,
-                    339,
+                    355,
+                    374,
                     0
                   ]
                 },
@@ -2867,8 +2868,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    345,
-                    392,
+                    380,
+                    436,
                     0
                   ]
                 },
@@ -2887,8 +2888,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    398,
-                    406,
+                    442,
+                    449,
                     0
                   ]
                 },
@@ -2932,7 +2933,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "id": "[uuid]",
                     "sourceRange": [
                       68,
-                      83,
+                      86,
                       0
                     ],
                     "tag": null,
@@ -2942,13 +2943,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      89,
-                      113,
+                      92,
+                      125,
                       0
                     ],
                     "tag": {
-                      "end": 112,
-                      "start": 106,
+                      "end": 124,
+                      "start": 118,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2958,8 +2959,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      119,
-                      166,
+                      131,
+                      187,
                       0
                     ],
                     "tag": null,
@@ -2975,7 +2976,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "id": "[uuid]",
                         "sourceRange": [
                           68,
-                          83,
+                          86,
                           0
                         ]
                       },
@@ -2994,8 +2995,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          89,
-                          113,
+                          92,
+                          125,
                           0
                         ]
                       },
@@ -3004,8 +3005,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         8.0
                       ],
                       "tag": {
-                        "end": 112,
-                        "start": 106,
+                        "end": 124,
+                        "start": 118,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3019,8 +3020,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          119,
-                          166,
+                          131,
+                          187,
                           0
                         ]
                       },
@@ -3039,8 +3040,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          172,
-                          180,
+                          193,
+                          200,
                           0
                         ]
                       },
@@ -3116,8 +3117,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "__geoMeta": {
                             "id": "[uuid]",
                             "sourceRange": [
-                              89,
-                              113,
+                              92,
+                              125,
                               0
                             ]
                           },
@@ -3126,8 +3127,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             8.0
                           ],
                           "tag": {
-                            "end": 112,
-                            "start": 106,
+                            "end": 124,
+                            "start": 118,
                             "type": "TagDeclarator",
                             "value": "seg01"
                           },
@@ -3141,13 +3142,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            89,
-                            113,
+                            92,
+                            125,
                             0
                           ],
                           "tag": {
-                            "end": 112,
-                            "start": 106,
+                            "end": 124,
+                            "start": 118,
                             "type": "TagDeclarator",
                             "value": "seg01"
                           },
@@ -3157,8 +3158,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__meta": [
                         {
                           "sourceRange": [
-                            106,
-                            112,
+                            118,
+                            124,
                             0
                           ]
                         }
@@ -3200,8 +3201,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__meta": [
                 {
                   "sourceRange": [
-                    228,
-                    260,
+                    257,
+                    289,
                     0
                   ]
                 }
@@ -3220,8 +3221,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  266,
-                  296,
+                  295,
+                  325,
                   0
                 ]
               }
@@ -3232,8 +3233,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "__meta": [
               {
                 "sourceRange": [
-                  266,
-                  296,
+                  295,
+                  325,
                   0
                 ]
               }
@@ -3250,8 +3251,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    525,
-                    550,
+                    577,
+                    611,
                     0
                   ]
                 },
@@ -3260,8 +3261,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   1.5
                 ],
                 "tag": {
-                  "end": 549,
-                  "start": 543,
+                  "end": 610,
+                  "start": 604,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -3275,8 +3276,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    556,
-                    572,
+                    617,
+                    636,
                     0
                   ]
                 },
@@ -3295,8 +3296,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    578,
-                    625,
+                    642,
+                    698,
                     0
                   ]
                 },
@@ -3315,8 +3316,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    631,
-                    639,
+                    704,
+                    711,
                     0
                   ]
                 },
@@ -3359,8 +3360,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      302,
-                      317,
+                      331,
+                      349,
                       0
                     ],
                     "tag": null,
@@ -3370,8 +3371,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      323,
-                      339,
+                      355,
+                      374,
                       0
                     ],
                     "tag": null,
@@ -3381,8 +3382,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      345,
-                      392,
+                      380,
+                      436,
                       0
                     ],
                     "tag": null,
@@ -3397,8 +3398,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          302,
-                          317,
+                          331,
+                          349,
                           0
                         ]
                       },
@@ -3417,8 +3418,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          323,
-                          339,
+                          355,
+                          374,
                           0
                         ]
                       },
@@ -3437,8 +3438,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          345,
-                          392,
+                          380,
+                          436,
                           0
                         ]
                       },
@@ -3457,8 +3458,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          398,
-                          406,
+                          442,
+                          449,
                           0
                         ]
                       },
@@ -3502,7 +3503,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "id": "[uuid]",
                           "sourceRange": [
                             68,
-                            83,
+                            86,
                             0
                           ],
                           "tag": null,
@@ -3512,13 +3513,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            89,
-                            113,
+                            92,
+                            125,
                             0
                           ],
                           "tag": {
-                            "end": 112,
-                            "start": 106,
+                            "end": 124,
+                            "start": 118,
                             "type": "TagDeclarator",
                             "value": "seg01"
                           },
@@ -3528,8 +3529,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            119,
-                            166,
+                            131,
+                            187,
                             0
                           ],
                           "tag": null,
@@ -3545,7 +3546,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "id": "[uuid]",
                               "sourceRange": [
                                 68,
-                                83,
+                                86,
                                 0
                               ]
                             },
@@ -3564,8 +3565,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                89,
-                                113,
+                                92,
+                                125,
                                 0
                               ]
                             },
@@ -3574,8 +3575,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               8.0
                             ],
                             "tag": {
-                              "end": 112,
-                              "start": 106,
+                              "end": 124,
+                              "start": 118,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -3589,8 +3590,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                119,
-                                166,
+                                131,
+                                187,
                                 0
                               ]
                             },
@@ -3609,8 +3610,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                172,
-                                180,
+                                193,
+                                200,
                                 0
                               ]
                             },
@@ -3686,8 +3687,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                 "__geoMeta": {
                                   "id": "[uuid]",
                                   "sourceRange": [
-                                    89,
-                                    113,
+                                    92,
+                                    125,
                                     0
                                   ]
                                 },
@@ -3696,8 +3697,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   8.0
                                 ],
                                 "tag": {
-                                  "end": 112,
-                                  "start": 106,
+                                  "end": 124,
+                                  "start": 118,
                                   "type": "TagDeclarator",
                                   "value": "seg01"
                                 },
@@ -3711,13 +3712,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                 "faceId": "[uuid]",
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  89,
-                                  113,
+                                  92,
+                                  125,
                                   0
                                 ],
                                 "tag": {
-                                  "end": 112,
-                                  "start": 106,
+                                  "end": 124,
+                                  "start": 118,
                                   "type": "TagDeclarator",
                                   "value": "seg01"
                                 },
@@ -3727,8 +3728,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__meta": [
                               {
                                 "sourceRange": [
-                                  106,
-                                  112,
+                                  118,
+                                  124,
                                   0
                                 ]
                               }
@@ -3770,8 +3771,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "__meta": [
                       {
                         "sourceRange": [
-                          228,
-                          260,
+                          257,
+                          289,
                           0
                         ]
                       }
@@ -3790,8 +3791,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        266,
-                        296,
+                        295,
+                        325,
                         0
                       ]
                     }
@@ -3802,8 +3803,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__meta": [
                     {
                       "sourceRange": [
-                        266,
-                        296,
+                        295,
+                        325,
                         0
                       ]
                     }
@@ -3818,8 +3819,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__meta": [
                   {
                     "sourceRange": [
-                      266,
-                      296,
+                      295,
+                      325,
                       0
                     ]
                   }
@@ -3831,8 +3832,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__meta": [
                 {
                   "sourceRange": [
-                    454,
-                    486,
+                    506,
+                    538,
                     0
                   ]
                 }
@@ -3851,8 +3852,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  492,
-                  519,
+                  544,
+                  571,
                   0
                 ]
               }
@@ -3869,8 +3870,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        525,
-                        550,
+                        577,
+                        611,
                         0
                       ]
                     },
@@ -3879,8 +3880,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       1.5
                     ],
                     "tag": {
-                      "end": 549,
-                      "start": 543,
+                      "end": 610,
+                      "start": 604,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3894,13 +3895,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      525,
-                      550,
+                      577,
+                      611,
                       0
                     ],
                     "tag": {
-                      "end": 549,
-                      "start": 543,
+                      "end": 610,
+                      "start": 604,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3910,8 +3911,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__meta": [
                   {
                     "sourceRange": [
-                      543,
-                      549,
+                      604,
+                      610,
                       0
                     ]
                   }
@@ -3924,8 +3925,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "__meta": [
               {
                 "sourceRange": [
-                  492,
-                  519,
+                  544,
+                  571,
                   0
                 ]
               }
@@ -3942,8 +3943,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    758,
-                    775,
+                    839,
+                    859,
                     0
                   ]
                 },
@@ -3962,8 +3963,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    781,
-                    799,
+                    865,
+                    886,
                     0
                   ]
                 },
@@ -3982,8 +3983,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    805,
-                    852,
+                    892,
+                    948,
                     0
                   ]
                 },
@@ -4002,8 +4003,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    858,
-                    866,
+                    954,
+                    961,
                     0
                   ]
                 },
@@ -4046,13 +4047,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      525,
-                      550,
+                      577,
+                      611,
                       0
                     ],
                     "tag": {
-                      "end": 549,
-                      "start": 543,
+                      "end": 610,
+                      "start": 604,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -4062,8 +4063,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      556,
-                      572,
+                      617,
+                      636,
                       0
                     ],
                     "tag": null,
@@ -4073,8 +4074,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      578,
-                      625,
+                      642,
+                      698,
                       0
                     ],
                     "tag": null,
@@ -4089,8 +4090,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          525,
-                          550,
+                          577,
+                          611,
                           0
                         ]
                       },
@@ -4099,8 +4100,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         1.5
                       ],
                       "tag": {
-                        "end": 549,
-                        "start": 543,
+                        "end": 610,
+                        "start": 604,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -4114,8 +4115,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          556,
-                          572,
+                          617,
+                          636,
                           0
                         ]
                       },
@@ -4134,8 +4135,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          578,
-                          625,
+                          642,
+                          698,
                           0
                         ]
                       },
@@ -4154,8 +4155,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          631,
-                          639,
+                          704,
+                          711,
                           0
                         ]
                       },
@@ -4198,8 +4199,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            302,
-                            317,
+                            331,
+                            349,
                             0
                           ],
                           "tag": null,
@@ -4209,8 +4210,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            323,
-                            339,
+                            355,
+                            374,
                             0
                           ],
                           "tag": null,
@@ -4220,8 +4221,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            345,
-                            392,
+                            380,
+                            436,
                             0
                           ],
                           "tag": null,
@@ -4236,8 +4237,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                302,
-                                317,
+                                331,
+                                349,
                                 0
                               ]
                             },
@@ -4256,8 +4257,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                323,
-                                339,
+                                355,
+                                374,
                                 0
                               ]
                             },
@@ -4276,8 +4277,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                345,
-                                392,
+                                380,
+                                436,
                                 0
                               ]
                             },
@@ -4296,8 +4297,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                398,
-                                406,
+                                442,
+                                449,
                                 0
                               ]
                             },
@@ -4341,7 +4342,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                 "id": "[uuid]",
                                 "sourceRange": [
                                   68,
-                                  83,
+                                  86,
                                   0
                                 ],
                                 "tag": null,
@@ -4351,13 +4352,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                 "faceId": "[uuid]",
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  89,
-                                  113,
+                                  92,
+                                  125,
                                   0
                                 ],
                                 "tag": {
-                                  "end": 112,
-                                  "start": 106,
+                                  "end": 124,
+                                  "start": 118,
                                   "type": "TagDeclarator",
                                   "value": "seg01"
                                 },
@@ -4367,8 +4368,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                 "faceId": "[uuid]",
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  119,
-                                  166,
+                                  131,
+                                  187,
                                   0
                                 ],
                                 "tag": null,
@@ -4384,7 +4385,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                     "id": "[uuid]",
                                     "sourceRange": [
                                       68,
-                                      83,
+                                      86,
                                       0
                                     ]
                                   },
@@ -4403,8 +4404,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   "__geoMeta": {
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      89,
-                                      113,
+                                      92,
+                                      125,
                                       0
                                     ]
                                   },
@@ -4413,8 +4414,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                     8.0
                                   ],
                                   "tag": {
-                                    "end": 112,
-                                    "start": 106,
+                                    "end": 124,
+                                    "start": 118,
                                     "type": "TagDeclarator",
                                     "value": "seg01"
                                   },
@@ -4428,8 +4429,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   "__geoMeta": {
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      119,
-                                      166,
+                                      131,
+                                      187,
                                       0
                                     ]
                                   },
@@ -4448,8 +4449,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   "__geoMeta": {
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      172,
-                                      180,
+                                      193,
+                                      200,
                                       0
                                     ]
                                   },
@@ -4525,8 +4526,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                       "__geoMeta": {
                                         "id": "[uuid]",
                                         "sourceRange": [
-                                          89,
-                                          113,
+                                          92,
+                                          125,
                                           0
                                         ]
                                       },
@@ -4535,8 +4536,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                         8.0
                                       ],
                                       "tag": {
-                                        "end": 112,
-                                        "start": 106,
+                                        "end": 124,
+                                        "start": 118,
                                         "type": "TagDeclarator",
                                         "value": "seg01"
                                       },
@@ -4550,13 +4551,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                       "faceId": "[uuid]",
                                       "id": "[uuid]",
                                       "sourceRange": [
-                                        89,
-                                        113,
+                                        92,
+                                        125,
                                         0
                                       ],
                                       "tag": {
-                                        "end": 112,
-                                        "start": 106,
+                                        "end": 124,
+                                        "start": 118,
                                         "type": "TagDeclarator",
                                         "value": "seg01"
                                       },
@@ -4566,8 +4567,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   "__meta": [
                                     {
                                       "sourceRange": [
-                                        106,
-                                        112,
+                                        118,
+                                        124,
                                         0
                                       ]
                                     }
@@ -4609,8 +4610,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "__meta": [
                             {
                               "sourceRange": [
-                                228,
-                                260,
+                                257,
+                                289,
                                 0
                               ]
                             }
@@ -4629,8 +4630,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "__geoMeta": {
                             "id": "[uuid]",
                             "sourceRange": [
-                              266,
-                              296,
+                              295,
+                              325,
                               0
                             ]
                           }
@@ -4641,8 +4642,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "__meta": [
                           {
                             "sourceRange": [
-                              266,
-                              296,
+                              295,
+                              325,
                               0
                             ]
                           }
@@ -4657,8 +4658,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__meta": [
                         {
                           "sourceRange": [
-                            266,
-                            296,
+                            295,
+                            325,
                             0
                           ]
                         }
@@ -4670,8 +4671,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "__meta": [
                       {
                         "sourceRange": [
-                          454,
-                          486,
+                          506,
+                          538,
                           0
                         ]
                       }
@@ -4690,8 +4691,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        492,
-                        519,
+                        544,
+                        571,
                         0
                       ]
                     }
@@ -4708,8 +4709,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "__geoMeta": {
                             "id": "[uuid]",
                             "sourceRange": [
-                              525,
-                              550,
+                              577,
+                              611,
                               0
                             ]
                           },
@@ -4718,8 +4719,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             1.5
                           ],
                           "tag": {
-                            "end": 549,
-                            "start": 543,
+                            "end": 610,
+                            "start": 604,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -4733,13 +4734,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            525,
-                            550,
+                            577,
+                            611,
                             0
                           ],
                           "tag": {
-                            "end": 549,
-                            "start": 543,
+                            "end": 610,
+                            "start": 604,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -4749,8 +4750,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "__meta": [
                         {
                           "sourceRange": [
-                            543,
-                            549,
+                            604,
+                            610,
                             0
                           ]
                         }
@@ -4763,8 +4764,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "__meta": [
                     {
                       "sourceRange": [
-                        492,
-                        519,
+                        544,
+                        571,
                         0
                       ]
                     }
@@ -4779,8 +4780,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "__meta": [
                   {
                     "sourceRange": [
-                      492,
-                      519,
+                      544,
+                      571,
                       0
                     ]
                   }
@@ -4792,8 +4793,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__meta": [
                 {
                   "sourceRange": [
-                    687,
-                    719,
+                    768,
+                    800,
                     0
                   ]
                 }
@@ -4812,8 +4813,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  725,
-                  752,
+                  806,
+                  833,
                   0
                 ]
               }
@@ -4824,8 +4825,8 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "__meta": [
               {
                 "sourceRange": [
-                  725,
-                  752,
+                  806,
+                  833,
                   0
                 ]
               }

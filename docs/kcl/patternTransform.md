@@ -63,7 +63,7 @@ fn transform(id) {
 // Sketch 4 cylinders.
 sketch001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 2 }, %)
-  |> extrude(5, %)
+  |> extrude(length = 5)
   |> patternTransform(4, transform, %)
 ```
 
@@ -79,7 +79,7 @@ fn transform(id) {
 
 sketch001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 2 }, %)
-  |> extrude(5, %)
+  |> extrude(length = 5)
   |> patternTransform(4, transform, %)
 ```
 
@@ -97,12 +97,12 @@ fn cube(length, center) {
 
   return startSketchOn('XY')
     |> startProfileAt(p0, %)
-    |> lineTo(p1, %)
-    |> lineTo(p2, %)
-    |> lineTo(p3, %)
-    |> lineTo(p0, %)
-    |> close(%)
-    |> extrude(length, %)
+    |> line(endAbsolute = p1)
+    |> line(endAbsolute = p2)
+    |> line(endAbsolute = p3)
+    |> line(endAbsolute = p0)
+    |> close()
+    |> extrude(length = length)
 }
 
 width = 20
@@ -135,12 +135,12 @@ fn cube(length, center) {
 
   return startSketchOn('XY')
     |> startProfileAt(p0, %)
-    |> lineTo(p1, %)
-    |> lineTo(p2, %)
-    |> lineTo(p3, %)
-    |> lineTo(p0, %)
-    |> close(%)
-    |> extrude(length, %)
+    |> line(endAbsolute = p1)
+    |> line(endAbsolute = p2)
+    |> line(endAbsolute = p3)
+    |> line(endAbsolute = p0)
+    |> close()
+    |> extrude(length = length)
 }
 
 width = 20
@@ -179,7 +179,7 @@ fn layer() {
   return startSketchOn("XY")
     // or some other plane idk
     |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
-    |> extrude(h, %)
+    |> extrude(length = h)
 }
 // The vase is 100 layers tall.
 // The 100 layers are replica of each other, with a slight transformation applied to each.
@@ -205,7 +205,7 @@ startSketchOn('XY')
        center = [0, 0],
        inscribed = false
      }, %)
-  |> extrude(4, %)
+  |> extrude(length = 4)
   |> patternTransform(3, transform, %)
 ```
 

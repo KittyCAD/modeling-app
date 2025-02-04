@@ -12,6 +12,7 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
   CallExpression,
+  CallExpressionKw,
   clearSceneAndBustCache,
   emptyExecState,
   ExecState,
@@ -456,14 +457,15 @@ export class KclManager {
     Array.from(this.engineCommandManager.artifactGraph).forEach(
       ([commandId, artifact]) => {
         if (!('codeRef' in artifact)) return
-        const _node1 = getNodeFromPath<Node<CallExpression>>(
+        const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
           this.ast,
           artifact.codeRef.pathToNode,
-          'CallExpression'
+          ['CallExpression', 'CallExpressionKw']
         )
         if (err(_node1)) return
         const { node } = _node1
-        if (node.type !== 'CallExpression') return
+        if (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw')
+          return
         const [oldStart, oldEnd] = artifact.codeRef.range
         if (oldStart === 0 && oldEnd === 0) return
         if (oldStart === node.start && oldEnd === node.end) return
