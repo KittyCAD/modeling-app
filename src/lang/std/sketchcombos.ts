@@ -155,10 +155,22 @@ function createCallWrapper(
     }
   }
 
-  const args =
-    tooltip === 'circle'
-      ? []
-      : [createFirstArg(tooltip, val), createPipeSubstitution()]
+  if (tooltip === 'circle') {
+    const labeledArgs = []
+    if (tag) {
+      labeledArgs.push(createLabeledArg(ARG_TAG, tag))
+    }
+    return {
+      callExp: createCallExpressionStdLibKw(
+        'circle',
+        null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+        labeledArgs
+      ),
+      valueUsedInTransform: 0,
+    }
+  }
+
+  const args = [createFirstArg(tooltip, val), createPipeSubstitution()]
   if (tag) {
     args.push(tag)
   }

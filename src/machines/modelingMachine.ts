@@ -2828,7 +2828,7 @@ export function isEditingExistingSketch({
       item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
   )
   const hasCircle = pipeExpression.body.some(
-    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+    (item) => item.type === 'CallExpressionKw' && item.callee.name === 'circle'
   )
   return (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle
 }
@@ -2876,7 +2876,7 @@ export function pipeHasCircle({
   const pipeExpression = variableDeclaration.node.init
   if (pipeExpression.type !== 'PipeExpression') return false
   const hasCircle = pipeExpression.body.some(
-    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+    (item) => item.type === 'CallExpressionKw' && item.callee.name === 'circle'
   )
   return hasCircle
 }
@@ -2935,7 +2935,7 @@ export function isClosedSketch({
   if (node.node?.declaration?.init?.type !== 'PipeExpression') return false
   return node.node.declaration.init.body.some(
     (node) =>
-      node.type === 'CallExpression' &&
+      (node.type === 'CallExpressionKw' || node.type === 'CallExpression') &&
       (node.callee.name === 'close' || node.callee.name === 'circle')
   )
 }

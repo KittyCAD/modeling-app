@@ -66,7 +66,12 @@ import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { EdgeCutInfo } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { findKwArg, findKwArgAny, findKwArgAnyIndex } from 'lang/util'
+import {
+  findKwArg,
+  findKwArgAny,
+  findKwArgAnyIndex,
+  findKwArgWithIndex,
+} from 'lang/util'
 
 export const ARG_TAG = 'tag'
 export const ARG_END = 'end'
@@ -1049,7 +1054,7 @@ export const tangentialArcTo: SketchLineHelper = {
     ]
   },
 }
-export const circle: SketchLineHelper = {
+export const circle: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
 
@@ -1070,6 +1075,7 @@ export const circle: SketchLineHelper = {
     const radiusExp = createLiteral(roundOff(radius, 2))
 
     if (replaceExistingCallback) {
+      // ADAM: Make this kw.
       const result = replaceExistingCallback([
         {
           type: 'arrayInObject',
@@ -1128,14 +1134,12 @@ export const circle: SketchLineHelper = {
       pathToNode: shallowPath,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
-    if (callExp.type !== 'CallExpression') return []
-    const firstArg = callExp.arguments?.[0]
-    if (firstArg.type !== 'ObjectExpression') return []
-    const centerDetails = getObjExprProperty(firstArg, 'center')
-    const radiusDetails = getObjExprProperty(firstArg, 'radius')
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
+    if (callExp.type !== 'CallExpressionKw') return []
+    const centerDetails = findKwArgWithIndex('center', callExp)
+    const radiusDetails = findKwArgWithIndex('radius', callExp)
     if (!centerDetails || !radiusDetails) return []
     if (centerDetails.expr.type !== 'ArrayExpression') return []
 
@@ -1985,12 +1989,12 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToY,
   angledLineThatIntersects,
   tangentialArcTo,
-  circle,
 } as const
 
 export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   line,
   lineTo,
+  circle,
 } as const
 
 export function changeSketchArguments(
