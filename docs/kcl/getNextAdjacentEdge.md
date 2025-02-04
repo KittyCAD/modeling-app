@@ -29,14 +29,14 @@ getNextAdjacentEdge(tag: TagIdentifier) -> Uuid
 ```js
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([10, 0], %)
+  |> line(end = [10, 0])
   |> angledLine({ angle = 60, length = 10 }, %)
   |> angledLine({ angle = 120, length = 10 }, %)
-  |> line([-10, 0], %)
+  |> line(end = [-10, 0])
   |> angledLine({ angle = 240, length = 10 }, %, $referenceEdge)
-  |> close(%)
+  |> close()
 
-example = extrude(5, exampleSketch)
+example = extrude(exampleSketch, length = 5)
   |> fillet({
        radius = 3,
        tags = [getNextAdjacentEdge(referenceEdge)]

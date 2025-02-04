@@ -104,7 +104,11 @@ export function App() {
 
   // Generate thumbnail.png when loading the app
   useEffect(() => {
-    if (!capturedCanvas && lastCommandType === 'execution-done') {
+    if (
+      isDesktop() &&
+      !capturedCanvas &&
+      lastCommandType === 'execution-done'
+    ) {
       setTimeout(() => {
         const projectDirectoryWithoutEndingSlash = loaderData?.project?.path
         if (!projectDirectoryWithoutEndingSlash) {
