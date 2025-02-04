@@ -50,12 +50,12 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
-///   |> lineTo([width/2, -length/2], %, $edge1)
-///   |> lineTo([width/2, length/2], %, $edge2)
-///   |> lineTo([-width/2, length/2], %, $edge3)
-///   |> close(%, $edge4)
+///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
+///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
+///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
+///   |> close(tag = $edge4)
 ///
-/// mountingPlate = extrude(thickness, mountingPlateSketch)
+/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
 ///   |> chamfer({
 ///     length = chamferLength,
 ///     tags = [
@@ -72,16 +72,16 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// fn cube(pos, scale) {
 /// sg = startSketchOn('XY')
 ///     |> startProfileAt(pos, %)
-///     |> line([0, scale], %)
-///     |> line([scale, 0], %)
-///     |> line([0, -scale], %)
+///     |> line(end = [0, scale])
+///     |> line(end = [scale, 0])
+///     |> line(end = [0, -scale])
 ///
 ///     return sg
 /// }
 ///
 /// part001 = cube([0,0], 20)
-///     |> close(%, $line1)
-///     |> extrude(20, %)
+///     |> close(tag = $line1)
+///     |> extrude(length = 20)
 ///     |> chamfer({
 ///         length = 10,
 ///         tags = [getOppositeEdge(line1)]
@@ -89,12 +89,12 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// sketch001 = startSketchOn(part001, chamfer1)
 ///     |> startProfileAt([10, 10], %)
-///     |> line([2, 0], %)
-///     |> line([0, 2], %)
-///     |> line([-2, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
-///     |> extrude(10, %)
+///     |> line(end = [2, 0])
+///     |> line(end = [0, 2])
+///     |> line(end = [-2, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///     |> extrude(length = 10)
 /// ```
 #[stdlib {
     name = "chamfer",

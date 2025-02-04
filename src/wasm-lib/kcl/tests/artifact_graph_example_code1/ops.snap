@@ -27,49 +27,48 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          239,
-          242,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          244,
-          253,
+          288,
+          291,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      231,
-      254,
+      260,
+      292,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        268,
+        277,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          267,
-          297,
+          305,
+          335,
           0
         ]
       },
       "solid": {
         "sourceRange": [
-          299,
-          300,
+          337,
+          338,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      260,
-      301,
+      298,
+      339,
       0
     ],
     "type": "StdLibCall",
@@ -79,23 +78,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          328,
-          338,
+          366,
+          376,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          340,
-          345,
+          378,
+          383,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      314,
-      346,
+      352,
+      384,
       0
     ],
     "type": "StdLibCall",
@@ -105,26 +104,25 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          511,
-          512,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          514,
-          523,
+          583,
+          584,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      503,
-      524,
+      555,
+      585,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        563,
+        572,
+        0
+      ]
+    }
   }
 ]

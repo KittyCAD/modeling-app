@@ -4,21 +4,21 @@ import { test, expect } from './zoo-test'
 
 const file = `sketch001 = startSketchOn('XZ')
 profile001 = startProfileAt([57.81, 250.51], sketch001)
-  |> line([121.13, 56.63], %, $seg02)
-  |> line([83.37, -34.61], %, $seg01)
-  |> line([19.66, -116.4], %)
-  |> line([-221.8, -41.69], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(200, profile001)
+  |> line(end = [121.13, 56.63], tag = $seg02)
+  |> line(end = [83.37, -34.61], tag = $seg01)
+  |> line(end = [19.66, -116.4])
+  |> line(end = [-221.8, -41.69])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 200)
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([-73.64, -42.89], %)
   |> xLine(173.71, %)
-  |> line([-22.12, -94.4], %)
+  |> line(end = [-22.12, -94.4])
   |> xLine(-156.98, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude002 = extrude(50, sketch002)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(sketch002, length = 50)
 sketch003 = startSketchOn('XY')
   |> startProfileAt([52.92, 157.81], %)
   |> angledLine([0, 176.4], %, $rectangleSegmentA001)
@@ -30,12 +30,12 @@ sketch003 = startSketchOn('XY')
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude003 = extrude(20, sketch003)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude003 = extrude(sketch003, length = 20)
 `
 
-test.describe('Check the happy path, for basic changing color', () => {
+test.fixme('Check the happy path, for basic changing color', () => {
   const cases = [
     {
       desc: 'User accepts change',

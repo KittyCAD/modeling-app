@@ -272,7 +272,7 @@ impl Backend {
 }
 const part001 = cube([0,0], 20)
     |> close(%)
-    |> extrude(20, %)"#
+    |> extrude(length=20)"#
                     .to_string(),
             );
         }
