@@ -4,7 +4,7 @@ import { executorInputPath, getUtils } from './test-utils'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import path from 'path'
 
-test.describe('Command bar tests', () => {
+test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
