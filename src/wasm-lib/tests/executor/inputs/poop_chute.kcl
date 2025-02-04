@@ -26,7 +26,7 @@ sketch001 = startSketchOn('-YZ')
   |> xLineTo(0, %)
   |> yLineTo(segEndY(seg01), %)
   |> angledLineToY({ angle: 180 - 45, to: 0 }, %)
-  |> close(%)
+  |> close()
 part001 = revolve({
   angle: 90,
   axis: {
@@ -54,5 +54,5 @@ sketch002 = startSketchOn('-YZ')
   |> xLineTo(0, %)
   |> yLineTo(segEndY(seg02), %)
   |> angledLineToY({ angle: 180 - 45, to: 0 }, %)
-  |> close(%)
-  |> extrude(back_length - height, %)
+  |> close()
+  |> extrude(length = back_length - height)

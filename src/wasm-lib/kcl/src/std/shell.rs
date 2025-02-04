@@ -40,11 +40,11 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Remove the end face for the extrusion.
 /// firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
-///     |> line([24, 0], %)
-///     |> line([0, -24], %)
-///     |> line([-24, 0], %)
-///     |> close(%)
-///     |> extrude(6, %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
 ///
 /// // Remove the end face for the extrusion.
 /// shell({
@@ -57,11 +57,11 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Remove the start face for the extrusion.
 /// firstSketch = startSketchOn('-XZ')
 ///     |> startProfileAt([-12, 12], %)
-///     |> line([24, 0], %)
-///     |> line([0, -24], %)
-///     |> line([-24, 0], %)
-///     |> close(%)
-///     |> extrude(6, %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
 ///
 /// // Remove the start face for the extrusion.
 /// shell({
@@ -74,11 +74,11 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Remove a tagged face and the end face for the extrusion.
 /// firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
-///     |> line([24, 0], %)
-///     |> line([0, -24], %)
-///     |> line([-24, 0], %, $myTag)
-///     |> close(%)
-///     |> extrude(6, %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0], tag = $myTag)
+///     |> close()
+///     |> extrude(length = 6)
 ///
 /// // Remove a tagged face for the extrusion.
 /// shell({
@@ -91,11 +91,11 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Remove multiple faces at once.
 /// firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
-///     |> line([24, 0], %)
-///     |> line([0, -24], %)
-///     |> line([-24, 0], %, $myTag)
-///     |> close(%)
-///     |> extrude(6, %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0], tag = $myTag)
+///     |> close()
+///     |> extrude(length = 6)
 ///
 /// // Remove a tagged face and the end face for the extrusion.
 /// shell({
@@ -109,19 +109,19 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// size = 100
 /// case = startSketchOn('-XZ')
 ///     |> startProfileAt([-size, -size], %)
-///     |> line([2 * size, 0], %)
-///     |> line([0, 2 * size], %)
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
 ///     |> tangentialArcTo([-size, size], %)
-///     |> close(%)
-///     |> extrude(65, %)
+///     |> close()
+///     |> extrude(length = 65)
 ///
 /// thing1 = startSketchOn(case, 'end')
 ///     |> circle({ center = [-size / 2, -size / 2], radius = 25 }, %)
-///     |> extrude(50, %)
+///     |> extrude(length = 50)
 ///
 /// thing2 = startSketchOn(case, 'end')
 ///     |> circle({ center = [size / 2, -size / 2], radius = 25 }, %)
-///     |> extrude(50, %)
+///     |> extrude(length = 50)
 ///
 /// // We put "case" in the shell function to shell the entire object.
 /// shell({ faces = ['start'], thickness = 5 }, case)
@@ -132,19 +132,19 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// size = 100
 /// case = startSketchOn('XY')
 ///     |> startProfileAt([-size, -size], %)
-///     |> line([2 * size, 0], %)
-///     |> line([0, 2 * size], %)
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
 ///     |> tangentialArcTo([-size, size], %)
-///     |> close(%)
-///     |> extrude(65, %)
+///     |> close()
+///     |> extrude(length = 65)
 ///
 /// thing1 = startSketchOn(case, 'end')
 ///     |> circle({ center = [-size / 2, -size / 2], radius = 25 }, %)
-///     |> extrude(50, %)
+///     |> extrude(length = 50)
 ///
 /// thing2 = startSketchOn(case, 'end')
 ///     |> circle({ center = [size / 2, -size / 2], radius = 25 }, %)
-///     |> extrude(50, %)
+///     |> extrude(length = 50)
 ///
 /// // We put "thing1" in the shell function to shell the end face of the object.
 /// shell({ faces = ['end'], thickness = 5 }, thing1)
@@ -157,19 +157,19 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// size = 100
 /// case = startSketchOn('XY')
 ///     |> startProfileAt([-size, -size], %)
-///     |> line([2 * size, 0], %)
-///     |> line([0, 2 * size], %)
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
 ///     |> tangentialArcTo([-size, size], %)
-///     |> close(%)
-///     |> extrude(65, %)
+///     |> close()
+///     |> extrude(length = 65)
 ///
 /// thing1 = startSketchOn(case, 'end')
 ///     |> circle({ center = [-size / 2, -size / 2], radius = 25 }, %)
-///     |> extrude(50, %)
+///     |> extrude(length = 50)
 ///
 /// thing2 = startSketchOn(case, 'end')
 ///     |> circle({ center = [size / 2, -size / 2], radius = 25 }, %)
-///     |> extrude(50, %)
+///     |> extrude(length = 50)
 ///
 /// // We put "thing1" and "thing2" in the shell function to shell the end face of the object.
 /// shell({ faces = ['end'], thickness = 5 }, [thing1, thing2])
@@ -260,11 +260,11 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Hollow a basic sketch.
 /// firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
-///     |> line([24, 0], %)
-///     |> line([0, -24], %)
-///     |> line([-24, 0], %)
-///     |> close(%)
-///     |> extrude(6, %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
 ///     |> hollow (0.25, %)
 /// ```
 ///
@@ -272,11 +272,11 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Hollow a basic sketch.
 /// firstSketch = startSketchOn('-XZ')
 ///     |> startProfileAt([-12, 12], %)
-///     |> line([24, 0], %)
-///     |> line([0, -24], %)
-///     |> line([-24, 0], %)
-///     |> close(%)
-///     |> extrude(6, %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
 ///     |> hollow (0.5, %)
 /// ```
 ///
@@ -285,19 +285,19 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// size = 100
 /// case = startSketchOn('-XZ')
 ///     |> startProfileAt([-size, -size], %)
-///     |> line([2 * size, 0], %)
-///     |> line([0, 2 * size], %)
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
 ///     |> tangentialArcTo([-size, size], %)
-///     |> close(%)
-///     |> extrude(65, %)
+///     |> close()
+///     |> extrude(length = 65)
 ///
 /// thing1 = startSketchOn(case, 'end')
 ///     |> circle({ center = [-size / 2, -size / 2], radius = 25 }, %)
-///     |> extrude(50, %)
+///     |> extrude(length = 50)
 ///
 /// thing2 = startSketchOn(case, 'end')
 ///     |> circle({ center = [size / 2, -size / 2], radius = 25 }, %)
-///     |> extrude(50, %)
+///     |> extrude(length = 50)
 ///
 /// hollow(0.5, case)
 /// ```
