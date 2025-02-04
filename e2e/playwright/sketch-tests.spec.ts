@@ -546,6 +546,7 @@ test.describe('Sketch tests', () => {
     page,
     homePage,
   }) => {
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(

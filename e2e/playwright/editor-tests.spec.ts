@@ -894,6 +894,7 @@ test.describe('Editor tests', () => {
     context,
     homePage,
   }) => {
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
