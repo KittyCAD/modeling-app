@@ -70,6 +70,7 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [],
         "sourceRange": [
           230,
           305,

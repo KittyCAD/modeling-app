@@ -79,6 +79,7 @@ description: Operations executed artifact_graph_example_code1.kcl
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [],
         "sourceRange": [
           305,
           335,

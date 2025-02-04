@@ -150,6 +150,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [],
         "sourceRange": [
           653,
           773,
@@ -259,6 +260,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [],
         "sourceRange": [
           857,
           977,

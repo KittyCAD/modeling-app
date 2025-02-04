@@ -65,11 +65,21 @@ description: Operations executed fillet-and-shell.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "artifactIds": [
+        "[uuid]"
+      ],
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [],
         "sourceRange": [
           1071,
           1270,
@@ -206,7 +216,16 @@ description: Operations executed fillet-and-shell.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "artifactIds": [
+        "[uuid]"
+      ],
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -321,7 +340,16 @@ description: Operations executed fillet-and-shell.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "artifactIds": [
+        "[uuid]"
+      ],
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -436,7 +464,16 @@ description: Operations executed fillet-and-shell.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "artifactIds": [
+        "[uuid]"
+      ],
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -551,7 +588,16 @@ description: Operations executed fillet-and-shell.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "artifactIds": [
+        "[uuid]"
+      ],
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

@@ -65,7 +65,16 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "artifactIds": [
+        "[uuid]"
+      ],
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
