@@ -7,6 +7,7 @@ use anyhow::Result;
 use artifact::build_artifact_graph;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
+use itertools::{EitherOrBoth, Itertools};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -2139,9 +2140,47 @@ impl ExecutorContext {
     /// way in which this gets invoked should always be through
     /// [Self::get_changed_program]. This is purely to contain the logic on
     /// how we construct a new [CacheResult].
-    pub fn generate_changed_program(&self, old_ast: Node<AstProgram>, new_ast: Node<AstProgram>) -> CacheResult {
+    ///
+    /// Digests *must* be computed before calling this.
+    fn generate_changed_program(&self, old_ast: Node<AstProgram>, new_ast: Node<AstProgram>) -> CacheResult {
         let mut generated_program = new_ast.clone();
         generated_program.body = vec![];
+
+        if !old_ast.annotations().zip_longest(new_ast.annotations()).all(|pair| {
+            match pair {
+                EitherOrBoth::Both(old, new) => {
+                    // Compare annotations, ignoring source ranges.
+                    match (&old.value, &new.value) {
+                        (
+                            NonCodeValue::Annotation { name, properties },
+                            NonCodeValue::Annotation {
+                                name: new_name,
+                                properties: new_properties,
+                            },
+                        ) => {
+                            name.digest == new_name.digest
+                                && properties
+                                    .as_ref()
+                                    .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
+                                    == new_properties
+                                        .as_ref()
+                                        .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
+                        }
+                        _ => false,
+                    }
+                }
+                _ => false,
+            }
+        }) {
+            // If any of the annotations are different at the beginning of the
+            // program, it's the settings, and we have to bust cache and rebuild
+            // the scene.
+
+            return CacheResult {
+                clear_scene: true,
+                program: new_ast,
+            };
+        }
 
         if !old_ast.body.iter().zip(new_ast.body.iter()).all(|(old, new)| {
             let old_node: WalkNode = old.into();
@@ -4231,6 +4270,41 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
             .await;
 
         assert_eq!(result, None);
+    }
+
+    // Changing the units settings using an annotation with the exact same file
+    // should bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_unit_setting_using_annotation() {
+        let old_code = r#"@settings(defaultLengthUnit = in)
+startSketchOn('XY')
+"#;
+        let new_code = r#"@settings(defaultLengthUnit = mm)
+startSketchOn('XY')
+"#;
+
+        let (program, ctx, exec_state) = parse_execute(old_code).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
+        new_program.compute_digest();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: new_program.ast.clone(),
+            })
+            .await;
+
+        assert!(result.is_some());
+
+        let result = result.unwrap();
+
+        assert_eq!(result.program, new_program.ast);
+        assert!(result.clear_scene);
     }
 
     #[tokio::test(flavor = "multi_thread")]
