@@ -52,7 +52,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("-XZ")
-///   |> circle({ center = [0, 0], radius = 10 }, %)
+///   |> circle(center = [0, 0], radius = 10 )
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
@@ -64,7 +64,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> line(end = [0, 30])
 ///   |> line(end = [-30, 0])
 ///   |> close()
-///   |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
+///   |> hole(circle(center = [0, 15], radius = 5 ), %)
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```

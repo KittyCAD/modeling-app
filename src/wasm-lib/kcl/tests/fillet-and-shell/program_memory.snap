@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing fillet-and-shell.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -921,7 +922,7 @@ description: Program memory after executing fillet-and-shell.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1512,
+                    "end": 1499,
                     "id": {
                       "end": 1311,
                       "name": "screw",
@@ -1005,73 +1006,51 @@ description: Program memory after executing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1414,
-                              "properties": [
-                                {
-                                  "end": 1398,
-                                  "key": {
-                                    "end": 1389,
-                                    "name": "center",
-                                    "start": 1383,
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "center"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "end": 1392,
+                                    "name": "x",
+                                    "start": 1391,
+                                    "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "start": 1383,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "elements": [
-                                      {
-                                        "end": 1394,
-                                        "name": "x",
-                                        "start": 1393,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      {
-                                        "end": 1397,
-                                        "name": "y",
-                                        "start": 1396,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      }
-                                    ],
-                                    "end": 1398,
-                                    "start": 1392,
-                                    "type": "ArrayExpression",
-                                    "type": "ArrayExpression"
-                                  }
-                                },
-                                {
-                                  "end": 1412,
-                                  "key": {
-                                    "end": 1406,
-                                    "name": "radius",
-                                    "start": 1400,
+                                  {
+                                    "end": 1395,
+                                    "name": "y",
+                                    "start": 1394,
+                                    "type": "Identifier",
                                     "type": "Identifier"
-                                  },
-                                  "start": 1400,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "end": 1412,
-                                    "raw": "2.5",
-                                    "start": 1409,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.5,
-                                      "suffix": "None"
-                                    }
                                   }
-                                }
-                              ],
-                              "start": 1381,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                                ],
+                                "end": 1396,
+                                "start": 1390,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             },
                             {
-                              "end": 1417,
-                              "start": 1416,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "radius"
+                              },
+                              "arg": {
+                                "end": 1410,
+                                "raw": "2.5",
+                                "start": 1407,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.5,
+                                  "suffix": "None"
+                                }
+                              }
                             }
                           ],
                           "callee": {
@@ -1080,111 +1059,91 @@ description: Program memory after executing fillet-and-shell.kcl
                             "start": 1374,
                             "type": "Identifier"
                           },
-                          "end": 1418,
+                          "end": 1411,
                           "start": 1374,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
                               "arguments": [
                                 {
-                                  "end": 1472,
-                                  "properties": [
-                                    {
-                                      "end": 1455,
-                                      "key": {
-                                        "end": 1446,
-                                        "name": "center",
-                                        "start": 1440,
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "type": "Identifier",
+                                    "name": "center"
+                                  },
+                                  "arg": {
+                                    "elements": [
+                                      {
+                                        "end": 1442,
+                                        "name": "x",
+                                        "start": 1441,
+                                        "type": "Identifier",
                                         "type": "Identifier"
                                       },
-                                      "start": 1440,
-                                      "type": "ObjectProperty",
-                                      "value": {
-                                        "elements": [
-                                          {
-                                            "end": 1451,
-                                            "name": "x",
-                                            "start": 1450,
-                                            "type": "Identifier",
-                                            "type": "Identifier"
-                                          },
-                                          {
-                                            "end": 1454,
-                                            "name": "y",
-                                            "start": 1453,
-                                            "type": "Identifier",
-                                            "type": "Identifier"
-                                          }
-                                        ],
-                                        "end": 1455,
-                                        "start": 1449,
-                                        "type": "ArrayExpression",
-                                        "type": "ArrayExpression"
-                                      }
-                                    },
-                                    {
-                                      "end": 1470,
-                                      "key": {
-                                        "end": 1463,
-                                        "name": "radius",
-                                        "start": 1457,
+                                      {
+                                        "end": 1445,
+                                        "name": "y",
+                                        "start": 1444,
+                                        "type": "Identifier",
                                         "type": "Identifier"
-                                      },
-                                      "start": 1457,
-                                      "type": "ObjectProperty",
-                                      "value": {
-                                        "end": 1470,
-                                        "raw": "1.25",
-                                        "start": 1466,
-                                        "type": "Literal",
-                                        "type": "Literal",
-                                        "value": {
-                                          "value": 1.25,
-                                          "suffix": "None"
-                                        }
                                       }
-                                    }
-                                  ],
-                                  "start": 1438,
-                                  "type": "ObjectExpression",
-                                  "type": "ObjectExpression"
+                                    ],
+                                    "end": 1446,
+                                    "start": 1440,
+                                    "type": "ArrayExpression",
+                                    "type": "ArrayExpression"
+                                  }
                                 },
                                 {
-                                  "end": 1475,
-                                  "start": 1474,
-                                  "type": "PipeSubstitution",
-                                  "type": "PipeSubstitution"
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "type": "Identifier",
+                                    "name": "radius"
+                                  },
+                                  "arg": {
+                                    "end": 1461,
+                                    "raw": "1.25",
+                                    "start": 1457,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.25,
+                                      "suffix": "None"
+                                    }
+                                  }
                                 }
                               ],
                               "callee": {
-                                "end": 1437,
+                                "end": 1430,
                                 "name": "circle",
-                                "start": 1431,
+                                "start": 1424,
                                 "type": "Identifier"
                               },
-                              "end": 1476,
-                              "start": 1431,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
+                              "end": 1463,
+                              "start": 1424,
+                              "type": "CallExpressionKw",
+                              "type": "CallExpressionKw",
+                              "unlabeled": null
                             },
                             {
-                              "end": 1479,
-                              "start": 1478,
+                              "end": 1466,
+                              "start": 1465,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1430,
+                            "end": 1423,
                             "name": "hole",
-                            "start": 1426,
+                            "start": 1419,
                             "type": "Identifier"
                           },
-                          "end": 1480,
-                          "start": 1426,
+                          "end": 1467,
+                          "start": 1419,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1197,28 +1156,28 @@ description: Program memory after executing fillet-and-shell.kcl
                                 "name": "length"
                               },
                               "arg": {
-                                "end": 1511,
+                                "end": 1498,
                                 "name": "height",
-                                "start": 1505,
+                                "start": 1492,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1495,
+                            "end": 1482,
                             "name": "extrude",
-                            "start": 1488,
+                            "start": 1475,
                             "type": "Identifier"
                           },
-                          "end": 1512,
-                          "start": 1488,
+                          "end": 1499,
+                          "start": 1475,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 1512,
+                      "end": 1499,
                       "start": 1314,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -1226,7 +1185,7 @@ description: Program memory after executing fillet-and-shell.kcl
                     "start": 1306,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1512,
+                  "end": 1499,
                   "kind": "const",
                   "start": 1306,
                   "type": "VariableDeclaration",
@@ -1234,22 +1193,22 @@ description: Program memory after executing fillet-and-shell.kcl
                 },
                 {
                   "argument": {
-                    "end": 1527,
+                    "end": 1514,
                     "name": "screw",
-                    "start": 1522,
+                    "start": 1509,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1527,
-                  "start": 1515,
+                  "end": 1514,
+                  "start": 1502,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1529,
+              "end": 1516,
               "start": 1302
             },
-            "end": 1529,
+            "end": 1516,
             "params": [
               {
                 "type": "Parameter",
@@ -2471,7 +2430,7 @@ description: Program memory after executing fillet-and-shell.kcl
             {
               "sourceRange": [
                 1287,
-                1529,
+                1516,
                 0
               ]
             }

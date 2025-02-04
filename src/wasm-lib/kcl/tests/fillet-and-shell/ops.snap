@@ -73,14 +73,14 @@ snapshot_kind: text
     "name": "m25Screw",
     "functionSourceRange": [
       1287,
-      1529,
+      1516,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1531,
-      1660,
+      1518,
+      1647,
       0
     ]
   },
@@ -107,23 +107,23 @@ snapshot_kind: text
     "labeledArgs": {
       "hole_sketch": {
         "sourceRange": [
-          1431,
-          1476,
+          1424,
+          1463,
           0
         ]
       },
       "sketch": {
         "sourceRange": [
-          1478,
-          1479,
+          1465,
+          1466,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1426,
-      1480,
+      1419,
+      1467,
       0
     ],
     "type": "StdLibCall",
@@ -133,16 +133,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          1505,
-          1511,
+          1492,
+          1498,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1488,
-      1512,
+      1475,
+      1499,
       0
     ],
     "type": "StdLibCall",
@@ -156,14 +156,14 @@ snapshot_kind: text
     "name": "m25Screw",
     "functionSourceRange": [
       1287,
-      1529,
+      1516,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1662,
-      1789,
+      1649,
+      1776,
       0
     ]
   },
@@ -190,23 +190,23 @@ snapshot_kind: text
     "labeledArgs": {
       "hole_sketch": {
         "sourceRange": [
-          1431,
-          1476,
+          1424,
+          1463,
           0
         ]
       },
       "sketch": {
         "sourceRange": [
-          1478,
-          1479,
+          1465,
+          1466,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1426,
-      1480,
+      1419,
+      1467,
       0
     ],
     "type": "StdLibCall",
@@ -216,16 +216,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          1505,
-          1511,
+          1492,
+          1498,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1488,
-      1512,
+      1475,
+      1499,
       0
     ],
     "type": "StdLibCall",
@@ -239,14 +239,14 @@ snapshot_kind: text
     "name": "m25Screw",
     "functionSourceRange": [
       1287,
-      1529,
+      1516,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1791,
-      1916,
+      1778,
+      1903,
       0
     ]
   },
@@ -273,23 +273,23 @@ snapshot_kind: text
     "labeledArgs": {
       "hole_sketch": {
         "sourceRange": [
-          1431,
-          1476,
+          1424,
+          1463,
           0
         ]
       },
       "sketch": {
         "sourceRange": [
-          1478,
-          1479,
+          1465,
+          1466,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1426,
-      1480,
+      1419,
+      1467,
       0
     ],
     "type": "StdLibCall",
@@ -299,16 +299,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          1505,
-          1511,
+          1492,
+          1498,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1488,
-      1512,
+      1475,
+      1499,
       0
     ],
     "type": "StdLibCall",
@@ -322,14 +322,14 @@ snapshot_kind: text
     "name": "m25Screw",
     "functionSourceRange": [
       1287,
-      1529,
+      1516,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1918,
-      2045,
+      1905,
+      2032,
       0
     ]
   },
@@ -356,23 +356,23 @@ snapshot_kind: text
     "labeledArgs": {
       "hole_sketch": {
         "sourceRange": [
-          1431,
-          1476,
+          1424,
+          1463,
           0
         ]
       },
       "sketch": {
         "sourceRange": [
-          1478,
-          1479,
+          1465,
+          1466,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1426,
-      1480,
+      1419,
+      1467,
       0
     ],
     "type": "StdLibCall",
@@ -382,16 +382,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          1505,
-          1511,
+          1492,
+          1498,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1488,
-      1512,
+      1475,
+      1499,
       0
     ],
     "type": "StdLibCall",
@@ -404,23 +404,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          2053,
-          2103,
+          2040,
+          2090,
           0
         ]
       },
       "solid_set": {
         "sourceRange": [
-          2105,
-          2109,
+          2092,
+          2096,
           0
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      2047,
-      2110,
+      2034,
+      2097,
       0
     ],
     "type": "StdLibCall",

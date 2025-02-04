@@ -152,7 +152,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///
 /// // Sketch 4 cylinders.
 /// sketch001 = startSketchOn('XZ')
-///   |> circle({ center = [0, 0], radius = 2 }, %)
+///   |> circle(center = [0, 0], radius = 2 )
 ///   |> extrude(length = 5)
 ///   |> patternTransform(4, transform, %)
 /// ```
@@ -165,7 +165,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// sketch001 = startSketchOn('XZ')
-///   |> circle({ center = [0, 0], radius = 2 }, %)
+///   |> circle(center = [0, 0], radius = 2 )
 ///   |> extrude(length = 5)
 ///   |> patternTransform(4, transform, %)
 /// ```
@@ -261,7 +261,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer() {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
+///     |> circle(center = [0, 0], radius = 1 , tag = $tag1)
 ///     |> extrude(length = h)
 /// }
 /// // The vase is 100 layers tall.
@@ -322,7 +322,7 @@ async fn inner_pattern_transform<'a>(
 ///
 /// // Sketch 4 circles.
 /// sketch001 = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> circle(center = [0, 0], radius = 2 )
 ///   |> patternTransform2d(4, transform, %)
 /// ```
 #[stdlib {
@@ -694,7 +694,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> circle({ center = [0, 0], radius = 1 }, %)
+///   |> circle(center = [0, 0], radius = 1 )
 ///   |> patternLinear2d({
 ///        axis = [1, 0],
 ///        instances = 7,
@@ -973,7 +973,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> circle({ center = [0, 0], radius = 1 }, %)
+///   |> circle(center = [0, 0], radius = 1 )
 ///
 /// example = extrude(exampleSketch, length = -5)
 ///   |> patternCircular3d({

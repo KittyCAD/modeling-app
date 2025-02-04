@@ -26,18 +26,24 @@ miniHdmiHole = startSketchAt([
        0,
        border + miniHdmiDistance - (miniHdmiWidth / 2)
      ])
-  |> line(endAbsolute = [
-       0,
-       border + miniHdmiDistance + miniHdmiWidth / 2
-     ])
-  |> line(endAbsolute = [
-       1,
-       border + miniHdmiDistance + miniHdmiWidth / 2
-     ])
-  |> line(endAbsolute = [
-       1,
-       border + miniHdmiDistance - (miniHdmiWidth / 2)
-     ])
+  |> line(
+       endAbsolute = [
+         0,
+         border + miniHdmiDistance + miniHdmiWidth / 2
+       ],
+     )
+  |> line(
+       endAbsolute = [
+         1,
+         border + miniHdmiDistance + miniHdmiWidth / 2
+       ],
+     )
+  |> line(
+       endAbsolute = [
+         1,
+         border + miniHdmiDistance - (miniHdmiWidth / 2)
+       ],
+     )
   |> close(%)
 
 case = startSketchOn('XY')
@@ -60,8 +66,8 @@ case = startSketchOn('XY')
 fn m25Screw(x, y, height) {
   screw = startSketchOn("XY")
     |> startProfileAt([0, 0], %)
-    |> circle({ center = [x, y], radius = 2.5 }, %)
-    |> hole(circle({ center = [x, y], radius = 1.25 }, %), %)
+    |> circle(center = [x, y], radius = 2.5)
+    |> hole(circle(center = [x, y], radius = 1.25), %)
     |> extrude(length = height)
   return screw
 }

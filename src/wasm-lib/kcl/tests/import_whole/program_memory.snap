@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing import_whole.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -37,7 +38,7 @@ description: Program memory after executing import_whole.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   61,
-                  104,
+                  98,
                   1
                 ],
                 "tag": null,
@@ -53,7 +54,7 @@ description: Program memory after executing import_whole.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       61,
-                      104,
+                      98,
                       1
                     ]
                   },
@@ -118,7 +119,7 @@ description: Program memory after executing import_whole.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     61,
-                    104,
+                    98,
                     1
                   ]
                 }
@@ -130,7 +131,7 @@ description: Program memory after executing import_whole.kcl
                 {
                   "sourceRange": [
                     61,
-                    104,
+                    98,
                     1
                   ]
                 }
@@ -146,7 +147,7 @@ description: Program memory after executing import_whole.kcl
               {
                 "sourceRange": [
                   61,
-                  104,
+                  98,
                   1
                 ]
               }

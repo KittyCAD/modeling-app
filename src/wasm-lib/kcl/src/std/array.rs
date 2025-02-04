@@ -33,7 +33,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// r = 10 // radius
 /// fn drawCircle(id) {
 ///   return startSketchOn("XY")
-///     |> circle({ center: [id * 2 * r, 0], radius: r}, %)
+///     |> circle(center = [id * 2 * r, 0], radius = r)
 /// }
 ///
 /// // Call `drawCircle`, passing in each element of the array.
@@ -51,7 +51,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///   [1..3],
 ///   fn(id) {
 ///     return startSketchOn("XY")
-///       |> circle({ center: [id * 2 * r, 0], radius: r}, %)
+///       |> circle(center = [id * 2 * r, 0], radius = r)
 ///   }
 /// )
 /// ```

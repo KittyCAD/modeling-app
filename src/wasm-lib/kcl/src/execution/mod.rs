@@ -1199,7 +1199,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn("XY")
-    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
+    |> circle(center = [0, 0], radius = 1 , tag = $tag1)
     |> extrude(length = 10)
 }
 

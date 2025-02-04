@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing sketch_on_face_circle_tagged.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -367,7 +368,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   298,
-                  351,
+                  350,
                   0
                 ]
               },
@@ -382,8 +383,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               ],
               "radius": 5.0,
               "tag": {
-                "end": 350,
-                "start": 341,
+                "end": 349,
+                "start": 340,
                 "type": "TagDeclarator",
                 "value": "myCircle"
               },
@@ -398,12 +399,12 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "id": "[uuid]",
               "sourceRange": [
                 298,
-                351,
+                350,
                 0
               ],
               "tag": {
-                "end": 350,
-                "start": 341,
+                "end": 349,
+                "start": 340,
                 "type": "TagDeclarator",
                 "value": "myCircle"
               },
@@ -413,8 +414,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
           "__meta": [
             {
               "sourceRange": [
-                341,
-                350,
+                340,
+                349,
                 0
               ]
             }
@@ -645,12 +646,12 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   298,
-                  351,
+                  350,
                   0
                 ],
                 "tag": {
-                  "end": 350,
-                  "start": 341,
+                  "end": 349,
+                  "start": 340,
                   "type": "TagDeclarator",
                   "value": "myCircle"
                 },
@@ -666,7 +667,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       298,
-                      351,
+                      350,
                       0
                     ]
                   },
@@ -681,8 +682,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "end": 350,
-                    "start": 341,
+                    "end": 349,
+                    "start": 340,
                     "type": "TagDeclarator",
                     "value": "myCircle"
                   },
@@ -950,7 +951,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     298,
-                    351,
+                    350,
                     0
                   ]
                 }
@@ -968,7 +969,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                         "id": "[uuid]",
                         "sourceRange": [
                           298,
-                          351,
+                          350,
                           0
                         ]
                       },
@@ -983,8 +984,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                       ],
                       "radius": 5.0,
                       "tag": {
-                        "end": 350,
-                        "start": 341,
+                        "end": 349,
+                        "start": 340,
                         "type": "TagDeclarator",
                         "value": "myCircle"
                       },
@@ -999,12 +1000,12 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                       "id": "[uuid]",
                       "sourceRange": [
                         298,
-                        351,
+                        350,
                         0
                       ],
                       "tag": {
-                        "end": 350,
-                        "start": 341,
+                        "end": 349,
+                        "start": 340,
                         "type": "TagDeclarator",
                         "value": "myCircle"
                       },
@@ -1014,8 +1015,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        341,
-                        350,
+                        340,
+                        349,
                         0
                       ]
                     }
@@ -1029,7 +1030,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 {
                   "sourceRange": [
                     298,
-                    351,
+                    350,
                     0
                   ]
                 }
@@ -1045,7 +1046,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               {
                 "sourceRange": [
                   298,
-                  351,
+                  350,
                   0
                 ]
               }

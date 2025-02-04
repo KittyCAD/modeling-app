@@ -319,21 +319,39 @@ impl CallExpressionKw {
         let indent = if ctxt == ExprContext::Pipe {
             "".to_string()
         } else {
+            options.get_indentation(indentation_level + 1)
+        };
+        let closing_indentation = if ctxt == ExprContext::Pipe {
+            options.get_indentation_offset_pipe(indentation_level)
+        } else {
             options.get_indentation(indentation_level)
         };
-        let name = &self.callee.name;
-        let mut arg_list = if let Some(first_arg) = &self.unlabeled {
-            vec![first_arg.recast(options, indentation_level, ctxt)]
+        let inner_indentation = if ctxt == ExprContext::Pipe {
+            options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
-            Vec::new()
+            options.get_indentation(indentation_level + 1)
+        };
+        let name = &self.callee.name;
+        let mut arg_list = Vec::new();
+        if let Some(first_arg) = &self.unlabeled {
+            let fst_arg = first_arg.recast(options, indentation_level + 1, ctxt);
+            arg_list.push(fst_arg)
         };
         arg_list.extend(
             self.arguments
                 .iter()
-                .map(|arg| arg.recast(options, indentation_level, ctxt)),
+                .map(|arg| arg.recast(options, indentation_level + 1, ctxt)),
         );
-        let args = arg_list.join(", ");
-        format!("{indent}{name}({args})")
+
+        if arg_list.iter().any(|arg| arg.contains('\n')) {
+            // Multiline
+            let args = arg_list.join(&format!(",\n{inner_indentation}"));
+            format!("{indent}{name}(\n{inner_indentation}{args},\n{closing_indentation})")
+        } else {
+            // Single line
+            let args = arg_list.join(", ");
+            format!("{indent}{name}({args})")
+        }
     }
 }
 
@@ -1407,13 +1425,13 @@ tabs_r = startSketchOn({
   |> line([0, -10], %)
   |> line([-10, -5], %)
   |> close()
-  |> hole(circle({
+  |> hole(circle(
        center = [
          width / 2 + thk + hole_diam,
          length / 2 - hole_diam
        ],
-       radius = hole_diam / 2
-     }, %), %)
+       radius = hole_diam / 2,
+     ), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis = [0, -1, 0],
@@ -1434,13 +1452,13 @@ tabs_l = startSketchOn({
   |> line([0, -10], %)
   |> line([10, -5], %)
   |> close()
-  |> hole(circle({
+  |> hole(circle(
        center = [
          -width / 2 - thk - hole_diam,
          length / 2 - hole_diam
        ],
-       radius = hole_diam / 2
-     }, %), %)
+       radius = hole_diam / 2,
+     ), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis = [0, -1, 0],
@@ -1532,13 +1550,13 @@ tabs_r = startSketchOn({
   |> line([0, -10], %)
   |> line([-10, -5], %)
   |> close()
-  |> hole(circle({
+  |> hole(circle(
        center = [
          width / 2 + thk + hole_diam,
          length / 2 - hole_diam
        ],
-       radius = hole_diam / 2
-     }, %), %)
+       radius = hole_diam / 2,
+     ), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis = [0, -1, 0],
@@ -1559,13 +1577,13 @@ tabs_l = startSketchOn({
   |> line([0, -10], %)
   |> line([10, -5], %)
   |> close()
-  |> hole(circle({
+  |> hole(circle(
        center = [
          -width / 2 - thk - hole_diam,
          length / 2 - hole_diam
        ],
-       radius = hole_diam / 2
-     }, %), %)
+       radius = hole_diam / 2,
+     ), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis = [0, -1, 0],

@@ -970,10 +970,10 @@ mod tests {
         let snippet = circle_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"circle({
+            r#"circle(
 	center = [${0:3.14}, ${1:3.14}],
 	radius = ${2:3.14},
-}, ${3:%})${}"#
+)${}"#
         );
     }
 
