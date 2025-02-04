@@ -396,7 +396,9 @@ test.describe('Testing Camera Movement', () => {
         await settingsLink.click()
         await expect(settingsDialogHeading).toBeVisible()
         await userSettingsTab.click()
+        await mouseControlsSetting.scrollIntoViewIfNeeded()
         await mouseControlsSetting.selectOption({ label: 'Solidworks' })
+        await expect(mouseControlsSetting).toHaveValue('Solidworks')
         await expect(mouseControlSuccesToast).toBeVisible()
         await settingsCloseButton.click()
       })
@@ -459,7 +461,7 @@ test.describe('Testing Camera Movement', () => {
         .then((value) => parseFloat(value))
     }
 
-    async function doOrbitWith(callback = async () => {}) {
+    async function doOrbitWith(callback = async () => { }) {
       await resetCamera()
 
       await test.step(`Perform orbit`, async () => {
