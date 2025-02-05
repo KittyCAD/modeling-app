@@ -356,7 +356,7 @@ impl Args {
         Ok(numbers)
     }
 
-    pub(crate) fn get_pattern_transform_args(&self) -> Result<(u32, FnAsArg<'_>, SolidSet), KclError> {
+    pub(crate) fn get_pattern_transform_args(&self) -> Result<(u32, FnAsArg<'_>, SolidSet, Option<bool>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -764,6 +764,10 @@ macro_rules! let_field_of {
     ($obj:ident, $field:ident?) => {
         let $field = $obj.get(stringify!($field)).and_then(FromKclValue::from_kcl_val);
     };
+    // Optional field but with a different string used as the key
+    ($obj:ident, $field:ident? $key:literal) => {
+        let $field = $obj.get($key).and_then(FromKclValue::from_kcl_val);
+    };
     // Mandatory field, but with a different string used as the key.
     ($obj:ident, $field:ident $key:literal) => {
         let $field = $obj.get($key).and_then(FromKclValue::from_kcl_val)?;
@@ -947,12 +951,14 @@ impl<'a> FromKclValue<'a> for super::patterns::CircularPattern3dData {
         let_field_of!(obj, rotate_duplicates "rotateDuplicates");
         let_field_of!(obj, axis);
         let_field_of!(obj, center);
+        let_field_of!(obj, use_original? "useOriginal");
         Some(Self {
             instances,
             axis,
             center,
             arc_degrees,
             rotate_duplicates,
+            use_original,
         })
     }
 }
@@ -964,11 +970,13 @@ impl<'a> FromKclValue<'a> for super::patterns::CircularPattern2dData {
         let_field_of!(obj, arc_degrees "arcDegrees");
         let_field_of!(obj, rotate_duplicates "rotateDuplicates");
         let_field_of!(obj, center);
+        let_field_of!(obj, use_original? "useOriginal");
         Some(Self {
             instances,
             center,
             arc_degrees,
             rotate_duplicates,
+            use_original,
         })
     }
 }

@@ -32,6 +32,16 @@ impl Geometry {
             Geometry::Solid(e) => e.id,
         }
     }
+
+    /// If this geometry is the result of a pattern, then return the ID of
+    /// the original sketch which was patterned.
+    /// Equivalent to the `id()` method if this isn't a pattern.
+    pub fn original_id(&self) -> uuid::Uuid {
+        match self {
+            Geometry::Sketch(s) => s.original_id,
+            Geometry::Solid(e) => e.sketch.original_id,
+        }
+    }
 }
 
 /// A set of geometry.
@@ -419,6 +429,8 @@ pub struct Sketch {
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
     pub artifact_id: ArtifactId,
+    #[ts(skip)]
+    pub original_id: uuid::Uuid,
     pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
