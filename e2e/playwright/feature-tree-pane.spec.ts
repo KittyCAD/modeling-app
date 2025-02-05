@@ -46,9 +46,9 @@ const FEAUTRE_TREE_SKETCH_CODE = `sketch001 = startSketchOn('XZ')
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
-extrude001 = extrude(10, sketch001)
+extrude001 = extrude(sketch001, length = 10)
 sketch002 = startSketchOn(extrude001, rectangleSegmentB001)
   |> circle({
        center = [-1, 2],
@@ -253,12 +253,12 @@ test.describe('Feature Tree pane', () => {
     const initialInput = '23'
     const initialCode = `sketch001 = startSketchOn('XZ')
       |> circle({ center = [0, 0], radius = 5 }, %)
-      renamedExtrude = extrude(${initialInput}, sketch001)`
+      renamedExtrude = extrude(sketch001, length = ${initialInput})`
     const newConstantName = 'distance001'
     const expectedCode = `sketch001 = startSketchOn('XZ')
       |> circle({ center = [0, 0], radius = 5 }, %)
       ${newConstantName} = 23
-      renamedExtrude = extrude(${newConstantName}, sketch001)`
+      renamedExtrude = extrude(sketch001, length = ${newConstantName})`
 
     await context.folderSetupFn(async (dir) => {
       const testDir = join(dir, 'test-sample')
@@ -288,7 +288,9 @@ test.describe('Feature Tree pane', () => {
       await editor.expectState({
         highlightedCode: '',
         diagnostics: [],
-        activeLines: [`renamedExtrude = extrude(${initialInput}, sketch001)`],
+        activeLines: [
+          `renamedExtrude = extrude(sketch001, length = ${initialInput})`,
+        ],
       })
       await cmdBar.expectState({
         commandName: 'Extrude',
@@ -324,7 +326,7 @@ test.describe('Feature Tree pane', () => {
         highlightedCode: '',
         diagnostics: [],
         activeLines: [
-          `renamedExtrude = extrude(${newConstantName}, sketch001)`,
+          `renamedExtrude = extrude(sketch001, length = ${newConstantName})`,
         ],
       })
       await editor.expectEditor.toContain(expectedCode, {
