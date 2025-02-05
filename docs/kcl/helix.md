@@ -9,7 +9,7 @@ Create a helix.
 
 
 ```js
-helix(data: HelixData) -> HelixValue
+helix(revolutions: number, angle_start: number, ccw?: bool, radius: number, axis: Axis3dOrEdgeReference, length?: number) -> HelixValue
 ```
 
 
@@ -17,7 +17,12 @@ helix(data: HelixData) -> HelixValue
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`HelixData`](/docs/kcl/types/HelixData) | Data for a helix. | Yes |
+| `revolutions` | `number` | Number of revolutions. | Yes |
+| `angle_start` | `number` | Start angle (in degrees). | Yes |
+| `ccw` | `bool` | Is the helix rotation counter clockwise? The default is `false`. | No |
+| `radius` | `number` | Radius of the helix. | Yes |
+| `axis` | [`Axis3dOrEdgeReference`](/docs/kcl/types/Axis3dOrEdgeReference) | Axis to use for the helix. | Yes |
+| `length` | `number` | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
 
 ### Returns
 
@@ -28,14 +33,7 @@ helix(data: HelixData) -> HelixValue
 
 ```js
 // Create a helix around the Z axis.
-helixPath = helix({
-  angleStart = 0,
-  ccw = true,
-  revolutions = 5,
-  length = 10,
-  radius = 5,
-  axis = 'Z'
-})
+helixPath = helix(angleStart = 0, ccw = true, revolutions = 5, length = 10, radius = 5, axis = 'Z')
 
 // Create a spring by sweeping around the helix path.
 springSketch = startSketchOn('YZ')
@@ -51,14 +49,7 @@ helper001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10], tag = $edge001)
 
-helixPath = helix({
-  angleStart = 0,
-  ccw = true,
-  revolutions = 5,
-  length = 10,
-  radius = 5,
-  axis = edge001
-})
+helixPath = helix(angleStart = 0, ccw = true, revolutions = 5, length = 10, radius = 5, axis = edge001)
 
 // Create a spring by sweeping around the helix path.
 springSketch = startSketchOn('XY')
@@ -70,17 +61,10 @@ springSketch = startSketchOn('XY')
 
 ```js
 // Create a helix around a custom axis.
-helixPath = helix({
-  angleStart = 0,
-  ccw = true,
-  revolutions = 5,
-  length = 10,
-  radius = 5,
-  axis = {
-    custom = {
-      axis = [0, 0, 1.0],
-      origin = [0, 0.25, 0]
-    }
+helixPath = helix(angleStart = 0, ccw = true, revolutions = 5, length = 10, radius = 5, axis = {
+  custom = {
+    axis = [0, 0, 1.0],
+    origin = [0, 0.25, 0]
   }
 })
 

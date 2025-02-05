@@ -26,8 +26,7 @@ use crate::{
     docs::StdLibFn,
     errors::KclError,
     execution::{annotations, KclValue, Metadata, TagIdentifier},
-    parsing::ast::digest::Digest,
-    parsing::PIPE_OPERATOR,
+    parsing::{ast::digest::Digest, PIPE_OPERATOR},
     source_range::{ModuleId, SourceRange},
 };
 
