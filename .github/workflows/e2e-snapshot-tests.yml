@@ -115,8 +115,11 @@ jobs:
     - name: check for changes
       id: git-check
       run: |
-          changes=$(git diff --name-only e2e/playwright/snapshot-tests.spec.ts-snapshots)
-          echo "changes=$changes" >> $GITHUB_OUTPUT
+        {
+          echo 'changes<<EOF'
+          git diff --name-only e2e/playwright/snapshot-tests.spec.ts-snapshots
+          echo EOF
+        } >> "$GITHUB_OUTPUT"
 
     # only upload artifacts if there's actually changes
     - name: Upload changes, if any
