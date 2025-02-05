@@ -181,7 +181,7 @@ jobs:
         git fetch origin
         echo ${{ github.head_ref }}
         git checkout ${{ github.head_ref }}
-        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
+        git commit -m "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
         git push
         git push origin ${{ github.head_ref }}
     # only upload artifacts if there's actually changes
