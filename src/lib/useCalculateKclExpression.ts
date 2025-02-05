@@ -48,6 +48,10 @@ export function useCalculateKclExpression({
     bodyPath: [],
   })
   const [valueNode, setValueNode] = useState<Expr | null>(null)
+  // Gotcha: If we do not attempt to parse numeric literals instantly it means that there is an async action to verify
+  // the value is good. This means all E2E tests have a race condition on when they can hit "next" in the commad bar.
+  // Most scenarios automatically pass a numeric literal. We can try to parse that first, otherwise make it go through the slow
+  // async method.
   // If we pass in numeric literals, we should instantly parse them, they have nothing to do with application memory
   const _code_value = `const __result__ = ${value}`
   const codeValueParseResult = parse(_code_value)
