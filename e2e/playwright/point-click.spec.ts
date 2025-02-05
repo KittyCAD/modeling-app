@@ -140,6 +140,8 @@ test.describe('verify sketch on chamfer works', () => {
 
       await scene.moveCameraTo(cameraPos, cameraTarget)
 
+      await scene.drawCanvas()
+      await new Promise(() => {})
       await test.step('check chamfer selection changes cursor positon', async () => {
         await expect(async () => {
           // sometimes initial click doesn't register
