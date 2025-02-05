@@ -385,18 +385,6 @@ impl Args {
     > {
         FromArgs::from_args(self, 0)
     }
-    pub(crate) fn get_circle_three_point_args(
-        &self,
-    ) -> Result<
-        (
-            crate::std::shapes::CircleThreePointData,
-            crate::std::shapes::SketchOrSurface,
-            Option<TagNode>,
-        ),
-        KclError,
-    > {
-        FromArgs::from_args(self, 0)
-    }
 
     pub(crate) fn get_sketches(&self) -> Result<(SketchSet, Sketch), KclError> {
         FromArgs::from_args(self, 0)
@@ -1212,15 +1200,6 @@ impl<'a> FromKclValue<'a> for super::shapes::CircleThreePointData {
         let_field_of!(obj, p2);
         let_field_of!(obj, p3);
         Some(Self { p1, p2, p3 })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, radius);
-        let_field_of!(obj, offset);
-        Some(Self::RadiusAndOffset { radius, offset })
     }
 }
 
