@@ -9,7 +9,7 @@ Create a helix.
 
 
 ```js
-helix(revolutions: number, angle_start: number, ccw: bool, radius: number, axis: Axis3dOrEdgeReference, length?: number) -> HelixValue
+helix(revolutions: number, angle_start: number, ccw?: bool, radius: number, axis: Axis3dOrEdgeReference, length?: number) -> HelixValue
 ```
 
 
@@ -19,7 +19,7 @@ helix(revolutions: number, angle_start: number, ccw: bool, radius: number, axis:
 |----------|------|-------------|----------|
 | `revolutions` | `number` | Number of revolutions. | Yes |
 | `angle_start` | `number` | Start angle (in degrees). | Yes |
-| `ccw` | `bool` | Is the helix rotation counter clockwise? The default is `false`. | Yes |
+| `ccw` | `bool` | Is the helix rotation counter clockwise? The default is `false`. | No |
 | `radius` | `number` | Radius of the helix. | Yes |
 | `axis` | [`Axis3dOrEdgeReference`](/docs/kcl/types/Axis3dOrEdgeReference) | Axis to use for the helix. | Yes |
 | `length` | `number` | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |

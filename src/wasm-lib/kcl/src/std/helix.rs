@@ -18,7 +18,7 @@ use crate::{
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let angle_start = args.get_kw_arg("angleStart")?;
     let revolutions = args.get_kw_arg("revolutions")?;
-    let ccw = args.get_kw_arg_opt("ccw")?.unwrap_or(false);
+    let ccw = args.get_kw_arg_opt("ccw")?;
     let radius = args.get_kw_arg("radius")?;
     let axis = args.get_kw_arg("axis")?;
     let length = args.get_kw_arg_opt("length")?;
@@ -97,7 +97,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         revolutions = { docs = "Number of revolutions."},
         
         angle_start = { docs = "Start angle (in degrees)."},
-        ccw = { docs = "Is the helix rotation counter clockwise? The default is `false`."},
+        ccw = { docs = "Is the helix rotation counter clockwise? The default is `false`.", include_in_snippet = false},
         radius = { docs = "Radius of the helix."},
         axis = { docs = "Axis to use for the helix."},
         length = { docs = "Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.", include_in_snippet = true},
@@ -108,7 +108,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 async fn inner_helix(
     revolutions: f64,
     angle_start: f64,
-    ccw: bool,
+    ccw: Option<bool>,
     radius: f64,
     axis: Axis3dOrEdgeReference,
     length: Option<f64>,
@@ -119,7 +119,7 @@ async fn inner_helix(
         value: id,
         revolutions,
         angle_start,
-        ccw,
+        ccw: ccw.unwrap_or(false),
         units: exec_state.length_unit(),
         meta: vec![args.source_range.into()],
     });
@@ -144,7 +144,7 @@ async fn inner_helix(
                 id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
                     radius: LengthUnit(radius),
-                    is_clockwise: !ccw,
+                    is_clockwise: !helix_result.ccw,
                     length: LengthUnit(length),
                     revolutions,
                     start_angle: Angle::from_degrees(angle_start),
@@ -161,7 +161,7 @@ async fn inner_helix(
                 id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
                     radius: LengthUnit(radius),
-                    is_clockwise: !ccw,
+                    is_clockwise: !helix_result.ccw,
                     length: length.map(LengthUnit),
                     revolutions,
                     start_angle: Angle::from_degrees(angle_start),
