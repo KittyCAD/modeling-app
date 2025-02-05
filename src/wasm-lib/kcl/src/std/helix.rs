@@ -13,7 +13,6 @@ use crate::{
     std::{axis_or_reference::Axis3dOrEdgeReference, Args},
 };
 
-
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let angle_start = args.get_kw_arg("angleStart")?;
@@ -23,7 +22,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let axis = args.get_kw_arg("axis")?;
     let length = args.get_kw_arg_opt("length")?;
 
-    let value = inner_helix(revolutions,angle_start, ccw, radius, axis, length, exec_state, args).await?;
+    let value = inner_helix(revolutions, angle_start, ccw, radius, axis, length, exec_state, args).await?;
     Ok(KclValue::Helix { value })
 }
 
@@ -95,7 +94,6 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     unlabeled_first = false,
     args = {
         revolutions = { docs = "Number of revolutions."},
-        
         angle_start = { docs = "Start angle (in degrees)."},
         ccw = { docs = "Is the helix rotation counter clockwise? The default is `false`.", include_in_snippet = false},
         radius = { docs = "Radius of the helix."},
@@ -112,7 +110,9 @@ async fn inner_helix(
     radius: f64,
     axis: Axis3dOrEdgeReference,
     length: Option<f64>,
-    exec_state: &mut ExecState, args: Args) -> Result<Box<HelixValue>, KclError> {
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<HelixValue>, KclError> {
     let id = exec_state.next_uuid();
 
     let helix_result = Box::new(HelixValue {
