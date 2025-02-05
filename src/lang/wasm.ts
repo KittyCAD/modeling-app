@@ -158,6 +158,12 @@ export function isTopLevelModule(range: SourceRange): boolean {
   return range[2] === 0
 }
 
+function firstSourceRange(error: RustKclError): SourceRange {
+  return error.sourceRanges.length > 0
+    ? sourceRangeFromRust(error.sourceRanges[0])
+    : defaultSourceRange()
+}
+
 export const wasmUrl = () => {
   // For when we're in electron (file based) or web server (network based)
   // For some reason relative paths don't work as expected. Otherwise we would
@@ -255,7 +261,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0]),
+      firstSourceRange(parsed),
       [],
       [],
       defaultArtifactGraph()
@@ -622,7 +628,7 @@ export const executor = async (
     const kclError = new KCLError(
       parsed.error.kind,
       parsed.error.msg,
-      sourceRangeFromRust(parsed.error.sourceRanges[0]),
+      firstSourceRange(parsed.error),
       parsed.operations,
       parsed.artifactCommands,
       rustArtifactGraphToMap(parsed.artifactGraph)
@@ -691,7 +697,7 @@ export const modifyAstForSketch = async (
     const kclError = new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0]),
+      firstSourceRange(parsed),
       [],
       [],
       defaultArtifactGraph()
@@ -762,7 +768,7 @@ export function programMemoryInit(): ProgramMemory | Error {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0]),
+      firstSourceRange(parsed),
       [],
       [],
       defaultArtifactGraph()

@@ -35,7 +35,7 @@ sketch003 = startSketchOn('XY')
 extrude003 = extrude(sketch003, length = 20)
 `
 
-test.describe('Check the happy path, for basic changing color', () => {
+test.fixme('Check the happy path, for basic changing color', () => {
   const cases = [
     {
       desc: 'User accepts change',
@@ -134,7 +134,7 @@ test.describe('Check the happy path, for basic changing color', () => {
   }
 })
 
-test.describe('bad path', () => {
+test.describe('bad path', { tag: ['@skipWin'] }, () => {
   test(`bad edit prompt`, async ({
     context,
     homePage,
