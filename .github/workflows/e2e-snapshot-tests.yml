@@ -33,7 +33,7 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
-  test:
+  snapshot-test:
     runs-on: ubuntu-22.04
     needs: check-rust-changes
     steps:
@@ -75,6 +75,7 @@ jobs:
       continue-on-error: true
 
     - name: Setup Rust
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: dtolnay/rust-toolchain@stable
 
     - name: Cache Wasm (because rust diff)
