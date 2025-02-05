@@ -661,6 +661,10 @@ impl ExecutorContext {
             )
         })?;
 
+        crate::log::log(format!(
+            "Post interpretation KCL memory stats: {:#?}",
+            exec_state.memory().stats
+        ));
         let session_data = self.engine.get_session_data();
         Ok(session_data)
     }

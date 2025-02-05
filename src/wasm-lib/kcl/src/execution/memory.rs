@@ -1,15 +1,139 @@
 //! Representation of KCL memory.
 //!
-//! Stores `KclValue`s by name using dynamic scoping (i.e., functions as both KCL's runtime memory
-//! and name resolution). Memory does not support addresses or references, so all values must be
-//! self-contained.
+//! Stores `KclValue`s by name using dynamic scoping. Memory does not support addresses or references,
+//! so all values must be self-contained. Memory is essentially a map from `String`s to `KclValue`s.
+//! `KclValue`s are entirely opaque to this module. Memory is global and there should be only
+//! one per execution. It has no explicit support for caching between executions.
 //!
-//! Memory is mostly immutable (or at least monotonic; since KCL does not support mutation or
-//! reassignment). However, tags may change as code is executed and that mutates tag values in
-//! memory and the records of tags in the representation of geometry.
+//! Memory is mostly immutable (since KCL does not support mutation or reassignment). However, tags
+//! may change as code is executed and that mutates memory. Therefore,
+//! ProgramMemory supports mutability and does not rely on KCL's (mostly) immutable nature.
 //!
-//! TODO document snapshots
-//! functions always ref a snapshot
+//! ProgramMemory is observably monotonic, i.e., it only grows and even when we pop a stack frame the
+//! frame, it is retained. We remove some values which we know cannot be referenced, but we
+//! should in the future do better garbage collection (of values and envs).
+//!
+//! ## Concepts
+//!
+//! There are three main moving parts for ProgramMemory: environments, snapshots, and the call stack. I'll
+//! cover environments (and the call stack) first as if snapshots didn't exist, then describe snapshots.
+//!
+//! An environment is a set of bindings (i.e., a map from names to values). Environments handle
+//! both scoping and context switching. A new lexical scope means a new environment. Nesting of scopes
+//! means that environments form a tree, which is represented by parent pointers in the environments.
+//!
+//! Example:
+//!
+//! ```norun
+//! a = 10
+//!
+//! fn foo() {
+//!   b = a
+//!   a = 0
+//! }
+//! ```
+//!
+//! The body of `foo` has an environment who's parent is the enclosing scope. Variables in the inner
+//! scope can hide those in the outer scope (meaning `a` can be redefined in `foo`). Variables in the
+//! outer scope are visible from the inner scope. Note that `b` and the new `a` are not visible
+//! outside of `foo`.
+//!
+//! Nesting of environments is independent of the call stack. E.g., when `foo` is called, we push a
+//! new stack frame (which is an environment). The caller's env is on the stack and is not referenced
+//! by the new environment (i.e., variables in the caller's env are not visible from the callee).
+//!
+//! Note, however, that if a function is called from it's enclosing scope, then the outer env will
+//! be on the call stack and be the parent of the current env. Calling from a different scope will
+//! mean the call stack and parent env do not correspond.
+//!
+//! When a function declaration is interpreted we create a value in memory (in the env in which it
+//! is declared) which contains the function's AST and a reference to the env where it is declared.
+//! When the function is called, a new environment is created with the saved reference as its parent
+//! and used for interpreting the function body. The return value is saved into this env. When the
+//! function returns the callee env is popped to resume execution in the caller's env.
+//!
+//! Now consider extending the above example:
+//!
+//! Example:
+//!
+//! ```norun
+//! a = 10
+//!
+//! fn foo() {
+//!   b = a
+//!   a = 0
+//! }
+//!
+//! c = 2
+//! ```
+//!
+//! `c` should not be visible inside foo and if `a` is modified after the declaration of `foo`, then
+//! the earlier value should be the one visible in `foo`, even if `foo` is called after (lexically or
+//! temporally) the definition of `c`. (Note that although KCL does not permit mutation, objects
+//! can change due to the way tags are implemented).
+//!
+//! To make this work, when we save a reference to an enclosing scope we take a snapshot of memory at
+//! that point and save a reference to that snapshot. When we call a function, the parent of the new
+//! callee env is that snapshot, not the current version of the enclosing scope.
+//!
+//! Entering an inline scope (e.g., the body of an `if` statement) means pushing an env who's parent
+//! is the current env. We don't need to snapshot in this case.
+//!
+//! ## Implementation
+//!
+//! All environments are kept by the ProgramMemory, their ordering is not important and does not
+//! correspond to anything in the program or execution.
+//!
+//! Pushing and popping stack frames is straightforward. Most get/set/update operations don't touch
+//! the call stack other than the current env (updating tags on function return is the exception).
+//!
+//! Snapshots are maintained within an environment and are always specific to an environment. Snapshots
+//! must also have a parent reference (since they are logically a snapshot of all memory). This parent
+//! refers to a snapshot within the parent env. When a snapshot is created, we must create a snapshot
+//! object for each parent env. When using a snapshot we must check the parent snapshot whenever
+//! we check the parent env (and not the current version of the parent env).
+//!
+//! An environment will have many snapshots, they are kept in time order, and do not reference each
+//! other. (The parent of a snapshot is always in another env).
+//!
+//! A snapshot is created empty (we don't copy memory) and we use a copy-on-write design: when a
+//! value in an environment is modified, we copy the old version into the most recent snapshot (note
+//! that we never overwrite a value in the snapshot, if a value is modified multiple times, we want
+//! to keep the original version, not an intermediate one). Likewise, if we insert a new variable,
+//! we put a tombstone value in the snapshot.
+//!
+//! When we read from the current version of an environment, we simply read from the bindings in the
+//! env and ignore the snapshots. When we read from a snapshot, we first check the specific snapshot
+//! for the key, then check any newer snapshots, then finally check the env bindings.
+//!
+//! A minor optimisation is that when creating a snapshot, if the previous one is empty, then
+//! we can reuse that rather than creating a new one. Since we only create a snapshot when a function
+//! is declared and the function decl is immediately saved into the new snapshot, the empty snapshot
+//! optimisation only happens with parent snapshots (though if the env tree is deep this means we
+//! can save a lot of snapshots).
+//!
+//! ## Invariants
+//!
+//! There's obviously a bunch of invariants in this design, some are kinda obvious, some are limited
+//! in scope and are documented inline, here are some others:
+//!
+//! - The current env and all envs in the call stack are 'just envs', never a snapshot (we could
+//! use just a ref to an env, rather than to a snapshot but this is pretty inconvenient, so just
+//! know that the snapshot ref is always to the current version). Only the parent envs or saved refs
+//! can be refs to snapshots.
+//! - We only ever write into the current env, never into any parent envs (though we can read from
+//! both).
+//! - Therefore, there is no concept of writing into a snapshot, only reading from one.
+//! - The env ref saved with a function decl is always to a snapshot, never to the current version.
+//! - If there are no snapshots in an environment and it is no longer in the call stack, then there
+//! are no references from function decls to the env (if it is the parent of an env with extant refs
+//! then there would be snapshots in the child env and that implies there must be a snapshot in the
+//! parent to be the parent of that snapshot).
+//! - Since KCL does not have submodules and decls are not visible outside of a nested scope, all
+//! references to variables in other modules must be in the root scope of a module.
+//! - Therefore, an active env must either be on the call stack, have snapshots, or be a root env. This
+//! is however a conservative approximation since snapshots may exist even if there are no live
+//! references to an env.
 
 use std::fmt;
 
@@ -25,8 +149,13 @@ use crate::{
 };
 use env::Environment;
 
+/// The distinguished name of the return value of a function.
 pub(crate) const RETURN_NAME: &str = "__return";
 
+/// KCL memory. There should be only one ProgramMemory for the interpretation of a program (
+/// including other modules). Multiple interpretation runs should have fresh instances.
+///
+/// See module docs.
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -36,9 +165,10 @@ pub struct ProgramMemory {
     current_env: EnvironmentRef,
     /// Invariant: forall er in call_stack: er.1.is_none()
     call_stack: Vec<EnvironmentRef>,
+    /// Statistics about the memory, should not be used for anything other than meta-info.
     #[allow(dead_code)]
     #[serde(skip)]
-    stats: MemoryStats,
+    pub(crate) stats: MemoryStats,
 }
 
 // Intended for debugging. Do not rely on this output in any way!
@@ -69,13 +199,17 @@ impl ProgramMemory {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            environments: vec![Environment::root()],
+            environments: vec![Environment::new_root()],
             current_env: EnvironmentRef::root(),
             call_stack: Vec::new(),
             stats: MemoryStats::default(),
         }
     }
 
+    /// Push a new (standard KCL) stack frame on to the call stack.
+    ///
+    /// `parent` is the environment where the function being called is declared (not the caller's
+    /// environment, which is probably `self.current_env`).
     pub fn push_new_env_for_call(&mut self, parent: EnvironmentRef) {
         self.stats.env_count += 1;
 
@@ -85,6 +219,14 @@ impl ProgramMemory {
         self.environments.push(new_env);
     }
 
+    /// Push a new stack frame on to the call stack for callees which should not read or write
+    /// from memory.
+    ///
+    /// This is suitable for calling standard library functions or other functions written in Rust
+    /// which will use 'Rust memory' rather than KCL's memory and cannot reach into the wider
+    /// environment.
+    ///
+    /// Trying to read or write from this environment will panic with an index out of bounds.
     pub fn push_new_env_for_rust_call(&mut self) {
         self.call_stack.push(self.current_env);
         // Rust functions shouldn't try to set or access anything in their environment, so don't
@@ -93,15 +235,27 @@ impl ProgramMemory {
         self.current_env = EnvironmentRef(usize::MAX, SnapshotRef::none());
     }
 
+    /// Push a new stack frame on to the call stack with no connection to a parent environment.
+    ///
+    /// Suitable for executing a separate module.
     pub fn push_new_root_env(&mut self) {
         self.stats.env_count += 1;
 
         self.call_stack.push(self.current_env);
-        let new_env = Environment::root();
+        let new_env = Environment::new_root();
         self.current_env = EnvironmentRef(self.environments.len(), SnapshotRef::none());
         self.environments.push(new_env);
     }
 
+    /// Pop a frame from the call stack and return a reference to the popped environment. The popped
+    /// environment is preserved (so the returned reference will remain valid), but see below for
+    /// important caveats.
+    ///
+    /// The popped environment will always be retained (though we may do some GC in the future). It
+    /// may however be pruned/compressed so that any variable which cannot be referenced elsewhere is
+    /// removed from the environment. The return value of function and all top-level values in a
+    /// module are preserved. Any environment which may be referenced by a function (closure-capture)
+    /// is entirely preserved.
     pub fn pop_env(&mut self) -> EnvironmentRef {
         let old = self.current_env;
         self.current_env = self.call_stack.pop().unwrap();
@@ -120,7 +274,7 @@ impl ProgramMemory {
         EnvironmentRef(self.current_env.0, snapshot)
     }
 
-    /// Add to the program memory in the current scope.
+    /// Add a value to the program memory (in the current scope). The value must not already exist.
     pub fn add(&mut self, key: &str, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         if self.environments[self.current_env.index()].contains_key(key) {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
@@ -129,17 +283,21 @@ impl ProgramMemory {
             }));
         }
 
+        self.stats.mutation_count += 1;
+
         self.environments[self.current_env.index()].insert(key.to_owned(), value);
 
         Ok(())
     }
 
     pub fn insert_or_update(&mut self, key: String, value: KclValue) {
+        self.stats.mutation_count += 1;
         self.environments[self.current_env.index()].insert_or_update(key.to_owned(), value);
     }
 
     #[cfg(test)]
     fn update_with_env(&mut self, key: &str, value: KclValue, env: Option<usize>) {
+        self.stats.mutation_count += 1;
         let env = env.unwrap_or(self.current_env.index());
         self.environments[env].insert_or_update(key.to_owned(), value);
     }
@@ -150,6 +308,7 @@ impl ProgramMemory {
         self.get_from(var, self.current_env, source_range)
     }
 
+    /// Get a value from a specific snapshot of the memory.
     pub fn get_from(
         &self,
         var: &str,
@@ -171,13 +330,19 @@ impl ProgramMemory {
         }))
     }
 
+    /// Iterate over all key/value pairs in the current environment which satisfy the provided
+    /// predicate.
     pub fn find_all_in_current_env<'a>(
         &'a self,
-        f: impl Fn(&KclValue) -> bool + 'a,
+        pred: impl Fn(&KclValue) -> bool + 'a,
     ) -> impl Iterator<Item = (&'a String, &'a KclValue)> {
-        self.environments[self.current_env.index()].find_all_by(f)
+        self.environments[self.current_env.index()].find_all_by(pred)
     }
 
+    /// Walk all values accessible from any enviroment in the call stack.
+    ///
+    /// This may include duplicate values or different versions of a value known by the same key,
+    /// since an environment may be accessible via multiple paths.
     pub fn walk_call_stack(&self) -> impl Iterator<Item = &KclValue> {
         let mut cur_env = self.current_env;
         let mut stack_index = self.call_stack.len();
@@ -197,6 +362,7 @@ impl ProgramMemory {
     }
 }
 
+// See walk_call_stack.
 struct CallStackIterator<'a> {
     mem: &'a ProgramMemory,
     cur_env: EnvironmentRef,
@@ -218,7 +384,9 @@ impl<'a> Iterator for CallStackIterator<'a> {
             return None;
         }
 
+        // Loop over each frame in the call stack.
         loop {
+            // Loop over each environment in the tree of scopes of which the current stack frame is a leaf.
             loop {
                 // `unwrap` is OK since we check for None at the start of the function, and if we update
                 // cur_values then it must be to Some(..).
@@ -236,6 +404,7 @@ impl<'a> Iterator for CallStackIterator<'a> {
             }
 
             if self.stack_index > 0 {
+                // Loop to skip any non-KCL stack frames.
                 loop {
                     self.stack_index -= 1;
                     let env_ref = self.mem.call_stack[self.stack_index];
@@ -263,7 +432,7 @@ impl PartialEq for ProgramMemory {
     }
 }
 
-/// An index pointing to an environment.
+/// An index pointing to an environment at a point in time (either a snapshot or the current version, see the module docs).
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, ts_rs::TS, JsonSchema)]
 pub struct EnvironmentRef(usize, SnapshotRef);
 
@@ -281,32 +450,42 @@ impl EnvironmentRef {
     }
 }
 
+/// An index pointing to a snapshot within a specific (unspecified) environment.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, ts_rs::TS, JsonSchema)]
 pub struct SnapshotRef(usize);
 
 impl SnapshotRef {
+    /// Represents no snapshot, use the current version of the environment.
     fn none() -> Self {
         Self(0)
     }
 
+    /// `self` represents a snapshot.
     fn is_some(self) -> bool {
         self.0 > 0
     }
 
+    /// `self` represents the current version.
     fn is_none(self) -> bool {
         self.0 == 0
     }
 
     // Precondition: self.is_some()
     fn index(&self) -> usize {
+        // Note that `0` is a distinguished value meaning 'no snapshot', so the reference value
+        // is one greater than the index into the list of snapshots.
         self.0 - 1
     }
 }
 
 #[derive(Clone, Debug, Default)]
-struct MemoryStats {
+pub(crate) struct MemoryStats {
+    // Total number of environments created.
     env_count: usize,
+    // Total number of snapshots created.
     snapshot_count: usize,
+    // Total number of values inserted or updated.
+    mutation_count: usize,
 }
 
 // Use a sub-module to protect access to `Environment::bindings` and prevent unexpected mutatation
@@ -319,6 +498,7 @@ mod env {
         bindings: IndexMap<String, KclValue>,
         // invariant: self.parent.is_none() => forall s in self.snapshots: s.parent_snapshot.is_none()
         snapshots: Vec<Snapshot>,
+        // An outer scope, if one exists.
         parent: Option<EnvironmentRef>,
     }
 
@@ -345,7 +525,9 @@ mod env {
 
     #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
     struct Snapshot {
+        /// The version of the owning environment's parent environment corresponding to this snapshot.
         parent_snapshot: Option<SnapshotRef>,
+        /// CoW'ed data from the environment.
         data: IndexMap<String, KclValue>,
     }
 
@@ -366,7 +548,8 @@ mod env {
     }
 
     impl Environment {
-        pub(super) fn root() -> Self {
+        /// Create a new root environment (new program or module)
+        pub(super) fn new_root() -> Self {
             const NO_META: Vec<Metadata> = Vec::new();
 
             Self {
@@ -382,6 +565,7 @@ mod env {
             }
         }
 
+        /// Create a new child environment, parent points to it's surrounding lexical scope.
         pub(super) fn new(parent: EnvironmentRef) -> Self {
             Self {
                 bindings: IndexMap::new(),
@@ -391,7 +575,7 @@ mod env {
         }
 
         /// Possibly compress this environment by deleting all memory except the return value.
-        /// 
+        ///
         /// This method will return without changing anything if the environment may be referenced
         /// (this is a pretty conservative approximation, but if you keep an EnvironmentRef around
         /// in a new way it might be incorrect).
@@ -424,6 +608,7 @@ mod env {
             self.bindings.get(key).ok_or(self.parent(snapshot))
         }
 
+        /// Find the `EnvironmentRef` of the parent of this environment corresponding to the specified snapshot.
         pub(super) fn parent(&self, snapshot: SnapshotRef) -> Option<EnvironmentRef> {
             if snapshot.is_none() {
                 return self.parent;
@@ -435,6 +620,7 @@ mod env {
             }
         }
 
+        /// Iterate over all values in the environment at the specified snapshot.
         pub(super) fn values<'a>(&'a self, snapshot: SnapshotRef) -> Box<dyn Iterator<Item = &'a KclValue> + 'a> {
             if snapshot.is_none() {
                 return Box::new(self.bindings.values());
@@ -473,6 +659,7 @@ mod env {
             self.bindings.insert(key, value);
         }
 
+        /// Was the key contained in this environment at the specified point in time.
         fn snapshot_contains_key(&self, key: &str, snapshot: SnapshotRef) -> bool {
             for i in snapshot.index()..self.snapshots.len() {
                 if self.snapshots[i].data.contains_key(key) {
@@ -482,10 +669,13 @@ mod env {
             return false;
         }
 
+        /// Is the key currently contained in this environment.
         pub(super) fn contains_key(&self, key: &str) -> bool {
             self.bindings.contains_key(key)
         }
 
+        /// Iterate over all key/value pairs currently in this environment where the value satisfies
+        /// the providied predicate (`f`).
         pub(super) fn find_all_by<'a>(
             &'a self,
             f: impl Fn(&KclValue) -> bool + 'a,
@@ -503,6 +693,9 @@ mod env {
         }
     }
 
+    /// Build a new snapshot of the specified environment at the current moment.
+    ///
+    /// This is non-trival since we have to build the tree of parent snapshots.
     pub(super) fn snapshot(mem: &mut ProgramMemory, env_ref: EnvironmentRef) -> SnapshotRef {
         let env = &mem.environments[env_ref.index()];
         let parent = env.parent;
@@ -512,6 +705,12 @@ mod env {
         if env.snapshots.is_empty() {
             env.snapshots.push(Snapshot::new(parent_snapshot));
             return SnapshotRef(1);
+        }
+
+        let prev_snapshot = env.snapshots.last().unwrap();
+        if prev_snapshot.data.is_empty() && prev_snapshot.parent_snapshot == parent_snapshot {
+            // If the prev snapshot is empty, reuse it.
+            return SnapshotRef(env.snapshots.len());
         }
 
         env.snapshots.push(Snapshot::new(parent_snapshot));
