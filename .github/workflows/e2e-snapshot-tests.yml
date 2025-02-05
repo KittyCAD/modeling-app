@@ -33,7 +33,7 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
-  snapshot-test:
+  snapshot-tests:
     runs-on: ubuntu-22.04
     needs: check-rust-changes
     steps:
@@ -116,7 +116,7 @@ jobs:
       id: git-check
       run: |
           changes=$(git diff --name-only e2e/playwright/snapshot-tests.spec.ts-snapshots)
-          echo "changes=$changes"
+          echo "changes=$changes" >> $GITHUB_OUTPUT
 
     # only upload artifacts if there's actually changes
     - name: Upload changes, if any
