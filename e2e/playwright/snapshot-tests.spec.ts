@@ -55,13 +55,6 @@ test.skip(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context }) => {
-    // skip on macos and windows.
-    test.skip(
-      // eslint-disable-next-line jest/valid-title
-      process.platform === 'darwin' || process.platform === 'win32',
-      'Skip on macos and windows'
-    )
-
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
