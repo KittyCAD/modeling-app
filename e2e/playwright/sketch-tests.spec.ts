@@ -10,7 +10,7 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 
-test.describe('Sketch tests', () => {
+test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
     page,
     context,
@@ -646,8 +646,6 @@ test.describe('Sketch tests', () => {
   |> revolve({ axis = "X" }, %)`)
   })
   test('Can add multiple sketches', async ({ page, homePage }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
 
     const viewportSize = { width: 1200, height: 500 }
@@ -845,8 +843,6 @@ test.describe('Sketch tests', () => {
     page,
     homePage,
   }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
       localStorage.setItem(
