@@ -791,7 +791,10 @@ description: Program memory after executing pipe_as_arg.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+<<<<<<< HEAD
             "artifactId": "[uuid]",
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
             "value": [
               {
                 "faceId": "[uuid]",
@@ -946,7 +949,10 @@ description: Program memory after executing pipe_as_arg.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+<<<<<<< HEAD
                 "artifactId": "[uuid]",
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -992,8 +998,11 @@ description: Program memory after executing pipe_as_arg.kcl
                   ]
                 }
               },
+<<<<<<< HEAD
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
               "units": {
                 "type": "Mm"
               },
@@ -1130,6 +1139,7 @@ description: Program memory after executing pipe_as_arg.kcl
               ]
             }
           ]
+<<<<<<< HEAD
         },
         "x": {
           "type": "Number",
@@ -1143,6 +1153,8 @@ description: Program memory after executing pipe_as_arg.kcl
               ]
             }
           ]
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
         }
       },
       "snapshots": [],
@@ -1158,7 +1170,10 @@ description: Program memory after executing pipe_as_arg.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+<<<<<<< HEAD
             "artifactId": "[uuid]",
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
             "value": [
               {
                 "faceId": "[uuid]",
@@ -1313,7 +1328,10 @@ description: Program memory after executing pipe_as_arg.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+<<<<<<< HEAD
                 "artifactId": "[uuid]",
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -1359,8 +1377,11 @@ description: Program memory after executing pipe_as_arg.kcl
                   ]
                 }
               },
+<<<<<<< HEAD
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
               "units": {
                 "type": "Mm"
               },
@@ -1390,6 +1411,7 @@ description: Program memory after executing pipe_as_arg.kcl
               }
             ]
           }
+<<<<<<< HEAD
         },
         "center": {
           "type": "Array",
@@ -1775,6 +1797,8 @@ description: Program memory after executing pipe_as_arg.kcl
               ]
             }
           ]
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
         }
       },
       "snapshots": [],

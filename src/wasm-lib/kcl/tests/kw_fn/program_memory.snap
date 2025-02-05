@@ -267,19 +267,6 @@ description: Program memory after executing kw_fn.kcl
               ]
             }
           ]
-        },
-        "x": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                95,
-                96,
-                0
-              ]
-            }
-          ]
         }
       },
       "snapshots": [],
@@ -305,32 +292,6 @@ description: Program memory after executing kw_fn.kcl
               "sourceRange": [
                 121,
                 122,
-                0
-              ]
-            }
-          ]
-        },
-        "delta": {
-          "type": "Number",
-          "value": 2.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                121,
-                122,
-                0
-              ]
-            }
-          ]
-        },
-        "x": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                110,
-                111,
                 0
               ]
             }

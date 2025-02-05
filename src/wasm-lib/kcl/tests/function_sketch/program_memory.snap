@@ -865,6 +865,7 @@ description: Program memory after executing function_sketch.kcl
               }
             ]
           }
+<<<<<<< HEAD
         },
         "h": {
           "type": "Number",
@@ -1122,6 +1123,8 @@ description: Program memory after executing function_sketch.kcl
               ]
             }
           ]
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
         }
       },
       "snapshots": [],

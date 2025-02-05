@@ -182,24 +182,6 @@ description: Program memory after executing kw_fn_with_defaults.kcl
               ]
             }
           ]
-        },
-        "by": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": []
-        },
-        "x": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                63,
-                64,
-                0
-              ]
-            }
-          ]
         }
       },
       "snapshots": [],
@@ -225,32 +207,6 @@ description: Program memory after executing kw_fn_with_defaults.kcl
               "sourceRange": [
                 96,
                 98,
-                0
-              ]
-            }
-          ]
-        },
-        "by": {
-          "type": "Number",
-          "value": 20.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                96,
-                98,
-                0
-              ]
-            }
-          ]
-        },
-        "x": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                88,
-                89,
                 0
               ]
             }

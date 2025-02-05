@@ -9,6 +9,7 @@
 //! memory and the records of tags in the representation of geometry.
 //!
 //! TODO document snapshots
+//! functions always ref a snapshot
 
 use std::fmt;
 
@@ -104,6 +105,11 @@ impl ProgramMemory {
     pub fn pop_env(&mut self) -> EnvironmentRef {
         let old = self.current_env;
         self.current_env = self.call_stack.pop().unwrap();
+
+        if !old.is_rust_env() {
+            self.environments[old.index()].compress();
+        }
+
         old
     }
 
@@ -181,7 +187,7 @@ impl ProgramMemory {
     pub fn walk_call_stack(&self) -> impl Iterator<Item = &KclValue> {
         let mut cur_env = self.current_env;
         let mut stack_index = self.call_stack.len();
-        while cur_env.0 == usize::MAX {
+        while cur_env.is_rust_env() {
             stack_index -= 1;
             cur_env = self.call_stack[stack_index];
         }
@@ -240,7 +246,7 @@ impl<'a> Iterator for CallStackIterator<'a> {
                     self.stack_index -= 1;
                     let env_ref = self.mem.call_stack[self.stack_index];
                     // We'll eventually hit this condtion since we can't start executing in Rust.
-                    if env_ref.0 != usize::MAX {
+                    if !env_ref.is_rust_env() {
                         self.cur_env = env_ref;
                         self.init_iter();
                         break;
@@ -274,6 +280,10 @@ impl EnvironmentRef {
 
     fn index(&self) -> usize {
         self.0
+    }
+
+    fn is_rust_env(&self) -> bool {
+        self.0 == usize::MAX
     }
 }
 
@@ -383,6 +393,26 @@ mod env {
                 bindings: IndexMap::new(),
                 snapshots: Vec::new(),
                 parent: Some(parent),
+            }
+        }
+
+        /// Possibly compress this environment by deleting all memory except the return value.
+        /// 
+        /// This method will return without changing anything if the environment may be referenced
+        /// (this is a pretty conservative approximation, but if you keep an EnvironmentRef around
+        /// in a new way it might be incorrect).
+        ///
+        /// See module docs for more details.
+        pub(super) fn compress(&mut self) {
+            // Don't compress if there might be a closure or import referencing us.
+            if !self.snapshots.is_empty() || self.parent.is_none() {
+                return;
+            }
+
+            let ret_value = self.bindings.get(RETURN_NAME).cloned();
+            self.bindings = IndexMap::new();
+            if let Some(ret_value) = ret_value {
+                self.bindings.insert(RETURN_NAME.to_owned(), ret_value);
             }
         }
 
@@ -616,6 +646,8 @@ mod test {
         mem.add("c", val(5), sr()).unwrap();
         assert_get(mem, "b", 4);
         assert_get(mem, "c", 5);
+        // Preserve the callee stack frame
+        mem.snapshot();
 
         let callee = mem.pop_env();
         assert_get(mem, "b", 3);

@@ -555,19 +555,6 @@ description: Program memory after executing riddle_small.kcl
               ]
             }
           ]
-        },
-        "s": {
-          "type": "Number",
-          "value": 205804.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                73,
-                79,
-                0
-              ]
-            }
-          ]
         }
       },
       "snapshots": [],
@@ -607,19 +594,6 @@ description: Program memory after executing riddle_small.kcl
               "sourceRange": [
                 58,
                 64,
-                0
-              ]
-            }
-          ]
-        },
-        "s": {
-          "type": "Number",
-          "value": 71816.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                85,
-                90,
                 0
               ]
             }

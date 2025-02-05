@@ -1060,6 +1060,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "sourceRange": [
                     146,
                     169,
+<<<<<<< HEAD
                     0
                   ]
                 },
@@ -1245,6 +1246,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "sourceRange": [
                     146,
                     169,
+=======
+>>>>>>> cb610d543 (Compress envs when popped)
                     0
                   ]
                 },
