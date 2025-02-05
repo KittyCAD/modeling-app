@@ -1,0 +1,142 @@
+name: E2E Tests
+on:
+  push:
+    branches: [ main, pierremtb/separate-snapshot-from-flow-tests ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+
+jobs:
+
+  check-rust-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      rust-changed: ${{ steps.filter.outputs.rust }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: filter
+        name: Check for Rust changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            rust:
+              - 'src/wasm-lib/**'
+
+  test:
+    runs-on: ubuntu-22.04
+    needs: check-rust-changes
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+
+    - name: Install dependencies
+      run: yarn
+
+    - name: Cache Playwright Browsers
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/ms-playwright/
+        key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+
+    - name: Install Playwright Browsers
+      run: yarn playwright install --with-deps
+
+    - name: Download Wasm Cache
+      id: download-wasm
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      uses: dawidd6/action-download-artifact@v7
+      continue-on-error: true
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        name: wasm-bundle
+        workflow: build-and-store-wasm.yml
+        branch: main
+        path: src/wasm-lib/pkg
+
+    - name: copy wasm blob
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+      continue-on-error: true
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache Wasm (because rust diff)
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: './src/wasm-lib'
+
+    - name: OR Cache Wasm (because wasm cache failed)
+      if: steps.download-wasm.outcome == 'failure'
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: './src/wasm-lib'
+
+    - name: Build Wasm (because rust diff)
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      run: yarn build:wasm
+
+    - name: OR Build Wasm (because wasm cache failed)
+      if: steps.download-wasm.outcome == 'failure'
+      run: yarn build:wasm
+
+    - name: build web
+      run: yarn tronb:vite:dev
+
+    - name: Run chrome snapshots
+      run: |
+        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot
+      env:
+        CI: true
+        NODE_ENV: development
+        VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        VITE_KC_SKIP_AUTH: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+
+    - name: check for changes
+      id: git-check
+      run: |
+          git add e2e/playwright/snapshot-tests.spec.ts-snapshots
+          if git status | grep -q "Changes to be committed"
+          then echo "modified=true" >> $GITHUB_OUTPUT
+          else echo "modified=false" >> $GITHUB_OUTPUT
+          fi
+
+    # only upload artifacts if there's actually changes
+    - name: Upload changes, if any
+      if: steps.git-check.outputs.modified == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-snapshots-${{ runner.os }}-${{ github.sha }}
+        path: e2e/playwright/snapshot-tests.spec.ts-snapshots
+
+    - name: Upload report, if any
+      uses: actions/upload-artifact@v4
+      if: steps.git-check.outputs.modified == 'true'
+      with:
+        name: playwright-report-${{ runner.os }}-${{ github.sha }}
+        path: playwright-report/
+        include-hidden-files: true
+        retention-days: 30
+
+    - name: Fail the run if we have snapshot updates
+      if: steps.git-check.outputs.modified == 'true'
+      run: exit 1
