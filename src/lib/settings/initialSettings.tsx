@@ -16,7 +16,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { useRef } from 'react'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { toSync } from 'lib/utils'
+import { isArray, toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
@@ -240,7 +240,7 @@ export function createSettings() {
                   if (
                     inputRef.current &&
                     inputRefVal &&
-                    !Array.isArray(inputRefVal)
+                    !isArray(inputRefVal)
                   ) {
                     updateValue(inputRefVal)
                   } else {
