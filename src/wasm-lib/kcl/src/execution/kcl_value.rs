@@ -4,7 +4,7 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::{memory::EnvironmentRef, ArtifactId, MetaSettings};
+use super::{memory::EnvironmentRef, MetaSettings};
 use crate::{
     errors::KclErrorDetails,
     exec::Sketch,
@@ -230,97 +230,6 @@ impl KclValue {
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
             KclValue::Tombstone { .. } => unreachable!("Tombstone Metadata"),
-        }
-    }
-
-    /// The value included in [crate::execution::cad_op::Operation]s.  Only
-    /// non-composite primitives should be included.
-    pub(crate) fn operation_value(&self) -> Option<KclValue> {
-        match self {
-            KclValue::Uuid { .. }
-            | KclValue::Bool { .. }
-            | KclValue::Number { .. }
-            | KclValue::String { .. } => Some(self.clone()),
-            KclValue::Array { .. } => None,
-            KclValue::Object { .. } => None,
-            KclValue::TagIdentifier(_) => None,
-            KclValue::TagDeclarator(_) => None,
-            KclValue::Plane { .. } => None,
-            KclValue::Face { .. } => None,
-            KclValue::Sketch { .. } => None,
-            KclValue::Sketches { .. } => None,
-            KclValue::Solid { .. } => None,
-            KclValue::Solids { .. } => None,
-            KclValue::Helix { .. } => None,
-            KclValue::ImportedGeometry(_) => None,
-            KclValue::Function { .. } => None,
-            KclValue::Module { .. } => None,
-            KclValue::KclNone { .. } => None,
-            KclValue::Tombstone { .. } => None,
-        }
-    }
-
-    /// The artifact IDs included in [crate::execution::cad_op::Operation]s.
-    pub(crate) fn operation_artifact_ids(&self) -> Option<Vec<ArtifactId>> {
-        self.collect_artifact_ids(true)
-    }
-
-    fn collect_artifact_ids(&self, recurse: bool) -> Option<Vec<ArtifactId>> {
-        match self {
-            KclValue::Uuid { .. } => None,
-            KclValue::Bool { .. } => None,
-            KclValue::Number { .. } => None,
-            KclValue::String { .. } => None,
-            KclValue::Array { value, .. } => {
-                if recurse {
-                    Some(
-                        value
-                            .iter()
-                            .flat_map(|sketch| sketch.collect_artifact_ids(false).unwrap_or_default())
-                            .collect(),
-                    )
-                } else {
-                    None
-                }
-            }
-            KclValue::Object { value, .. } => {
-                if recurse {
-                    Some(
-                        value
-                            .values()
-                            .flat_map(|value| value.collect_artifact_ids(false).unwrap_or_default())
-                            .collect(),
-                    )
-                } else {
-                    None
-                }
-            }
-            KclValue::TagIdentifier(_) => None,
-            KclValue::TagDeclarator(_) => None,
-            KclValue::Plane { value } => Some(vec![value.artifact_id]),
-            KclValue::Face { value } => Some(vec![value.artifact_id]),
-            KclValue::Sketch { value } => Some(vec![value.artifact_id]),
-            KclValue::Sketches { value } => {
-                if recurse {
-                    Some(value.iter().map(|sketch| sketch.artifact_id).collect())
-                } else {
-                    None
-                }
-            }
-            KclValue::Solid { value } => Some(vec![value.artifact_id]),
-            KclValue::Solids { value } => {
-                if recurse {
-                    Some(value.iter().map(|solid| solid.artifact_id).collect())
-                } else {
-                    None
-                }
-            }
-            KclValue::Helix { value } => Some(vec![value.artifact_id]),
-            KclValue::ImportedGeometry(_) => None,
-            KclValue::Function { .. } => None,
-            KclValue::Module { .. } => None,
-            KclValue::KclNone { .. } => None,
-            KclValue::Tombstone { .. } => None,
         }
     }
 

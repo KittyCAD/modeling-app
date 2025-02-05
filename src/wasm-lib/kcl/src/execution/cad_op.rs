@@ -59,34 +59,17 @@ impl Operation {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct OpArg {
-    /// The runtime value of the argument, only if it's a non-composite
-    /// primitive value.  We don't include all values since they can be quite
-    /// large, and we don't actually need them.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    value: Option<KclValue>,
-    /// The artifact ID of the value.  This will be `None` for primitive values,
-    /// and `Some` for values that have `ArtifactId`s.  If the value is an
-    /// array, this will be the artifact IDs of the elements.  Only one level of
-    /// nesting is supported.  If the value is an array of arrays, for example,
-    /// this will be an empty array.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    artifact_ids: Option<Vec<ArtifactId>>,
+    /// The runtime value of the argument.  Instead of using [`KclValue`], we
+    /// refer to scene objects using their [`ArtifactId`]s.
+    value: OpKclValue,
     /// The KCL code expression for the argument.  This is used in the UI so
     /// that the user can edit the expression.
     source_range: SourceRange,
 }
 
 impl OpArg {
-    pub(crate) fn new(
-        value: Option<KclValue>,
-        artifact_ids: Option<Vec<ArtifactId>>,
-        source_range: SourceRange,
-    ) -> Self {
-        Self {
-            value,
-            artifact_ids,
-            source_range,
-        }
+    pub(crate) fn new(value: OpKclValue, source_range: SourceRange) -> Self {
+        Self { value, source_range }
     }
 }
 
@@ -152,4 +135,164 @@ where
 
 fn is_false(b: &bool) -> bool {
     !*b
+}
+
+/// A KCL value used in Operations.  `ArtifactId`s are used to refer to the
+/// actual scene objects.  Any data not needed in the UI may be omitted.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum OpKclValue {
+    Uuid {
+        value: ::uuid::Uuid,
+    },
+    Bool {
+        value: bool,
+    },
+    Number {
+        value: f64,
+    },
+    Int {
+        value: i64,
+    },
+    String {
+        value: String,
+    },
+    Array {
+        value: Vec<OpKclValue>,
+    },
+    Object {
+        value: OpKclObjectFields,
+    },
+    TagIdentifier {
+        /// The name of the tag identifier.
+        value: String,
+        /// The artifact ID of the object it refers to.
+        artifact_id: Option<ArtifactId>,
+    },
+    TagDeclarator {
+        name: String,
+    },
+    Plane {
+        artifact_id: ArtifactId,
+    },
+    Face {
+        artifact_id: ArtifactId,
+    },
+    Sketch {
+        value: Box<OpSketch>,
+    },
+    Sketches {
+        value: Vec<OpSketch>,
+    },
+    Solid {
+        value: Box<OpSolid>,
+    },
+    Solids {
+        value: Vec<OpSolid>,
+    },
+    Helix {
+        value: Box<OpHelix>,
+    },
+    ImportedGeometry {
+        artifact_id: ArtifactId,
+    },
+    Function {},
+    Module {},
+    KclNone {},
+}
+
+pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct OpSketch {
+    artifact_id: ArtifactId,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct OpSolid {
+    artifact_id: ArtifactId,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct OpHelix {
+    artifact_id: ArtifactId,
+}
+
+impl From<&KclValue> for OpKclValue {
+    fn from(value: &KclValue) -> Self {
+        match value {
+            KclValue::Uuid { value, .. } => Self::Uuid { value: *value },
+            KclValue::Bool { value, .. } => Self::Bool { value: *value },
+            KclValue::Number { value, .. } => Self::Number { value: *value },
+            KclValue::String { value, .. } => Self::String { value: value.clone() },
+            KclValue::Array { value, .. } => {
+                let value = value.iter().map(Self::from).collect();
+                Self::Array { value }
+            }
+            KclValue::Object { value, .. } => {
+                let value = value.iter().map(|(k, v)| (k.clone(), Self::from(v))).collect();
+                Self::Object { value }
+            }
+            KclValue::TagIdentifier(tag_identifier) => Self::TagIdentifier {
+                value: tag_identifier.value.clone(),
+                artifact_id: tag_identifier.info.as_ref().map(|info| ArtifactId::new(info.id)),
+            },
+            KclValue::TagDeclarator(node) => Self::TagDeclarator {
+                name: node.name.clone(),
+            },
+            KclValue::Plane { value } => Self::Plane {
+                artifact_id: value.artifact_id,
+            },
+            KclValue::Face { value } => Self::Face {
+                artifact_id: value.artifact_id,
+            },
+            KclValue::Sketch { value } => Self::Sketch {
+                value: Box::new(OpSketch {
+                    artifact_id: value.artifact_id,
+                }),
+            },
+            KclValue::Sketches { value } => {
+                let value = value
+                    .iter()
+                    .map(|sketch| OpSketch {
+                        artifact_id: sketch.artifact_id,
+                    })
+                    .collect();
+                Self::Sketches { value }
+            }
+            KclValue::Solid { value } => Self::Solid {
+                value: Box::new(OpSolid {
+                    artifact_id: value.artifact_id,
+                }),
+            },
+            KclValue::Solids { value } => {
+                let value = value
+                    .iter()
+                    .map(|solid| OpSolid {
+                        artifact_id: solid.artifact_id,
+                    })
+                    .collect();
+                Self::Solids { value }
+            }
+            KclValue::Helix { value } => Self::Helix {
+                value: Box::new(OpHelix {
+                    artifact_id: value.artifact_id,
+                }),
+            },
+            KclValue::ImportedGeometry(imported_geometry) => Self::ImportedGeometry {
+                artifact_id: ArtifactId::new(imported_geometry.id),
+            },
+            KclValue::Function { .. } => Self::Function {},
+            KclValue::Module { .. } => Self::Module {},
+            KclValue::KclNone { .. } => Self::KclNone {},
+            KclValue::Tombstone { .. } => unreachable!("Tombstone OpKclValue"),
+        }
+    }
 }

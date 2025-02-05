@@ -8,7 +8,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
-        cad_op::{OpArg, Operation},
+        cad_op::{OpArg, OpKclValue, Operation},
         kcl_value::NumericType,
         memory,
         state::ModuleState,
@@ -929,8 +929,7 @@ impl Node<CallExpressionKw> {
                             (
                                 k.clone(),
                                 OpArg::new(
-                                    arg.value.operation_value(),
-                                    arg.value.operation_artifact_ids(),
+                                    OpKclValue::from(&arg.value),
                                     arg.source_range,
                                 ),
                             )
@@ -940,8 +939,7 @@ impl Node<CallExpressionKw> {
                         std_lib_fn: (&func).into(),
                         unlabeled_arg: args.get_unlabeled_kw_arg_unconverted().map(|arg| {
                             OpArg::new(
-                                arg.value.operation_value(),
-                                arg.value.operation_artifact_ids(),
+                                OpKclValue::from(&arg.value),
                                 arg.source_range,
                             )
                         }),
@@ -989,8 +987,7 @@ impl Node<CallExpressionKw> {
                         (
                             k.clone(),
                             OpArg::new(
-                                arg.value.operation_value(),
-                                arg.value.operation_artifact_ids(),
+                                OpKclValue::from(&arg.value),
                                 arg.source_range,
                             ),
                         )
@@ -1004,8 +1001,7 @@ impl Node<CallExpressionKw> {
                         function_source_range: func.function_def_source_range().unwrap_or_default(),
                         unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| {
                             OpArg::new(
-                                arg.value.operation_value(),
-                                arg.value.operation_artifact_ids(),
+                                OpKclValue::from(&arg.value),
                                 arg.source_range,
                             )
                         }),
@@ -1077,8 +1073,7 @@ impl Node<CallExpression> {
                             (
                                 k.name.clone(),
                                 OpArg::new(
-                                    arg.value.operation_value(),
-                                    arg.value.operation_artifact_ids(),
+                                    OpKclValue::from(&arg.value),
                                     arg.source_range,
                                 ),
                             )
