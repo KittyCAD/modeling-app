@@ -27,7 +27,7 @@ import {
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
-import { getAngle } from '../lib/utils'
+import { getAngle, isArray } from '../lib/utils'
 import { ARG_TAG, getArgForEnd, getFirstArg } from './std/sketch'
 import {
   getConstraintLevelFromSourceRange,
@@ -112,7 +112,7 @@ export function getNodeFromPath<T>(
     }
     if (
       typeof stopAt !== 'undefined' &&
-      (Array.isArray(stopAt)
+      (isArray(stopAt)
         ? stopAt.includes(currentNode.type)
         : currentNode.type === stopAt)
     ) {
@@ -167,6 +167,7 @@ export function getNodeFromPathCurry(
 type KCLNode = Node<
   | Expr
   | ExpressionStatement
+  | ImportStatement
   | VariableDeclaration
   | VariableDeclarator
   | ReturnStatement
@@ -263,10 +264,14 @@ export function traverse(
     // hmm this smell
     _traverse(_node.object, [...pathToNode, ['object', 'MemberExpression']])
     _traverse(_node.property, [...pathToNode, ['property', 'MemberExpression']])
-  } else if ('body' in _node && Array.isArray(_node.body)) {
-    _node.body.forEach((expression, index) =>
+  } else if (_node.type === 'ImportStatement') {
+    // Do nothing.
+  } else if ('body' in _node && isArray(_node.body)) {
+    // TODO: Program should have a type field, but it currently doesn't.
+    const program = node as Node<Program>
+    program.body.forEach((expression, index) => {
       _traverse(expression, [...pathToNode, ['body', ''], [index, 'index']])
-    )
+    })
   }
   option?.leave?.(_node)
 }
