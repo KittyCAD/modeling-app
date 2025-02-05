@@ -1,7 +1,7 @@
-name: E2E Tests
+name: E2E Snapshot Tests
 on:
   push:
-    branches: [ main, pierremtb/separate-snapshot-from-flow-tests ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -140,3 +140,5 @@ jobs:
     - name: Fail the run if we have snapshot updates
       if: steps.git-check.outputs.modified == 'true'
       run: exit 1
+
+    # TODO: check if we could comment on the PR as well
