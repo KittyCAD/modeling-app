@@ -30,11 +30,13 @@ test('verify extruding circle works', async ({
     localStorage.setItem('persistCode', file)
   }, file)
   await homePage.goToModelingScene()
+  await scene.waitForExecutionDone()
 
   const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
   await test.step('because there is sweepable geometry, verify extrude is enable when nothing is selected', async () => {
-    await scene.clickNoWhere()
+    // FIXME: Do not click, clicking removes the activeLines in future checks
+    // await scene.clickNoWhere()
     await expect(toolbar.extrudeButton).toBeEnabled()
   })
 

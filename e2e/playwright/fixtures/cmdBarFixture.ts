@@ -121,6 +121,23 @@ export class CmdBarFixture {
     }
   }
 
+  // Added data-testid to the command bar buttons
+  // command-bar-continue are the buttons to go to the next step
+  // does not include the submit which is the final button press
+  // aka the right arrow button
+  continue = async () => {
+    const continueButton = this.page.getByTestId('command-bar-continue')
+    await continueButton.click()
+  }
+
+  // Added data-testid to the commad bar buttons
+  // command-bar-submit is the button for the final step to submit
+  // the command bar flow aka the checkmark button.
+  submit = async () => {
+    const submitButton = this.page.getByTestId('command-bar-submit')
+    await submitButton.click()
+  }
+
   openCmdBar = async (selectCmd?: 'promptToEdit') => {
     // TODO why does this button not work in electron tests?
     // await this.cmdBarOpenBtn.click()

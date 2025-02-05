@@ -97,6 +97,7 @@ function CommandBarKclInput({
     value,
     initialVariableName,
   })
+
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
     detail: String(roundOff(v.value as number)),

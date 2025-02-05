@@ -48,7 +48,16 @@ export function useCalculateKclExpression({
     bodyPath: [],
   })
   const [valueNode, setValueNode] = useState<Expr | null>(null)
-  const [calcResult, setCalcResult] = useState('NAN')
+  // If we pass in numeric literals, we should instantly parse them, they have nothing to do with application memory
+  const _code_value = `const __result__ = ${value}`
+  const codeValueParseResult = parse(_code_value)
+  let isValueParsable = true
+  if (err(codeValueParseResult) || !resultIsOk(codeValueParseResult)) {
+    isValueParsable = false
+  }
+  const initialCalcResult: number | string =
+    isNaN(Number(value)) || !isValueParsable ? 'NAN' : value
+  const [calcResult, setCalcResult] = useState(initialCalcResult)
   const [newVariableName, setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
 
