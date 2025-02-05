@@ -46,15 +46,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
-    - uses: actions/create-github-app-token@v1
-      id: app-token
-      with:
-        app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
-        private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
-        owner: ${{ github.repository_owner }}
     - uses: actions/checkout@v4
-      with:
-        token: ${{ steps.app-token.outputs.token }}
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
@@ -165,30 +157,22 @@ jobs:
       shell: bash
       id: git-check
       run: |
-          git add .
+          git add e2e/playwright/snapshot-tests.spec.ts-snapshots
           if git status | grep -q "Changes to be committed"
           then echo "modified=true" >> $GITHUB_OUTPUT
           else echo "modified=false" >> $GITHUB_OUTPUT
           fi
-    - name: Commit changes, if any
-      if: steps.git-check.outputs.modified == 'true'
-      shell: bash
-      run: |
-        git add .
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-        git fetch origin
-        echo ${{ github.head_ref }}
-        git checkout ${{ github.head_ref }}
-        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
-        git push
-        git push origin ${{ github.head_ref }}
     # only upload artifacts if there's actually changes
+    - name: Upload changes, if any
+      if: steps.git-check.outputs.modified == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-snapshots-${{ matrix.os }}-${{ github.sha }}
+        path: e2e/playwright/snapshot-tests.spec.ts-snapshots
     - uses: actions/upload-artifact@v4
       if: steps.git-check.outputs.modified == 'true'
       with:
-        name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-report-${{ matrix.os }}-${{ github.sha }}
         path: playwright-report/
         include-hidden-files: true
         retention-days: 30
