@@ -1193,6 +1193,15 @@ impl<'a> FromKclValue<'a> for super::shapes::CircleData {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, radius);
+        let_field_of!(obj, offset);
+        Some(Self::RadiusAndOffset { radius, offset })
+    }
+}
+
 impl<'a> FromKclValue<'a> for crate::execution::Point3d {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 1: object with x/y/z fields
