@@ -24,16 +24,7 @@ description: Operations executed cube_with_error.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 40.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                379,
-                381,
-                0
-              ]
-            }
-          ]
+          "value": 40.0
         },
         "sourceRange": [
           354,
@@ -49,7 +40,19 @@ description: Operations executed cube_with_error.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

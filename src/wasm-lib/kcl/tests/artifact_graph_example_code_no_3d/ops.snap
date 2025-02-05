@@ -8,16 +8,7 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "YZ",
-          "__meta": [
-            {
-              "sourceRange": [
-                26,
-                30,
-                0
-              ]
-            }
-          ]
+          "value": "YZ"
         },
         "sourceRange": [
           26,
@@ -40,16 +31,7 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "-XZ",
-          "__meta": [
-            {
-              "sourceRange": [
-                455,
-                460,
-                0
-              ]
-            }
-          ]
+          "value": "-XZ"
         },
         "sourceRange": [
           455,

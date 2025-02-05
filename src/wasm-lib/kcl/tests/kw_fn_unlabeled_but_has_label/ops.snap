@@ -16,16 +16,7 @@ description: Operations executed kw_fn_unlabeled_but_has_label.kcl
       "x": {
         "value": {
           "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                45,
-                46,
-                0
-              ]
-            }
-          ]
+          "value": 1.0
         },
         "sourceRange": [
           45,

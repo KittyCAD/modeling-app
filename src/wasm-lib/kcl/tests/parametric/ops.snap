@@ -8,16 +8,7 @@ description: Operations executed parametric.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                242,
-                246,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           242,
@@ -40,16 +31,7 @@ description: Operations executed parametric.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 9.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                34,
-                35,
-                0
-              ]
-            }
-          ]
+          "value": 9.0
         },
         "sourceRange": [
           482,
@@ -65,6 +47,18 @@ description: Operations executed parametric.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

@@ -33,16 +33,7 @@ description: Operations executed kw_fn_with_defaults.kcl
     "unlabeledArg": {
       "value": {
         "type": "Number",
-        "value": 1.0,
-        "__meta": [
-          {
-            "sourceRange": [
-              88,
-              89,
-              0
-            ]
-          }
-        ]
+        "value": 1.0
       },
       "sourceRange": [
         88,
@@ -54,16 +45,7 @@ description: Operations executed kw_fn_with_defaults.kcl
       "by": {
         "value": {
           "type": "Number",
-          "value": 20.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                96,
-                98,
-                0
-              ]
-            }
-          ]
+          "value": 20.0
         },
         "sourceRange": [
           96,

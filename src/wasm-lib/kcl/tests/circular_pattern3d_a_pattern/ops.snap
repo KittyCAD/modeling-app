@@ -8,16 +8,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XZ",
-          "__meta": [
-            {
-              "sourceRange": [
-                30,
-                34,
-                0
-              ]
-            }
-          ]
+          "value": "XZ"
         },
         "sourceRange": [
           30,
@@ -40,16 +31,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                176,
-                177,
-                0
-              ]
-            }
-          ]
+          "value": 1.0
         },
         "sourceRange": [
           176,
@@ -66,9 +48,12 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         0,
         0,
@@ -79,7 +64,23 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
   {
     "labeledArgs": {
       "axis": {
-        "artifactIds": [],
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 1.0
+            },
+            {
+              "type": "Number",
+              "value": 0.0
+            },
+            {
+              "type": "Number",
+              "value": 0.0
+            }
+          ]
+        },
         "sourceRange": [
           232,
           241,
@@ -89,16 +90,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
       "distance": {
         "value": {
           "type": "Number",
-          "value": 6.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                273,
-                274,
-                0
-              ]
-            }
-          ]
+          "value": 6.0
         },
         "sourceRange": [
           273,
@@ -109,16 +101,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
       "instances": {
         "value": {
           "type": "Number",
-          "value": 7.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                257,
-                258,
-                0
-              ]
-            }
-          ]
+          "value": 7.0
         },
         "sourceRange": [
           257,
@@ -135,9 +118,12 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         208,
         221,
@@ -150,16 +136,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
       "arcDegrees": {
         "value": {
           "type": "Number",
-          "value": 360.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                398,
-                401,
-                0
-              ]
-            }
-          ]
+          "value": 360.0
         },
         "sourceRange": [
           398,
@@ -168,7 +145,23 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
         ]
       },
       "axis": {
-        "artifactIds": [],
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0
+            },
+            {
+              "type": "Number",
+              "value": 0.0
+            },
+            {
+              "type": "Number",
+              "value": 1.0
+            }
+          ]
+        },
         "sourceRange": [
           326,
           335,
@@ -176,7 +169,23 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
         ]
       },
       "center": {
-        "artifactIds": [],
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": -20.0
+            },
+            {
+              "type": "Number",
+              "value": -20.0
+            },
+            {
+              "type": "Number",
+              "value": -20.0
+            }
+          ]
+        },
         "sourceRange": [
           348,
           363,
@@ -186,16 +195,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
       "instances": {
         "value": {
           "type": "Number",
-          "value": 41.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                379,
-                381,
-                0
-              ]
-            }
-          ]
+          "value": 41.0
         },
         "sourceRange": [
           379,
@@ -206,16 +206,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
-          "value": false,
-          "__meta": [
-            {
-              "sourceRange": [
-                424,
-                429,
-                0
-              ]
-            }
-          ]
+          "value": false
         },
         "sourceRange": [
           424,
@@ -232,15 +223,32 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]",
-        "[uuid]",
-        "[uuid]",
-        "[uuid]",
-        "[uuid]",
-        "[uuid]",
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Solids",
+        "value": [
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          }
+        ]
+      },
       "sourceRange": [
         309,
         315,

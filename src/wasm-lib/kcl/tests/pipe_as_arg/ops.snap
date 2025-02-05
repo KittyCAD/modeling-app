@@ -43,23 +43,7 @@ description: Operations executed pipe_as_arg.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 400.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                441,
-                444,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                394,
-                395,
-                0
-              ]
-            }
-          ]
+          "value": 400.0
         },
         "sourceRange": [
           355,
@@ -75,7 +59,19 @@ description: Operations executed pipe_as_arg.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

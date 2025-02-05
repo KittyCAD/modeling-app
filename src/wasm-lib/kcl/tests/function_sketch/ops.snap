@@ -24,16 +24,7 @@ description: Operations executed function_sketch.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                42,
-                46,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           42,
@@ -56,16 +47,7 @@ description: Operations executed function_sketch.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 3.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                234,
-                235,
-                0
-              ]
-            }
-          ]
+          "value": 3.0
         },
         "sourceRange": [
           200,
@@ -81,7 +63,19 @@ description: Operations executed function_sketch.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

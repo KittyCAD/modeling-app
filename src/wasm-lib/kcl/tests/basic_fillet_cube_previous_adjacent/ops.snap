@@ -8,16 +8,7 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                24,
-                28,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           24,
@@ -40,16 +31,7 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                229,
-                231,
-                0
-              ]
-            }
-          ]
+          "value": 10.0
         },
         "sourceRange": [
           229,
@@ -65,12 +47,41 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 2.0
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
           245,
           320,
@@ -78,9 +89,12 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
         ]
       },
       "solid": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           322,
           323,

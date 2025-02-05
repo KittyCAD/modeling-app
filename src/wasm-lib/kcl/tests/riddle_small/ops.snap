@@ -46,16 +46,7 @@ description: Operations executed riddle_small.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XZ",
-          "__meta": [
-            {
-              "sourceRange": [
-                155,
-                159,
-                0
-              ]
-            }
-          ]
+          "value": "XZ"
         },
         "sourceRange": [
           155,
@@ -78,16 +69,7 @@ description: Operations executed riddle_small.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                304,
-                305,
-                0
-              ]
-            }
-          ]
+          "value": 1.0
         },
         "sourceRange": [
           304,
@@ -103,6 +85,18 @@ description: Operations executed riddle_small.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

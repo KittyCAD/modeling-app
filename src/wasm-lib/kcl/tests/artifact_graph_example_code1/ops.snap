@@ -8,16 +8,7 @@ description: Operations executed artifact_graph_example_code1.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                26,
-                30,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           26,
@@ -40,16 +31,7 @@ description: Operations executed artifact_graph_example_code1.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                288,
-                291,
-                0
-              ]
-            }
-          ]
+          "value": -10.0
         },
         "sourceRange": [
           288,
@@ -66,9 +48,12 @@ description: Operations executed artifact_graph_example_code1.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         268,
         277,
@@ -79,7 +64,25 @@ description: Operations executed artifact_graph_example_code1.kcl
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 5.0
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "TagIdentifier",
+                  "value": "seg01",
+                  "artifact_id": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
           305,
           335,
@@ -87,9 +90,12 @@ description: Operations executed artifact_graph_example_code1.kcl
         ]
       },
       "solid": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           337,
           338,
@@ -109,9 +115,12 @@ description: Operations executed artifact_graph_example_code1.kcl
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           366,
           376,
@@ -119,6 +128,11 @@ description: Operations executed artifact_graph_example_code1.kcl
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg02",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
           378,
           383,
@@ -140,16 +154,7 @@ description: Operations executed artifact_graph_example_code1.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                583,
-                584,
-                0
-              ]
-            }
-          ]
+          "value": 5.0
         },
         "sourceRange": [
           583,
@@ -166,9 +171,12 @@ description: Operations executed artifact_graph_example_code1.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         563,
         572,

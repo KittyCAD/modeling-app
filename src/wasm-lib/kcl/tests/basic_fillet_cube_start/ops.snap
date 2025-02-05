@@ -8,16 +8,7 @@ description: Operations executed basic_fillet_cube_start.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                24,
-                28,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           24,
@@ -40,16 +31,7 @@ description: Operations executed basic_fillet_cube_start.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                202,
-                204,
-                0
-              ]
-            }
-          ]
+          "value": 10.0
         },
         "sourceRange": [
           202,
@@ -65,12 +47,47 @@ description: Operations executed basic_fillet_cube_start.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 2.0
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "TagIdentifier",
+                  "value": "thing",
+                  "artifact_id": "[uuid]"
+                },
+                {
+                  "type": "TagIdentifier",
+                  "value": "thing2",
+                  "artifact_id": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
           218,
           256,
@@ -78,9 +95,12 @@ description: Operations executed basic_fillet_cube_start.kcl
         ]
       },
       "solid": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           258,
           259,

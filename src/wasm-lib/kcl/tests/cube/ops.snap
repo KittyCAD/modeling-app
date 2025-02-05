@@ -14,7 +14,19 @@ description: Operations executed cube.kcl
     "unlabeledArg": null,
     "labeledArgs": {
       "center": {
-        "artifactIds": [],
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0
+            },
+            {
+              "type": "Number",
+              "value": 0.0
+            }
+          ]
+        },
         "sourceRange": [
           417,
           423,
@@ -24,16 +36,7 @@ description: Operations executed cube.kcl
       "sideLength": {
         "value": {
           "type": "Number",
-          "value": 40.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                404,
-                406,
-                0
-              ]
-            }
-          ]
+          "value": 40.0
         },
         "sourceRange": [
           404,
@@ -53,16 +56,7 @@ description: Operations executed cube.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 40.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                404,
-                406,
-                0
-              ]
-            }
-          ]
+          "value": 40.0
         },
         "sourceRange": [
           362,
@@ -78,7 +72,19 @@ description: Operations executed cube.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

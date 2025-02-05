@@ -8,16 +8,7 @@ description: Operations executed fillet-and-shell.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                791,
-                795,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           791,
@@ -40,16 +31,7 @@ description: Operations executed fillet-and-shell.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 8.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                165,
-                166,
-                0
-              ]
-            }
-          ]
+          "value": 8.0
         },
         "sourceRange": [
           1047,
@@ -66,9 +48,12 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         0,
         0,
@@ -79,7 +64,36 @@ description: Operations executed fillet-and-shell.kcl
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 1.0
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
           1071,
           1270,
@@ -87,9 +101,12 @@ description: Operations executed fillet-and-shell.kcl
         ]
       },
       "solid": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1272,
           1273,
@@ -127,16 +144,7 @@ description: Operations executed fillet-and-shell.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                1328,
-                1332,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           1328,
@@ -157,9 +165,12 @@ description: Operations executed fillet-and-shell.kcl
   {
     "labeledArgs": {
       "hole_sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1431,
           1476,
@@ -167,9 +178,12 @@ description: Operations executed fillet-and-shell.kcl
         ]
       },
       "sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1478,
           1479,
@@ -191,16 +205,7 @@ description: Operations executed fillet-and-shell.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 4.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                77,
-                78,
-                0
-              ]
-            }
-          ]
+          "value": 4.0
         },
         "sourceRange": [
           1505,
@@ -217,9 +222,12 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         0,
         0,
@@ -251,16 +259,7 @@ description: Operations executed fillet-and-shell.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                1328,
-                1332,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           1328,
@@ -281,9 +280,12 @@ description: Operations executed fillet-and-shell.kcl
   {
     "labeledArgs": {
       "hole_sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1431,
           1476,
@@ -291,9 +293,12 @@ description: Operations executed fillet-and-shell.kcl
         ]
       },
       "sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1478,
           1479,
@@ -315,16 +320,7 @@ description: Operations executed fillet-and-shell.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 4.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                77,
-                78,
-                0
-              ]
-            }
-          ]
+          "value": 4.0
         },
         "sourceRange": [
           1505,
@@ -341,9 +337,12 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         0,
         0,
@@ -375,16 +374,7 @@ description: Operations executed fillet-and-shell.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                1328,
-                1332,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           1328,
@@ -405,9 +395,12 @@ description: Operations executed fillet-and-shell.kcl
   {
     "labeledArgs": {
       "hole_sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1431,
           1476,
@@ -415,9 +408,12 @@ description: Operations executed fillet-and-shell.kcl
         ]
       },
       "sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1478,
           1479,
@@ -439,16 +435,7 @@ description: Operations executed fillet-and-shell.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 4.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                77,
-                78,
-                0
-              ]
-            }
-          ]
+          "value": 4.0
         },
         "sourceRange": [
           1505,
@@ -465,9 +452,12 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         0,
         0,
@@ -499,16 +489,7 @@ description: Operations executed fillet-and-shell.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                1328,
-                1332,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           1328,
@@ -529,9 +510,12 @@ description: Operations executed fillet-and-shell.kcl
   {
     "labeledArgs": {
       "hole_sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1431,
           1476,
@@ -539,9 +523,12 @@ description: Operations executed fillet-and-shell.kcl
         ]
       },
       "sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1478,
           1479,
@@ -563,16 +550,7 @@ description: Operations executed fillet-and-shell.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 4.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                77,
-                78,
-                0
-              ]
-            }
-          ]
+          "value": 4.0
         },
         "sourceRange": [
           1505,
@@ -589,9 +567,12 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         0,
         0,
@@ -605,7 +586,15 @@ description: Operations executed fillet-and-shell.kcl
   {
     "labeledArgs": {
       "faces": {
-        "artifactIds": [],
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "end"
+            }
+          ]
+        },
         "sourceRange": [
           2067,
           2074,
@@ -615,16 +604,7 @@ description: Operations executed fillet-and-shell.kcl
       "thickness": {
         "value": {
           "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                48,
-                49,
-                0
-              ]
-            }
-          ]
+          "value": 1.0
         },
         "sourceRange": [
           2088,
@@ -641,9 +621,12 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
-      "artifactIds": [
-        "[uuid]"
-      ],
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         2053,
         2057,

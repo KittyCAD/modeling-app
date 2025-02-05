@@ -24,16 +24,7 @@ description: Operations executed sketch_in_object.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                35,
-                39,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           35,
@@ -59,16 +50,7 @@ description: Operations executed sketch_in_object.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                442,
-                445,
-                0
-              ]
-            }
-          ]
+          "value": -10.0
         },
         "sourceRange": [
           442,
@@ -84,7 +66,19 @@ description: Operations executed sketch_in_object.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -107,16 +101,7 @@ description: Operations executed sketch_in_object.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                240,
-                244,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           240,
@@ -142,16 +127,7 @@ description: Operations executed sketch_in_object.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                500,
-                502,
-                0
-              ]
-            }
-          ]
+          "value": 10.0
         },
         "sourceRange": [
           500,
@@ -167,6 +143,18 @@ description: Operations executed sketch_in_object.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

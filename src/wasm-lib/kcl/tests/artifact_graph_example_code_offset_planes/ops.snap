@@ -8,25 +8,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": 20.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                44,
-                46,
-                0
-              ]
-            }
-          ]
+          "value": 20.0
         },
         "sourceRange": [
           44,
@@ -45,16 +27,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
     "unlabeledArg": {
       "value": {
         "type": "String",
-        "value": "XY",
-        "__meta": [
-          {
-            "sourceRange": [
-              29,
-              33,
-              0
-            ]
-          }
-        ]
+        "value": "XY"
       },
       "sourceRange": [
         29,
@@ -68,25 +41,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": -50.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                92,
-                95,
-                0
-              ]
-            }
-          ]
+          "value": -50.0
         },
         "sourceRange": [
           92,
@@ -105,16 +60,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
     "unlabeledArg": {
       "value": {
         "type": "String",
-        "value": "XZ",
-        "__meta": [
-          {
-            "sourceRange": [
-              77,
-              81,
-              0
-            ]
-          }
-        ]
+        "value": "XZ"
       },
       "sourceRange": [
         77,
@@ -128,25 +74,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": 10.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                141,
-                143,
-                0
-              ]
-            }
-          ]
+          "value": 10.0
         },
         "sourceRange": [
           141,
@@ -165,16 +93,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
     "unlabeledArg": {
       "value": {
         "type": "String",
-        "value": "YZ",
-        "__meta": [
-          {
-            "sourceRange": [
-              126,
-              130,
-              0
-            ]
-          }
-        ]
+        "value": "YZ"
       },
       "sourceRange": [
         126,
@@ -186,9 +105,10 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
           172,
           186,

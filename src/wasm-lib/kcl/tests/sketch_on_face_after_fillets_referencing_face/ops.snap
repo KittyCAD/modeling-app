@@ -8,16 +8,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                1006,
-                1010,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           1006,
@@ -40,16 +31,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "length": {
         "value": {
           "type": "Number",
-          "value": 6.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                594,
-                595,
-                0
-              ]
-            }
-          ]
+          "value": 6.0
         },
         "sourceRange": [
           1322,
@@ -65,12 +47,41 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 0.25
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
           1341,
           1421,
@@ -78,9 +89,12 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         ]
       },
       "solid": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1423,
           1424,
@@ -100,7 +114,24 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 0.5707134902949093
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
           1438,
           1530,
@@ -108,9 +139,12 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         ]
       },
       "solid": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1532,
           1533,
@@ -130,9 +164,12 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1562,
           1569,
@@ -140,6 +177,11 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg01",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
           1571,
           1576,
@@ -161,16 +203,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                1806,
-                1808,
-                0
-              ]
-            }
-          ]
+          "value": 10.0
         },
         "sourceRange": [
           1806,
@@ -186,6 +219,18 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

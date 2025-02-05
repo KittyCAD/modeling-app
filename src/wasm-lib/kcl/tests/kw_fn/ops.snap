@@ -33,16 +33,7 @@ description: Operations executed kw_fn.kcl
     "unlabeledArg": {
       "value": {
         "type": "Number",
-        "value": 1.0,
-        "__meta": [
-          {
-            "sourceRange": [
-              110,
-              111,
-              0
-            ]
-          }
-        ]
+        "value": 1.0
       },
       "sourceRange": [
         110,
@@ -54,16 +45,7 @@ description: Operations executed kw_fn.kcl
       "delta": {
         "value": {
           "type": "Number",
-          "value": 2.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                121,
-                122,
-                0
-              ]
-            }
-          ]
+          "value": 2.0
         },
         "sourceRange": [
           121,
