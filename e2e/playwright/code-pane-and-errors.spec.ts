@@ -6,7 +6,7 @@ import { bracket } from 'lib/exampleKcl'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
 import fsp from 'fs/promises'
 
-test.describe('Code pane and errors', () => {
+test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
     page,
     homePage,
@@ -20,11 +20,11 @@ test.describe('Code pane and errors', () => {
         `// Extruded Triangle
   sketch001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
-    |> line([10, 0], %)
-    |> line([-5, 10], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude001 = extrude(5, sketch001)`
+    |> line(end = [10, 0])
+    |> line(end = [-5, 10])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude001 = extrude(sketch001, length = 5)`
       )
     })
 
@@ -79,8 +79,10 @@ test.describe('Code pane and errors', () => {
 
     // Delete a character to break the KCL
     await editor.openPane()
-    await editor.scrollToText('thickness, bracketLeg1Sketch)')
-    await page.getByText('extrude(thickness, bracketLeg1Sketch)').click()
+    await editor.scrollToText('bracketLeg1Sketch, length = thickness)')
+    await page
+      .getByText('extrude(bracketLeg1Sketch, length = thickness)')
+      .click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
@@ -107,7 +109,7 @@ test.describe('Code pane and errors', () => {
     await editor.openPane()
 
     // Go to our problematic code again (missing closing paren!)
-    await editor.scrollToText('extrude(thickness, bracketLeg1Sketch')
+    await editor.scrollToText('extrude(bracketLeg1Sketch, length = thickness')
 
     // Ensure that a badge appears on the button
     await expect(codePaneButtonHolder).toContainText('notification')

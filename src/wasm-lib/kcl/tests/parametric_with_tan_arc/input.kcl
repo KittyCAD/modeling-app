@@ -9,15 +9,15 @@ shelfMountL = 9
 wallMountL = 8
 
 bracket = startSketchAt([0, 0])
-  |> line([0, wallMountL], %)
+  |> line(end = [0, wallMountL])
   |> tangentialArc({ radius = filletR, offset = 90 }, %)
-  |> line([-shelfMountL, 0], %)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL, 0], %)
+  |> line(end = [-shelfMountL, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [shelfMountL, 0])
   |> tangentialArc({
        radius = filletR - thickness,
        offset = -90
      }, %)
-  |> line([0, -wallMountL], %)
+  |> line(end = [0, -wallMountL])
   |> close(%)
-  |> extrude(width, %)
+  |> extrude(length = width)

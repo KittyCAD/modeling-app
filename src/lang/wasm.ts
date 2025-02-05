@@ -88,6 +88,8 @@ export type { BinaryExpression } from '../wasm-lib/kcl/bindings/BinaryExpression
 export type { ReturnStatement } from '../wasm-lib/kcl/bindings/ReturnStatement'
 export type { ExpressionStatement } from '../wasm-lib/kcl/bindings/ExpressionStatement'
 export type { CallExpression } from '../wasm-lib/kcl/bindings/CallExpression'
+export type { CallExpressionKw } from '../wasm-lib/kcl/bindings/CallExpressionKw'
+export type { LabeledArg } from '../wasm-lib/kcl/bindings/LabeledArg'
 export type { VariableDeclarator } from '../wasm-lib/kcl/bindings/VariableDeclarator'
 export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
@@ -101,6 +103,7 @@ export type SyntaxType =
   | 'ExpressionStatement'
   | 'BinaryExpression'
   | 'CallExpression'
+  | 'CallExpressionKw'
   | 'Identifier'
   | 'ReturnStatement'
   | 'VariableDeclaration'
@@ -247,6 +250,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
     // throw e
+    console.error(e.toString())
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,

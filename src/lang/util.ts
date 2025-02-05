@@ -6,6 +6,8 @@ import {
   ArrayExpression,
   BinaryExpression,
   ArtifactGraph,
+  CallExpressionKw,
+  Expr,
   LiteralValue,
   NumericSuffix,
 } from './wasm'
@@ -97,6 +99,46 @@ export function isLiteral(e: any): e is Literal {
 
 export function isBinaryExpression(e: any): e is BinaryExpression {
   return e && e.type === 'BinaryExpression'
+}
+
+/**
+Search the keyword arguments from a call for an argument with this label.
+*/
+export function findKwArg(
+  label: string,
+  call: CallExpressionKw
+): Expr | undefined {
+  return call.arguments.find((arg) => {
+    return arg.label.name === label
+  })?.arg
+}
+
+/**
+Search the keyword arguments from a call for an argument with one of these labels.
+*/
+export function findKwArgAny(
+  labels: string[],
+  call: CallExpressionKw
+): Expr | undefined {
+  return call.arguments.find((arg) => {
+    return labels.includes(arg.label.name)
+  })?.arg
+}
+
+/**
+Search the keyword arguments from a call for an argument with one of these labels.
+*/
+export function findKwArgAnyIndex(
+  labels: string[],
+  call: CallExpressionKw
+): number | undefined {
+  return call.arguments.findIndex((arg) => {
+    return labels.includes(arg.label.name)
+  })
+}
+
+export function isAbsolute(call: CallExpressionKw): boolean {
+  return findKwArgAny(['endAbsolute'], call) !== undefined
 }
 
 export function isLiteralValueNumber(

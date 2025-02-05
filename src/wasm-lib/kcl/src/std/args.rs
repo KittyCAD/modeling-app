@@ -97,14 +97,24 @@ impl Args {
     }
 
     /// Get a keyword argument. If not set, returns None.
-    pub(crate) fn get_kw_arg_opt<'a, T>(&'a self, label: &str) -> Option<T>
+    pub(crate) fn get_kw_arg_opt<'a, T>(&'a self, label: &str) -> Result<Option<T>, KclError>
     where
         T: FromKclValue<'a>,
     {
-        self.kw_args
-            .labeled
-            .get(label)
-            .and_then(|arg| T::from_kcl_val(&arg.value))
+        let Some(arg) = self.kw_args.labeled.get(label) else {
+            return Ok(None);
+        };
+
+        T::from_kcl_val(&arg.value).map(Some).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: format!(
+                    "The optional arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
+                    type_name::<T>(),
+                    arg.value.human_friendly_type(),
+                ),
+            })
+        })
     }
 
     /// Get a keyword argument. If not set, returns Err.
@@ -112,7 +122,7 @@ impl Args {
     where
         T: FromKclValue<'a>,
     {
-        self.get_kw_arg_opt(label).ok_or_else(|| {
+        self.get_kw_arg_opt(label)?.ok_or_else(|| {
             KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![self.source_range],
                 message: format!("This function requires a keyword argument '{label}'"),
@@ -407,10 +417,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagNode>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_data_and_optional_tag<'a, T>(&'a self) -> Result<(T, Option<FaceTag>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
@@ -475,10 +481,6 @@ impl Args {
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_number_sketch_set(&self) -> Result<(f64, SketchSet), KclError> {
         FromArgs::from_args(self, 0)
     }
 

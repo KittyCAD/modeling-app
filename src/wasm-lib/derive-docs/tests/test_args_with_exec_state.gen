@@ -120,6 +120,7 @@ impl crate::docs::StdLibFn for SomeFunction {
             required: true,
             label_required: true,
             description: String::new(),
+            include_in_snippet: true,
         })
     }
 

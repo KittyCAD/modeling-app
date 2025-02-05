@@ -3,6 +3,8 @@ import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
+  LabeledArg,
+  CallExpressionKw,
   PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
@@ -32,9 +34,16 @@ import {
   traverse,
   getBodyIndex,
   isCallExprWithName,
+  ARG_INDEX_FIELD,
+  LABELED_ARG_FIELD,
 } from './queryAst'
+import {
+  addTagForSketchOnFace,
+  ARG_TAG,
+  getConstraintInfo,
+  getConstraintInfoKw,
+} from './std/sketch'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { addTagForSketchOnFace, getConstraintInfo } from './std/sketch'
 import {
   PathToNodeMap,
   isLiteralArrayOrStatic,
@@ -52,6 +61,7 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { KclExpressionWithVariable } from 'lib/commandTypes'
 import { Artifact, getPathsFromArtifact } from './std/artifactGraph'
 import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
+import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
 
 export function startSketchOnDefault(
@@ -152,10 +162,11 @@ export function addSketchTo(
     createLiteral('default'),
     createPipeSubstitution(),
   ])
-  const initialLineTo = createCallExpressionStdLib('line', [
-    createLiteral('default'),
-    createPipeSubstitution(),
-  ])
+  const initialLineTo = createCallExpressionStdLibKw(
+    'line',
+    null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+    [createLabeledArg('end', createLiteral('default'))]
+  )
 
   const pipeBody = [startSketchOn, startProfileAt, initialLineTo]
 
@@ -216,6 +227,27 @@ export function findUniqueName(
 
   // recursive case: name is not unique and does not end in digits
   return findUniqueName(searchStr, name, pad, index + 1)
+}
+
+/**
+Set the keyword argument to the given value.
+Returns true if it overwrote an existing argument.
+Returns false if no argument with the label existed before.
+*/
+export function mutateKwArg(
+  label: string,
+  node: CallExpressionKw,
+  val: Expr
+): boolean {
+  for (let i = 0; i < node.arguments.length; i++) {
+    const arg = node.arguments[i]
+    if (arg.label.name === label) {
+      node.arguments[i].arg = val
+      return true
+    }
+  }
+  node.arguments.push(createLabeledArg(label, val))
+  return false
 }
 
 export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
@@ -307,10 +339,14 @@ export function extrudeSketch(
   if (err(_node3)) return _node3
   const { node: variableDeclarator } = _node3
 
-  const extrudeCall = createCallExpressionStdLib('extrude', [
-    distance,
+  const extrudeCall = createCallExpressionStdLibKw(
+    'extrude',
     createIdentifier(variableDeclarator.id.name),
-  ])
+    [createLabeledArg('length', distance)]
+  )
+  // index of the 'length' arg above. If you reorder the labeled args above,
+  // make sure to update this too.
+  const argIndex = 0
 
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
@@ -328,8 +364,9 @@ export function extrudeSketch(
     [sketchIndexInBody + 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
   return {
     modifiedAst: _node,
@@ -515,10 +552,10 @@ export function sketchOnExtrudedFace(
   const { node: oldSketchNode } = _node1
 
   const oldSketchName = oldSketchNode.id.name
-  const _node2 = getNodeFromPath<CallExpression>(
+  const _node2 = getNodeFromPath<CallExpression | CallExpressionKw>(
     _node,
     sketchPathToNode,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
   if (err(_node2)) return _node2
   const { node: expression } = _node2
@@ -819,6 +856,29 @@ export function createCallExpressionStdLib(
   }
 }
 
+export function createCallExpressionStdLibKw(
+  name: string,
+  unlabeled: CallExpressionKw['unlabeled'],
+  args: CallExpressionKw['arguments']
+): Node<CallExpressionKw> {
+  return {
+    type: 'CallExpressionKw',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    callee: {
+      type: 'Identifier',
+      start: 0,
+      end: 0,
+      moduleId: 0,
+
+      name,
+    },
+    unlabeled,
+    arguments: args,
+  }
+}
+
 export function createCallExpression(
   name: string,
   args: CallExpression['arguments']
@@ -970,20 +1030,46 @@ export function giveSketchFnCallTag(
     }
   | Error {
   const path = getNodePathFromSourceRange(ast, range)
-  const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
-  if (err(_node1)) return _node1
-  const { node: primaryCallExp } = _node1
+  const maybeTag = (() => {
+    const callNode = getNodeFromPath<CallExpression | CallExpressionKw>(
+      ast,
+      path,
+      ['CallExpression', 'CallExpressionKw']
+    )
+    if (!err(callNode) && callNode.node.type === 'CallExpressionKw') {
+      const { node: primaryCallExp } = callNode
+      const existingTag = findKwArg(ARG_TAG, primaryCallExp)
+      const tagDeclarator =
+        existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
+      const isTagExisting = !!existingTag
+      if (!isTagExisting) {
+        callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
+      }
+      return { tagDeclarator, isTagExisting }
+    }
 
-  // Tag is always 3rd expression now, using arg index feels brittle
-  // but we can come up with a better way to identify tag later.
-  const thirdArg = primaryCallExp.arguments?.[2]
-  const tagDeclarator =
-    thirdArg ||
-    (createTagDeclarator(tag || findUniqueName(ast, 'seg', 2)) as TagDeclarator)
-  const isTagExisting = !!thirdArg
-  if (!isTagExisting) {
-    primaryCallExp.arguments[2] = tagDeclarator
-  }
+    // We've handled CallExpressionKw above, so this has to be positional.
+    const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
+    if (err(_node1)) return _node1
+    const { node: primaryCallExp } = _node1
+
+    // Tag is always 3rd expression now, using arg index feels brittle
+    // but we can come up with a better way to identify tag later.
+    const thirdArg = primaryCallExp.arguments?.[2]
+    const tagDeclarator =
+      thirdArg ||
+      (createTagDeclarator(
+        tag || findUniqueName(ast, 'seg', 2)
+      ) as TagDeclarator)
+    const isTagExisting = !!thirdArg
+    if (!isTagExisting) {
+      primaryCallExp.arguments[2] = tagDeclarator
+    }
+    return { tagDeclarator, isTagExisting }
+  })()
+
+  if (err(maybeTag)) return maybeTag
+  const { tagDeclarator, isTagExisting } = maybeTag
   if ('value' in tagDeclarator) {
     // Now TypeScript knows tagDeclarator has a value property
     return {
@@ -1104,17 +1190,22 @@ export function deleteSegmentFromPipeExpression(
   dependentRanges.forEach((range) => {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
 
-    const callExp = getNodeFromPath<Node<CallExpression>>(
+    const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
       _modifiedAst,
       path,
-      'CallExpression',
+      ['CallExpression', 'CallExpressionKw'],
       true
     )
     if (err(callExp)) return callExp
 
-    const constraintInfo = getConstraintInfo(callExp.node, code, path).find(
-      ({ sourceRange }) => isOverlap(sourceRange, range)
-    )
+    const constraintInfo =
+      callExp.node.type === 'CallExpression'
+        ? getConstraintInfo(callExp.node, code, path).find(({ sourceRange }) =>
+            isOverlap(sourceRange, range)
+          )
+        : getConstraintInfoKw(callExp.node, code, path).find(
+            ({ sourceRange }) => isOverlap(sourceRange, range)
+          )
     if (!constraintInfo) return
 
     if (!constraintInfo.argPosition) return
@@ -1210,11 +1301,16 @@ export async function deleteFromSelection(
           if (node.type === 'VariableDeclaration') {
             const dec = node.declaration
             if (
-              dec.init.type === 'CallExpression' &&
-              (dec.init.callee.name === 'extrude' ||
-                dec.init.callee.name === 'revolve') &&
-              dec.init.arguments?.[1].type === 'Identifier' &&
-              dec.init.arguments?.[1].name === varDecName
+              (dec.init.type === 'CallExpression' &&
+                (dec.init.callee.name === 'extrude' ||
+                  dec.init.callee.name === 'revolve') &&
+                dec.init.arguments?.[1].type === 'Identifier' &&
+                dec.init.arguments?.[1].name === varDecName) ||
+              (dec.init.type === 'CallExpressionKw' &&
+                (dec.init.callee.name === 'extrude' ||
+                  dec.init.callee.name === 'revolve') &&
+                dec.init.unlabeled?.type === 'Identifier' &&
+                dec.init.unlabeled?.name === varDecName)
             ) {
               pathToNode = path
               extrudeNameToDelete = dec.id.name
@@ -1547,4 +1643,8 @@ export function createNodeFromExprSnippet(
   const node = program.program?.body[0]
   if (!node) return new Error('No node found')
   return node
+}
+
+export const createLabeledArg = (name: string, arg: Expr): LabeledArg => {
+  return { label: createIdentifier(name), arg, type: 'LabeledArg' }
 }

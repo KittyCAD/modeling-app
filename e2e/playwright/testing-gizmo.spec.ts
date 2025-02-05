@@ -3,9 +3,7 @@ import { getUtils } from './test-utils'
 import { uuidv4 } from 'lib/utils'
 import { TEST_CODE_GIZMO } from './storageStates'
 
-test.describe('Testing Gizmo', () => {
-  // TODO: fix this test on windows after the electron migration
-  test.skip(process.platform === 'win32', 'Skip on windows')
+test.describe('Testing Gizmo', { tag: ['@skipWin'] }, () => {
   const cases = [
     {
       testDescription: 'top view',
@@ -269,13 +267,13 @@ test.describe(`Testing gizmo, fixture-based`, () => {
                segAng(rectangleSegmentA001),
                -segLen(rectangleSegmentA001)
              ], %)
-          |> close(%)
+          |> close()
         const sketch001 = startSketchOn('XZ')
           |> circle({
                center: [818.33, 168.1],
                radius: 182.8
              }, %)
-          |> extrude(50, %)
+          |> extrude(length = 50)
       `
       )
     })

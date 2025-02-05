@@ -58,7 +58,6 @@ layout: manual
 * [`legAngY`](kcl/legAngY)
 * [`legLen`](kcl/legLen)
 * [`line`](kcl/line)
-* [`lineTo`](kcl/lineTo)
 * [`ln`](kcl/ln)
 * [`loft`](kcl/loft)
 * [`log`](kcl/log)

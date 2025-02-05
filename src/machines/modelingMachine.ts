@@ -1599,7 +1599,7 @@ export const modelingMachine = setup({
       }
     ),
     extrudeAstMod: fromPromise<
-      void,
+      unknown,
       ModelingCommandSchema['Extrude'] | undefined
     >(async ({ input }) => {
       if (!input) return Promise.reject('No input provided')

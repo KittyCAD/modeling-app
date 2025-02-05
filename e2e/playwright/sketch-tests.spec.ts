@@ -11,7 +11,7 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 
-test.describe('Sketch tests', () => {
+test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
     page,
     context,
@@ -49,11 +49,11 @@ test.describe('Sketch tests', () => {
   |> xLine(width * .5, %)
   |> yLine(height, %)
   |> xLine(-width * .5, %)
-  |> close(%)
+  |> close()
   |> hole(screwHole, %)
-  |> extrude(thickness, %)
+  |> extrude(length = thickness)
 
-    part002 = startSketchOn('-XZ')
+  part002 = startSketchOn('-XZ')
   ${startProfileAt3}
   |> xLine(width / 4, %)
   |> tangentialArcTo([width / 2, 0], %)
@@ -66,8 +66,8 @@ test.describe('Sketch tests', () => {
       }, %)
   |> yLine(-wireOffset, %)
   |> xLine(-width / 4, %)
-  |> close(%)
-  |> extrude(-height, %)
+  |> close()
+  |> extrude(length = -height)
     `
         )
       },
@@ -194,9 +194,9 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
           'persistCode',
           `sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
-      |> line([12.73, -0.09], %)
+      |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
-      |> close(%)`
+      |> close()`
         )
       })
 
@@ -234,9 +234,9 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       if (openPanes.includes('code')) {
         await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
-      |> line([12.73, -0.09], %)
+      |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
-      |> close(%)`)
+      |> close()`)
       } else {
         // Ensure we don't see the code.
         await expect(u.codeLocator).not.toBeVisible()
@@ -268,7 +268,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
 
       await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-      // drag startProfieAt handle
+      // drag startProfileAt handle
       await page.mouse.move(startPX[0], startPX[1])
       await page.mouse.down()
       await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
@@ -311,10 +311,10 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
       |> startProfileAt([6.44, -12.07], %)
-      |> line([14.72, 1.97], %)
+      |> line(end = [14.72, 1.97])
       |> tangentialArcTo([24.95, -5.38], %)
-      |> line([1.97, 2.06], %)
-      |> close(%)`)
+      |> line(end = [1.97, 2.06])
+      |> close()`)
     }
     test(
       'code pane open at start-handles',
@@ -453,10 +453,10 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -10.01], %)
-  |> line([12.73, -0.09], %)
+  |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
-  |> close(%)
-  |> extrude(5, %)`
+  |> close()
+  |> extrude(length = 5)`
       )
     })
 
@@ -539,10 +539,10 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([7.12, -12.68], %)
-    |> line([12.68, -1.09], %)
+    |> line(end = [12.68, -1.09])
     |> tangentialArcTo([24.89, 0.68], %)
-    |> close(%)
-    |> extrude(5, %)
+    |> close()
+    |> extrude(length = 5)
   `)
   })
 
@@ -556,9 +556,9 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
+  |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis = "X",}, %)`
       )
     })
@@ -607,7 +607,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
 
     await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-    // drag startProfieAt handle
+    // drag startProfileAt handle
     await page.mouse.move(startPX[0], startPX[1])
     await page.mouse.down()
     await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
@@ -641,15 +641,13 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([6.44, -12.07], %)
-  |> line([14.72, 1.97], %)
+  |> line(end = [14.72, 1.97])
   |> tangentialArcTo([24.95, -5.38], %)
-  |> line([1.97, 2.06], %)
-  |> close(%)
+  |> line(end = [1.97, 2.06])
+  |> close()
   |> revolve({ axis = "X" }, %)`)
   })
   test('Can add multiple sketches', async ({ page, homePage }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
 
     const viewportSize = { width: 1200, height: 500 }
@@ -760,8 +758,8 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
       )}], sketch001)
     |> xLine(${roundOff(scale * 139.19)}, %)
     |> yLine(-${roundOff(scale * 139.2)}, %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()`
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
@@ -855,19 +853,17 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     page,
     homePage,
   }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([-0.45, 0.87], %)
-    |> line([1.32, 0.38], %)
-    |> line([1.02, -1.32], %, $seg01)
-    |> line([-1.01, -0.77], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+    |> line(end = [1.32, 0.38])
+    |> line(end = [1.02, -1.32], tag = $seg01)
+    |> line(end = [-1.01, -0.77])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
   `
       )
     })
@@ -882,8 +878,8 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    // click "line([1.32, 0.38], %)"
-    await page.getByText(`line([1.32, 0.38], %)`).click()
+    // click "line(end = [1.32, 0.38])"
+    await page.getByText(`line(end = [1.32, 0.38])`).click()
     await page.waitForTimeout(100)
     await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
       { timeout: 10_000 }
@@ -921,12 +917,12 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([-0.45, 0.87], %)
-    |> line([1.32, 0.38], %)
-    |> line([1.02, -1.32], %, $seg01)
-    |> line([-1.01, -0.77], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude001 = extrude(5, sketch001)
+    |> line(end = [1.32, 0.38])
+    |> line(end = [1.02, -1.32], tag = $seg01)
+    |> line(end = [-1.01, -0.77])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude001 = extrude(sketch001, length = 5)
   `
       )
     })
@@ -942,8 +938,11 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
 
     await page.getByRole('button', { name: 'Start Sketch' }).click()
 
+    // Click the end face of extrude001
     await page.mouse.click(622, 355)
 
+    // The click should generate a new sketch starting on the end face of extrude001
+    // signified by the implicit 'END' tag for that solid.
     await page.waitForTimeout(800)
     await page.getByText(`END')`).click()
     await page.keyboard.press('End')
@@ -961,12 +960,12 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     await expect((await u.codeLocator.innerText()).replace(/\s/g, '')).toBe(
       `sketch001 = startSketchOn('XZ')
     |> startProfileAt([-0.45, 0.87], %)
-    |> line([1.32, 0.38], %)
-    |> line([1.02, -1.32], %, $seg01)
-    |> line([-1.01, -0.77], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude001 = extrude(5, sketch001)
+    |> line(end = [1.32, 0.38])
+    |> line(end = [1.02, -1.32], tag = $seg01)
+    |> line(end = [-1.01, -0.77])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude001 = extrude(sketch001, length = 5)
   sketch002 = startSketchOn(extrude001, 'END')
     |>
   `.replace(/\s/g, '')
@@ -1012,8 +1011,8 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
 
       await u.codeLocator.fill(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
+    |> line(end = [20, 0])
+    |> line(end = [0, 20])
     |> xLine(-20, %)
   `)
 
@@ -1051,7 +1050,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
       await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
       await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([11.8, 9.09], %)
-    |> line([3.39, -3.39], %)
+    |> line(end = [3.39, -3.39])
   `)
 
       await page.addInitScript(async () => {
@@ -1059,7 +1058,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
           'persistCode',
           `sketch001 = startSketchOn('XZ')
     |> startProfileAt([11.8, 9.09], %)
-    |> line([3.39, -3.39], %)
+    |> line(end = [3.39, -3.39])
   `
         )
       })
@@ -1092,7 +1091,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
           |> angledLineOfYLength({ angle = 60, length = lugHeadLength }, %)
           |> xLineTo(0 + .001, %)
           |> yLineTo(0, %)
-          |> close(%)
+          |> close()
           |> revolve({ axis = "Y" }, %)
 
         return lugSketch
@@ -1162,30 +1161,30 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
      -railTop / 2,
      railClampable + railBaseLength
    ], %)
-    |> lineTo([
+    |> line(endAbsolute = [
      railTop / 2,
      railClampable + railBaseLength
-   ], %)
-    |> lineTo([
+   ])
+    |> line(endAbsolute = [
      railWideWidth / 2,
      railClampable / 2 + railBaseLength
-   ], %, $seg01)
-    |> lineTo([railTop / 2, railBaseLength], %)
-    |> lineTo([railBaseWidth / 2, railBaseLength], %)
-    |> lineTo([railBaseWidth / 2, 0], %)
-    |> lineTo([-railBaseWidth / 2, 0], %)
-    |> lineTo([-railBaseWidth / 2, railBaseLength], %)
-    |> lineTo([-railTop / 2, railBaseLength], %)
-    |> lineTo([
+   ], $seg01)
+    |> line(endAbsolute = [railTop / 2, railBaseLength])
+    |> line(endAbsolute = [railBaseWidth / 2, railBaseLength])
+    |> line(endAbsolute = [railBaseWidth / 2, 0])
+    |> line(endAbsolute = [-railBaseWidth / 2, 0])
+    |> line(endAbsolute = [-railBaseWidth / 2, railBaseLength])
+    |> line(endAbsolute = [-railTop / 2, railBaseLength])
+    |> line(endAbsolute = [
      -railWideWidth / 2,
      railClampable / 2 + railBaseLength
-   ], %)
-    |> lineTo([
+   ])
+    |> line(endAbsolute = [
      -railTop / 2,
      railClampable + railBaseLength
-   ], %)
-    |> close(%)
-    |> extrude(in2mm(2), %)`
+   ])
+    |> close()
+    |> extrude(length = in2mm(2))`
       )
     })
 
@@ -1272,7 +1271,7 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
       })
 
       await test.step('Make typo and check the segments have Disappeared and there is a syntax error', async () => {
-        await editor.replaceCode('lineTo([pro', 'badBadBadFn([pro')
+        await editor.replaceCode('line(endAbsolute = [pro', 'badBadBadFn([pro')
         await editor.expectState({
           activeLines: [],
           diagnostics: ['memoryitemkey`badBadBadFn`isnotdefined'],
@@ -1283,7 +1282,7 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
       })
 
       await test.step('', async () => {
-        await editor.replaceCode('badBadBadFn([pro', 'lineTo([pro')
+        await editor.replaceCode('badBadBadFn([pro', 'line(endAbsolute = [pro')
         await editor.expectState({
           activeLines: [],
           diagnostics: [],
@@ -2356,7 +2355,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([3.14, 3.14], %)
+  |> line(end = [3.14, 3.14])
   |> arcTo({
   end = [4, 2],
   interior = [1, 2]
@@ -2438,7 +2437,7 @@ test.describe('Redirecting to home page and back to the original file should cle
         'persistCode',
         ` sketch001 = startSketchOn('XZ')
 |> startProfileAt([256.85, 14.41], %)
-|> lineTo([0, 211.07], %)
+|> line(endAbsolute = [0, 211.07])
 `
       )
     })

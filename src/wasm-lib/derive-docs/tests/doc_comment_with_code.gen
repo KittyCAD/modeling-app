@@ -171,6 +171,7 @@ impl crate::docs::StdLibFn for MyFunc {
             required: false,
             label_required: true,
             description: String::new().to_string(),
+            include_in_snippet: false,
         }]
     }
 
@@ -186,6 +187,7 @@ impl crate::docs::StdLibFn for MyFunc {
             required: true,
             label_required: true,
             description: String::new(),
+            include_in_snippet: true,
         })
     }
 

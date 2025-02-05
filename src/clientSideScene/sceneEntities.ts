@@ -56,6 +56,7 @@ import {
   resultIsOk,
   SourceRange,
   topLevelRange,
+  CallExpressionKw,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -85,6 +86,8 @@ import {
   createArrayExpression,
   createCallExpressionStdLib,
   createIdentifier,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
   createLiteral,
   createNodeFromExprSnippet,
   createObjectExpression,
@@ -686,10 +689,10 @@ export class SceneEntities {
         )
 
         let seg: Group
-        const _node1 = getNodeFromPath<Node<CallExpression>>(
+        const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
           maybeModdedAst,
           segPathToNode,
-          'CallExpression'
+          ['CallExpression', 'CallExpressionKw']
         )
         if (err(_node1)) return
         const callExpName = _node1.node?.callee?.name
@@ -900,27 +903,27 @@ export class SceneEntities {
         // Snapping logic for the profile start handle
         if (intersectsProfileStart) {
           const lastSegment = sketch.paths.slice(-1)[0]
+          const originCoords = createArrayExpression([
+            createCallExpressionStdLib('profileStartX', [
+              createPipeSubstitution(),
+            ]),
+            createCallExpressionStdLib('profileStartY', [
+              createPipeSubstitution(),
+            ]),
+          ])
           modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             pathToNode: sketchEntryNodePath,
             expressions: [
-              createCallExpressionStdLib(
-                lastSegment.type === 'TangentialArcTo'
-                  ? 'tangentialArcTo'
-                  : 'lineTo',
-                [
-                  createArrayExpression([
-                    createCallExpressionStdLib('profileStartX', [
-                      createPipeSubstitution(),
-                    ]),
-                    createCallExpressionStdLib('profileStartY', [
-                      createPipeSubstitution(),
-                    ]),
+              lastSegment.type === 'TangentialArcTo'
+                ? createCallExpressionStdLib('tangentialArcTo', [
+                    originCoords,
+                    createPipeSubstitution(),
+                  ])
+                : createCallExpressionStdLibKw('line', null, [
+                    createLabeledArg('endAbsolute', originCoords),
                   ]),
-                  createPipeSubstitution(),
-                ]
-              ),
             ],
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
@@ -2015,15 +2018,16 @@ export class SceneEntities {
       Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
       Number(sketchNodePaths[0][1][0])
 
-    const _node = getNodeFromPath<Node<CallExpression>>(
+    const _node = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
       modifiedAst,
       draftInfo ? nodePathWithCorrectedIndexForTruncatedAst : pathToNode,
-      'CallExpression'
+      ['CallExpression', 'CallExpressionKw']
     )
     if (trap(_node)) return
     const node = _node.node
 
-    if (node.type !== 'CallExpression') return
+    if (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw')
+      return
 
     let modded:
       | {
@@ -2333,11 +2337,12 @@ export class SceneEntities {
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           const updatedAst = pResult.program
-          const _node = getNodeFromPath<Node<CallExpression>>(
-            updatedAst,
-            parent.userData.pathToNode,
-            'CallExpression'
-          )
+          const _node = getNodeFromPath<
+            Node<CallExpression | CallExpressionKw>
+          >(updatedAst, parent.userData.pathToNode, [
+            'CallExpressionKw',
+            'CallExpression',
+          ])
           if (trap(_node, { suppress: true })) return
           const node = _node.node
           editorManager.setHighlightRange([topLevelRange(node.start, node.end)])
@@ -2502,9 +2507,11 @@ function prepareTruncatedMemoryAndAst(
     // truncatedAst needs to setup with another segment at the end
     let newSegment
     if (draftSegment === 'line') {
-      newSegment = createCallExpressionStdLib('line', [
-        createArrayExpression([createLiteral(0), createLiteral(0)]),
-        createPipeSubstitution(),
+      newSegment = createCallExpressionStdLibKw('line', null, [
+        createLabeledArg(
+          'end',
+          createArrayExpression([createLiteral(0), createLiteral(0)])
+        ),
       ])
     } else {
       newSegment = createCallExpressionStdLib('tangentialArcTo', [
