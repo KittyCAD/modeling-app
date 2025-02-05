@@ -63,6 +63,7 @@ unsafe impl Sync for EngineConnection {}
 
 impl EngineConnection {
     pub async fn new(manager: EngineCommandManager) -> Result<EngineConnection, JsValue> {
+        #[allow(clippy::arc_with_non_send_sync)]
         Ok(EngineConnection {
             manager: Arc::new(manager),
             batch: Arc::new(Mutex::new(Vec::new())),
