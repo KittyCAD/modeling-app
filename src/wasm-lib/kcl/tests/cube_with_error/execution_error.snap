@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Error from executing cube_with_error.kcl
-snapshot_kind: text
 ---
 KCL UndefinedValue error
 
