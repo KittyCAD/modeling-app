@@ -7,6 +7,7 @@ import { trap } from 'lib/trap'
 import { codeToIdSelections } from 'lib/selections'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
 import { defaultSourceRange, SourceRange, topLevelRange } from 'lang/wasm'
+import { isArray } from 'lib/utils'
 
 export function AstExplorer() {
   const { context } = useModelingContext()
@@ -166,12 +167,12 @@ function DisplayObj({
             {Object.entries(obj).map(([key, value]) => {
               if (filterKeys.includes(key)) {
                 return null
-              } else if (Array.isArray(value)) {
+              } else if (isArray(value)) {
                 return (
                   <li key={key}>
                     {`${key}: [`}
                     <DisplayBody
-                      body={value}
+                      body={value as any}
                       filterKeys={filterKeys}
                       node={node}
                     />
