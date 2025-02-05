@@ -1142,7 +1142,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     match result {
         KclValue::Sketch { value: ref mut sketch } => {
             for (_, tag) in sketch.tags.iter() {
-                exec_state.mut_memory().update_tag(&tag.value, tag.clone());
+                exec_state
+                    .mut_memory()
+                    .insert_or_update(tag.value.clone(), KclValue::TagIdentifier(Box::new(tag.clone())));
             }
         }
         KclValue::Solid { ref mut value } => {
@@ -1180,7 +1182,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         }
                     };
 
-                    exec_state.mut_memory().update_tag(&tag.name, tag_id.clone());
+                    exec_state
+                        .mut_memory()
+                        .insert_or_update(tag.name.clone(), KclValue::TagIdentifier(Box::new(tag_id.clone())));
 
                     // update the sketch tags.
                     value.sketch.tags.insert(tag.name.clone(), tag_id);
@@ -1188,7 +1192,31 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
 
             // Find the stale sketch in memory and update it.
-            exec_state.mut_memory().update_sketch_tags(&value.sketch);
+            if !value.sketch.tags.is_empty() {
+                let updates: Vec<_> = exec_state
+                    .memory()
+                    .find_all_in_current_env(|v| match v {
+                        KclValue::Sketch { value: sk } => sk.artifact_id == value.sketch.artifact_id,
+                        _ => false,
+                    })
+                    .map(|(k, v)| {
+                        let mut sketch = v.as_sketch().unwrap().clone();
+                        for (tag_name, tag_id) in value.sketch.tags.iter() {
+                            sketch.tags.insert(tag_name.clone(), tag_id.clone());
+                        }
+                        (
+                            k.clone(),
+                            KclValue::Sketch {
+                                value: Box::new(sketch),
+                            },
+                        )
+                    })
+                    .collect();
+
+                updates
+                    .into_iter()
+                    .for_each(|(k, v)| exec_state.mut_memory().insert_or_update(k, v))
+            }
         }
         _ => {}
     }

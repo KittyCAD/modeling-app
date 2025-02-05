@@ -418,6 +418,14 @@ impl KclValue {
         }
     }
 
+    pub fn as_sketch(&self) -> Option<&Sketch> {
+        if let KclValue::Sketch { value } = self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
     pub fn as_f64(&self) -> Option<f64> {
         if let KclValue::Number { value, meta: _ } = &self {
             Some(*value)

@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{KclValue, Metadata, Sketch, TagIdentifier},
+    execution::{KclValue, Metadata},
     source_range::SourceRange,
 };
 use env::Environment;
@@ -134,8 +134,12 @@ impl ProgramMemory {
         Ok(())
     }
 
+    pub fn insert_or_update(&mut self, key: String, value: KclValue) {
+        self.environments[self.current_env.index()].insert_or_update(key.to_owned(), value);
+    }
+
     #[cfg(test)]
-    fn update(&mut self, key: &str, value: KclValue, env: Option<usize>) {
+    fn update_with_env(&mut self, key: &str, value: KclValue, env: Option<usize>) {
         let env = env.unwrap_or(self.current_env.index());
         self.environments[env].insert_or_update(key.to_owned(), value);
     }
@@ -167,21 +171,11 @@ impl ProgramMemory {
         }))
     }
 
-    pub fn update_sketch_tags(&mut self, sg: &Sketch) {
-        self.environments[self.current_env.index()].update_sketch_tags(sg);
-    }
-
-    pub fn update_tag(&mut self, tag: &str, value: TagIdentifier) {
-        debug_assert!(
-            self.environments[self.current_env.index()]
-                .get(tag, SnapshotRef::none())
-                .map(|val| matches!(val, KclValue::TagIdentifier(_)))
-                .unwrap_or(true),
-            "Attempt to update tag, but value to update is not in fact a tag. Key: `{tag}`",
-        );
-
-        self.environments[self.current_env.index()]
-            .insert_or_update(tag.to_owned(), KclValue::TagIdentifier(Box::new(value)));
+    pub fn find_all_in_current_env<'a>(
+        &'a self,
+        f: impl Fn(&KclValue) -> bool + 'a,
+    ) -> impl Iterator<Item = (&'a String, &'a KclValue)> {
+        self.environments[self.current_env.index()].find_all_by(f)
     }
 
     pub fn walk_call_stack(&self) -> impl Iterator<Item = &KclValue> {
@@ -449,18 +443,11 @@ mod env {
             Box::new(
                 self.bindings
                     .iter()
-                    .filter_map(move |(k, v)| {
-                        if self.snapshot_contains_key(k, snapshot) {
-                            None
-                        } else {
-                            Some(v)
-                        }
-                    })
+                    .filter_map(move |(k, v)| (!self.snapshot_contains_key(k, snapshot)).then_some(v))
                     .chain(self.snapshots.iter().flat_map(|s| {
-                        s.data.values().filter_map(|v| match v {
-                            KclValue::Tombstone { .. } => None,
-                            _ => Some(v),
-                        })
+                        s.data
+                            .values()
+                            .filter_map(|v| (!matches!(v, KclValue::Tombstone { .. })).then_some(v))
                     })),
             )
         }
@@ -499,28 +486,11 @@ mod env {
             self.bindings.contains_key(key)
         }
 
-        pub(super) fn update_sketch_tags(&mut self, sg: &Sketch) {
-            if sg.tags.is_empty() {
-                return;
-            }
-
-            let mut updates = Vec::new();
-
-            for (key, val) in self.bindings.iter() {
-                let KclValue::Sketch { value } = val else { continue };
-
-                if value.artifact_id == sg.artifact_id {
-                    let mut value = value.clone();
-                    for (tag_name, tag_id) in sg.tags.iter() {
-                        value.tags.insert(tag_name.clone(), tag_id.clone());
-                    }
-                    updates.push((key.clone(), KclValue::Sketch { value }));
-                }
-            }
-
-            for (key, value) in updates {
-                self.insert_or_update(key, value);
-            }
+        pub(super) fn find_all_by<'a>(
+            &'a self,
+            f: impl Fn(&KclValue) -> bool + 'a,
+        ) -> impl Iterator<Item = (&'a String, &'a KclValue)> {
+            self.bindings.iter().filter(move |(_, v)| f(v))
         }
     }
 
@@ -814,8 +784,8 @@ mod test {
         let sn3 = mem.snapshot();
         mem.add("b", val(4), sr()).unwrap();
         let sn4 = mem.snapshot();
-        mem.update("b", val(6), None);
-        mem.update("b", val(7), Some(callee_env));
+        mem.update_with_env("b", val(6), None);
+        mem.update_with_env("b", val(7), Some(callee_env));
 
         assert_get(mem, "b", 6);
         assert_get_from(mem, "b", 3, sn3);
