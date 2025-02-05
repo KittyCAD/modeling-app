@@ -114,23 +114,20 @@ jobs:
     - name: check for changes
       id: git-check
       run: |
-          git add e2e/playwright/snapshot-tests.spec.ts-snapshots
-          if git status | grep -q "Changes to be committed"
-          then echo "modified=true" >> $GITHUB_OUTPUT
-          else echo "modified=false" >> $GITHUB_OUTPUT
-          fi
+          changes=$(git diff --name-only e2e/playwright/snapshot-tests.spec.ts-snapshots)
+          echo "changes=$changes"
 
     # only upload artifacts if there's actually changes
     - name: Upload changes, if any
-      if: steps.git-check.outputs.modified == 'true'
+      if: steps.git-check.outputs.changes != ''
       uses: actions/upload-artifact@v4
       with:
         name: playwright-snapshots-${{ runner.os }}-${{ github.sha }}
-        path: e2e/playwright/snapshot-tests.spec.ts-snapshots
+        path: ${{ steps.git-check.outputs.changes }}
 
     - name: Upload report, if any
       uses: actions/upload-artifact@v4
-      if: steps.git-check.outputs.modified == 'true'
+      if: steps.git-check.outputs.changes != ''
       with:
         name: playwright-report-${{ runner.os }}-${{ github.sha }}
         path: playwright-report/
@@ -138,7 +135,7 @@ jobs:
         retention-days: 30
 
     - name: Fail the run if we have snapshot updates
-      if: steps.git-check.outputs.modified == 'true'
+      if: steps.git-check.outputs.changes != ''
       run: exit 1
 
     # TODO: check if we could comment on the PR as well
