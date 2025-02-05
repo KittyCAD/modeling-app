@@ -174,7 +174,7 @@ jobs:
       if: steps.git-check.outputs.modified == 'true'
       shell: bash
       run: |
-        git add .
+        git add e2e/playwright/snapshot-tests.spec.ts-snapshots
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
