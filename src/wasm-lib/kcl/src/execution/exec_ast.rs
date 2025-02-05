@@ -19,7 +19,7 @@ use crate::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
         CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector, ItemVisibility,
         LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef, NonCodeValue, ObjectExpression,
-        PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
+        PipeExpression, Program, TagDeclarator, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{
@@ -114,14 +114,14 @@ impl ExecutorContext {
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
-                            let (_, env_ref, module_exports) = self
-                                .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
+                            let (env_ref, module_exports) = self
+                                .exec_module_for_items(module_id, exec_state, ExecutionKind::Isolated, source_range)
                                 .await?;
                             for import_item in items {
                                 // Extract the item from the module.
                                 let item = exec_state
                                     .memory()
-                                    .get_from(&import_item.name.name, env_ref.unwrap(), import_item.into())
+                                    .get_from(&import_item.name.name, env_ref, import_item.into())
                                     .map_err(|_err| {
                                         KclError::UndefinedValue(KclErrorDetails {
                                             message: format!("{} is not defined in module", import_item.name.name),
@@ -156,13 +156,13 @@ impl ExecutorContext {
                             }
                         }
                         ImportSelector::Glob(_) => {
-                            let (_, env_ref, module_exports) = self
-                                .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
+                            let (env_ref, module_exports) = self
+                                .exec_module_for_items(module_id, exec_state, ExecutionKind::Isolated, source_range)
                                 .await?;
                             for name in module_exports.iter() {
                                 let item = exec_state
                                     .memory()
-                                    .get_from(name, env_ref.unwrap(), source_range)
+                                    .get_from(name, env_ref, source_range)
                                     .map_err(|_err| {
                                         KclError::Internal(KclErrorDetails {
                                             message: format!("{} is not defined in module (but was exported?)", name),
@@ -295,7 +295,8 @@ impl ExecutorContext {
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 // TODO handle parsing errors properly
                 let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
-                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed));
+                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed, None));
+
                 Ok(id)
             }
             ImportPath::Foreign { .. } => {
@@ -318,82 +319,116 @@ impl ExecutorContext {
                 let id = exec_state.next_module_id();
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err().unwrap();
-                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed));
+                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }
         }
     }
 
-    async fn exec_module(
+    async fn exec_module_for_items(
         &self,
         module_id: ModuleId,
         exec_state: &mut ExecState,
         exec_kind: ExecutionKind,
         source_range: SourceRange,
-    ) -> Result<(Option<KclValue>, Option<EnvironmentRef>, Vec<String>), KclError> {
-        let old_units = exec_state.length_unit();
-        // TODO It sucks that we have to clone the whole module AST here
-        let info = exec_state.global.module_infos[&module_id].clone();
+    ) -> Result<(EnvironmentRef, Vec<String>), KclError> {
+        let path = exec_state.global.module_infos[&module_id].path.clone();
+        let mut repr = exec_state.global.module_infos[&module_id].take_repr();
+        // DON'T EARLY RETURN! We need to restore the module repr
 
-        match &info.repr {
-            ModuleRepr::Root => Err(KclError::ImportCycle(KclErrorDetails {
-                message: format!(
-                    "circular import of modules is not allowed: {} -> {}",
-                    exec_state
-                        .global
-                        .mod_loader
-                        .import_stack
-                        .iter()
-                        .map(|p| p.as_path().to_string_lossy())
-                        .collect::<Vec<_>>()
-                        .join(" -> "),
-                    info.path
-                ),
-                source_ranges: vec![source_range],
+        let result = match &mut repr {
+            ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
+            ModuleRepr::Kcl(_, Some((env_ref, items))) => Ok((*env_ref, items.clone())),
+            ModuleRepr::Kcl(program, cache) => self
+                .exec_module_from_ast(program, &path, exec_state, exec_kind, source_range)
+                .await
+                .map(|(_, er, items)| {
+                    *cache = Some((er, items.clone()));
+                    (er, items)
+                }),
+            ModuleRepr::Foreign(geom) => Err(KclError::Semantic(KclErrorDetails {
+                message: "Cannot import items from foreign modules".to_owned(),
+                source_ranges: vec![geom.source_range],
             })),
-            ModuleRepr::Kcl(program) => {
-                let mut local_state = ModuleState::new(&self.settings);
-                exec_state.global.mod_loader.enter_module(&info.path);
-                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-                exec_state.mut_memory().push_new_root_env();
-                let original_execution = self.engine.replace_execution_kind(exec_kind);
+            ModuleRepr::Dummy => unreachable!(),
+        };
 
-                let result = self
-                    .exec_program(program, exec_state, crate::execution::BodyType::Root)
-                    .await;
+        exec_state.global.module_infos[&module_id].restore_repr(repr);
+        result
+    }
 
-                let new_units = exec_state.length_unit();
-                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-                let env_ref = exec_state.mut_memory().pop_env();
-                exec_state.global.mod_loader.leave_module(&info.path);
-                if !exec_kind.is_isolated() && new_units != old_units {
-                    self.engine.set_units(old_units.into(), Default::default()).await?;
-                }
-                self.engine.replace_execution_kind(original_execution);
+    async fn exec_module_for_result(
+        &self,
+        module_id: ModuleId,
+        exec_state: &mut ExecState,
+        exec_kind: ExecutionKind,
+        source_range: SourceRange,
+    ) -> Result<Option<KclValue>, KclError> {
+        let path = exec_state.global.module_infos[&module_id].path.clone();
+        let repr = exec_state.global.module_infos[&module_id].take_repr();
+        // DON'T EARLY RETURN! We need to restore the module repr
 
-                let result = result.map_err(|err| {
-                    if let KclError::ImportCycle(_) = err {
-                        // It was an import cycle.  Keep the original message.
-                        err.override_source_ranges(vec![source_range])
-                    } else {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!(
-                                "Error loading imported file. Open it to view more details. {}: {}",
-                                info.path,
-                                err.message()
-                            ),
-                            source_ranges: vec![source_range],
-                        })
-                    }
-                })?;
+        let result = match &repr {
+            ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
+            ModuleRepr::Kcl(program, _) => self
+                .exec_module_from_ast(program, &path, exec_state, exec_kind, source_range)
+                .await
+                .map(|(val, _, _)| val),
+            ModuleRepr::Foreign(geom) => super::import::send_to_engine(geom.clone(), self)
+                .await
+                .map(|geom| Some(KclValue::ImportedGeometry(geom))),
+            ModuleRepr::Dummy => unreachable!(),
+        };
 
-                Ok((result, Some(env_ref), local_state.module_exports))
-            }
-            ModuleRepr::Foreign(geom) => {
-                let geom = super::import::send_to_engine(geom.clone(), self).await?;
-                Ok((Some(KclValue::ImportedGeometry(geom)), None, Vec::new()))
-            }
+        exec_state.global.module_infos[&module_id].restore_repr(repr);
+        result
+    }
+
+    async fn exec_module_from_ast(
+        &self,
+        program: &Node<Program>,
+        path: &ModulePath,
+        exec_state: &mut ExecState,
+        exec_kind: ExecutionKind,
+        source_range: SourceRange,
+    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
+        let old_units = exec_state.length_unit();
+        let mut local_state = ModuleState::new(&self.settings);
+        exec_state.global.mod_loader.enter_module(path);
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        exec_state.mut_memory().push_new_root_env();
+        let original_execution = self.engine.replace_execution_kind(exec_kind);
+
+        let result = self
+            .exec_program(program, exec_state, crate::execution::BodyType::Root)
+            .await;
+
+        let new_units = exec_state.length_unit();
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        let env_ref = exec_state.mut_memory().pop_env();
+        exec_state.global.mod_loader.leave_module(path);
+        if !exec_kind.is_isolated() && new_units != old_units {
+            self.engine.set_units(old_units.into(), Default::default()).await?;
         }
+        self.engine.replace_execution_kind(original_execution);
+
+        result
+            .map_err(|err| {
+                if let KclError::ImportCycle(_) = err {
+                    // It was an import cycle.  Keep the original message.
+                    err.override_source_ranges(vec![source_range])
+                } else {
+                    KclError::Semantic(KclErrorDetails {
+                        message: format!(
+                            "Error loading imported file. Open it to view more details. {}: {}",
+                            path,
+                            err.message()
+                        ),
+                        source_ranges: vec![source_range],
+                    })
+                }
+            })
+            .map(|result| (result, env_ref, local_state.module_exports))
     }
 
     #[async_recursion]
@@ -411,23 +446,22 @@ impl ExecutorContext {
             Expr::Identifier(identifier) => {
                 let value = exec_state.memory().get(&identifier.name, identifier.into())?.clone();
                 if let KclValue::Module { value: module_id, meta } = value {
-                    let (result, _, _) = self
-                        .exec_module(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
-                        .await?;
-                    result.unwrap_or_else(|| {
-                        // The module didn't have a return value.  Currently,
-                        // the only way to have a return value is with the final
-                        // statement being an expression statement.
-                        //
-                        // TODO: Make a warning when we support them in the
-                        // execution phase.
-                        let mut new_meta = vec![metadata.to_owned()];
-                        new_meta.extend(meta);
-                        KclValue::KclNone {
-                            value: Default::default(),
-                            meta: new_meta,
-                        }
-                    })
+                    self.exec_module_for_result(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
+                        .await?
+                        .unwrap_or_else(|| {
+                            // The module didn't have a return value.  Currently,
+                            // the only way to have a return value is with the final
+                            // statement being an expression statement.
+                            //
+                            // TODO: Make a warning when we support them in the
+                            // execution phase.
+                            let mut new_meta = vec![metadata.to_owned()];
+                            new_meta.extend(meta);
+                            KclValue::KclNone {
+                                value: Default::default(),
+                                meta: new_meta,
+                            }
+                        })
                 } else {
                     value
                 }

@@ -146,6 +146,23 @@ impl ExecState {
     pub fn angle_unit(&self) -> UnitAngle {
         self.mod_local.settings.default_angle_units
     }
+
+    pub(super) fn circular_import_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
+        KclError::ImportCycle(KclErrorDetails {
+            message: format!(
+                "circular import of modules is not allowed: {} -> {}",
+                self.global
+                    .mod_loader
+                    .import_stack
+                    .iter()
+                    .map(|p| p.as_path().to_string_lossy())
+                    .collect::<Vec<_>>()
+                    .join(" -> "),
+                path,
+            ),
+            source_ranges: vec![source_range],
+        })
+    }
 }
 
 impl GlobalState {
