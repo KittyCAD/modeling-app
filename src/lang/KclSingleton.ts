@@ -73,14 +73,14 @@ export class KclManager {
 
   engineCommandManager: EngineCommandManager
 
-  private _isExecutingCallback: (arg: boolean) => void = () => { }
-  private _astCallBack: (arg: Node<Program>) => void = () => { }
-  private _programMemoryCallBack: (arg: ProgramMemory) => void = () => { }
-  private _logsCallBack: (arg: string[]) => void = () => { }
-  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => { }
-  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => { }
-  private _wasmInitFailedCallback: (arg: boolean) => void = () => { }
-  private _executeCallback: () => void = () => { }
+  private _isExecutingCallback: (arg: boolean) => void = () => {}
+  private _astCallBack: (arg: Node<Program>) => void = () => {}
+  private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
+  private _logsCallBack: (arg: string[]) => void = () => {}
+  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
+  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
+  private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
+  private _executeCallback: () => void = () => {}
 
   get ast() {
     return this._ast
@@ -730,8 +730,8 @@ function setSelectionFilter(
 ) {
   const { engineEvents } = selectionsToRestore
     ? handleSelectionBatch({
-      selections: selectionsToRestore,
-    })
+        selections: selectionsToRestore,
+      })
     : { engineEvents: undefined }
   if (!selectionsToRestore || !engineEvents) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
