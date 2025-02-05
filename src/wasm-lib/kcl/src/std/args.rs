@@ -1193,16 +1193,6 @@ impl<'a> FromKclValue<'a> for super::shapes::CircleData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::shapes::CircleThreePointData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, p1);
-        let_field_of!(obj, p2);
-        let_field_of!(obj, p3);
-        Some(Self { p1, p2, p3 })
-    }
-}
-
 impl<'a> FromKclValue<'a> for crate::execution::Point3d {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 1: object with x/y/z fields
