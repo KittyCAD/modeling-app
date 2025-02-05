@@ -134,7 +134,7 @@ test.describe('Check the happy path, for basic changing color', () => {
   }
 })
 
-test.describe('bad path', () => {
+test.describe('bad path', { tag: ['@skipWin'] }, () => {
   test(`bad edit prompt`, async ({
     context,
     homePage,

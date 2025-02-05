@@ -183,6 +183,6 @@ impl FileSystem for FileManager {
             })
         })?;
 
-        Ok(files.into_iter().map(|s| std::path::PathBuf::from(s)).collect())
+        Ok(files.into_iter().map(std::path::PathBuf::from).collect())
     }
 }
