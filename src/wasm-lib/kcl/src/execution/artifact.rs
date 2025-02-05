@@ -12,6 +12,7 @@ use serde::{ser::SerializeSeq, Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    errors::KclErrorDetails,
     parsing::ast::types::{Node, Program},
     KclError, SourceRange,
 };
@@ -601,9 +602,12 @@ fn artifacts_to_update(
         }
         ModelingCmd::EnableSketchMode(_) => {
             let current_plane_id = current_plane_id.ok_or_else(|| {
-                KclError::internal(format!(
-                    "Expected a current plane ID when processing EnableSketchMode command, but we have none: {id:?}"
-                ))
+                KclError::Internal(KclErrorDetails {
+                    message: format!(
+                        "Expected a current plane ID when processing EnableSketchMode command, but we have none: {id:?}"
+                    ),
+                    source_ranges: vec![range],
+                })
             })?;
             let existing_plane = artifacts.get(&ArtifactId::new(current_plane_id));
             match existing_plane {
@@ -643,9 +647,12 @@ fn artifacts_to_update(
         ModelingCmd::StartPath(_) => {
             let mut return_arr = Vec::new();
             let current_plane_id = current_plane_id.ok_or_else(|| {
-                KclError::internal(format!(
-                    "Expected a current plane ID when processing StartPath command, but we have none: {id:?}"
-                ))
+                KclError::Internal(KclErrorDetails {
+                    message: format!(
+                        "Expected a current plane ID when processing StartPath command, but we have none: {id:?}"
+                    ),
+                    source_ranges: vec![range],
+                })
             })?;
             return_arr.push(Artifact::Path(Path {
                 id,
@@ -748,9 +755,10 @@ fn artifacts_to_update(
                 // TODO: Using the first one.  Make sure to revisit this
                 // choice, don't think it matters for now.
                 path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
-                    KclError::internal(format!(
-                        "Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"
-                    ))
+                    KclError::Internal(KclErrorDetails {
+                        message: format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
+                        source_ranges: vec![range],
+                    })
                 })?),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
@@ -789,7 +797,14 @@ fn artifacts_to_update(
                     continue;
                 };
                 last_path = Some(path);
-                let path_sweep_id = path.sweep_id.expect("Expected sweep_id to be Some");
+                let path_sweep_id = path.sweep_id.ok_or_else(|| {
+                    KclError::Internal(KclErrorDetails {
+                        message:format!(
+                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                        ),
+                        source_ranges: vec![range],
+                    })
+                })?;
                 let extra_artifact = _exec_artifacts.values().find_map(|a| {
                     if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
                         if *id == face_id.0 {
@@ -852,7 +867,14 @@ fn artifacts_to_update(
                         continue;
                     };
                     let cap = face.clone().cap;
-                    let path_sweep_id = path.sweep_id.expect("Expected sweep_id to be Some");
+                    let path_sweep_id = path.sweep_id.ok_or_else(|| {
+                        KclError::Internal(KclErrorDetails {
+                            message:format!(
+                                "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                            ),
+                            source_ranges: vec![range],
+                        })
+                    })?;
                     let extra_artifact = _exec_artifacts.values().find(|a| {
                         if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
                             *id == face_id.0
@@ -920,17 +942,23 @@ fn artifacts_to_update(
             let response_edge_id = match response {
                 OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(r) => {
                     let Some(edge_id) = r.edge else {
-                        return Err(KclError::internal(format!(
-                            "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: id={id:?}, {response:?}"
-                        )));
+                        return Err(KclError::Internal(KclErrorDetails {
+                            message:format!(
+                                "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: id={id:?}, {response:?}"
+                            ),
+                            source_ranges: vec![range],
+                        }));
                     };
                     edge_id.into()
                 }
                 OkModelingCmdResponse::Solid3dGetOppositeEdge(r) => r.edge.into(),
                 _ => {
-                    return Err(KclError::internal(format!(
-                        "Expected Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge response, but got: id={id:?}, {response:?}"
-                    )));
+                    return Err(KclError::Internal(KclErrorDetails {
+                        message:format!(
+                            "Expected Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge response, but got: id={id:?}, {response:?}"
+                        ),
+                        source_ranges: vec![range],
+                    }));
                 }
             };
 
