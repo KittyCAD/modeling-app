@@ -165,7 +165,7 @@ jobs:
       shell: bash
       id: git-check
       run: |
-          git add .
+          git add e2e/playwright/snapshot-tests.spec.ts-snapshots
           if git status | grep -q "Changes to be committed"
           then echo "modified=true" >> $GITHUB_OUTPUT
           else echo "modified=false" >> $GITHUB_OUTPUT
