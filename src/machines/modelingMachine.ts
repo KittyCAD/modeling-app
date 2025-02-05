@@ -1458,6 +1458,7 @@ export const modelingMachine = setup({
       const isEditing =
         nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number'
       let ast = structuredClone(kclManager.ast)
+      let extrudeName: string | undefined = undefined
 
       // If this is an edit flow, first we're going to remove the old extrusion
       if (isEditing) {
