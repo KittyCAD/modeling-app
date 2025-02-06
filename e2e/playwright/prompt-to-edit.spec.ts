@@ -36,7 +36,7 @@ extrude003 = extrude(sketch003, length = 20)
 `
 
 test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
-  test('Check the happy path, for basic changing color', () => {
+  test.describe('Check the happy path, for basic changing color', () => {
     const cases = [
       {
         desc: 'User accepts change',
@@ -137,58 +137,56 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     }
   })
 
-  test('bad path', { tag: ['@skipWin'] }, () => {
-    test(`bad edit prompt`, async ({
-      context,
-      homePage,
-      cmdBar,
-      editor,
-      toolbar,
-      page,
-      scene,
-    }) => {
-      await context.addInitScript((file) => {
-        localStorage.setItem('persistCode', file)
-      }, file)
-      await homePage.goToModelingScene()
+  test(`bad edit prompt`, async ({
+    context,
+    homePage,
+    cmdBar,
+    editor,
+    toolbar,
+    page,
+    scene,
+  }) => {
+    await context.addInitScript((file) => {
+      localStorage.setItem('persistCode', file)
+    }, file)
+    await homePage.goToModelingScene()
 
-      const body1CapCoords = { x: 571, y: 351 }
-      const [clickBody1Cap] = scene.makeMouseHelpers(
-        body1CapCoords.x,
-        body1CapCoords.y
-      )
-      const yellow: [number, number, number] = [179, 179, 131]
-      const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
-      const failToast = page.getByText(
-        'Failed to edit your KCL code, please try again with a different prompt or selection'
-      )
+    const body1CapCoords = { x: 571, y: 351 }
+    const [clickBody1Cap] = scene.makeMouseHelpers(
+      body1CapCoords.x,
+      body1CapCoords.y
+    )
+    const yellow: [number, number, number] = [179, 179, 131]
+    const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
+    const failToast = page.getByText(
+      'Failed to edit your KCL code, please try again with a different prompt or selection'
+    )
 
-      await test.step('wait for scene to load and select body', async () => {
-        await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
+    await test.step('wait for scene to load and select body', async () => {
+      await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
 
-        await clickBody1Cap()
-        await scene.expectPixelColor(yellow, body1CapCoords, 20)
+      await clickBody1Cap()
+      await scene.expectPixelColor(yellow, body1CapCoords, 20)
 
-        await editor.expectState({
-          highlightedCode: '',
-          activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
-          diagnostics: [],
-        })
+      await editor.expectState({
+        highlightedCode: '',
+        activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
+        diagnostics: [],
       })
+    })
 
-      await test.step('fire of bad prompt', async () => {
-        await cmdBar.openCmdBar('promptToEdit')
-        await page
-          .getByTestId('cmd-bar-arg-value')
-          .fill('ansheusha asnthuatshoeuhtaoetuhthaeu laughs in dvorak')
-        await page.waitForTimeout(100)
-        await cmdBar.progressCmdBar()
-        await expect(submittingToast).toBeVisible()
-      })
-      await test.step('check fail toast appeared', async () => {
-        await expect(submittingToast).not.toBeVisible({ timeout: 2 * 60_000 }) // can take a while
-        await expect(failToast).toBeVisible()
-      })
+    await test.step('fire of bad prompt', async () => {
+      await cmdBar.openCmdBar('promptToEdit')
+      await page
+        .getByTestId('cmd-bar-arg-value')
+        .fill('ansheusha asnthuatshoeuhtaoetuhthaeu laughs in dvorak')
+      await page.waitForTimeout(100)
+      await cmdBar.progressCmdBar()
+      await expect(submittingToast).toBeVisible()
+    })
+    await test.step('check fail toast appeared', async () => {
+      await expect(submittingToast).not.toBeVisible({ timeout: 2 * 60_000 }) // can take a while
+      await expect(failToast).toBeVisible()
     })
   })
 })
