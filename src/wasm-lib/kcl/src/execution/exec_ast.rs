@@ -1609,7 +1609,7 @@ pub struct FunctionParam<'a> {
     pub ctx: ExecutorContext,
 }
 
-impl<'a> FunctionParam<'a> {
+impl FunctionParam<'_> {
     pub async fn call(&self, exec_state: &mut ExecState, args: Vec<Arg>) -> Result<Option<KclValue>, KclError> {
         if let Some(inner) = self.inner {
             inner(

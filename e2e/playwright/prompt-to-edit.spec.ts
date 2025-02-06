@@ -35,7 +35,7 @@ sketch003 = startSketchOn('XY')
 extrude003 = extrude(sketch003, length = 20)
 `
 
-test.fixme('Check the happy path, for basic changing color', () => {
+test.describe('Check the happy path, for basic changing color', () => {
   const cases = [
     {
       desc: 'User accepts change',
