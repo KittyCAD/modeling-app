@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing function_sketch_with_position.kcl
+assertion_line: 106
+description: Program memory after executing function_sketch.kcl
 ---
 {
   "environments": [
@@ -33,11 +34,11 @@ description: Program memory after executing function_sketch_with_position.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 200,
+                    "end": 202,
                     "id": {
-                      "end": 28,
+                      "end": 25,
                       "name": "myBox",
-                      "start": 23,
+                      "start": 20,
                       "type": "Identifier"
                     },
                     "init": {
@@ -45,49 +46,72 @@ description: Program memory after executing function_sketch_with_position.kcl
                         {
                           "arguments": [
                             {
-                              "end": 49,
+                              "end": 46,
                               "raw": "'XY'",
-                              "start": 45,
+                              "start": 42,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XY"
                             }
                           ],
                           "callee": {
-                            "end": 44,
+                            "end": 41,
                             "name": "startSketchOn",
-                            "start": 31,
+                            "start": 28,
                             "type": "Identifier"
                           },
-                          "end": 50,
-                          "start": 31,
+                          "end": 47,
+                          "start": 28,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 74,
-                              "name": "p",
-                              "start": 73,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "elements": [
+                                {
+                                  "end": 72,
+                                  "raw": "0",
+                                  "start": 71,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                {
+                                  "end": 75,
+                                  "raw": "0",
+                                  "start": 74,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                }
+                              ],
+                              "end": 76,
+                              "start": 70,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
                             },
                             {
-                              "end": 77,
-                              "start": 76,
+                              "end": 79,
+                              "start": 78,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 72,
+                            "end": 69,
                             "name": "startProfileAt",
-                            "start": 58,
+                            "start": 55,
                             "type": "Identifier"
                           },
-                          "end": 78,
-                          "start": 58,
+                          "end": 80,
+                          "start": 55,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -102,9 +126,9 @@ description: Program memory after executing function_sketch_with_position.kcl
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 99,
+                                    "end": 101,
                                     "raw": "0",
-                                    "start": 98,
+                                    "start": 100,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -113,28 +137,28 @@ description: Program memory after executing function_sketch_with_position.kcl
                                     }
                                   },
                                   {
-                                    "end": 102,
+                                    "end": 104,
                                     "name": "l",
-                                    "start": 101,
+                                    "start": 103,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 ],
-                                "end": 103,
-                                "start": 97,
+                                "end": 105,
+                                "start": 99,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 90,
+                            "end": 92,
                             "name": "line",
-                            "start": 86,
+                            "start": 88,
                             "type": "Identifier"
                           },
-                          "end": 104,
-                          "start": 86,
+                          "end": 106,
+                          "start": 88,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -150,16 +174,16 @@ description: Program memory after executing function_sketch_with_position.kcl
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 125,
+                                    "end": 127,
                                     "name": "w",
-                                    "start": 124,
+                                    "start": 126,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   {
-                                    "end": 128,
+                                    "end": 130,
                                     "raw": "0",
-                                    "start": 127,
+                                    "start": 129,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -168,21 +192,21 @@ description: Program memory after executing function_sketch_with_position.kcl
                                     }
                                   }
                                 ],
-                                "end": 129,
-                                "start": 123,
+                                "end": 131,
+                                "start": 125,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 116,
+                            "end": 118,
                             "name": "line",
-                            "start": 112,
+                            "start": 114,
                             "type": "Identifier"
                           },
-                          "end": 130,
-                          "start": 112,
+                          "end": 132,
+                          "start": 114,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -198,9 +222,9 @@ description: Program memory after executing function_sketch_with_position.kcl
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 151,
+                                    "end": 153,
                                     "raw": "0",
-                                    "start": 150,
+                                    "start": 152,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -210,34 +234,34 @@ description: Program memory after executing function_sketch_with_position.kcl
                                   },
                                   {
                                     "argument": {
-                                      "end": 155,
+                                      "end": 157,
                                       "name": "l",
-                                      "start": 154,
+                                      "start": 156,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
-                                    "end": 155,
+                                    "end": 157,
                                     "operator": "-",
-                                    "start": 153,
+                                    "start": 155,
                                     "type": "UnaryExpression",
                                     "type": "UnaryExpression"
                                   }
                                 ],
-                                "end": 156,
-                                "start": 149,
+                                "end": 158,
+                                "start": 151,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 142,
+                            "end": 144,
                             "name": "line",
-                            "start": 138,
+                            "start": 140,
                             "type": "Identifier"
                           },
-                          "end": 157,
-                          "start": 138,
+                          "end": 159,
+                          "start": 140,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -245,20 +269,20 @@ description: Program memory after executing function_sketch_with_position.kcl
                         {
                           "arguments": [
                             {
-                              "end": 172,
-                              "start": 171,
+                              "end": 174,
+                              "start": 173,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 170,
+                            "end": 172,
                             "name": "close",
-                            "start": 165,
+                            "start": 167,
                             "type": "Identifier"
                           },
-                          "end": 173,
-                          "start": 165,
+                          "end": 175,
+                          "start": 167,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -271,62 +295,62 @@ description: Program memory after executing function_sketch_with_position.kcl
                                 "name": "length"
                               },
                               "arg": {
-                                "end": 199,
+                                "end": 201,
                                 "name": "h",
-                                "start": 198,
+                                "start": 200,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 188,
+                            "end": 190,
                             "name": "extrude",
-                            "start": 181,
+                            "start": 183,
                             "type": "Identifier"
                           },
-                          "end": 200,
-                          "start": 181,
+                          "end": 202,
+                          "start": 183,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 200,
-                      "start": 31,
+                      "end": 202,
+                      "start": 28,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 23,
+                    "start": 20,
                     "type": "VariableDeclarator"
                   },
-                  "end": 200,
+                  "end": 202,
                   "kind": "const",
-                  "start": 23,
+                  "start": 20,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 216,
+                    "end": 218,
                     "name": "myBox",
-                    "start": 211,
+                    "start": 213,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 216,
-                  "start": 204,
+                  "end": 218,
+                  "start": 206,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 218,
+              "end": 220,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "end": 204,
-                      "start": 200,
+                      "end": 206,
+                      "start": 202,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -336,15 +360,15 @@ description: Program memory after executing function_sketch_with_position.kcl
                 },
                 "startNodes": []
               },
-              "start": 19
+              "start": 16
             },
-            "end": 218,
+            "end": 220,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "end": 8,
-                  "name": "p",
+                  "name": "h",
                   "start": 7,
                   "type": "Identifier"
                 }
@@ -353,7 +377,7 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "type": "Parameter",
                 "identifier": {
                   "end": 11,
-                  "name": "h",
+                  "name": "l",
                   "start": 10,
                   "type": "Identifier"
                 }
@@ -362,17 +386,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "type": "Parameter",
                 "identifier": {
                   "end": 14,
-                  "name": "l",
-                  "start": 13,
-                  "type": "Identifier"
-                }
-              },
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 17,
                   "name": "w",
-                  "start": 16,
+                  "start": 13,
                   "type": "Identifier"
                 }
               }
@@ -388,13 +403,13 @@ description: Program memory after executing function_sketch_with_position.kcl
             {
               "sourceRange": [
                 6,
-                218,
+                220,
                 0
               ]
             }
           ]
         },
-        "thing": {
+        "fnBox": {
           "type": "Solid",
           "value": {
             "type": "Solid",
@@ -405,8 +420,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  86,
-                  104,
+                  88,
+                  106,
                   0
                 ],
                 "tag": null,
@@ -416,8 +431,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  112,
-                  130,
+                  114,
+                  132,
                   0
                 ],
                 "tag": null,
@@ -427,8 +442,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  138,
-                  157,
+                  140,
+                  159,
                   0
                 ],
                 "tag": null,
@@ -438,8 +453,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  165,
-                  173,
+                  167,
+                  175,
                   0
                 ],
                 "tag": null,
@@ -454,8 +469,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      86,
-                      104,
+                      88,
+                      106,
                       0
                     ]
                   },
@@ -474,8 +489,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      112,
-                      130,
+                      114,
+                      132,
                       0
                     ]
                   },
@@ -494,8 +509,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      138,
-                      157,
+                      140,
+                      159,
                       0
                     ]
                   },
@@ -514,8 +529,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      165,
-                      173,
+                      167,
+                      175,
                       0
                     ]
                   },
@@ -574,8 +589,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    58,
-                    78,
+                    55,
+                    80,
                     0
                   ]
                 }
@@ -588,8 +603,8 @@ description: Program memory after executing function_sketch_with_position.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    58,
-                    78,
+                    55,
+                    80,
                     0
                   ]
                 }
@@ -604,8 +619,8 @@ description: Program memory after executing function_sketch_with_position.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  58,
-                  78,
+                  55,
+                  80,
                   0
                 ]
               }
@@ -622,7 +637,7 @@ description: Program memory after executing function_sketch_with_position.kcl
               "value": null,
               "__meta": []
             },
-            "thing": {
+            "fnBox": {
               "type": "Tombstone",
               "value": null,
               "__meta": []
@@ -645,8 +660,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  86,
-                  104,
+                  88,
+                  106,
                   0
                 ],
                 "tag": null,
@@ -656,8 +671,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  112,
-                  130,
+                  114,
+                  132,
                   0
                 ],
                 "tag": null,
@@ -667,8 +682,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  138,
-                  157,
+                  140,
+                  159,
                   0
                 ],
                 "tag": null,
@@ -678,8 +693,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  165,
-                  173,
+                  167,
+                  175,
                   0
                 ],
                 "tag": null,
@@ -694,8 +709,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      86,
-                      104,
+                      88,
+                      106,
                       0
                     ]
                   },
@@ -714,8 +729,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      112,
-                      130,
+                      114,
+                      132,
                       0
                     ]
                   },
@@ -734,8 +749,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      138,
-                      157,
+                      140,
+                      159,
                       0
                     ]
                   },
@@ -754,8 +769,8 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      165,
-                      173,
+                      167,
+                      175,
                       0
                     ]
                   },
@@ -814,25 +829,22 @@ description: Program memory after executing function_sketch_with_position.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    58,
-                    78,
+                    55,
+                    80,
                     0
                   ]
                 }
               },
               "artifactId": "[uuid]",
-<<<<<<< HEAD
               "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
               "units": {
                 "type": "Mm"
               },
               "__meta": [
                 {
                   "sourceRange": [
-                    58,
-                    78,
+                    55,
+                    80,
                     0
                   ]
                 }
@@ -847,313 +859,13 @@ description: Program memory after executing function_sketch_with_position.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  58,
-                  78,
+                  55,
+                  80,
                   0
                 ]
               }
             ]
           }
-<<<<<<< HEAD
-        },
-        "h": {
-          "type": "Number",
-          "value": 3.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                240,
-                241,
-                0
-              ]
-            }
-          ]
-        },
-        "l": {
-          "type": "Number",
-          "value": 6.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                243,
-                244,
-                0
-              ]
-            }
-          ]
-        },
-        "myBox": {
-          "type": "Solid",
-          "value": {
-            "type": "Solid",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": [
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  86,
-                  104,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  112,
-                  130,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  138,
-                  157,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  165,
-                  173,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              }
-            ],
-            "sketch": {
-              "type": "Sketch",
-              "id": "[uuid]",
-              "paths": [
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      86,
-                      104,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    6.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      112,
-                      130,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    10.0,
-                    6.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      138,
-                      157,
-                      0
-                    ]
-                  },
-                  "from": [
-                    10.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    10.0,
-                    0.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      165,
-                      173,
-                      0
-                    ]
-                  },
-                  "from": [
-                    10.0,
-                    0.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    0.0
-                  ],
-                  "type": "ToPoint"
-                }
-              ],
-              "on": {
-                "type": "plane",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": "XY",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
-                },
-                "__meta": []
-              },
-              "start": {
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    58,
-                    78,
-                    0
-                  ]
-                }
-              },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    58,
-                    78,
-                    0
-                  ]
-                }
-              ]
-            },
-            "height": 3.0,
-            "startCapId": "[uuid]",
-            "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  58,
-                  78,
-                  0
-                ]
-              }
-            ]
-          }
-        },
-        "p": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    233,
-                    234,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    236,
-                    237,
-                    0
-                  ]
-                }
-              ]
-            }
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                232,
-                238,
-                0
-              ]
-            }
-          ]
-        },
-        "w": {
-          "type": "Number",
-          "value": 10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                246,
-                248,
-                0
-              ]
-            }
-          ]
-=======
->>>>>>> cb610d543 (Compress envs when popped)
         }
       },
       "snapshots": [],

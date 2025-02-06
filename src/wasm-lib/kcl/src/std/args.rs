@@ -256,10 +256,7 @@ impl Args {
                     exec_state
                         .memory()
                         .walk_call_stack()
-                        .filter(|v| match v {
-                            KclValue::Solid { value } if value.sketch.id == sketch_id => true,
-                            _ => false,
-                        })
+                        .filter(|v| matches!(v, KclValue::Solid { value } if value.sketch.id == sketch_id))
                         .flat_map(|v| match v {
                             KclValue::Solid { value } => value.get_all_edge_cut_ids(),
                             _ => unreachable!(),

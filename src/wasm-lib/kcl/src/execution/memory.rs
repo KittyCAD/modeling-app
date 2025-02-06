@@ -33,7 +33,7 @@
 //! }
 //! ```
 //!
-//! The body of `foo` has an environment who's parent is the enclosing scope. Variables in the inner
+//! The body of `foo` has an environment whose parent is the enclosing scope. Variables in the inner
 //! scope can hide those in the outer scope (meaning `a` can be redefined in `foo`). Variables in the
 //! outer scope are visible from the inner scope. Note that `b` and the new `a` are not visible
 //! outside of `foo`.
@@ -76,7 +76,7 @@
 //! that point and save a reference to that snapshot. When we call a function, the parent of the new
 //! callee env is that snapshot, not the current version of the enclosing scope.
 //!
-//! Entering an inline scope (e.g., the body of an `if` statement) means pushing an env who's parent
+//! Entering an inline scope (e.g., the body of an `if` statement) means pushing an env whose parent
 //! is the current env. We don't need to snapshot in this case.
 //!
 //! ## Implementation
@@ -118,22 +118,22 @@
 //! in scope and are documented inline, here are some others:
 //!
 //! - The current env and all envs in the call stack are 'just envs', never a snapshot (we could
-//! use just a ref to an env, rather than to a snapshot but this is pretty inconvenient, so just
-//! know that the snapshot ref is always to the current version). Only the parent envs or saved refs
-//! can be refs to snapshots.
+//!   use just a ref to an env, rather than to a snapshot but this is pretty inconvenient, so just
+//!   know that the snapshot ref is always to the current version). Only the parent envs or saved refs
+//!   can be refs to snapshots.
 //! - We only ever write into the current env, never into any parent envs (though we can read from
-//! both).
+//!   both).
 //! - Therefore, there is no concept of writing into a snapshot, only reading from one.
 //! - The env ref saved with a function decl is always to a snapshot, never to the current version.
 //! - If there are no snapshots in an environment and it is no longer in the call stack, then there
-//! are no references from function decls to the env (if it is the parent of an env with extant refs
-//! then there would be snapshots in the child env and that implies there must be a snapshot in the
-//! parent to be the parent of that snapshot).
+//!   are no references from function decls to the env (if it is the parent of an env with extant refs
+//!   then there would be snapshots in the child env and that implies there must be a snapshot in the
+//!   parent to be the parent of that snapshot).
 //! - Since KCL does not have submodules and decls are not visible outside of a nested scope, all
-//! references to variables in other modules must be in the root scope of a module.
+//!   references to variables in other modules must be in the root scope of a module.
 //! - Therefore, an active env must either be on the call stack, have snapshots, or be a root env. This
-//! is however a conservative approximation since snapshots may exist even if there are no live
-//! references to an env.
+//!   is however a conservative approximation since snapshots may exist even if there are no live
+//!   references to an env.
 
 use std::fmt;
 
@@ -231,7 +231,7 @@ impl ProgramMemory {
         self.call_stack.push(self.current_env);
         // Rust functions shouldn't try to set or access anything in their environment, so don't
         // waste time and space on a new env. Using usize::MAX means we'll get an overflow if we
-        // try to acceess anything rather than a silent error.
+        // try to access anything rather than a silent error.
         self.current_env = EnvironmentRef(usize::MAX, SnapshotRef::none());
     }
 
@@ -261,7 +261,7 @@ impl ProgramMemory {
         self.current_env = self.call_stack.pop().unwrap();
 
         if !old.is_rust_env() {
-            self.environments[old.index()].compress();
+            self.environments[old.index()].compact();
         }
 
         old
@@ -339,7 +339,7 @@ impl ProgramMemory {
         self.environments[self.current_env.index()].find_all_by(pred)
     }
 
-    /// Walk all values accessible from any enviroment in the call stack.
+    /// Walk all values accessible from any environment in the call stack.
     ///
     /// This may include duplicate values or different versions of a value known by the same key,
     /// since an environment may be accessible via multiple paths.
@@ -380,9 +380,7 @@ impl<'a> Iterator for CallStackIterator<'a> {
     type Item = &'a KclValue;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.cur_values.is_none() {
-            return None;
-        }
+        self.cur_values.as_ref()?;
 
         // Loop over each frame in the call stack.
         loop {
@@ -408,7 +406,7 @@ impl<'a> Iterator for CallStackIterator<'a> {
                 loop {
                     self.stack_index -= 1;
                     let env_ref = self.mem.call_stack[self.stack_index];
-                    // We'll eventually hit this condtion since we can't start executing in Rust.
+                    // We'll eventually hit this condition since we can't start executing in Rust.
                     if !env_ref.is_rust_env() {
                         self.cur_env = env_ref;
                         self.init_iter();
@@ -581,7 +579,7 @@ mod env {
         /// in a new way it might be incorrect).
         ///
         /// See module docs for more details.
-        pub(super) fn compress(&mut self) {
+        pub(super) fn compact(&mut self) {
             // Don't compress if there might be a closure or import referencing us.
             if !self.snapshots.is_empty() || self.parent.is_none() {
                 return;
@@ -630,11 +628,11 @@ mod env {
                 self.bindings
                     .iter()
                     .filter_map(move |(k, v)| (!self.snapshot_contains_key(k, snapshot)).then_some(v))
-                    .chain(self.snapshots.iter().flat_map(|s| {
-                        s.data
-                            .values()
-                            .filter_map(|v| (!matches!(v, KclValue::Tombstone { .. })).then_some(v))
-                    })),
+                    .chain(
+                        self.snapshots
+                            .iter()
+                            .flat_map(|s| s.data.values().filter(|v| !matches!(v, KclValue::Tombstone { .. }))),
+                    ),
             )
         }
 
@@ -666,7 +664,7 @@ mod env {
                     return true;
                 }
             }
-            return false;
+            false
         }
 
         /// Is the key currently contained in this environment.

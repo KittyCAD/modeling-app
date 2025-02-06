@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 106
 description: Program memory after executing sketch_in_object.kcl
 ---
 {
@@ -795,10 +796,7 @@ description: Program memory after executing sketch_in_object.kcl
               }
             },
             "artifactId": "[uuid]",
-<<<<<<< HEAD
             "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
             "units": {
               "type": "Mm"
             },
@@ -956,10 +954,7 @@ description: Program memory after executing sketch_in_object.kcl
                       }
                     },
                     "artifactId": "[uuid]",
-<<<<<<< HEAD
                     "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
                     "units": {
                       "type": "Mm"
                     },
@@ -1170,10 +1165,7 @@ description: Program memory after executing sketch_in_object.kcl
               }
             },
             "artifactId": "[uuid]",
-<<<<<<< HEAD
             "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
             "units": {
               "type": "Mm"
             },
@@ -1340,10 +1332,7 @@ description: Program memory after executing sketch_in_object.kcl
                       }
                     },
                     "artifactId": "[uuid]",
-<<<<<<< HEAD
                     "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
                     "units": {
                       "type": "Mm"
                     },

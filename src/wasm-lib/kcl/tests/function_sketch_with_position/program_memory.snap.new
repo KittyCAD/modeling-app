@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing sketch_on_face_end_negative_extrude.kcl
+assertion_line: 106
+description: Program memory after executing function_sketch_with_position.kcl
 ---
 {
   "environments": [
@@ -26,18 +27,18 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
           "value": 0.0,
           "__meta": []
         },
-        "cube": {
+        "box": {
           "type": "Function",
           "expression": {
             "body": {
               "body": [
                 {
                   "declaration": {
-                    "end": 169,
+                    "end": 200,
                     "id": {
-                      "end": 26,
-                      "name": "sg",
-                      "start": 24,
+                      "end": 28,
+                      "name": "myBox",
+                      "start": 23,
                       "type": "Identifier"
                     },
                     "init": {
@@ -45,22 +46,22 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                         {
                           "arguments": [
                             {
-                              "end": 47,
+                              "end": 49,
                               "raw": "'XY'",
-                              "start": 43,
+                              "start": 45,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XY"
                             }
                           ],
                           "callee": {
-                            "end": 42,
+                            "end": 44,
                             "name": "startSketchOn",
-                            "start": 29,
+                            "start": 31,
                             "type": "Identifier"
                           },
-                          "end": 48,
-                          "start": 29,
+                          "end": 50,
+                          "start": 31,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -68,8 +69,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                           "arguments": [
                             {
                               "end": 74,
-                              "name": "pos",
-                              "start": 71,
+                              "name": "p",
+                              "start": 73,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
@@ -81,13 +82,13 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                             }
                           ],
                           "callee": {
-                            "end": 70,
+                            "end": 72,
                             "name": "startProfileAt",
-                            "start": 56,
+                            "start": 58,
                             "type": "Identifier"
                           },
                           "end": 78,
-                          "start": 56,
+                          "start": 58,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -113,14 +114,14 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                                     }
                                   },
                                   {
-                                    "end": 106,
-                                    "name": "scale",
+                                    "end": 102,
+                                    "name": "l",
                                     "start": 101,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 ],
-                                "end": 107,
+                                "end": 103,
                                 "start": 97,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
@@ -133,7 +134,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                             "start": 86,
                             "type": "Identifier"
                           },
-                          "end": 108,
+                          "end": 104,
                           "start": 86,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
@@ -150,16 +151,16 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 133,
-                                    "name": "scale",
-                                    "start": 128,
+                                    "end": 125,
+                                    "name": "w",
+                                    "start": 124,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   {
-                                    "end": 136,
+                                    "end": 128,
                                     "raw": "0",
-                                    "start": 135,
+                                    "start": 127,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -168,21 +169,21 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                                     }
                                   }
                                 ],
-                                "end": 137,
-                                "start": 127,
+                                "end": 129,
+                                "start": 123,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 120,
+                            "end": 116,
                             "name": "line",
-                            "start": 116,
+                            "start": 112,
                             "type": "Identifier"
                           },
-                          "end": 138,
-                          "start": 116,
+                          "end": 130,
+                          "start": 112,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -198,9 +199,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 159,
+                                    "end": 151,
                                     "raw": "0",
-                                    "start": 158,
+                                    "start": 150,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -210,74 +211,123 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                                   },
                                   {
                                     "argument": {
-                                      "end": 167,
-                                      "name": "scale",
-                                      "start": 162,
+                                      "end": 155,
+                                      "name": "l",
+                                      "start": 154,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
-                                    "end": 167,
+                                    "end": 155,
                                     "operator": "-",
-                                    "start": 161,
+                                    "start": 153,
                                     "type": "UnaryExpression",
                                     "type": "UnaryExpression"
                                   }
                                 ],
-                                "end": 168,
-                                "start": 157,
+                                "end": 156,
+                                "start": 149,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 150,
+                            "end": 142,
                             "name": "line",
-                            "start": 146,
+                            "start": 138,
                             "type": "Identifier"
                           },
-                          "end": 169,
-                          "start": 146,
+                          "end": 157,
+                          "start": 138,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 172,
+                              "start": 171,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 170,
+                            "name": "close",
+                            "start": 165,
+                            "type": "Identifier"
+                          },
+                          "end": 173,
+                          "start": 165,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "length"
+                              },
+                              "arg": {
+                                "end": 199,
+                                "name": "h",
+                                "start": 198,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 188,
+                            "name": "extrude",
+                            "start": 181,
+                            "type": "Identifier"
+                          },
+                          "end": 200,
+                          "start": 181,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 169,
-                      "start": 29,
+                      "end": 200,
+                      "start": 31,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 24,
+                    "start": 23,
                     "type": "VariableDeclarator"
                   },
-                  "end": 169,
+                  "end": 200,
                   "kind": "const",
-                  "start": 24,
+                  "start": 23,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 182,
-                    "name": "sg",
-                    "start": 180,
+                    "end": 216,
+                    "name": "myBox",
+                    "start": 211,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 182,
-                  "start": 173,
+                  "end": 216,
+                  "start": 204,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 184,
+              "end": 218,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "end": 173,
-                      "start": 169,
+                      "end": 204,
+                      "start": 200,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -287,30 +337,48 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 },
                 "startNodes": []
               },
-              "start": 20
+              "start": 19
             },
-            "end": 184,
+            "end": 218,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 11,
-                  "name": "pos",
-                  "start": 8,
+                  "end": 8,
+                  "name": "p",
+                  "start": 7,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 18,
-                  "name": "scale",
+                  "end": 11,
+                  "name": "h",
+                  "start": 10,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 14,
+                  "name": "l",
                   "start": 13,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 17,
+                  "name": "w",
+                  "start": 16,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 7,
+            "start": 6,
             "type": "FunctionExpression"
           },
           "memory": [
@@ -320,14 +388,14 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
           "__meta": [
             {
               "sourceRange": [
-                7,
-                184,
+                6,
+                218,
                 0
               ]
             }
           ]
         },
-        "part001": {
+        "thing": {
           "type": "Solid",
           "value": {
             "type": "Solid",
@@ -339,7 +407,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "id": "[uuid]",
                 "sourceRange": [
                   86,
-                  108,
+                  104,
                   0
                 ],
                 "tag": null,
@@ -349,8 +417,19 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  116,
+                  112,
+                  130,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
                   138,
+                  157,
                   0
                 ],
                 "tag": null,
@@ -360,19 +439,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  146,
-                  169,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  217,
-                  225,
+                  165,
+                  173,
                   0
                 ],
                 "tag": null,
@@ -388,7 +456,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                     "id": "[uuid]",
                     "sourceRange": [
                       86,
-                      108,
+                      104,
                       0
                     ]
                   },
@@ -399,7 +467,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "tag": null,
                   "to": [
                     0.0,
-                    20.0
+                    6.0
                   ],
                   "type": "ToPoint"
                 },
@@ -407,38 +475,38 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      116,
+                      112,
+                      130,
+                      0
+                    ]
+                  },
+                  "from": [
+                    0.0,
+                    6.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    10.0,
+                    6.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
                       138,
+                      157,
                       0
                     ]
                   },
                   "from": [
-                    0.0,
-                    20.0
+                    10.0,
+                    6.0
                   ],
                   "tag": null,
                   "to": [
-                    20.0,
-                    20.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      146,
-                      169,
-                      0
-                    ]
-                  },
-                  "from": [
-                    20.0,
-                    20.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    20.0,
+                    10.0,
                     0.0
                   ],
                   "type": "ToPoint"
@@ -447,13 +515,13 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      217,
-                      225,
+                      165,
+                      173,
                       0
                     ]
                   },
                   "from": [
-                    20.0,
+                    10.0,
                     0.0
                   ],
                   "tag": null,
@@ -507,7 +575,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    56,
+                    58,
                     78,
                     0
                   ]
@@ -521,14 +589,14 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
               "__meta": [
                 {
                   "sourceRange": [
-                    56,
+                    58,
                     78,
                     0
                   ]
                 }
               ]
             },
-            "height": 20.0,
+            "height": 3.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
@@ -537,15 +605,37 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
             "__meta": [
               {
                 "sourceRange": [
-                  56,
+                  58,
                   78,
                   0
                 ]
               }
             ]
           }
-        },
-        "part002": {
+        }
+      },
+      "snapshots": [
+        {
+          "parent_snapshot": null,
+          "data": {
+            "box": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "thing": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            }
+          }
+        }
+      ],
+      "parent": null
+    },
+    {
+      "bindings": {
+        "__return": {
           "type": "Solid",
           "value": {
             "type": "Solid",
@@ -556,8 +646,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  329,
-                  348,
+                  86,
+                  104,
                   0
                 ],
                 "tag": null,
@@ -567,8 +657,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  354,
-                  373,
+                  112,
+                  130,
                   0
                 ],
                 "tag": null,
@@ -578,8 +668,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  379,
-                  399,
+                  138,
+                  157,
                   0
                 ],
                 "tag": null,
@@ -589,8 +679,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  405,
-                  413,
+                  165,
+                  173,
                   0
                 ],
                 "tag": null,
@@ -605,8 +695,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      329,
-                      348,
+                      86,
+                      104,
                       0
                     ]
                   },
@@ -617,7 +707,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "tag": null,
                   "to": [
                     0.0,
-                    10.0
+                    6.0
                   ],
                   "type": "ToPoint"
                 },
@@ -625,19 +715,19 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      354,
-                      373,
+                      112,
+                      130,
                       0
                     ]
                   },
                   "from": [
                     0.0,
-                    10.0
+                    6.0
                   ],
                   "tag": null,
                   "to": [
                     10.0,
-                    10.0
+                    6.0
                   ],
                   "type": "ToPoint"
                 },
@@ -645,14 +735,14 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      379,
-                      399,
+                      138,
+                      157,
                       0
                     ]
                   },
                   "from": [
                     10.0,
-                    10.0
+                    6.0
                   ],
                   "tag": null,
                   "to": [
@@ -665,8 +755,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      405,
-                      413,
+                      165,
+                      173,
                       0
                     ]
                   },
@@ -683,10 +773,15 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 }
               ],
               "on": {
-                "type": "face",
+                "type": "plane",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "end",
+                "value": "XY",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -702,233 +797,10 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "y": 0.0,
                   "z": 1.0
                 },
-                "solid": {
-                  "type": "Solid",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
-                  "value": [
-                    {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        86,
-                        108,
-                        0
-                      ],
-                      "tag": null,
-                      "type": "extrudePlane"
-                    },
-                    {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        116,
-                        138,
-                        0
-                      ],
-                      "tag": null,
-                      "type": "extrudePlane"
-                    },
-                    {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        146,
-                        169,
-                        0
-                      ],
-                      "tag": null,
-                      "type": "extrudePlane"
-                    },
-                    {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        217,
-                        225,
-                        0
-                      ],
-                      "tag": null,
-                      "type": "extrudePlane"
-                    }
-                  ],
-                  "sketch": {
-                    "type": "Sketch",
-                    "id": "[uuid]",
-                    "paths": [
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            86,
-                            108,
-                            0
-                          ]
-                        },
-                        "from": [
-                          0.0,
-                          0.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          0.0,
-                          20.0
-                        ],
-                        "type": "ToPoint"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            116,
-                            138,
-                            0
-                          ]
-                        },
-                        "from": [
-                          0.0,
-                          20.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          20.0,
-                          20.0
-                        ],
-                        "type": "ToPoint"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            146,
-                            169,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.0,
-                          20.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          20.0,
-                          0.0
-                        ],
-                        "type": "ToPoint"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            217,
-                            225,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.0,
-                          0.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          0.0,
-                          0.0
-                        ],
-                        "type": "ToPoint"
-                      }
-                    ],
-                    "on": {
-                      "type": "plane",
-                      "id": "[uuid]",
-                      "artifactId": "[uuid]",
-                      "value": "XY",
-                      "origin": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 0.0
-                      },
-                      "xAxis": {
-                        "x": 1.0,
-                        "y": 0.0,
-                        "z": 0.0
-                      },
-                      "yAxis": {
-                        "x": 0.0,
-                        "y": 1.0,
-                        "z": 0.0
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0
-                      },
-                      "units": {
-                        "type": "Mm"
-                      },
-                      "__meta": []
-                    },
-                    "start": {
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          56,
-                          78,
-                          0
-                        ]
-                      }
-                    },
-                    "artifactId": "[uuid]",
-                    "originalId": "[uuid]",
-                    "units": {
-                      "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          56,
-                          78,
-                          0
-                        ]
-                      }
-                    ]
-                  },
-                  "height": 20.0,
-                  "startCapId": "[uuid]",
-                  "endCapId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        56,
-                        78,
-                        0
-                      ]
-                    }
-                  ]
-                },
                 "units": {
                   "type": "Mm"
                 },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      263,
-                      292,
-                      0
-                    ]
-                  }
-                ]
+                "__meta": []
               },
               "start": {
                 "from": [
@@ -943,8 +815,8 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    298,
-                    323,
+                    58,
+                    78,
                     0
                   ]
                 }
@@ -957,14 +829,14 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
               "__meta": [
                 {
                   "sourceRange": [
-                    298,
-                    323,
+                    58,
+                    78,
                     0
                   ]
                 }
               ]
             },
-            "height": -5.0,
+            "height": 3.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
@@ -973,357 +845,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
             "__meta": [
               {
                 "sourceRange": [
-                  298,
-                  323,
-                  0
-                ]
-              }
-            ]
-          }
-        }
-      },
-      "snapshots": [
-        {
-          "parent_snapshot": null,
-          "data": {
-            "cube": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            },
-            "part001": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            },
-            "part002": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            }
-          }
-        }
-      ],
-      "parent": null
-    },
-    {
-      "bindings": {
-        "__return": {
-          "type": "Sketch",
-          "value": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    86,
-                    108,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  20.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    116,
-                    138,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  20.0
-                ],
-                "tag": null,
-                "to": [
-                  20.0,
-                  20.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    146,
-                    169,
-<<<<<<< HEAD
-                    0
-                  ]
-                },
-                "from": [
-                  20.0,
-                  20.0
-                ],
-                "tag": null,
-                "to": [
-                  20.0,
-                  0.0
-                ],
-                "type": "ToPoint"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XY",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Mm"
-              },
-              "__meta": []
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  56,
-                  78,
-                  0
-                ]
-              }
-            },
-            "artifactId": "[uuid]",
-<<<<<<< HEAD
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  56,
-                  78,
-                  0
-                ]
-              }
-            ]
-          }
-        },
-        "pos": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    201,
-                    202,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    204,
-                    205,
-                    0
-                  ]
-                }
-              ]
-            }
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                200,
-                206,
-                0
-              ]
-            }
-          ]
-        },
-        "scale": {
-          "type": "Number",
-          "value": 20.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                208,
-                210,
-                0
-              ]
-            }
-          ]
-        },
-        "sg": {
-          "type": "Sketch",
-          "value": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    86,
-                    108,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  20.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    116,
-                    138,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  20.0
-                ],
-                "tag": null,
-                "to": [
-                  20.0,
-                  20.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    146,
-                    169,
-=======
->>>>>>> cb610d543 (Compress envs when popped)
-                    0
-                  ]
-                },
-                "from": [
-                  20.0,
-                  20.0
-                ],
-                "tag": null,
-                "to": [
-                  20.0,
-                  0.0
-                ],
-                "type": "ToPoint"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "XY",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Mm"
-              },
-              "__meta": []
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  56,
-                  78,
-                  0
-                ]
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  56,
+                  58,
                   78,
                   0
                 ]

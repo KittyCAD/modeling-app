@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 106
 description: Program memory after executing import_side_effect.kcl
 ---
 {
@@ -233,10 +234,7 @@ description: Program memory after executing import_side_effect.kcl
               }
             },
             "artifactId": "[uuid]",
-<<<<<<< HEAD
             "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
             "units": {
               "type": "Mm"
             },

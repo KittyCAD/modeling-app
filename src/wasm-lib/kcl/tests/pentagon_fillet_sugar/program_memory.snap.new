@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 106
 description: Program memory after executing pentagon_fillet_sugar.kcl
 ---
 {
@@ -713,10 +714,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-<<<<<<< HEAD
                   "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
                   "units": {
                     "type": "Mm"
                   },
@@ -846,10 +844,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               }
             },
             "artifactId": "[uuid]",
-<<<<<<< HEAD
             "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
             "units": {
               "type": "Mm"
             },
@@ -1305,10 +1300,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-<<<<<<< HEAD
                   "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
                   "units": {
                     "type": "Mm"
                   },
@@ -1438,10 +1430,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               }
             },
             "artifactId": "[uuid]",
-<<<<<<< HEAD
             "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
             "units": {
               "type": "Mm"
             },
@@ -2091,10 +2080,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 }
               },
               "artifactId": "[uuid]",
-<<<<<<< HEAD
               "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
               "units": {
                 "type": "Mm"
               },
@@ -2588,10 +2574,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       }
                     },
                     "artifactId": "[uuid]",
-<<<<<<< HEAD
                     "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
                     "units": {
                       "type": "Mm"
                     },
@@ -2721,10 +2704,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 }
               },
               "artifactId": "[uuid]",
-<<<<<<< HEAD
               "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
               "units": {
                 "type": "Mm"
               },
@@ -3234,10 +3214,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       }
                     },
                     "artifactId": "[uuid]",
-<<<<<<< HEAD
                     "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
                     "units": {
                       "type": "Mm"
                     },
@@ -3367,10 +3344,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 }
               },
               "artifactId": "[uuid]",
-<<<<<<< HEAD
               "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
               "units": {
                 "type": "Mm"
               },
@@ -3952,10 +3926,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-<<<<<<< HEAD
                   "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
                   "units": {
                     "type": "Mm"
                   },
@@ -4070,10 +4041,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               }
             },
             "artifactId": "[uuid]",
-<<<<<<< HEAD
             "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
             "units": {
               "type": "Mm"
             },
@@ -4087,133 +4055,6 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               }
             ]
           }
-<<<<<<< HEAD
-        },
-        "arc_tag": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "arc_tag",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  531,
-                  553,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -200.0,
-                100.0
-              ],
-              "from": [
-                -120.0,
-                100.0
-              ],
-              "radius": 80.0,
-              "tag": {
-                "end": 552,
-                "start": 544,
-                "type": "TagDeclarator",
-                "value": "arc_tag"
-              },
-              "to": [
-                -120.0,
-                99.99999999999999
-              ],
-              "type": "Arc"
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                544,
-                552,
-                0
-              ]
-            }
-          ]
-        },
-        "face": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "c",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  317,
-                  373,
-                  0
-                ]
-              },
-              "from": [
-                -249.99999999999994,
-                433.01270189221935
-              ],
-              "tag": {
-                "end": 372,
-                "start": 370,
-                "type": "TagDeclarator",
-                "value": "c"
-              },
-              "to": [
-                0.00000000000011368683772161603,
-                0.00000000000005684341886080802
-              ],
-              "type": "ToPoint"
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                317,
-                373,
-                0
-              ],
-              "tag": {
-                "end": 372,
-                "start": 370,
-                "type": "TagDeclarator",
-                "value": "c"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                370,
-                372,
-                0
-              ]
-            }
-          ]
-        },
-        "x": {
-          "type": "Number",
-          "value": -200.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                584,
-                588,
-                0
-              ]
-            }
-          ]
-=======
->>>>>>> a6757a13f (Fixups)
         }
       },
       "snapshots": [],
@@ -4665,10 +4506,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     }
                   },
                   "artifactId": "[uuid]",
-<<<<<<< HEAD
                   "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
                   "units": {
                     "type": "Mm"
                   },
@@ -4783,10 +4621,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               }
             },
             "artifactId": "[uuid]",
-<<<<<<< HEAD
             "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
             "units": {
               "type": "Mm"
             },
@@ -4800,133 +4635,6 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               }
             ]
           }
-<<<<<<< HEAD
-        },
-        "arc_tag": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "arc_tag",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  531,
-                  553,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                200.0,
-                100.0
-              ],
-              "from": [
-                280.0,
-                100.0
-              ],
-              "radius": 80.0,
-              "tag": {
-                "end": 552,
-                "start": 544,
-                "type": "TagDeclarator",
-                "value": "arc_tag"
-              },
-              "to": [
-                280.0,
-                99.99999999999999
-              ],
-              "type": "Arc"
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                544,
-                552,
-                0
-              ]
-            }
-          ]
-        },
-        "face": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "a",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  194,
-                  249,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": {
-                "end": 248,
-                "start": 246,
-                "type": "TagDeclarator",
-                "value": "a"
-              },
-              "to": [
-                250.00000000000006,
-                433.0127018922193
-              ],
-              "type": "ToPoint"
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                194,
-                249,
-                0
-              ],
-              "tag": {
-                "end": 248,
-                "start": 246,
-                "type": "TagDeclarator",
-                "value": "a"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                246,
-                248,
-                0
-              ]
-            }
-          ]
-        },
-        "x": {
-          "type": "Number",
-          "value": 200.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                789,
-                792,
-                0
-              ]
-            }
-          ]
-=======
->>>>>>> a6757a13f (Fixups)
         }
       },
       "snapshots": [],

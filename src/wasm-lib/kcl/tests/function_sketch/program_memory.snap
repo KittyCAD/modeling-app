@@ -835,7 +835,10 @@ description: Program memory after executing function_sketch.kcl
                 }
               },
               "artifactId": "[uuid]",
+<<<<<<< HEAD
               "originalId": "[uuid]",
+=======
+>>>>>>> a6757a13f (Fixups)
               "units": {
                 "type": "Mm"
               },

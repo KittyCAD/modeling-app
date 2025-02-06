@@ -1126,6 +1126,7 @@ description: Program memory after executing sketch_on_face_end.kcl
               }
             },
             "artifactId": "[uuid]",
+<<<<<<< HEAD
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
@@ -1314,6 +1315,8 @@ description: Program memory after executing sketch_on_face_end.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+=======
+>>>>>>> a6757a13f (Fixups)
             "units": {
               "type": "Mm"
             },

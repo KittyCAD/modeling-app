@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing cube.kcl
+assertion_line: 106
+description: Program memory after executing pipe_as_arg.kcl
 ---
 {
   "environments": [
@@ -33,27 +34,27 @@ description: Program memory after executing cube.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 50,
+                    "end": 42,
                     "id": {
-                      "end": 33,
+                      "end": 29,
                       "name": "l",
-                      "start": 32,
+                      "start": 28,
                       "type": "Identifier"
                     },
                     "init": {
-                      "end": 50,
+                      "end": 42,
                       "left": {
-                        "end": 46,
-                        "name": "sideLength",
-                        "start": 36,
+                        "end": 38,
+                        "name": "length",
+                        "start": 32,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 50,
+                        "end": 42,
                         "raw": "2",
-                        "start": 49,
+                        "start": 41,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -61,42 +62,42 @@ description: Program memory after executing cube.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 36,
+                      "start": 32,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "start": 32,
+                    "start": 28,
                     "type": "VariableDeclarator"
                   },
-                  "end": 50,
+                  "end": 42,
                   "kind": "const",
-                  "start": 32,
+                  "start": 28,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 66,
+                    "end": 58,
                     "id": {
-                      "end": 54,
+                      "end": 46,
                       "name": "x",
-                      "start": 53,
+                      "start": 45,
                       "type": "Identifier"
                     },
                     "init": {
                       "computed": false,
-                      "end": 66,
+                      "end": 58,
                       "object": {
-                        "end": 63,
+                        "end": 55,
                         "name": "center",
-                        "start": 57,
+                        "start": 49,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "property": {
-                        "end": 65,
+                        "end": 57,
                         "raw": "0",
-                        "start": 64,
+                        "start": 56,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -104,42 +105,42 @@ description: Program memory after executing cube.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 57,
+                      "start": 49,
                       "type": "MemberExpression",
                       "type": "MemberExpression"
                     },
-                    "start": 53,
+                    "start": 45,
                     "type": "VariableDeclarator"
                   },
-                  "end": 66,
+                  "end": 58,
                   "kind": "const",
-                  "start": 53,
+                  "start": 45,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 82,
+                    "end": 74,
                     "id": {
-                      "end": 70,
+                      "end": 62,
                       "name": "y",
-                      "start": 69,
+                      "start": 61,
                       "type": "Identifier"
                     },
                     "init": {
                       "computed": false,
-                      "end": 82,
+                      "end": 74,
                       "object": {
-                        "end": 79,
+                        "end": 71,
                         "name": "center",
-                        "start": 73,
+                        "start": 65,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "property": {
-                        "end": 81,
+                        "end": 73,
                         "raw": "1",
-                        "start": 80,
+                        "start": 72,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -147,30 +148,58 @@ description: Program memory after executing cube.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 73,
+                      "start": 65,
                       "type": "MemberExpression",
                       "type": "MemberExpression"
                     },
-                    "start": 69,
+                    "start": 61,
                     "type": "VariableDeclarator"
                   },
-                  "end": 82,
+                  "end": 74,
                   "kind": "const",
-                  "start": 69,
+                  "start": 61,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 106,
+                    "end": 98,
                     "id": {
-                      "end": 87,
+                      "end": 79,
                       "name": "p0",
-                      "start": 85,
+                      "start": 77,
                       "type": "Identifier"
                     },
                     "init": {
                       "elements": [
+                        {
+                          "end": 89,
+                          "left": {
+                            "argument": {
+                              "end": 85,
+                              "name": "l",
+                              "start": 84,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 85,
+                            "operator": "-",
+                            "start": 83,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 89,
+                            "name": "x",
+                            "start": 88,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 83,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
                         {
                           "end": 97,
                           "left": {
@@ -190,7 +219,7 @@ description: Program memory after executing cube.kcl
                           "operator": "+",
                           "right": {
                             "end": 97,
-                            "name": "x",
+                            "name": "y",
                             "start": 96,
                             "type": "Identifier",
                             "type": "Identifier"
@@ -198,265 +227,237 @@ description: Program memory after executing cube.kcl
                           "start": 91,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
-                        },
-                        {
-                          "end": 105,
-                          "left": {
-                            "argument": {
-                              "end": 101,
-                              "name": "l",
-                              "start": 100,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "end": 101,
-                            "operator": "-",
-                            "start": 99,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 105,
-                            "name": "y",
-                            "start": 104,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 99,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
                         }
                       ],
-                      "end": 106,
-                      "start": 90,
+                      "end": 98,
+                      "start": 82,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
-                    "start": 85,
+                    "start": 77,
                     "type": "VariableDeclarator"
                   },
-                  "end": 106,
+                  "end": 98,
                   "kind": "const",
-                  "start": 85,
+                  "start": 77,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 129,
+                    "end": 121,
                     "id": {
-                      "end": 111,
+                      "end": 103,
                       "name": "p1",
-                      "start": 109,
+                      "start": 101,
                       "type": "Identifier"
                     },
                     "init": {
                       "elements": [
                         {
-                          "end": 121,
+                          "end": 113,
                           "left": {
                             "argument": {
-                              "end": 117,
+                              "end": 109,
                               "name": "l",
-                              "start": 116,
+                              "start": 108,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 117,
+                            "end": 109,
                             "operator": "-",
-                            "start": 115,
+                            "start": 107,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 121,
+                            "end": 113,
                             "name": "x",
-                            "start": 120,
+                            "start": 112,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 107,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        {
+                          "end": 120,
+                          "left": {
+                            "end": 116,
+                            "name": "l",
+                            "start": 115,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 120,
+                            "name": "y",
+                            "start": 119,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "start": 115,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
-                        },
-                        {
-                          "end": 128,
-                          "left": {
-                            "end": 124,
-                            "name": "l",
-                            "start": 123,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 128,
-                            "name": "y",
-                            "start": 127,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 123,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
                         }
                       ],
-                      "end": 129,
-                      "start": 114,
+                      "end": 121,
+                      "start": 106,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
-                    "start": 109,
+                    "start": 101,
                     "type": "VariableDeclarator"
                   },
-                  "end": 129,
+                  "end": 121,
                   "kind": "const",
-                  "start": 109,
+                  "start": 101,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 151,
+                    "end": 143,
                     "id": {
-                      "end": 134,
+                      "end": 126,
                       "name": "p2",
-                      "start": 132,
+                      "start": 124,
                       "type": "Identifier"
                     },
                     "init": {
                       "elements": [
                         {
-                          "end": 143,
+                          "end": 135,
                           "left": {
-                            "end": 139,
+                            "end": 131,
                             "name": "l",
-                            "start": 138,
+                            "start": 130,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 143,
+                            "end": 135,
                             "name": "x",
-                            "start": 142,
+                            "start": 134,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 138,
+                          "start": 130,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 150,
+                          "end": 142,
                           "left": {
-                            "end": 146,
+                            "end": 138,
                             "name": "l",
-                            "start": 145,
+                            "start": 137,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 150,
+                            "end": 142,
                             "name": "y",
-                            "start": 149,
+                            "start": 141,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 145,
+                          "start": 137,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 151,
-                      "start": 137,
+                      "end": 143,
+                      "start": 129,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
-                    "start": 132,
+                    "start": 124,
                     "type": "VariableDeclarator"
                   },
-                  "end": 151,
+                  "end": 143,
                   "kind": "const",
-                  "start": 132,
+                  "start": 124,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 174,
+                    "end": 166,
                     "id": {
-                      "end": 156,
+                      "end": 148,
                       "name": "p3",
-                      "start": 154,
+                      "start": 146,
                       "type": "Identifier"
                     },
                     "init": {
                       "elements": [
+                        {
+                          "end": 157,
+                          "left": {
+                            "end": 153,
+                            "name": "l",
+                            "start": 152,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 157,
+                            "name": "x",
+                            "start": 156,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 152,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
                         {
                           "end": 165,
                           "left": {
-                            "end": 161,
-                            "name": "l",
-                            "start": 160,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 165,
-                            "name": "x",
-                            "start": 164,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 160,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        {
-                          "end": 173,
-                          "left": {
                             "argument": {
-                              "end": 169,
+                              "end": 161,
                               "name": "l",
-                              "start": 168,
+                              "start": 160,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 169,
+                            "end": 161,
                             "operator": "-",
-                            "start": 167,
+                            "start": 159,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 173,
+                            "end": 165,
                             "name": "y",
-                            "start": 172,
+                            "start": 164,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 167,
+                          "start": 159,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 174,
-                      "start": 159,
+                      "end": 166,
+                      "start": 151,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     },
-                    "start": 154,
+                    "start": 146,
                     "type": "VariableDeclarator"
                   },
-                  "end": 174,
+                  "end": 166,
                   "kind": "const",
-                  "start": 154,
+                  "start": 146,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
@@ -466,21 +467,21 @@ description: Program memory after executing cube.kcl
                       {
                         "arguments": [
                           {
-                            "end": 201,
+                            "end": 193,
                             "name": "p0",
-                            "start": 199,
+                            "start": 191,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 198,
+                          "end": 190,
                           "name": "startSketchAt",
-                          "start": 185,
+                          "start": 177,
                           "type": "Identifier"
                         },
-                        "end": 202,
-                        "start": 185,
+                        "end": 194,
+                        "start": 177,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -493,22 +494,22 @@ description: Program memory after executing cube.kcl
                               "name": "endAbsolute"
                             },
                             "arg": {
-                              "end": 231,
+                              "end": 223,
                               "name": "p1",
-                              "start": 229,
+                              "start": 221,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 214,
+                          "end": 206,
                           "name": "line",
-                          "start": 210,
+                          "start": 202,
                           "type": "Identifier"
                         },
-                        "end": 232,
-                        "start": 210,
+                        "end": 224,
+                        "start": 202,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -522,22 +523,22 @@ description: Program memory after executing cube.kcl
                               "name": "endAbsolute"
                             },
                             "arg": {
-                              "end": 261,
+                              "end": 253,
                               "name": "p2",
-                              "start": 259,
+                              "start": 251,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 244,
+                          "end": 236,
                           "name": "line",
-                          "start": 240,
+                          "start": 232,
                           "type": "Identifier"
                         },
-                        "end": 262,
-                        "start": 240,
+                        "end": 254,
+                        "start": 232,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -551,22 +552,22 @@ description: Program memory after executing cube.kcl
                               "name": "endAbsolute"
                             },
                             "arg": {
-                              "end": 291,
+                              "end": 283,
                               "name": "p3",
-                              "start": 289,
+                              "start": 281,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 274,
+                          "end": 266,
                           "name": "line",
-                          "start": 270,
+                          "start": 262,
                           "type": "Identifier"
                         },
-                        "end": 292,
-                        "start": 270,
+                        "end": 284,
+                        "start": 262,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -580,36 +581,43 @@ description: Program memory after executing cube.kcl
                               "name": "endAbsolute"
                             },
                             "arg": {
-                              "end": 321,
+                              "end": 313,
                               "name": "p0",
-                              "start": 319,
+                              "start": 311,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 304,
+                          "end": 296,
                           "name": "line",
-                          "start": 300,
+                          "start": 292,
                           "type": "Identifier"
                         },
-                        "end": 322,
-                        "start": 300,
+                        "end": 314,
+                        "start": 292,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
                       },
                       {
-                        "arguments": [],
+                        "arguments": [
+                          {
+                            "end": 329,
+                            "start": 328,
+                            "type": "PipeSubstitution",
+                            "type": "PipeSubstitution"
+                          }
+                        ],
                         "callee": {
-                          "end": 335,
+                          "end": 327,
                           "name": "close",
-                          "start": 330,
+                          "start": 322,
                           "type": "Identifier"
                         },
-                        "end": 337,
-                        "start": 330,
+                        "end": 330,
+                        "start": 322,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -622,45 +630,45 @@ description: Program memory after executing cube.kcl
                               "name": "length"
                             },
                             "arg": {
-                              "end": 372,
-                              "name": "sideLength",
-                              "start": 362,
+                              "end": 361,
+                              "name": "length",
+                              "start": 355,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 352,
+                          "end": 345,
                           "name": "extrude",
-                          "start": 345,
+                          "start": 338,
                           "type": "Identifier"
                         },
-                        "end": 373,
-                        "start": 345,
+                        "end": 362,
+                        "start": 338,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
                       }
                     ],
-                    "end": 373,
-                    "start": 185,
+                    "end": 362,
+                    "start": 177,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 373,
-                  "start": 178,
+                  "end": 362,
+                  "start": 170,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 375,
+              "end": 364,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "6": [
                     {
-                      "end": 178,
-                      "start": 174,
+                      "end": 170,
+                      "start": 166,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -670,15 +678,15 @@ description: Program memory after executing cube.kcl
                 },
                 "startNodes": []
               },
-              "start": 28
+              "start": 24
             },
-            "end": 375,
+            "end": 364,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 18,
-                  "name": "sideLength",
+                  "end": 14,
+                  "name": "length",
                   "start": 8,
                   "type": "Identifier"
                 }
@@ -686,9 +694,9 @@ description: Program memory after executing cube.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 26,
+                  "end": 22,
                   "name": "center",
-                  "start": 20,
+                  "start": 16,
                   "type": "Identifier"
                 }
               }
@@ -704,7 +712,76 @@ description: Program memory after executing cube.kcl
             {
               "sourceRange": [
                 7,
+                364,
+                0
+              ]
+            }
+          ]
+        },
+        "double": {
+          "type": "Function",
+          "expression": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 395,
+                    "left": {
+                      "end": 391,
+                      "name": "x",
+                      "start": 390,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "end": 395,
+                      "raw": "2",
+                      "start": 394,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 390,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 395,
+                  "start": 383,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 397,
+              "start": 379
+            },
+            "end": 397,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 377,
+                  "name": "x",
+                  "start": 376,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 375,
+            "type": "FunctionExpression"
+          },
+          "memory": [
+            0,
+            2
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
                 375,
+                397,
                 0
               ]
             }
@@ -721,8 +798,19 @@ description: Program memory after executing cube.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  210,
+                  202,
+                  224,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
                   232,
+                  254,
                   0
                 ],
                 "tag": null,
@@ -732,8 +820,8 @@ description: Program memory after executing cube.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  240,
                   262,
+                  284,
                   0
                 ],
                 "tag": null,
@@ -743,19 +831,8 @@ description: Program memory after executing cube.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  270,
                   292,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  300,
-                  322,
+                  314,
                   0
                 ],
                 "tag": null,
@@ -770,19 +847,39 @@ description: Program memory after executing cube.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      210,
+                      202,
+                      224,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -200.0,
+                    -200.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -200.0,
+                    200.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
                       232,
+                      254,
                       0
                     ]
                   },
                   "from": [
-                    -20.0,
-                    -20.0
+                    -200.0,
+                    200.0
                   ],
                   "tag": null,
                   "to": [
-                    -20.0,
-                    20.0
+                    200.0,
+                    200.0
                   ],
                   "type": "ToPoint"
                 },
@@ -790,19 +887,19 @@ description: Program memory after executing cube.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      240,
                       262,
+                      284,
                       0
                     ]
                   },
                   "from": [
-                    -20.0,
-                    20.0
+                    200.0,
+                    200.0
                   ],
                   "tag": null,
                   "to": [
-                    20.0,
-                    20.0
+                    200.0,
+                    -200.0
                   ],
                   "type": "ToPoint"
                 },
@@ -810,19 +907,19 @@ description: Program memory after executing cube.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      270,
                       292,
+                      314,
                       0
                     ]
                   },
                   "from": [
-                    20.0,
-                    20.0
+                    200.0,
+                    -200.0
                   ],
                   "tag": null,
                   "to": [
-                    20.0,
-                    -20.0
+                    -200.0,
+                    -200.0
                   ],
                   "type": "ToPoint"
                 },
@@ -830,39 +927,19 @@ description: Program memory after executing cube.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      300,
                       322,
-                      0
-                    ]
-                  },
-                  "from": [
-                    20.0,
-                    -20.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -20.0,
-                    -20.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
                       330,
-                      337,
                       0
                     ]
                   },
                   "from": [
-                    -20.0,
-                    -20.0
+                    -200.0,
+                    -200.0
                   ],
                   "tag": null,
                   "to": [
-                    -20.0,
-                    -20.0
+                    -200.0,
+                    -200.0
                   ],
                   "type": "ToPoint"
                 }
@@ -899,19 +976,19 @@ description: Program memory after executing cube.kcl
               },
               "start": {
                 "from": [
-                  -20.0,
-                  -20.0
+                  -200.0,
+                  -200.0
                 ],
                 "to": [
-                  -20.0,
-                  -20.0
+                  -200.0,
+                  -200.0
                 ],
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    185,
-                    202,
+                    177,
+                    194,
                     0
                   ]
                 }
@@ -924,14 +1001,14 @@ description: Program memory after executing cube.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    185,
-                    202,
+                    177,
+                    194,
                     0
                   ]
                 }
               ]
             },
-            "height": 40.0,
+            "height": 400.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
@@ -940,13 +1017,58 @@ description: Program memory after executing cube.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  185,
-                  202,
+                  177,
+                  194,
                   0
                 ]
               }
             ]
           }
+        },
+        "width": {
+          "type": "Function",
+          "expression": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 423,
+                    "raw": "200",
+                    "start": 420,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 200.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "end": 423,
+                  "start": 413,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 425,
+              "start": 409
+            },
+            "end": 425,
+            "params": [],
+            "start": 406,
+            "type": "FunctionExpression"
+          },
+          "memory": [
+            0,
+            3
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                406,
+                425,
+                0
+              ]
+            }
+          ]
         }
       },
       "snapshots": [
@@ -957,8 +1079,28 @@ description: Program memory after executing cube.kcl
               "type": "Tombstone",
               "value": null,
               "__meta": []
-            },
+            }
+          }
+        },
+        {
+          "parent_snapshot": null,
+          "data": {
+            "double": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            }
+          }
+        },
+        {
+          "parent_snapshot": null,
+          "data": {
             "myCube": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "width": {
               "type": "Tombstone",
               "value": null,
               "__meta": []
@@ -967,6 +1109,35 @@ description: Program memory after executing cube.kcl
         }
       ],
       "parent": null
+    },
+    {
+      "bindings": {
+        "__return": {
+          "type": "Number",
+          "value": 400.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                441,
+                444,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                394,
+                395,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "snapshots": [],
+      "parent": [
+        0,
+        2
+      ]
     },
     {
       "bindings": {
@@ -981,8 +1152,19 @@ description: Program memory after executing cube.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  210,
+                  202,
+                  224,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
                   232,
+                  254,
                   0
                 ],
                 "tag": null,
@@ -992,8 +1174,8 @@ description: Program memory after executing cube.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  240,
                   262,
+                  284,
                   0
                 ],
                 "tag": null,
@@ -1003,19 +1185,8 @@ description: Program memory after executing cube.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  270,
                   292,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  300,
-                  322,
+                  314,
                   0
                 ],
                 "tag": null,
@@ -1030,19 +1201,39 @@ description: Program memory after executing cube.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      210,
+                      202,
+                      224,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -200.0,
+                    -200.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -200.0,
+                    200.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
                       232,
+                      254,
                       0
                     ]
                   },
                   "from": [
-                    -20.0,
-                    -20.0
+                    -200.0,
+                    200.0
                   ],
                   "tag": null,
                   "to": [
-                    -20.0,
-                    20.0
+                    200.0,
+                    200.0
                   ],
                   "type": "ToPoint"
                 },
@@ -1050,19 +1241,19 @@ description: Program memory after executing cube.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      240,
                       262,
+                      284,
                       0
                     ]
                   },
                   "from": [
-                    -20.0,
-                    20.0
+                    200.0,
+                    200.0
                   ],
                   "tag": null,
                   "to": [
-                    20.0,
-                    20.0
+                    200.0,
+                    -200.0
                   ],
                   "type": "ToPoint"
                 },
@@ -1070,19 +1261,19 @@ description: Program memory after executing cube.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      270,
                       292,
+                      314,
                       0
                     ]
                   },
                   "from": [
-                    20.0,
-                    20.0
+                    200.0,
+                    -200.0
                   ],
                   "tag": null,
                   "to": [
-                    20.0,
-                    -20.0
+                    -200.0,
+                    -200.0
                   ],
                   "type": "ToPoint"
                 },
@@ -1090,39 +1281,19 @@ description: Program memory after executing cube.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      300,
                       322,
-                      0
-                    ]
-                  },
-                  "from": [
-                    20.0,
-                    -20.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -20.0,
-                    -20.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
                       330,
-                      337,
                       0
                     ]
                   },
                   "from": [
-                    -20.0,
-                    -20.0
+                    -200.0,
+                    -200.0
                   ],
                   "tag": null,
                   "to": [
-                    -20.0,
-                    -20.0
+                    -200.0,
+                    -200.0
                   ],
                   "type": "ToPoint"
                 }
@@ -1159,42 +1330,39 @@ description: Program memory after executing cube.kcl
               },
               "start": {
                 "from": [
-                  -20.0,
-                  -20.0
+                  -200.0,
+                  -200.0
                 ],
                 "to": [
-                  -20.0,
-                  -20.0
+                  -200.0,
+                  -200.0
                 ],
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    185,
-                    202,
+                    177,
+                    194,
                     0
                   ]
                 }
               },
               "artifactId": "[uuid]",
-<<<<<<< HEAD
               "originalId": "[uuid]",
-=======
->>>>>>> a6757a13f (Fixups)
               "units": {
                 "type": "Mm"
               },
               "__meta": [
                 {
                   "sourceRange": [
-                    185,
-                    202,
+                    177,
+                    194,
                     0
                   ]
                 }
               ]
             },
-            "height": 40.0,
+            "height": 400.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
@@ -1203,8 +1371,8 @@ description: Program memory after executing cube.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  185,
-                  202,
+                  177,
+                  194,
                   0
                 ]
               }
