@@ -424,6 +424,7 @@ test.describe('verify sketch on chamfer works', () => {
     }, file)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
