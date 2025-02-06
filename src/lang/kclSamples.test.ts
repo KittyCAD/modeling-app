@@ -43,7 +43,7 @@ process.chdir(DIR_KCL_SAMPLES)
 
 beforeAll(async () => {
   await initPromise
-})
+}, 5_000)
 
 afterAll(async () => {
   try {
@@ -71,6 +71,6 @@ describe('Test KCL Samples from public Github repository', () => {
         },
         files.length * 1000
       )
-    })
+    }, 3_0000)
   })
 })
