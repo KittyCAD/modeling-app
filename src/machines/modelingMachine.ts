@@ -1015,10 +1015,6 @@ export const modelingMachine = setup({
             return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            console.log('second point click', {
-              p1: event.data,
-              p2: [twoD.x, twoD.y],
-            })
             sceneInfra.modelingSend({
               type: 'Add second point',
               data: {

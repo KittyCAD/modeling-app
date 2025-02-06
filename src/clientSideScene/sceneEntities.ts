@@ -1441,14 +1441,15 @@ export class SceneEntities {
 
     const varName = findUniqueName(_ast, 'profile')
 
-    const thirdPointCloseToWhereUserLastClicked = `[${point2[0] + 0.1}, ${
-      point2[1] + 0.1
-    }]`
-    const newExpression = createNodeFromExprSnippet`${varName} = circleThreePoint({
-  p1 = [${point1[0]}, ${point1[1]}],
-  p2 = [${point2[0]}, ${point2[1]}],
-  p3 = ${thirdPointCloseToWhereUserLastClicked}},
-  ${varDec.node.id.name}
+    const thirdPointCloseToWhereUserLastClicked = `[${roundOff(
+      point2[0] + 0.1,
+      2
+    )}, ${roundOff(point2[1] + 0.1, 2)}]`
+    const newExpression = createNodeFromExprSnippet`${varName} = circleThreePoint(
+  ${varDec.node.id.name},
+  p1 = [${roundOff(point1[0], 2)}, ${roundOff(point1[1], 2)}],
+  p2 = [${roundOff(point2[0], 2)}, ${roundOff(point2[1], 2)}],
+  p3 = ${thirdPointCloseToWhereUserLastClicked},
 )`
     if (err(newExpression)) return newExpression
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
@@ -1495,7 +1496,7 @@ export class SceneEntities {
         if (trap(_node)) return
         const sketchInit = _node.node.declaration.init
 
-        if (sketchInit.type === 'CallExpression') {
+        if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
             kclManager.programMemory,
@@ -1563,7 +1564,7 @@ export class SceneEntities {
         const sketchInit = _node.node?.declaration.init
 
         let modded = structuredClone(_ast)
-        if (sketchInit.type === 'CallExpression') {
+        if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
             kclManager.programMemory,

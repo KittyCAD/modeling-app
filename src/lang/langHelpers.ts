@@ -43,6 +43,7 @@ export const toolTips: Array<ToolTip> = [
   'yLineTo',
   'angledLineThatIntersects',
   'tangentialArcTo',
+  'circleThreePoint',
 ]
 
 export async function executeAst({

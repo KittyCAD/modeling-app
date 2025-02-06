@@ -66,7 +66,12 @@ import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { EdgeCutInfo } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { findKwArg, findKwArgAny, findKwArgAnyIndex } from 'lang/util'
+import {
+  findKwArg,
+  findKwArgWithIndex,
+  findKwArgAny,
+  findKwArgAnyIndex,
+} from 'lang/util'
 
 export const ARG_TAG = 'tag'
 export const ARG_END = 'end'
@@ -1242,21 +1247,22 @@ export const circle: SketchLineHelper = {
     ]
   },
 }
-export const circleThreePoint: SketchLineHelper = {
+export const circleThreePoint: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
-    if (segmentInput.type !== 'circle-three-point-segment')
+    if (segmentInput.type !== 'circle-three-point-segment') {
       return CIRCLE_THREE_POINT_SEGMENT_ERR
+    }
 
     const { p1, p2, p3 } = segmentInput
-    const _node = { ...node }
-    const nodeMeta = getNodeFromPath<PipeExpression>(
+    const _node = structuredClone(node)
+    const nodeMeta = getNodeFromPath<VariableDeclaration>(
       _node,
       pathToNode,
-      'PipeExpression'
+      'VariableDeclaration'
     )
     if (err(nodeMeta)) return nodeMeta
 
-    const { node: pipe } = nodeMeta
+    const { node: varDec } = nodeMeta
 
     const createRoundedLiteral = (val: number) =>
       createLiteral(roundOff(val, 2))
@@ -1308,8 +1314,7 @@ export const circleThreePoint: SketchLineHelper = {
       if (err(result)) return result
       const { callExp, valueUsedInTransform } = result
 
-      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      pipe.body[callIndex] = callExp
+      varDec.declaration.init = callExp
 
       return {
         modifiedAst: _node,
@@ -1320,11 +1325,12 @@ export const circleThreePoint: SketchLineHelper = {
     return new Error('not implemented')
   },
   updateArgs: ({ node, pathToNode, input }) => {
-    if (input.type !== 'circle-three-point-segment')
+    if (input.type !== 'circle-three-point-segment') {
       return CIRCLE_THREE_POINT_SEGMENT_ERR
+    }
     const { p1, p2, p3 } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
     const { node: callExpression, shallowPath } = nodeMeta
@@ -1334,33 +1340,25 @@ export const circleThreePoint: SketchLineHelper = {
         createLiteral(roundOff(point[1], 2)),
       ])
 
-    const firstArg = callExpression.arguments?.[0]
     const newP1 = createRounded2DPointArr(p1)
     const newP2 = createRounded2DPointArr(p2)
     const newP3 = createRounded2DPointArr(p3)
-    mutateObjExpProp(firstArg, newP1, 'p1')
-    mutateObjExpProp(firstArg, newP2, 'p2')
-    mutateObjExpProp(firstArg, newP3, 'p3')
+    mutateKwArg('p1', callExpression, newP1)
+    mutateKwArg('p2', callExpression, newP2)
+    mutateKwArg('p3', callExpression, newP3)
 
     return {
       modifiedAst: _node,
       pathToNode: shallowPath,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (
-    callExp: CallExpression,
-    code,
-    pathToNode,
-    filterValue
-  ) => {
-    if (callExp.type !== 'CallExpression') return []
-    const firstArg = callExp.arguments?.[0]
-    if (firstArg.type !== 'ObjectExpression') return []
-    const p1Details = getObjExprProperty(firstArg, 'p1')
-    const p2Details = getObjExprProperty(firstArg, 'p2')
-    const p3Details = getObjExprProperty(firstArg, 'p3')
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp, code, pathToNode, filterValue) => {
+    if (callExp.type !== 'CallExpressionKw') return []
+    const p1Details = findKwArgWithIndex('p1', callExp)
+    const p2Details = findKwArgWithIndex('p2', callExp)
+    const p3Details = findKwArgWithIndex('p3', callExp)
     if (!p1Details || !p2Details || !p3Details) return []
     if (
       p1Details.expr.type !== 'ArrayExpression' ||
@@ -1371,29 +1369,23 @@ export const circleThreePoint: SketchLineHelper = {
 
     const pathToP1ArrayExpression: PathToNode = [
       ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['properties', 'ObjectExpression'],
-      [p1Details.index, 'index'],
-      ['value', 'Property'],
+      ['arguments', 'CallExpressionKw'],
+      [p1Details.argIndex, 'arg index'],
+      ['arg', 'labeledArg -> Arg'],
       ['elements', 'ArrayExpression'],
     ]
     const pathToP2ArrayExpression: PathToNode = [
       ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['properties', 'ObjectExpression'],
-      [p2Details.index, 'index'],
-      ['value', 'Property'],
+      ['arguments', 'CallExpressionKw'],
+      [p2Details.argIndex, 'arg index'],
+      ['arg', 'labeledArg -> Arg'],
       ['elements', 'ArrayExpression'],
     ]
     const pathToP3ArrayExpression: PathToNode = [
       ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['properties', 'ObjectExpression'],
-      [p3Details.index, 'index'],
-      ['value', 'Property'],
+      ['arguments', 'CallExpressionKw'],
+      [p3Details.argIndex, 'arg index'],
+      ['arg', 'labeledArg -> Arg'],
       ['elements', 'ArrayExpression'],
     ]
 
@@ -2310,12 +2302,12 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineThatIntersects,
   tangentialArcTo,
   circle,
-  circleThreePoint,
 } as const
 
 export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   line,
   lineTo,
+  circleThreePoint,
 } as const
 
 export function changeSketchArguments(
@@ -2403,7 +2395,9 @@ export function getConstraintInfoKw(
   filterValue?: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
-  const isAbsolute = findKwArg('endAbsolute', callExpression) !== undefined
+  const isAbsolute =
+    fnName === 'circleThreePoint' ||
+    findKwArg('endAbsolute', callExpression) !== undefined
   if (!(fnName in sketchLineHelperMapKw)) return []
   const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
   return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
@@ -3050,6 +3044,8 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
       return new Error(
         `line call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'circleThreePoint':
+      return false
   }
   return new Error(`Unknown sketch function ${name}`)
 }

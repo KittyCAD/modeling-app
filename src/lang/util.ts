@@ -108,9 +108,25 @@ export function findKwArg(
   label: string,
   call: CallExpressionKw
 ): Expr | undefined {
-  return call.arguments.find((arg) => {
+  return call?.arguments?.find((arg) => {
     return arg.label.name === label
   })?.arg
+}
+
+/**
+Search the keyword arguments from a call for an argument with this label,
+returns the index of the argument as well.
+*/
+export function findKwArgWithIndex(
+  label: string,
+  call: CallExpressionKw
+): { expr: Expr; argIndex: number } | undefined {
+  const index = call.arguments.findIndex((arg) => {
+    return arg.label.name === label
+  })
+  return index >= 0
+    ? { expr: call.arguments[index].arg, argIndex: index }
+    : undefined
 }
 
 /**

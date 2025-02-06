@@ -242,8 +242,21 @@ export function mutateKwArg(
   for (let i = 0; i < node.arguments.length; i++) {
     const arg = node.arguments[i]
     if (arg.label.name === label) {
-      node.arguments[i].arg = val
-      return true
+      if (isLiteralArrayOrStatic(val) && isLiteralArrayOrStatic(arg.arg)) {
+        node.arguments[i].arg = val
+        return true
+      } else if (
+        arg.arg.type === 'ArrayExpression' &&
+        val.type === 'ArrayExpression'
+      ) {
+        const arrExp = arg.arg
+        arrExp.elements.forEach((element, i) => {
+          if (isLiteralArrayOrStatic(element)) {
+            arrExp.elements[i] = val.elements[i]
+          }
+        })
+        return true
+      }
     }
   }
   node.arguments.push(createLabeledArg(label, val))
@@ -1474,6 +1487,13 @@ export async function deleteFromSelection(
       astClone.body.splice(varDecIndex, 1)
       return astClone
     }
+  } else if (
+    varDec.node.init.type === 'CallExpressionKw' &&
+    varDec.node.init.callee.name === 'circleThreePoint'
+  ) {
+    const varDecIndex = varDec.shallowPath[1][0] as number
+    astClone.body.splice(varDecIndex, 1)
+    return astClone
   }
 
   return new Error('Selection not recognised, could not delete')
@@ -1639,12 +1659,11 @@ export function createNodeFromExprSnippet(
   )
   let program = parse(code)
   if (err(program)) return program
-  console.log('code', code, program)
   const node = program.program?.body[0]
   if (!node) return new Error('No node found')
   return node
 }
 
-export const createLabeledArg = (name: string, arg: Expr): LabeledArg => {
-  return { label: createIdentifier(name), arg, type: 'LabeledArg' }
+export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
+  return { label: createIdentifier(label), arg, type: 'LabeledArg' }
 }
