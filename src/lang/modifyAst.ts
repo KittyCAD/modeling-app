@@ -320,14 +320,14 @@ export function extrudeSketch({
   pathToNode,
   distance = createLiteral(4),
   extrudeName,
-  artifact
+  artifact,
 }: {
   node: Node<Program>
   pathToNode: PathToNode
   shouldPipe?: boolean
   distance: Expr
   extrudeName?: string
-  artifact?: Artifact,
+  artifact?: Artifact
 }):
   | {
       modifiedAst: Node<Program>
