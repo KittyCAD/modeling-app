@@ -26,11 +26,18 @@ type CmdBarSerialised =
 export class CmdBarFixture {
   public page: Page
   cmdBarOpenBtn!: Locator
+  cmdBarElement!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = page.getByTestId('command-bar-open-button')
+    this.cmdBarElement = page.getByTestId('command-bar')
   }
+
+  get currentArgumentInput() {
+    return this.page.getByTestId('cmd-bar-arg-value')
+  }
+
   reConstruct = (page: Page) => {
     this.page = page
   }

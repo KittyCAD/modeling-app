@@ -2392,8 +2392,6 @@ export class SceneEntities {
   }
 }
 
-export type DefaultPlaneStr = 'XY' | 'XZ' | 'YZ' | '-XY' | '-XZ' | '-YZ'
-
 // calculations/pure-functions/easy to test so no excuse not to
 
 function prepareTruncatedMemoryAndAst(

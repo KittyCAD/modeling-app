@@ -456,7 +456,7 @@ export class KclManager {
     // problem this solves, but either way we should strive to remove it.
     Array.from(this.engineCommandManager.artifactGraph).forEach(
       ([commandId, artifact]) => {
-        if (!('codeRef' in artifact)) return
+        if (!('codeRef' in artifact && artifact.codeRef)) return
         const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
           this.ast,
           artifact.codeRef.pathToNode,

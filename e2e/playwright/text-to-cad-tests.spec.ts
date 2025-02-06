@@ -3,7 +3,7 @@ import { getUtils, createProject } from './test-utils'
 import { join } from 'path'
 import fs from 'fs'
 
-test.describe('Text-to-CAD tests', () => {
+test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
   test('basic lego happy case', async ({ page, homePage }) => {
     const u = await getUtils(page)
 
@@ -435,11 +435,6 @@ test.describe('Text-to-CAD tests', () => {
     async ({ page, homePage }) => {
       // Let this test run longer since we've seen it timeout.
       test.setTimeout(180_000)
-      // skip on windows
-      test.skip(
-        process.platform === 'win32',
-        'This test is flaky, skipping for now'
-      )
 
       const u = await getUtils(page)
 
