@@ -1952,6 +1952,7 @@ extrude001 = extrude(sketch001, length = 40)
   }, initialCode)
   await page.setBodyDimensions({ width: 1000, height: 500 })
   await homePage.goToModelingScene()
+  await scene.waitForExecutionDone()
 
   // One dumb hardcoded screen pixel value
   const testPoint = { x: 580, y: 180 }
