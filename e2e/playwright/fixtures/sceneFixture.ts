@@ -239,30 +239,6 @@ export class SceneFixture {
     await expect(buttonToTest).toBeVisible()
     await buttonToTest.click()
   }
-
-  drawCanvas = async () => {
-    await this.page.evaluate(() => {
-      var canvas = document.querySelector('[data-engine="three.js r172"]')
-      // insert at global document level and pointer events through it...
-      // make overlay
-      var parentElement = canvas?.parentElement
-      var overlayCanvas = canvas?.cloneNode()
-      this.overlay = overlayCanvas
-      if (overlayCanvas) {
-        overlayCanvas.style.top = '0px'
-        overlayCanvas.style.position = 'absolute'
-        overlayCanvas.style.pointerEvents = 'none'
-        overlayCanvas.style.zIndex = '99999999'
-        document.body.prepend(overlayCanvas)
-        let ctx = overlayCanvas.getContext('2d')
-        ctx.lineWidth = 3
-        ctx.strokeStyle = '#FF0000'
-        ctx.beginPath()
-        ctx.arc(500, 250, 10, 0, 2 * Math.PI, false)
-        ctx.stroke()
-      }
-    })
-  }
 }
 
 export async function expectPixelColor(
