@@ -746,7 +746,7 @@ openSketch = startSketchOn('XY')
 
     // Colors
     const edgeColorWhite: [number, number, number] = [220, 220, 220] // varies from 192 to 255
-    const edgeColorYellow: [number, number, number] = [251, 251, 67]
+    const edgeColorYellow: [number, number, number] = [251, 251, 40] // vaies from 12 to 67
     const faceColorGray: [number, number, number] = [168, 168, 168]
     const faceColorYellow: [number, number, number] = [155, 155, 155]
     const tolerance = 40
