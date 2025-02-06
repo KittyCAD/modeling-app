@@ -144,7 +144,7 @@ async function doBasicSketch(
   |> xLine(-segLen(seg01), %)`)
 }
 
-test.describe('Basic sketch', () => {
+test.describe('Basic sketch', { tag: ['@skipWin'] }, () => {
   test.fixme('code pane open at start', async ({ page, homePage }) => {
     await doBasicSketch(page, homePage, ['code'])
   })

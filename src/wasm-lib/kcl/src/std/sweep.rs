@@ -57,17 +57,17 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
-///     |> line([0, 7], %)
+///     |> line(end = [0, 7])
 ///     |> tangentialArc({
 ///         offset: 90,
 ///         radius: 5
 ///     }, %)
-///     |> line([-3, 0], %)
+///     |> line(end = [-3, 0])
 ///     |> tangentialArc({
 ///         offset: -90,
 ///         radius: 5
 ///     }, %)
-///     |> line([0, 7], %)
+///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
 /// pipeHole = startSketchOn('XY')
@@ -91,14 +91,14 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around a helix path.
 ///
 /// // Create a helix around the Z axis.
-/// helixPath = helix({
+/// helixPath = helix(
 ///     angleStart = 0,
 ///     ccw = true,
 ///     revolutions = 4,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Z',
-///  })
+///  )
 ///
 ///
 /// // Create a spring by sweeping around the helix path.
@@ -131,5 +131,5 @@ async fn inner_sweep(
     )
     .await?;
 
-    do_post_extrude(sketch, 0.0, exec_state, args).await
+    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
 }

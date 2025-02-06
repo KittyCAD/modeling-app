@@ -27,101 +27,48 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          202,
-          203,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          205,
-          214,
-          0
-        ]
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [
-      194,
-      215,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
           242,
-          252,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          254,
-          259,
-          0
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      228,
-      260,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "sourceRange": [
-          428,
-          429,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          431,
-          440,
+          243,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      420,
-      441,
+      214,
+      244,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        222,
+        231,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          468,
-          478,
+          271,
+          281,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          480,
-          485,
+          283,
+          288,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      454,
-      486,
+      257,
+      289,
       0
     ],
     "type": "StdLibCall",
@@ -131,49 +78,48 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          661,
-          662,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          664,
-          673,
+          491,
+          492,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      653,
-      674,
+      463,
+      493,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        471,
+        480,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          701,
-          711,
+          520,
+          530,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          713,
-          718,
+          532,
+          537,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      687,
-      719,
+      506,
+      538,
       0
     ],
     "type": "StdLibCall",
@@ -183,26 +129,76 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          888,
-          889,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          891,
-          900,
+          753,
+          754,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      880,
-      901,
+      725,
+      755,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "sourceRange": [
+        733,
+        742,
+        0
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          782,
+          792,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          794,
+          799,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      768,
+      800,
       0
     ],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          1003,
+          1004,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      975,
+      1005,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "sourceRange": [
+        983,
+        992,
+        0
+      ]
+    }
   }
 ]

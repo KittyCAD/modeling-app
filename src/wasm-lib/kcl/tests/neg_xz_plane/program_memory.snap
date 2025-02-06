@@ -31,13 +31,14 @@ description: Program memory after executing neg_xz_plane.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   67,
-                  88,
+                  97,
                   0
                 ],
                 "tag": null,
@@ -47,8 +48,8 @@ description: Program memory after executing neg_xz_plane.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  94,
-                  113,
+                  103,
+                  131,
                   0
                 ],
                 "tag": null,
@@ -58,8 +59,8 @@ description: Program memory after executing neg_xz_plane.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  119,
-                  127,
+                  137,
+                  145,
                   0
                 ],
                 "tag": null,
@@ -75,7 +76,7 @@ description: Program memory after executing neg_xz_plane.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       67,
-                      88,
+                      97,
                       0
                     ]
                   },
@@ -94,8 +95,8 @@ description: Program memory after executing neg_xz_plane.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      94,
-                      113,
+                      103,
+                      131,
                       0
                     ]
                   },
@@ -114,8 +115,8 @@ description: Program memory after executing neg_xz_plane.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      119,
-                      127,
+                      137,
+                      145,
                       0
                     ]
                   },
@@ -134,6 +135,7 @@ description: Program memory after executing neg_xz_plane.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XZ",
                 "origin": {
                   "x": 0.0,
@@ -179,6 +181,7 @@ description: Program memory after executing neg_xz_plane.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
