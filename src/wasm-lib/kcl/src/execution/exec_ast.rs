@@ -925,24 +925,13 @@ impl Node<CallExpressionKw> {
                         .kw_args
                         .labeled
                         .iter()
-                        .map(|(k, arg)| {
-                            (
-                                k.clone(),
-                                OpArg::new(
-                                    OpKclValue::from(&arg.value),
-                                    arg.source_range,
-                                ),
-                            )
-                        })
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
-                        unlabeled_arg: args.get_unlabeled_kw_arg_unconverted().map(|arg| {
-                            OpArg::new(
-                                OpKclValue::from(&arg.value),
-                                arg.source_range,
-                            )
-                        }),
+                        unlabeled_arg: args
+                            .get_unlabeled_kw_arg_unconverted()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                         is_error: false,
@@ -983,15 +972,7 @@ impl Node<CallExpressionKw> {
                     .kw_args
                     .labeled
                     .iter()
-                    .map(|(k, arg)| {
-                        (
-                            k.clone(),
-                            OpArg::new(
-                                OpKclValue::from(&arg.value),
-                                arg.source_range,
-                            ),
-                        )
-                    })
+                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                     .collect();
                 exec_state
                     .mod_local
@@ -999,12 +980,11 @@ impl Node<CallExpressionKw> {
                     .push(Operation::UserDefinedFunctionCall {
                         name: Some(fn_name.clone()),
                         function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| {
-                            OpArg::new(
-                                OpKclValue::from(&arg.value),
-                                arg.source_range,
-                            )
-                        }),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                     });
@@ -1072,10 +1052,7 @@ impl Node<CallExpression> {
                         .map(|(k, arg)| {
                             (
                                 k.name.clone(),
-                                OpArg::new(
-                                    OpKclValue::from(&arg.value),
-                                    arg.source_range,
-                                ),
+                                OpArg::new(OpKclValue::from(&arg.value), arg.source_range),
                             )
                         })
                         .collect();
