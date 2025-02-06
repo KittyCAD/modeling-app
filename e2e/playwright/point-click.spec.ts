@@ -1516,6 +1516,7 @@ extrude001 = extrude(sketch001, length = -12)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     // verify modeling scene is loaded
     await scene.expectPixelColor(
@@ -1743,6 +1744,7 @@ chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     // verify modeling scene is loaded
     await scene.expectPixelColor(
