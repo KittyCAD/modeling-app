@@ -16,7 +16,7 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
     let ctx = ExecutorContext::new_forwarded_mock(Arc::new(Box::new(
         crate::conn_mock_core::EngineConnection::new(ref_result).await?,
     )));
-    ctx.run(program.into(), &mut ExecState::new(&ctx.settings)).await?;
+    ctx.run(&program, &mut ExecState::new(&ctx.settings)).await?;
 
     let result = result.lock().expect("mutex lock").clone();
     Ok(result)

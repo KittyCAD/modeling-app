@@ -8,6 +8,7 @@ use kittycad_modeling_cmds::{
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
     EnableSketchMode, ModelingCmd, SketchModeDisable,
 };
+use schemars::JsonSchema;
 use serde::{ser::SerializeSeq, Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -37,7 +38,7 @@ pub struct ArtifactCommand {
     pub command: ModelingCmd,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Artifact.ts")]
 pub struct ArtifactId(Uuid);
 
@@ -449,6 +450,12 @@ impl EdgeCut {
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactGraph {
     map: IndexMap<ArtifactId, Artifact>,
+}
+
+impl ArtifactGraph {
+    pub fn len(&self) -> usize {
+        self.map.len()
+    }
 }
 
 pub(super) fn build_artifact_graph(

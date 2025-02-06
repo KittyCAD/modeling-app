@@ -60,7 +60,7 @@ import {
   mutateObjExpProp,
   findUniqueName,
 } from 'lang/modifyAst'
-import { roundOff, getLength, getAngle } from 'lib/utils'
+import { roundOff, getLength, getAngle, isArray } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
@@ -104,7 +104,7 @@ export function createFirstArg(
   sketchFn: ToolTip,
   val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
 ): Expr | Error {
-  if (Array.isArray(val)) {
+  if (isArray(val)) {
     if (
       [
         'angledLine',

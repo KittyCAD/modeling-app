@@ -26,9 +26,11 @@ import {
   MAKE_TOAST_MESSAGES,
 } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
-import { reportRejection } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
+import { DefaultPlaneStr } from 'lib/planes'
+import { defaultPlaneStrToKey } from 'lib/planes'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -2168,6 +2170,16 @@ export class EngineCommandManager extends EventTarget {
       this.defaultPlanes.yz !== '' &&
       this.defaultPlanes.xz !== ''
     )
+  }
+
+  getDefaultPlaneId(name: DefaultPlaneStr): string | Error {
+    const key = defaultPlaneStrToKey(name)
+    if (!this.defaultPlanes) {
+      return new Error('Default planes not initialized')
+    } else if (err(key)) {
+      return key
+    }
+    return this.defaultPlanes[key]
   }
 
   async setPlaneHidden(id: string, hidden: boolean) {

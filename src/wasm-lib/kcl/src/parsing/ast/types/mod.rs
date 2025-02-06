@@ -2,7 +2,7 @@
 
 use std::{
     cell::RefCell,
-    collections::HashMap,
+    collections::{BTreeMap, HashMap},
     fmt,
     ops::{Deref, DerefMut, RangeInclusive},
     rc::Rc,
@@ -26,8 +26,7 @@ use crate::{
     docs::StdLibFn,
     errors::KclError,
     execution::{annotations, KclValue, Metadata, TagIdentifier},
-    parsing::ast::digest::Digest,
-    parsing::PIPE_OPERATOR,
+    parsing::{ast::digest::Digest, PIPE_OPERATOR},
     source_range::{ModuleId, SourceRange},
 };
 
@@ -255,15 +254,26 @@ impl Node<Program> {
         Ok(findings)
     }
 
-    /// Get the annotations for the meta settings from the kcl file.
-    pub fn get_meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
-        let annotations = self
-            .non_code_meta
+    pub fn annotations(&self) -> impl Iterator<Item = &Node<NonCodeNode>> {
+        self.non_code_meta
             .start_nodes
             .iter()
-            .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range())));
-        for (annotation, source_range) in annotations {
+            .filter(|n| n.value_is_annotation())
+    }
+
+    pub fn annotations_mut(&mut self) -> impl Iterator<Item = &mut Node<NonCodeNode>> {
+        self.non_code_meta
+            .start_nodes
+            .iter_mut()
+            .filter(|n| n.value_is_annotation())
+    }
+
+    /// Get the annotations for the meta settings from the kcl file.
+    pub fn get_meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
+        for annotation_node in self.annotations() {
+            let annotation = &annotation_node.value;
             if annotation.annotation_name() == Some(annotations::SETTINGS) {
+                let source_range = annotation_node.as_source_range();
                 let mut meta_settings = crate::execution::MetaSettings::default();
                 meta_settings.update_from_annotation(annotation, source_range)?;
                 return Ok(Some(meta_settings));
@@ -276,17 +286,15 @@ impl Node<Program> {
     pub fn change_meta_settings(&mut self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
-        for node in &mut new_program.non_code_meta.start_nodes {
-            if let Some(annotation) = node.annotation() {
-                if annotation.annotation_name() == Some(annotations::SETTINGS) {
-                    let annotation = NonCodeValue::new_from_meta_settings(&settings);
-                    *node = Node::no_src(NonCodeNode {
-                        value: annotation,
-                        digest: None,
-                    });
-                    found = true;
-                    break;
-                }
+        for node in new_program.annotations_mut() {
+            if node.value.annotation_name() == Some(annotations::SETTINGS) {
+                let annotation = NonCodeValue::new_from_meta_settings(&settings);
+                *node = Node::no_src(NonCodeNode {
+                    value: annotation,
+                    digest: None,
+                });
+                found = true;
+                break;
             }
         }
 
@@ -1091,6 +1099,16 @@ impl NonCodeNode {
             _ => None,
         }
     }
+
+    pub fn value_is_annotation(&self) -> bool {
+        match self.value {
+            NonCodeValue::InlineComment { .. }
+            | NonCodeValue::BlockComment { .. }
+            | NonCodeValue::NewLineBlockComment { .. }
+            | NonCodeValue::NewLine => false,
+            NonCodeValue::Annotation { .. } => true,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1176,7 +1194,7 @@ impl NonCodeValue {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
-    pub non_code_nodes: HashMap<usize, NodeList<NonCodeNode>>,
+    pub non_code_nodes: BTreeMap<usize, NodeList<NonCodeNode>>,
     pub start_nodes: NodeList<NonCodeNode>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1215,7 +1233,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
             .non_code_nodes
             .into_iter()
             .map(|(key, value)| Ok((key.parse().map_err(serde::de::Error::custom)?, value)))
-            .collect::<Result<HashMap<_, _>, _>>()?;
+            .collect::<Result<BTreeMap<_, _>, _>>()?;
         Ok(NonCodeMeta {
             non_code_nodes,
             start_nodes: helper.start_nodes,
