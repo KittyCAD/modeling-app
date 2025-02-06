@@ -707,16 +707,18 @@ export function addHelix({
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
   const variable = createVariableDeclaration(
     name,
-    createCallExpressionStdLib('helix', [
-      createObjectExpression({
-        revolutions,
-        angleStart,
-        counterClockWise: createLiteral(counterClockWise),
-        radius,
-        axis: createLiteral(axis),
-        length,
-      }),
-    ])
+    createCallExpressionStdLibKw(
+      'helix',
+      null, // Not in a pipeline
+      [
+        createLabeledArg('revolutions', revolutions),
+        createLabeledArg('angleStart', angleStart),
+        createLabeledArg('counterClockWise', createLiteral(counterClockWise)),
+        createLabeledArg('radius', radius),
+        createLabeledArg('axis', createLiteral(axis)),
+        createLabeledArg('length', length),
+      ]
+    )
   )
 
   // TODO: figure out smart insertion than just appending at the end

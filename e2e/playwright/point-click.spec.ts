@@ -786,7 +786,7 @@ openSketch = startSketchOn('XY')
   }) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
-    const expectedOutput = `helix001 = helix(revolutions = 1,  angleStart = 360,  counterClockWise = false,  radius = 5,  axis = 'X',  length = 5)`
+    const expectedOutput = `helix001 = helix(revolutions = 1, angleStart = 360, counterClockWise = false, radius = 5, axis = 'X', length = 5)`
 
     await homePage.goToModelingScene()
 
@@ -823,7 +823,7 @@ openSketch = startSketchOn('XY')
       await editor.expectEditor.toContain(expectedOutput)
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['})'],
+        activeLines: [expectedOutput],
         highlightedCode: '',
       })
       // Red plane is now gone, white helix is there
