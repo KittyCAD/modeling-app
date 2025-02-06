@@ -329,11 +329,32 @@ export const ModelingMachineProvider = ({
                   otherSelections: [],
                 }
               } else if (setSelections.selection && editorManager.isShiftDown) {
-                selections = {
-                  graphSelections: [
+                // check if already selected
+                const alreadySelected = selectionRanges.graphSelections.some(
+                  (selection) =>
+                    selection.artifact?.id ===
+                    setSelections.selection?.artifact?.id
+                )
+
+                let updatedSelections: typeof selectionRanges.graphSelections
+
+                if (alreadySelected) {
+                  // remove it
+                  updatedSelections = selectionRanges.graphSelections.filter(
+                    (selection) =>
+                      selection.artifact?.id !==
+                      setSelections.selection?.artifact?.id
+                  )
+                } else {
+                  // add it
+                  updatedSelections = [
                     ...selectionRanges.graphSelections,
                     setSelections.selection,
-                  ],
+                  ]
+                }
+
+                selections = {
+                  graphSelections: updatedSelections,
                   otherSelections: selectionRanges.otherSelections,
                 }
               }
