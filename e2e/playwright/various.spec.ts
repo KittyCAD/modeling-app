@@ -444,7 +444,7 @@ test('Delete key does not navigate back', async ({ page, homePage }) => {
   await expect.poll(() => page.url()).not.toContain('/settings')
 })
 
-test('DOG DOG', async ({ page, homePage, scene, cmdBar }) => {
+test('Sketch on face', async ({ page, homePage, scene, cmdBar }) => {
   test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
