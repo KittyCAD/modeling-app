@@ -1,7 +1,7 @@
 // TODO optimise size of CompilationError
 #![allow(clippy::result_large_err)]
 
-use std::{cell::RefCell, collections::HashMap, str::FromStr};
+use std::{cell::RefCell, collections::BTreeMap, str::FromStr};
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, separated_pair, terminated},
@@ -755,8 +755,8 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
         .end;
 
     // Sort the array's elements (i.e. expression nodes) from the noncode nodes.
-    let (elements, non_code_nodes): (Vec<_>, HashMap<usize, _>) = elements.into_iter().enumerate().fold(
-        (Vec::new(), HashMap::new()),
+    let (elements, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = elements.into_iter().enumerate().fold(
+        (Vec::new(), BTreeMap::new()),
         |(mut elements, mut non_code_nodes), (i, e)| {
             match e {
                 NonCodeOr::NonCode(x) => {
@@ -898,8 +898,8 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
     .parse_next(i)?;
 
     // Sort the object's properties from the noncode nodes.
-    let (properties, non_code_nodes): (Vec<_>, HashMap<usize, _>) = properties.into_iter().enumerate().fold(
-        (Vec::new(), HashMap::new()),
+    let (properties, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = properties.into_iter().enumerate().fold(
+        (Vec::new(), BTreeMap::new()),
         |(mut properties, mut non_code_nodes), (i, e)| {
             match e {
                 NonCodeOr::NonCode(x) => {
