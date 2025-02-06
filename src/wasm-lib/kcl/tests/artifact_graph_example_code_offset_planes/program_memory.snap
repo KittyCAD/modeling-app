@@ -31,6 +31,7 @@ snapshot_kind: text
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 0.0,
@@ -62,6 +63,7 @@ snapshot_kind: text
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 0.0,
@@ -93,6 +95,7 @@ snapshot_kind: text
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 10.0,
@@ -150,6 +153,7 @@ snapshot_kind: text
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "Custom",
               "origin": {
                 "x": 0.0,
@@ -195,6 +199,7 @@ snapshot_kind: text
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
