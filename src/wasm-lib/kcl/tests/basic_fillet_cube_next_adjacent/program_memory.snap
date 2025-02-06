@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -491,6 +492,7 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
