@@ -444,7 +444,7 @@ test('Delete key does not navigate back', async ({ page, homePage }) => {
   await expect.poll(() => page.url()).not.toContain('/settings')
 })
 
-test('Sketch on face', async ({ page, homePage }) => {
+test('DOG DOG', async ({ page, homePage, scene, cmdBar }) => {
   test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
@@ -470,11 +470,7 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
   await page.setBodyDimensions({ width: 1200, height: 500 })
 
   await homePage.goToModelingScene()
-
-  // wait for execution done
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
+  await scene.waitForExecutionDone()
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -579,10 +575,9 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
   await expect(page.getByTestId('command-bar')).toBeVisible()
   await page.waitForTimeout(100)
 
-  await page.getByRole('button', { name: 'arrow right Continue' }).click()
-  await page.waitForTimeout(100)
+  await cmdBar.progressCmdBar()
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  await page.getByRole('button', { name: 'checkmark Submit command' }).click()
+  await cmdBar.progressCmdBar()
 
   const result2 = result.genNext`
 const sketch002 = extrude(sketch002, length = ${[5, 5]} + 7)`
