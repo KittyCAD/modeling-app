@@ -1164,6 +1164,7 @@ async fn start_sketch_on_face(
 
     Ok(Box::new(Face {
         id: extrude_plane_id,
+        artifact_id: extrude_plane_id.into(),
         value: tag.to_string(),
         // TODO: get this from the extrude plane data.
         x_axis: solid.sketch.on.x_axis(),
@@ -1359,7 +1360,7 @@ pub(crate) async fn inner_start_profile_at(
 
     let sketch = Sketch {
         id: path_id,
-        original_id: path_id,
+        artifact_id: path_id.into(),
         on: sketch_surface.clone(),
         paths: vec![],
         units,
