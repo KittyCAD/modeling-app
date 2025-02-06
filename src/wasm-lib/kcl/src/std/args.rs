@@ -131,7 +131,7 @@ impl Args {
     }
 
     /// Get the unlabeled keyword argument. If not set, returns None.
-    pub(crate) fn get_unlabeled_kw_arg_unconverted(&self) -> Option<&Arg> {
+    pub(crate) fn unlabeled_kw_arg_unconverted(&self) -> Option<&Arg> {
         self.kw_args
             .unlabeled
             .as_ref()
@@ -146,7 +146,7 @@ impl Args {
         T: FromKclValue<'a>,
     {
         let arg = self
-            .get_unlabeled_kw_arg_unconverted()
+            .unlabeled_kw_arg_unconverted()
             .ok_or(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![self.source_range],
                 message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),

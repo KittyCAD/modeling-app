@@ -930,7 +930,7 @@ impl Node<CallExpressionKw> {
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
                         unlabeled_arg: args
-                            .get_unlabeled_kw_arg_unconverted()
+                            .unlabeled_kw_arg_unconverted()
                             .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
