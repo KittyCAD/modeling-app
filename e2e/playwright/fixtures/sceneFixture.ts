@@ -39,12 +39,10 @@ export class SceneFixture {
   public streamWrapper!: Locator
   public loadingIndicator!: Locator
   private exeIndicator!: Locator
-  public overlay!: Node | null
 
   constructor(page: Page) {
     this.page = page
     this.reConstruct(page)
-    this.overlay = null
   }
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
