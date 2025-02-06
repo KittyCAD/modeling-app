@@ -57,7 +57,7 @@ function CommandComboBox({
           onKeyDown={(event) => {
             if (
               (event.metaKey && event.key === 'k') ||
-              (event.key === 'Escape')
+              event.key === 'Escape'
             ) {
               event.preventDefault()
               commandBarActor.send({ type: 'Close' })
