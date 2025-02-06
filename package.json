@@ -158,7 +158,7 @@
     "@types/electron": "^1.6.10",
     "@types/isomorphic-fetch": "^0.0.39",
     "@types/minimist": "^1.2.5",
-    "@types/mocha": "^10.0.6",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^22.13.1",
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.4",
