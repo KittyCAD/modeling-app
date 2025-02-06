@@ -168,7 +168,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         height: 'auto',
       }}
       minWidth={200}
-      maxWidth={800}
+      maxWidth={2000}
       handleWrapperClass="sidebar-resize-handles"
       handleClasses={{
         right:
