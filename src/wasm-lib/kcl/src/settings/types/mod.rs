@@ -561,12 +561,11 @@ mod tests {
     use pretty_assertions::assert_eq;
     use validator::Validate;
 
-    use crate::settings::types::CameraOrbitType;
-
     use super::{
         AppColor, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
         ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
+    use crate::settings::types::CameraOrbitType;
 
     #[test]
     // Test that we can deserialize a project file from the old format.
