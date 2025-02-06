@@ -59,6 +59,7 @@ test.describe('Check the happy path, for basic changing color', () => {
         localStorage.setItem('persistCode', file)
       }, file)
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       const body1CapCoords = { x: 571, y: 351 }
       const greenCheckCoords = { x: 565, y: 345 }
