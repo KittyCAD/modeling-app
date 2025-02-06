@@ -9,14 +9,14 @@ snapshot_kind: text
     "name": "cube",
     "functionSourceRange": [
       7,
-      175,
+      184,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      186,
-      202,
+      195,
+      211,
       0
     ]
   },
@@ -46,23 +46,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          230,
-          232,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          234,
-          235,
+          248,
+          250,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      222,
-      236,
+      231,
+      251,
       0
     ],
     "type": "StdLibCall",
@@ -72,23 +65,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          262,
-          269,
+          277,
+          284,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          271,
-          276,
+          286,
+          291,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      248,
-      277,
+      263,
+      292,
       0
     ],
     "type": "StdLibCall",
@@ -98,23 +91,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          350,
-          351,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          353,
-          354,
+          374,
+          375,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      342,
-      355,
+      357,
+      376,
       0
     ],
     "type": "StdLibCall",

@@ -92,6 +92,8 @@ export type { BinaryExpression } from '../wasm-lib/kcl/bindings/BinaryExpression
 export type { ReturnStatement } from '../wasm-lib/kcl/bindings/ReturnStatement'
 export type { ExpressionStatement } from '../wasm-lib/kcl/bindings/ExpressionStatement'
 export type { CallExpression } from '../wasm-lib/kcl/bindings/CallExpression'
+export type { CallExpressionKw } from '../wasm-lib/kcl/bindings/CallExpressionKw'
+export type { LabeledArg } from '../wasm-lib/kcl/bindings/LabeledArg'
 export type { VariableDeclarator } from '../wasm-lib/kcl/bindings/VariableDeclarator'
 export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
@@ -105,6 +107,7 @@ export type SyntaxType =
   | 'ExpressionStatement'
   | 'BinaryExpression'
   | 'CallExpression'
+  | 'CallExpressionKw'
   | 'Identifier'
   | 'ReturnStatement'
   | 'VariableDeclaration'
@@ -157,6 +160,12 @@ export function topLevelRange(start: number, end: number): SourceRange {
  */
 export function isTopLevelModule(range: SourceRange): boolean {
   return range[2] === 0
+}
+
+function firstSourceRange(error: RustKclError): SourceRange {
+  return error.sourceRanges.length > 0
+    ? sourceRangeFromRust(error.sourceRanges[0])
+    : defaultSourceRange()
 }
 
 export const wasmUrl = () => {
@@ -251,11 +260,12 @@ export const parse = (code: string | Error): ParseResult | Error => {
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
     // throw e
+    console.error(e.toString())
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0]),
+      firstSourceRange(parsed),
       [],
       [],
       defaultArtifactGraph()
@@ -622,7 +632,7 @@ export const executor = async (
     const kclError = new KCLError(
       parsed.error.kind,
       parsed.error.msg,
-      sourceRangeFromRust(parsed.error.sourceRanges[0]),
+      firstSourceRange(parsed.error),
       parsed.operations,
       parsed.artifactCommands,
       rustArtifactGraphToMap(parsed.artifactGraph)
@@ -691,7 +701,7 @@ export const modifyAstForSketch = async (
     const kclError = new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0]),
+      firstSourceRange(parsed),
       [],
       [],
       defaultArtifactGraph()
@@ -762,7 +772,7 @@ export function programMemoryInit(): ProgramMemory | Error {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0]),
+      firstSourceRange(parsed),
       [],
       [],
       defaultArtifactGraph()

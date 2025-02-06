@@ -18,6 +18,7 @@ import {
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { err } from 'lib/trap'
+import { codeManager } from 'lib/singletons'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from 'lang/wasm'
 

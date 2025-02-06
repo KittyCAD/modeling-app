@@ -82,10 +82,7 @@ mod wasm;
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
-pub use execution::{
-    cache::{CacheInformation, OldAstState},
-    ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
-};
+pub use execution::{bust_cache, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d};
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},

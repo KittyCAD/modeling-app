@@ -11,7 +11,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, Modu
     let program = Program::parse_no_errs(code)?;
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
     let mut exec_state = ExecState::new(&ctx.settings);
-    ctx.run(program.clone().into(), &mut exec_state).await?;
+    ctx.run(&program, &mut exec_state).await?;
 
     // We need to get the sketch ID.
     // Get the sketch ID from memory.
@@ -62,9 +62,9 @@ async fn kcl_test_modify_sketch_part001() {
     let code = format!(
         r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
-  |> line([7.37, -11], %)
-  |> line([-8.69, -3.75], %)
-  |> line([-5, 4.25], %)
+  |> line(end = [7.37, -11])
+  |> line(end = [-8.69, -3.75])
+  |> line(end = [-5, 4.25])
 "#,
         name
     );
@@ -87,9 +87,9 @@ async fn kcl_test_modify_sketch_part002() {
     let code = format!(
         r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
-  |> line([7.42, -8.62], %)
-  |> line([-6.38, -3.51], %)
-  |> line([-3.77, 3.56], %)
+  |> line(end = [7.42, -8.62])
+  |> line(end = [-6.38, -3.51])
+  |> line(end = [-3.77, 3.56])
 "#,
         name
     );
@@ -113,10 +113,10 @@ async fn kcl_test_modify_close_sketch() {
     let code = format!(
         r#"{} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
-  |> line([7.42, -8.62], %)
-  |> line([-6.38, -3.51], %)
-  |> line([-3.77, 3.56], %)
-  |> close(%)
+  |> line(end = [7.42, -8.62])
+  |> line(end = [-6.38, -3.51])
+  |> line(end = [-3.77, 3.56])
+  |> close()
 "#,
         name
     );
@@ -139,10 +139,10 @@ async fn kcl_test_modify_line_to_close_sketch() {
     let code = format!(
         r#"const {} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
-  |> line([7.42, -8.62], %)
-  |> line([-6.38, -3.51], %)
-  |> line([-3.77, 3.56], %)
-  |> lineTo([7.91, 3.89], %)
+  |> line(end = [7.42, -8.62])
+  |> line(end = [-6.38, -3.51])
+  |> line(end = [-3.77, 3.56])
+  |> line(endAbsolute = [7.91, 3.89])
 "#,
         name
     );
@@ -159,10 +159,10 @@ async fn kcl_test_modify_line_to_close_sketch() {
         format!(
             r#"{} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
-  |> line([7.42, -8.62], %)
-  |> line([-6.38, -3.51], %)
-  |> line([-3.77, 3.56], %)
-  |> close(%)
+  |> line(end = [7.42, -8.62])
+  |> line(end = [-6.38, -3.51])
+  |> line(end = [-3.77, 3.56])
+  |> close()
 "#,
             name
         )
@@ -176,10 +176,10 @@ async fn kcl_test_modify_with_constraint() {
         r#"const thing = 12
 const {} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
-  |> line([7.42, -8.62], %)
-  |> line([-6.38, -3.51], %)
-  |> line([-3.77, 3.56], %)
-  |> lineTo([thing, 3.89], %)
+  |> line(end = [7.42, -8.62])
+  |> line(end = [-6.38, -3.51])
+  |> line(end = [-3.77, 3.56])
+  |> line(endAbsolute = [thing, 3.89])
 "#,
         name
     );
@@ -190,8 +190,8 @@ const {} = startSketchOn("XY")
 
     assert!(result.is_err());
     assert_eq!(
-        result.unwrap_err().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([188, 193, 0])], message: "Sketch part002 is constrained `partial` and cannot be modified" }"#
+        result.unwrap_err().message(),
+        "Sketch part002 is constrained `partial` and cannot be modified",
     );
 }
 
@@ -201,10 +201,10 @@ async fn kcl_test_modify_line_should_close_sketch() {
     let code = format!(
         r#"const {} = startSketchOn("XY")
   |> startProfileAt([13.69, 3.8], %)
-  |> line([4.23, -11.79], %)
-  |> line([-10.7, -1.16], %)
-  |> line([-3.72, 8.69], %)
-  |> line([10.19, 4.26], %)
+  |> line(end = [4.23, -11.79])
+  |> line(end = [-10.7, -1.16])
+  |> line(end = [-3.72, 8.69])
+  |> line(end = [10.19, 4.26])
 "#,
         name
     );
@@ -221,10 +221,10 @@ async fn kcl_test_modify_line_should_close_sketch() {
         format!(
             r#"{} = startSketchOn("XY")
   |> startProfileAt([13.69, 3.8], %)
-  |> line([4.23, -11.79], %)
-  |> line([-10.7, -1.16], %)
-  |> line([-3.72, 8.69], %)
-  |> close(%)
+  |> line(end = [4.23, -11.79])
+  |> line(end = [-10.7, -1.16])
+  |> line(end = [-3.72, 8.69])
+  |> close()
 "#,
             name
         )

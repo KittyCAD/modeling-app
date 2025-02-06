@@ -3,9 +3,7 @@ import { getUtils } from './test-utils'
 import { uuidv4 } from 'lib/utils'
 import { TEST_CODE_GIZMO } from './storageStates'
 
-test.describe('Testing Gizmo', () => {
-  // TODO: fix this test on windows after the electron migration
-  test.skip(process.platform === 'win32', 'Skip on windows')
+test.describe('Testing Gizmo', { tag: ['@skipWin'] }, () => {
   const cases = [
     {
       testDescription: 'top view',
@@ -269,13 +267,13 @@ test.describe(`Testing gizmo, fixture-based`, () => {
                segAng(rectangleSegmentA001),
                -segLen(rectangleSegmentA001)
              ], %)
-          |> close(%)
+          |> close()
         const sketch001 = startSketchOn('XZ')
           |> circle({
                center: [818.33, 168.1],
                radius: 182.8
              }, %)
-          |> extrude(50, %)
+          |> extrude(length = 50)
       `
       )
     })
@@ -289,8 +287,8 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await test.step(`Setup`, async () => {
       await scene.expectState({
         camera: {
-          position: [11912.6, -39586.98, 21391.21],
-          target: [11912.6, -635, 3317.49],
+          position: [11796.52, -39216.59, 21103.27],
+          target: [11796.52, -635, 3201.42],
         },
       })
     })
@@ -315,7 +313,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await test.step(`Verify the camera moved`, async () => {
       await scene.expectState({
         camera: {
-          position: [20785.58, -40221.98, 22343.46],
+          position: [20785.58, -39851.59, 22171.6],
           target: [20785.58, -1270, 4269.74],
         },
       })
