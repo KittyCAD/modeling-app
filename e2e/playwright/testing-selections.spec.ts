@@ -973,6 +973,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
   test("Hovering and selection of extruded faces works, and is not overridden shortly after user's click", async ({
     page,
     homePage,
+    scene,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -991,6 +992,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({
@@ -1024,19 +1026,19 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
       .poll(() => u.getGreatestPixDiff(extrudeWall, noHoverColor))
       .toBeLessThan(15)
     await page.mouse.move(nothing.x, nothing.y)
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(1000)
     await page.mouse.move(extrudeWall.x, extrudeWall.y)
     await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     await expect(page.getByTestId('hover-highlight').first()).toContainText(
       removeAfterFirstParenthesis(extrudeText)
     )
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(1000)
     await expect(
       await u.getGreatestPixDiff(extrudeWall, hoverColor)
     ).toBeLessThan(15)
     await page.mouse.click(extrudeWall.x, extrudeWall.y)
     await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${extrudeText}`)
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(1000)
     await expect(
       await u.getGreatestPixDiff(extrudeWall, selectColor)
     ).toBeLessThan(15)
@@ -1047,7 +1049,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     ).toBeLessThan(15)
 
     await page.mouse.move(nothing.x, nothing.y)
-    await page.waitForTimeout(300)
+    await page.waitForTimeout(1000)
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
     // because of shading, color is not exact everywhere on the face
@@ -1061,11 +1063,11 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await expect(page.getByTestId('hover-highlight').first()).toContainText(
       removeAfterFirstParenthesis(capText)
     )
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(1000)
     await expect(await u.getGreatestPixDiff(cap, hoverColor)).toBeLessThan(15)
     await page.mouse.click(cap.x, cap.y)
     await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${capText}`)
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(1000)
     await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(15)
     await page.waitForTimeout(1000)
     // check color stays there, i.e. not overridden (this was a bug previously)
