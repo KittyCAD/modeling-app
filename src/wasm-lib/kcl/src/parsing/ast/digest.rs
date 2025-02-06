@@ -1,6 +1,9 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
-use super::types::{DefaultParamVal, ItemVisibility, LabelledExpression, LiteralValue, VariableKind};
+use super::types::{
+    DefaultParamVal, ItemVisibility, LabelledExpression, LiteralValue, NonCodeMeta, NonCodeNode, NonCodeValue,
+    VariableKind,
+};
 use crate::parsing::ast::types::{
     ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
     ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
@@ -79,10 +82,58 @@ impl Program {
         for body_item in slf.body.iter_mut() {
             hasher.update(body_item.compute_digest());
         }
+        // This contains settings annotations.
+        hasher.update(slf.non_code_meta.compute_digest());
         if let Some(shebang) = &slf.shebang {
             hasher.update(&shebang.inner.content);
         }
     });
+}
+
+impl NonCodeMeta {
+    compute_digest!(|slf, hasher| {
+        for non_code_node in slf.start_nodes.iter_mut() {
+            hasher.update(non_code_node.compute_digest());
+        }
+        for (_, non_code_nodes) in slf.non_code_nodes.iter_mut() {
+            for non_code_node in non_code_nodes.iter_mut() {
+                hasher.update(non_code_node.compute_digest());
+            }
+        }
+    });
+}
+
+impl NonCodeNode {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.value.compute_digest());
+    });
+}
+
+impl NonCodeValue {
+    pub fn compute_digest(&mut self) -> Digest {
+        let mut hasher = Sha256::new();
+        match self {
+            NonCodeValue::InlineComment { .. } => {}
+            NonCodeValue::BlockComment { .. } => {}
+            NonCodeValue::NewLineBlockComment { .. } => {}
+            NonCodeValue::NewLine => {}
+            NonCodeValue::Annotation {
+                ref mut name,
+                properties,
+            } => {
+                hasher.update(name.compute_digest());
+                if let Some(properties) = properties {
+                    hasher.update(properties.len().to_ne_bytes());
+                    for property in properties.iter_mut() {
+                        hasher.update(property.compute_digest());
+                    }
+                } else {
+                    hasher.update("no_properties");
+                }
+            }
+        }
+        hasher.finalize().into()
+    }
 }
 
 impl BodyItem {
@@ -459,5 +510,21 @@ mod test {
         let prog3_digest = crate::parsing::top_level_parse(prog3_string).unwrap().compute_digest();
 
         assert_eq!(prog1_digest, prog3_digest);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_annotations_digest() {
+        // Settings annotations should be included in the digest.
+        let prog1_string = r#"@settings(defaultLengthUnit = in)
+startSketchOn('XY')
+"#;
+        let prog1_digest = crate::parsing::top_level_parse(prog1_string).unwrap().compute_digest();
+
+        let prog2_string = r#"@settings(defaultLengthUnit = mm)
+startSketchOn('XY')
+"#;
+        let prog2_digest = crate::parsing::top_level_parse(prog2_string).unwrap().compute_digest();
+
+        assert!(prog1_digest != prog2_digest);
     }
 }
