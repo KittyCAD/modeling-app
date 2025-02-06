@@ -31,6 +31,7 @@ description: Program memory after executing mike_stress_test.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -31072,6 +31073,7 @@ description: Program memory after executing mike_stress_test.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -31117,6 +31119,7 @@ description: Program memory after executing mike_stress_test.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

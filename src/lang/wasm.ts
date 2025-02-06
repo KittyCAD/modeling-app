@@ -18,6 +18,7 @@ import {
   default_project_settings,
   base64_decode,
   clear_scene_and_bust_cache,
+  kcl_settings,
   change_kcl_settings,
   reloadModule,
 } from 'lib/wasm_lib_wrapper'
@@ -58,6 +59,9 @@ import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
 import { MetaSettings } from 'wasm-lib/kcl/bindings/MetaSettings'
+import { UnitAngle, UnitLength } from 'wasm-lib/kcl/bindings/ModelingCmd'
+import { UnitLen } from 'wasm-lib/kcl/bindings/UnitLen'
+import { UnitAngle as UnitAng } from 'wasm-lib/kcl/bindings/UnitAngle'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -857,8 +861,35 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
   }
 }
 
-/// Change the meta settings for the kcl file.
-/// Returns the new kcl string with the updated settings.
+/**
+ * Get the meta settings for the KCL.  If no settings were set in the file,
+ * returns null.
+ */
+export function kclSettings(
+  kcl: string | Node<Program>
+): MetaSettings | null | Error {
+  let program: Node<Program>
+  if (typeof kcl === 'string') {
+    const parseResult = parse(kcl)
+    if (err(parseResult)) return parseResult
+    if (!resultIsOk(parseResult)) {
+      return new Error(`parse result had errors`, { cause: parseResult })
+    }
+    program = parseResult.program
+  } else {
+    program = kcl
+  }
+  try {
+    return kcl_settings(JSON.stringify(program))
+  } catch (e) {
+    return new Error('Caught error getting kcl settings', { cause: e })
+  }
+}
+
+/**
+ * Change the meta settings for the kcl file.
+ * @returns the new kcl string with the updated settings.
+ */
 export function changeKclSettings(
   kcl: string,
   settings: MetaSettings
@@ -866,7 +897,59 @@ export function changeKclSettings(
   try {
     return change_kcl_settings(kcl, JSON.stringify(settings))
   } catch (e) {
-    console.error('Caught error changing kcl settings: ' + e)
-    return new Error('Caught error changing kcl settings: ' + e)
+    console.error('Caught error changing kcl settings', e)
+    return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
+ * Convert a `UnitLength_type` to a `UnitLen`
+ */
+export function unitLengthToUnitLen(input: UnitLength): UnitLen {
+  switch (input) {
+    case 'm':
+      return { type: 'M' }
+    case 'cm':
+      return { type: 'Cm' }
+    case 'yd':
+      return { type: 'Yards' }
+    case 'ft':
+      return { type: 'Feet' }
+    case 'in':
+      return { type: 'Inches' }
+    default:
+      return { type: 'Mm' }
+  }
+}
+
+/**
+ * Convert `UnitLen` to `UnitLength_type`.
+ */
+export function unitLenToUnitLength(input: UnitLen): UnitLength {
+  switch (input.type) {
+    case 'M':
+      return 'm'
+    case 'Cm':
+      return 'cm'
+    case 'Yards':
+      return 'yd'
+    case 'Feet':
+      return 'ft'
+    case 'Inches':
+      return 'in'
+    default:
+      return 'mm'
+  }
+}
+
+/**
+ * Convert `UnitAngle` to `UnitAngle_type`.
+ */
+export function unitAngToUnitAngle(input: UnitAng): UnitAngle {
+  switch (input.type) {
+    case 'Radians':
+      return 'radians'
+    default:
+      return 'degrees'
   }
 }

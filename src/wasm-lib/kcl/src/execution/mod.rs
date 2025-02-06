@@ -3,8 +3,15 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+pub use cache::bust_cache;
 use cache::OldAstState;
+pub use cad_op::Operation;
+pub use exec_ast::FunctionParam;
+pub use geometry::*;
+pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine, ZOO_COORD_SYSTEM};
 use indexmap::IndexMap;
+pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -12,8 +19,10 @@ use kcmc::{
     ImageFormat, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
+pub use memory::ProgramMemory;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+pub use state::{ExecState, IdGenerator, MetaSettings};
 
 use crate::{
     engine::EngineManager,
@@ -29,16 +38,6 @@ use crate::{
     std::{args::Arg, StdLib},
     ExecError, KclErrorWithOutputs,
 };
-
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
-pub use cache::bust_cache;
-pub use cad_op::Operation;
-pub use exec_ast::FunctionParam;
-pub use geometry::*;
-pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine, ZOO_COORD_SYSTEM};
-pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
-pub use memory::ProgramMemory;
-pub use state::{ExecState, IdGenerator, MetaSettings};
 
 pub(crate) mod annotations;
 mod artifact;
@@ -685,9 +684,9 @@ impl ExecutorContext {
 
     /// Execute an AST's program and build auxiliary outputs like the artifact
     /// graph.
-    async fn execute_and_build_graph<'a>(
+    async fn execute_and_build_graph(
         &self,
-        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        program: NodeRef<'_, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
     ) -> Result<Option<KclValue>, KclError> {
         // Don't early return!  We need to build other outputs regardless of

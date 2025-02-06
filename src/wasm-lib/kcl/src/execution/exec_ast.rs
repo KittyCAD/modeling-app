@@ -1609,7 +1609,7 @@ pub struct FunctionParam<'a> {
     pub ctx: ExecutorContext,
 }
 
-impl<'a> FunctionParam<'a> {
+impl FunctionParam<'_> {
     pub async fn call(&self, exec_state: &mut ExecState, args: Vec<Arg>) -> Result<Option<KclValue>, KclError> {
         if let Some(inner) = self.inner {
             inner(
@@ -1640,9 +1640,8 @@ impl JsonSchema for FunctionParam<'_> {
 
 #[cfg(test)]
 mod test {
-    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Parameter};
-
     use super::*;
+    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Parameter};
 
     #[test]
     fn test_assign_args_to_params() {

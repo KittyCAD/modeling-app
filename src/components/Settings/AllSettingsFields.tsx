@@ -47,7 +47,7 @@ export const AllSettingsFields = forwardRef(
       isFileSettings && isDesktop()
         ? decodeURI(
             location.pathname
-              .replace(PATHS.FILE + '/', '')
+              .replace(PATHS.FILE + window.electron.sep, '')
               .replace(PATHS.SETTINGS, '')
               .slice(
                 0,

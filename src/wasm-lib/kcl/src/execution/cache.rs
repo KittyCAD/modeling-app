@@ -2,11 +2,12 @@
 
 use std::sync::Arc;
 
+use itertools::{EitherOrBoth, Itertools};
 use tokio::sync::RwLock;
 
 use crate::{
     execution::{ExecState, ExecutorSettings},
-    parsing::ast::types::{Node, Program},
+    parsing::ast::types::{Node, NonCodeValue, Program},
     walk::Node as WalkNode,
 };
 
@@ -113,6 +114,44 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
         return CacheResult::NoAction(try_reapply_settings);
     }
 
+    // Check if the annotations are different.
+    if !old_ast.annotations().zip_longest(new_ast.annotations()).all(|pair| {
+        match pair {
+            EitherOrBoth::Both(old, new) => {
+                // Compare annotations, ignoring source ranges.  Digests must
+                // have been computed before this.
+                match (&old.value, &new.value) {
+                    (
+                        NonCodeValue::Annotation { name, properties },
+                        NonCodeValue::Annotation {
+                            name: new_name,
+                            properties: new_properties,
+                        },
+                    ) => {
+                        name.digest == new_name.digest
+                            && properties
+                                .as_ref()
+                                .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
+                                == new_properties
+                                    .as_ref()
+                                    .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
+                    }
+                    _ => false,
+                }
+            }
+            _ => false,
+        }
+    }) {
+        // If any of the annotations are different at the beginning of the
+        // program, it's likely the settings, and we have to bust the cache and
+        // re-execute the whole thing.
+        return CacheResult::ReExecute {
+            clear_scene: true,
+            reapply_settings: true,
+            program: new.ast.clone(),
+        };
+    }
+
     // Check if the changes were only to Non-code areas, like comments or whitespace.
     let (clear_scene, program) = generate_changed_program(old_ast, new_ast);
     CacheResult::ReExecute {
@@ -126,6 +165,8 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 /// way in which this gets invoked should always be through
 /// [get_changed_program]. This is purely to contain the logic on
 /// how we construct a new [CacheResult].
+///
+/// Digests *must* be computed before calling this.
 fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>) -> (bool, Node<Program>) {
     if !old_ast.body.iter().zip(new_ast.body.iter()).all(|(old, new)| {
         let old_node: WalkNode = old.into();
@@ -465,5 +506,43 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(true));
+    }
+
+    // Changing the units settings using an annotation with the exact same file
+    // should bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_unit_setting_using_annotation() {
+        let old_code = r#"@settings(defaultLengthUnit = in)
+startSketchOn('XY')
+"#;
+        let new_code = r#"@settings(defaultLengthUnit = mm)
+startSketchOn('XY')
+"#;
+
+        let (program, ctx, _) = parse_execute(old_code).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &ctx.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &ctx.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(
+            result,
+            CacheResult::ReExecute {
+                clear_scene: true,
+                reapply_settings: true,
+                program: new_program.ast
+            }
+        );
     }
 }

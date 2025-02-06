@@ -91,14 +91,14 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around a helix path.
 ///
 /// // Create a helix around the Z axis.
-/// helixPath = helix({
+/// helixPath = helix(
 ///     angleStart = 0,
 ///     ccw = true,
 ///     revolutions = 4,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Z',
-///  })
+///  )
 ///
 ///
 /// // Create a spring by sweeping around the helix path.
@@ -131,5 +131,5 @@ async fn inner_sweep(
     )
     .await?;
 
-    do_post_extrude(sketch, 0.0, exec_state, args).await
+    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
 }

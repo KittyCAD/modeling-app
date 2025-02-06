@@ -180,7 +180,7 @@ impl Environment {
             let KclValue::Sketch { value } = val else { continue };
             let mut sketch = value.to_owned();
 
-            if sketch.original_id == sg.original_id {
+            if sketch.artifact_id == sg.artifact_id {
                 for tag in sg.tags.iter() {
                     sketch.tags.insert(tag.0.clone(), tag.1.clone());
                 }

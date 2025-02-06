@@ -47,7 +47,7 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from './std/sketchcombos'
-import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr } from 'lib/planes'
 import { isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { SimplifiedArgDetails } from './std/stdTypes'
@@ -284,12 +284,19 @@ export function mutateObjExpProp(
   return false
 }
 
-export function extrudeSketch(
-  node: Node<Program>,
-  pathToNode: PathToNode,
+export function extrudeSketch({
+  node,
+  pathToNode,
   shouldPipe = false,
-  distance: Expr = createLiteral(4)
-):
+  distance = createLiteral(4),
+  extrudeName,
+}: {
+  node: Node<Program>
+  pathToNode: PathToNode
+  shouldPipe?: boolean
+  distance: Expr
+  extrudeName?: string
+}):
   | {
       modifiedAst: Node<Program>
       pathToNode: PathToNode
@@ -357,7 +364,8 @@ export function extrudeSketch(
 
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
+  const name =
+    extrudeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
 
   const sketchIndexInPathToNode =
@@ -629,14 +637,19 @@ export function sketchOnExtrudedFace(
 export function addOffsetPlane({
   node,
   defaultPlane,
+  insertIndex,
   offset,
+  planeName,
 }: {
   node: Node<Program>
   defaultPlane: DefaultPlaneStr
+  insertIndex?: number
   offset: Expr
+  planeName?: string
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
-  const newPlaneName = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
+  const newPlaneName =
+    planeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
 
   const newPlane = createVariableDeclaration(
     newPlaneName,
@@ -646,10 +659,19 @@ export function addOffsetPlane({
     ])
   )
 
-  modifiedAst.body.push(newPlane)
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length
+      : 0
+
+  modifiedAst.body.length
+    ? modifiedAst.body.splice(insertAt, 0, newPlane)
+    : modifiedAst.body.push(newPlane)
   const pathToNode: PathToNode = [
     ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
+    [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],

@@ -32,11 +32,12 @@ gltf-json = "1.4.1"
 http = { workspace = true }
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 indexmap = { version = "2.7.0", features = ["serde"] }
+itertools = "0.13.0"
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = "1.5.0"
 measurements = "0.11.0"
-miette = "7.2.0"
+miette = "7.5.0"
 mime_guess = "2.0.5"
 parse-display = "0.9.1"
 pyo3 = { version = "0.22.6", optional = true }
@@ -115,8 +116,7 @@ expectorate = "1.1.0"
 handlebars = "6.3.0"
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 insta = { version = "1.41.1", features = ["json", "filters", "redactions"] }
-itertools = "0.13.0"
-miette = { version = "7.2.0", features = ["fancy"] }
+miette = { version = "7.5.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
 tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.0"
