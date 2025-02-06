@@ -26,6 +26,9 @@ import { reportRejection } from 'lib/trap'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { EngineConnectionStateType } from 'lang/std/engineConnection'
+import { CustomIcon } from 'components/CustomIcon'
+import Tooltip from 'components/Tooltip'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -163,58 +166,97 @@ export function useStepNumber(
       : onboardingRoutes.findIndex(
           (r) => r.path === makeUrlPathRelative(slug)
         ) + 1
-    : undefined
+    : 1
 }
 
 export function OnboardingButtons({
-  next,
-  nextText,
-  dismiss,
   currentSlug,
   className,
+  dismissClassName,
+  onNextOverride,
   ...props
 }: {
-  next: () => void
-  nextText?: string
-  dismiss: () => void
   currentSlug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
   className?: string
+  dismissClassName?: string
+  onNextOverride?: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
+  const dismiss = useDismiss()
   const stepNumber = useStepNumber(currentSlug)
+  const previousStep =
+    !stepNumber || stepNumber === 0 ? null : onboardingRoutes[stepNumber - 2]
+  const goToPrevious = useNextClick(
+    onboardingPaths.INDEX + (previousStep?.path ?? '')
+  )
+  const nextStep =
+    !stepNumber || stepNumber === onboardingRoutes.length
+      ? null
+      : onboardingRoutes[stepNumber]
+  const goToNext = useNextClick(onboardingPaths.INDEX + (nextStep?.path ?? ''))
 
   return (
-    <div
-      className={'flex items-center justify-between ' + (className ?? '')}
-      {...props}
-    >
-      <ActionButton
-        Element="button"
+    <>
+      <button
         onClick={dismiss}
-        iconStart={{
-          icon: 'close',
-          className: 'text-chalkboard-10',
-          bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
-        }}
-        className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
+        className={
+          'group block !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent ' +
+          dismissClassName
+        }
       >
-        Dismiss
-      </ActionButton>
-      {stepNumber !== undefined && (
-        <p className="font-mono text-xs text-center m-0">
-          {stepNumber} / {onboardingRoutes.length}
-        </p>
-      )}
-      <ActionButton
-        autoFocus
-        Element="button"
-        onClick={next}
-        iconStart={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}
-        className="dark:hover:bg-chalkboard-80/50"
-        data-testid="onboarding-next"
+        <CustomIcon
+          name="close"
+          className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+        />
+        <Tooltip position="bottom" delay={500}>
+          Dismiss <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
+        </Tooltip>
+      </button>
+      <div
+        className={'flex items-center justify-between ' + (className ?? '')}
+        {...props}
       >
-        {nextText ?? 'Next'}
-      </ActionButton>
-    </div>
+        <ActionButton
+          Element="button"
+          onClick={() =>
+            previousStep?.path || previousStep?.index
+              ? goToPrevious()
+              : dismiss()
+          }
+          iconStart={{
+            icon: previousStep ? 'arrowLeft' : 'close',
+            className: 'text-chalkboard-10',
+            bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
+          }}
+          className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
+        >
+          {previousStep ? `Back` : 'Dismiss'}
+        </ActionButton>
+        {stepNumber !== undefined && (
+          <p className="font-mono text-xs text-center m-0">
+            {stepNumber} / {onboardingRoutes.length}
+          </p>
+        )}
+        <ActionButton
+          autoFocus
+          Element="button"
+          onClick={() => {
+            if (nextStep?.path) {
+              onNextOverride ? onNextOverride() : goToNext()
+            } else {
+              dismiss()
+            }
+          }}
+          iconStart={{
+            icon: nextStep ? 'arrowRight' : 'checkmark',
+            bgClassName: 'dark:bg-chalkboard-80',
+          }}
+          className="dark:hover:bg-chalkboard-80/50"
+          data-testid="onboarding-next"
+        >
+          {nextStep ? `Next` : 'Finish'}
+        </ActionButton>
+      </div>
+    </>
   )
 }
 
