@@ -72,7 +72,9 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
         const green: [number, number, number] = [108, 152, 75]
         const notGreen: [number, number, number] = [132, 132, 132]
         const body2NotGreen: [number, number, number] = [88, 88, 88]
-        const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
+        const submittingToast = page.getByText(
+          'Submitting to Text-to-CAD API...'
+        )
         const successToast = page.getByText('Prompt to edit successful')
         const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
         const rejectBtn = page.getByRole('button', { name: 'close Reject' })
