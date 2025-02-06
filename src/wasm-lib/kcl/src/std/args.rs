@@ -1071,27 +1071,6 @@ impl<'a> FromKclValue<'a> for super::appearance::AppearanceData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::helix::HelixData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, revolutions);
-        let_field_of!(obj, length?);
-        let_field_of!(obj, ccw?);
-        let_field_of!(obj, radius);
-        let_field_of!(obj, axis);
-        let ccw = ccw.unwrap_or_default();
-        let angle_start = obj.get("angleStart")?.as_f64()?;
-        Some(Self {
-            revolutions,
-            angle_start,
-            ccw,
-            length,
-            radius,
-            axis,
-        })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::helix::HelixRevolutionsData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;

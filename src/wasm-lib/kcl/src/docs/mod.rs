@@ -1059,13 +1059,7 @@ mod tests {
         let snippet = helix_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"helix({
-	revolutions = ${0:3.14},
-	angleStart = ${1:3.14},
-	ccw = ${2:false},
-	radius = ${3:3.14},
-	axis = ${4:"X"},
-})${}"#
+            r#"helix(revolutions = ${0:3.14}, angle_start = ${1:3.14}, radius = ${2:3.14}, axis = ${3:"X"}, length = ${4:3.14})${}"#
         );
     }
 
