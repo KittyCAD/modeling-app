@@ -19,7 +19,7 @@ type FeatureTreeEvent =
     }
   | {
       type: 'deleteOperation'
-      data: { targetSourceRange: SourceRange }
+      data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | {
       type: 'enterEditFlow'
@@ -246,7 +246,7 @@ export const featureTreeMachine = setup({
       },
       initial: 'selecting',
       entry: 'sendSelectionEvent',
-      // exit: ['clearContext'],
+      exit: ['clearContext'],
     },
 
     goingToError: {
