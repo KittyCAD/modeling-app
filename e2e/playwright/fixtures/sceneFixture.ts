@@ -38,7 +38,10 @@ export class SceneFixture {
   public page: Page
   public streamWrapper!: Locator
   public loadingIndicator!: Locator
-  private exeIndicator!: Locator
+
+  get exeIndicator() {
+    return this.page.getByTestId('model-state-indicator-execution-done')
+  }
 
   constructor(page: Page) {
     this.page = page
@@ -64,7 +67,6 @@ export class SceneFixture {
   reConstruct = (page: Page) => {
     this.page = page
 
-    this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
     this.streamWrapper = page.getByTestId('stream')
     this.loadingIndicator = this.streamWrapper.getByTestId('loading')
   }

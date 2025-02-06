@@ -15,6 +15,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     page,
     context,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
     const selectionsSnippets = {
@@ -75,6 +76,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     // wait for execution done
     await u.openDebugPanel()

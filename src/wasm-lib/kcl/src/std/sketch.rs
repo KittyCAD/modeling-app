@@ -130,7 +130,6 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> line(end = [-10, 0], tag = $thirdLineOfBox)
 ///   |> close()
 ///   |> extrude(length = 5)
-///
 /// ```
 #[stdlib {
     name = "line",

@@ -11,8 +11,14 @@ import {
   filterOperations,
   getOperationIcon,
   getOperationLabel,
+  stdLibMap,
 } from 'lib/operations'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+} from 'lib/singletons'
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { Actor, Prop } from 'xstate'
@@ -60,6 +66,7 @@ export const FeatureTreePane = () => {
                 engineCommandManager.artifactGraph
               )
             : null
+
           if (!artifact || !('codeRef' in artifact)) {
             modelingSend({
               type: 'Set selection',
@@ -311,14 +318,12 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (
-      props.item.type === 'StdLibCall' &&
-      props.item.name === 'startSketchOn'
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterEditFlow',
         data: {
           targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
         },
       })
     }
@@ -361,6 +366,14 @@ const OperationItem = (props: {
               }}
             >
               View function definition
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'StdLibCall' &&
+      stdLibMap[props.item.name]?.prepareToEdit
+        ? [
+            <ContextMenuItem onClick={enterEditFlow}>
+              Edit {name}
             </ContextMenuItem>,
           ]
         : []),
