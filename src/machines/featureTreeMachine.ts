@@ -21,11 +21,16 @@ type FeatureTreeEvent =
       type: 'enterEditFlow'
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
+  | {
+      type: 'enterDeleteFlow'
+      data: { targetSourceRange: SourceRange; currentOperation: Operation }
+    }
   | { type: 'goToError' }
   | { type: 'codePaneOpened' }
   | { type: 'selected' }
   | { type: 'done' }
   | { type: 'xstate.error.actor.prepareEditCommand'; error: Error }
+  | { type: 'xstate.error.actor.prepareDeleteCommand'; error: Error }
 
 type FeatureTreeContext = {
   targetSourceRange?: SourceRange
@@ -43,6 +48,29 @@ export const featureTreeMachine = setup({
   },
   actors: {
     prepareEditCommand: fromPromise(
+      ({
+        input,
+      }: {
+        input: EnterEditFlowProps & {
+          commandBarSend: (typeof commandBarActor)['send']
+        }
+      }) => {
+        return new Promise((resolve, reject) => {
+          const { commandBarSend, ...editFlowProps } = input
+          enterEditFlow(editFlowProps)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              input.commandBarSend(result)
+              resolve(result)
+            })
+            .catch(reject)
+        })
+      }
+    ),
+    prepareDeleteCommand: fromPromise(
       ({
         input,
       }: {
@@ -107,6 +135,11 @@ export const featureTreeMachine = setup({
 
         enterEditFlow: {
           target: 'enteringEditFlow',
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+        },
+
+        enterDeleteFlow: {
+          target: 'enteringDeleteFlow',
           actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
@@ -180,6 +213,60 @@ export const featureTreeMachine = setup({
         prepareEditCommand: {
           invoke: {
             src: 'prepareEditCommand',
+            input: ({ context }) => {
+              const artifact = context.targetSourceRange
+                ? getArtifactFromRange(
+                    context.targetSourceRange,
+                    engineCommandManager.artifactGraph
+                  ) ?? undefined
+                : undefined
+              return {
+                // currentOperation is guaranteed to be defined here
+                operation: context.currentOperation!,
+                artifact,
+                commandBarSend: commandBarActor.send,
+              }
+            },
+            onDone: {
+              target: 'done',
+              reenter: true,
+            },
+            onError: {
+              target: 'done',
+              reenter: true,
+              actions: ({ event }) => {
+                if ('error' in event && err(event.error)) {
+                  toast.error(event.error.message)
+                }
+              },
+            },
+          },
+        },
+      },
+
+      initial: 'selecting',
+      entry: 'sendSelectionEvent',
+      exit: ['clearContext'],
+    },
+
+    enteringDeleteFlow: {
+      states: {
+        selecting: {
+          on: {
+            selected: {
+              target: 'prepareDeleteCommand',
+              reenter: true,
+            },
+          },
+        },
+
+        done: {
+          always: '#featureTree.idle',
+        },
+
+        prepareDeleteCommand: {
+          invoke: {
+            src: 'prepareDeleteCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
                 ? getArtifactFromRange(
