@@ -10,6 +10,7 @@ import { stringToKclExpression } from './kclHelpers'
 import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
 import { isDefaultPlaneStr } from './planes'
 import { Selections } from './selections'
+import { ModelingMachineEvent } from 'machines/modelingMachine'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -428,6 +429,28 @@ export async function enterEditFlow({
             type: 'Find and select command',
             data: stdLibInfo.prepareToEdit,
           }
+    }
+  }
+
+  return new Error(
+    'Feature tree editing not yet supported for this operation. Please edit in the code editor.'
+  )
+}
+
+export async function enterDeleteFlow({
+  operation,
+  artifact,
+}: EnterEditFlowProps): Promise<Error | ModelingMachineEvent> {
+  if (operation.type !== 'StdLibCall') {
+    return new Error(
+      'Feature tree deletion not yet supported for user-defined functions. Please edit in the code editor.'
+    )
+  }
+  const stdLibInfo = stdLibMap[operation.name]
+
+  if (stdLibInfo) {
+    return {
+      type: 'Delete selection',
     }
   }
 

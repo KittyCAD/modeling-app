@@ -18,11 +18,11 @@ type FeatureTreeEvent =
       data: { targetSourceRange: SourceRange }
     }
   | {
-      type: 'enterEditFlow'
-      data: { targetSourceRange: SourceRange; currentOperation: Operation }
+      type: 'deleteOperation'
+      data: { targetSourceRange: SourceRange }
     }
   | {
-      type: 'enterDeleteFlow'
+      type: 'enterEditFlow'
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | { type: 'goToError' }
@@ -70,29 +70,6 @@ export const featureTreeMachine = setup({
         })
       }
     ),
-    prepareDeleteCommand: fromPromise(
-      ({
-        input,
-      }: {
-        input: EnterEditFlowProps & {
-          commandBarSend: (typeof commandBarActor)['send']
-        }
-      }) => {
-        return new Promise((resolve, reject) => {
-          const { commandBarSend, ...editFlowProps } = input
-          enterEditFlow(editFlowProps)
-            .then((result) => {
-              if (err(result)) {
-                reject(result)
-                return
-              }
-              input.commandBarSend(result)
-              resolve(result)
-            })
-            .catch(reject)
-        })
-      }
-    ),
   },
   actions: {
     saveTargetSourceRange: assign({
@@ -114,9 +91,10 @@ export const featureTreeMachine = setup({
     openCodePane: () => {},
     sendEditFlowStart: () => {},
     scrollToError: () => {},
+    sendDeleteSelection: () => {},
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogCMAFn7EAbAFYAHAHYAnGoOm9OgMw6tAGhABPRBsvF+a6wYBM-A-0uWepYGAL4h9qiYuAREZJQ0sGBULBgA8qJgOJgysgLCSCDiktJyCsoIKipabmo6-Co2Wip+-DoG9k4IWpp+Ae6W-N16KpZeYRHo2HiEYCTkVNRgshiZAKIQUgBiFHQA7nkKRVI5ZapergN6el46515GVdYdiN4GbjpGXiNGV2pan+MQJEpjFZnEFvRGKscDg6DgDgUjiV5AVylU3sEjFo-P9fINRs8KpU9MRrLp+CZPkF9IDgdEZiR6KRZFBGKwOFwcDxiIlktIWdReWAUpAEWIJMdSqjVK0VMQzN1LCoTGofPwvIS-jpiJ8DFo1OoDA13GNwkDJvTYkyWWy2JxuCQIHIaGLChLkacKm15TodGoPAYlRT-O1HIg6ppDF5rvpmmZLLSLdMrXRmazmHbOdy6BlZGmAMJ0CBgAAKaFkNBYRdL5bA6SWoqEh3dJ2lXUqxDa2O8JkM+ksmt0Oq8er0-S8quCiaiybBQpSaZ5SWF-KgguXIogrqRrdA5X1JIMbSPZn9lg0KkJzVcrU+XlxDSM6unIIZS75i6dFeo25bUr3qgGIeRiNH4JhfN4aiEhO1QfHoIH6n6DyBloL6WmCSwrDgabrFsOy7O+K5puufKNvk4rFLuSjhv62hBKY1h-PRUFhggwxeJ2Pa6D4hj1KEZp0rOJCYZkOEbBg2x7MQX4uk2iJ-iiAEVFo1T6ho9S+PoXjaYSwxqMQKj+EYepNEYowfGhQnECJ2EsrhEn4cQoh4KIaB4PZhYALaeeWEDUDJZCyAAbnQADWJCCaCwnLKJdniZJBHOWArnueJXk+bIEAIMyIUsNkch5L+lH-tRCAGtqxlaFcNgqGO3YsZ0ZlGDq+ggWO7j+NYllRdZMW2VA9kJU5LluWAHl0N5vmLDCcJORQmDIHCnnEJFb42WJeFSUlKVjWlE0ZVlOV0HlyKFXJFGSoppXlTqo4WE0dUGGYhJGD8OrKhYwwgYx-ETDOPXWum0KwjgxA5ksBbVmW35VsW0N1rmZHNsVV37pYzU2DohlPYE7hWFe2kcU9Jj8Pwei6K9ah6N1b6A1CM2gzJP7nW6KOevoxB-Aa-oPBSVMBDoBPqMQ95qCBxL6ueOhhGasjVvABSrUQyOXZ6AC0disWrfjaFVpPWNc8FfAmAlJj18xgCrHptqqV5-No6htMMSqBr6NMpmmtocg6VtUeU54cTYernkxWgTvjrHWNqYvBOegbaX4v3mv9tOpjaGbe1yJDzquvsleUY6uL6Hy+uoHjwZerH+hxesgRSXwqOcbumynHvp+y9pZ9Jzp56jqjNKp6qBvUfpi38mqqnRFJ1J8lRN9LLevm36Yd1mJDg3mLKFnDta9566OaEHWgh1VYe1AOVeT7XATdFjHznu7c4brn8ls221iB9ix-+qf4cX50YdtA3HOIMEY5MqaP2zs-RcOc0x7xtqTTsX8T7kz-nbZq7ExaBifPcUmC8-pLyfh+Fk3cKzwKUjjB2tQRjBGoX6K8gYRYjkJoaYIVRIG9SwhtByexyGlUsPqYgVxmimBwU+BooYAG3FJMMCk9EqoTiTkrDCfVuFDVgSyPh5QDQcWEWYYw6pxFtF0o3EWGhPh1ANEaCyi90LRS4XFTaBEZJaOcA0Tm55Rj+isdYdwukjxuE+CYLStwY4cPWo4nhiURqpSkOlXyriECBjlIGM8A9DJkw1KxYY1RAh3gCIEbx1NbFWTpnQYGcJEkCNgr6LEAw-T3jDleSomgzI3F0AbLsHCykVNBhvSGO8yGv1VjbYWxc6mtFVCpLJnRKhvTmU+fWFhAjdLTkDBmpDLbDOtkpcmcoeKFPcGORukj+7zOVIs-wyzrgyxCEAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogCMAFn7EAnDq0AOFXq0AmYwHYNagDQgAnqrVaAzMT17jBgKz8VJvWoBfAJtUTFwCIjJKGlgwKhYMAHlRMBxMGVkBYSQQcUlpOQVlBF9NXX1DE3NLG3sERwA2Ygt9NTUzY08tFXUnIJD0bDxCMBJyKmowWQxUgFEIKQAxCjoAdyyFPKkMotUGst0DI1MLfms7VXUVbTMGsyc1J1v9Jwb+kFChiNGoiamZnAAETiYBmyzWGxyWwK8hyxUMBx0Ryqp3OdVu108xgeZhUDVeWjMuPen3CIzG0VoDDosxwODoOEhYgk20KcMQxhUiIqx2qZ1qqjMemIxkcWn2bSc7iMZhJgzJkXopFkUEYrA4XBwPGIsXi0hV1F1YASkCZuRZMN2JX4nhcnhUnnaj1tThUTwFJU8niaei6r1uTh8-kCwQ+8uGiroytVzDYnG4JAgchoZuhO3ZJUD2kOlRONQuJQaDS0xCcXXMWn4919nj0crCEZ+SpVarjmu1dBSsmjAGE6BAwAAFNCyGgsftDkdgZJTU1CTYW9OgYoNFTGYgNDT7fjGIveXweh3e1x+u74oNtetfck6kEJaO3vXRw13mYQVOLtnLxANIyuNdtDaahuuKHpeiWHQNPa-BaF04oeFeCo-Ea94qsQSajtQH75EuSiCtyyJ5vyBY6J4xAqGYhKmBoSKuohjYkP8qTRvMSwrKsj7GvqUAvnqc7ZMyOFfnhCC2uuTgeDBeirt4TxmIe2KaFB+LATa3jGFW9HfIx0zMSqrEYOCHEYSm85Qp+sLfp6BG5nyaKqE8ZH4h4TivFiahesYWk3kxOAsQshnscQoh4KIaB4AZfYALZRSOEDUCZZCyAAbnQADWJCkgxxC+f5bFrMFoXhWAkV0DFcUIMqqUsOkchZNhrKWSJJh2g02IGPs0mVloCluOREl6GYMGGJRQreZEuX6QFRmFWAYURQF0WxbI8WpPSODBRQmDIAyUXEFl2k5bpflTflHEhXNxWleVK2VSldA1TC9VmYJjVWi1xDeu1eL8F1MGHr4ZEUfoEpON0bh1qGB0+cd0bAlQYJBSh3G8Vx-ELkJTXFJ5paSSDDr8HJHq+poGkSWcX2wVoIYDA2h2TVA8OgmAM0mVhL3mpjVoaTZvKoh6TzCmK0muV0v27uNPwM0ziMFRd81gDLYBLXFCXJklqUZft4b07DKpKzN8vFUrKu3VVD21ZkQgNZaGZU80hMOquUFfSoHqVmYG6jV0Z4SZ4spQzrMMAnDIKy+dRV4CbZXLatdIMpt227drdPB3pjNhyzQVG1HmemxAd3VZbz0CZzb1210Duut6eJem1bsFgYajNLuXTPODpiSyQzYxrS63EJ2Uy9hOw6YeOA6j9OXbo+ZXMZj7n38EvXWbg6boepyQuHODFG2r+XfED3jB9wnbM27hxScrzKL5nUrnckvbWOqKhJBKGsgTvAOTQ0QGPl1ZABaBoHoAGigPuMMAf9bZWTUMYQ84pmgdA6J0QarpCYHyPrGDUCYoEX0QA8Fw+xqbk3uLBPQh42hNDLM4DynIHiUIwVGFsWD4xahIMjaMuDhLFD0DaUsa5XSPDcA8deBYHSuRPM4e4MEvRbkYdGVs2C2HoWTFwrGlxKLEH4G1XcxZgJFndGIl0kiniBlgo6bR8jmHqlYR2Lsw8J5TjUVaMG1wiGPA0qQ2sh5jG+ikWY2RljA6p0iBwlUziMxg0ITBMszl7QeycB6NoJZTCrwrG0L0RID5hKgJxVCUAIkwOAhuGJ3o-alHuGBV4LdNxCi9KUvowTryhNfA+EyhSRJeFLOWVya5CQeXkgWPeNTAJni9IYA+DMDJGQ6cUV40TnBlM6KUchYjCbNzuISTqJgNBjSaUhHSIdTqBQKjk2ZiBgJuNKXElZClXTkTKapepnjJl6ygNMoK7TZ7-xEj0O4IpDDFlxDoMwWIG51DXKKB5+JnCOVaF5fZ2UpnTWzpHEqi0Y5xXOQgKCntBpqCMGuQmUpQUKSrBuR5UEya3ADrTZpUs3kG3YtiqUCzYnlMrKsuoUFm6pMcF4UUPgEV0oOUdI5GcEZZ1Oa08J3zoEiUeFcxZNzOXE28FXNcbgrgtVeeKplBUvmvXlfCTkJZvBL1KHcXwxgeqN0eFXDS+J-AWAJbq9O+qI6XVzpK-O2K7h4tBWccwS8TCGGJuYEUhMr47j0NXWlYYQlNiYb3eOOAWURrUL+GlfJKlrOFEvJesD7SCxkVYlN-dB7dhVH2Rxo4WWguIJmwadwc2JLEbBRt5RM3tC5PoYVCb6Xd2TcfVNKi61yrwQgIUJYKKAxQWWZZ8CyJih0N23EUkEVBCAA */
   id: 'featureTree',
   description: 'Workflows for interacting with the feature tree pane',
   context: ({ input }) => input,
@@ -138,8 +116,8 @@ export const featureTreeMachine = setup({
           actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
-        enterDeleteFlow: {
-          target: 'enteringDeleteFlow',
+        deleteOperation: {
+          target: 'deletingOperation',
           actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
@@ -249,58 +227,26 @@ export const featureTreeMachine = setup({
       exit: ['clearContext'],
     },
 
-    enteringDeleteFlow: {
+    deletingOperation: {
       states: {
         selecting: {
           on: {
             selected: {
-              target: 'prepareDeleteCommand',
+              target: 'deletingSelection',
               reenter: true,
             },
           },
         },
-
+        deletingSelection: {
+          entry: 'sendDeleteSelection',
+        },
         done: {
           always: '#featureTree.idle',
         },
-
-        prepareDeleteCommand: {
-          invoke: {
-            src: 'prepareDeleteCommand',
-            input: ({ context }) => {
-              const artifact = context.targetSourceRange
-                ? getArtifactFromRange(
-                    context.targetSourceRange,
-                    engineCommandManager.artifactGraph
-                  ) ?? undefined
-                : undefined
-              return {
-                // currentOperation is guaranteed to be defined here
-                operation: context.currentOperation!,
-                artifact,
-                commandBarSend: commandBarActor.send,
-              }
-            },
-            onDone: {
-              target: 'done',
-              reenter: true,
-            },
-            onError: {
-              target: 'done',
-              reenter: true,
-              actions: ({ event }) => {
-                if ('error' in event && err(event.error)) {
-                  toast.error(event.error.message)
-                }
-              },
-            },
-          },
-        },
       },
-
       initial: 'selecting',
       entry: 'sendSelectionEvent',
-      exit: ['clearContext'],
+      // exit: ['clearContext'],
     },
 
     goingToError: {

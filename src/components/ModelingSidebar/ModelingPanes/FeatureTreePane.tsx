@@ -53,6 +53,9 @@ export const FeatureTreePane = () => {
         sendEditFlowStart: () => {
           modelingSend({ type: 'Enter sketch' })
         },
+        sendDeleteSelection: () => {
+          modelingSend({ type: 'Delete selection' })
+        },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
         },
@@ -332,10 +335,9 @@ const OperationItem = (props: {
   function enterDeleteFlow() {
     if (props.item.type === 'StdLibCall') {
       props.send({
-        type: 'enterDeleteFlow',
+        type: 'deleteOperation',
         data: {
           targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
         },
       })
     }
