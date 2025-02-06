@@ -256,7 +256,11 @@ test.describe('Testing selections', () => {
     }
   )
 
-  test('Solids should be select and deletable', async ({ page, homePage }) => {
+  test('Solids should be select and deletable', async ({
+    page,
+    homePage,
+    scene,
+  }) => {
     test.setTimeout(90_000)
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -328,10 +332,7 @@ test.describe('Testing selections', () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+    await scene.waitForExecutionDone()
 
     await u.openAndClearDebugPanel()
     await u.sendCustomCmd({
@@ -1119,7 +1120,7 @@ test.describe('Testing selections', () => {
   |> line(end = [4.95, -8])
   |> line(end = [-20.38, -10.12])
   |> line(end = [-15.79, 17.08])
-  
+
     fn yohey = (pos) => {
   sketch004 = startSketchOn('XZ')
   ${extrudeAndEditBlockedInFunction}
@@ -1129,7 +1130,7 @@ test.describe('Testing selections', () => {
   |> line(end = [-15.79, 17.08])
   return ''
     }
-  
+
     yohey([15.79, -34.6])
     `
         )
