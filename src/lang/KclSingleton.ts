@@ -39,7 +39,6 @@ import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 interface ExecuteArgs {
   ast?: Node<Program>
   zoomToFit?: boolean
-  isPartialExecution?: boolean
   executionId?: number
   zoomOnRangeAndType?: {
     range: SourceRange
@@ -484,10 +483,7 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(opts?: {
-    zoomToFit?: true
-    isPartialExecution?: true
-  }): Promise<void> {
+  async executeCode(opts?: { zoomToFit?: true }): Promise<void> {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
