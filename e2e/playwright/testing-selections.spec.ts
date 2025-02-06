@@ -903,6 +903,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
   test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
     page,
     homePage,
+    scene,
   }) => {
     const cases = [
       {
@@ -938,6 +939,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({
