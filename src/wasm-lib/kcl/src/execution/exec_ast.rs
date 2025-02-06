@@ -1640,9 +1640,8 @@ impl JsonSchema for FunctionParam<'_> {
 
 #[cfg(test)]
 mod test {
-    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Parameter};
-
     use super::*;
+    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Parameter};
 
     #[test]
     fn test_assign_args_to_params() {
