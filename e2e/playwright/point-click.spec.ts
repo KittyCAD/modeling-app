@@ -1853,6 +1853,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 575, y: 200 }
