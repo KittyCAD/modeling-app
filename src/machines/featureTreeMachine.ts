@@ -1,5 +1,12 @@
+import { getArtifactFromRange } from 'lang/std/artifactGraph'
 import { SourceRange } from 'lang/wasm'
-import { assign, setup } from 'xstate'
+import { enterEditFlow, EnterEditFlowProps } from 'lib/operations'
+import { engineCommandManager } from 'lib/singletons'
+import { err } from 'lib/trap'
+import toast from 'react-hot-toast'
+import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { assign, fromPromise, setup } from 'xstate'
+import { commandBarActor } from './commandBarMachine'
 
 type FeatureTreeEvent =
   | {
@@ -12,27 +19,67 @@ type FeatureTreeEvent =
     }
   | {
       type: 'enterEditFlow'
-      data: { targetSourceRange: SourceRange }
+      data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | { type: 'goToError' }
   | { type: 'codePaneOpened' }
   | { type: 'selected' }
   | { type: 'done' }
+  | { type: 'xstate.error.actor.prepareEditCommand'; error: Error }
+
+type FeatureTreeContext = {
+  targetSourceRange?: SourceRange
+  currentOperation?: Operation
+}
 
 export const featureTreeMachine = setup({
   types: {
-    context: {} as { targetSourceRange?: SourceRange },
+    input: {} as FeatureTreeContext,
+    context: {} as FeatureTreeContext,
     events: {} as FeatureTreeEvent,
   },
   guards: {
     codePaneIsOpen: () => false,
   },
+  actors: {
+    prepareEditCommand: fromPromise(
+      ({
+        input,
+      }: {
+        input: EnterEditFlowProps & {
+          commandBarSend: (typeof commandBarActor)['send']
+        }
+      }) => {
+        return new Promise((resolve, reject) => {
+          const { commandBarSend, ...editFlowProps } = input
+          enterEditFlow(editFlowProps)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              input.commandBarSend(result)
+              resolve(result)
+            })
+            .catch(reject)
+        })
+      }
+    ),
+  },
   actions: {
     saveTargetSourceRange: assign({
       targetSourceRange: ({ event }) =>
-        'data' in event ? event.data.targetSourceRange : undefined,
+        'data' in event && !err(event.data)
+          ? event.data.targetSourceRange
+          : undefined,
     }),
-    clearTargetSourceRange: assign({
+    saveCurrentOperation: assign({
+      currentOperation: ({ event }) =>
+        'data' in event && 'currentOperation' in event.data
+          ? event.data.currentOperation
+          : undefined,
+    }),
+    clearContext: assign({
       targetSourceRange: undefined,
     }),
     sendSelectionEvent: () => {},
@@ -41,9 +88,10 @@ export const featureTreeMachine = setup({
     scrollToError: () => {},
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogCMAFn7EAbAFYAHAHYAnGoOm9OgMw6tAGhABPRBsvF+a6wYBM-A-0uWepYGAL4h9qiYuAREZJQ0sGBULBgA8qJgOJgysgLCSCDiktJyCsoIKipabmo6-Co2Wip+-DoG9k4IWpp+Ae6W-N16KpZeYRHo2HiEYCTkVNRgshiZAKIQUgBiFHQA7nkKRVI5ZapergN6el46515GVdYdiN4GbjpGXiNGV2pan+MQJEpjFZsR6KRZFBGKwOFwcDxiIlktIodRkWAUpADgUjiV5AVyipWipiGZupYVCY1D5+F5ngg-jpiJ8DFo1OoDA13GNwkDJtEZiQIVCYWxONwSBA5DQcWIJMdSoTVG0yTodGoPAZKfwjP52o5EHVNIYvNd9M0zJZAcDBbERdDmOL4Yi6BlZJCoABhOgQMAABTQshoLF9AaDYHSS2xQkOCvxpy6lWIbS0Bm8JkM+ksDKZLK8bL0-S8NOCNoF01iGJSnqRSUxqKg6PrWIgcsK8ZOyq6aj0avTbU1Hg0KgZzVcrU+Xn+9Q+dPLUUrYOrjeI0uD1HbeK7oCJBj7xkafhMX28agZJeqHz0RhstTUD21WgXIKFxCWKxwnvWWx2uzrKKes2KIxvk8rFDuShGpY1RaKMRiHr4va9gyegPsQQRmiYVK+GYL52mCH6ZN+GwYNsexrjKm6xrinZKruqhaLBmr8PUvj6F4nGoeoxDEpYCFMVSowfPhS7CnQnqMKsOA4HQODEG6Syej6fqBhuoaqRGUbBm2NHgYqBIMV0-EproxLpoE7hWGOnFeGSxgaPwei6EYmaiaCczxLQDB0NJsk4FudGGVBFRpsQwRGGmgx6n4cH0oaFSVH21i6LqD5mtYejuW+DpSTJcmURugUQfRIX6MQfwcpqDxpUETwJSoXxqMQ04PjoSXspYtRhHyshhvABS2mJcYlcF5QALR2Al43TtoVJDD46ZfJS1p8kNHlxFQI0GYmNJjn8c21PuIzjuq2X2hJopOnCkrbQm3ZdXZNhsl1fzOSW1kJdYzKeK5VQqJh+7nWCuXXRKCIkCunp3ZB5RFq46ofOq6geDeo4JZqdlaEWt66l8jXfcD4mSWDLpSjKMOlUSzSwXS2qztVfy5jS2g43UnyVOcZ1rRWG2g7C4Ouu6ylhmpYCU2NiD8Zoz1wZq2NaB9OYYyz2O6gE3TtR8XVEwBDbQ7Ro2JtYT1pnLb2K7UyudIrFU3h8ZoamafhZTzi4bVDUJ6zWUIS7trGmS98vvVb+1GBhjUPtqer3KxOi657UCFeLhs7d2FmHe1ARmFr54NdqLUFrZnLBFUutEV+UI-mRf5+w9NgYZSNyBHB6rxTbcHhTY5wmDVMGrRM7tvhXJG-hRid10ZGjNUEjVWM533t4gaHh8aFgaOc+7XOXyzEVXpHkf+64p-p91T744VBEE7h0oEGpTZ0Dx2Sbhi9r4ozNLroN+XJk8hTBV51SRQGE7JiS9ErJjgnSRWC0bCu0Hq+C6JMf7yUUh6KEKlwzBj-uUKqKYgFQNAYrMcVI+yVFcqxfwFhAhf0uo6FByccHLyaC1JygRp5FkagaTo5CyFUj1KxO+gReRhCAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogCMAFn7EAbAFYAHAHYAnGoOm9OgMw6tAGhABPRBsvF+a6wYBM-A-0uWepYGAL4h9qiYuAREZJQ0sGBULBgA8qJgOJgysgLCSCDiktJyCsoIKipabmo6-Co2Wip+-DoG9k4IWpp+Ae6W-N16KpZeYRHo2HiEYCTkVNRgshiZAKIQUgBiFHQA7nkKRVI5ZapergN6el46515GVdYdiN4GbjpGXiNGV2pan+MQJEpjFZnEFvRGKscDg6DgDgUjiV5AVylU3sEjFo-P9fINRs8KpU9MRrLp+CZPkF9IDgdEZiR6KRZFBGKwOFwcDxiIlktIWdReWAUpAEWIJMdSqjVK0VMQzN1LCoTGofPwvIS-jpiJ8DFo1OoDA13GNwkDJvTYkyWWy2JxuCQIHIaGLChLkacKm15TodGoPAYlRT-O1HIg6ppDF5rvpmmZLLSLdMrXRmazmHbOdy6BlZGmAMJ0CBgAAKaFkNBYRdL5bA6SWoqEh3dJ2lXUqxDa2O8JkM+ksmt0Oq8er0-S8quCiaiybBQpSaZ5SWF-KgguXIogrqRrdA5X1JIMbSPZn9lg0KkJzVcrU+XlxDSM6unIIZS75i6dFeo25bUr3qgGIeRiNH4JhfN4aiEhO1QfHoIH6n6DyBloL6WmCSwrDgabrFsOy7O+K5puufKNvk4rFLuSjhv62hBKY1h-PRUFhggwxeJ2Pa6D4hj1KEZp0rOJCYZkOEbBg2x7MQX4uk2iJ-iiAEVFo1T6ho9S+PoXjaYSwxqMQKj+EYepNEYowfGhQnECJ2EsrhEn4cQoh4KIaB4PZhYALaeeWEDUDJZCyAAbnQADWJCCaCwnLKJdniZJBHOWArnueJXk+bIEAIMyIUsNkch5L+lH-tRCAGtqxlaFcNgqGO3YsZ0ZlGDq+ggWO7j+NYllRdZMW2VA9kJU5LluWAHl0N5vmLDCcJORQmDIHCnnEJFb42WJeFSUlKVjWlE0ZVlOV0HlyKFXJFGSoppXlTqo4WE0dUGGYhJGD8OrKhYwwgYx-ETDOPXWum0KwjgxA5ksBbVmW35VsW0N1rmZHNsVV37pYzU2DohlPYE7hWFe2kcU9Jj8Pwei6K9ah6N1b6A1CM2gzJP7nW6KOevoxB-Aa-oPBSVMBDoBPqMQ95qCBxL6ueOhhGasjVvABSrUQyOXZ6AC0disWrfjaFVpPWNc8FfAmAlJj18xgCrHptqqV5-No6htMMSqBr6NMpmmtocg6VtUeU54cTYernkxWgTvjrHWNqYvBOegbaX4v3mv9tOpjaGbe1yJDzquvsleUY6uL6Hy+uoHjwZerH+hxesgRSXwqOcbumynHvp+y9pZ9Jzp56jqjNKp6qBvUfpi38mqqnRFJ1J8lRN9LLevm36Yd1mJDg3mLKFnDta9566OaEHWgh1VYe1AOVeT7XATdFjHznu7c4brn8ls221iB9ix-+qf4cX50YdtA3HOIMEY5MqaP2zs-RcOc0x7xtqTTsX8T7kz-nbZq7ExaBifPcUmC8-pLyfh+Fk3cKzwKUjjB2tQRjBGoX6K8gYRYjkJoaYIVRIG9SwhtByexyGlUsPqYgVxmimBwU+BooYAG3FJMMCk9EqoTiTkrDCfVuFDVgSyPh5QDQcWEWYYw6pxFtF0o3EWGhPh1ANEaCyi90LRS4XFTaBEZJaOcA0Tm55Rj+isdYdwukjxuE+CYLStwY4cPWo4nhiURqpSkOlXyriECBjlIGM8A9DJkw1KxYY1RAh3gCIEbx1NbFWTpnQYGcJEkCNgr6LEAw-T3jDleSomgzI3F0AbLsHCykVNBhvSGO8yGv1VjbYWxc6mtFVCpLJnRKhvTmU+fWFhAjdLTkDBmpDLbDOtkpcmcoeKFPcGORukj+7zOVIs-wyzrgyxCEAA */
   id: 'featureTree',
   description: 'Workflows for interacting with the feature tree pane',
+  context: ({ input }) => input,
   states: {
     idle: {
       on: {
@@ -59,7 +107,7 @@ export const featureTreeMachine = setup({
 
         enterEditFlow: {
           target: 'enteringEditFlow',
-          actions: 'saveTargetSourceRange',
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
         goToError: 'goingToError',
@@ -79,7 +127,7 @@ export const featureTreeMachine = setup({
         },
 
         done: {
-          entry: ['clearTargetSourceRange'],
+          entry: ['clearContext'],
           always: '#featureTree.idle',
         },
 
@@ -107,7 +155,7 @@ export const featureTreeMachine = setup({
 
         done: {
           always: '#featureTree.idle',
-          entry: 'clearTargetSourceRange',
+          entry: 'clearContext',
         },
       },
 
@@ -118,18 +166,54 @@ export const featureTreeMachine = setup({
       states: {
         selecting: {
           on: {
-            selected: 'done',
+            selected: {
+              target: 'prepareEditCommand',
+              reenter: true,
+            },
           },
         },
 
         done: {
           always: '#featureTree.idle',
         },
+
+        prepareEditCommand: {
+          invoke: {
+            src: 'prepareEditCommand',
+            input: ({ context }) => {
+              const artifact = context.targetSourceRange
+                ? getArtifactFromRange(
+                    context.targetSourceRange,
+                    engineCommandManager.artifactGraph
+                  ) ?? undefined
+                : undefined
+              return {
+                // currentOperation is guaranteed to be defined here
+                operation: context.currentOperation!,
+                artifact,
+                commandBarSend: commandBarActor.send,
+              }
+            },
+            onDone: {
+              target: 'done',
+              reenter: true,
+            },
+            onError: {
+              target: 'done',
+              reenter: true,
+              actions: ({ event }) => {
+                if ('error' in event && err(event.error)) {
+                  toast.error(event.error.message)
+                }
+              },
+            },
+          },
+        },
       },
 
       initial: 'selecting',
       entry: 'sendSelectionEvent',
-      exit: ['clearTargetSourceRange', 'sendEditFlowStart'],
+      exit: ['clearContext'],
     },
 
     goingToError: {
