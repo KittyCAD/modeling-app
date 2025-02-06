@@ -8,16 +8,7 @@ description: Operations executed sketch_on_face.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                24,
-                28,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           24,
@@ -40,16 +31,7 @@ description: Operations executed sketch_on_face.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                217,
-                218,
-                0
-              ]
-            }
-          ]
+          "value": 5.0
         },
         "sourceRange": [
           217,
@@ -65,14 +47,29 @@ description: Operations executed sketch_on_face.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           245,
           252,
@@ -80,6 +77,11 @@ description: Operations executed sketch_on_face.kcl
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "here",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
           254,
           258,
@@ -101,16 +103,7 @@ description: Operations executed sketch_on_face.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                403,
-                404,
-                0
-              ]
-            }
-          ]
+          "value": 5.0
         },
         "sourceRange": [
           403,
@@ -126,6 +119,18 @@ description: Operations executed sketch_on_face.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

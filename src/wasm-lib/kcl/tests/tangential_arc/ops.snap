@@ -8,16 +8,7 @@ description: Operations executed tangential_arc.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                158,
-                160,
-                0
-              ]
-            }
-          ]
+          "value": 10.0
         },
         "sourceRange": [
           158,
@@ -33,6 +24,18 @@ description: Operations executed tangential_arc.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

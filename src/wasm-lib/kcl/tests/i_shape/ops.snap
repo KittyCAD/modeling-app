@@ -6,9 +6,12 @@ description: Operations executed i_shape.kcl
   {
     "labeledArgs": {
       "hole_sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           2351,
           2356,
@@ -16,9 +19,12 @@ description: Operations executed i_shape.kcl
         ]
       },
       "sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           2358,
           2359,
@@ -40,16 +46,7 @@ description: Operations executed i_shape.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 3.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                2383,
-                2386,
-                0
-              ]
-            }
-          ]
+          "value": 3.0
         },
         "sourceRange": [
           2383,
@@ -65,6 +62,18 @@ description: Operations executed i_shape.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

@@ -24,16 +24,7 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                43,
-                47,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           43,
@@ -59,16 +50,7 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 20.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                248,
-                250,
-                0
-              ]
-            }
-          ]
+          "value": 20.0
         },
         "sourceRange": [
           248,
@@ -84,14 +66,29 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           277,
           284,
@@ -101,16 +98,7 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "end",
-          "__meta": [
-            {
-              "sourceRange": [
-                286,
-                291,
-                0
-              ]
-            }
-          ]
+          "value": "end"
         },
         "sourceRange": [
           286,
@@ -133,16 +121,7 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                374,
-                375,
-                0
-              ]
-            }
-          ]
+          "value": 5.0
         },
         "sourceRange": [
           374,
@@ -158,6 +137,18 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

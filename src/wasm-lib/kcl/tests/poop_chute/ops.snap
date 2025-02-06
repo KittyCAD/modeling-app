@@ -8,16 +8,7 @@ description: Operations executed poop_chute.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "-YZ",
-          "__meta": [
-            {
-              "sourceRange": [
-                196,
-                201,
-                0
-              ]
-            }
-          ]
+          "value": "-YZ"
         },
         "sourceRange": [
           196,
@@ -38,7 +29,51 @@ description: Operations executed poop_chute.kcl
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "angle": {
+              "type": "Number",
+              "value": 90.0
+            },
+            "axis": {
+              "type": "Object",
+              "value": {
+                "custom": {
+                  "type": "Object",
+                  "value": {
+                    "axis": {
+                      "type": "Array",
+                      "value": [
+                        {
+                          "type": "Number",
+                          "value": 1.0
+                        },
+                        {
+                          "type": "Number",
+                          "value": 0.0
+                        }
+                      ]
+                    },
+                    "origin": {
+                      "type": "Array",
+                      "value": [
+                        {
+                          "type": "Number",
+                          "value": 0.0
+                        },
+                        {
+                          "type": "Number",
+                          "value": 5.5000001
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "sourceRange": [
           822,
           940,
@@ -46,9 +81,12 @@ description: Operations executed poop_chute.kcl
         ]
       },
       "sketch": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           942,
           951,
@@ -70,16 +108,7 @@ description: Operations executed poop_chute.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "-YZ",
-          "__meta": [
-            {
-              "sourceRange": [
-                980,
-                985,
-                0
-              ]
-            }
-          ]
+          "value": "-YZ"
         },
         "sourceRange": [
           980,
@@ -102,23 +131,7 @@ description: Operations executed poop_chute.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 1.5,
-          "__meta": [
-            {
-              "sourceRange": [
-                116,
-                117,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                77,
-                80,
-                0
-              ]
-            }
-          ]
+          "value": 1.5
         },
         "sourceRange": [
           1610,
@@ -134,6 +147,18 @@ description: Operations executed poop_chute.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

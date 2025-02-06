@@ -8,16 +8,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                152,
-                156,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           152,
@@ -40,16 +31,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 200.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                17,
-                20,
-                0
-              ]
-            }
-          ]
+          "value": 200.0
         },
         "sourceRange": [
           396,
@@ -65,7 +47,19 @@ description: Operations executed pentagon_fillet_sugar.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -86,9 +80,12 @@ description: Operations executed pentagon_fillet_sugar.kcl
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           456,
           457,
@@ -96,6 +93,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "c",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
           459,
           463,
@@ -120,16 +122,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 100.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                34,
-                37,
-                0
-              ]
-            }
-          ]
+          "value": 100.0
         },
         "sourceRange": [
           629,
@@ -145,12 +138,46 @@ description: Operations executed pentagon_fillet_sugar.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 5.0
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "TagIdentifier",
+                  "value": "arc_tag",
+                  "artifact_id": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
           653,
           773,
@@ -158,9 +185,12 @@ description: Operations executed pentagon_fillet_sugar.kcl
         ]
       },
       "solid": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           775,
           776,
@@ -196,9 +226,12 @@ description: Operations executed pentagon_fillet_sugar.kcl
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           456,
           457,
@@ -206,6 +239,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "a",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
           459,
           463,
@@ -230,16 +268,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 100.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                34,
-                37,
-                0
-              ]
-            }
-          ]
+          "value": 100.0
         },
         "sourceRange": [
           833,
@@ -255,12 +284,46 @@ description: Operations executed pentagon_fillet_sugar.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 5.0
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "TagIdentifier",
+                  "value": "arc_tag",
+                  "artifact_id": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
           857,
           977,
@@ -268,9 +331,12 @@ description: Operations executed pentagon_fillet_sugar.kcl
         ]
       },
       "solid": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           979,
           980,

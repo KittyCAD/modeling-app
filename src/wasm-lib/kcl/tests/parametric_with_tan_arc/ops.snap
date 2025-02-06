@@ -8,16 +8,7 @@ description: Operations executed parametric_with_tan_arc.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 11.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                34,
-                36,
-                0
-              ]
-            }
-          ]
+          "value": 11.0
         },
         "sourceRange": [
           612,
@@ -33,6 +24,18 @@ description: Operations executed parametric_with_tan_arc.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

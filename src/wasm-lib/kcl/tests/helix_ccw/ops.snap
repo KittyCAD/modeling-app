@@ -8,16 +8,7 @@ description: Operations executed helix_ccw.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                24,
-                28,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           24,
@@ -40,16 +31,7 @@ description: Operations executed helix_ccw.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                101,
-                103,
-                0
-              ]
-            }
-          ]
+          "value": 10.0
         },
         "sourceRange": [
           101,
@@ -65,12 +47,40 @@ description: Operations executed helix_ccw.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
-        "artifactIds": [],
+        "value": {
+          "type": "Object",
+          "value": {
+            "angleStart": {
+              "type": "Number",
+              "value": 0.0
+            },
+            "ccw": {
+              "type": "Bool",
+              "value": true
+            },
+            "revolutions": {
+              "type": "Number",
+              "value": 16.0
+            }
+          }
+        },
         "sourceRange": [
           127,
           201,
@@ -78,9 +88,12 @@ description: Operations executed helix_ccw.kcl
         ]
       },
       "solid": {
-        "artifactIds": [
-          "[uuid]"
-        ],
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           203,
           204,

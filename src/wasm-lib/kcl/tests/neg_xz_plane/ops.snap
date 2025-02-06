@@ -8,16 +8,7 @@ description: Operations executed neg_xz_plane.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "-XZ",
-          "__meta": [
-            {
-              "sourceRange": [
-                24,
-                29,
-                0
-              ]
-            }
-          ]
+          "value": "-XZ"
         },
         "sourceRange": [
           24,
@@ -40,23 +31,7 @@ description: Operations executed neg_xz_plane.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 12.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                168,
-                169,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                172,
-                173,
-                0
-              ]
-            }
-          ]
+          "value": 12.0
         },
         "sourceRange": [
           168,
@@ -72,6 +47,18 @@ description: Operations executed neg_xz_plane.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

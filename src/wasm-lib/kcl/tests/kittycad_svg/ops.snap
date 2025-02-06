@@ -8,16 +8,7 @@ description: Operations executed kittycad_svg.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XY",
-          "__meta": [
-            {
-              "sourceRange": [
-                20,
-                24,
-                0
-              ]
-            }
-          ]
+          "value": "XY"
         },
         "sourceRange": [
           20,
@@ -40,16 +31,7 @@ description: Operations executed kittycad_svg.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                18364,
-                18365,
-                0
-              ]
-            }
-          ]
+          "value": 1.0
         },
         "sourceRange": [
           18364,
@@ -65,6 +47,18 @@ description: Operations executed kittycad_svg.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

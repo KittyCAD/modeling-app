@@ -8,16 +8,7 @@ description: Operations executed xz_plane.kcl
       "data": {
         "value": {
           "type": "String",
-          "value": "XZ",
-          "__meta": [
-            {
-              "sourceRange": [
-                24,
-                28,
-                0
-              ]
-            }
-          ]
+          "value": "XZ"
         },
         "sourceRange": [
           24,
@@ -40,23 +31,7 @@ description: Operations executed xz_plane.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 12.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                167,
-                168,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                171,
-                172,
-                0
-              ]
-            }
-          ]
+          "value": 12.0
         },
         "sourceRange": [
           167,
@@ -72,6 +47,18 @@ description: Operations executed xz_plane.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]
