@@ -155,6 +155,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     const body1CapCoords = { x: 571, y: 351 }
     const [clickBody1Cap] = scene.makeMouseHelpers(

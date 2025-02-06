@@ -9,6 +9,8 @@ import {
   getCalculatedKclExpressionValue,
   programMemoryFromVariables,
 } from './kclHelpers'
+import { parse, resultIsOk } from 'lang/wasm'
+import { err } from 'lib/trap'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
