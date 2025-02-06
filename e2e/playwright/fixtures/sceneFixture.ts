@@ -1,6 +1,6 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { uuidv4 } from 'lib/utils'
+import { isArray, uuidv4 } from 'lib/utils'
 import {
   closeDebugPanel,
   doAndWaitForImageDiff,
@@ -255,7 +255,7 @@ export class SceneFixture {
 function isColourArray(
   colour: [number, number, number] | [number, number, number][]
 ): colour is [number, number, number][] {
-  return Array.isArray(colour[0])
+  return isArray(colour[0])
 }
 
 export async function expectPixelColor(

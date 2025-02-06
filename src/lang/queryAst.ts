@@ -38,6 +38,7 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { findKwArg } from './util'
 import { codeRefFromRange } from './std/artifactGraph'
 import { FunctionExpression } from 'wasm-lib/kcl/bindings/FunctionExpression'
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 
 export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
 export const ARG_INDEX_FIELD = 'arg index'
