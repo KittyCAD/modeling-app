@@ -3,8 +3,9 @@
 use std::path::PathBuf;
 
 use crate::{
+    engine::new_zoo_client,
     errors::ExecErrorWithState,
-    execution::{new_zoo_client, ExecutorContext, ExecutorSettings},
+    execution::{ExecutorContext, ExecutorSettings},
     settings::types::UnitLength,
     ConnectionError, ExecError, ExecState, KclErrorWithOutputs, Program,
 };
@@ -66,8 +67,11 @@ async fn do_execute_and_snapshot(
     program: Program,
 ) -> Result<(ExecState, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = ExecState::new(&ctx.settings);
+    ctx.run_with_ui_outputs(&program, &mut exec_state)
+        .await
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
     let snapshot_png_bytes = ctx
-        .execute_and_prepare_snapshot(&program, &mut exec_state)
+        .prepare_snapshot()
         .await
         .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?
         .contents

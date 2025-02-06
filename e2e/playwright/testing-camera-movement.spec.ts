@@ -3,13 +3,8 @@ import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
 import { getUtils } from './test-utils'
 
-test.describe('Testing Camera Movement', () => {
+test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
   test('Can move camera reliably', async ({ page, context, homePage }) => {
-    // TODO: fix this test on windows too after the electron migration
-    const winOrMac =
-      process.platform === 'win32' || process.platform === 'darwin'
-    // eslint-disable-next-line
-    test.skip(winOrMac, 'Skip on windows')
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -347,8 +342,6 @@ test.describe('Testing Camera Movement', () => {
     homePage,
     page,
   }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     /**
      * Currently we only allow zooming by scroll when no other camera movement is happening,
      * set within cameraMouseDragGuards in cameraControls.ts,

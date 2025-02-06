@@ -14,7 +14,8 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid,
+        SolidSet,
     },
     std::Args,
 };
@@ -116,6 +117,9 @@ async fn inner_extrude(
         )
         .await?;
 
+        // TODO: We're reusing the same UUID for multiple commands.  This seems
+        // like the artifact graph would never be able to find all the
+        // responses.
         args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Extrude {
@@ -132,7 +136,7 @@ async fn inner_extrude(
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
         )
         .await?;
-        solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
+        solids.push(do_post_extrude(sketch.clone(), id.into(), length, exec_state, args.clone()).await?);
     }
 
     Ok(solids.into())
@@ -140,6 +144,7 @@ async fn inner_extrude(
 
 pub(crate) async fn do_post_extrude(
     sketch: Sketch,
+    solid_id: ArtifactId,
     length: f64,
     exec_state: &mut ExecState,
     args: Args,
@@ -285,6 +290,7 @@ pub(crate) async fn do_post_extrude(
         // that we passed in to the function, but it's actually the id of the
         // sketch.
         id: sketch.id,
+        artifact_id: solid_id,
         value: new_value,
         meta: sketch.meta.clone(),
         units: sketch.units,

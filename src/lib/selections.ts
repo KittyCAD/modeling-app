@@ -22,7 +22,6 @@ import { getNodeFromPath, isSingleCursorInPipe } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { CommandArgument } from './commandTypes'
 import {
-  DefaultPlaneStr,
   getParentGroup,
   SEGMENT_BODIES_PLUS_PROFILE_START,
 } from 'clientSideScene/sceneEntities'
@@ -43,6 +42,7 @@ import {
   ArtifactId,
 } from 'lang/std/artifactGraph'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { DefaultPlaneStr } from './planes'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -614,7 +614,7 @@ export function codeToIdSelections(
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          if (!('codeRef' in artifact)) return null
+          if (!('codeRef' in artifact && artifact.codeRef)) return null
           return isOverlap(artifact.codeRef.range, selection.range)
             ? {
                 artifact,
@@ -819,8 +819,8 @@ export async function sendSelectEventToEngine(
     clientX: e.clientX,
     clientY: e.clientY,
     el,
-    streamWidth: el.clientWidth,
-    streamHeight: el.clientHeight,
+    streamWidth: engineCommandManager.width,
+    streamHeight: engineCommandManager.height,
   })
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',

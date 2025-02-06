@@ -1186,4 +1186,56 @@ test.describe('Undo and redo do not keep history when navigating between files',
       })
     }
   )
+
+  test(
+    `cloned file has an incremented name and same contents`,
+    { tag: '@electron' },
+    async ({ page, context, homePage }, testInfo) => {
+      const { panesOpen, createNewFile, cloneFile } = await getUtils(page, test)
+
+      const { dir } = await context.folderSetupFn(async (dir) => {
+        const finalDir = join(dir, 'testDefault')
+        await fsp.mkdir(finalDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
+          join(finalDir, 'lee.kcl')
+        )
+      })
+
+      const contentOriginal = await fsp.readFile(
+        join(dir, 'testDefault', 'lee.kcl'),
+        'utf-8'
+      )
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      await panesOpen(['files'])
+      await homePage.openProject('testDefault')
+
+      await cloneFile('lee.kcl')
+      await cloneFile('lee-1.kcl')
+      await cloneFile('lee-2.kcl')
+      await cloneFile('lee-3.kcl')
+      await cloneFile('lee-4.kcl')
+
+      await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
+        await expect(
+          page
+            .locator('[data-testid="file-pane-scroll-container"] button')
+            .filter({ hasText: /lee[-]?[0-5]?/ })
+        ).toHaveCount(5)
+      })
+
+      await test.step('Postcondition: the files have the same contents', async () => {
+        for (let n = 0; n < 5; n += 1) {
+          const content = await fsp.readFile(
+            join(dir, 'testDefault', `lee-${n + 1}.kcl`),
+            'utf-8'
+          )
+          await expect(content).toEqual(contentOriginal)
+        }
+      })
+    }
+  )
 })

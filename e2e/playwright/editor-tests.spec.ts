@@ -10,7 +10,7 @@ import {
 
 import { join } from 'path'
 
-test.describe('Editor tests', () => {
+test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })

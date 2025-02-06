@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing import_function_not_sketch.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -166,6 +165,7 @@ snapshot_kind: text
                               "value": {
                                 "type": "Solid",
                                 "id": "[uuid]",
+                                "artifactId": "[uuid]",
                                 "value": [
                                   {
                                     "faceId": "[uuid]",
@@ -424,6 +424,7 @@ snapshot_kind: text
                                   "on": {
                                     "type": "plane",
                                     "id": "[uuid]",
+                                    "artifactId": "[uuid]",
                                     "value": "XY",
                                     "origin": {
                                       "x": 0.0,
@@ -469,6 +470,7 @@ snapshot_kind: text
                                       ]
                                     }
                                   },
+                                  "artifactId": "[uuid]",
                                   "units": {
                                     "type": "Mm"
                                   },
@@ -597,6 +599,7 @@ snapshot_kind: text
                     "value": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
@@ -855,6 +858,7 @@ snapshot_kind: text
                         "on": {
                           "type": "plane",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "XY",
                           "origin": {
                             "x": 0.0,
@@ -900,6 +904,7 @@ snapshot_kind: text
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },

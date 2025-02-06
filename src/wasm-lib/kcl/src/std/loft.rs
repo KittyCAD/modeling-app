@@ -159,5 +159,5 @@ async fn inner_loft(
     let mut sketch = sketches[0].clone();
     // Override its id with the loft id so we can get its faces later
     sketch.id = id;
-    do_post_extrude(sketch, 0.0, exec_state, args).await
+    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
 }

@@ -287,6 +287,7 @@ snapshot_kind: text
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "YZ",
               "origin": {
                 "x": 0.0,
@@ -466,6 +467,7 @@ snapshot_kind: text
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -560,6 +562,7 @@ snapshot_kind: text
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XZ",
               "origin": {
                 "x": 0.0,
@@ -605,6 +608,7 @@ snapshot_kind: text
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

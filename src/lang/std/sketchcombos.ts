@@ -57,7 +57,7 @@ import {
   getSketchSegmentFromPathToNode,
   getSketchSegmentFromSourceRange,
 } from './sketchConstraints'
-import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
+import { getAngle, roundOff, normaliseAngle, isArray } from '../../lib/utils'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { findKwArg, findKwArgAny } from 'lang/util'
 
@@ -122,7 +122,7 @@ function createCallWrapper(
   tag?: Expr,
   valueUsedInTransform?: number
 ): CreatedSketchExprResult {
-  if (Array.isArray(val)) {
+  if (isArray(val)) {
     if (tooltip === 'line') {
       const labeledArgs = [createLabeledArg('end', createArrayExpression(val))]
       if (tag) {
@@ -1330,12 +1330,12 @@ export function getRemoveConstraintsTransform(
 
   // check if the function has no constraints
   const isTwoValFree =
-    Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
+    isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   if (isTwoValFree) {
     return false
   }
   const isOneValFree =
-    !Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
+    !isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   if (isOneValFree) {
     return transformInfo
   }
@@ -1649,7 +1649,7 @@ export function getConstraintType(
   // and for one val sketch functions that the arg is NOT locked down
   // these conditions should have been checked previously.
   // completely locked down or not locked down at all does not depend on the fnName so we can check that first
-  const isArr = Array.isArray(val)
+  const isArr = isArray(val)
   if (!isArr) {
     if (fnName === 'xLine') return 'yRelative'
     if (fnName === 'yLine') return 'xRelative'
@@ -2113,9 +2113,9 @@ export function getConstraintLevelFromSourceRange(
 
   // check if the function has no constraints
   const isTwoValFree =
-    Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
+    isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   const isOneValFree =
-    !Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
+    !isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
 
   if (isTwoValFree) return { level: 'free', range: range }
   if (isOneValFree) return { level: 'partial', range: range }
@@ -2128,7 +2128,7 @@ export function isLiteralArrayOrStatic(
 ): boolean {
   if (!val) return false
 
-  if (Array.isArray(val)) {
+  if (isArray(val)) {
     const a = val[0]
     const b = val[1]
     return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)
@@ -2142,7 +2142,7 @@ export function isLiteralArrayOrStatic(
 export function isNotLiteralArrayOrStatic(
   val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
 ): boolean {
-  if (Array.isArray(val)) {
+  if (isArray(val)) {
     const a = val[0]
     const b = val[1]
     return isNotLiteralArrayOrStatic(a) && isNotLiteralArrayOrStatic(b)

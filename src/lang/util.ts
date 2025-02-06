@@ -12,7 +12,7 @@ import {
   NumericSuffix,
 } from './wasm'
 import { filterArtifacts } from 'lang/std/artifactGraph'
-import { isOverlap } from 'lib/utils'
+import { isArray, isOverlap } from 'lib/utils'
 
 export function updatePathToNodeFromMap(
   oldPath: PathToNode,
@@ -40,8 +40,8 @@ export function isCursorInSketchCommandRange(
       predicate: (artifact) => {
         return selectionRanges.graphSelections.some(
           (selection) =>
-            Array.isArray(selection?.codeRef?.range) &&
-            Array.isArray(artifact?.codeRef?.range) &&
+            isArray(selection?.codeRef?.range) &&
+            isArray(artifact?.codeRef?.range) &&
             isOverlap(selection?.codeRef?.range, artifact.codeRef.range)
         )
       },
