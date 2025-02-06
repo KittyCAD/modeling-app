@@ -61,10 +61,10 @@ export function getNodeFromPath<T>(
   replacement?: any
 ):
   | {
-    node: T
-    shallowPath: PathToNode
-    deepPath: PathToNode
-  }
+      node: T
+      shallowPath: PathToNode
+      deepPath: PathToNode
+    }
   | Error {
   let currentNode = node as any
   let stopAtNode = null
@@ -152,11 +152,11 @@ export function getNodeFromPathCurry(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
 ) =>
-    | {
+  | {
       node: T
       path: PathToNode
     }
-    | Error {
+  | Error {
   return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
     const _node1 = getNodeFromPath<T>(node, path, stopAt, returnEarly)
     if (err(_node1)) return _node1
@@ -364,10 +364,10 @@ export function isNodeSafeToReplacePath(
   path: PathToNode
 ):
   | {
-    isSafe: boolean
-    value: Expr
-    replacer: ReplacerFn
-  }
+      isSafe: boolean
+      value: Expr
+      replacer: ReplacerFn
+    }
   | Error {
   if (path[path.length - 1][0] === 'callee') {
     path = path.slice(0, -1)
@@ -430,10 +430,10 @@ export function isNodeSafeToReplace(
   sourceRange: SourceRange
 ):
   | {
-    isSafe: boolean
-    value: Node<Expr>
-    replacer: ReplacerFn
-  }
+      isSafe: boolean
+      value: Node<Expr>
+      replacer: ReplacerFn
+    }
   | Error {
   let path = getNodePathFromSourceRange(ast, sourceRange)
   return isNodeSafeToReplacePath(ast, path)
@@ -484,9 +484,9 @@ export function isLinesParallelAndConstrained(
   secondaryLine: Selection
 ):
   | {
-    isParallelAndConstrained: boolean
-    selection: Selection | null
-  }
+      isParallelAndConstrained: boolean
+      selection: Selection | null
+    }
   | Error {
   try {
     const EPSILON = 0.005
