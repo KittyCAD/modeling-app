@@ -25,7 +25,7 @@ import {
   SourceRange,
   topLevelRange,
 } from 'lang/wasm'
-import { getNodeFromPath } from './queryAst'
+import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
@@ -35,6 +35,7 @@ import {
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -70,6 +71,7 @@ export class KclManager {
   private _wasmInitFailed = true
   private _hasErrors = false
   private _switchedFiles = false
+  private _fileSettings: KclSettingsAnnotation = {}
 
   engineCommandManager: EngineCommandManager
 
@@ -367,6 +369,13 @@ export class KclManager {
     if (this._isAstEmpty(ast)) {
       await this.disableSketchMode()
     }
+
+    let fileSettings = getSettingsAnnotation(ast)
+    if (err(fileSettings)) {
+      console.error(fileSettings)
+      fileSettings = {}
+    }
+    this.fileSettings = fileSettings
 
     this.logs = logs
     this.errors = errors
@@ -698,6 +707,14 @@ export class KclManager {
   // Determines if there is no KCL code which means it is executing a blank KCL file
   _isAstEmpty(ast: Node<Program>) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
+  }
+
+  get fileSettings() {
+    return this._fileSettings
+  }
+
+  set fileSettings(settings: KclSettingsAnnotation) {
+    this._fileSettings = settings
   }
 }
 

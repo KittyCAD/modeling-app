@@ -539,6 +539,18 @@ pub fn calculate_circle_from_3_points(ax: f64, ay: f64, bx: f64, by: f64, cx: f6
     }
 }
 
+/// Takes a parsed KCL program and returns the Meta settings.  If it's not
+/// found, null is returned.
+#[wasm_bindgen]
+pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: Program = serde_json::from_str(program_json).map_err(|e| e.to_string())?;
+    let settings = program.meta_settings().map_err(|e| e.to_string())?;
+
+    JsValue::from_serde(&settings).map_err(|e| e.to_string())
+}
+
 /// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
 #[wasm_bindgen]
 pub fn change_kcl_settings(code: &str, settings_str: &str) -> Result<String, String> {
