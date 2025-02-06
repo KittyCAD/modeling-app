@@ -84,6 +84,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -310,6 +311,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -534,6 +536,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -817,6 +820,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -971,6 +975,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg01",
                 "xAxis": {
                   "x": 1.0,
@@ -990,6 +995,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -1216,6 +1222,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -1440,6 +1447,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1517,6 +1525,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

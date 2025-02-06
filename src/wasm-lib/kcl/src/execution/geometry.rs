@@ -6,6 +6,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::ArtifactId;
 use crate::{
     errors::KclError,
     execution::{ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
@@ -216,6 +217,8 @@ pub struct ImportedGeometry {
 pub struct Helix {
     /// The id of the helix.
     pub value: uuid::Uuid,
+    /// The artifact ID.
+    pub artifact_id: ArtifactId,
     /// Number of revolutions.
     pub revolutions: f64,
     /// Start angle (in degrees).
@@ -234,6 +237,8 @@ pub struct Helix {
 pub struct Plane {
     /// The id of the plane.
     pub id: uuid::Uuid,
+    /// The artifact ID.
+    pub artifact_id: ArtifactId,
     // The code for the plane either a string or custom.
     pub value: PlaneType,
     /// Origin of the plane.
@@ -255,6 +260,7 @@ impl Plane {
         match value {
             crate::std::sketch::PlaneData::XY => Plane {
                 id,
+                artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
@@ -265,6 +271,7 @@ impl Plane {
             },
             crate::std::sketch::PlaneData::NegXY => Plane {
                 id,
+                artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
@@ -275,6 +282,7 @@ impl Plane {
             },
             crate::std::sketch::PlaneData::XZ => Plane {
                 id,
+                artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
@@ -285,6 +293,7 @@ impl Plane {
             },
             crate::std::sketch::PlaneData::NegXZ => Plane {
                 id,
+                artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(-1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
@@ -295,6 +304,7 @@ impl Plane {
             },
             crate::std::sketch::PlaneData::YZ => Plane {
                 id,
+                artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(0.0, 1.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
@@ -305,6 +315,7 @@ impl Plane {
             },
             crate::std::sketch::PlaneData::NegYZ => Plane {
                 id,
+                artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(0.0, 1.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
@@ -320,6 +331,7 @@ impl Plane {
                 z_axis,
             } => Plane {
                 id,
+                artifact_id: id.into(),
                 origin: *origin,
                 x_axis: *x_axis,
                 y_axis: *y_axis,
@@ -350,6 +362,8 @@ impl Plane {
 pub struct Face {
     /// The id of the face.
     pub id: uuid::Uuid,
+    /// The artifact ID.
+    pub artifact_id: ArtifactId,
     /// The tag of the face.
     pub value: String,
     /// What should the face’s X axis be?
@@ -404,8 +418,7 @@ pub struct Sketch {
     pub tags: IndexMap<String, TagIdentifier>,
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
-    #[serde(skip)]
-    pub original_id: uuid::Uuid,
+    pub artifact_id: ArtifactId,
     pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
@@ -517,6 +530,8 @@ impl Sketch {
 pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
+    /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
+    pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
     /// The sketch.

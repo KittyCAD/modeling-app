@@ -26,6 +26,7 @@ An solid is a collection of extrude surfaces.
 |----------|------|-------------|----------|
 | `type` |enum: `solid`|  | No |
 | `id` |`string`| The id of the solid. | No |
+| `artifactId` |[`ArtifactId`](/docs/kcl/types/ArtifactId)| The artifact ID of the solid.  Unlike `id`, this doesn't change. | No |
 | `value` |`[` [`ExtrudeSurface`](/docs/kcl/types/ExtrudeSurface) `]`| The extrude surfaces. | No |
 | `sketch` |[`Sketch`](/docs/kcl/types/Sketch)| The sketch. | No |
 | `height` |`number`| The height of the solid. | No |
