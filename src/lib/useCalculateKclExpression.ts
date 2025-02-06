@@ -62,7 +62,7 @@ export function useCalculateKclExpression({
     isValueParsable = false
   }
   const initialCalcResult: number | string =
-    isNaN(Number(value)) || !isValueParsable ? 'NAN' : value
+    Number.isNaN(Number(value)) || !isValueParsable ? 'NAN' : value
   const [calcResult, setCalcResult] = useState(initialCalcResult)
   const [newVariableName, setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)

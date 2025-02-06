@@ -176,7 +176,6 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     // I needed to increase this timeout to get this to pass.
     await page.waitForTimeout(10000)
 
-
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
     await expect(codePaneButtonHolder).toContainText('notification')
