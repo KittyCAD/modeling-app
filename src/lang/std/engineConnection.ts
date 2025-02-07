@@ -406,13 +406,14 @@ class EngineConnection extends EventTarget {
         default:
           if (this.isConnecting()) break
           // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping) this.connect().catch(reportRejection)
+          if (!this.pingPongSpan.ping)
+            this.connect({ reconnect: false }).catch(reportRejection)
           break
       }
     }, pingIntervalMs)
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.connect()
+    this.connect({ reconnect: false })
   }
 
   // SHOULD ONLY BE USED FOR VITESTS
@@ -523,7 +524,9 @@ class EngineConnection extends EventTarget {
     this.idleMode = opts?.idleMode ?? false
     clearInterval(this.pingIntervalId)
 
-    if (opts?.idleMode) {
+    this.disconnectAll()
+
+    if (this.idleMode) {
       this.state = {
         type: EngineConnectionStateType.Disconnecting,
         value: {
@@ -542,8 +545,6 @@ class EngineConnection extends EventTarget {
         type: DisconnectingType.Quit,
       },
     }
-
-    this.disconnectAll()
   }
 
   initiateConnectionExclusive(): boolean {
@@ -597,7 +598,7 @@ class EngineConnection extends EventTarget {
    * This will attempt the full handshake, and retry if the connection
    * did not establish.
    */
-  connect(reconnecting?: boolean): Promise<void> {
+  connect(args: { reconnect: boolean }): Promise<void> {
     const that = this
     return new Promise((resolve) => {
       if (this.isConnecting() || this.isReady()) {
@@ -1227,7 +1228,7 @@ class EngineConnection extends EventTarget {
         this.websocket.addEventListener('message', this.onWebSocketMessage)
       }
 
-      if (reconnecting) {
+      if (args.reconnect) {
         createWebSocketConnection()
       } else {
         this.onNetworkStatusReady = () => {
@@ -1240,6 +1241,7 @@ class EngineConnection extends EventTarget {
       }
     })
   }
+
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
   unreliableSend(message: Models['WebSocketRequest_type']) {
@@ -1291,8 +1293,17 @@ class EngineConnection extends EventTarget {
       this.websocket?.readyState === 3
 
     if (closedPc && closedUDC && closedWS) {
-      // Do not notify the rest of the program that we have cut off anything.
-      this.state = { type: EngineConnectionStateType.Disconnected }
+      if (!this.idleMode) {
+        // Do not notify the rest of the program that we have cut off anything.
+        this.state = { type: EngineConnectionStateType.Disconnected }
+      } else {
+        this.state = {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Pause,
+          },
+        }
+      }
       this.triggeredStart = false
     }
   }
@@ -1318,23 +1329,32 @@ export interface Subscription<T extends ModelTypes> {
   ) => void
 }
 
+export enum CommandLogType {
+  SendModeling = 'send-modeling',
+  SendScene = 'send-scene',
+  ReceiveReliable = 'receive-reliable',
+  ExecutionDone = 'execution-done',
+  ExportDone = 'export-done',
+  SetDefaultSystemProperties = 'set_default_system_properties',
+}
+
 export type CommandLog =
   | {
-      type: 'send-modeling'
+      type: CommandLogType.SendModeling
       data: EngineCommand
     }
   | {
-      type: 'send-scene'
+      type: CommandLogType.SendScene
       data: EngineCommand
     }
   | {
-      type: 'receive-reliable'
+      type: CommandLogType.ReceiveReliable
       data: OkWebSocketResponseData
       id: string
       cmd_type?: string
     }
   | {
-      type: 'execution-done'
+      type: CommandLogType.ExecutionDone
       data: null
     }
 
@@ -1683,7 +1703,7 @@ export class EngineCommandManager extends EventTarget {
           message.request_id
         ) {
           this.addCommandLog({
-            type: 'receive-reliable',
+            type: CommandLogType.ReceiveReliable,
             data: message.resp,
             id: message?.request_id || '',
             cmd_type: pending?.command?.cmd?.type,
@@ -1717,7 +1737,7 @@ export class EngineCommandManager extends EventTarget {
               if (!command) return
               if (command.type === 'modeling_cmd_req')
                 this.addCommandLog({
-                  type: 'receive-reliable',
+                  type: CommandLogType.ReceiveReliable,
                   data: {
                     type: 'modeling',
                     data: {
@@ -1759,7 +1779,7 @@ export class EngineCommandManager extends EventTarget {
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.engineConnection?.connect()
+      this.engineConnection?.connect({ reconnect: false })
     }
     this.engineConnection.addEventListener(
       EngineConnectionEvents.ConnectionStarted,
@@ -1819,6 +1839,7 @@ export class EngineCommandManager extends EventTarget {
       )
 
       this.engineConnection?.tearDown(opts)
+      this.engineConnection = undefined
 
       // Our window.engineCommandManager.tearDown assignment causes this case to happen which is
       // only really for tests.
@@ -1826,6 +1847,8 @@ export class EngineCommandManager extends EventTarget {
     } else if (this.engineCommandManager?.engineConnection) {
       // @ts-ignore
       this.engineCommandManager?.engineConnection?.tearDown(opts)
+      // @ts-ignore
+      this.engineCommandManager.engineConnection = null
     }
   }
   async startNewSession() {
@@ -1901,7 +1924,7 @@ export class EngineCommandManager extends EventTarget {
     ) {
       // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
       this.addCommandLog({
-        type: 'send-scene',
+        type: CommandLogType.SendScene,
         data: command,
       })
     }
