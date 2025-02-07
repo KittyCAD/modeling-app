@@ -1,0 +1,140 @@
+# alone
+
+@a
+
+==>
+Program(Annotation(At,
+                   AnnotationName))
+
+# empty
+
+@ann()
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList))
+
+# equals
+
+@setting(a=1)
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList(AnnotationProperty(PropertyName,
+                                                     Equals,
+                                                     Number))))
+
+# operator
+
+@ann(a*1)
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList(AnnotationProperty(PropertyName,
+                                                     MultOp,
+                                                     Number))))
+
+# complex expr
+
+@ann(a=(1+2+f('yes')))
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList(AnnotationProperty(PropertyName,
+                                                     Equals,
+                                                     ParenthesizedExpression(BinaryExpression(BinaryExpression(Number,
+                                                                                                               AddOp,
+                                                                                                               Number),
+                                                                                              AddOp,
+                                                                                              CallExpression(VariableName,
+                                                                                                             ArgumentList(String))))))))
+
+# many args
+
+@ann(a=1, b=2)
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList(AnnotationProperty(PropertyName,
+                                                     Equals,
+                                                     Number),
+                                  AnnotationProperty(PropertyName,
+                                                     Equals,
+                                                     Number))))
+
+# space around op
+
+@ann(a / 1)
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList(AnnotationProperty(PropertyName,
+                                                     MultOp,
+                                                     Number))))
+
+# space around sep
+
+@ann(a/1 , b/2)
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList(AnnotationProperty(PropertyName,
+                                                     MultOp,
+                                                     Number),
+                                  AnnotationProperty(PropertyName,
+                                                     MultOp,
+                                                     Number))))
+
+# trailing sep
+
+@ann(a=1,)
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList(AnnotationProperty(PropertyName,
+                                                     Equals,
+                                                     Number))))
+
+# lone sep
+
+@ann(,)
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList))
+
+# inside fn
+
+fn f() {
+  @anno(b=2)
+}
+
+==>
+Program(FunctionDeclaration(fn,
+                            VariableDefinition,
+                            ParamList,
+                            Body(Annotation(At,
+                                            AnnotationName,
+                                            AnnotationList(AnnotationProperty(PropertyName,
+                                                                              Equals,
+                                                                              Number))))))
+
+# laxer with space than the language parser is
+
+@ anno (b=2)
+
+==>
+Program(Annotation(At,
+                   AnnotationName,
+                   AnnotationList(AnnotationProperty(PropertyName,
+                                                     Equals,
+                                                     Number))))
