@@ -160,7 +160,7 @@ impl Program {
 
     /// Get the meta settings for the kcl file from the annotations.
     pub fn meta_settings(&self) -> Result<Option<crate::MetaSettings>, KclError> {
-        self.ast.get_meta_settings()
+        self.ast.meta_settings()
     }
 
     /// Change the meta settings for the kcl file.
