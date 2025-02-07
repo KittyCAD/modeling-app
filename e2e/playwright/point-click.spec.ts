@@ -221,8 +221,8 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         afterRectangle2ndClickSnippet: `angledLine([0,11.39],%,$rectangleSegmentA002)
         |>angledLine([segAng(rectangleSegmentA002)-90,105.26],%)
         |>angledLine([segAng(rectangleSegmentA002),-segLen(rectangleSegmentA002)],%)
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)],%)
-        |>close(%)`,
+        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
+        |>close()`,
       })
 
       await sketchOnAChamfer({
@@ -248,8 +248,8 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         afterRectangle2ndClickSnippet: `angledLine([0,11.56],%,$rectangleSegmentA003)
         |>angledLine([segAng(rectangleSegmentA003)-90,106.84],%)
         |>angledLine([segAng(rectangleSegmentA003),-segLen(rectangleSegmentA003)],%)
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)],%)
-        |>close(%)`,
+        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
+        |>close()`,
       })
 
       await sketchOnAChamfer({
@@ -270,8 +270,8 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         afterRectangle2ndClickSnippet: `angledLine([0,11.16],%,$rectangleSegmentA004)
         |>angledLine([segAng(rectangleSegmentA004)-90,103.07],%)
         |>angledLine([segAng(rectangleSegmentA004),-segLen(rectangleSegmentA004)],%)
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)],%)|
-        >close(%)`,
+        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
+        |>close()`,
       })
       /// last one
       await sketchOnAChamfer({
@@ -289,8 +289,8 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         afterRectangle2ndClickSnippet: `angledLine([0,9.1],%,$rectangleSegmentA005)
         |>angledLine([segAng(rectangleSegmentA005)-90,84.07],%)
         |>angledLine([segAng(rectangleSegmentA005),-segLen(rectangleSegmentA005)],%)
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)],%)
-        |>close(%)`,
+        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
+        |>close()`,
       })
 
       await test.step('verify at the end of the test that final code is what is expected', async () => {
@@ -306,9 +306,9 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $yo)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %, $seg02)
-  |> close(%)
-extrude001 = extrude(100, sketch001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(sketch001, length = 100)
   |> chamfer({
        length = 30,
        tags = [getOppositeEdge(seg01)]
@@ -333,8 +333,8 @@ profile004 = startProfileAt([-23.43, 19.69], sketch005)
        segAng(rectangleSegmentA005),
        -segLen(rectangleSegmentA005)
      ], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch004 = startSketchOn(extrude001, seg05)
 profile003 = startProfileAt([82.57, 322.96], sketch004)
   |> angledLine([0, 11.16], %, $rectangleSegmentA004)
@@ -346,8 +346,8 @@ profile003 = startProfileAt([82.57, 322.96], sketch004)
        segAng(rectangleSegmentA004),
        -segLen(rectangleSegmentA004)
      ], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch003 = startSketchOn(extrude001, seg04)
 profile002 = startProfileAt([-209.64, 255.28], sketch003)
   |> angledLine([0, 11.56], %, $rectangleSegmentA003)
@@ -359,8 +359,8 @@ profile002 = startProfileAt([-209.64, 255.28], sketch003)
        segAng(rectangleSegmentA003),
        -segLen(rectangleSegmentA003)
      ], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch002 = startSketchOn(extrude001, seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
   |> angledLine([0, 11.39], %, $rectangleSegmentA002)
@@ -372,8 +372,9 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
        segAng(rectangleSegmentA002),
        -segLen(rectangleSegmentA002)
      ], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
 `,
           { shouldNormalise: true }
         )
@@ -423,8 +424,8 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         afterRectangle2ndClickSnippet: `angledLine([0,11.39],%,$rectangleSegmentA002)
         |>angledLine([segAng(rectangleSegmentA002)-90,105.26],%)
         |>angledLine([segAng(rectangleSegmentA002),-segLen(rectangleSegmentA002)],%)
-        |>line(endAbsolute=[profileStartX(%),profileStartY(%)],%)
-        |>close(%)`,
+        |>line(endAbsolute=[profileStartX(%),profileStartY(%)])
+        |>close()`,
       })
       await editor.expectEditor.toContain(
         `sketch001 = startSketchOn('XZ')
@@ -464,8 +465,8 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
        segAng(rectangleSegmentA002),
        -segLen(rectangleSegmentA002)
      ], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute=[profileStartX(%), profileStartY(%)])
+  |> close()
 `,
         { shouldNormalise: true }
       )
@@ -531,10 +532,10 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
 
     const expectedCodeSnippets = {
       sketchOnXzPlane: `sketch001 = startSketchOn('XZ')`,
-      pointAtOrigin: `startProfileAt([${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}], %)`,
+      pointAtOrigin: `startProfileAt([${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}], sketch001)`,
       segmentOnXAxis: `xLine(${xAxisSloppy.kcl[0]}, %)`,
-      afterSegmentDraggedOffYAxis: `startProfileAt([${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}], %)`,
-      afterSegmentDraggedOnYAxis: `startProfileAt([${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}], %)`,
+      afterSegmentDraggedOffYAxis: `startProfileAt([${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}], sketch001)`,
+      afterSegmentDraggedOnYAxis: `startProfileAt([${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}], sketch001)`,
     }
 
     await test.step(`Start a sketch on the XZ plane`, async () => {
@@ -575,6 +576,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         expectedCodeSnippets.afterSegmentDraggedOnYAxis
       )
     })
+    await editor.page.waitForTimeout(1000)
   })
 
   test(`Verify user can double-click to edit a sketch`, async ({
