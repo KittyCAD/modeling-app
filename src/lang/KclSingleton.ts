@@ -25,7 +25,7 @@ import {
   SourceRange,
   topLevelRange,
 } from 'lang/wasm'
-import { getNodeFromPath } from './queryAst'
+import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
@@ -35,6 +35,7 @@ import {
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -70,6 +71,7 @@ export class KclManager {
   private _wasmInitFailed = true
   private _hasErrors = false
   private _switchedFiles = false
+  private _fileSettings: KclSettingsAnnotation = {}
 
   engineCommandManager: EngineCommandManager
 
@@ -368,6 +370,13 @@ export class KclManager {
       await this.disableSketchMode()
     }
 
+    let fileSettings = getSettingsAnnotation(ast)
+    if (err(fileSettings)) {
+      console.error(fileSettings)
+      fileSettings = {}
+    }
+    this.fileSettings = fileSettings
+
     this.logs = logs
     this.errors = errors
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
@@ -411,14 +420,7 @@ export class KclManager {
 
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(
-    ast: Program = this._ast,
-    {
-      updates,
-    }: {
-      updates: 'none' | 'artifactRanges'
-    } = { updates: 'none' }
-  ) {
+  async executeAstMock(ast: Program = this._ast) {
     await this.ensureWasmInit()
 
     const newCode = recast(ast)
@@ -449,34 +451,6 @@ export class KclManager {
       this.lastSuccessfulProgramMemory = execState.memory
       this.lastSuccessfulOperations = execState.operations
     }
-    if (updates !== 'artifactRanges') return
-
-    // TODO the below seems like a work around, I wish there's a comment explaining exactly what
-    // problem this solves, but either way we should strive to remove it.
-    Array.from(this.engineCommandManager.artifactGraph).forEach(
-      ([commandId, artifact]) => {
-        if (!('codeRef' in artifact && artifact.codeRef)) return
-        const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
-          this.ast,
-          artifact.codeRef.pathToNode,
-          ['CallExpression', 'CallExpressionKw']
-        )
-        if (err(_node1)) return
-        const { node } = _node1
-        if (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw')
-          return
-        const [oldStart, oldEnd] = artifact.codeRef.range
-        if (oldStart === 0 && oldEnd === 0) return
-        if (oldStart === node.start && oldEnd === node.end) return
-        this.engineCommandManager.artifactGraph.set(commandId, {
-          ...artifact,
-          codeRef: {
-            ...artifact.codeRef,
-            range: topLevelRange(node.start, node.end),
-          },
-        })
-      }
-    )
   }
   cancelAllExecutions() {
     this._cancelTokens.forEach((_, key) => {
@@ -697,6 +671,14 @@ export class KclManager {
   // Determines if there is no KCL code which means it is executing a blank KCL file
   _isAstEmpty(ast: Node<Program>) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
+  }
+
+  get fileSettings() {
+    return this._fileSettings
+  }
+
+  set fileSettings(settings: KclSettingsAnnotation) {
+    this._fileSettings = settings
   }
 }
 

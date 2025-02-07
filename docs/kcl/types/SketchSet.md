@@ -31,6 +31,7 @@ A sketch is a collection of paths.
 | `start` |[`BasePath`](/docs/kcl/types/BasePath)| The starting path. | No |
 | `tags` |`object`| Tag identifiers that have been declared in this sketch. | No |
 | `artifactId` |[`ArtifactId`](/docs/kcl/types/ArtifactId)| The original id of the sketch. This stays the same even if the sketch is is sketched on face etc. | No |
+| `originalId` |`string`|  | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A sketch or a group of sketches. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`| Metadata. | No |
 

@@ -818,8 +818,8 @@ export async function sendSelectEventToEngine(
     clientX: e.clientX,
     clientY: e.clientY,
     el,
-    streamWidth: el.clientWidth,
-    streamHeight: el.clientHeight,
+    streamWidth: engineCommandManager.width,
+    streamHeight: engineCommandManager.height,
   })
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',

@@ -1406,6 +1406,8 @@ export class EngineCommandManager extends EventTarget {
     commandId: string
   }
   settings: SettingsViaQueryString
+  width: number = 1337
+  height: number = 1337
 
   /**
    * Export intent traxcks the intent of the export. If it is null there is no
@@ -1510,6 +1512,9 @@ export class EngineCommandManager extends EventTarget {
     if (width === 0 || height === 0) {
       return
     }
+
+    this.width = width
+    this.height = height
 
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
@@ -1822,6 +1827,9 @@ export class EngineCommandManager extends EventTarget {
     if (!this.engineConnection?.isReady()) {
       return
     }
+
+    this.width = streamWidth
+    this.height = streamHeight
 
     const resizeCmd: EngineCommand = {
       type: 'modeling_cmd_req',

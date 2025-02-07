@@ -23,6 +23,9 @@ import {
   VariableDeclarator,
   recast,
   ArtifactGraph,
+  kclSettings,
+  unitLenToUnitLength,
+  unitAngToUnitAngle,
 } from './wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
@@ -39,6 +42,7 @@ import { findKwArg } from './util'
 import { codeRefFromRange } from './std/artifactGraph'
 import { FunctionExpression } from 'wasm-lib/kcl/bindings/FunctionExpression'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
 export const ARG_INDEX_FIELD = 'arg index'
@@ -933,4 +937,24 @@ export function doesSketchPipeNeedSplitting(
   )
     return true
   return false
+}
+/**
+ * Given KCL, returns the settings annotation object if it exists.
+ */
+export function getSettingsAnnotation(
+  kcl: string | Node<Program>
+): KclSettingsAnnotation | Error {
+  const metaSettings = kclSettings(kcl)
+  if (err(metaSettings)) return metaSettings
+
+  const settings: KclSettingsAnnotation = {}
+  // No settings in the KCL.
+  if (!metaSettings) return settings
+
+  settings.defaultLengthUnit = unitLenToUnitLength(
+    metaSettings.defaultLengthUnits
+  )
+  settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
+
+  return settings
 }

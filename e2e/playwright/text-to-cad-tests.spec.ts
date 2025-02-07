@@ -3,7 +3,7 @@ import { getUtils, createProject } from './test-utils'
 import { join } from 'path'
 import fs from 'fs'
 
-test.describe('Text-to-CAD tests', () => {
+test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
   test('basic lego happy case', async ({ page, homePage }) => {
     const u = await getUtils(page)
 
