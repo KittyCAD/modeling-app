@@ -1,7 +1,6 @@
 import toast from 'react-hot-toast'
 import { ActionIcon, ActionIconProps } from './ActionIcon'
 import {
-  MouseEvent,
   RefObject,
   useCallback,
   useEffect,
@@ -148,16 +147,18 @@ interface ContextMenuItemProps {
   onClick?: () => void
   hotkey?: string
   'data-testid'?: string
+  disabled?: boolean
 }
 
 export function ContextMenuItem(props: ContextMenuItemProps) {
-  const { children, icon, onClick, hotkey } = props
+  const { children, icon, onClick, hotkey, disabled } = props
 
   return (
     <button
+      disabled={disabled}
       data-testid={props['data-testid']}
       className="flex items-center gap-2 py-1 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
     >
       {icon && <ActionIcon icon={icon} bgClassName="!bg-transparent" />}
       <div className="flex-1">{children}</div>

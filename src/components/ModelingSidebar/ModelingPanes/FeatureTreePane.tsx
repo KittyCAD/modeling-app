@@ -339,7 +339,10 @@ const OperationItem = (props: {
   }
 
   function enterDeleteFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'UserDefinedFunctionCall'
+    ) {
       props.send({
         type: 'deleteOperation',
         data: {
@@ -389,13 +392,20 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' &&
-      stdLibMap[props.item.name]?.prepareToEdit
-        ? [<ContextMenuItem onClick={enterEditFlow}>Edit</ContextMenuItem>]
-        : []),
       ...(props.item.type === 'StdLibCall'
-        ? [<ContextMenuItem onClick={enterDeleteFlow}>Delete</ContextMenuItem>]
+        ? [
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.prepareToEdit}
+              onClick={enterEditFlow}
+              hotkey="Double click"
+            >
+              Edit
+            </ContextMenuItem>,
+          ]
         : []),
+      <ContextMenuItem onClick={enterDeleteFlow} hotkey="Delete">
+        Delete
+      </ContextMenuItem>,
     ],
     [props.item, props.send]
   )
