@@ -174,7 +174,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Module { meta, .. } => to_vec_sr(&meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
-            KclValue::Tombstone { .. } => unreachable!(),
+            KclValue::Tombstone { .. } => unreachable!("Tombstone SourceRange"),
         }
     }
 }
@@ -206,7 +206,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Object { meta, .. } => to_vec_sr(meta),
             KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
-            KclValue::Tombstone { .. } => unreachable!(),
+            KclValue::Tombstone { .. } => unreachable!("Tombstone &SourceRange"),
         }
     }
 }
@@ -234,7 +234,7 @@ impl KclValue {
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
-            KclValue::Tombstone { .. } => unreachable!(),
+            KclValue::Tombstone { .. } => unreachable!("Tombstone Metadata"),
         }
     }
 
@@ -312,6 +312,16 @@ impl KclValue {
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }
+    }
+
+    pub(crate) fn map_env_ref(&self, env_map: &HashMap<EnvironmentRef, EnvironmentRef>) -> Self {
+        let mut result = self.clone();
+        if let KclValue::Function { ref mut memory, .. } = result {
+            if let Some(new) = env_map.get(memory) {
+                *memory = *new;
+            }
+        }
+        result
     }
 
     /// Put the number into a KCL value.

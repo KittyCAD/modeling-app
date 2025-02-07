@@ -11,8 +11,8 @@ use crate::{
         cad_op::{OpArg, Operation},
         memory,
         state::ModuleState,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata,
-        ProgramMemory, TagEngineInfo, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory,
+        TagEngineInfo, TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
@@ -142,7 +142,7 @@ impl ExecutorContext {
 
                                 // Add the item to the current module.
                                 exec_state.mut_memory().add(
-                                    import_item.identifier(),
+                                    import_item.identifier().to_owned(),
                                     item,
                                     SourceRange::from(&import_item.name),
                                 )?;
@@ -170,7 +170,7 @@ impl ExecutorContext {
                                         })
                                     })?
                                     .clone();
-                                exec_state.mut_memory().add(name, item, source_range)?;
+                                exec_state.mut_memory().add(name.to_owned(), item, source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
                                     exec_state.mod_local.module_exports.push(name.clone());
@@ -183,7 +183,7 @@ impl ExecutorContext {
                                 value: module_id,
                                 meta: vec![source_range.into()],
                             };
-                            exec_state.mut_memory().add(&name, item, source_range)?;
+                            exec_state.mut_memory().add(name, item, source_range)?;
                         }
                     }
                     last_expr = None;
@@ -221,7 +221,9 @@ impl ExecutorContext {
                             StatementKind::Declaration { name: &var_name },
                         )
                         .await?;
-                    exec_state.mut_memory().add(&var_name, memory_item, source_range)?;
+                    exec_state
+                        .mut_memory()
+                        .add(var_name.clone(), memory_item, source_range)?;
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
@@ -249,7 +251,7 @@ impl ExecutorContext {
                         .await?;
                     exec_state
                         .mut_memory()
-                        .add(memory::RETURN_NAME, value, metadata.source_range)
+                        .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
                         .map_err(|_| {
                             KclError::Semantic(KclErrorDetails {
                                 message: "Multiple returns from a single function.".to_owned(),
@@ -509,7 +511,7 @@ impl ExecutorContext {
                     .await?;
                 exec_state
                     .mut_memory()
-                    .add(&expr.label.name, result.clone(), init.into())?;
+                    .add(expr.label.name.clone(), result.clone(), init.into())?;
                 // TODO this lets us use the label as a variable name, but not as a tag in most cases
                 result
             }
@@ -1235,7 +1237,7 @@ impl Node<TagDeclarator> {
 
         exec_state
             .mut_memory()
-            .add(&self.name, memory_item.clone(), self.into())?;
+            .add(self.name.clone(), memory_item.clone(), self.into())?;
 
         Ok(self.into())
     }
@@ -1539,14 +1541,18 @@ fn assign_args_to_params(
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
-            fn_memory.add(&param.identifier.name, arg.value.clone(), (&param.identifier).into())?;
+            fn_memory.add(
+                param.identifier.name.clone(),
+                arg.value.clone(),
+                (&param.identifier).into(),
+            )?;
         } else {
             // Argument was not provided.
             if let Some(ref default_val) = param.default_value {
                 // If the corresponding parameter is optional,
                 // then it's fine, the user doesn't need to supply it.
                 fn_memory.add(
-                    &param.identifier.name,
+                    param.identifier.name.clone(),
                     default_val.clone().into(),
                     (&param.identifier).into(),
                 )?;
@@ -1586,7 +1592,7 @@ fn assign_args_to_params_kw(
                     }
                 },
             };
-            fn_memory.add(&param.identifier.name, arg_val, (&param.identifier).into())?;
+            fn_memory.add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
         } else {
             let Some(unlabeled) = args.unlabeled.take() else {
                 let param_name = &param.identifier.name;
@@ -1604,7 +1610,7 @@ fn assign_args_to_params_kw(
                 });
             };
             fn_memory.add(
-                &param.identifier.name,
+                param.identifier.name.clone(),
                 unlabeled.value.clone(),
                 (&param.identifier).into(),
             )?;
@@ -1764,7 +1770,7 @@ mod test {
             let mut program_memory = ProgramMemory::new();
             for (name, item) in items {
                 program_memory
-                    .add(name.as_str(), item.clone(), SourceRange::default())
+                    .add(name.clone(), item.clone(), SourceRange::default())
                     .unwrap();
             }
             program_memory

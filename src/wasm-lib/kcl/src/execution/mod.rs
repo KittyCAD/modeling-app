@@ -496,25 +496,56 @@ impl ExecutorContext {
     pub async fn run_mock(
         &self,
         program: crate::Program,
+        use_prev_memory: bool,
         variables: IndexMap<String, KclValue>,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(self.is_mock());
 
         let mut exec_state = ExecState::new(&self.settings);
-        let program_memory_override = cache::read_old_memory().await;
-        let mut mem = if let Some(program_memory_override) = program_memory_override {
-            program_memory_override
+        let mut mem = if use_prev_memory {
+            cache::read_old_memory()
+                .await
+                .unwrap_or_else(|| exec_state.memory().clone())
         } else {
-            ProgramMemory::new()
+            exec_state.memory().clone()
         };
+
+        // Add any extra variables to memory
+        let mut to_restore = Vec::new();
         for (k, v) in variables {
-            mem.add(&k, v, SourceRange::synthetic())
+            crate::log::log(format!("add var: {k}"));
+            to_restore.push((k.clone(), mem.get(&k, SourceRange::default()).ok().cloned()));
+            mem.add(k, v, SourceRange::synthetic())
                 .map_err(KclErrorWithOutputs::no_outputs)?;
         }
+
+        // Push a scope so that old variables can be overwritten (since we might be re-executing some
+        // part of the scene).
+        mem.push_new_env_for_scope();
+
         *exec_state.mut_memory() = mem;
 
         self.inner_run(&program.ast, &mut exec_state).await?;
-        Ok(exec_state.to_wasm_outcome())
+
+        // Restore any temporary variables, then save any newly created variables back to
+        // memory in case another run wants to use them. Note this is just saved to the preserved
+        // memory, not to the exec_state which is not cached for mock execution.
+        let mut mem = exec_state.memory().clone();
+
+        let top = mem.pop_and_preserve_env();
+        for (k, v) in to_restore {
+            match v {
+                Some(v) => mem.insert_or_update(k, v),
+                None => mem.clear(k),
+            }
+        }
+        mem.squash_env(top);
+
+        cache::write_old_memory(mem).await;
+
+        let outcome = exec_state.to_mock_wasm_outcome();
+        crate::log::log(format!("return mock {:#?}", outcome.variables));
+        Ok(outcome)
     }
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {

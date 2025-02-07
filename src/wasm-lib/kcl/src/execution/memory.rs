@@ -135,7 +135,7 @@
 //!   is however a conservative approximation since snapshots may exist even if there are no live
 //!   references to an env.
 
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -219,6 +219,17 @@ impl ProgramMemory {
         self.environments.push(new_env);
     }
 
+    /// Push a stack frame for an inline scope.
+    ///
+    /// This should be used for blocks but is currently only used for mock execution.
+    pub fn push_new_env_for_scope(&mut self) {
+        self.stats.env_count += 1;
+
+        // We need to snapshot in case there is a function decl in the new scope.
+        let snapshot = self.snapshot();
+        self.push_new_env_for_call(snapshot);
+    }
+
     /// Push a new stack frame on to the call stack for callees which should not read or write
     /// from memory.
     ///
@@ -250,8 +261,8 @@ impl ProgramMemory {
     /// Pop a frame from the call stack and return a reference to the popped environment. The popped
     /// environment is preserved if it may be referenced (so the returned reference will remain valid).
     ///
-    /// The popped environment may be retained completly (if it may be referenced by a function decl
-    /// or import) or retained but its contents deleted or completly discarded.
+    /// The popped environment may be retained completely (if it may be referenced by a function decl
+    /// or import) or retained but its contents deleted or completely discarded.
     pub fn pop_env(&mut self) -> EnvironmentRef {
         let old = self.current_env;
         self.current_env = self.call_stack.pop().unwrap();
@@ -267,11 +278,46 @@ impl ProgramMemory {
                     self.stats.skipped_env_gcs += 1;
                 }
             } else {
-                self.stats.perserved_envs += 1;
+                self.stats.preserved_envs += 1;
             }
         }
 
         old
+    }
+
+    /// Pop a frame from the call stack and return a reference to the popped environment. The popped
+    /// environment is always preserved.
+    pub fn pop_and_preserve_env(&mut self) -> EnvironmentRef {
+        let old = self.current_env;
+        self.current_env = self.call_stack.pop().unwrap();
+        old
+    }
+
+    /// Merges the specified environment with the current environment, rewriting any environment refs
+    /// taking snapshots into account. Deletes (if possible) or clears the squashed environment.
+    pub fn squash_env(&mut self, old: EnvironmentRef) {
+        assert!(!old.is_rust_env());
+
+        let mut old_env = if old.index() == self.environments.len() - 1 {
+            // Common case and efficient
+            self.stats.env_gcs += 1;
+            self.environments.pop().unwrap()
+        } else {
+            // Should basically never happen in normal usage.
+            self.stats.skipped_env_gcs += 1;
+            std::mem::replace(&mut self.environments[old.index()], Environment::new(self.current_env))
+        };
+
+        // Map of any old env refs to the current env.
+        let snapshot_map: HashMap<_, _> = old_env
+            .snapshot_parents()
+            .map(|(s, p)| (EnvironmentRef(old.0, s), (EnvironmentRef(self.current_env.0, p))))
+            .collect();
+
+        // Move the variables in the popped env into the current env.
+        for (k, v) in old_env.take_bindings() {
+            self.environments[self.current_env.index()].insert_or_update(k.clone(), v.map_env_ref(&snapshot_map));
+        }
     }
 
     /// Snapshot the current state of the memory.
@@ -282,8 +328,8 @@ impl ProgramMemory {
     }
 
     /// Add a value to the program memory (in the current scope). The value must not already exist.
-    pub fn add(&mut self, key: &str, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
-        if self.environments[self.current_env.index()].contains_key(key) {
+    pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
+        if self.environments[self.current_env.index()].contains_key(&key) {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
                 message: format!("Cannot redefine `{}`", key),
                 source_ranges: vec![source_range],
@@ -292,14 +338,22 @@ impl ProgramMemory {
 
         self.stats.mutation_count += 1;
 
-        self.environments[self.current_env.index()].insert(key.to_owned(), value);
+        self.environments[self.current_env.index()].insert(key, value);
 
         Ok(())
     }
 
     pub fn insert_or_update(&mut self, key: String, value: KclValue) {
         self.stats.mutation_count += 1;
-        self.environments[self.current_env.index()].insert_or_update(key.to_owned(), value);
+        self.environments[self.current_env.index()].insert_or_update(key, value);
+    }
+
+    /// Delete an item from memory.
+    ///
+    /// Item will be preserved in any snapshots.
+    pub fn clear(&mut self, key: String) {
+        self.stats.mutation_count += 1;
+        self.environments[self.current_env.index()].clear(key);
     }
 
     #[cfg(test)]
@@ -313,6 +367,21 @@ impl ProgramMemory {
     /// Return Err if not found.
     pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
         self.get_from(var, self.current_env, source_range)
+    }
+
+    /// Get a key from the first KCL (i.e., non-Rust) stack frame on the call stack.
+    pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
+        if !self.current_env.is_rust_env() {
+            return self.get(key, source_range);
+        }
+
+        for env in self.call_stack.iter().rev() {
+            if !env.is_rust_env() {
+                return self.get_from(key, *env, source_range);
+            }
+        }
+
+        unreachable!("It can't be Rust frames all the way down");
     }
 
     /// Get a value from a specific snapshot of the memory.
@@ -438,7 +507,7 @@ impl PartialEq for ProgramMemory {
 }
 
 /// An index pointing to an environment at a point in time (either a snapshot or the current version, see the module docs).
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS, JsonSchema)]
 pub struct EnvironmentRef(usize, SnapshotRef);
 
 impl EnvironmentRef {
@@ -456,8 +525,8 @@ impl EnvironmentRef {
 }
 
 /// An index pointing to a snapshot within a specific (unspecified) environment.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, ts_rs::TS, JsonSchema)]
-pub struct SnapshotRef(usize);
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS, JsonSchema)]
+struct SnapshotRef(usize);
 
 impl SnapshotRef {
     /// Represents no snapshot, use the current version of the environment.
@@ -496,7 +565,7 @@ pub(crate) struct MemoryStats {
     // The number of empty envs we can't delete when popped from the call stack.
     skipped_env_gcs: usize,
     // The number of envs we can't delete when popped from the call stack because they may be referenced.
-    perserved_envs: usize,
+    preserved_envs: usize,
 }
 
 // Use a sub-module to protect access to `Environment::bindings` and prevent unexpected mutatation
@@ -578,6 +647,7 @@ mod env {
 
         /// Create a new child environment, parent points to it's surrounding lexical scope.
         pub(super) fn new(parent: EnvironmentRef) -> Self {
+            assert!(!parent.is_rust_env());
             Self {
                 bindings: IndexMap::new(),
                 snapshots: Vec::new(),
@@ -617,7 +687,13 @@ mod env {
                 }
             }
 
-            self.bindings.get(key).ok_or(self.parent(snapshot))
+            self.bindings
+                .get(key)
+                .and_then(|v| match v {
+                    KclValue::Tombstone { .. } => None,
+                    _ => Some(v),
+                })
+                .ok_or(self.parent(snapshot))
         }
 
         /// Find the `EnvironmentRef` of the parent of this environment corresponding to the specified snapshot.
@@ -641,7 +717,10 @@ mod env {
             Box::new(
                 self.bindings
                     .iter()
-                    .filter_map(move |(k, v)| (!self.snapshot_contains_key(k, snapshot)).then_some(v))
+                    .filter_map(move |(k, v)| {
+                        (!self.snapshot_contains_key(k, snapshot) && !matches!(v, KclValue::Tombstone { .. }))
+                            .then_some(v)
+                    })
                     .chain(
                         self.snapshots
                             .iter()
@@ -671,6 +750,19 @@ mod env {
             self.bindings.insert(key, value);
         }
 
+        /// Delete a key/value.
+        ///
+        /// We want to preserve the snapshot, so we can't just remove the element. We copy the deleted
+        /// value to the snapshot and replace the current value with a tombstone.
+        pub(super) fn clear(&mut self, key: String) {
+            if self.bindings.contains_key(&key) {
+                let old = self.bindings.insert(key.clone(), tombstone()).unwrap();
+                if let Some(s) = self.snapshots.last_mut() {
+                    s.data.insert(key, old);
+                }
+            }
+        }
+
         /// Was the key contained in this environment at the specified point in time.
         fn snapshot_contains_key(&self, key: &str, snapshot: SnapshotRef) -> bool {
             for i in snapshot.index()..self.snapshots.len() {
@@ -683,7 +775,7 @@ mod env {
 
         /// Is the key currently contained in this environment.
         pub(super) fn contains_key(&self, key: &str) -> bool {
-            self.bindings.contains_key(key)
+            !matches!(self.bindings.get(key), Some(KclValue::Tombstone { .. }) | None)
         }
 
         /// Iterate over all key/value pairs currently in this environment where the value satisfies
@@ -692,7 +784,26 @@ mod env {
             &'a self,
             f: impl Fn(&KclValue) -> bool + 'a,
         ) -> impl Iterator<Item = (&'a String, &'a KclValue)> {
-            self.bindings.iter().filter(move |(_, v)| f(v))
+            self.bindings
+                .iter()
+                .filter(move |(_, v)| f(v) && !matches!(v, KclValue::Tombstone { .. }))
+        }
+
+        /// Take all bindings from the environment.
+        pub(super) fn take_bindings(&mut self) -> impl Iterator<Item = (String, KclValue)> {
+            let bindings = std::mem::take(&mut self.bindings);
+            bindings
+                .into_iter()
+                .filter(move |(_, v)| !matches!(v, KclValue::Tombstone { .. }))
+        }
+
+        /// Returns an iterator over any snapshots in this environment, returning the ref to the
+        /// snapshot and its parent.
+        pub(super) fn snapshot_parents(&self) -> impl Iterator<Item = (SnapshotRef, SnapshotRef)> + '_ {
+            self.snapshots
+                .iter()
+                .enumerate()
+                .map(|(i, s)| (SnapshotRef(i + 1), s.parent_snapshot.unwrap()))
         }
     }
 
@@ -710,8 +821,7 @@ mod env {
     /// This is non-trival since we have to build the tree of parent snapshots.
     pub(super) fn snapshot(mem: &mut ProgramMemory, env_ref: EnvironmentRef) -> SnapshotRef {
         let env = &mem.environments[env_ref.index()];
-        let parent = env.parent;
-        let parent_snapshot = parent.map(|p| snapshot(mem, p));
+        let parent_snapshot = env.parent.map(|p| snapshot(mem, p));
 
         let env = &mut mem.environments[env_ref.index()];
         if env.snapshots.is_empty() {
@@ -776,18 +886,37 @@ mod test {
     }
 
     #[test]
+    fn mem_smoke() {
+        // Follows test_pattern_transform_function_cannot_access_future_definitions
+
+        let mem = &mut ProgramMemory::new();
+        let transform = mem.snapshot();
+        mem.add("transform".to_owned(), val(1), sr()).unwrap();
+        let layer = mem.snapshot();
+        mem.add("layer".to_owned(), val(1), sr()).unwrap();
+        mem.add("x".to_owned(), val(1), sr()).unwrap();
+
+        mem.push_new_env_for_call(layer);
+        mem.pop_env();
+
+        mem.push_new_env_for_call(transform);
+        mem.get("x", sr()).unwrap_err();
+        mem.pop_env();
+    }
+
+    #[test]
     fn simple_snapshot() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
         assert_get(mem, "a", 1);
-        mem.add("a", val(2), sr()).unwrap_err();
+        mem.add("a".to_owned(), val(2), sr()).unwrap_err();
         assert_get(mem, "a", 1);
         mem.get("b", sr()).unwrap_err();
 
         let sn = mem.snapshot();
-        mem.add("a", val(2), sr()).unwrap_err();
+        mem.add("a".to_owned(), val(2), sr()).unwrap_err();
         assert_get(mem, "a", 1);
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
         assert_get(mem, "b", 3);
         mem.get_from("b", sn, sr()).unwrap_err();
     }
@@ -795,15 +924,15 @@ mod test {
     #[test]
     fn multiple_snapshot() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
 
         let sn1 = mem.snapshot();
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
 
         let sn2 = mem.snapshot();
-        mem.add("a", val(4), sr()).unwrap_err();
-        mem.add("b", val(5), sr()).unwrap_err();
-        mem.add("c", val(6), sr()).unwrap();
+        mem.add("a".to_owned(), val(4), sr()).unwrap_err();
+        mem.add("b".to_owned(), val(5), sr()).unwrap_err();
+        mem.add("c".to_owned(), val(6), sr()).unwrap();
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 3);
         assert_get(mem, "c", 6);
@@ -818,13 +947,13 @@ mod test {
     #[test]
     fn simple_call_env() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
 
         mem.push_new_env_for_call(mem.current_env);
         assert_get(mem, "b", 3);
-        mem.add("b", val(4), sr()).unwrap();
-        mem.add("c", val(5), sr()).unwrap();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
         assert_get(mem, "b", 4);
         assert_get(mem, "c", 5);
         // Preserve the callee stack frame
@@ -842,21 +971,21 @@ mod test {
     #[test]
     fn multiple_call_env() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
 
         mem.push_new_env_for_call(mem.current_env);
         assert_get(mem, "b", 3);
-        mem.add("b", val(4), sr()).unwrap();
-        mem.add("c", val(5), sr()).unwrap();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
         assert_get(mem, "b", 4);
         assert_get(mem, "c", 5);
         mem.pop_env();
 
         mem.push_new_env_for_call(mem.current_env);
         assert_get(mem, "b", 3);
-        mem.add("b", val(6), sr()).unwrap();
-        mem.add("d", val(7), sr()).unwrap();
+        mem.add("b".to_owned(), val(6), sr()).unwrap();
+        mem.add("d".to_owned(), val(7), sr()).unwrap();
         assert_get(mem, "b", 6);
         assert_get(mem, "d", 7);
         mem.get("c", sr()).unwrap_err();
@@ -866,13 +995,13 @@ mod test {
     #[test]
     fn root_env() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
 
         mem.push_new_root_env();
         mem.get("b", sr()).unwrap_err();
-        mem.add("b", val(4), sr()).unwrap();
-        mem.add("c", val(5), sr()).unwrap();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
         assert_get(mem, "b", 4);
         assert_get(mem, "c", 5);
 
@@ -888,14 +1017,14 @@ mod test {
     #[test]
     fn rust_env() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
         let sn = mem.snapshot();
 
         mem.push_new_env_for_rust_call();
         mem.push_new_env_for_call(sn);
         assert_get(mem, "b", 3);
-        mem.add("b", val(4), sr()).unwrap();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
         assert_get(mem, "b", 4);
 
         mem.pop_env();
@@ -906,20 +1035,20 @@ mod test {
     #[test]
     fn deep_call_env() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
 
         mem.push_new_env_for_call(mem.current_env);
         assert_get(mem, "b", 3);
-        mem.add("b", val(4), sr()).unwrap();
-        mem.add("c", val(5), sr()).unwrap();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
         assert_get(mem, "b", 4);
         assert_get(mem, "c", 5);
 
         mem.push_new_env_for_call(mem.current_env);
         assert_get(mem, "b", 4);
-        mem.add("b", val(6), sr()).unwrap();
-        mem.add("d", val(7), sr()).unwrap();
+        mem.add("b".to_owned(), val(6), sr()).unwrap();
+        mem.add("d".to_owned(), val(7), sr()).unwrap();
         assert_get(mem, "b", 6);
         assert_get(mem, "c", 5);
         assert_get(mem, "d", 7);
@@ -938,15 +1067,15 @@ mod test {
     #[test]
     fn snap_env() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
 
         let sn = mem.snapshot();
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
 
         mem.push_new_env_for_call(sn);
         mem.get("b", sr()).unwrap_err();
-        mem.add("b", val(4), sr()).unwrap();
-        mem.add("c", val(5), sr()).unwrap();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
         assert_get(mem, "b", 4);
         assert_get(mem, "c", 5);
 
@@ -956,19 +1085,19 @@ mod test {
     }
 
     #[test]
-    fn snap_env_2() {
+    fn snap_env2() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
 
         let sn1 = mem.snapshot();
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
 
         mem.push_new_env_for_call(mem.current_env);
         let sn2 = mem.snapshot();
-        mem.add("b", val(4), sr()).unwrap();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
         let sn3 = mem.snapshot();
         assert_get_from(mem, "b", 3, sn2);
-        mem.add("c", val(5), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
         assert_get(mem, "b", 4);
         assert_get(mem, "c", 5);
 
@@ -982,18 +1111,18 @@ mod test {
     }
 
     #[test]
-    fn snap_env_2_updates() {
+    fn snap_env_two_updates() {
         let mem = &mut ProgramMemory::new();
-        mem.add("a", val(1), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
 
         let sn1 = mem.snapshot();
-        mem.add("b", val(3), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
         let sn2 = mem.snapshot();
 
         let callee_env = mem.current_env.0;
         mem.push_new_env_for_call(sn2);
         let sn3 = mem.snapshot();
-        mem.add("b", val(4), sr()).unwrap();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
         let sn4 = mem.snapshot();
         mem.update_with_env("b", val(6), None);
         mem.update_with_env("b", val(7), Some(callee_env));
@@ -1006,7 +1135,7 @@ mod test {
         let expected = [6, 1, 3, 1, 7];
         assert_eq!(vals, expected);
 
-        mem.pop_env();
+        let popped = mem.pop_env();
         assert_get(mem, "b", 7);
         mem.get_from("b", sn1, sr()).unwrap_err();
         assert_get_from(mem, "b", 3, sn2);
@@ -1014,24 +1143,96 @@ mod test {
         let vals: Vec<_> = mem.walk_call_stack().filter_map(expect_int).collect();
         let expected = [1, 7];
         assert_eq!(vals, expected);
+
+        let popped_env = &mem.environments[popped.index()];
+        let sp: Vec<_> = popped_env.snapshot_parents().collect();
+        assert_eq!(
+            sp,
+            vec![(SnapshotRef(1), SnapshotRef(2)), (SnapshotRef(2), SnapshotRef(2))]
+        );
     }
 
     #[test]
-    fn mem_smoke() {
-        // Follows test_pattern_transform_function_cannot_access_future_definitions
-
+    fn snap_env_clear() {
         let mem = &mut ProgramMemory::new();
-        let transform = mem.snapshot();
-        mem.add("transform", val(1), sr()).unwrap();
-        let layer = mem.snapshot();
-        mem.add("layer", val(1), sr()).unwrap();
-        mem.add("x", val(1), sr()).unwrap();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
 
-        mem.push_new_env_for_call(layer);
-        mem.pop_env();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+        let sn = mem.snapshot();
 
-        mem.push_new_env_for_call(transform);
-        mem.get("x", sr()).unwrap_err();
+        mem.push_new_env_for_call(sn);
+        mem.snapshot();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.snapshot();
+        mem.clear("b".to_owned());
+        mem.clear("a".to_owned());
+
+        assert_get(mem, "b", 3);
+        assert_get(mem, "a", 1);
+
         mem.pop_env();
+        assert_get(mem, "b", 3);
+        assert_get(mem, "a", 1);
+    }
+
+    #[test]
+    fn snap_env_clear2() {
+        let mem = &mut ProgramMemory::new();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+        let sn1 = mem.snapshot();
+        mem.clear("b".to_owned());
+        mem.clear("a".to_owned());
+        mem.get("b", SourceRange::default()).unwrap_err();
+        mem.get("a", SourceRange::default()).unwrap_err();
+
+        let sn = mem.snapshot();
+        mem.push_new_env_for_call(sn);
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        let sn2 = mem.snapshot();
+        mem.clear("b".to_owned());
+        mem.clear("a".to_owned());
+        mem.get("b", SourceRange::default()).unwrap_err();
+        mem.get("a", SourceRange::default()).unwrap_err();
+
+        mem.pop_env();
+        mem.get("b", SourceRange::default()).unwrap_err();
+        mem.get("a", SourceRange::default()).unwrap_err();
+
+        assert_get_from(mem, "a", 1, sn1);
+        assert_get_from(mem, "b", 3, sn1);
+        mem.get_from("a", sn2, SourceRange::default()).unwrap_err();
+        assert_get_from(mem, "b", 4, sn2);
+    }
+
+    #[test]
+    fn squash_env() {
+        let mem = &mut ProgramMemory::new();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        let sn1 = mem.snapshot();
+        mem.push_new_env_for_call(sn1);
+        mem.add("b".to_owned(), val(2), sr()).unwrap();
+        let sn2 = mem.snapshot();
+        mem.add(
+            "f".to_owned(),
+            KclValue::Function {
+                func: None,
+                expression: crate::parsing::ast::types::FunctionExpression::dummy(),
+                memory: sn2,
+                meta: Vec::new(),
+            },
+            sr(),
+        )
+        .unwrap();
+        let old = mem.pop_and_preserve_env();
+        mem.squash_env(old);
+        assert_get(mem, "a", 1);
+        assert_get(mem, "b", 2);
+        match mem.get("f", SourceRange::default()).unwrap() {
+            KclValue::Function { memory, .. } if *memory == sn1 => {}
+            v => panic!("{v:#?}"),
+        }
+        assert_eq!(mem.environments.len(), 1);
+        assert_eq!(mem.current_env, EnvironmentRef(0, SnapshotRef(0)));
     }
 }

@@ -34,10 +34,6 @@ describe('processMemory', () => {
     expect(output.myVar).toEqual(5)
     expect(output.otherVar).toEqual(3)
     expect(output).toEqual({
-      HALF_TURN: 180,
-      QUARTER_TURN: 90,
-      THREE_QUARTER_TURN: 270,
-      ZERO: 0,
       myVar: 5,
       myFn: '__function(a)__',
       otherVar: 3,

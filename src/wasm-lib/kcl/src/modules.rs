@@ -111,7 +111,6 @@ pub enum ModuleRepr {
     Dummy,
 }
 
-
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
 pub enum ModulePath {

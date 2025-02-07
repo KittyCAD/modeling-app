@@ -109,6 +109,22 @@ impl ExecState {
         }
     }
 
+    pub fn to_mock_wasm_outcome(self) -> ExecOutcome {
+        // Fields are opt-in so that we don't accidentally leak private internal
+        // state when we add more to ExecState.
+        ExecOutcome {
+            variables: self
+                .memory()
+                .find_all_in_current_env(|_| true)
+                .map(|(k, v)| (k.clone(), v.clone()))
+                .collect(),
+            operations: Default::default(),
+            artifacts: Default::default(),
+            artifact_commands: Default::default(),
+            artifact_graph: Default::default(),
+        }
+    }
+
     pub fn memory(&self) -> &ProgramMemory {
         &self.global.memory
     }

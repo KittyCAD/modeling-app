@@ -439,6 +439,7 @@ export async function deleteSegment({
     ast: modifiedAst,
     engineCommandManager: engineCommandManager,
     isMock: true,
+    usePrevMemory: false,
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')

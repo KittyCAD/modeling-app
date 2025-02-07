@@ -72,6 +72,7 @@ describe('Test KCL Samples from public Github repository', () => {
           const ast = assertParse(code)
           await enginelessExecutor(
             ast,
+            false,
             file.pathFromProjectDirectoryToFirstFile
           )
         },

@@ -1,6 +1,6 @@
 import {
   Program,
-  executor,
+  executeMock,
   SourceRange,
   ExecState,
   VariableMap,
@@ -80,22 +80,9 @@ class MockEngineCommandManager {
 
 export async function enginelessExecutor(
   ast: Node<Program>,
+  usePrevMemory?: boolean,
   path?: string,
   variables?: VariableMap
 ): Promise<ExecState> {
-  const mockEngineCommandManager = new MockEngineCommandManager({
-    setIsStreamReady: () => {},
-    setMediaStream: () => {},
-  }) as any as EngineCommandManager
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  mockEngineCommandManager.startNewSession()
-  const execState = await executor(
-    ast,
-    mockEngineCommandManager,
-    true,
-    path,
-    variables
-  )
-  await mockEngineCommandManager.waitForAllCommands()
-  return execState
+  return await executeMock(ast, usePrevMemory, path, variables)
 }

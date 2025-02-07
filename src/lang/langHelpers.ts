@@ -1,12 +1,12 @@
 import {
   Program,
-  executor,
+  executeWithEngine,
+  executeMock,
   kclLint,
   emptyExecState,
   ExecState,
   VariableMap,
 } from 'lang/wasm'
-import { enginelessExecutor } from 'lib/testHelpers'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
@@ -49,12 +49,14 @@ export async function executeAst({
   path,
   engineCommandManager,
   isMock,
+  usePrevMemory,
   variables,
 }: {
   ast: Node<Program>
   path?: string
   engineCommandManager: EngineCommandManager
   isMock: boolean
+  usePrevMemory?: boolean
   variables?: VariableMap
   isInterrupted?: boolean
 }): Promise<{
@@ -65,8 +67,8 @@ export async function executeAst({
 }> {
   try {
     const execState = await (isMock
-      ? enginelessExecutor(ast, path, variables)
-      : executor(ast, engineCommandManager, false, path))
+      ? executeMock(ast, usePrevMemory, path, variables)
+      : executeWithEngine(ast, engineCommandManager, path))
 
     await engineCommandManager.waitForAllCommands()
 

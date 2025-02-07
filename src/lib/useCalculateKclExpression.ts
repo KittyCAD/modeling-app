@@ -5,9 +5,7 @@ import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
 import { Expr } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
-import {
-  getCalculatedKclExpressionValue,
-} from './kclHelpers'
+import { getCalculatedKclExpressionValue } from './kclHelpers'
 import { parse, resultIsOk } from 'lang/wasm'
 import { err } from 'lib/trap'
 

@@ -3,7 +3,7 @@ import {
   parse_wasm,
   recast_wasm,
   format_number,
-  execute_all,
+  execute_with_engine,
   execute_mock,
   kcl_lint,
   modify_ast_for_sketch_wasm,
@@ -339,6 +339,16 @@ function execStateFromRust(
   }
 }
 
+function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
+  return {
+    variables: execOutcome.variables,
+    operations: execOutcome.operations,
+    artifacts: execOutcome.artifacts,
+    artifactCommands: execOutcome.artifactCommands,
+    artifactGraph: new Map<ArtifactId, Artifact>(),
+  }
+}
+
 export type ArtifactGraph = Map<ArtifactId, Artifact>
 
 function rustArtifactGraphToMap(
@@ -397,60 +407,82 @@ export function sketchFromKclValue(
  * @param path The full path of the file being executed.  Use `null` for
  * expressions that don't have a file, like expressions in the command bar.
  */
-export const executor = async (
+export const executeMock = async (
   node: Node<Program>,
-  engineCommandManager: EngineCommandManager,
-  isMock: boolean,
+  usePrevMemory?: boolean,
   path?: string,
   variables?: { [key in string]?: KclValue }
 ): Promise<ExecState> => {
   try {
-    let jsAppSettings = default_app_settings()
-    if (!TEST) {
-      const lastSettingsSnapshot = await import(
-        'components/SettingsAuthProvider'
-      ).then((module) => module.lastSettingsContextSnapshot)
-      if (lastSettingsSnapshot) {
-        jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
-      }
+    if (!variables) {
+      variables = {}
     }
-
-    if (isMock) {
-      if (!variables) {
-        variables = {}
-      }
-      const execOutcome: RustExecOutcome = await execute_mock(
-        JSON.stringify(node),
-        path,
-        JSON.stringify({ settings: jsAppSettings }),
-        JSON.stringify(variables),
-        fileSystemManager
-      )
-      return execStateFromRust(execOutcome, node)
-    } else {
-      const execOutcome: RustExecOutcome = await execute_all(
-        JSON.stringify(node),
-        path,
-        JSON.stringify({ settings: jsAppSettings }),
-        engineCommandManager,
-        fileSystemManager
-      )
-      return execStateFromRust(execOutcome, node)
+    if (usePrevMemory === undefined) {
+      usePrevMemory = true
     }
-  } catch (e: any) {
-    console.log(e)
-    const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
-    const kclError = new KCLError(
-      parsed.error.kind,
-      parsed.error.msg,
-      firstSourceRange(parsed.error),
-      parsed.operations,
-      parsed.artifactCommands,
-      rustArtifactGraphToMap(parsed.artifactGraph)
+    const execOutcome: RustExecOutcome = await execute_mock(
+      JSON.stringify(node),
+      path,
+      JSON.stringify({ settings: await jsAppSettings() }),
+      usePrevMemory,
+      JSON.stringify(variables),
+      fileSystemManager
     )
-
-    return Promise.reject(kclError)
+    return mockExecStateFromRust(execOutcome)
+  } catch (e: any) {
+    return Promise.reject(errFromErrWithOutputs(e))
   }
+}
+
+/**
+ * Execute a KCL program.
+ * @param node The AST of the program to execute.
+ * @param path The full path of the file being executed.  Use `null` for
+ * expressions that don't have a file, like expressions in the command bar.
+ */
+export const executeWithEngine = async (
+  node: Node<Program>,
+  engineCommandManager: EngineCommandManager,
+  path?: string
+): Promise<ExecState> => {
+  try {
+    const execOutcome: RustExecOutcome = await execute_with_engine(
+      JSON.stringify(node),
+      path,
+      JSON.stringify({ settings: await jsAppSettings() }),
+      engineCommandManager,
+      fileSystemManager
+    )
+    return execStateFromRust(execOutcome, node)
+  } catch (e: any) {
+    return Promise.reject(errFromErrWithOutputs(e))
+  }
+}
+
+const jsAppSettings = async () => {
+  let jsAppSettings = default_app_settings()
+  if (!TEST) {
+    const lastSettingsSnapshot = await import(
+      'components/SettingsAuthProvider'
+    ).then((module) => module.lastSettingsContextSnapshot)
+    if (lastSettingsSnapshot) {
+      jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
+    }
+  }
+  return jsAppSettings
+}
+
+const errFromErrWithOutputs = (e: any): KCLError => {
+  console.log('execute error', e)
+  const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
+  return new KCLError(
+    parsed.error.kind,
+    parsed.error.msg,
+    firstSourceRange(parsed.error),
+    parsed.operations,
+    parsed.artifactCommands,
+    rustArtifactGraphToMap(parsed.artifactGraph)
+  )
 }
 
 export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
@@ -518,7 +550,6 @@ export const modifyAstForSketch = async (
       defaultArtifactGraph()
     )
 
-    console.log(kclError)
     return Promise.reject(kclError)
   }
 }

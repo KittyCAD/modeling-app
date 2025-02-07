@@ -36,7 +36,7 @@ pub async fn clear_scene_and_bust_cache(
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn execute_all(
+pub async fn execute_with_engine(
     program_ast_json: &str,
     path: Option<String>,
     settings: &str,
@@ -61,12 +61,13 @@ pub async fn execute_all(
     }
 }
 
-// wasm_bindgen wrapper for execute
+// wasm_bindgen wrapper for mock execute
 #[wasm_bindgen]
 pub async fn execute_mock(
     program_ast_json: &str,
     path: Option<String>,
     settings: &str,
+    use_prev_memory: bool,
     variables: &str,
     fs_manager: kcl_lib::wasm_engine::FileSystemManager,
 ) -> Result<JsValue, String> {
@@ -81,7 +82,7 @@ pub async fn execute_mock(
     }
 
     let ctx = kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?;
-    match ctx.run_mock(program, variables).await {
+    match ctx.run_mock(program, use_prev_memory, variables).await {
         // The serde-wasm-bindgen does not work here because of weird HashMap issues.
         // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
         Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),

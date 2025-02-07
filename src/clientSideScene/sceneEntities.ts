@@ -504,7 +504,7 @@ export class SceneEntities {
     sketch: Sketch
     variableDeclarationName: string
   }> {
-    const prepared = this.prepareTruncatedMemoryAndAst(
+    const prepared = this.prepareTruncatedAst(
       sketchPathToNode || [],
       maybeModdedAst
     )
@@ -1848,12 +1848,12 @@ export class SceneEntities {
       ...this.mouseEnterLeaveCallbacks(),
     })
   }
-  prepareTruncatedMemoryAndAst = (
+  prepareTruncatedAst = (
     sketchPathToNode: PathToNode,
     ast?: Node<Program>,
     draftSegment?: DraftSegment
   ) =>
-    prepareTruncatedMemoryAndAst(
+    prepareTruncatedAst(
       sketchPathToNode,
       ast || kclManager.ast,
       kclManager.lastSuccessfulVariables,
@@ -2002,7 +2002,7 @@ export class SceneEntities {
     modifiedAst = modded.modifiedAst
     const info = draftInfo
       ? draftInfo
-      : this.prepareTruncatedMemoryAndAst(pathToNode || [])
+      : this.prepareTruncatedAst(pathToNode || [])
     if (trap(info, { suppress: true })) return
     const { truncatedAst, variableDeclarationName } = info
     ;(async () => {
@@ -2365,7 +2365,7 @@ export class SceneEntities {
 
 // calculations/pure-functions/easy to test so no excuse not to
 
-function prepareTruncatedMemoryAndAst(
+function prepareTruncatedAst(
   sketchPathToNode: PathToNode,
   ast: Node<Program>,
   variables: VariableMap,

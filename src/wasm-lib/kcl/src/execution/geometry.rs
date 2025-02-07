@@ -569,27 +569,6 @@ impl Solid {
     }
 }
 
-/// An solid ID and its fillet and chamfer IDs.  This is needed for lazy
-/// fillet evaluation.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
-pub struct SolidLazyIds {
-    pub solid_id: uuid::Uuid,
-    pub sketch_id: uuid::Uuid,
-    /// Chamfers or fillets on this solid.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub edge_cuts: Vec<uuid::Uuid>,
-}
-
-impl From<&Solid> for SolidLazyIds {
-    fn from(eg: &Solid) -> Self {
-        Self {
-            solid_id: eg.id,
-            sketch_id: eg.sketch.id,
-            edge_cuts: eg.edge_cuts.iter().map(|foc| foc.id()).collect(),
-        }
-    }
-}
-
 /// A fillet or a chamfer.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]

@@ -498,6 +498,6 @@ const theExtrude = startSketchOn('XY')
 async function exe(code: string, variables: VariableMap = {}) {
   const ast = assertParse(code)
 
-  const execState = await enginelessExecutor(ast, undefined, variables)
+  const execState = await enginelessExecutor(ast, true, undefined, variables)
   return execState.variables
 }
