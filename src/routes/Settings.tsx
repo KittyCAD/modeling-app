@@ -22,9 +22,9 @@ export const APP_VERSION =
   isTestEnv && NODE_ENV === 'development'
     ? '11.22.33'
     : isDesktop()
-    ? // @ts-ignore
+      ? // @ts-ignore
       window.electron.packageJson.version
-    : 'main'
+      : 'main'
 
 export const PACKAGE_NAME = isDesktop()
   ? window.electron.packageJson.name
@@ -32,12 +32,11 @@ export const PACKAGE_NAME = isDesktop()
 
 export const IS_NIGHTLY = PACKAGE_NAME.indexOf('-nightly') > -1
 
-export const IS_NIGHTLY_OR_DEBUG = IS_NIGHTLY || APP_VERSION === '0.0.0'
+export const IS_NIGHTLY_OR_DEBUG = IS_NIGHTLY || APP_VERSION === '0.0.0' || APP_VERSION === '11.22.33'
 
 export function getReleaseUrl(version: string = APP_VERSION) {
-  return `https://github.com/KittyCAD/modeling-app/releases/tag/${
-    IS_NIGHTLY ? 'nightly-' : ''
-  }v${version}`
+  return `https://github.com/KittyCAD/modeling-app/releases/tag/${IS_NIGHTLY ? 'nightly-' : ''
+    }v${version}`
 }
 
 export const Settings = () => {
@@ -61,9 +60,9 @@ export const Settings = () => {
       const element = document.getElementById(location.hash.slice(1))
       if (element) {
         element.scrollIntoView({ block: 'center', behavior: 'smooth' })
-        ;(
-          element.querySelector('input, select, textarea') as HTMLInputElement
-        )?.focus()
+          ; (
+            element.querySelector('input, select, textarea') as HTMLInputElement
+          )?.focus()
       }
     }
   }, [location.hash])
