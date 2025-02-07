@@ -11,7 +11,7 @@ export enum EngineStreamState {
   WaitForMediaStream = 'wait-for-media-stream',
   Playing = 'playing',
   Paused = 'paused',
-  // The is the state inbetween Paused and Playing *specifically that order*.
+  // The is the state in-between Paused and Playing *specifically that order*.
   Resuming = 'resuming',
 }
 
