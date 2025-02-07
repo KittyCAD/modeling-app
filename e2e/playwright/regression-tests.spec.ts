@@ -253,7 +253,7 @@ extrude001 = extrude(sketch001, length = 50)
       |>
   
     example = extrude(exampleSketch, length = 5)
-    shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
+    shell(exampleSketch, faces = ['end'], thickness = 0.25)`
         )
       })
 

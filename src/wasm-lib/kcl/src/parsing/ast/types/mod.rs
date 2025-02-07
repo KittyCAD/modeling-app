@@ -269,7 +269,7 @@ impl Node<Program> {
     }
 
     /// Get the annotations for the meta settings from the kcl file.
-    pub fn get_meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
+    pub fn meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
         for annotation_node in self.annotations() {
             let annotation = &annotation_node.value;
             if annotation.annotation_name() == Some(annotations::SETTINGS) {
@@ -3881,7 +3881,7 @@ const cylinder = startSketchOn('-XZ')
 
 startSketchOn('XY')"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
-        let result = program.get_meta_settings().unwrap();
+        let result = program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
@@ -3897,7 +3897,7 @@ startSketchOn('XY')"#;
 
 startSketchOn('XY')"#;
         let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
-        let result = program.get_meta_settings().unwrap();
+        let result = program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
@@ -3914,7 +3914,7 @@ startSketchOn('XY')"#;
             })
             .unwrap();
 
-        let result = new_program.get_meta_settings().unwrap();
+        let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
@@ -3939,7 +3939,7 @@ startSketchOn('XY')
     async fn test_parse_get_meta_settings_nothing_to_mm() {
         let some_program_string = r#"startSketchOn('XY')"#;
         let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
-        let result = program.get_meta_settings().unwrap();
+        let result = program.meta_settings().unwrap();
         assert!(result.is_none());
 
         // Edit the ast.
@@ -3950,7 +3950,7 @@ startSketchOn('XY')
             })
             .unwrap();
 
-        let result = new_program.get_meta_settings().unwrap();
+        let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 

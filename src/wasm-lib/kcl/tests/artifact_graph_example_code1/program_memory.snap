@@ -374,6 +374,7 @@ snapshot_kind: text
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -904,6 +905,7 @@ snapshot_kind: text
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -975,6 +977,7 @@ snapshot_kind: text
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1412,6 +1415,7 @@ snapshot_kind: text
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1878,6 +1882,7 @@ snapshot_kind: text
                     }
                   },
                   "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -1949,6 +1954,7 @@ snapshot_kind: text
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
