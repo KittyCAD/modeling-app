@@ -1534,10 +1534,10 @@ async fn kcl_test_shell_with_tag() {
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 40.14)
-  |> shell({
-    faces: [seg01],
-    thickness: 3.14,
-  }, %)
+  |> shell(
+    faces = [seg01],
+    thickness = 3.14,
+  )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1998,10 +1998,10 @@ async fn kcl_test_error_no_auth_websocket() {
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 40.14)
-  |> shell({
-    faces: [seg01],
-    thickness: 3.14,
-  }, %)
+  |> shell(
+    faces = [seg01],
+    thickness = 3.14,
+  )
 "#;
 
     let result = execute_and_snapshot_no_auth(code, UnitLength::Mm, None).await;

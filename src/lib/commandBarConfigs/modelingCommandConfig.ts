@@ -76,6 +76,14 @@ export type ModelingCommandSchema = {
     plane: Selections
     distance: KclCommandValue
   }
+  Helix: {
+    revolutions: KclCommandValue
+    angleStart: KclCommandValue
+    counterClockWise: boolean
+    radius: KclCommandValue
+    axis: string
+    length: KclCommandValue
+  }
   'change tool': {
     tool: SketchTool
   }
@@ -441,6 +449,53 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
       },
       distance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  Helix: {
+    description: 'Create a helix or spiral in 3D about an axis.',
+    icon: 'helix',
+    status: 'development',
+    needsReview: true,
+    args: {
+      revolutions: {
+        inputType: 'kcl',
+        defaultValue: '1',
+        required: true,
+        warningMessage:
+          'The helix workflow is new and under tested. Please break it and report issues.',
+      },
+      angleStart: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
+      counterClockWise: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'True', isCurrent: false, value: true },
+          { name: 'False', isCurrent: true, value: false },
+        ],
+      },
+      radius: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      axis: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+          { name: 'Z Axis', isCurrent: false, value: 'Z' },
+        ],
+      },
+      length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,

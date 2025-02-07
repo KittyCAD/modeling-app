@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing i_shape.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -643,6 +644,7 @@ description: Program memory after executing i_shape.kcl
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1623,6 +1625,7 @@ description: Program memory after executing i_shape.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1923,6 +1926,7 @@ description: Program memory after executing i_shape.kcl
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
