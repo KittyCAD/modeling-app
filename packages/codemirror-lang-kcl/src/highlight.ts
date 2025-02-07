@@ -24,6 +24,7 @@ export const kclHighlight = styleTags({
   VariableDefinition: t.definition(t.variableName),
   VariableName: t.variableName,
   PropertyName: t.propertyName,
+  'ObjectProperty/PropertyName': t.definition(t.propertyName),
   TagDeclarator: t.tagName,
   '( )': t.paren,
   '{ }': t.brace,
