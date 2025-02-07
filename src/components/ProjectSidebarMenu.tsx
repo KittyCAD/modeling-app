@@ -193,7 +193,7 @@ function ProjectMenuPopover({
           id: 'share-link',
           Element: 'button',
           children: 'Share link to file',
-          disabled: IS_NIGHTLY_OR_DEBUG || !findCommand(shareCommandInfo),
+          disabled: !(IS_NIGHTLY_OR_DEBUG && findCommand(shareCommandInfo)),
           onClick: async () => {
             await copyFileShareLink({
               token: token ?? '',
