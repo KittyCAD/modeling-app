@@ -273,7 +273,9 @@ export function createSettings() {
        */
       defaultUnit: new Setting<BaseUnit>({
         defaultValue: 'mm',
-        description: 'The default unit to use in modeling dimensions',
+        description: 'The default units to be set on new files',
+        title: 'New file units',
+        hideOnLevel: 'project',
         validate: (v) => baseUnitsUnion.includes(v as BaseUnit),
         commandConfig: {
           inputType: 'options',
