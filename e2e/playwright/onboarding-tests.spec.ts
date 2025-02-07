@@ -27,7 +27,7 @@ test.describe('Onboarding tests', () => {
       },
       cleanProjectDir: true,
     },
-    async ({ context, page, homePage }) => {
+    async ({ page, homePage }) => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
@@ -68,7 +68,7 @@ test.describe('Onboarding tests', () => {
       },
       cleanProjectDir: true,
     },
-    async ({ page, homePage }, testInfo) => {
+    async ({ page }) => {
       const u = await getUtils(page)
 
       const viewportSize = { width: 1200, height: 500 }
@@ -269,7 +269,7 @@ test.describe('Onboarding tests', () => {
       cleanProjectDir: true,
     },
 
-    async ({ context, page, homePage }) => {
+    async ({ page, homePage }) => {
       const u = await getUtils(page)
       const badCode = `// This is bad code we shouldn't see`
 
@@ -336,10 +336,10 @@ test.describe('Onboarding tests', () => {
       await homePage.goToModelingScene()
 
       // Test that the text in this step is correct
-      const avatarLocator = await page
+      const avatarLocator = page
         .getByTestId('user-sidebar-toggle')
         .locator('img')
-      const onboardingOverlayLocator = await page
+      const onboardingOverlayLocator = page
         .getByTestId('onboarding-content')
         .locator('div')
         .nth(1)
@@ -447,7 +447,7 @@ test.fixme(
     },
     cleanProjectDir: true,
   },
-  async ({ context, page, homePage }, testInfo) => {
+  async ({ context, page }) => {
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = join(dir, 'router-template-slate')
       await fsp.mkdir(routerTemplateDir, { recursive: true })
