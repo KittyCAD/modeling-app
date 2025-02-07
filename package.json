@@ -85,7 +85,7 @@
     "fmt": "prettier --write ./src *.ts *.json *.js ./e2e ./packages",
     "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e ./packages",
     "fetch:wasm": "./get-latest-wasm-bundle.sh",
-    "fetch:samples": "echo \"Fetching latest KCL samples...\" && curl -o public/kcl-samples-manifest-fallback.json https://raw.githubusercontent.com/KittyCAD/kcl-samples/achalmers/kw-shell/manifest.json",
+    "fetch:samples": "echo \"Fetching latest KCL samples...\" && curl -o public/kcl-samples-manifest-fallback.json https://raw.githubusercontent.com/KittyCAD/kcl-samples/achalmers/kw-appearance/manifest.json",
     "isomorphic-copy-wasm": "(copy src/wasm-lib/pkg/wasm_lib_bg.wasm public || cp src/wasm-lib/pkg/wasm_lib_bg.wasm public)",
     "build:wasm-dev": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --dev --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && yarn isomorphic-copy-wasm && yarn fmt",
     "build:wasm": "yarn wasm-prep && cd src/wasm-lib && wasm-pack build --release --target web --out-dir pkg && cargo test -p kcl-lib export_bindings && cd ../.. && yarn isomorphic-copy-wasm && yarn fmt",
