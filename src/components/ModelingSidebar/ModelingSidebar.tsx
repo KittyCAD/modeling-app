@@ -21,6 +21,8 @@ import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { sceneInfra } from 'lib/singletons'
+import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from 'lib/timings'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
