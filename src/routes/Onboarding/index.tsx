@@ -164,8 +164,8 @@ export function useStepNumber(
     ? slug === onboardingPaths.INDEX
       ? 1
       : onboardingRoutes.findIndex(
-        (r) => r.path === makeUrlPathRelative(slug)
-      ) + 1
+          (r) => r.path === makeUrlPathRelative(slug)
+        ) + 1
     : 1
 }
 
