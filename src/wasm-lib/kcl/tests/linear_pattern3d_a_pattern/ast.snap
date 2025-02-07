@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing linear_pattern3d_a_pattern.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -331,115 +332,88 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
           "init": {
             "arguments": [
               {
-                "end": 260,
-                "properties": [
-                  {
-                    "end": 225,
-                    "key": {
-                      "end": 213,
-                      "name": "axis",
-                      "start": 209,
-                      "type": "Identifier"
-                    },
-                    "start": 209,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "elements": [
-                        {
-                          "end": 218,
-                          "raw": "1",
-                          "start": 217,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 221,
-                          "raw": "0",
-                          "start": 220,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 224,
-                          "raw": "0",
-                          "start": 223,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 225,
-                      "start": 216,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "end": 242,
-                    "key": {
-                      "end": 238,
-                      "name": "instances",
-                      "start": 229,
-                      "type": "Identifier"
-                    },
-                    "start": 229,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 242,
-                      "raw": "7",
-                      "start": 241,
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "axis"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 234,
+                      "raw": "1",
+                      "start": 233,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 7.0,
+                        "value": 1.0,
                         "suffix": "None"
                       }
-                    }
-                  },
-                  {
-                    "end": 258,
-                    "key": {
-                      "end": 254,
-                      "name": "distance",
-                      "start": 246,
-                      "type": "Identifier"
                     },
-                    "start": 246,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 258,
-                      "raw": "6",
-                      "start": 257,
+                    {
+                      "end": 237,
+                      "raw": "0",
+                      "start": 236,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 6.0,
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 240,
+                      "raw": "0",
+                      "start": 239,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
                         "suffix": "None"
                       }
                     }
-                  }
-                ],
-                "start": 205,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
+                  ],
+                  "end": 241,
+                  "start": 232,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
               },
               {
-                "end": 275,
-                "name": "exampleSketch",
-                "start": 262,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "instances"
+                },
+                "arg": {
+                  "end": 258,
+                  "raw": "7",
+                  "start": 257,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 7.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "distance"
+                },
+                "arg": {
+                  "end": 274,
+                  "raw": "6",
+                  "start": 273,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 6.0,
+                    "suffix": "None"
+                  }
+                }
               }
             ],
             "callee": {
@@ -450,8 +424,15 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
             },
             "end": 276,
             "start": 189,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 221,
+              "name": "exampleSketch",
+              "start": 208,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 180,
           "type": "VariableDeclarator"
@@ -474,74 +455,39 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
           "init": {
             "arguments": [
               {
-                "end": 358,
-                "properties": [
-                  {
-                    "end": 323,
-                    "key": {
-                      "end": 311,
-                      "name": "axis",
-                      "start": 307,
-                      "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "axis"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 325,
+                      "raw": "0",
+                      "start": 324,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     },
-                    "start": 307,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "elements": [
-                        {
-                          "end": 316,
-                          "raw": "0",
-                          "start": 315,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 319,
-                          "raw": "0",
-                          "start": 318,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 322,
-                          "raw": "1",
-                          "start": 321,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 323,
-                      "start": 314,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "end": 339,
-                    "key": {
-                      "end": 335,
-                      "name": "distance",
+                    {
+                      "end": 328,
+                      "raw": "0",
                       "start": 327,
-                      "type": "Identifier"
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     },
-                    "start": 327,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 339,
+                    {
+                      "end": 331,
                       "raw": "1",
-                      "start": 338,
+                      "start": 330,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -549,40 +495,48 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         "suffix": "None"
                       }
                     }
-                  },
-                  {
-                    "end": 356,
-                    "key": {
-                      "end": 352,
-                      "name": "instances",
-                      "start": 343,
-                      "type": "Identifier"
-                    },
-                    "start": 343,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 356,
-                      "raw": "7",
-                      "start": 355,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 7.0,
-                        "suffix": "None"
-                      }
-                    }
-                  }
-                ],
-                "start": 303,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
+                  ],
+                  "end": 332,
+                  "start": 323,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
               },
               {
-                "end": 366,
-                "name": "pattn1",
-                "start": 360,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "distance"
+                },
+                "arg": {
+                  "end": 348,
+                  "raw": "1",
+                  "start": 347,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "instances"
+                },
+                "arg": {
+                  "end": 365,
+                  "raw": "7",
+                  "start": 364,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 7.0,
+                    "suffix": "None"
+                  }
+                }
               }
             ],
             "callee": {
@@ -593,8 +547,15 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
             },
             "end": 367,
             "start": 287,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 312,
+              "name": "pattn1",
+              "start": 306,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 278,
           "type": "VariableDeclarator"
