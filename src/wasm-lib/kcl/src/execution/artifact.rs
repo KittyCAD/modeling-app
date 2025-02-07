@@ -13,9 +13,7 @@ use serde::{ser::SerializeSeq, Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    errors::KclErrorDetails,
-    parsing::ast::types::{Node, Program},
-    KclError, SourceRange,
+    errors::KclErrorDetails, parsing::ast::types::{Node, Program}, KclError, SourceRange
 };
 
 #[cfg(test)]
@@ -112,6 +110,14 @@ pub struct CodeRef {
 pub struct Plane {
     pub id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct Helix {
+    pub id: ArtifactId,
     pub code_ref: CodeRef,
 }
 
@@ -274,6 +280,7 @@ pub struct EdgeCutEdge {
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
     Plane(Plane),
+    Helix(Helix),
     Path(Path),
     Segment(Segment),
     Solid2d(Solid2d),
@@ -301,6 +308,7 @@ impl Artifact {
     pub(crate) fn id(&self) -> ArtifactId {
         match self {
             Artifact::Plane(a) => a.id,
+            Artifact::Helix(a) => a.id,
             Artifact::Path(a) => a.id,
             Artifact::Segment(a) => a.id,
             Artifact::Solid2d(a) => a.id,
@@ -319,6 +327,7 @@ impl Artifact {
     pub(crate) fn code_ref(&self) -> Option<&CodeRef> {
         match self {
             Artifact::Plane(a) => Some(&a.code_ref),
+            Artifact::Helix(a) => Some(&a.code_ref),
             Artifact::Path(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
             Artifact::Solid2d(_) => None,
@@ -339,6 +348,7 @@ impl Artifact {
     fn merge(&mut self, new: Artifact) -> Option<Artifact> {
         match self {
             Artifact::Plane(a) => a.merge(new),
+            Artifact::Helix(a) => a.merge(new),
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
             Artifact::Solid2d(_) => Some(new),
@@ -360,6 +370,17 @@ impl Plane {
             return Some(new);
         };
         merge_ids(&mut self.path_ids, new.path_ids);
+
+        None
+    }
+}
+
+impl Helix {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Helix(new) = new else {
+            return Some(new);
+        };
+        // merge_ids(&mut self.path_ids, new.path_ids);
 
         None
     }
@@ -598,6 +619,15 @@ fn artifacts_to_update(
             return Ok(vec![Artifact::Plane(Plane {
                 id,
                 path_ids: Vec::new(),
+                code_ref: CodeRef { range, path_to_node },
+            })]);
+        }
+        ModelingCmd::EntityMakeHelixFromParams(_) => {
+            if range.is_synthetic() {
+                return Ok(Vec::new());
+            }
+            return Ok(vec![Artifact::Helix(Helix {
+                id,
                 code_ref: CodeRef { range, path_to_node },
             })]);
         }

@@ -68,6 +68,7 @@ impl Artifact {
     pub(crate) fn back_edges(&self) -> Vec<ArtifactId> {
         match self {
             Artifact::Plane(_) => Vec::new(),
+            Artifact::Helix(_) => Vec::new(),
             Artifact::Path(a) => vec![a.plane_id],
             Artifact::Segment(a) => vec![a.path_id],
             Artifact::Solid2d(a) => vec![a.path_id],
@@ -87,6 +88,7 @@ impl Artifact {
     pub(crate) fn child_ids(&self) -> Vec<ArtifactId> {
         match self {
             Artifact::Plane(a) => a.path_ids.clone(),
+            Artifact::Helix(a) =>  Vec::new(),
             Artifact::Path(a) => {
                 // Note: Don't include these since they're parents: plane_id.
                 let mut ids = a.seg_ids.clone();
@@ -203,6 +205,7 @@ impl ArtifactGraph {
 
             let grouped = match artifact {
                 Artifact::Plane(_) => false,
+                Artifact::Helix(_) => false,
                 Artifact::Path(_) => {
                     groups.entry(id).or_insert_with(Vec::new).push(id);
                     true
@@ -274,6 +277,14 @@ impl ArtifactGraph {
                     "{prefix}{}[\"Plane<br>{:?}\"]",
                     id,
                     code_ref_display(&plane.code_ref)
+                )?;
+            }
+            Artifact::Helix(helix) => {
+                writeln!(
+                    output,
+                    "{prefix}{}[\"Helix<br>{:?}\"]",
+                    id,
+                    code_ref_display(&helix.code_ref)
                 )?;
             }
             Artifact::Path(path) => {
@@ -488,6 +499,10 @@ impl ArtifactGraph {
             Artifact::Plane(_plane) => {
                 ids_seen.clear();
                 writeln!(output, "{prefix}Plane")?;
+            }
+            Artifact::Helix(_helix) => {
+                ids_seen.clear();
+                writeln!(output, "{prefix}Helix")?;
             }
             Artifact::Path(_path) => {
                 writeln!(output, "{prefix}Path")?;
