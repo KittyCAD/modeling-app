@@ -32,6 +32,8 @@ import {
 } from 'lib/constants'
 import { codeManager, kclManager } from 'lib/singletons'
 import { Project } from 'lib/project'
+import { changeKclSettings, unitLengthToUnitLen } from 'lang/wasm'
+import { err } from 'lib/trap'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -84,25 +86,25 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
   const [state, send, actor] = useMachine(
     projectsMachine.provide({
       actions: {
-        navigateToProject: () => {},
-        navigateToProjectIfNeeded: () => {},
-        navigateToFile: () => {},
+        navigateToProject: () => { },
+        navigateToProjectIfNeeded: () => { },
+        navigateToFile: () => { },
         toastSuccess: ({ event }) =>
           toast.success(
             ('data' in event && typeof event.data === 'string' && event.data) ||
-              ('output' in event &&
-                'message' in event.output &&
-                typeof event.output.message === 'string' &&
-                event.output.message) ||
-              ''
+            ('output' in event &&
+              'message' in event.output &&
+              typeof event.output.message === 'string' &&
+              event.output.message) ||
+            ''
           ),
         toastError: ({ event }) =>
           toast.error(
             ('data' in event && typeof event.data === 'string' && event.data) ||
-              ('output' in event &&
-                typeof event.output === 'string' &&
-                event.output) ||
-              ''
+            ('output' in event &&
+              typeof event.output === 'string' &&
+              event.output) ||
+            ''
           ),
       },
       actors: {
@@ -122,7 +124,12 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
         createFile: fromPromise(async ({ input }) => {
           // Browser version doesn't navigate, just overwrites the current file
           clearImportSearchParams()
-          codeManager.updateCodeStateEditor(input.code || '')
+          const codeToWrite = changeKclSettings(input.code ?? '', {
+            defaultLengthUnits: unitLengthToUnitLen(settings.context.modeling.defaultUnit.current),
+            defaultAngleUnits: { type: 'Degrees' },
+          })
+          if (err(codeToWrite)) return Promise.reject(codeToWrite)
+          codeManager.updateCodeStateEditor(codeToWrite)
           await codeManager.writeToFile()
           await kclManager.executeCode(true)
 
@@ -298,19 +305,19 @@ const ProjectsContextDesktop = ({
         toastSuccess: ({ event }) =>
           toast.success(
             ('data' in event && typeof event.data === 'string' && event.data) ||
-              ('output' in event &&
-                'message' in event.output &&
-                typeof event.output.message === 'string' &&
-                event.output.message) ||
-              ''
+            ('output' in event &&
+              'message' in event.output &&
+              typeof event.output.message === 'string' &&
+              event.output.message) ||
+            ''
           ),
         toastError: ({ event }) =>
           toast.error(
             ('data' in event && typeof event.data === 'string' && event.data) ||
-              ('output' in event &&
-                typeof event.output === 'string' &&
-                event.output) ||
-              ''
+            ('output' in event &&
+              typeof event.output === 'string' &&
+              event.output) ||
+            ''
           ),
       },
       actors: {
@@ -374,8 +381,8 @@ const ProjectsContextDesktop = ({
             input.method === 'newProject'
               ? PROJECT_ENTRYPOINT
               : input.name.endsWith(FILE_EXT)
-              ? input.name
-              : input.name + FILE_EXT
+                ? input.name
+                : input.name + FILE_EXT
           let message = 'File created successfully'
 
           const needsInterpolated = doesProjectNameNeedInterpolated(projectName)
@@ -406,7 +413,12 @@ const ProjectsContextDesktop = ({
           })
 
           fileName = name
-          await window.electron.writeFile(path, input.code || '')
+          const codeToWrite = changeKclSettings(input.code ?? '', {
+            defaultLengthUnits: unitLengthToUnitLen(settings.context.modeling.defaultUnit.current),
+            defaultAngleUnits: { type: 'Degrees' },
+          })
+          if (err(codeToWrite)) return Promise.reject(codeToWrite)
+          await window.electron.writeFile(path, codeToWrite)
 
           return {
             message,

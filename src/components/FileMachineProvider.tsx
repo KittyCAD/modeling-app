@@ -31,6 +31,9 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { markOnce } from 'lib/performance'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
+import { unit } from '@kittycad/lib/dist/types/src'
+import { changeKclSettings, unitLengthToUnitLen } from 'lang/wasm'
+import { err } from 'lib/trap'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -96,8 +99,8 @@ export const FileMachineProvider = ({
             navigate(
               `..${PATHS.FILE}/${encodeURIComponent(
                 context.selectedDirectory +
-                  window.electron.path.sep +
-                  event.output.name
+                window.electron.path.sep +
+                event.output.name
               )}`
             )
           } else if (
@@ -159,7 +162,12 @@ export const FileMachineProvider = ({
                 createdPath
               )
             } else {
-              await window.electron.writeFile(createdPath, input.content ?? '')
+              const codeToWrite = changeKclSettings(input.content ?? '', {
+                defaultLengthUnits: unitLengthToUnitLen(settings.context.modeling.defaultUnit.current),
+                defaultAngleUnits: { type: 'Degrees' },
+              })
+              if (err(codeToWrite)) return Promise.reject(codeToWrite)
+              await window.electron.writeFile(createdPath, codeToWrite)
             }
           }
 
@@ -188,7 +196,13 @@ export const FileMachineProvider = ({
             })
             createdName = name
             createdPath = path
-            await window.electron.writeFile(createdPath, input.content ?? '')
+
+            const codeToWrite = changeKclSettings(input.content ?? '', {
+              defaultLengthUnits: unitLengthToUnitLen(settings.context.modeling.defaultUnit.current),
+              defaultAngleUnits: { type: 'Degrees' },
+            })
+            if (err(codeToWrite)) return Promise.reject(codeToWrite)
+            await window.electron.writeFile(createdPath, codeToWrite)
           }
 
           return {
@@ -302,9 +316,8 @@ export const FileMachineProvider = ({
           }
 
           return {
-            message: `Successfully deleted ${isDir ? 'folder' : 'file'} "${
-              input.name
-            }"`,
+            message: `Successfully deleted ${isDir ? 'folder' : 'file'} "${input.name
+              }"`,
           }
         }),
       },
