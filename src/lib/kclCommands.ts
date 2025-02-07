@@ -135,7 +135,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     },
     {
       name: 'share-file-link',
-      displayName: 'Share a copy through Zoo',
+      displayName: 'Share current part (via Zoo link)',
       description: 'Create a link that contains a copy of the current file.',
       groupId: 'code',
       needsReview: false,
@@ -145,7 +145,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           token: commandProps.authToken,
           code: codeManager.code,
           name: commandProps.projectData.project?.name || '',
-          units: commandProps.settings.defaultUnit,
         }).catch(reportRejection)
       },
     },

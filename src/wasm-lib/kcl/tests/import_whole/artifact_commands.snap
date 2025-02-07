@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands import_whole.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -525,7 +526,7 @@ description: Artifact commands import_whole.kcl
     "cmdId": "[uuid]",
     "range": [
       83,
-      130,
+      123,
       0
     ],
     "command": {

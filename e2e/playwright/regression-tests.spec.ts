@@ -253,7 +253,7 @@ extrude001 = extrude(sketch001, length = 50)
       |>
   
     example = extrude(exampleSketch, length = 5)
-    shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
+    shell(exampleSketch, faces = ['end'], thickness = 0.25)`
         )
       })
 
@@ -314,6 +314,7 @@ extrude001 = extrude(sketch001, length = 50)
   )
 
   test('when engine fails export we handle the failure and alert the user', async ({
+    scene,
     page,
     homePage,
   }) => {
@@ -383,10 +384,7 @@ extrude001 = extrude(sketch001, length = 50)
     await page.keyboard.press('End')
     await page.keyboard.press('Enter')
 
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+    await scene.waitForExecutionDone()
 
     // Now try exporting
 
