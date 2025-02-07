@@ -52,7 +52,7 @@ export function Toolbar({
   }, [kclManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
-  const { overallState } = useNetworkContext()
+  const { overallState, immediateState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
   const [showRichContent, setShowRichContent] = useState(false)
@@ -61,6 +61,7 @@ export function Toolbar({
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
     isExecuting ||
+    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady
 
   const currentMode =

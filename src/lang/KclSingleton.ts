@@ -473,7 +473,7 @@ export class KclManager {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
     }
     this.engineCommandManager.addCommandLog({
-      type: 'execution-done',
+      type: CommandLogType.ExecutionDone,
       data: null,
     })
 
@@ -492,7 +492,7 @@ export class KclManager {
     this.isExecuting = false
     this.executeIsStale = null
     this.engineCommandManager.addCommandLog({
-      type: 'execution-done',
+      type: CommandLogType.ExecutionDone,
       data: null,
     })
     markOnce('code/endExecuteAst')

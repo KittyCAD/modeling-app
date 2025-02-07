@@ -147,6 +147,7 @@ export const ModelingMachineProvider = ({
       showScaleGrid,
       cameraOrbit,
       enableSSAO,
+      cameraProjection,
     },
   } = useSettings()
   const navigate = useNavigate()
@@ -163,6 +164,7 @@ export const ModelingMachineProvider = ({
     commandBarActor,
     commandBarIsClosedSelector
   )
+
   // Settings machine setup
   // const retrievedSettings = useRef(
   // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
@@ -1912,22 +1914,6 @@ export const ModelingMachineProvider = ({
       }
     }
   }, [modelingActor])
-
-  useSetupEngineManager(
-    streamRef,
-    modelingSend,
-    modelingState.context,
-    {
-      pool: pool,
-      theme: theme.current,
-      highlightEdges: highlightEdges.current,
-      enableSSAO: enableSSAO.current,
-      showScaleGrid: showScaleGrid.current,
-      cameraProjection: cameraProjection.current,
-      cameraOrbit: cameraOrbit.current,
-    },
-    token
-  )
 
   useEffect(() => {
     kclManager.registerExecuteCallback(() => {

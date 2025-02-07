@@ -18,6 +18,7 @@ export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const commandBarState = useCommandBarState()
+  const { immediateState } = useNetworkContext()
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
@@ -31,6 +32,14 @@ export const CommandBar = () => {
     if (commandBarState.matches('Closed')) return
     commandBarActor.send({ type: 'Close' })
   }, [pathname])
+
+  useEffect(() => {
+    if (
+      immediateState.type !== EngineConnectionStateType.ConnectionEstablished
+    ) {
+      commandBarActor.send({ type: 'Close' })
+    }
+  }, [immediateState])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
