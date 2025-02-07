@@ -16,23 +16,16 @@ impl Program {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
 
-        let result = self
+        let mut result = self
             .shebang
             .as_ref()
             .map(|sh| format!("{}\n\n", sh.inner.content))
             .unwrap_or_default();
 
-        let result = if !self.non_code_meta.start_nodes.is_empty() {
-            result
-                + &self
-                    .non_code_meta
-                    .start_nodes
-                    .iter()
-                    .map(|start| start.recast(options, indentation_level))
-                    .collect::<String>()
-        } else {
-            result
-        };
+        for start in &self.non_code_meta.start_nodes {
+            result.push_str(&start.recast(options, indentation_level));
+        }
+        let result = result; // Remove mutation.
 
         let result = self
             .body
