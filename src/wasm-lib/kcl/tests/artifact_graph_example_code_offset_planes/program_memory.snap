@@ -200,6 +200,7 @@ snapshot_kind: text
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },

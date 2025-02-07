@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing sketch_on_face_end_negative_extrude.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -541,6 +542,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -913,6 +915,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -975,6 +978,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

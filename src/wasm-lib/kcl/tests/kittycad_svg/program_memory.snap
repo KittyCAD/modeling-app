@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing kittycad_svg.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -8820,6 +8821,7 @@ description: Program memory after executing kittycad_svg.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
