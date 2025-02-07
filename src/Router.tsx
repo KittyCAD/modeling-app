@@ -110,7 +110,6 @@ const router = createRouter([
                 <CommandBar />
                 {
                   // @ts-ignore
-                  // TODO: add a check for searchParams.has(ASK_TO_OPEN_QUERY_PARAM) here
                   !isDesktop() && import.meta.env.PROD && <DownloadAppBanner />
                 }
               </ModelingMachineProvider>
