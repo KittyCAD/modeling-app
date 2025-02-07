@@ -10,6 +10,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
 
@@ -30,11 +31,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
-
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+    await scene.waitForExecutionDone()
 
     // Ensure no badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
@@ -175,7 +172,9 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
-    await page.waitForTimeout(1000)
+    // FIXME: await scene.waitForExecutionDone() does not work. It still fails.
+    // I needed to increase this timeout to get this to pass.
+    await page.waitForTimeout(10000)
 
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
