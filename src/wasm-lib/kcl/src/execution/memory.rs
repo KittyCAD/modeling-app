@@ -248,20 +248,27 @@ impl ProgramMemory {
     }
 
     /// Pop a frame from the call stack and return a reference to the popped environment. The popped
-    /// environment is preserved (so the returned reference will remain valid), but see below for
-    /// important caveats.
+    /// environment is preserved if it may be referenced (so the returned reference will remain valid).
     ///
-    /// The popped environment will always be retained (though we may do some GC in the future). It
-    /// may however be pruned/compressed so that any variable which cannot be referenced elsewhere is
-    /// removed from the environment. The return value of function and all top-level values in a
-    /// module are preserved. Any environment which may be referenced by a function (closure-capture)
-    /// is entirely preserved.
+    /// The popped environment may be retained completly (if it may be referenced by a function decl
+    /// or import) or retained but its contents deleted or completly discarded.
     pub fn pop_env(&mut self) -> EnvironmentRef {
         let old = self.current_env;
         self.current_env = self.call_stack.pop().unwrap();
 
         if !old.is_rust_env() {
             self.environments[old.index()].compact();
+
+            if self.environments[old.index()].is_empty() {
+                if old.index() == self.environments.len() - 1 {
+                    self.environments.pop();
+                    self.stats.env_gcs += 1;
+                } else {
+                    self.stats.skipped_env_gcs += 1;
+                }
+            } else {
+                self.stats.perserved_envs += 1;
+            }
         }
 
         old
@@ -484,6 +491,12 @@ pub(crate) struct MemoryStats {
     snapshot_count: usize,
     // Total number of values inserted or updated.
     mutation_count: usize,
+    // The number of envs we delete when popped from the call stack.
+    env_gcs: usize,
+    // The number of empty envs we can't delete when popped from the call stack.
+    skipped_env_gcs: usize,
+    // The number of envs we can't delete when popped from the call stack because they may be referenced.
+    perserved_envs: usize,
 }
 
 // Use a sub-module to protect access to `Environment::bindings` and prevent unexpected mutatation
@@ -572,7 +585,12 @@ mod env {
             }
         }
 
-        /// Possibly compress this environment by deleting all memory except the return value.
+        // True if the env is empty and not a root env.
+        pub(super) fn is_empty(&self) -> bool {
+            self.snapshots.is_empty() && self.bindings.is_empty() && self.parent.is_some()
+        }
+
+        /// Possibly compress this environment by deleting the memory.
         ///
         /// This method will return without changing anything if the environment may be referenced
         /// (this is a pretty conservative approximation, but if you keep an EnvironmentRef around
@@ -585,11 +603,7 @@ mod env {
                 return;
             }
 
-            let ret_value = self.bindings.get(RETURN_NAME).cloned();
             self.bindings = IndexMap::new();
-            if let Some(ret_value) = ret_value {
-                self.bindings.insert(RETURN_NAME.to_owned(), ret_value);
-            }
         }
 
         pub(super) fn get(&self, key: &str, snapshot: SnapshotRef) -> Result<&KclValue, Option<EnvironmentRef>> {

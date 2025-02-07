@@ -677,9 +677,7 @@ impl Backend {
                 // string.
                 Err(anyhow::anyhow!("failed to execute code"))
             }
-            Ok(_) => {
-                Ok(())
-            }
+            Ok(_) => Ok(()),
         }
     }
 

@@ -508,7 +508,8 @@ impl ExecutorContext {
             ProgramMemory::new()
         };
         for (k, v) in variables {
-            mem.add(&k, v, SourceRange::synthetic()).map_err(KclErrorWithOutputs::no_outputs)?;
+            mem.add(&k, v, SourceRange::synthetic())
+                .map_err(KclErrorWithOutputs::no_outputs)?;
         }
         *exec_state.mut_memory() = mem;
 
@@ -1603,12 +1604,7 @@ let w = f() + f()
         ctx.run_with_caching(old_program).await.unwrap();
 
         // Get the id_generator from the first execution.
-        let id_generator = cache::read_old_ast()
-            .await
-            .unwrap()
-            .exec_state
-            .global
-            .id_generator;
+        let id_generator = cache::read_old_ast().await.unwrap().exec_state.global.id_generator;
 
         let code = r#"sketch001 = startSketchOn('XZ')
 |> startProfileAt([62.74, 206.13], %)
@@ -1629,12 +1625,7 @@ let w = f() + f()
         // Execute the program.
         ctx.run_with_caching(program).await.unwrap();
 
-        let new_id_generator = cache::read_old_ast()
-            .await
-            .unwrap()
-            .exec_state
-            .global
-            .id_generator;
+        let new_id_generator = cache::read_old_ast().await.unwrap().exec_state.global.id_generator;
 
         assert_eq!(id_generator, new_id_generator);
     }

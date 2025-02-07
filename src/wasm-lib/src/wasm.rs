@@ -5,7 +5,8 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    bust_cache, clear_mem_cache, exec::IdGenerator, pretty::NumericSuffix, CoreDump, EngineManager, ModuleId, Point2d, Program,
+    bust_cache, clear_mem_cache, exec::IdGenerator, pretty::NumericSuffix, CoreDump, EngineManager, ModuleId, Point2d,
+    Program,
 };
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;

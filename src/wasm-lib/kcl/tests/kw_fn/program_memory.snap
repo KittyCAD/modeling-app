@@ -245,64 +245,6 @@ description: Program memory after executing kw_fn.kcl
         }
       ],
       "parent": null
-    },
-    {
-      "bindings": {
-        "__return": {
-          "type": "Number",
-          "value": 2.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                95,
-                96,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                32,
-                33,
-                0
-              ]
-            }
-          ]
-        }
-      },
-      "snapshots": [],
-      "parent": [
-        0,
-        1
-      ]
-    },
-    {
-      "bindings": {
-        "__return": {
-          "type": "Number",
-          "value": 3.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                110,
-                111,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                121,
-                122,
-                0
-              ]
-            }
-          ]
-        }
-      },
-      "snapshots": [],
-      "parent": [
-        0,
-        2
-      ]
     }
   ],
   "currentEnv": [

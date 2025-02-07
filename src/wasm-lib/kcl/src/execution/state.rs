@@ -97,7 +97,11 @@ impl ExecState {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
-            variables: self.memory().find_all_in_current_env(|_| true).map(|(k, v)| (k.clone(), v.clone())).collect(),
+            variables: self
+                .memory()
+                .find_all_in_current_env(|_| true)
+                .map(|(k, v)| (k.clone(), v.clone()))
+                .collect(),
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,

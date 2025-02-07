@@ -182,14 +182,7 @@ description: Program memory after executing import_function_not_sketch.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
-<<<<<<< HEAD
-<<<<<<< HEAD
             "artifactId": "[uuid]",
-=======
->>>>>>> cb610d543 (Compress envs when popped)
-=======
-            "artifactId": "[uuid]",
->>>>>>> a6757a13f (Fixups)
             "value": [
               {
                 "faceId": "[uuid]",
@@ -448,14 +441,7 @@ description: Program memory after executing import_function_not_sketch.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
-<<<<<<< HEAD
-<<<<<<< HEAD
                 "artifactId": "[uuid]",
-=======
->>>>>>> cb610d543 (Compress envs when popped)
-=======
-                "artifactId": "[uuid]",
->>>>>>> a6757a13f (Fixups)
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -501,15 +487,8 @@ description: Program memory after executing import_function_not_sketch.kcl
                   ]
                 }
               },
-<<<<<<< HEAD
-<<<<<<< HEAD
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-=======
->>>>>>> cb610d543 (Compress envs when popped)
-=======
-              "artifactId": "[uuid]",
->>>>>>> a6757a13f (Fixups)
               "units": {
                 "type": "Mm"
               },

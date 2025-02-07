@@ -167,57 +167,6 @@ description: Program memory after executing kw_fn_with_defaults.kcl
         }
       ],
       "parent": null
-    },
-    {
-      "bindings": {
-        "__return": {
-          "type": "Number",
-          "value": 2.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                63,
-                64,
-                0
-              ]
-            }
-          ]
-        }
-      },
-      "snapshots": [],
-      "parent": [
-        0,
-        1
-      ]
-    },
-    {
-      "bindings": {
-        "__return": {
-          "type": "Number",
-          "value": 21.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                88,
-                89,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                96,
-                98,
-                0
-              ]
-            }
-          ]
-        }
-      },
-      "snapshots": [],
-      "parent": [
-        0,
-        1
-      ]
     }
   ],
   "currentEnv": [
