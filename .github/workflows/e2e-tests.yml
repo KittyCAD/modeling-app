@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main, pierremtb/playwright-may-fool-me-once-1-shard ]
+    branches: [ main, pierremtb/playwright-may-fool-me-once-1-shard-kevin ]
   pull_request:
     branches: [ main ]
 
