@@ -32,15 +32,18 @@ test.fixme('Units menu', async ({ page, homePage }) => {
   await expect(unitsMenuButton).toContainText('mm')
 })
 
-test('Successful export shows a success toast', async ({ page, homePage }) => {
-  // FYI this test doesn't work with only engine running locally
-  // And you will need to have the KittyCAD CLI installed
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    ;(window as any).playwrightSkipFilePicker = true
-    localStorage.setItem(
-      'persistCode',
-      `topAng = 25
+test(
+  'Successful export shows a success toast',
+  { tag: '@skipLocalEngine' },
+  async ({ page, homePage }) => {
+    // FYI this test doesn't work with only engine running locally
+    // And you will need to have the KittyCAD CLI installed
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      ;(window as any).playwrightSkipFilePicker = true
+      localStorage.setItem(
+        'persistCode',
+        `topAng = 25
 bottomAng = 35
 baseLen = 3.5
 baseHeight = 1
@@ -78,26 +81,27 @@ part001 = startSketchOn('-XZ')
 |> xLineTo(ZERO, %)
 |> close()
 |> extrude(length = 4)`
+      )
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.waitForCmdReceive('extrude')
+    await page.waitForTimeout(1000)
+    await u.clearAndCloseDebugPanel()
+
+    await doExport(
+      {
+        type: 'gltf',
+        storage: 'embedded',
+        presentation: 'pretty',
+      },
+      page
     )
-  })
-  await page.setBodyDimensions({ width: 1200, height: 500 })
-
-  await homePage.goToModelingScene()
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.waitForCmdReceive('extrude')
-  await page.waitForTimeout(1000)
-  await u.clearAndCloseDebugPanel()
-
-  await doExport(
-    {
-      type: 'gltf',
-      storage: 'embedded',
-      presentation: 'pretty',
-    },
-    page
-  )
-})
+  }
+)
 
 test('Paste should not work unless an input is focused', async ({
   page,

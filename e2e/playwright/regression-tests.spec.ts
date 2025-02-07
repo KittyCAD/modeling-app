@@ -251,7 +251,7 @@ extrude001 = extrude(sketch001, length = 50)
       |> yLineTo(0, %)
       |> close()
       |>
-  
+
     example = extrude(exampleSketch, length = 5)
     shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
         )
@@ -306,113 +306,113 @@ extrude001 = extrude(sketch001, length = 50)
       |> angledLine({ angle: 50, length: 45 }, %)
       |> yLineTo(0, %)
       |> close()
-  
+
       thing: "blah"`)
 
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
     }
   )
 
-  test('when engine fails export we handle the failure and alert the user', async ({
-    scene,
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(
-      async ({ code }) => {
-        localStorage.setItem('persistCode', code)
-        ;(window as any).playwrightSkipFilePicker = true
-      },
-      { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
-    )
+  test(
+    'when engine fails export we handle the failure and alert the user',
+    { tag: '@skipLocalEngine' },
+    async ({ scene, page, homePage }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+          ;(window as any).playwrightSkipFilePicker = true
+        },
+        { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
+      )
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
 
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    // expect zero errors in guter
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // expect zero errors in guter
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    // export the model
-    const exportButton = page.getByTestId('export-pane-button')
-    await expect(exportButton).toBeVisible()
+      // export the model
+      const exportButton = page.getByTestId('export-pane-button')
+      await expect(exportButton).toBeVisible()
 
-    // Click the export button
-    await exportButton.click()
+      // Click the export button
+      await exportButton.click()
 
-    // Click the stl.
-    const stlOption = page.getByText('glTF')
-    await expect(stlOption).toBeVisible()
+      // Click the stl.
+      const stlOption = page.getByText('glTF')
+      await expect(stlOption).toBeVisible()
 
-    await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
 
-    // Click the checkbox
-    const submitButton = page.getByText('Confirm Export')
-    await expect(submitButton).toBeVisible()
+      // Click the checkbox
+      const submitButton = page.getByText('Confirm Export')
+      await expect(submitButton).toBeVisible()
 
-    await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
 
-    // Find the toast.
-    // Look out for the toast message
-    const exportingToastMessage = page.getByText(`Exporting...`)
-    const errorToastMessage = page.getByText(`Error while exporting`)
+      // Find the toast.
+      // Look out for the toast message
+      const exportingToastMessage = page.getByText(`Exporting...`)
+      const errorToastMessage = page.getByText(`Error while exporting`)
 
-    const engineErrorToastMessage = page.getByText(`Nothing to export`)
-    await expect(engineErrorToastMessage).toBeVisible()
+      const engineErrorToastMessage = page.getByText(`Nothing to export`)
+      await expect(engineErrorToastMessage).toBeVisible()
 
-    // Make sure the exporting toast is gone
-    await expect(exportingToastMessage).not.toBeVisible()
+      // Make sure the exporting toast is gone
+      await expect(exportingToastMessage).not.toBeVisible()
 
-    // Click the code editor
-    await page.locator('.cm-content').click()
+      // Click the code editor
+      await page.locator('.cm-content').click()
 
-    await page.waitForTimeout(2000)
+      await page.waitForTimeout(2000)
 
-    // Expect the toast to be gone
-    await expect(errorToastMessage).not.toBeVisible()
-    await expect(engineErrorToastMessage).not.toBeVisible()
+      // Expect the toast to be gone
+      await expect(errorToastMessage).not.toBeVisible()
+      await expect(engineErrorToastMessage).not.toBeVisible()
 
-    // Now add in code that works.
-    await page.locator('.cm-content').fill(bracket)
-    await page.keyboard.press('End')
-    await page.keyboard.press('Enter')
+      // Now add in code that works.
+      await page.locator('.cm-content').fill(bracket)
+      await page.keyboard.press('End')
+      await page.keyboard.press('Enter')
 
-    await scene.waitForExecutionDone()
+      await scene.waitForExecutionDone()
 
-    // Now try exporting
+      // Now try exporting
 
-    // Click the export button
-    await exportButton.click()
+      // Click the export button
+      await exportButton.click()
 
-    // Click the stl.
-    await expect(stlOption).toBeVisible()
+      // Click the stl.
+      await expect(stlOption).toBeVisible()
 
-    await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
 
-    // Click the checkbox
-    await expect(submitButton).toBeVisible()
+      // Click the checkbox
+      await expect(submitButton).toBeVisible()
 
-    await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
 
-    // Find the toast.
-    // Look out for the toast message
-    await expect(exportingToastMessage).toBeVisible()
+      // Find the toast.
+      // Look out for the toast message
+      await expect(exportingToastMessage).toBeVisible()
 
-    // Expect it to succeed.
-    await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
-    await expect(errorToastMessage).not.toBeVisible()
-    await expect(engineErrorToastMessage).not.toBeVisible()
+      // Expect it to succeed.
+      await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
+      await expect(errorToastMessage).not.toBeVisible()
+      await expect(engineErrorToastMessage).not.toBeVisible()
 
-    const successToastMessage = page.getByText(`Exported successfully`)
-    await expect(successToastMessage).toBeVisible()
-  })
+      const successToastMessage = page.getByText(`Exported successfully`)
+      await expect(successToastMessage).toBeVisible()
+    }
+  )
   test(
     'ensure you can not export while an export is already going',
     { tag: ['@skipLinux', '@skipWin'] },

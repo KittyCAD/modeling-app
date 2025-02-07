@@ -9,7 +9,7 @@ import fsp from 'fs/promises'
 
 test(
   'export works on the first try',
-  { tag: '@electron' },
+  { tag: ['@electron', '@skipLocalEngine'] },
   async ({ page, context, scene }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
