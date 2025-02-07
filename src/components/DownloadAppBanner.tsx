@@ -10,8 +10,7 @@ const DownloadAppBanner = () => {
   const hasCreateFileParam = searchParams.has(CREATE_FILE_URL_PARAM)
   const { settings } = useSettingsAuthContext()
   const [isBannerDismissed, setIsBannerDismissed] = useState(
-    settings.context.app.dismissWebBanner.current ||
-    hasCreateFileParam
+    settings.context.app.dismissWebBanner.current || hasCreateFileParam
   )
 
   return (
