@@ -4,10 +4,12 @@ import { codeManager, kclManager } from './singletons'
 import { isDesktop } from './isDesktop'
 import { FILE_EXT } from './constants'
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
-import { reportRejection } from './trap'
+import { err, reportRejection } from './trap'
 import { IndexLoaderData } from './types'
 import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 import { copyFileShareLink } from './links'
+import { changeKclSettings, unitLengthToUnitLen } from 'lang/wasm'
+import toast from 'react-hot-toast'
 
 interface OnSubmitProps {
   sampleName: string
@@ -148,6 +150,53 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           code: codeManager.code,
           name: commandProps.projectData.project?.name || '',
         }).catch(reportRejection)
+      },
+    },
+    {
+      name: 'change-length-units',
+      displayName: `Set file's default length unit`,
+      description: `Change the length unit to be used unless overriden inline`,
+      groupId: 'code',
+      needsReview: false,
+      icon: 'dimension',
+      args: {
+        unit: {
+          inputType: 'options',
+          required: true,
+          options: () => {
+            const current = kclManager.fileSettings.defaultLengthUnit
+            return [
+              { value: 'mm', name: 'Millimeters', isCurrent: current === 'mm' },
+              { value: 'cm', name: 'Centimeters', isCurrent: current === 'cm' },
+              { value: 'm', name: 'Meters', isCurrent: current === 'm' },
+              { value: 'in', name: 'Inches', isCurrent: current === 'in' },
+              { value: 'ft', name: 'Feet', isCurrent: current === 'ft' },
+              { value: 'yd', name: 'Yards', isCurrent: current === 'yd' },
+            ]
+          },
+          defaultValue: commandProps.settings.defaultUnit,
+        },
+      },
+      onSubmit: (data) => {
+        if (!(data?.unit && commandProps.projectData.file)) {
+          return
+        }
+
+        const codeToWrite = changeKclSettings(codeManager.code, {
+          defaultLengthUnits: unitLengthToUnitLen(data.unit),
+          defaultAngleUnits: { type: 'Degrees' },
+        })
+        if (err(codeToWrite)) return Promise.reject(codeToWrite)
+        codeManager.updateCodeStateEditor(codeToWrite)
+        codeManager
+          .writeToFile()
+          .then(() => {
+            kclManager.executeCode(true)
+          })
+          .then(() => {
+            toast.success(`Updated per-file units to ${data.unit}`)
+          })
+          .catch(reportRejection)
       },
     },
   ]
