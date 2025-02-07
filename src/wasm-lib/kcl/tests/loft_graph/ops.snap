@@ -1,0 +1,70 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed loft_graph.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          26,
+          30,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      12,
+      31,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "sourceRange": [
+          241,
+          243,
+          0
+        ]
+      },
+      "std_plane": {
+        "sourceRange": [
+          235,
+          239,
+          0
+        ]
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [
+      223,
+      244,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          271,
+          279,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      257,
+      280,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]
