@@ -226,7 +226,7 @@ pipeHole = startSketchOn('XY')
 sweepSketch = startSketchOn('XY')
   |> circle({ center = [0, 0], radius = 2 }, %)
   |> hole(pipeHole, %)
-  |> sweep({ path = sweepPath }, %)
+  |> sweep(path = sweepPath)
   |> appearance({
        color = "#ff0000",
        metalness = 50,
