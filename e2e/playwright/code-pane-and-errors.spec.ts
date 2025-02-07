@@ -186,7 +186,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     // click in the editor to focus it
     await page.locator('.cm-content').click()
 
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(2000)
 
     // go to the start of the editor and enter more text which will trigger
     // a lint error.
@@ -203,8 +203,9 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('ArrowUp')
     await page.keyboard.press('Home')
     await page.keyboard.type('foo_bar = 1')
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(2000)
     await page.keyboard.press('Enter')
+    await page.waitForTimeout(2000)
 
     // ensure we have a lint error
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()

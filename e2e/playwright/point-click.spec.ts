@@ -731,6 +731,9 @@ openSketch = startSketchOn('XY')
     const expectedOutput = `plane001 = offsetPlane('XZ', 5)`
 
     await homePage.goToModelingScene()
+    // FIXME: Since there is no KCL code loaded. We need to wait for the scene to load before we continue.
+    // The engine may not be connected
+    await page.waitForTimeout(15000)
 
     await test.step(`Look for the blue of the XZ plane`, async () => {
       await scene.expectPixelColor([50, 51, 96], testPoint, 15)
