@@ -86,25 +86,25 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
   const [state, send, actor] = useMachine(
     projectsMachine.provide({
       actions: {
-        navigateToProject: () => {},
-        navigateToProjectIfNeeded: () => {},
-        navigateToFile: () => {},
+        navigateToProject: () => { },
+        navigateToProjectIfNeeded: () => { },
+        navigateToFile: () => { },
         toastSuccess: ({ event }) =>
           toast.success(
             ('data' in event && typeof event.data === 'string' && event.data) ||
-              ('output' in event &&
-                'message' in event.output &&
-                typeof event.output.message === 'string' &&
-                event.output.message) ||
-              ''
+            ('output' in event &&
+              'message' in event.output &&
+              typeof event.output.message === 'string' &&
+              event.output.message) ||
+            ''
           ),
         toastError: ({ event }) =>
           toast.error(
             ('data' in event && typeof event.data === 'string' && event.data) ||
-              ('output' in event &&
-                typeof event.output === 'string' &&
-                event.output) ||
-              ''
+            ('output' in event &&
+              typeof event.output === 'string' &&
+              event.output) ||
+            ''
           ),
       },
       actors: {
@@ -126,7 +126,7 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
           clearImportSearchParams()
           const codeToWrite = changeKclSettings(input.code ?? '', {
             defaultLengthUnits: unitLengthToUnitLen(
-              settings.context.modeling.defaultUnit.current
+              settings.modeling.defaultUnit.current
             ),
             defaultAngleUnits: { type: 'Degrees' },
           })
@@ -307,19 +307,19 @@ const ProjectsContextDesktop = ({
         toastSuccess: ({ event }) =>
           toast.success(
             ('data' in event && typeof event.data === 'string' && event.data) ||
-              ('output' in event &&
-                'message' in event.output &&
-                typeof event.output.message === 'string' &&
-                event.output.message) ||
-              ''
+            ('output' in event &&
+              'message' in event.output &&
+              typeof event.output.message === 'string' &&
+              event.output.message) ||
+            ''
           ),
         toastError: ({ event }) =>
           toast.error(
             ('data' in event && typeof event.data === 'string' && event.data) ||
-              ('output' in event &&
-                typeof event.output === 'string' &&
-                event.output) ||
-              ''
+            ('output' in event &&
+              typeof event.output === 'string' &&
+              event.output) ||
+            ''
           ),
       },
       actors: {
@@ -383,8 +383,8 @@ const ProjectsContextDesktop = ({
             input.method === 'newProject'
               ? PROJECT_ENTRYPOINT
               : input.name.endsWith(FILE_EXT)
-              ? input.name
-              : input.name + FILE_EXT
+                ? input.name
+                : input.name + FILE_EXT
           let message = 'File created successfully'
 
           const needsInterpolated = doesProjectNameNeedInterpolated(projectName)
@@ -417,7 +417,7 @@ const ProjectsContextDesktop = ({
           fileName = name
           const codeToWrite = changeKclSettings(input.code ?? '', {
             defaultLengthUnits: unitLengthToUnitLen(
-              settings.context.modeling.defaultUnit.current
+              settings.modeling.defaultUnit.current
             ),
             defaultAngleUnits: { type: 'Degrees' },
           })
