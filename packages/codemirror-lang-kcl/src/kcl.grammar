@@ -59,7 +59,9 @@ UnaryOp { AddOp | BangOp }
 
 ObjectProperty { PropertyName (":" | Equals) expression }
 
-ArgumentList { "(" commaSep<expression> ")" }
+NamedArgument { ArgumentName Equals expression }
+
+ArgumentList { "(" commaSep<NamedArgument | expression> ")" }
 
 type[@isGroup=Type] {
   @specialize[@name=PrimitiveType]<
@@ -73,6 +75,8 @@ type[@isGroup=Type] {
 VariableDefinition { identifier }
 
 VariableName { identifier }
+
+ArgumentName { identifier }
 
 @skip { whitespace | LineComment | BlockComment }
 
