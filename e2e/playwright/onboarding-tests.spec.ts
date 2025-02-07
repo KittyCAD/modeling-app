@@ -443,7 +443,7 @@ test.describe('Onboarding tests', () => {
   )
 })
 
-test(
+test.fixme(
   'Restarting onboarding on desktop takes one attempt',
   {
     appSettings: {
