@@ -1879,7 +1879,7 @@ chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001
       const testPoint = { x: 575, y: 200 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       const shellDeclaration =
-        "shell001 = shell({ faces = ['end'], thickness = 5 }, extrude001)"
+        "shell001 = shell(extrude001, faces = ['end'], thickness = 5)"
 
       await test.step(`Look for the grey of the shape`, async () => {
         await scene.expectPixelColor([127, 127, 127], testPoint, 15)
@@ -1979,8 +1979,7 @@ extrude001 = extrude(sketch001, length = 40)
     const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 70)
     const mutatedCode = 'xLine(-40, %, $seg01)'
     const shellDeclaration =
-      "shell001 = shell({  faces = ['end', seg01],  thickness = 5}, extrude001)"
-    const formattedOutLastLine = '}, extrude001)'
+      "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 5)"
 
     await test.step(`Look for the grey of the shape`, async () => {
       await scene.expectPixelColor([99, 99, 99], testPoint, 15)
@@ -2023,7 +2022,7 @@ extrude001 = extrude(sketch001, length = 40)
       await editor.expectEditor.toContain(shellDeclaration)
       await editor.expectState({
         diagnostics: [],
-        activeLines: [formattedOutLastLine],
+        activeLines: [shellDeclaration],
         highlightedCode: '',
       })
       await scene.expectPixelColor([49, 49, 49], testPoint, 15)
@@ -2077,9 +2076,8 @@ extrude002 = extrude(sketch002, length = 50)
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 550, y: 295 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-      const shellDeclaration = `shell001 = shell({ faces = ['end'], thickness = 5 }, ${
-        hasExtrudesInPipe ? 'sketch002' : 'extrude002'
-      })`
+      const shellTarget = hasExtrudesInPipe ? 'sketch002' : 'extrude002'
+      const shellDeclaration = `shell001 = shell(${shellTarget}, faces = ['end'], thickness = 5)`
 
       await test.step(`Look for the grey of the shape`, async () => {
         await toolbar.closePane('code')

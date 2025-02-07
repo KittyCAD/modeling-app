@@ -1019,15 +1019,6 @@ impl<'a> FromKclValue<'a> for super::sketch::BezierData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::shell::ShellData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, thickness);
-        let_field_of!(obj, faces);
-        Some(Self { thickness, faces })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::chamfer::ChamferData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
