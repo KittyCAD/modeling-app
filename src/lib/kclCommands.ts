@@ -147,7 +147,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           token: commandProps.authToken,
           code: codeManager.code,
           name: commandProps.projectData.project?.name || '',
-          units: commandProps.settings.defaultUnit,
         }).catch(reportRejection)
       },
     },

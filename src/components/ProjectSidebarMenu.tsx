@@ -104,7 +104,7 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  const { settings } = useSettingsAuthContext()
+  useSettingsAuthContext()
   const token = useToken()
   const machineManager = useContext(MachineManagerContext)
   const commands = useSelector(commandBarActor, commandsSelector)
@@ -129,9 +129,8 @@ function ProjectMenuPopover({
           children: (
             <>
               <span className="flex-1">Project settings</span>
-              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-                isDesktop() ? '' : '⬆'
-              },`}</kbd>
+              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${isDesktop() ? '' : '⬆'
+                },`}</kbd>
             </>
           ),
           onClick: () => {
@@ -200,7 +199,6 @@ function ProjectMenuPopover({
               token: token ?? '',
               code: codeManager.code,
               name: project?.name || '',
-              units: settings.context.modeling.defaultUnit.current,
             })
           },
         },
@@ -240,8 +238,8 @@ function ProjectMenuPopover({
           <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
             {isDesktop() && file?.name
               ? file.name.slice(
-                  file.name.lastIndexOf(window.electron.path.sep) + 1
-                )
+                file.name.lastIndexOf(window.electron.path.sep) + 1
+              )
               : APP_NAME}
           </span>
           {isDesktop() && project?.name && (
