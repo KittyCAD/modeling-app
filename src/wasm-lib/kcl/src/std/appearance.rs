@@ -120,10 +120,11 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///     |> close()
 ///     |> extrude(length = 6)
 ///
-/// shell({
+/// shell(
+///     firstSketch,
 ///     faces = ['end'],
 ///     thickness = 0.25,
-/// }, firstSketch)
+/// )
 ///     |> appearance({
 ///         color = '#ff0000',
 ///         metalness = 90,
@@ -147,10 +148,11 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///         roughness = 90
 ///     }, %)
 ///
-/// shell({
+/// shell(
+///     firstSketch,
 ///     faces = ['end'],
 ///     thickness = 0.25,
-/// }, firstSketch)
+/// )
 /// ```
 ///
 /// ```no_run
@@ -252,9 +254,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///         radius = 2,
 ///         }, %)              
 ///     |> hole(pipeHole, %)
-///     |> sweep({
-///         path: sweepPath,
-///     }, %)
+///     |> sweep(path = sweepPath)
 ///     |> appearance({
 ///         color: "#ff0000",
 ///         metalness: 50,

@@ -3,80 +3,81 @@ import { test, expect } from './zoo-test'
 import { commonPoints, getUtils } from './test-utils'
 
 test.describe('Test network and connection issues', () => {
-  test('simulate network down and network little widget', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+  test(
+    'simulate network down and network little widget',
+    { tag: '@skipLocalEngine' },
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    const networkToggle = page.getByTestId('network-toggle')
+      const networkToggle = page.getByTestId('network-toggle')
 
-    // This is how we wait until the stream is online
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled({ timeout: 15000 })
+      // This is how we wait until the stream is online
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled({ timeout: 15000 })
 
-    const networkWidget = page.locator('[data-testid="network-toggle"]')
-    await expect(networkWidget).toBeVisible()
-    await networkWidget.hover()
+      const networkWidget = page.locator('[data-testid="network-toggle"]')
+      await expect(networkWidget).toBeVisible()
+      await networkWidget.hover()
 
-    const networkPopover = page.locator('[data-testid="network-popover"]')
-    await expect(networkPopover).not.toBeVisible()
+      const networkPopover = page.locator('[data-testid="network-popover"]')
+      await expect(networkPopover).not.toBeVisible()
 
-    // (First check) Expect the network to be up
-    await expect(networkToggle).toContainText('Connected')
+      // (First check) Expect the network to be up
+      await expect(networkToggle).toContainText('Connected')
 
-    // Click the network widget
-    await networkWidget.click()
+      // Click the network widget
+      await networkWidget.click()
 
-    // Check the modal opened.
-    await expect(networkPopover).toBeVisible()
+      // Check the modal opened.
+      await expect(networkPopover).toBeVisible()
 
-    // Click off the modal.
-    await page.mouse.click(100, 100)
-    await expect(networkPopover).not.toBeVisible()
+      // Click off the modal.
+      await page.mouse.click(100, 100)
+      await expect(networkPopover).not.toBeVisible()
 
-    // Turn off the network
-    await u.emulateNetworkConditions({
-      offline: true,
-      // values of 0 remove any active throttling. crbug.com/456324#c9
-      latency: 0,
-      downloadThroughput: -1,
-      uploadThroughput: -1,
-    })
+      // Turn off the network
+      await u.emulateNetworkConditions({
+        offline: true,
+        // values of 0 remove any active throttling. crbug.com/456324#c9
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      })
 
-    // Expect the network to be down
-    await expect(networkToggle).toContainText('Problem')
+      // Expect the network to be down
+      await expect(networkToggle).toContainText('Problem')
 
-    // Click the network widget
-    await networkWidget.click()
+      // Click the network widget
+      await networkWidget.click()
 
-    // Check the modal opened.
-    await expect(networkPopover).toBeVisible()
+      // Check the modal opened.
+      await expect(networkPopover).toBeVisible()
 
-    // Click off the modal.
-    await page.mouse.click(0, 0)
-    await expect(networkPopover).not.toBeVisible()
+      // Click off the modal.
+      await page.mouse.click(0, 0)
+      await expect(networkPopover).not.toBeVisible()
 
-    // Turn back on the network
-    await u.emulateNetworkConditions({
-      offline: false,
-      // values of 0 remove any active throttling. crbug.com/456324#c9
-      latency: 0,
-      downloadThroughput: -1,
-      uploadThroughput: -1,
-    })
+      // Turn back on the network
+      await u.emulateNetworkConditions({
+        offline: false,
+        // values of 0 remove any active throttling. crbug.com/456324#c9
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      })
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled({ timeout: 15000 })
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled({ timeout: 15000 })
 
-    // (Second check) expect the network to be up
-    await expect(networkToggle).toContainText('Connected')
-  })
+      // (Second check) expect the network to be up
+      await expect(networkToggle).toContainText('Connected')
+    }
+  )
 
   test('Engine disconnect & reconnect in sketch mode', async ({
     page,

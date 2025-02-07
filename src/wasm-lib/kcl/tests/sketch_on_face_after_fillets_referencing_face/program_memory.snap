@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing sketch_on_face_after_fillets_referencing_face.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -537,6 +538,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1448,6 +1450,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1526,6 +1529,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
