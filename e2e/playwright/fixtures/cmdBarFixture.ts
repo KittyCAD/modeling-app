@@ -140,7 +140,7 @@ export class CmdBarFixture {
     await continueButton.click()
   }
 
-  // Added data-testid to the commad bar buttons
+  // Added data-testid to the command bar buttons
   // command-bar-submit is the button for the final step to submit
   // the command bar flow aka the checkmark button.
   submit = async () => {
