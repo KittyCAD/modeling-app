@@ -4,24 +4,34 @@ import { Spinner } from '@src/components/Spinner'
 
 export const ModelStateIndicator = () => {
   const [commands] = useEngineCommands()
+  const [isDone, setIsDone] = useState<boolean>(false)
+
+  const engineStreamActor = useEngineStreamContext.useActorRef()
+  const engineStreamState = engineStreamActor.getSnapshot()
+
   const lastCommandType = commands[commands.length - 1]?.type
 
+  useEffect(() => {
+    if (lastCommandType === CommandLogType.SetDefaultSystemProperties) {
+      setIsDone(false)
+    }
+    if (lastCommandType === CommandLogType.ExecutionDone) {
+      setIsDone(true)
+    }
+  }, [lastCommandType])
+
   let className = 'w-6 h-6 '
-  let icon = <Spinner className={className} />
+  let icon = <div className={className}></div>
   let dataTestId = 'model-state-indicator'
 
-  if (lastCommandType === 'receive-reliable') {
-    className +=
-      'bg-chalkboard-20 dark:bg-chalkboard-80 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 rounded-sm bg-succeed-10/30 dark:bg-succeed'
-    icon = (
-      <CustomIcon
-        data-testid={dataTestId + '-receive-reliable'}
-        name="checkmark"
-      />
-    )
-  } else if (lastCommandType === 'execution-done') {
-    className +=
-      'border-6 border border-solid border-chalkboard-60 dark:border-chalkboard-80 bg-chalkboard-20 dark:bg-chalkboard-80 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 rounded-sm bg-succeed-10/30 dark:bg-succeed'
+  if (engineStreamState.value === EngineStreamState.Paused) {
+    className += 'text-secondary'
+    icon = <CustomIcon data-testid={dataTestId + '-paused'} name="parallel" />
+  } else if (engineStreamState.value === EngineStreamState.Resuming) {
+    className += 'text-secondary'
+    icon = <CustomIcon data-testid={dataTestId + '-resuming'} name="parallel" />
+  } else if (isDone) {
+    className += 'text-secondary'
     icon = (
       <CustomIcon
         data-testid={dataTestId + '-execution-done'}
