@@ -139,6 +139,12 @@ export const FeatureTreePane = () => {
     featureTreeSend({ type: 'selected' })
   }, [lastSelectionEvent])
 
+  // Watch for changes in the operations and send an event to the feature tree machine
+  // TODO: copied from above, there's likely a better way?
+  useEffect(() => {
+    featureTreeSend({ type: 'operationsChanged' })
+  }, [operationList])
+
   function goToError() {
     featureTreeSend({ type: 'goToError' })
   }
