@@ -21,5 +21,6 @@ Data for a circular pattern on a 3D model.
 | `center` |`[number, number, number]`| The center about which to make the pattern. This is a 3D vector. | No |
 | `arcDegrees` |`number`| The arc angle (in degrees) to place the repetitions. Must be greater than 0. | No |
 | `rotateDuplicates` |`boolean`| Whether or not to rotate the duplicates as they are copied. | No |
+| `useOriginal` |`boolean`| If the target being patterned is itself a pattern, then, should you use the original solid, or the pattern? | No |
 
 

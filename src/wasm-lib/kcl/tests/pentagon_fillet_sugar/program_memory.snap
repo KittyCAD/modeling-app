@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing pentagon_fillet_sugar.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -713,6 +714,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     }
                   },
                   "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -842,6 +844,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1297,6 +1300,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     }
                   },
                   "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -1426,6 +1430,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -2318,6 +2323,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                           }
                         },
                         "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -2782,6 +2788,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -3275,6 +3282,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -3404,6 +3412,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -3913,6 +3922,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -4042,6 +4052,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
