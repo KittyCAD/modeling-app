@@ -31,7 +31,7 @@ use crate::{
 };
 
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
-pub use cache::bust_cache;
+pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
 pub use exec_ast::FunctionParam;
 pub use geometry::*;
@@ -58,8 +58,8 @@ mod state;
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
-    /// Program variable bindings of the top-level module.
-    pub memory: ProgramMemory,
+    /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
+    pub variables: IndexMap<String, KclValue>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -496,14 +496,21 @@ impl ExecutorContext {
     pub async fn run_mock(
         &self,
         program: crate::Program,
-        program_memory_override: Option<ProgramMemory>,
+        variables: IndexMap<String, KclValue>,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(self.is_mock());
 
         let mut exec_state = ExecState::new(&self.settings);
-        if let Some(program_memory_override) = program_memory_override {
-            *exec_state.mut_memory() = program_memory_override;
+        let program_memory_override = cache::read_old_memory().await;
+        let mut mem = if let Some(program_memory_override) = program_memory_override {
+            program_memory_override
+        } else {
+            ProgramMemory::new()
+        };
+        for (k, v) in variables {
+            mem.add(&k, v, SourceRange::synthetic()).map_err(KclErrorWithOutputs::no_outputs)?;
         }
+        *exec_state.mut_memory() = mem;
 
         self.inner_run(&program.ast, &mut exec_state).await?;
         Ok(exec_state.to_wasm_outcome())
@@ -516,7 +523,7 @@ impl ExecutorContext {
             ast: old_ast,
             exec_state: old_state,
             settings: old_settings,
-        }) = cache::read_old_ast_memory().await
+        }) = cache::read_old_ast().await
         {
             let old = CacheInformation {
                 ast: &old_ast,
@@ -595,7 +602,7 @@ impl ExecutorContext {
         result?;
 
         // Save this as the last successful execution to the cache.
-        cache::write_old_ast_memory(OldAstState {
+        cache::write_old_ast(OldAstState {
             ast: program,
             exec_state: exec_state.clone(),
             settings: self.settings.clone(),
@@ -660,6 +667,10 @@ impl ExecutorContext {
                 exec_state.global.artifact_graph.clone(),
             )
         })?;
+
+        if !self.is_mock() {
+            cache::write_old_memory(exec_state.memory().clone()).await;
+        }
 
         crate::log::log(format!(
             "Post interpretation KCL memory stats: {:#?}",
@@ -1592,7 +1603,7 @@ let w = f() + f()
         ctx.run_with_caching(old_program).await.unwrap();
 
         // Get the id_generator from the first execution.
-        let id_generator = cache::read_old_ast_memory()
+        let id_generator = cache::read_old_ast()
             .await
             .unwrap()
             .exec_state
@@ -1618,7 +1629,7 @@ let w = f() + f()
         // Execute the program.
         ctx.run_with_caching(program).await.unwrap();
 
-        let new_id_generator = cache::read_old_ast_memory()
+        let new_id_generator = cache::read_old_ast()
             .await
             .unwrap()
             .exec_state

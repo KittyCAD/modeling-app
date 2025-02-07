@@ -11,7 +11,8 @@ import {
   parse_wasm as ParseWasm,
   recast_wasm as RecastWasm,
   format_number as FormatNumber,
-  execute as Execute,
+  execute_all as ExecuteAll,
+  execute_mock as ExecuteMock,
   kcl_lint as KclLint,
   modify_ast_for_sketch_wasm as ModifyAstForSketch,
   is_points_ccw as IsPointsCcw,
@@ -57,8 +58,11 @@ export const recast_wasm: typeof RecastWasm = (...args) => {
 export const format_number: typeof FormatNumber = (...args) => {
   return getModule().format_number(...args)
 }
-export const execute: typeof Execute = (...args) => {
-  return getModule().execute(...args)
+export const execute_all: typeof ExecuteAll = (...args) => {
+  return getModule().execute_all(...args)
+}
+export const execute_mock: typeof ExecuteMock = (...args) => {
+  return getModule().execute_mock(...args)
 }
 export const kcl_lint: typeof KclLint = (...args) => {
   return getModule().kcl_lint(...args)

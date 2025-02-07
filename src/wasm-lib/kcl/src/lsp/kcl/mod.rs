@@ -677,14 +677,7 @@ impl Backend {
                 // string.
                 Err(anyhow::anyhow!("failed to execute code"))
             }
-            Ok(outcome) => {
-                let memory = outcome.memory;
-
-                // Send the notification to the client that the memory was updated.
-                self.client
-                    .send_notification::<custom_notifications::MemoryUpdated>(memory)
-                    .await;
-
+            Ok(_) => {
                 Ok(())
             }
         }

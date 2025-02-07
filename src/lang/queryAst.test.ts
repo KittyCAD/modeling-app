@@ -9,7 +9,6 @@ import {
   CallExpression,
   VariableDeclarator,
 } from './wasm'
-import { ProgramMemory } from 'lang/wasm'
 import {
   findAllPreviousVariables,
   isNodeSafeToReplace,
@@ -63,7 +62,7 @@ variableBelowShouldNotBeIncluded = 3
 
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(rangeStart, rangeStart)
     )
     expect(variables).toEqual([
@@ -398,7 +397,7 @@ part001 = startSketchAt([-1.41, 3.46])
       selection: {
         codeRef: codeRefFromRange(topLevelRange(100, 101), ast),
       },
-      programMemory: execState.memory,
+      memVars: execState.variables,
     })
     expect(result).toEqual(true)
   })
@@ -418,7 +417,7 @@ part001 = startSketchAt([-1.41, 3.46])
       selection: {
         codeRef: codeRefFromRange(topLevelRange(100, 101), ast),
       },
-      programMemory: execState.memory,
+      memVars: execState.variables,
     })
     expect(result).toEqual(true)
   })
@@ -432,7 +431,7 @@ part001 = startSketchAt([-1.41, 3.46])
       selection: {
         codeRef: codeRefFromRange(topLevelRange(10, 11), ast),
       },
-      programMemory: execState.memory,
+      memVars: execState.variables,
     })
     expect(result).toEqual(false)
   })
@@ -722,7 +721,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
     const modifiedAst = addCallExpressionsToPipe({
       node: ast,
-      programMemory: ProgramMemory.empty(),
+      variables: {},
       pathToNode: sketchPathToNode,
       expressions: [
         createCallExpressionStdLib(
@@ -777,7 +776,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
     const modifiedAst = addCloseToPipe({
       node: ast,
-      programMemory: ProgramMemory.empty(),
+      variables: {},
       pathToNode: sketchPathToNode,
     })
 

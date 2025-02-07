@@ -1,10 +1,10 @@
 import {
   Program,
   executor,
-  ProgramMemory,
   kclLint,
   emptyExecState,
   ExecState,
+  VariableMap,
 } from 'lang/wasm'
 import { enginelessExecutor } from 'lib/testHelpers'
 import { EngineCommandManager } from 'lang/std/engineConnection'
@@ -48,14 +48,14 @@ export async function executeAst({
   ast,
   path,
   engineCommandManager,
-  // If you set programMemoryOverride we assume you mean mock mode. Since that
-  // is the only way to go about it.
-  programMemoryOverride,
+  isMock,
+  variables,
 }: {
   ast: Node<Program>
   path?: string
   engineCommandManager: EngineCommandManager
-  programMemoryOverride?: ProgramMemory
+  isMock: boolean
+  variables?: VariableMap
   isInterrupted?: boolean
 }): Promise<{
   logs: string[]
@@ -64,9 +64,9 @@ export async function executeAst({
   isInterrupted: boolean
 }> {
   try {
-    const execState = await (programMemoryOverride
-      ? enginelessExecutor(ast, programMemoryOverride, path)
-      : executor(ast, engineCommandManager, path))
+    const execState = await (isMock
+      ? enginelessExecutor(ast, path, variables)
+      : executor(ast, engineCommandManager, false, path))
 
     await engineCommandManager.waitForAllCommands()
 

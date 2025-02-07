@@ -5,7 +5,7 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    bust_cache, exec::IdGenerator, pretty::NumericSuffix, CoreDump, EngineManager, ModuleId, Point2d, Program,
+    bust_cache, clear_mem_cache, exec::IdGenerator, pretty::NumericSuffix, CoreDump, EngineManager, ModuleId, Point2d, Program,
 };
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
@@ -18,6 +18,7 @@ pub async fn clear_scene_and_bust_cache(
     console_error_panic_hook::set_once();
 
     bust_cache().await;
+    clear_mem_cache().await;
 
     let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
         .await
@@ -34,10 +35,9 @@ pub async fn clear_scene_and_bust_cache(
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn execute(
+pub async fn execute_all(
     program_ast_json: &str,
     path: Option<String>,
-    program_memory_override_str: &str,
     settings: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     fs_manager: kcl_lib::wasm_engine::FileSystemManager,
@@ -45,32 +45,46 @@ pub async fn execute(
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
-    let program_memory_override: Option<kcl_lib::exec::ProgramMemory> =
-        serde_json::from_str(program_memory_override_str).map_err(|e| e.to_string())?;
     let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
     let mut settings: kcl_lib::ExecutorSettings = config.into();
     if let Some(path) = path {
         settings.with_current_file(std::path::PathBuf::from(path));
     }
 
-    // If we have a program memory override, assume we are in mock mode.
-    // You cannot override the memory in non-mock mode.
-    if program_memory_override.is_some() {
-        let ctx = kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?;
-        match ctx.run_mock(program, program_memory_override).await {
-            // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-            // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-            Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
-            Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
-        }
-    } else {
-        let ctx = kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?;
-        match ctx.run_with_caching(program).await {
-            // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-            // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-            Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
-            Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
-        }
+    let ctx = kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?;
+    match ctx.run_with_caching(program).await {
+        // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+        // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+        Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
+        Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
+    }
+}
+
+// wasm_bindgen wrapper for execute
+#[wasm_bindgen]
+pub async fn execute_mock(
+    program_ast_json: &str,
+    path: Option<String>,
+    settings: &str,
+    variables: &str,
+    fs_manager: kcl_lib::wasm_engine::FileSystemManager,
+) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
+    let variables = serde_json::from_str(variables).map_err(|e| e.to_string())?;
+    let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
+    let mut settings: kcl_lib::ExecutorSettings = config.into();
+    if let Some(path) = path {
+        settings.with_current_file(std::path::PathBuf::from(path));
+    }
+
+    let ctx = kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?;
+    match ctx.run_mock(program, variables).await {
+        // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+        // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+        Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
+        Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
     }
 }
 

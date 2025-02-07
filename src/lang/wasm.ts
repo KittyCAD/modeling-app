@@ -3,7 +3,8 @@ import {
   parse_wasm,
   recast_wasm,
   format_number,
-  execute,
+  execute_all,
+  execute_mock,
   kcl_lint,
   modify_ast_for_sketch_wasm,
   is_points_ccw,
@@ -281,6 +282,8 @@ export const assertParse = (code: string): Node<Program> => {
   return result.program
 }
 
+export type VariableMap = { [key in string]?: KclValue }
+
 export type PathToNode = [string | number, string][]
 
 export const isPathToNodeNumber = (
@@ -290,7 +293,7 @@ export const isPathToNodeNumber = (
 }
 
 export interface ExecState {
-  memory: ProgramMemory
+  variables: { [key in string]?: KclValue }
   operations: Operation[]
   artifacts: { [key in ArtifactId]?: RustArtifact }
   artifactCommands: ArtifactCommand[]
@@ -303,7 +306,7 @@ export interface ExecState {
  */
 export function emptyExecState(): ExecState {
   return {
-    memory: ProgramMemory.empty(),
+    variables: {},
     operations: [],
     artifacts: {},
     artifactCommands: [],
@@ -328,7 +331,7 @@ function execStateFromRust(
   }
 
   return {
-    memory: ProgramMemory.fromRaw(execOutcome.memory),
+    variables: execOutcome.variables,
     operations: execOutcome.operations,
     artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
@@ -352,202 +355,6 @@ function rustArtifactGraphToMap(
 
 export function defaultArtifactGraph(): ArtifactGraph {
   return new Map()
-}
-
-interface Memory {
-  [key: string]: KclValue | undefined
-}
-
-const ROOT_ENVIRONMENT_REF: EnvironmentRef = 0
-
-function emptyEnvironment(): Environment {
-  return { bindings: {}, parent: null }
-}
-
-function emptyRootEnvironment(): Environment {
-  return {
-    // This is dumb this is copied from rust.
-    bindings: {
-      ZERO: { type: 'Number', value: 0.0, __meta: [] },
-      QUARTER_TURN: { type: 'Number', value: 90.0, __meta: [] },
-      HALF_TURN: { type: 'Number', value: 180.0, __meta: [] },
-      THREE_QUARTER_TURN: { type: 'Number', value: 270.0, __meta: [] },
-    },
-    parent: null,
-  }
-}
-
-/**
- * This duplicates logic in Rust.  The hope is to keep ProgramMemory internals
- * isolated from the rest of the TypeScript code so that we can move it to Rust
- * in the future.
- */
-export class ProgramMemory {
-  private environments: Environment[]
-  private currentEnv: EnvironmentRef
-
-  /**
-   * Empty memory doesn't include prelude definitions.
-   */
-  static empty(): ProgramMemory {
-    return new ProgramMemory()
-  }
-
-  static fromRaw(raw: RawProgramMemory): ProgramMemory {
-    return new ProgramMemory(raw.environments, raw.currentEnv)
-  }
-
-  constructor(
-    environments: Environment[] = [emptyRootEnvironment()],
-    currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF
-  ) {
-    this.environments = environments
-    this.currentEnv = currentEnv
-  }
-
-  /**
-   * Returns a deep copy.
-   */
-  clone(): ProgramMemory {
-    return ProgramMemory.fromRaw(structuredClone(this.toRaw()))
-  }
-
-  has(name: string): boolean {
-    let envRef = this.currentEnv
-    while (true) {
-      const env = this.environments[envRef]
-      if (env.bindings.hasOwnProperty(name)) {
-        return true
-      }
-      if (!env.parent) {
-        break
-      }
-      envRef = env.parent
-    }
-    return false
-  }
-
-  get(name: string): KclValue | null {
-    let envRef = this.currentEnv
-    while (true) {
-      const env = this.environments[envRef]
-      if (env.bindings.hasOwnProperty(name)) {
-        return env.bindings[name] ?? null
-      }
-      if (!env.parent) {
-        break
-      }
-      envRef = env.parent
-    }
-    return null
-  }
-
-  insert(name: string, value: KclValue): Error | null {
-    if (this.environments.length === 0) {
-      return new Error('No environment to set memory in')
-    }
-    const env = this.environments[this.currentEnv]
-    if (!!env.bindings[name]) {
-      return new Error('Key already exists in memory: ' + name)
-    }
-    env.bindings[name] = value
-    return null
-  }
-
-  /**
-   * Returns a new ProgramMemory with only `KclValue`s that pass the
-   * predicate.  Values are deep copied.
-   *
-   * Note: Return value of the returned ProgramMemory is always null.
-   */
-  filterVariables(
-    keepPrelude: boolean,
-    predicate: (value: KclValue) => boolean
-  ): ProgramMemory | Error {
-    const environments: Environment[] = []
-    for (const [i, env] of this.environments.entries()) {
-      let bindings: Memory
-      if (i === ROOT_ENVIRONMENT_REF && keepPrelude) {
-        // Get prelude definitions.  Create these first so that they're always
-        // first in iteration order.
-        const memoryOrError = programMemoryInit()
-        if (err(memoryOrError)) return memoryOrError
-        bindings = memoryOrError.environments[0].bindings
-      } else {
-        bindings = emptyEnvironment().bindings
-      }
-
-      for (const [name, value] of Object.entries(env.bindings)) {
-        if (value === undefined) continue
-        // Check the predicate.
-        if (!predicate(value)) {
-          continue
-        }
-        // Deep copy.
-        bindings[name] = structuredClone(value)
-      }
-      environments.push({ bindings, parent: env.parent })
-    }
-    return new ProgramMemory(environments, this.currentEnv)
-  }
-
-  numEnvironments(): number {
-    return this.environments.length
-  }
-
-  numVariables(envRef: EnvironmentRef): number {
-    return Object.keys(this.environments[envRef]).length
-  }
-
-  /**
-   * Returns all variable entries in memory that are visible, in a flat
-   * structure.  If variables are shadowed, they're not visible, and therefore,
-   * not included.
-   *
-   * This should only be used to display in the MemoryPane UI.
-   */
-  visibleEntries(): Map<string, KclValue> {
-    const map = new Map<string, KclValue>()
-    let envRef = this.currentEnv
-    while (true) {
-      const env = this.environments[envRef]
-      for (const [name, value] of Object.entries(env.bindings)) {
-        if (value === undefined) continue
-        // Don't include shadowed variables.
-        if (!map.has(name)) {
-          map.set(name, value)
-        }
-      }
-      if (!env.parent) {
-        break
-      }
-      envRef = env.parent
-    }
-    return map
-  }
-
-  /**
-   * Returns true if any visible variables are a Sketch or Solid.
-   */
-  hasSketchOrSolid(): boolean {
-    for (const node of this.visibleEntries().values()) {
-      if (node.type === 'Solid' || node.type === 'Sketch') {
-        return true
-      }
-    }
-    return false
-  }
-
-  /**
-   * Return the representation that can be serialized to JSON.  This should only
-   * be used within this module.
-   */
-  toRaw(): RawProgramMemory {
-    return {
-      environments: this.environments,
-      currentEnv: this.currentEnv,
-    }
-  }
 }
 
 // TODO: In the future, make the parameter be a KclValue.
@@ -589,23 +396,14 @@ export function sketchFromKclValue(
  * @param node The AST of the program to execute.
  * @param path The full path of the file being executed.  Use `null` for
  * expressions that don't have a file, like expressions in the command bar.
- * @param programMemoryOverride If this is not `null`, this will be used as the
- * initial program memory, and the execution will be engineless (AKA mock
- * execution).
  */
 export const executor = async (
   node: Node<Program>,
   engineCommandManager: EngineCommandManager,
+  isMock: boolean,
   path?: string,
-  programMemoryOverride: ProgramMemory | Error | null = null
+  variables?: { [key in string]?: KclValue }
 ): Promise<ExecState> => {
-  if (programMemoryOverride !== null && err(programMemoryOverride))
-    return Promise.reject(programMemoryOverride)
-
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  if (programMemoryOverride !== null && err(programMemoryOverride))
-    return Promise.reject(programMemoryOverride)
-
   try {
     let jsAppSettings = default_app_settings()
     if (!TEST) {
@@ -616,15 +414,29 @@ export const executor = async (
         jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
       }
     }
-    const execOutcome: RustExecOutcome = await execute(
-      JSON.stringify(node),
-      path,
-      JSON.stringify(programMemoryOverride?.toRaw() || null),
-      JSON.stringify({ settings: jsAppSettings }),
-      engineCommandManager,
-      fileSystemManager
-    )
-    return execStateFromRust(execOutcome, node)
+
+    if (isMock) {
+      if (!variables) {
+        variables = {}
+      }
+      const execOutcome: RustExecOutcome = await execute_mock(
+        JSON.stringify(node),
+        path,
+        JSON.stringify({ settings: jsAppSettings }),
+        JSON.stringify(variables),
+        fileSystemManager
+      )
+      return execStateFromRust(execOutcome, node)
+    } else {
+      const execOutcome: RustExecOutcome = await execute_all(
+        JSON.stringify(node),
+        path,
+        JSON.stringify({ settings: jsAppSettings }),
+        engineCommandManager,
+        fileSystemManager
+      )
+      return execStateFromRust(execOutcome, node)
+    }
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
@@ -751,27 +563,6 @@ export function getTangentialArcToInfo({
     endAngle: result.end_angle,
     ccw: result.ccw > 0,
     arcLength: result.arc_length,
-  }
-}
-
-/**
- * Returns new ProgramMemory with prelude definitions.
- */
-export function programMemoryInit(): ProgramMemory | Error {
-  try {
-    const memory: RawProgramMemory = program_memory_init()
-    return new ProgramMemory(memory.environments, memory.currentEnv)
-  } catch (e: any) {
-    console.log(e)
-    const parsed: RustKclError = JSON.parse(e.toString())
-    return new KCLError(
-      parsed.kind,
-      parsed.msg,
-      firstSourceRange(parsed),
-      [],
-      [],
-      defaultArtifactGraph()
-    )
   }
 }
 
