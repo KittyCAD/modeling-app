@@ -69,7 +69,6 @@ import {
   startSketchOnDefault,
 } from 'lang/modifyAst'
 import {
-  CodeRef,
   PathToNode,
   Program,
   VariableDeclaration,
@@ -84,7 +83,6 @@ import {
   isCursorInFunctionDefinition,
   traverse,
 } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
@@ -747,6 +745,8 @@ export const ModelingMachineProvider = ({
             const sketchPaths = getPathsFromArtifact({
               artifact: selectionRanges.graphSelections[0].artifact,
               sketchPathToNode: sketchPathToNode || [],
+              artifactGraph: engineCommandManager.artifactGraph,
+              ast: kclManager.ast,
             })
             if (err(sketchPaths)) return Promise.reject(sketchPaths)
             let codeRef =

@@ -19,7 +19,6 @@ import {
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { err } from 'lib/trap'
-import { engineCommandManager, kclManager } from 'lib/singletons'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from 'lang/wasm'
 
@@ -499,8 +498,8 @@ export function getPlaneFromArtifact(
   return new Error(`Artifact type ${artifact.type} does not have a plane`)
 }
 
-const isExprSafe = (index: number): boolean => {
-  const expr = kclManager.ast.body?.[index]
+const isExprSafe = (index: number, ast: Program): boolean => {
+  const expr = ast.body?.[index]
   if (!expr) {
     return false
   }
@@ -525,7 +524,8 @@ const isExprSafe = (index: number): boolean => {
 
 const onlyConsecutivePaths = (
   orderedNodePaths: PathToNode[],
-  originalPath: PathToNode
+  originalPath: PathToNode,
+  ast: Program
 ): PathToNode[] => {
   const originalIndex = Number(
     orderedNodePaths.find(
@@ -547,58 +547,63 @@ const onlyConsecutivePaths = (
   for (let i = originalIndex; i <= maxIndex; i++) {
     if (pathIndexMap[i]) {
       safePaths.push(pathIndexMap[i])
-    } else if (!isExprSafe(i)) {
+    } else if (!isExprSafe(i, ast)) {
       break
     }
   }
   for (let i = originalIndex - 1; i >= minIndex; i--) {
     if (pathIndexMap[i]) {
       safePaths.unshift(pathIndexMap[i])
-    } else if (!isExprSafe(i)) {
+    } else if (!isExprSafe(i, ast)) {
       break
     }
   }
   return safePaths
 }
 
-export function getPathsFromPlaneArtifact(planeArtifact: PlaneArtifact) {
+export function getPathsFromPlaneArtifact(
+  planeArtifact: PlaneArtifact,
+  artifactGraph: ArtifactGraph,
+  ast: Program
+): PathToNode[] {
   const nodePaths: PathToNode[] = []
   for (const pathId of planeArtifact.pathIds) {
-    const path = engineCommandManager.artifactGraph.get(pathId)
+    const path = artifactGraph.get(pathId)
     if (!path) continue
     if ('codeRef' in path && path.codeRef) {
       // TODO should figure out why upstream the path is bad
       const isNodePathBad = path.codeRef.pathToNode.length < 2
       nodePaths.push(
         isNodePathBad
-          ? getNodePathFromSourceRange(kclManager.ast, path.codeRef.range)
+          ? getNodePathFromSourceRange(ast, path.codeRef.range)
           : path.codeRef.pathToNode
       )
     }
   }
-  return onlyConsecutivePaths(nodePaths, nodePaths[0])
+  return onlyConsecutivePaths(nodePaths, nodePaths[0], ast)
 }
 
 export function getPathsFromArtifact({
   sketchPathToNode,
   artifact,
+  artifactGraph,
+  ast,
 }: {
   sketchPathToNode: PathToNode
   artifact?: Artifact
+  artifactGraph: ArtifactGraph
+  ast: Program
 }): PathToNode[] | Error {
-  const plane = getPlaneFromArtifact(
-    artifact,
-    engineCommandManager.artifactGraph
-  )
+  const plane = getPlaneFromArtifact(artifact, artifactGraph)
   if (err(plane)) return plane
   const paths = getArtifactsOfTypes(
     { keys: plane.pathIds, types: ['path'] },
-    engineCommandManager.artifactGraph
+    artifactGraph
   )
   let nodePaths = [...paths.values()]
     .map((path) => path.codeRef.pathToNode)
     .sort((a, b) => Number(a[1][0]) - Number(b[1][0]))
-  return onlyConsecutivePaths(nodePaths, sketchPathToNode)
+  return onlyConsecutivePaths(nodePaths, sketchPathToNode, ast)
 }
 
 function isNodeSafe(node: Expr): boolean {

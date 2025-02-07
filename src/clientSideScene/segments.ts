@@ -54,13 +54,11 @@ import {
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
   ARROWHEAD,
-  CIRCLE_3_POINT_DRAFT_CIRCLE,
   DRAFT_POINT,
   SceneInfra,
   SEGMENT_LENGTH_LABEL,
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
   SEGMENT_LENGTH_LABEL_TEXT,
-  SKETCH_LAYER,
 } from './sceneInfra'
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
 import { normaliseAngle, roundOff } from 'lib/utils'
@@ -71,7 +69,7 @@ import {
 } from 'machines/modelingMachine'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
-import { editorManager, sceneInfra } from 'lib/singletons'
+import { sceneInfra } from 'lib/singletons'
 import { Selections } from 'lib/selections'
 import { calculate_circle_from_3_points } from 'wasm-lib/pkg/wasm_lib'
 import { commandBarActor } from 'machines/commandBarMachine'

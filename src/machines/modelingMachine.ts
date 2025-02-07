@@ -702,6 +702,7 @@ export const modelingMachine = setup({
           axisOrEdge,
           axis,
           edge,
+          engineCommandManager.artifactGraph,
           selection.graphSelections[0]?.artifact
         )
         if (trap(revolveSketchRes)) return
@@ -1063,7 +1064,11 @@ export const modelingMachine = setup({
             JSON.stringify(sketchDetails.planeNodePath)
       )
       if (planeArtifact?.type !== 'plane') return {}
-      const newPaths = getPathsFromPlaneArtifact(planeArtifact)
+      const newPaths = getPathsFromPlaneArtifact(
+        planeArtifact,
+        engineCommandManager.artifactGraph,
+        kclManager.ast
+      )
       return {
         sketchDetails: {
           ...sketchDetails,
@@ -1635,6 +1640,7 @@ export const modelingMachine = setup({
         node: ast,
         pathToNode,
         artifact: selection.graphSelections[0].artifact,
+        artifactGraph: engineCommandManager.artifactGraph,
         distance:
           'variableName' in distance
             ? distance.variableIdentifierAst

@@ -1,6 +1,6 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { DEV } from 'env'
-import { commandBarActor, commandBarMachine } from 'machines/commandBarMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
 import {
   isEditingExistingSketch,
   modelingMachine,

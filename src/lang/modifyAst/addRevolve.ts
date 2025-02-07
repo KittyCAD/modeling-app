@@ -7,6 +7,7 @@ import {
   CallExpression,
   VariableDeclarator,
   CallExpressionKw,
+  ArtifactGraph,
 } from 'lang/wasm'
 import { Selections } from 'lib/selections'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
@@ -25,6 +26,8 @@ import {
   getEdgeTagCall,
 } from 'lang/modifyAst/addEdgeTreatment'
 import { Artifact, getPathsFromArtifact } from 'lang/std/artifactGraph'
+import { kclManager } from 'lib/singletons'
+
 export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,
@@ -32,6 +35,7 @@ export function revolveSketch(
   axisOrEdge: string,
   axis: string,
   edge: Selections,
+  artifactGraph: ArtifactGraph,
   artifact?: Artifact
 ):
   | {
@@ -43,6 +47,8 @@ export function revolveSketch(
   const orderedSketchNodePaths = getPathsFromArtifact({
     artifact: artifact,
     sketchPathToNode: pathToSketchNode,
+    artifactGraph,
+    ast: kclManager.ast,
   })
   if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
   const clonedAst = structuredClone(ast)

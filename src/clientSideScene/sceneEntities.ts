@@ -1,12 +1,8 @@
 import {
   BoxGeometry,
-  Color,
   DoubleSide,
   Group,
   Intersection,
-  Line,
-  LineDashedMaterial,
-  BufferGeometry,
   Mesh,
   MeshBasicMaterial,
   Object3D,
@@ -17,7 +13,6 @@ import {
   Points,
   Quaternion,
   Scene,
-  SphereGeometry,
   Vector2,
   Vector3,
 } from 'three'
@@ -70,7 +65,6 @@ import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { executeAst, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
-  createCircleGeometry,
   SegmentUtils,
   segmentUtils,
 } from './segments'
@@ -121,8 +115,6 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { LabeledArg } from 'wasm-lib/kcl/bindings/LabeledArg'
-import { Literal } from 'wasm-lib/kcl/bindings/Literal'
 import { radToDeg } from 'three/src/math/MathUtils'
 import toast from 'react-hot-toast'
 import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'

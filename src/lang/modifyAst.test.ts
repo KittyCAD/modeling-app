@@ -3,7 +3,6 @@ import {
   recast,
   initPromise,
   Identifier,
-  SourceRange,
   topLevelRange,
   LiteralValue,
   Literal,

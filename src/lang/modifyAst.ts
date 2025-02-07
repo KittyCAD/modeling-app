@@ -24,6 +24,7 @@ import {
   isPathToNodeNumber,
   parse,
   formatNumber,
+  ArtifactGraph,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -63,6 +64,8 @@ import { Artifact, getPathsFromArtifact } from './std/artifactGraph'
 import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
+import { kclManager } from 'lib/singletons'
+import React from 'react'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -321,12 +324,14 @@ export function extrudeSketch({
   distance = createLiteral(4),
   extrudeName,
   artifact,
+  artifactGraph,
 }: {
   node: Node<Program>
   pathToNode: PathToNode
   shouldPipe?: boolean
   distance: Expr
   extrudeName?: string
+  artifactGraph: ArtifactGraph
   artifact?: Artifact
 }):
   | {
@@ -338,6 +343,8 @@ export function extrudeSketch({
   const orderedSketchNodePaths = getPathsFromArtifact({
     artifact: artifact,
     sketchPathToNode: pathToNode,
+    artifactGraph,
+    ast: node,
   })
   if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
   const _node = structuredClone(node)
