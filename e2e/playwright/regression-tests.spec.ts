@@ -192,11 +192,11 @@ extrude001 = extrude(sketch001, length = 50)
   |> line(end = [0, -1])
   |> close()
   |> extrude(length = 1)
-  |> patternLinear3d({
-        axis: [1, 0, 1],
-        repetitions: 3,
-        distance: 6
-      }, %)`
+  |> patternLinear3d(
+        axis = [1, 0, 1],
+        repetitions = 3,
+        distance = 6
+      )`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })

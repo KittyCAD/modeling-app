@@ -1031,13 +1031,13 @@ sphere = startSketchOn('XZ')
      }, %)
   |> close()
   |> revolve({ axis: 'x' }, %)
-  |> patternCircular3d({
+  |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
        repetitions = 10,
        arcDegrees = 360,
        rotateDuplicates = true
-     }, %)
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')
@@ -1098,13 +1098,13 @@ sphere = startSketchOn('XZ')
      }, %)
   |> close()
   |> revolve({ axis = 'x' }, %)
-  |> patternCircular3d({
+  |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
        repetitions = 10,
        arcDegrees = 360,
        rotateDuplicates = true
-     }, %)
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')
@@ -1417,11 +1417,11 @@ tabs_r = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
+  |> patternLinear3d(
        axis = [0, -1, 0],
        repetitions = 1,
        distance = length - 10
-     }, %)
+     )
   // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
        plane: {
@@ -1444,11 +1444,11 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
+  |> patternLinear3d(
        axis = [0, -1, 0],
        repetitions = 1,
        distance = length - 10
-     }, %)
+     )
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1542,11 +1542,11 @@ tabs_r = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
+  |> patternLinear3d(
        axis = [0, -1, 0],
        repetitions = 1,
        distance = length - 10
-     }, %)
+     )
 // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
        plane = {
@@ -1569,11 +1569,11 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
+  |> patternLinear3d(
        axis = [0, -1, 0],
        repetitions = 1,
        distance = length - 10
-     }, %)
+     )
 "#
         );
     }
