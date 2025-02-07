@@ -1427,6 +1427,8 @@ export async function deleteFromSelection(
         'VariableDeclarator'
       )
       if (err(extrudeVarDec)) return extrudeVarDec
+      if (!extrudeVarDec.node.id)
+        return new Error("Couldn't find variable id to delete")
       extrudeNameToDelete = extrudeVarDec.node.id.name
     }
 

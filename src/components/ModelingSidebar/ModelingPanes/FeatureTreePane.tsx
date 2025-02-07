@@ -70,7 +70,6 @@ export const FeatureTreePane = () => {
               )
             : null
 
-          console.log('sendSelectionEvent', context, artifact)
           if (!artifact || !('codeRef' in artifact)) {
             modelingSend({
               type: 'Set selection',
@@ -345,7 +344,6 @@ const OperationItem = (props: {
         type: 'deleteOperation',
         data: {
           targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
         },
       })
     }

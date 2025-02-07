@@ -10,7 +10,6 @@ import { stringToKclExpression } from './kclHelpers'
 import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
 import { isDefaultPlaneStr } from './planes'
 import { Selections } from './selections'
-import { ModelingMachineEvent } from 'machines/modelingMachine'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'

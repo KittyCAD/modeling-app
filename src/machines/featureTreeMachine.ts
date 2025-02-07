@@ -19,7 +19,7 @@ type FeatureTreeEvent =
     }
   | {
       type: 'deleteOperation'
-      data: { targetSourceRange: SourceRange; currentOperation: Operation }
+      data: { targetSourceRange: SourceRange }
     }
   | {
       type: 'enterEditFlow'
