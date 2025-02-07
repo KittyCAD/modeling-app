@@ -29,22 +29,6 @@ use crate::{
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
-/// Data for a linear pattern on a 2D sketch.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct LinearPattern2dData {
-    /// The number of total instances. Must be greater than or equal to 1.
-    /// This includes the original entity. For example, if instances is 2,
-    /// there will be two copies -- the original, and one new copy.
-    /// If instances is 1, this has no effect.
-    pub instances: u32,
-    /// The distance between each repetition. This can also be referred to as spacing.
-    pub distance: f64,
-    /// The axis of the pattern. This is a 2D vector.
-    pub axis: [f64; 2],
-}
-
 /// Data for a linear pattern on a 3D model.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -689,10 +673,13 @@ mod tests {
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_set, use_original): (LinearPattern2dData, SketchSet, Option<bool>) =
-        super::args::FromArgs::from_args(&args, 0)?;
+    let sketch_set: SketchSet = args.get_unlabeled_kw_arg("sketchSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let distance: f64 = args.get_kw_arg("distance")?;
+    let axis: [f64; 2] = args.get_kw_arg("axis")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    if data.axis == [0.0, 0.0] {
+    if axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
                 "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
@@ -701,7 +688,8 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let sketches = inner_pattern_linear_2d(data, sketch_set, use_original, exec_state, args).await?;
+    let sketches =
+        inner_pattern_linear_2d(sketch_set, instances, distance, axis, use_original, exec_state, args).await?;
     Ok(sketches.into())
 }
 
@@ -711,31 +699,41 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 1 }, %)
-///   |> patternLinear2d({
+///   |> patternLinear2d(
 ///        axis = [1, 0],
 ///        instances = 7,
 ///        distance = 4
-///      }, %)
+///      )
 ///
 /// example = extrude(exampleSketch, length = 1)
 /// ```
 #[stdlib {
     name = "patternLinear2d",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_set = { docs = "The sketch(es) to duplicate" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
+        distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
+        axis = { docs = "The axis of the pattern. A 2D vector." },
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
+    }
 }]
 async fn inner_pattern_linear_2d(
-    data: LinearPattern2dData,
     sketch_set: SketchSet,
+    instances: u32,
+    distance: f64,
+    axis: [f64; 2],
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
-    let axis = data.axis;
     let [x, y] = axis;
     let axis_len = f64::sqrt(x * x + y * y);
     let normalized_axis = kcmc::shared::Point2d::from([x / axis_len, y / axis_len]);
-    let transforms: Vec<_> = (1..data.instances)
+    let transforms: Vec<_> = (1..instances)
         .map(|i| {
-            let d = data.distance * (i as f64);
+            let d = distance * (i as f64);
             let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
             vec![Transform {
                 translate,
@@ -755,10 +753,13 @@ async fn inner_pattern_linear_2d(
 
 /// A linear pattern on a 3D model.
 pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid_set, use_original): (LinearPattern3dData, SolidSet, Option<bool>) =
-        super::args::FromArgs::from_args(&args, 0)?;
+    let solid_set: SolidSet = args.get_unlabeled_kw_arg("solidSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let distance: f64 = args.get_kw_arg("distance")?;
+    let axis: [f64; 3] = args.get_kw_arg("axis")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    if data.axis == [0.0, 0.0, 0.0] {
+    if axis == [0.0, 0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
                 "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
@@ -767,7 +768,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let solids = inner_pattern_linear_3d(data, solid_set, use_original, exec_state, args).await?;
+    let solids = inner_pattern_linear_3d(solid_set, instances, distance, axis, use_original, exec_state, args).await?;
     Ok(solids.into())
 }
 
@@ -783,30 +784,40 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 1)
-///   |> patternLinear3d({
+///   |> patternLinear3d(
 ///       axis = [1, 0, 1],
 ///       instances = 7,
 ///       distance = 6
-///     }, %)
+///     )
 /// ```
 #[stdlib {
     name = "patternLinear3d",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid_set = { docs = "The solid(s) to duplicate" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
+        distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
+        axis = { docs = "The axis of the pattern. A 2D vector." },
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
+    }
 }]
 async fn inner_pattern_linear_3d(
-    data: LinearPattern3dData,
     solid_set: SolidSet,
+    instances: u32,
+    distance: f64,
+    axis: [f64; 3],
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
-    let axis = data.axis;
     let [x, y, z] = axis;
     let axis_len = f64::sqrt(x * x + y * y + z * z);
     let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
-    let transforms: Vec<_> = (1..data.instances)
+    let transforms: Vec<_> = (1..instances)
         .map(|i| {
-            let d = data.distance * (i as f64);
+            let d = distance * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
             vec![Transform {
                 translate,
@@ -828,7 +839,7 @@ async fn inner_pattern_linear_3d(
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub struct CircularPattern2dData {
+struct CircularPattern2dData {
     /// The number of total instances. Must be greater than or equal to 1.
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
@@ -870,7 +881,7 @@ pub struct CircularPattern3dData {
     pub use_original: Option<bool>,
 }
 
-pub enum CircularPattern {
+enum CircularPattern {
     ThreeD(CircularPattern3dData),
     TwoD(CircularPattern2dData),
 }
@@ -941,9 +952,24 @@ impl CircularPattern {
 
 /// A circular pattern on a 2D sketch.
 pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_set): (CircularPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
+    let sketch_set: SketchSet = args.get_unlabeled_kw_arg("sketchSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let center: [f64; 2] = args.get_kw_arg("center")?;
+    let arc_degrees: f64 = args.get_kw_arg("arcDegrees")?;
+    let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    let sketches = inner_pattern_circular_2d(data, sketch_set, exec_state, args).await?;
+    let sketches = inner_pattern_circular_2d(
+        sketch_set,
+        instances,
+        center,
+        arc_degrees,
+        rotate_duplicates,
+        use_original,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(sketches.into())
 }
 
@@ -959,21 +985,36 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 ///   |> line(end = [-1, 0])
 ///   |> line(end = [0, -5])
 ///   |> close()
-///   |> patternCircular2d({
+///   |> patternCircular2d(
 ///        center = [0, 0],
 ///        instances = 13,
 ///        arcDegrees = 360,
 ///        rotateDuplicates = true
-///      }, %)
+///      )
 ///
 /// example = extrude(exampleSketch, length = 1)
 /// ```
 #[stdlib {
     name = "patternCircular2d",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_set = { docs = "Which sketch(es) to pattern" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
+        center = { docs = "The center about which to make the pattern. This is a 2D vector."},
+        arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
+        rotate_duplicates= { docs = "Whether or not to rotate the duplicates as they are copied."},
+        use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
+    }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_2d(
-    data: CircularPattern2dData,
     sketch_set: SketchSet,
+    instances: u32,
+    center: [f64; 2],
+    arc_degrees: f64,
+    rotate_duplicates: bool,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
@@ -982,6 +1023,13 @@ async fn inner_pattern_circular_2d(
     if args.ctx.context_type == crate::execution::ContextType::Mock {
         return Ok(starting_sketches);
     }
+    let data = CircularPattern2dData {
+        instances,
+        center,
+        arc_degrees,
+        rotate_duplicates,
+        use_original,
+    };
 
     let mut sketches = Vec::new();
     for sketch in starting_sketches.iter() {
@@ -1008,9 +1056,36 @@ async fn inner_pattern_circular_2d(
 
 /// A circular pattern on a 3D model.
 pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid_set): (CircularPattern3dData, SolidSet) = args.get_data_and_solid_set()?;
+    let solid_set: SolidSet = args.get_unlabeled_kw_arg("solidSet")?;
+    // The number of total instances. Must be greater than or equal to 1.
+    // This includes the original entity. For example, if instances is 2,
+    // there will be two copies -- the original, and one new copy.
+    // If instances is 1, this has no effect.
+    let instances: u32 = args.get_kw_arg("instances")?;
+    // The axis around which to make the pattern. This is a 3D vector.
+    let axis: [f64; 3] = args.get_kw_arg("axis")?;
+    // The center about which to make the pattern. This is a 3D vector.
+    let center: [f64; 3] = args.get_kw_arg("center")?;
+    // The arc angle (in degrees) to place the repetitions. Must be greater than 0.
+    let arc_degrees: f64 = args.get_kw_arg("arcDegrees")?;
+    // Whether or not to rotate the duplicates as they are copied.
+    let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
+    // If the target being patterned is itself a pattern, then, should you use the original solid,
+    // or the pattern?
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    let solids = inner_pattern_circular_3d(data, solid_set, exec_state, args).await?;
+    let solids = inner_pattern_circular_3d(
+        solid_set,
+        instances,
+        axis,
+        center,
+        arc_degrees,
+        rotate_duplicates,
+        use_original,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(solids.into())
 }
 
@@ -1024,21 +1099,38 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///   |> circle({ center = [0, 0], radius = 1 }, %)
 ///
 /// example = extrude(exampleSketch, length = -5)
-///   |> patternCircular3d({
+///   |> patternCircular3d(
 ///        axis = [1, -1, 0],
 ///        center = [10, -20, 0],
 ///        instances = 11,
 ///        arcDegrees = 360,
 ///        rotateDuplicates = true
-///      }, %)
+///      )
 /// ```
 #[stdlib {
     name = "patternCircular3d",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid_set = { docs = "Which solid(s) to pattern" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
+        axis = { docs = "The axis around which to make the pattern. This is a 3D vector"},
+        center = { docs = "The center about which to make the pattern. This is a 3D vector."},
+        arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
+        rotate_duplicates = { docs = "Whether or not to rotate the duplicates as they are copied."},
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
+    }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_3d(
-    data: CircularPattern3dData,
     solid_set: SolidSet,
+    instances: u32,
+    axis: [f64; 3],
+    center: [f64; 3],
+    arc_degrees: f64,
+    rotate_duplicates: bool,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
@@ -1055,6 +1147,14 @@ async fn inner_pattern_circular_3d(
     }
 
     let mut solids = Vec::new();
+    let data = CircularPattern3dData {
+        instances,
+        axis,
+        center,
+        arc_degrees,
+        rotate_duplicates,
+        use_original,
+    };
     for solid in starting_solids.iter() {
         let geometries = pattern_circular(
             CircularPattern::ThreeD(data.clone()),

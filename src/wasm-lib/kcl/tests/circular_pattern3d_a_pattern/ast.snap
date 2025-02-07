@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing circular_pattern3d_a_pattern.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -321,7 +322,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
       },
       {
         "declaration": {
-          "end": 276,
+          "end": 277,
           "id": {
             "end": 186,
             "name": "pattn1",
@@ -331,115 +332,88 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
           "init": {
             "arguments": [
               {
-                "end": 260,
-                "properties": [
-                  {
-                    "end": 225,
-                    "key": {
-                      "end": 213,
-                      "name": "axis",
-                      "start": 209,
-                      "type": "Identifier"
-                    },
-                    "start": 209,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "elements": [
-                        {
-                          "end": 218,
-                          "raw": "1",
-                          "start": 217,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 221,
-                          "raw": "0",
-                          "start": 220,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 224,
-                          "raw": "0",
-                          "start": 223,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 225,
-                      "start": 216,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "end": 242,
-                    "key": {
-                      "end": 238,
-                      "name": "instances",
-                      "start": 229,
-                      "type": "Identifier"
-                    },
-                    "start": 229,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 242,
-                      "raw": "7",
-                      "start": 241,
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "axis"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 234,
+                      "raw": "1",
+                      "start": 233,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 7.0,
+                        "value": 1.0,
                         "suffix": "None"
                       }
-                    }
-                  },
-                  {
-                    "end": 258,
-                    "key": {
-                      "end": 254,
-                      "name": "distance",
-                      "start": 246,
-                      "type": "Identifier"
                     },
-                    "start": 246,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 258,
-                      "raw": "6",
-                      "start": 257,
+                    {
+                      "end": 237,
+                      "raw": "0",
+                      "start": 236,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 6.0,
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 240,
+                      "raw": "0",
+                      "start": 239,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
                         "suffix": "None"
                       }
                     }
-                  }
-                ],
-                "start": 205,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
+                  ],
+                  "end": 241,
+                  "start": 232,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
               },
               {
-                "end": 275,
-                "name": "exampleSketch",
-                "start": 262,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "instances"
+                },
+                "arg": {
+                  "end": 258,
+                  "raw": "7",
+                  "start": 257,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 7.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "distance"
+                },
+                "arg": {
+                  "end": 274,
+                  "raw": "6",
+                  "start": 273,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 6.0,
+                    "suffix": "None"
+                  }
+                }
               }
             ],
             "callee": {
@@ -448,15 +422,22 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               "start": 189,
               "type": "Identifier"
             },
-            "end": 276,
+            "end": 277,
             "start": 189,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 221,
+              "name": "exampleSketch",
+              "start": 208,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 180,
           "type": "VariableDeclarator"
         },
-        "end": 276,
+        "end": 277,
         "kind": "const",
         "start": 180,
         "type": "VariableDeclaration",
@@ -464,241 +445,213 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
       },
       {
         "declaration": {
-          "end": 430,
+          "end": 432,
           "id": {
-            "end": 284,
+            "end": 285,
             "name": "pattn2",
-            "start": 278,
+            "start": 279,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 421,
-                "properties": [
-                  {
-                    "end": 325,
-                    "key": {
-                      "end": 313,
-                      "name": "axis",
-                      "start": 309,
-                      "type": "Identifier"
-                    },
-                    "start": 309,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "elements": [
-                        {
-                          "end": 318,
-                          "raw": "0",
-                          "start": 317,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 321,
-                          "raw": "0",
-                          "start": 320,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 324,
-                          "raw": "1",
-                          "start": 323,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 325,
-                      "start": 316,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "end": 353,
-                    "key": {
-                      "end": 335,
-                      "name": "center",
-                      "start": 329,
-                      "type": "Identifier"
-                    },
-                    "start": 329,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "elements": [
-                        {
-                          "argument": {
-                            "end": 342,
-                            "raw": "20",
-                            "start": 340,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 20.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "end": 342,
-                          "operator": "-",
-                          "start": 339,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
-                        },
-                        {
-                          "argument": {
-                            "end": 347,
-                            "raw": "20",
-                            "start": 345,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 20.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "end": 347,
-                          "operator": "-",
-                          "start": 344,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
-                        },
-                        {
-                          "argument": {
-                            "end": 352,
-                            "raw": "20",
-                            "start": 350,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 20.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "end": 352,
-                          "operator": "-",
-                          "start": 349,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
-                        }
-                      ],
-                      "end": 353,
-                      "start": 338,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "end": 371,
-                    "key": {
-                      "end": 366,
-                      "name": "instances",
-                      "start": 357,
-                      "type": "Identifier"
-                    },
-                    "start": 357,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 371,
-                      "raw": "41",
-                      "start": 369,
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "axis"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 328,
+                      "raw": "0",
+                      "start": 327,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 41.0,
+                        "value": 0.0,
                         "suffix": "None"
                       }
-                    }
-                  },
-                  {
-                    "end": 391,
-                    "key": {
-                      "end": 385,
-                      "name": "arcDegrees",
-                      "start": 375,
-                      "type": "Identifier"
                     },
-                    "start": 375,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 391,
-                      "raw": "360",
-                      "start": 388,
+                    {
+                      "end": 331,
+                      "raw": "0",
+                      "start": 330,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 360.0,
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 334,
+                      "raw": "1",
+                      "start": 333,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
                         "suffix": "None"
                       }
                     }
-                  },
-                  {
-                    "end": 419,
-                    "key": {
-                      "end": 411,
-                      "name": "rotateDuplicates",
-                      "start": 395,
-                      "type": "Identifier"
-                    },
-                    "start": 395,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 419,
-                      "raw": "false",
-                      "start": 414,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": false
-                    }
-                  }
-                ],
-                "start": 305,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
+                  ],
+                  "end": 335,
+                  "start": 326,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
               },
               {
-                "end": 429,
-                "name": "pattn1",
-                "start": 423,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "center"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "argument": {
+                        "end": 352,
+                        "raw": "20",
+                        "start": 350,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 20.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "end": 352,
+                      "operator": "-",
+                      "start": 349,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    {
+                      "argument": {
+                        "end": 357,
+                        "raw": "20",
+                        "start": 355,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 20.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "end": 357,
+                      "operator": "-",
+                      "start": 354,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    {
+                      "argument": {
+                        "end": 362,
+                        "raw": "20",
+                        "start": 360,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 20.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "end": 362,
+                      "operator": "-",
+                      "start": 359,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  ],
+                  "end": 363,
+                  "start": 348,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "instances"
+                },
+                "arg": {
+                  "end": 381,
+                  "raw": "41",
+                  "start": 379,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 41.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "arcDegrees"
+                },
+                "arg": {
+                  "end": 401,
+                  "raw": "360",
+                  "start": 398,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 360.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "rotateDuplicates"
+                },
+                "arg": {
+                  "end": 429,
+                  "raw": "false",
+                  "start": 424,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": false
+                }
               }
             ],
             "callee": {
-              "end": 304,
+              "end": 305,
               "name": "patternCircular3d",
-              "start": 287,
+              "start": 288,
               "type": "Identifier"
             },
-            "end": 430,
-            "start": 287,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "end": 432,
+            "start": 288,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 315,
+              "name": "pattn1",
+              "start": 309,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
-          "start": 278,
+          "start": 279,
           "type": "VariableDeclarator"
         },
-        "end": 430,
+        "end": 432,
         "kind": "const",
-        "start": 278,
+        "start": 279,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 431,
+    "end": 433,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
@@ -713,8 +666,8 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
         ],
         "1": [
           {
-            "end": 278,
-            "start": 276,
+            "end": 279,
+            "start": 277,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
