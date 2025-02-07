@@ -99,8 +99,8 @@ export const FileMachineProvider = ({
             navigate(
               `..${PATHS.FILE}/${encodeURIComponent(
                 context.selectedDirectory +
-                window.electron.path.sep +
-                event.output.name
+                  window.electron.path.sep +
+                  event.output.name
               )}`
             )
           } else if (
@@ -163,7 +163,9 @@ export const FileMachineProvider = ({
               )
             } else {
               const codeToWrite = changeKclSettings(input.content ?? '', {
-                defaultLengthUnits: unitLengthToUnitLen(settings.context.modeling.defaultUnit.current),
+                defaultLengthUnits: unitLengthToUnitLen(
+                  settings.context.modeling.defaultUnit.current
+                ),
                 defaultAngleUnits: { type: 'Degrees' },
               })
               if (err(codeToWrite)) return Promise.reject(codeToWrite)
@@ -198,7 +200,9 @@ export const FileMachineProvider = ({
             createdPath = path
 
             const codeToWrite = changeKclSettings(input.content ?? '', {
-              defaultLengthUnits: unitLengthToUnitLen(settings.context.modeling.defaultUnit.current),
+              defaultLengthUnits: unitLengthToUnitLen(
+                settings.context.modeling.defaultUnit.current
+              ),
               defaultAngleUnits: { type: 'Degrees' },
             })
             if (err(codeToWrite)) return Promise.reject(codeToWrite)
@@ -316,8 +320,9 @@ export const FileMachineProvider = ({
           }
 
           return {
-            message: `Successfully deleted ${isDir ? 'folder' : 'file'} "${input.name
-              }"`,
+            message: `Successfully deleted ${isDir ? 'folder' : 'file'} "${
+              input.name
+            }"`,
           }
         }),
       },
