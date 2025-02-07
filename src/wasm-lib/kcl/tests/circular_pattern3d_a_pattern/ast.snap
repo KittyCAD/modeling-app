@@ -322,7 +322,7 @@ snapshot_kind: text
       },
       {
         "declaration": {
-          "end": 276,
+          "end": 277,
           "id": {
             "end": 186,
             "name": "pattn1",
@@ -422,7 +422,7 @@ snapshot_kind: text
               "start": 189,
               "type": "Identifier"
             },
-            "end": 276,
+            "end": 277,
             "start": 189,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -437,7 +437,7 @@ snapshot_kind: text
           "start": 180,
           "type": "VariableDeclarator"
         },
-        "end": 276,
+        "end": 277,
         "kind": "const",
         "start": 180,
         "type": "VariableDeclaration",
@@ -445,11 +445,11 @@ snapshot_kind: text
       },
       {
         "declaration": {
-          "end": 430,
+          "end": 432,
           "id": {
-            "end": 284,
+            "end": 285,
             "name": "pattn2",
-            "start": 278,
+            "start": 279,
             "type": "Identifier"
           },
           "init": {
@@ -463,9 +463,9 @@ snapshot_kind: text
                 "arg": {
                   "elements": [
                     {
-                      "end": 327,
+                      "end": 328,
                       "raw": "0",
-                      "start": 326,
+                      "start": 327,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -474,9 +474,9 @@ snapshot_kind: text
                       }
                     },
                     {
-                      "end": 330,
+                      "end": 331,
                       "raw": "0",
-                      "start": 329,
+                      "start": 330,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -485,9 +485,9 @@ snapshot_kind: text
                       }
                     },
                     {
-                      "end": 333,
+                      "end": 334,
                       "raw": "1",
-                      "start": 332,
+                      "start": 333,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -496,8 +496,8 @@ snapshot_kind: text
                       }
                     }
                   ],
-                  "end": 334,
-                  "start": 325,
+                  "end": 335,
+                  "start": 326,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -512,9 +512,9 @@ snapshot_kind: text
                   "elements": [
                     {
                       "argument": {
-                        "end": 351,
+                        "end": 352,
                         "raw": "20",
-                        "start": 349,
+                        "start": 350,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -522,17 +522,17 @@ snapshot_kind: text
                           "suffix": "None"
                         }
                       },
-                      "end": 351,
+                      "end": 352,
                       "operator": "-",
-                      "start": 348,
+                      "start": 349,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     },
                     {
                       "argument": {
-                        "end": 356,
+                        "end": 357,
                         "raw": "20",
-                        "start": 354,
+                        "start": 355,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -540,17 +540,17 @@ snapshot_kind: text
                           "suffix": "None"
                         }
                       },
-                      "end": 356,
+                      "end": 357,
                       "operator": "-",
-                      "start": 353,
+                      "start": 354,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     },
                     {
                       "argument": {
-                        "end": 361,
+                        "end": 362,
                         "raw": "20",
-                        "start": 359,
+                        "start": 360,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -558,15 +558,15 @@ snapshot_kind: text
                           "suffix": "None"
                         }
                       },
-                      "end": 361,
+                      "end": 362,
                       "operator": "-",
-                      "start": 358,
+                      "start": 359,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   ],
-                  "end": 362,
-                  "start": 347,
+                  "end": 363,
+                  "start": 348,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -578,9 +578,9 @@ snapshot_kind: text
                   "name": "instances"
                 },
                 "arg": {
-                  "end": 380,
+                  "end": 381,
                   "raw": "41",
-                  "start": 378,
+                  "start": 379,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -596,9 +596,9 @@ snapshot_kind: text
                   "name": "arcDegrees"
                 },
                 "arg": {
-                  "end": 400,
+                  "end": 401,
                   "raw": "360",
-                  "start": 397,
+                  "start": 398,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -614,9 +614,9 @@ snapshot_kind: text
                   "name": "rotateDuplicates"
                 },
                 "arg": {
-                  "end": 428,
+                  "end": 429,
                   "raw": "false",
-                  "start": 423,
+                  "start": 424,
                   "type": "Literal",
                   "type": "Literal",
                   "value": false
@@ -624,34 +624,34 @@ snapshot_kind: text
               }
             ],
             "callee": {
-              "end": 304,
+              "end": 305,
               "name": "patternCircular3d",
-              "start": 287,
+              "start": 288,
               "type": "Identifier"
             },
-            "end": 430,
-            "start": 287,
+            "end": 432,
+            "start": 288,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 314,
+              "end": 315,
               "name": "pattn1",
-              "start": 308,
+              "start": 309,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 278,
+          "start": 279,
           "type": "VariableDeclarator"
         },
-        "end": 430,
+        "end": 432,
         "kind": "const",
-        "start": 278,
+        "start": 279,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 431,
+    "end": 433,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
@@ -666,8 +666,8 @@ snapshot_kind: text
         ],
         "1": [
           {
-            "end": 278,
-            "start": 276,
+            "end": 279,
+            "start": 277,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

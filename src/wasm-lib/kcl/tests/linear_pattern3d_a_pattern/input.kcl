@@ -10,12 +10,12 @@ pattn1 = patternLinear3d(
   exampleSketch,
   axis = [1, 0, 0],
   instances = 7,
-  distance = 6
+  distance = 6,
 )
 
 pattn2 = patternLinear3d(
   pattn1,
   axis = [0, 0, 1],
   distance = 1,
-  instances = 7
+  instances = 7,
 )

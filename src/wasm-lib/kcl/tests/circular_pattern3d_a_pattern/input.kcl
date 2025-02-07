@@ -10,7 +10,7 @@ pattn1 = patternLinear3d(
   exampleSketch,
   axis = [1, 0, 0],
   instances = 7,
-  distance = 6
+  distance = 6,
 )
 
 pattn2 = patternCircular3d(
@@ -19,5 +19,5 @@ pattn2 = patternCircular3d(
   center = [-20, -20, -20],
   instances = 41,
   arcDegrees = 360,
-  rotateDuplicates = false
+  rotateDuplicates = false,
 )

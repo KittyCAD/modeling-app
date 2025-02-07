@@ -44,17 +44,24 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "sourceRange": [
-          205,
-          260,
+          232,
+          241,
           0
         ]
       },
-      "solid_set": {
+      "distance": {
         "sourceRange": [
-          262,
-          275,
+          273,
+          274,
+          0
+        ]
+      },
+      "instances": {
+        "sourceRange": [
+          257,
+          258,
           0
         ]
       }
@@ -66,21 +73,34 @@ snapshot_kind: text
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        208,
+        221,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "sourceRange": [
-          303,
-          358,
+          323,
+          332,
           0
         ]
       },
-      "solid_set": {
+      "distance": {
         "sourceRange": [
-          360,
-          366,
+          347,
+          348,
+          0
+        ]
+      },
+      "instances": {
+        "sourceRange": [
+          364,
+          365,
           0
         ]
       }
@@ -92,6 +112,12 @@ snapshot_kind: text
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        306,
+        312,
+        0
+      ]
+    }
   }
 ]

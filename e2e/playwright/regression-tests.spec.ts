@@ -195,7 +195,7 @@ extrude001 = extrude(sketch001, length = 50)
   |> patternLinear3d(
         axis = [1, 0, 1],
         repetitions = 3,
-        distance = 6
+        distance = 6,
       )`
       )
     })
