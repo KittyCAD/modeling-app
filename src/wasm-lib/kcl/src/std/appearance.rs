@@ -254,9 +254,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///         radius = 2,
 ///         }, %)              
 ///     |> hole(pipeHole, %)
-///     |> sweep({
-///         path: sweepPath,
-///     }, %)
+///     |> sweep(path = sweepPath)
 ///     |> appearance({
 ///         color: "#ff0000",
 ///         metalness: 50,
