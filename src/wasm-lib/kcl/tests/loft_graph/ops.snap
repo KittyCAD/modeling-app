@@ -66,5 +66,24 @@ description: Operations executed loft_graph.kcl
     ],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "sketches": {
+        "sourceRange": [
+          460,
+          484,
+          0
+        ]
+      }
+    },
+    "name": "loft",
+    "sourceRange": [
+      455,
+      485,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   }
 ]

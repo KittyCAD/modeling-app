@@ -662,9 +662,66 @@ description: Result of parsing loft_graph.kcl
         "start": 281,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
+      },
+      {
+        "end": 485,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "end": 471,
+                  "name": "profile001",
+                  "start": 461,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                {
+                  "end": 483,
+                  "name": "profile002",
+                  "start": 473,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "end": 484,
+              "start": 460,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
+          ],
+          "callee": {
+            "end": 459,
+            "name": "loft",
+            "start": 455,
+            "type": "Identifier"
+          },
+          "end": 485,
+          "start": 455,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 455,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
       }
     ],
-    "end": 454,
+    "end": 486,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "4": [
+          {
+            "end": 455,
+            "start": 453,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
     "start": 0
   }
 }

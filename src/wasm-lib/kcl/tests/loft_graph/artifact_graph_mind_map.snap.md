@@ -4,15 +4,48 @@ mindmap
     Plane
       Path
         Segment
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
+        Sweep Loft
+          Wall
+          Wall
+          Wall
+          Cap Start
+          Cap End
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Solid2d
     Plane
       Path
+        SweepEdge Opposite
+        SweepEdge Opposite
+        SweepEdge Opposite
         Segment
-        Segment
-        Segment
-        Segment
+        Sweep Loft
+          Wall
+          Wall
+          Wall
+          Cap Start
+          Cap End
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Solid2d
 ```

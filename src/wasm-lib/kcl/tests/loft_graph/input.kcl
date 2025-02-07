@@ -11,3 +11,5 @@ profile002 = startProfileAt([39, 172], sketch002)
   |> line(end = [-78, -145])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
+
+loft([profile001, profile002])
