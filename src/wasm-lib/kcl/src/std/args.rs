@@ -1042,20 +1042,6 @@ impl<'a> FromKclValue<'a> for super::fillet::FilletData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::sweep::SweepData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, path);
-        let_field_of!(obj, sectional?);
-        let_field_of!(obj, tolerance?);
-        Some(Self {
-            path,
-            sectional,
-            tolerance,
-        })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::appearance::AppearanceData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;

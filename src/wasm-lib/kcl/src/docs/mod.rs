@@ -1038,12 +1038,7 @@ mod tests {
     fn get_autocomplete_snippet_sweep() {
         let sweep_fn: Box<dyn StdLibFn> = Box::new(crate::std::sweep::Sweep);
         let snippet = sweep_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"sweep({
-	path = ${0:sketch000},
-}, ${1:%})${}"#
-        );
+        assert_eq!(snippet, r#"sweep(${0:%}, path = ${1:sketch000})${}"#);
     }
 
     #[test]
