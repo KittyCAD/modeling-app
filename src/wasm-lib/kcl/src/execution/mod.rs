@@ -1590,10 +1590,10 @@ let w = f() + f()
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
-|> shell({
-    faces: [seg01],
-    thickness: 3.14,
-}, %)
+|> shell(
+    thickness = 3.14,
+    faces = [seg01]
+)
 "#;
 
         let ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
@@ -1620,10 +1620,10 @@ let w = f() + f()
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
-|> shell({
-    faces: [seg01],
-    thickness: 3.14,
-}, %)
+|> shell(
+    faces = [seg01],
+    thickness = 3.14,
+)
 "#;
 
         // Execute a slightly different program again.

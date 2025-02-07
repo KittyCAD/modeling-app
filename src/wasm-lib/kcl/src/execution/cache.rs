@@ -242,7 +242,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, ctx, _) = parse_execute(new).await.unwrap();
 
@@ -273,7 +273,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
@@ -285,7 +285,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program_old, ctx, _) = parse_execute(old).await.unwrap();
 
@@ -318,7 +318,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
@@ -330,7 +330,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, ctx, _) = parse_execute(old).await.unwrap();
 
@@ -363,7 +363,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
@@ -375,7 +375,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, ctx, _) = parse_execute(old).await.unwrap();
 
@@ -409,7 +409,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, mut ctx, _) = parse_execute(new).await.unwrap();
 
@@ -451,7 +451,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, mut ctx, _) = parse_execute(new).await.unwrap();
 
@@ -486,7 +486,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, mut ctx, _) = parse_execute(new).await.unwrap();
 

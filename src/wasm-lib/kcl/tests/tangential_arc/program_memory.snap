@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing tangential_arc.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -187,6 +188,7 @@ description: Program memory after executing tangential_arc.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

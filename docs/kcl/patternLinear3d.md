@@ -9,7 +9,7 @@ Repeat a 3-dimensional solid along a linear path, with a dynamic amount
 of distance between each repetition, some specified number of times.
 
 ```js
-patternLinear3d(data: LinearPattern3dData, solid_set: SolidSet) -> [Solid]
+patternLinear3d(data: LinearPattern3dData, solid_set: SolidSet, use_original?: bool) -> [Solid]
 ```
 
 
@@ -19,6 +19,7 @@ patternLinear3d(data: LinearPattern3dData, solid_set: SolidSet) -> [Solid]
 |----------|------|-------------|----------|
 | `data` | [`LinearPattern3dData`](/docs/kcl/types/LinearPattern3dData) | Data for a linear pattern on a 3D model. | Yes |
 | `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | A solid or a group of solids. | Yes |
+| `use_original` | `bool` |  | No |
 
 ### Returns
 

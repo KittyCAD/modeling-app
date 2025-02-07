@@ -55,6 +55,7 @@ const mySketch001 = startSketchOn('XY')
         ],
         id: expect.any(String),
         artifactId: expect.any(String),
+        originalId: expect.any(String),
         units: {
           type: 'Mm',
         },
@@ -98,6 +99,7 @@ const mySketch001 = startSketchOn('XY')
         ],
         sketch: {
           id: expect.any(String),
+          originalId: expect.any(String),
           artifactId: expect.any(String),
           units: {
             type: 'Mm',
@@ -203,6 +205,7 @@ const sk2 = startSketchOn('XY')
           ],
           sketch: {
             id: expect.any(String),
+            originalId: expect.any(String),
             artifactId: expect.any(String),
             __meta: expect.any(Array),
             on: expect.any(Object),
@@ -308,6 +311,7 @@ const sk2 = startSketchOn('XY')
           ],
           sketch: {
             id: expect.any(String),
+            originalId: expect.any(String),
             artifactId: expect.any(String),
             units: {
               type: 'Mm',
