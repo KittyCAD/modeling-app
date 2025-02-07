@@ -154,7 +154,7 @@ test.describe('Onboarding tests', () => {
   )
 
   test(
-    'Click through each onboarding step',
+    'Click through each onboarding step and back',
     {
       appSettings: {
         app: {
@@ -187,15 +187,21 @@ test.describe('Onboarding tests', () => {
       ).toBeVisible()
 
       const nextButton = page.getByTestId('onboarding-next')
+      const prevButton = page.getByTestId('onboarding-prev')
 
       while ((await nextButton.innerText()) !== 'Finish') {
         await nextButton.hover()
         await nextButton.click()
       }
 
-      // Finish the onboarding
-      await nextButton.hover()
-      await nextButton.click()
+      while ((await prevButton.innerText()) !== 'Dismiss') {
+        await prevButton.hover()
+        await prevButton.click()
+      }
+
+      // Dismiss the onboarding
+      await prevButton.hover()
+      await prevButton.click()
 
       // Test that the onboarding pane is gone
       await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
@@ -437,7 +443,7 @@ test.describe('Onboarding tests', () => {
   )
 })
 
-test.fixme(
+test(
   'Restarting onboarding on desktop takes one attempt',
   {
     appSettings: {
@@ -486,10 +492,6 @@ test.fixme(
     })
 
     await test.step('Navigate into project', async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-
-      page.on('console', console.log)
-
       await expect(
         page.getByRole('heading', { name: 'Your Projects' })
       ).toBeVisible()

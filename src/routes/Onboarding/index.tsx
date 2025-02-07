@@ -164,8 +164,8 @@ export function useStepNumber(
     ? slug === onboardingPaths.INDEX
       ? 1
       : onboardingRoutes.findIndex(
-          (r) => r.path === makeUrlPathRelative(slug)
-        ) + 1
+        (r) => r.path === makeUrlPathRelative(slug)
+      ) + 1
     : 1
 }
 
@@ -202,6 +202,7 @@ export function OnboardingButtons({
           'group block !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent ' +
           dismissClassName
         }
+        data-testid="onboarding-dismiss"
       >
         <CustomIcon
           name="close"
@@ -228,6 +229,7 @@ export function OnboardingButtons({
             bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
           }}
           className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
+          data-testid="onboarding-prev"
         >
           {previousStep ? `Back` : 'Dismiss'}
         </ActionButton>
