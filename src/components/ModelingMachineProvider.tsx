@@ -21,7 +21,7 @@ import {
   modelingMachine,
   modelingMachineDefaultContext,
 } from 'machines/modelingMachine'
-import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   isCursorInSketchCommandRange,
   updateSketchDetailsNodePaths,
@@ -139,6 +139,7 @@ export const ModelingMachineProvider = ({
       highlightEdges,
       showScaleGrid,
       cameraOrbit,
+      cameraProjection,
     },
   } = useSettings()
   const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
@@ -156,6 +157,7 @@ export const ModelingMachineProvider = ({
     commandBarActor,
     commandBarIsClosedSelector
   )
+
   // Settings machine setup
   // const retrievedSettings = useRef(
   // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
@@ -1612,22 +1614,6 @@ export const ModelingMachineProvider = ({
       },
       // devTools: true,
     }
-  )
-
-  useSetupEngineManager(
-    streamRef,
-    modelingSend,
-    modelingState.context,
-    {
-      pool: pool,
-      theme: theme.current,
-      highlightEdges: highlightEdges.current,
-      enableSSAO: enableSSAO.current,
-      showScaleGrid: showScaleGrid.current,
-      cameraProjection: cameraProjection.current,
-      cameraOrbit: cameraOrbit.current,
-    },
-    token
   )
 
   useEffect(() => {

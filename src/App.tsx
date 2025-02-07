@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
-import { Stream } from './components/Stream'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { onboardingPaths } from 'routes/Onboarding/paths'
@@ -32,6 +31,8 @@ import { useSettings } from 'machines/appMachine'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
+import EngineStreamContext from 'hooks/useEngineStreamContext'
+import { EngineStream } from 'components/EngineStream'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -54,6 +55,12 @@ export function App() {
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
   const ref = useRef<HTMLDivElement>(null)
+
+  // Stream related refs and data
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  let [searchParams] = useSearchParams()
+  const pool = searchParams.get('pool')
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
@@ -135,13 +142,26 @@ export function App() {
       />
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
-      <Stream />
-      {/* <CamToggle /> */}
-      <LowerRightControls coreDumpManager={coreDumpManager}>
-        <UnitsMenu />
-        <Gizmo />
-        <CameraProjectionToggle />
-      </LowerRightControls>
+      <EngineStreamContext.Provider
+        options={{
+          input: {
+            videoRef,
+            canvasRef,
+            mediaStream: null,
+            authToken: token ?? null,
+            pool,
+            zoomToFit: true,
+          },
+        }}
+      >
+        <EngineStream />
+        {/* <CamToggle /> */}
+        <LowerRightControls coreDumpManager={coreDumpManager}>
+          <UnitsMenu />
+          <Gizmo />
+          <CameraProjectionToggle />
+        </LowerRightControls>
+      </EngineStreamContext.Provider>
     </div>
   )
 }
