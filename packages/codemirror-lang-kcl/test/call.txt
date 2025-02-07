@@ -48,9 +48,9 @@ Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
                                            PipeOperator,
                                            CallExpression(VariableName,
                                                           ArgumentList(PipeSubstitution,
-                                                                       NamedArgument(ArgumentName,
-                                                                                     Equals,
-                                                                                     ArrayExpression(VariableName,
+                                                                       LabeledArgument(ArgumentLabel,
+                                                                                       Equals,
+                                                                                       ArrayExpression(VariableName,
                                                                                                      Number)))))))
 
 # implied % and named arg
@@ -63,9 +63,9 @@ Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
                                                           ArgumentList(String)),
                                            PipeOperator,
                                            CallExpression(VariableName,
-                                                          ArgumentList(NamedArgument(ArgumentName,
-                                                                                     Equals,
-                                                                                     ArrayExpression(VariableName,
+                                                          ArgumentList(LabeledArgument(ArgumentLabel,
+                                                                                       Equals,
+                                                                                       ArrayExpression(VariableName,
                                                                                                      Number)))))))
 
 # multiple named arg
@@ -74,12 +74,12 @@ ngon(plane = "XY", numSides = 5, radius = pentR)
 
 ==>
 Program(ExpressionStatement(CallExpression(VariableName,
-                                           ArgumentList(NamedArgument(ArgumentName,
-                                                                      Equals,
-                                                                      String),
-                                                        NamedArgument(ArgumentName,
-                                                                      Equals,
-                                                                      Number),
-                                                        NamedArgument(ArgumentName,
-                                                                      Equals,
-                                                                      VariableName)))))
+                                           ArgumentList(LabeledArgument(ArgumentLabel,
+                                                                        Equals,
+                                                                        String),
+                                                        LabeledArgument(ArgumentLabel,
+                                                                        Equals,
+                                                                        Number),
+                                                        LabeledArgument(ArgumentLabel,
+                                                                        Equals,
+                                                                        VariableName)))))
