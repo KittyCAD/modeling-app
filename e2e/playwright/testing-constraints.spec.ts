@@ -708,9 +708,8 @@ part002 = startSketchOn('XZ')
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await editor.scrollToText('line(end = [74.36, 130.4], %)', true)
-        await page.getByText('line(end = [74.36, 130.4], %)').click()
-        await page.screenshot({ path: 'ok.png' })
+        await editor.scrollToText('line(end = [74.36, 130.4])', true)
+        await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         const line3 = await u.getSegmentBodyCoords(
