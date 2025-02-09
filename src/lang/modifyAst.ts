@@ -444,10 +444,11 @@ export function addSweep(
 } {
   const modifiedAst = structuredClone(node)
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const sweep = createCallExpressionStdLib('sweep', [
-    createObjectExpression({ path: createIdentifier(pathDeclarator.id.name) }),
+  const sweep = createCallExpressionStdLibKw(
+    'sweep',
     createIdentifier(profileDeclarator.id.name),
-  ])
+    [createLabeledArg('path', createIdentifier(pathDeclarator.id.name))]
+  )
   const declaration = createVariableDeclaration(name, sweep)
   modifiedAst.body.push(declaration)
   const pathToNode: PathToNode = [
@@ -455,8 +456,9 @@ export function addSweep(
     [modifiedAst.body.length - 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['arguments', 'CallExpressionKw'],
+    [0, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
 
   return {
@@ -690,6 +692,63 @@ export function addOffsetPlane({
     ['arguments', 'CallExpression'],
     [0, 'index'],
   ]
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
+ * Append a helix to the AST
+ */
+export function addHelix({
+  node,
+  revolutions,
+  angleStart,
+  counterClockWise,
+  radius,
+  axis,
+  length,
+}: {
+  node: Node<Program>
+  revolutions: Expr
+  angleStart: Expr
+  counterClockWise: boolean
+  radius: Expr
+  axis: string
+  length: Expr
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
+  const variable = createVariableDeclaration(
+    name,
+    createCallExpressionStdLibKw(
+      'helix',
+      null, // Not in a pipeline
+      [
+        createLabeledArg('revolutions', revolutions),
+        createLabeledArg('angleStart', angleStart),
+        createLabeledArg('counterClockWise', createLiteral(counterClockWise)),
+        createLabeledArg('radius', radius),
+        createLabeledArg('axis', createLiteral(axis)),
+        createLabeledArg('length', length),
+      ]
+    )
+  )
+
+  // TODO: figure out smart insertion than just appending at the end
+  const argIndex = 0
+  modifiedAst.body.push(variable)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
+  ]
+
   return {
     modifiedAst,
     pathToNode,

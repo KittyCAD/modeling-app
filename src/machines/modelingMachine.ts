@@ -42,6 +42,7 @@ import {
 } from 'components/Toolbar/EqualLength'
 import { revolveSketch } from 'lang/modifyAst/addRevolve'
 import {
+  addHelix,
   addOffsetPlane,
   addSweep,
   deleteFromSelection,
@@ -297,6 +298,7 @@ export type ModelingMachineEvent =
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
+  | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
@@ -1767,6 +1769,73 @@ export const modelingMachine = setup({
         }
       }
     ),
+    helixAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Helix'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const {
+          revolutions,
+          angleStart,
+          counterClockWise,
+          radius,
+          axis,
+          length,
+        } = input
+
+        for (const variable of [revolutions, angleStart, radius, length]) {
+          // Insert the variable if it exists
+          if (
+            'variableName' in variable &&
+            variable.variableName &&
+            variable.insertIndex !== undefined
+          ) {
+            const newBody = [...ast.body]
+            newBody.splice(
+              variable.insertIndex,
+              0,
+              variable.variableDeclarationAst
+            )
+            ast.body = newBody
+          }
+        }
+
+        const valueOrVariable = (variable: KclCommandValue) =>
+          'variableName' in variable
+            ? variable.variableIdentifierAst
+            : variable.valueAst
+
+        const result = addHelix({
+          node: ast,
+          revolutions: valueOrVariable(revolutions),
+          angleStart: valueOrVariable(angleStart),
+          counterClockWise,
+          radius: valueOrVariable(radius),
+          axis,
+          length: valueOrVariable(length),
+        })
+
+        const updateAstResult = await kclManager.updateAst(
+          result.modifiedAst,
+          true,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
     sweepAstMod: fromPromise(
       async ({
         input,
@@ -2148,6 +2217,11 @@ export const modelingMachine = setup({
 
         'Offset plane': {
           target: 'Applying offset plane',
+          reenter: true,
+        },
+
+        Helix: {
+          target: 'Applying helix',
           reenter: true,
         },
 
@@ -3096,6 +3170,19 @@ export const modelingMachine = setup({
         id: 'offsetPlaneAstMod',
         input: ({ event }) => {
           if (event.type !== 'Offset plane') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying helix': {
+      invoke: {
+        src: 'helixAstMod',
+        id: 'helixAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Helix') return undefined
           return event.data
         },
         onDone: ['idle'],

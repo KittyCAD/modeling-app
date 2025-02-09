@@ -20,6 +20,7 @@ export class ToolbarFixture {
   shellButton!: Locator
   revolveButton!: Locator
   offsetPlaneButton!: Locator
+  helixButton!: Locator
   startSketchBtn!: Locator
   lineBtn!: Locator
   tangentialArcBtn!: Locator
@@ -52,6 +53,7 @@ export class ToolbarFixture {
     this.shellButton = page.getByTestId('shell')
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
+    this.helixButton = page.getByTestId('helix')
     this.startSketchBtn = page.getByTestId('sketch')
     this.lineBtn = page.getByTestId('line')
     this.tangentialArcBtn = page.getByTestId('tangential-arc')

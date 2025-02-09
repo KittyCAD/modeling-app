@@ -27,7 +27,7 @@ test.describe('Onboarding tests', () => {
       },
       cleanProjectDir: true,
     },
-    async ({ context, page, homePage }) => {
+    async ({ page, homePage }) => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
@@ -68,7 +68,7 @@ test.describe('Onboarding tests', () => {
       },
       cleanProjectDir: true,
     },
-    async ({ page, homePage }, testInfo) => {
+    async ({ page }) => {
       const u = await getUtils(page)
 
       const viewportSize = { width: 1200, height: 500 }
@@ -154,7 +154,7 @@ test.describe('Onboarding tests', () => {
   )
 
   test(
-    'Click through each onboarding step',
+    'Click through each onboarding step and back',
     {
       appSettings: {
         app: {
@@ -187,15 +187,21 @@ test.describe('Onboarding tests', () => {
       ).toBeVisible()
 
       const nextButton = page.getByTestId('onboarding-next')
+      const prevButton = page.getByTestId('onboarding-prev')
 
       while ((await nextButton.innerText()) !== 'Finish') {
         await nextButton.hover()
         await nextButton.click()
       }
 
-      // Finish the onboarding
-      await nextButton.hover()
-      await nextButton.click()
+      while ((await prevButton.innerText()) !== 'Dismiss') {
+        await prevButton.hover()
+        await prevButton.click()
+      }
+
+      // Dismiss the onboarding
+      await prevButton.hover()
+      await prevButton.click()
 
       // Test that the onboarding pane is gone
       await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
@@ -269,7 +275,7 @@ test.describe('Onboarding tests', () => {
       cleanProjectDir: true,
     },
 
-    async ({ context, page, homePage }) => {
+    async ({ page, homePage }) => {
       const u = await getUtils(page)
       const badCode = `// This is bad code we shouldn't see`
 
@@ -336,10 +342,10 @@ test.describe('Onboarding tests', () => {
       await homePage.goToModelingScene()
 
       // Test that the text in this step is correct
-      const avatarLocator = await page
+      const avatarLocator = page
         .getByTestId('user-sidebar-toggle')
         .locator('img')
-      const onboardingOverlayLocator = await page
+      const onboardingOverlayLocator = page
         .getByTestId('onboarding-content')
         .locator('div')
         .nth(1)
@@ -447,7 +453,7 @@ test(
     },
     cleanProjectDir: true,
   },
-  async ({ context, page, homePage }, testInfo) => {
+  async ({ context, page }) => {
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = join(dir, 'router-template-slate')
       await fsp.mkdir(routerTemplateDir, { recursive: true })
@@ -486,10 +492,6 @@ test(
     })
 
     await test.step('Navigate into project', async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-
-      page.on('console', console.log)
-
       await expect(
         page.getByRole('heading', { name: 'Your Projects' })
       ).toBeVisible()
