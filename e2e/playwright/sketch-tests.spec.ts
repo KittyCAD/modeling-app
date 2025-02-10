@@ -1465,7 +1465,12 @@ test.describe('multi-profile sketching', () => {
       )
     })
     await test.step('create two corner rectangles in a row without unequip', async () => {
-      await toolbar.rectangleBtn.click()
+      await expect
+        .poll(async () => {
+          await toolbar.rectangleBtn.click()
+          return toolbar.rectangleBtn.getAttribute('aria-pressed')
+        })
+        .toBe('true')
 
       await crnRect1point1()
       await editor.expectEditor.toContain(

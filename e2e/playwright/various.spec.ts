@@ -231,8 +231,12 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await page.mouse.click(1000, 100)
   await page.keyboard.press('Escape')
   await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
-  await page.keyboard.press('l')
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  await expect
+    .poll(async () => {
+      await page.keyboard.press('l')
+      return lineButton.getAttribute('aria-pressed')
+    })
+    .toBe('true')
 
   // Do not close the sketch.
   // On close it will exit sketch mode.
