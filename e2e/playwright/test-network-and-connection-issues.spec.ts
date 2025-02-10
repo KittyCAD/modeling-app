@@ -79,124 +79,124 @@ test.describe('Test network and connection issues', () => {
     }
   )
 
-  test('Engine disconnect & reconnect in sketch mode', {tag: '@skipLocalEngine'}, async ({
-    page,
-    homePage,
-  }) => {
-    // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
-    const networkToggle = page.getByTestId('network-toggle')
+  test(
+    'Engine disconnect & reconnect in sketch mode',
+    { tag: '@skipLocalEngine' },
+    async ({ page, homePage }) => {
+      // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
+      const networkToggle = page.getByTestId('network-toggle')
 
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    const PUR = 400 / 37.5 //pixeltoUnitRatio
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      const PUR = 400 / 37.5 //pixeltoUnitRatio
 
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
 
-    await u.openDebugPanel()
-    // click on "Start Sketch" button
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await page.waitForTimeout(100)
+      await u.openDebugPanel()
+      // click on "Start Sketch" button
+      await u.clearCommandLogs()
+      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await page.waitForTimeout(100)
 
-    // select a plane
-    await page.mouse.click(700, 200)
+      // select a plane
+      await page.mouse.click(700, 200)
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')`
-    )
-    await u.closeDebugPanel()
+      await expect(page.locator('.cm-content')).toHaveText(
+        `sketch001 = startSketchOn('XZ')`
+      )
+      await u.closeDebugPanel()
 
-    await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+      await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
-    const startXPx = 600
-    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')
+      const startXPx = 600
+      await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
-    await page.waitForTimeout(100)
+      await page.waitForTimeout(100)
 
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-    await page.waitForTimeout(100)
+      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+      await page.waitForTimeout(100)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> xLine(${commonPoints.num1}, %)`)
 
-    // Expect the network to be up
-    await expect(networkToggle).toContainText('Connected')
+      // Expect the network to be up
+      await expect(networkToggle).toContainText('Connected')
 
-    // simulate network down
-    await u.emulateNetworkConditions({
-      offline: true,
-      // values of 0 remove any active throttling. crbug.com/456324#c9
-      latency: 0,
-      downloadThroughput: -1,
-      uploadThroughput: -1,
-    })
+      // simulate network down
+      await u.emulateNetworkConditions({
+        offline: true,
+        // values of 0 remove any active throttling. crbug.com/456324#c9
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      })
 
-    // Expect the network to be down
-    await expect(networkToggle).toContainText('Problem')
+      // Expect the network to be down
+      await expect(networkToggle).toContainText('Problem')
 
-    // Ensure we are not in sketch mode
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).not.toBeVisible()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+      // Ensure we are not in sketch mode
+      await expect(
+        page.getByRole('button', { name: 'Exit Sketch' })
+      ).not.toBeVisible()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeVisible()
 
-    // simulate network up
-    await u.emulateNetworkConditions({
-      offline: false,
-      // values of 0 remove any active throttling. crbug.com/456324#c9
-      latency: 0,
-      downloadThroughput: -1,
-      uploadThroughput: -1,
-    })
+      // simulate network up
+      await u.emulateNetworkConditions({
+        offline: false,
+        // values of 0 remove any active throttling. crbug.com/456324#c9
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      })
 
-    // Wait for the app to be ready for use
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled({ timeout: 15000 })
+      // Wait for the app to be ready for use
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled({ timeout: 15000 })
 
-    // Expect the network to be up
-    await expect(networkToggle).toContainText('Connected')
-    await expect(page.getByTestId('loading-stream')).not.toBeAttached()
+      // Expect the network to be up
+      await expect(networkToggle).toContainText('Connected')
+      await expect(page.getByTestId('loading-stream')).not.toBeAttached()
 
-    // Click off the code pane.
-    await page.mouse.click(100, 100)
+      // Click off the code pane.
+      await page.mouse.click(100, 100)
 
-    // select a line
-    await page.getByText(`startProfileAt(${commonPoints.startAt}, %)`).click()
+      // select a line
+      await page.getByText(`startProfileAt(${commonPoints.startAt}, %)`).click()
 
-    // enter sketch again
-    await u.doAndWaitForCmd(
-      () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
-      'default_camera_get_settings'
-    )
-    await page.waitForTimeout(150)
+      // enter sketch again
+      await u.doAndWaitForCmd(
+        () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
+        'default_camera_get_settings'
+      )
+      await page.waitForTimeout(150)
 
-    // Click the line tool
-    await page.getByRole('button', { name: 'line Line', exact: true }).click()
+      // Click the line tool
+      await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
-    await page.waitForTimeout(150)
+      await page.waitForTimeout(150)
 
-    // Ensure we can continue sketching
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-    await expect.poll(u.normalisedEditorCode)
-      .toBe(`sketch001 = startSketchOn('XZ')
+      // Ensure we can continue sketching
+      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+      await expect.poll(u.normalisedEditorCode)
+        .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
   |> xLine(12.34, %)
   |> line(end = [-12.34, 12.34])
 
 `)
-    await page.waitForTimeout(100)
-    await page.mouse.click(startXPx, 500 - PUR * 20)
+      await page.waitForTimeout(100)
+      await page.mouse.click(startXPx, 500 - PUR * 20)
 
-    await expect.poll(u.normalisedEditorCode)
-      .toBe(`sketch001 = startSketchOn('XZ')
+      await expect.poll(u.normalisedEditorCode)
+        .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
   |> xLine(12.34, %)
   |> line(end = [-12.34, 12.34])
@@ -204,20 +204,21 @@ test.describe('Test network and connection issues', () => {
 
 `)
 
-    // Unequip line tool
-    await page.keyboard.press('Escape')
-    // Make sure we didn't pop out of sketch mode.
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).toBeVisible()
-    await expect(
-      page.getByRole('button', { name: 'line Line', exact: true })
-    ).not.toHaveAttribute('aria-pressed', 'true')
+      // Unequip line tool
+      await page.keyboard.press('Escape')
+      // Make sure we didn't pop out of sketch mode.
+      await expect(
+        page.getByRole('button', { name: 'Exit Sketch' })
+      ).toBeVisible()
+      await expect(
+        page.getByRole('button', { name: 'line Line', exact: true })
+      ).not.toHaveAttribute('aria-pressed', 'true')
 
-    // Exit sketch
-    await page.keyboard.press('Escape')
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).not.toBeVisible()
-  })
+      // Exit sketch
+      await page.keyboard.press('Escape')
+      await expect(
+        page.getByRole('button', { name: 'Exit Sketch' })
+      ).not.toBeVisible()
+    }
+  )
 })
