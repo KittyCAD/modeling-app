@@ -1388,6 +1388,7 @@ export async function deleteFromSelection(
       varDec.node.init.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
+    selection.artifact?.type === 'helix' ||
     !selection.artifact // aka expected to be a shell at this point
   ) {
     let extrudeNameToDelete = ''
@@ -1395,7 +1396,8 @@ export async function deleteFromSelection(
     if (
       selection.artifact &&
       selection.artifact.type !== 'sweep' &&
-      selection.artifact.type !== 'plane'
+      selection.artifact.type !== 'plane' &&
+      selection.artifact.type !== 'helix'
     ) {
       const varDecName = varDec.node.id.name
       traverse(astClone, {
@@ -1434,13 +1436,17 @@ export async function deleteFromSelection(
       if (!pathToNode) return new Error('Could not find extrude variable')
     } else {
       pathToNode = selection.codeRef.pathToNode
-      const extrudeVarDec = getNodeFromPath<VariableDeclarator>(
-        astClone,
-        pathToNode,
-        'VariableDeclarator'
-      )
-      if (err(extrudeVarDec)) return extrudeVarDec
-      extrudeNameToDelete = extrudeVarDec.node.id.name
+      if (varDec.node.type !== 'VariableDeclarator') {
+        const callExp = getNodeFromPath<CallExpression>(
+          astClone,
+          pathToNode,
+          'CallExpression'
+        )
+        if (err(callExp)) return callExp
+        extrudeNameToDelete = callExp.node.callee.name
+      } else {
+        extrudeNameToDelete = varDec.node.id.name
+      }
     }
 
     const expressionIndex = pathToNode[1][0] as number

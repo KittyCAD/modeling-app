@@ -79,6 +79,7 @@ impl Artifact {
             Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
             Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
+            Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
         }
     }
 
@@ -157,6 +158,10 @@ impl Artifact {
                 // Note: Don't include these since they're parents: edge_cut_id.
                 vec![a.surface_id]
             }
+            Artifact::Helix(_) => {
+                // Note: Don't include these since they're parents: axis_id.
+                Vec::new()
+            }
         }
     }
 }
@@ -224,7 +229,8 @@ impl ArtifactGraph {
                 | Artifact::Cap(_)
                 | Artifact::SweepEdge(_)
                 | Artifact::EdgeCut(_)
-                | Artifact::EdgeCutEdge(_) => false,
+                | Artifact::EdgeCutEdge(_)
+                | Artifact::Helix(_) => false,
             };
             if !grouped {
                 ungrouped.push(id);
@@ -340,6 +346,14 @@ impl ArtifactGraph {
             }
             Artifact::EdgeCutEdge(_edge_cut_edge) => {
                 writeln!(output, "{prefix}{}[EdgeCutEdge]", id)?;
+            }
+            Artifact::Helix(helix) => {
+                writeln!(
+                    output,
+                    "{prefix}{}[\"Helix<br>{:?}\"]",
+                    id,
+                    code_ref_display(&helix.code_ref)
+                )?;
             }
         }
         Ok(())
@@ -521,6 +535,9 @@ impl ArtifactGraph {
             }
             Artifact::EdgeCutEdge(_edge_cut_edge) => {
                 writeln!(output, "{prefix}EdgeCutEdge")?;
+            }
+            Artifact::Helix(_) => {
+                writeln!(output, "{prefix}Helix")?;
             }
         }
 

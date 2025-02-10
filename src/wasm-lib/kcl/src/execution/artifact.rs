@@ -277,6 +277,17 @@ pub struct EdgeCutEdge {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct Helix {
+    pub id: ArtifactId,
+    /// The axis of the helix.  Currently this is always an edge ID, but we may
+    /// add axes to the graph.
+    pub axis_id: Option<ArtifactId>,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
     Plane(Plane),
@@ -301,6 +312,7 @@ pub enum Artifact {
     SweepEdge(SweepEdge),
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
+    Helix(Helix),
 }
 
 impl Artifact {
@@ -318,6 +330,7 @@ impl Artifact {
             Artifact::SweepEdge(a) => a.id,
             Artifact::EdgeCut(a) => a.id,
             Artifact::EdgeCutEdge(a) => a.id,
+            Artifact::Helix(a) => a.id,
         }
     }
 
@@ -337,6 +350,7 @@ impl Artifact {
             Artifact::SweepEdge(_) => None,
             Artifact::EdgeCut(a) => Some(&a.code_ref),
             Artifact::EdgeCutEdge(_) => None,
+            Artifact::Helix(a) => Some(&a.code_ref),
         }
     }
 
@@ -356,6 +370,7 @@ impl Artifact {
             Artifact::SweepEdge(_) => Some(new),
             Artifact::EdgeCut(a) => a.merge(new),
             Artifact::EdgeCutEdge(_) => Some(new),
+            Artifact::Helix(_) => Some(new),
         }
     }
 }
@@ -997,6 +1012,25 @@ fn artifacts_to_update(
             } else {
                 // TODO: Handle other types like SweepEdge.
             }
+            return Ok(return_arr);
+        }
+        ModelingCmd::EntityMakeHelixFromParams(_) => {
+            let return_arr = vec![Artifact::Helix(Helix {
+                id,
+                axis_id: None,
+                code_ref: CodeRef { range, path_to_node },
+            })];
+            return Ok(return_arr);
+        }
+        ModelingCmd::EntityMakeHelixFromEdge(helix) => {
+            let edge_id = ArtifactId::new(helix.edge_id);
+            let return_arr = vec![Artifact::Helix(Helix {
+                id,
+                axis_id: Some(edge_id),
+                code_ref: CodeRef { range, path_to_node },
+            })];
+            // We could add the reverse graph edge connecting from the edge to
+            // the helix here, but it's not useful right now.
             return Ok(return_arr);
         }
         _ => {}
