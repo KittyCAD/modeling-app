@@ -79,7 +79,7 @@ test.describe('Test network and connection issues', () => {
     }
   )
 
-  test('Engine disconnect & reconnect in sketch mode', async ({
+  test('Engine disconnect & reconnect in sketch mode', {tag: '@skipLocalEngine'}, async ({
     page,
     homePage,
   }) => {
