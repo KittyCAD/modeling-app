@@ -10,53 +10,33 @@ flowchart LR
     8["Segment<br>[1291, 1299, 0]"]
     9[Solid2d]
   end
-  subgraph path33 [Path]
-    33["Path<br>[1583, 1614, 0]"]
-    34["Segment<br>[1620, 1645, 0]"]
-    35["Segment<br>[1651, 1676, 0]"]
-    36["Segment<br>[1682, 1707, 0]"]
-    37["Segment<br>[1713, 1769, 0]"]
-    38["Segment<br>[1775, 1783, 0]"]
-    39[Solid2d]
+  subgraph path21 [Path]
+    21["Path<br>[1583, 1614, 0]"]
+    22["Segment<br>[1620, 1645, 0]"]
+    23["Segment<br>[1651, 1676, 0]"]
+    24["Segment<br>[1682, 1707, 0]"]
+    25["Segment<br>[1713, 1769, 0]"]
+    26["Segment<br>[1775, 1783, 0]"]
+    27[Solid2d]
   end
   1["Plane<br>[992, 1011, 0]"]
   10["Sweep Extrusion<br>[1305, 1328, 0]"]
-  11[Wall]
-  12[Wall]
-  13[Wall]
-  14[Wall]
-  15[Wall]
-  16[Wall]
+  11["Cap End"]
+  12["Cap End"]
+  13["Cap End"]
+  14["Cap End"]
+  15["Cap End"]
+  16["Cap End"]
   17["Cap Start"]
   18["Cap End"]
-  19["SweepEdge Opposite"]
-  20["SweepEdge Adjacent"]
-  21["SweepEdge Opposite"]
-  22["SweepEdge Adjacent"]
-  23["SweepEdge Opposite"]
-  24["SweepEdge Adjacent"]
-  25["SweepEdge Opposite"]
-  26["SweepEdge Adjacent"]
-  27["SweepEdge Opposite"]
-  28["SweepEdge Adjacent"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  31["EdgeCut Fillet<br>[1334, 1425, 0]"]
-  32["EdgeCut Fillet<br>[1431, 1534, 0]"]
-  40["Sweep Extrusion<br>[1789, 1809, 0]"]
-  41[Wall]
-  42[Wall]
-  43[Wall]
-  44[Wall]
-  45["Cap End"]
-  46["SweepEdge Opposite"]
-  47["SweepEdge Adjacent"]
-  48["SweepEdge Opposite"]
-  49["SweepEdge Adjacent"]
-  50["SweepEdge Opposite"]
-  51["SweepEdge Adjacent"]
-  52["SweepEdge Opposite"]
-  53["SweepEdge Adjacent"]
+  19["EdgeCut Fillet<br>[1334, 1425, 0]"]
+  20["EdgeCut Fillet<br>[1431, 1534, 0]"]
+  28["Sweep Extrusion<br>[1789, 1809, 0]"]
+  29["Cap End"]
+  30["Cap End"]
+  31["Cap End"]
+  32["Cap End"]
+  33["Cap End"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -66,24 +46,12 @@ flowchart LR
   2 --- 8
   2 ---- 10
   2 --- 9
-  3 --- 11
-  3 --- 19
-  3 --- 20
-  4 --- 12
-  4 --- 21
-  4 --- 22
-  5 --- 13
-  5 --- 23
-  5 --- 24
-  6 --- 14
-  6 --- 25
-  6 --- 26
-  7 --- 15
-  7 --- 27
-  7 --- 28
-  8 --- 16
-  8 --- 29
-  8 --- 30
+  3 x--> 11
+  4 x--> 12
+  5 x--> 13
+  6 x--> 14
+  7 x--> 15
+  8 x--> 16
   10 --- 11
   10 --- 12
   10 --- 13
@@ -92,51 +60,21 @@ flowchart LR
   10 --- 16
   10 --- 17
   10 --- 18
-  10 --- 19
-  10 --- 20
-  10 --- 21
-  10 --- 22
-  10 --- 23
-  10 --- 24
-  10 --- 25
-  10 --- 26
-  10 --- 27
-  10 --- 28
-  10 --- 29
-  10 --- 30
-  12 --- 33
-  26 <--x 31
-  20 <--x 32
-  33 --- 34
-  33 --- 35
-  33 --- 36
-  33 --- 37
-  33 --- 38
-  33 ---- 40
-  33 --- 39
-  34 --- 44
-  34 --- 52
-  34 --- 53
-  35 --- 43
-  35 --- 50
-  35 --- 51
-  36 --- 42
-  36 --- 48
-  36 --- 49
-  37 --- 41
-  37 --- 46
-  37 --- 47
-  40 --- 41
-  40 --- 42
-  40 --- 43
-  40 --- 44
-  40 --- 45
-  40 --- 46
-  40 --- 47
-  40 --- 48
-  40 --- 49
-  40 --- 50
-  40 --- 51
-  40 --- 52
-  40 --- 53
+  12 <--x 21
+  21 --- 22
+  21 --- 23
+  21 --- 24
+  21 --- 25
+  21 --- 26
+  21 ---- 28
+  21 --- 27
+  22 x--> 32
+  23 x--> 31
+  24 x--> 30
+  25 x--> 29
+  28 --- 29
+  28 --- 30
+  28 --- 31
+  28 --- 32
+  28 --- 33
 ```

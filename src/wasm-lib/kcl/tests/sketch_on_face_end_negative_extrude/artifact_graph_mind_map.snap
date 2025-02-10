@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact graph mind map sketch_on_face_end_negative_extrude.kcl
+extension: md
+snapshot_kind: binary
 ---
-

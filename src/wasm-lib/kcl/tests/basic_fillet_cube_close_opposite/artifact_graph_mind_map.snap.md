@@ -4,36 +4,20 @@ mindmap
     Plane
       Path
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
           EdgeCut Fillet
         Sweep Extrusion
-          Wall
-          Wall
-          Wall
-          Wall
+          Cap End
+          Cap End
+          Cap End
+          Cap End
           Cap Start
           Cap End
-          SweepEdge Opposite
-          SweepEdge Adjacent
-          SweepEdge Opposite
-          SweepEdge Adjacent
-          SweepEdge Opposite
-          SweepEdge Adjacent
-          SweepEdge Opposite
-          SweepEdge Adjacent
         Solid2d
 ```

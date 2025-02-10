@@ -7,21 +7,15 @@ flowchart LR
   end
   1["Plane<br>[12, 31, 0]"]
   5["Sweep Extrusion<br>[104, 124, 0]"]
-  6[Wall]
+  6["Cap End"]
   7["Cap Start"]
   8["Cap End"]
-  9["SweepEdge Opposite"]
-  10["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 ---- 5
   2 --- 4
-  3 --- 6
-  3 --- 9
-  3 --- 10
+  3 x--> 6
   5 --- 6
   5 --- 7
   5 --- 8
-  5 --- 9
-  5 --- 10
 ```

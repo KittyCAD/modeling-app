@@ -4,60 +4,29 @@ mindmap
     Plane
       Path
         Segment
-          Wall
-          Segment
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          Segment
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          Segment
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          Segment
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          Segment
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          Segment
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          Segment
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          Segment
-          SweepEdge Adjacent
+          Cap End
         Sweep Revolve
-          Wall
-          Wall
-          Wall
-          Wall
-          Wall
-          Wall
-          Wall
-          Wall
-          Segment
-          SweepEdge Adjacent
-          Segment
-          Segment
-          SweepEdge Adjacent
-          Segment
-          SweepEdge Adjacent
-          Segment
-          SweepEdge Adjacent
-          Segment
-          SweepEdge Adjacent
-          Segment
-          SweepEdge Adjacent
-          Segment
-          SweepEdge Adjacent
+          Cap End
+          Cap End
+          Cap End
+          Cap End
+          Cap End
+          Cap End
+          Cap End
+          Cap End
         Solid2d
 ```

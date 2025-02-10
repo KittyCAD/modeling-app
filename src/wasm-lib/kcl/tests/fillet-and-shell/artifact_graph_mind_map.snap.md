@@ -11,50 +11,31 @@ mindmap
     Plane
       Path
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Sweep Extrusion
-          Wall
-          Wall
-          Wall
-          Wall
+          Cap End
+          Cap End
+          Cap End
+          Cap End
           Cap Start
           Cap End
-          SweepEdge Opposite
-          SweepEdge Adjacent
-          SweepEdge Opposite
-          SweepEdge Adjacent
-          SweepEdge Opposite
-          SweepEdge Adjacent
-          SweepEdge Opposite
-          SweepEdge Adjacent
         Solid2d
     Plane
       Path
       Path
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Sweep Extrusion
-          Wall
+          Cap End
+          Cap End
           Cap Start
           Cap End
-          SweepEdge Opposite
-          SweepEdge Adjacent
         Solid2d
       Path
         Segment
@@ -63,15 +44,12 @@ mindmap
       Path
       Path
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Sweep Extrusion
-          Wall
+          Cap End
+          Cap End
           Cap Start
           Cap End
-          SweepEdge Opposite
-          SweepEdge Adjacent
         Solid2d
       Path
         Segment
@@ -80,15 +58,12 @@ mindmap
       Path
       Path
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Sweep Extrusion
-          Wall
+          Cap End
+          Cap End
           Cap Start
           Cap End
-          SweepEdge Opposite
-          SweepEdge Adjacent
         Solid2d
       Path
         Segment
@@ -97,15 +72,12 @@ mindmap
       Path
       Path
         Segment
-          Wall
-          SweepEdge Opposite
-          SweepEdge Adjacent
+          Cap End
         Sweep Extrusion
-          Wall
+          Cap End
+          Cap End
           Cap Start
           Cap End
-          SweepEdge Opposite
-          SweepEdge Adjacent
         Solid2d
       Path
         Segment

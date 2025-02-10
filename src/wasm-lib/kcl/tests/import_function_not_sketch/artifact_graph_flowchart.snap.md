@@ -14,21 +14,14 @@ flowchart LR
   end
   1["Plane<br>[52, 71, 1]"]
   12["Sweep Revolve<br>[304, 330, 1]"]
-  13[Wall]
-  14[Wall]
-  15[Wall]
-  16[Wall]
-  17[Wall]
-  18[Wall]
-  19[Wall]
-  20[Wall]
-  21["SweepEdge Adjacent"]
-  22["SweepEdge Adjacent"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Adjacent"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Adjacent"]
-  27["SweepEdge Adjacent"]
+  13["Cap End"]
+  14["Cap End"]
+  15["Cap End"]
+  16["Cap End"]
+  17["Cap End"]
+  18["Cap End"]
+  19["Cap End"]
+  20["Cap End"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -40,22 +33,14 @@ flowchart LR
   2 --- 10
   2 ---- 12
   2 --- 11
-  3 --- 13
-  3 x--> 21
-  4 --- 14
-  4 --- 21
-  5 --- 15
-  5 --- 22
-  6 --- 16
-  6 --- 23
-  7 --- 17
-  7 --- 24
-  8 --- 18
-  8 --- 25
-  9 --- 19
-  9 --- 26
-  10 --- 20
-  10 --- 27
+  3 x--> 13
+  4 x--> 14
+  5 x--> 15
+  6 x--> 16
+  7 x--> 17
+  8 x--> 18
+  9 x--> 19
+  10 x--> 20
   12 --- 13
   12 --- 14
   12 --- 15
@@ -64,19 +49,4 @@ flowchart LR
   12 --- 18
   12 --- 19
   12 --- 20
-  12 <--x 3
-  12 --- 21
-  12 <--x 4
-  12 <--x 5
-  12 --- 22
-  12 <--x 6
-  12 --- 23
-  12 <--x 7
-  12 --- 24
-  12 <--x 8
-  12 --- 25
-  12 <--x 9
-  12 --- 26
-  12 <--x 10
-  12 --- 27
 ```

@@ -16,107 +16,95 @@ flowchart LR
     13["Segment<br>[1005, 1024, 0]"]
     14[Solid2d]
   end
-  subgraph path31 [Path]
-    31["Path<br>[1341, 1366, 0]"]
+  subgraph path23 [Path]
+    23["Path<br>[1341, 1366, 0]"]
   end
-  subgraph path32 [Path]
-    32["Path<br>[1374, 1418, 0]"]
-    33["Segment<br>[1374, 1418, 0]"]
-    34[Solid2d]
+  subgraph path24 [Path]
+    24["Path<br>[1374, 1418, 0]"]
+    25["Segment<br>[1374, 1418, 0]"]
+    26[Solid2d]
   end
-  subgraph path35 [Path]
-    35["Path<br>[1431, 1476, 0]"]
-    36["Segment<br>[1431, 1476, 0]"]
-    37[Solid2d]
+  subgraph path27 [Path]
+    27["Path<br>[1431, 1476, 0]"]
+    28["Segment<br>[1431, 1476, 0]"]
+    29[Solid2d]
   end
-  subgraph path45 [Path]
-    45["Path<br>[1341, 1366, 0]"]
+  subgraph path36 [Path]
+    36["Path<br>[1341, 1366, 0]"]
   end
-  subgraph path46 [Path]
-    46["Path<br>[1374, 1418, 0]"]
-    47["Segment<br>[1374, 1418, 0]"]
-    48[Solid2d]
+  subgraph path37 [Path]
+    37["Path<br>[1374, 1418, 0]"]
+    38["Segment<br>[1374, 1418, 0]"]
+    39[Solid2d]
+  end
+  subgraph path40 [Path]
+    40["Path<br>[1431, 1476, 0]"]
+    41["Segment<br>[1431, 1476, 0]"]
+    42[Solid2d]
   end
   subgraph path49 [Path]
-    49["Path<br>[1431, 1476, 0]"]
-    50["Segment<br>[1431, 1476, 0]"]
-    51[Solid2d]
+    49["Path<br>[1341, 1366, 0]"]
   end
-  subgraph path59 [Path]
-    59["Path<br>[1341, 1366, 0]"]
+  subgraph path50 [Path]
+    50["Path<br>[1374, 1418, 0]"]
+    51["Segment<br>[1374, 1418, 0]"]
+    52[Solid2d]
   end
-  subgraph path60 [Path]
-    60["Path<br>[1374, 1418, 0]"]
-    61["Segment<br>[1374, 1418, 0]"]
-    62[Solid2d]
+  subgraph path53 [Path]
+    53["Path<br>[1431, 1476, 0]"]
+    54["Segment<br>[1431, 1476, 0]"]
+    55[Solid2d]
+  end
+  subgraph path62 [Path]
+    62["Path<br>[1341, 1366, 0]"]
   end
   subgraph path63 [Path]
-    63["Path<br>[1431, 1476, 0]"]
-    64["Segment<br>[1431, 1476, 0]"]
+    63["Path<br>[1374, 1418, 0]"]
+    64["Segment<br>[1374, 1418, 0]"]
     65[Solid2d]
   end
-  subgraph path73 [Path]
-    73["Path<br>[1341, 1366, 0]"]
-  end
-  subgraph path74 [Path]
-    74["Path<br>[1374, 1418, 0]"]
-    75["Segment<br>[1374, 1418, 0]"]
-    76[Solid2d]
-  end
-  subgraph path77 [Path]
-    77["Path<br>[1431, 1476, 0]"]
-    78["Segment<br>[1431, 1476, 0]"]
-    79[Solid2d]
+  subgraph path66 [Path]
+    66["Path<br>[1431, 1476, 0]"]
+    67["Segment<br>[1431, 1476, 0]"]
+    68[Solid2d]
   end
   1["Plane<br>[373, 461, 0]"]
   8["Plane<br>[777, 796, 0]"]
   15["Sweep Extrusion<br>[1030, 1058, 0]"]
-  16[Wall]
-  17[Wall]
-  18[Wall]
-  19[Wall]
+  16["Cap End"]
+  17["Cap End"]
+  18["Cap End"]
+  19["Cap End"]
   20["Cap Start"]
   21["Cap End"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Opposite"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Opposite"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Opposite"]
-  29["SweepEdge Adjacent"]
-  30["Plane<br>[1314, 1333, 0]"]
-  38["Sweep Extrusion<br>[1488, 1512, 0]"]
-  39[Wall]
-  40["Cap Start"]
-  41["Cap End"]
-  42["SweepEdge Opposite"]
-  43["SweepEdge Adjacent"]
-  44["Plane<br>[1314, 1333, 0]"]
-  52["Sweep Extrusion<br>[1488, 1512, 0]"]
-  53[Wall]
-  54["Cap Start"]
-  55["Cap End"]
-  56["SweepEdge Opposite"]
-  57["SweepEdge Adjacent"]
-  58["Plane<br>[1314, 1333, 0]"]
-  66["Sweep Extrusion<br>[1488, 1512, 0]"]
-  67[Wall]
-  68["Cap Start"]
-  69["Cap End"]
-  70["SweepEdge Opposite"]
-  71["SweepEdge Adjacent"]
-  72["Plane<br>[1314, 1333, 0]"]
-  80["Sweep Extrusion<br>[1488, 1512, 0]"]
-  81[Wall]
-  82["Cap Start"]
-  83["Cap End"]
-  84["SweepEdge Opposite"]
-  85["SweepEdge Adjacent"]
-  86["EdgeCut Fillet<br>[1064, 1274, 0]"]
-  87["EdgeCut Fillet<br>[1064, 1274, 0]"]
-  88["EdgeCut Fillet<br>[1064, 1274, 0]"]
-  89["EdgeCut Fillet<br>[1064, 1274, 0]"]
+  22["Plane<br>[1314, 1333, 0]"]
+  30["Sweep Extrusion<br>[1488, 1512, 0]"]
+  31["Cap End"]
+  32["Cap End"]
+  33["Cap Start"]
+  34["Cap End"]
+  35["Plane<br>[1314, 1333, 0]"]
+  43["Sweep Extrusion<br>[1488, 1512, 0]"]
+  44["Cap End"]
+  45["Cap End"]
+  46["Cap Start"]
+  47["Cap End"]
+  48["Plane<br>[1314, 1333, 0]"]
+  56["Sweep Extrusion<br>[1488, 1512, 0]"]
+  57["Cap End"]
+  58["Cap End"]
+  59["Cap Start"]
+  60["Cap End"]
+  61["Plane<br>[1314, 1333, 0]"]
+  69["Sweep Extrusion<br>[1488, 1512, 0]"]
+  70["Cap End"]
+  71["Cap End"]
+  72["Cap Start"]
+  73["Cap End"]
+  74["EdgeCut Fillet<br>[1064, 1274, 0]"]
+  75["EdgeCut Fillet<br>[1064, 1274, 0]"]
+  76["EdgeCut Fillet<br>[1064, 1274, 0]"]
+  77["EdgeCut Fillet<br>[1064, 1274, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -130,98 +118,66 @@ flowchart LR
   9 --- 13
   9 ---- 15
   9 --- 14
-  10 --- 16
-  10 --- 22
-  10 --- 23
-  11 --- 17
-  11 --- 24
-  11 --- 25
-  12 --- 18
-  12 --- 26
-  12 --- 27
-  13 --- 19
-  13 --- 28
-  13 --- 29
+  10 x--> 16
+  11 x--> 17
+  12 x--> 18
+  13 x--> 19
   15 --- 16
   15 --- 17
   15 --- 18
   15 --- 19
   15 --- 20
   15 --- 21
-  15 --- 22
-  15 --- 23
-  15 --- 24
-  15 --- 25
-  15 --- 26
-  15 --- 27
-  15 --- 28
-  15 --- 29
+  22 --- 23
+  22 --- 24
+  22 --- 27
+  24 --- 25
+  24 ---- 30
+  24 --- 26
+  25 x--> 31
+  27 --- 28
+  27 --- 29
   30 --- 31
   30 --- 32
-  30 --- 35
-  32 --- 33
-  32 ---- 38
-  32 --- 34
-  33 --- 39
-  33 --- 42
-  33 --- 43
+  30 --- 33
+  30 --- 34
   35 --- 36
   35 --- 37
-  38 --- 39
-  38 --- 40
-  38 --- 41
-  38 --- 42
-  38 --- 43
-  44 --- 45
-  44 --- 46
-  44 --- 49
-  46 --- 47
-  46 ---- 52
-  46 --- 48
-  47 --- 53
-  47 --- 56
-  47 --- 57
-  49 --- 50
-  49 --- 51
-  52 --- 53
-  52 --- 54
-  52 --- 55
-  52 --- 56
-  52 --- 57
-  58 --- 59
-  58 --- 60
-  58 --- 63
-  60 --- 61
-  60 ---- 66
-  60 --- 62
-  61 --- 67
-  61 --- 70
-  61 --- 71
+  35 --- 40
+  37 --- 38
+  37 ---- 43
+  37 --- 39
+  38 x--> 44
+  40 --- 41
+  40 --- 42
+  43 --- 44
+  43 --- 45
+  43 --- 46
+  43 --- 47
+  48 --- 49
+  48 --- 50
+  48 --- 53
+  50 --- 51
+  50 ---- 56
+  50 --- 52
+  51 x--> 57
+  53 --- 54
+  53 --- 55
+  56 --- 57
+  56 --- 58
+  56 --- 59
+  56 --- 60
+  61 --- 62
+  61 --- 63
+  61 --- 66
   63 --- 64
+  63 ---- 69
   63 --- 65
+  64 x--> 70
   66 --- 67
   66 --- 68
-  66 --- 69
-  66 --- 70
-  66 --- 71
-  72 --- 73
-  72 --- 74
-  72 --- 77
-  74 --- 75
-  74 ---- 80
-  74 --- 76
-  75 --- 81
-  75 --- 84
-  75 --- 85
-  77 --- 78
-  77 --- 79
-  80 --- 81
-  80 --- 82
-  80 --- 83
-  80 --- 84
-  80 --- 85
-  23 <--x 86
-  25 <--x 87
-  27 <--x 88
-  29 <--x 89
+  69 --- 70
+  69 --- 71
+  69 --- 72
+  69 --- 73
 ```
