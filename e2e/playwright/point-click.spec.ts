@@ -1353,7 +1353,7 @@ sketch002 = startSketchOn('XZ')
       testPoint.x - 50,
       testPoint.y
     )
-    const sweepDeclaration = 'sweep001 = sweep({ path = sketch002 }, sketch001)'
+    const sweepDeclaration = 'sweep001 = sweep(sketch001, path = sketch002)'
 
     await test.step(`Look for sketch001`, async () => {
       await toolbar.closePane('code')
@@ -2545,7 +2545,7 @@ extrude002 = extrude(sketch002, length = 50)
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> xLine(-2000, %)
-sweep001 = sweep({ path = sketch002 }, sketch001)
+sweep001 = sweep(sketch001, path = sketch002)
 `
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)

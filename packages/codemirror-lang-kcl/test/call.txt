@@ -1,0 +1,85 @@
+# empty
+
+f()
+
+==>
+Program(ExpressionStatement(CallExpression(VariableName,
+                                           ArgumentList)))
+
+# single anon arg
+
+f(1)
+
+==>
+Program(ExpressionStatement(CallExpression(VariableName,
+                                           ArgumentList(Number))))
+
+# deprecated multiple anon args
+
+f(1, 2)
+
+==>
+Program(ExpressionStatement(CallExpression(VariableName,
+                                           ArgumentList(Number,
+                                                        Number))))
+
+# deprecated trailing %
+
+startSketchOn('XY')
+|> line([thickness, 0], %)
+
+==>
+Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
+                                                          ArgumentList(String)),
+                                           PipeOperator,
+                                           CallExpression(VariableName,
+                                                          ArgumentList(ArrayExpression(VariableName,
+                                                                                       Number),
+                                                                       PipeSubstitution)))))
+
+# % and named arg
+
+startSketchOn('XY')
+|> line(%, end = [thickness, 0])
+
+==>
+Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
+                                                          ArgumentList(String)),
+                                           PipeOperator,
+                                           CallExpression(VariableName,
+                                                          ArgumentList(PipeSubstitution,
+                                                                       LabeledArgument(ArgumentLabel,
+                                                                                       Equals,
+                                                                                       ArrayExpression(VariableName,
+                                                                                                     Number)))))))
+
+# implied % and named arg
+
+startSketchOn('XY')
+|> line(end = [thickness, 0])
+
+==>
+Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
+                                                          ArgumentList(String)),
+                                           PipeOperator,
+                                           CallExpression(VariableName,
+                                                          ArgumentList(LabeledArgument(ArgumentLabel,
+                                                                                       Equals,
+                                                                                       ArrayExpression(VariableName,
+                                                                                                     Number)))))))
+
+# multiple named arg
+
+ngon(plane = "XY", numSides = 5, radius = pentR)
+
+==>
+Program(ExpressionStatement(CallExpression(VariableName,
+                                           ArgumentList(LabeledArgument(ArgumentLabel,
+                                                                        Equals,
+                                                                        String),
+                                                        LabeledArgument(ArgumentLabel,
+                                                                        Equals,
+                                                                        Number),
+                                                        LabeledArgument(ArgumentLabel,
+                                                                        Equals,
+                                                                        VariableName)))))
