@@ -212,6 +212,7 @@ export function createSettings() {
        */
       streamIdleMode: new Setting<number | undefined>({
         defaultValue: undefined,
+        hideOnLevel: 'project',
         description: 'Toggle stream idling, saving bandwidth and battery',
         validate: (v) =>
           v === undefined ||
