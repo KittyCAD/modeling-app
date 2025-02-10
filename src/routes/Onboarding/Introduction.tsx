@@ -94,7 +94,7 @@ function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
       codeManager.updateCodeStateEditor(bracket)
       await codeManager.writeToFile()
 
-      await kclManager.executeCode(true)
+      await kclManager.executeCode({ zoomToFit: true })
       props.setShouldShowWarning(false)
     }
     return () => {

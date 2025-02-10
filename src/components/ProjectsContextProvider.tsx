@@ -124,7 +124,7 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
           clearImportSearchParams()
           codeManager.updateCodeStateEditor(input.code || '')
           await codeManager.writeToFile()
-          await kclManager.executeCode(true)
+          await kclManager.executeCode({ zoomToFit: true })
 
           return {
             message: 'File overwritten successfully',
