@@ -328,7 +328,6 @@ export function extrudeSketch({
 }: {
   node: Node<Program>
   pathToNode: PathToNode
-  shouldPipe?: boolean
   distance: Expr
   extrudeName?: string
   artifactGraph: ArtifactGraph
