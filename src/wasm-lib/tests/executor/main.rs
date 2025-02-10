@@ -433,7 +433,7 @@ rectangle = startSketchOn('XY')
 async fn kcl_test_patterns_circular_basic_2d() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternCircular2d({center: [20, 20], instances: 13, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> patternCircular2d(center = [20, 20], instances = 13, arcDegrees = 210, rotateDuplicates = true)
     |> extrude(length = 1)
 "#;
 
@@ -450,7 +450,7 @@ async fn kcl_test_patterns_circular_basic_3d() {
     |> line(end = [0, -1])
     |> close()
     |> extrude(length = 1)
-    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 41, arcDegrees: 360, rotateDuplicates: false}, %)
+    |> patternCircular3d(axis = [0,0, 1], center = [-20, -20, -20], instances = 41, arcDegrees = 360, rotateDuplicates = false)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -466,7 +466,7 @@ async fn kcl_test_patterns_circular_3d_tilted_axis() {
     |> line(end = [0, -1])
     |> close()
     |> extrude(length = 1)
-    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], instances: 11, arcDegrees: 360, rotateDuplicates: true}, %)
+    |> patternCircular3d(axis = [1,1,0], center = [10, 0, 10], instances = 11, arcDegrees = 360, rotateDuplicates = true)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1596,7 +1596,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
+pattn2 = patternCircular3d(axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false, part001) 
 
 "#;
 
@@ -1623,7 +1623,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
+pattn2 = patternCircular3d(axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false, part001) 
 
 "#;
 
@@ -1750,12 +1750,12 @@ async fn kcl_test_arc_error_same_start_end() {
        radius: 1.5
      }, %)
   |> close()
-  |> patternCircular2d({
-       arcDegrees: 360,
-       center: [0, 0],
-       instances: 6,
-       rotateDuplicates: true
-     }, %)
+  |> patternCircular2d(
+       arcDegrees = 360,
+       center = [0, 0],
+       instances = 6,
+       rotateDuplicates = true
+     )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;

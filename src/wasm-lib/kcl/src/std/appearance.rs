@@ -204,7 +204,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///       instances = 7,
 ///       distance = 6
 ///      )
-///   |> appearance({
+///   |> appearance(
 ///       color = '#ff0000',
 ///       metalness = 90,
 ///       roughness = 90
