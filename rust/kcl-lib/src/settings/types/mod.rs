@@ -150,6 +150,7 @@ where
   #[derive(Deserialize)]
   #[serde(untagged)]
   enum StreamIdleModeValue {
+    Number(u32),
     String(String),
     Boolean(bool),
   }
@@ -157,6 +158,7 @@ where
   const DEFAULT_TIMEOUT: u32 = 1000 * 60 * 5;
 
   Ok(match StreamIdleModeValue::deserialize(deserializer) {
+    Ok(StreamIdleModeValue::Number(value)) => Some(value),
     Ok(StreamIdleModeValue::String(value)) => Some(value.parse::<u32>().unwrap_or(DEFAULT_TIMEOUT)),
     // The old type of this value. I'm willing to say no one used it but
     // we can never guarantee it.
