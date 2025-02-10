@@ -135,6 +135,16 @@ export class ToolbarFixture {
     await this.page.getByTestId('dropdown-center-rectangle').click()
   }
 
+  selectCircleThreePoint = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Center circle:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-circle-three-points')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-circle-three-points').click()
+  }
+
   async closePane(paneId: SidebarType) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }

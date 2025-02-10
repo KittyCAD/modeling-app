@@ -1389,6 +1389,32 @@ test.describe('multi-profile sketching', () => {
     const [cntrRect2point1] = scene.makeMouseHelpers(785, 332)
     const [cntrRect2point2] = scene.makeMouseHelpers(808, 286)
 
+    const [circle3Point1p1, circle3Point1p1Move] = scene.makeMouseHelpers(
+      630,
+      465
+    )
+    const [circle3Point1p2, circle3Point1p2Move] = scene.makeMouseHelpers(
+      673,
+      340
+    )
+    const [circle3Point1p3, circle3Point1p3Move] = scene.makeMouseHelpers(
+      734,
+      414
+    )
+
+    const [circle3Point2p1, circle3Point2p1Move] = scene.makeMouseHelpers(
+      876,
+      351
+    )
+    const [circle3Point2p2, circle3Point2p2Move] = scene.makeMouseHelpers(
+      875,
+      279
+    )
+    const [circle3Point2p3, circle3Point2p3Move] = scene.makeMouseHelpers(
+      834,
+      306
+    )
+
     await toolbar.startSketchPlaneSelection()
     await selectXZPlane()
     // timeout wait for engine animation is unavoidable
@@ -1555,6 +1581,55 @@ test.describe('multi-profile sketching', () => {
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`.replaceAll('\n', '')
       )
+    })
+
+    await test.step('create two circle-three-points in a row without an unequip', async () => {
+      await toolbar.selectCircleThreePoint()
+
+      await circle3Point1p1Move()
+      await circle3Point1p1()
+      await page.waitForTimeout(300)
+      await circle3Point1p2Move()
+      await circle3Point1p2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        'profile009 = circleThreePoint(sketch001, p1 = [8.82, -14.58], p2 = [11.73, -6.1], p3 = [11.83, -6])'
+      )
+
+      await circle3Point1p3Move()
+      await circle3Point1p3()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        'profile009 = circleThreePoint(sketch001, p1 = [8.82, -14.58], p2 = [11.73, -6.1], p3 = [15.87, -11.12])'
+      )
+
+      await circle3Point2p1Move()
+      await circle3Point2p1()
+      await page.waitForTimeout(300)
+      await circle3Point2p2Move()
+      await circle3Point2p2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        'profile010 = circleThreePoint(sketch001, p1 = [25.5, -6.85], p2 = [25.43, -1.97], p3 = [25.53, -1.87])'
+      )
+
+      await circle3Point2p3Move()
+      await circle3Point2p3()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        'profile010 = circleThreePoint(sketch001, p1 = [25.5, -6.85], p2 = [25.43, -1.97], p3 = [22.65, -3.8])'
+      )
+    })
+
+    await test.step('double check that circle three point can be unequiped', async () => {
+      // this was implicitly for other tools, but not for circle three point since it's last
+      await page.waitForTimeout(300)
+      await expect
+        .poll(async () => {
+          await toolbar.lineBtn.click()
+          return toolbar.lineBtn.getAttribute('aria-pressed')
+        })
+        .toBe('true')
     })
   })
 
