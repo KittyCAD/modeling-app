@@ -1476,7 +1476,7 @@ export class SceneEntities {
         const firstProfileIndex = Number(updatedSketchNodePaths[0][1][0])
         const nodePathWithCorrectedIndexForTruncatedAst =
           structuredClone(updatedEntryNodePath)
-        
+
         nodePathWithCorrectedIndexForTruncatedAst[1][0] =
           Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
           firstProfileIndex
