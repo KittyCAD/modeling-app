@@ -2280,13 +2280,17 @@ loft([profile001, profile002])
       `angledLine([0, 113.01], %, $rectangleSegmentA001)`
     )
   })
-  test(
-    'Can enter sketch loft edges offsetPlane and continue sketch',
-    async ({ scene, toolbar, editor, page, homePage }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn('XZ')
+  test('Can enter sketch loft edges offsetPlane and continue sketch', async ({
+    scene,
+    toolbar,
+    editor,
+    page,
+    homePage,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
 profile001 = startProfileAt([34, 42.66], sketch001)
   |> line(end = [102.65, 151.99])
   |> line(end = [76, -138.66])
@@ -2302,51 +2306,50 @@ profile002 = startProfileAt([39.43, 172.21], sketch002)
 
 loft([profile001, profile002])
 `
-        )
-      })
-
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled()
-
-      const topProfileEdgeClickCoords = { x: 602, y: 185 } as const
-      const [topProfileEdgeClick] = scene.makeMouseHelpers(
-        topProfileEdgeClickCoords.x,
-        topProfileEdgeClickCoords.y
       )
-      const [sideProfileEdgeClick] = scene.makeMouseHelpers(788, 188)
+    })
 
-      const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
-      const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
 
-      await scene.moveCameraTo(
-        { x: 8171, y: -7740, z: 1624 },
-        { x: 3302, y: -627, z: 2892 }
-      )
+    const topProfileEdgeClickCoords = { x: 602, y: 185 } as const
+    const [topProfileEdgeClick] = scene.makeMouseHelpers(
+      topProfileEdgeClickCoords.x,
+      topProfileEdgeClickCoords.y
+    )
+    const [sideProfileEdgeClick] = scene.makeMouseHelpers(788, 188)
 
-      await topProfileEdgeClick()
-      await page.waitForTimeout(300)
-      await toolbar.editSketch()
-      await page.waitForTimeout(600)
-      await sideProfileEdgeClick()
-      await page.waitForTimeout(300)
-      await scene.expectPixelColor(TEST_COLORS.BLUE, { x: 788, y: 188 }, 15)
+    const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
+    const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
 
-      await toolbar.rectangleBtn.click()
-      await page.waitForTimeout(100)
-      await rect1Crn1()
-      await editor.expectEditor.toContain(
-        `profile003 = startProfileAt([47.76, -17.13], plane001)`
-      )
-      await rect1Crn2()
-      await editor.expectEditor.toContain(
-        `angledLine([0, 106.42], %, $rectangleSegmentA001)`
-      )
-      await page.waitForTimeout(100)
-    }
-  )
+    await scene.moveCameraTo(
+      { x: 8171, y: -7740, z: 1624 },
+      { x: 3302, y: -627, z: 2892 }
+    )
+
+    await topProfileEdgeClick()
+    await page.waitForTimeout(300)
+    await toolbar.editSketch()
+    await page.waitForTimeout(600)
+    await sideProfileEdgeClick()
+    await page.waitForTimeout(300)
+    await scene.expectPixelColor(TEST_COLORS.BLUE, { x: 788, y: 188 }, 15)
+
+    await toolbar.rectangleBtn.click()
+    await page.waitForTimeout(100)
+    await rect1Crn1()
+    await editor.expectEditor.toContain(
+      `profile003 = startProfileAt([47.76, -17.13], plane001)`
+    )
+    await rect1Crn2()
+    await editor.expectEditor.toContain(
+      `angledLine([0, 106.42], %, $rectangleSegmentA001)`
+    )
+    await page.waitForTimeout(100)
+  })
 })
 
 // Regression test for https://github.com/KittyCAD/modeling-app/issues/4891
