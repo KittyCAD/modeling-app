@@ -55,7 +55,6 @@ nsis:
   perMachine: true
   allowElevation: true
   installerIcon: "assets/icon.ico"
-  include: "./installer.nsh"
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
