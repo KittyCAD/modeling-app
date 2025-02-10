@@ -2280,9 +2280,7 @@ loft([profile001, profile002])
       `angledLine([0, 113.01], %, $rectangleSegmentA001)`
     )
   })
-  // This test enters the wrong sketch when selecting a loft edge, in multi profile branch before artifact graph was
-  // migrated to rust.
-  test.fixme(
+  test(
     'Can enter sketch loft edges offsetPlane and continue sketch',
     async ({ scene, toolbar, editor, page, homePage }) => {
       await page.addInitScript(async () => {
