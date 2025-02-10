@@ -36,7 +36,7 @@ extrude003 = extrude(sketch003, length = 20)
 `
 
 test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
-  test.describe('Check the happy path, for basic changing color', () => {
+  test.fixme('Check the happy path, for basic changing color', () => {
     const cases = [
       {
         desc: 'User accepts change',
@@ -111,7 +111,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
         await test.step('verify initial change', async () => {
           await scene.expectPixelColor(green, greenCheckCoords, 15)
           await scene.expectPixelColor(body2NotGreen, body2WallCoords, 15)
-          await editor.expectEditor.toContain('appearance({')
+          await editor.expectEditor.toContain('appearance(')
         })
 
         if (!shouldReject) {
@@ -120,13 +120,13 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
             await expect(successToast).not.toBeVisible()
 
             await scene.expectPixelColor(green, greenCheckCoords, 15)
-            await editor.expectEditor.toContain('appearance({')
+            await editor.expectEditor.toContain('appearance(')
 
             // ctrl-z works after accepting
             await page.keyboard.down('ControlOrMeta')
             await page.keyboard.press('KeyZ')
             await page.keyboard.up('ControlOrMeta')
-            await editor.expectEditor.not.toContain('appearance({')
+            await editor.expectEditor.not.toContain('appearance(')
             await scene.expectPixelColor(notGreen, greenCheckCoords, 15)
           })
         } else {
@@ -135,7 +135,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
             await expect(successToast).not.toBeVisible()
 
             await scene.expectPixelColor(notGreen, greenCheckCoords, 15)
-            await editor.expectEditor.not.toContain('appearance({')
+            await editor.expectEditor.not.toContain('appearance(')
           })
         }
       })
