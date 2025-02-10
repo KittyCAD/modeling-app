@@ -301,7 +301,7 @@ test(
   }
 )
 
-test.skip(
+test(
   'external change of file contents are reflected in editor',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
