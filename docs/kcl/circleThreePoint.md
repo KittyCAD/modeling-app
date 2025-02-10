@@ -6,7 +6,7 @@ layout: manual
 
 Construct a circle derived from 3 points.
 
-Similar to inner_circle, but needs to retain 3-point information in the path so it can be used for other features, otherwise it's lost.
+
 
 ```js
 circleThreePoint(p1: [number], p2: [number], p3: [number], sketch_surface_or_group: SketchOrSurface, tag?: TagDeclarator) -> Sketch

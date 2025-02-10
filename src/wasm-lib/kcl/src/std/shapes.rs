@@ -182,8 +182,8 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     }
 }]
 
-/// Similar to inner_circle, but needs to retain 3-point information in the
-/// path so it can be used for other features, otherwise it's lost.
+// Similar to inner_circle, but needs to retain 3-point information in the
+// path so it can be used for other features, otherwise it's lost.
 async fn inner_circle_three_point(
     p1: [f64; 2],
     p2: [f64; 2],
