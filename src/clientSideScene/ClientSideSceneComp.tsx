@@ -146,7 +146,8 @@ export const ClientSideScene = ({
       state.matches({ Sketch: 'Line tool' }) ||
       state.matches({ Sketch: 'Tangential arc to' }) ||
       state.matches({ Sketch: 'Rectangle tool' }) ||
-      state.matches({ Sketch: 'Circle tool' })
+      state.matches({ Sketch: 'Circle tool' }) ||
+      state.matches({ Sketch: 'Circle three point tool' })
     ) {
       cursor = 'crosshair'
     } else {
