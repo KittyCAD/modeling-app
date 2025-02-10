@@ -457,7 +457,7 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(opts?: { zoomToFit?: true }): Promise<void> {
+  async executeCode(zoomToFit?: boolean): Promise<void> {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
@@ -465,10 +465,10 @@ export class KclManager {
       return
     }
 
-    // zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, opts?.zoomToFit)
+    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, zoomToFit)
 
     this.ast = { ...ast }
-    return this.executeAst(opts)
+    return this.executeAst({ zoomToFit })
   }
   /**
    * This will override the zoom to fit to zoom into the model if the previous AST was empty.

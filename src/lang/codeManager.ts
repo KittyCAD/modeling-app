@@ -157,7 +157,7 @@ export default class CodeManager {
               toast.error('Error saving file, please check file permissions')
               reject(err)
             })
-        }, 10)
+        }, 1000)
       })
     } else {
       safeLSSetItem(PERSIST_CODE_KEY, this.code)

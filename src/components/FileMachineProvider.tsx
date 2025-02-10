@@ -329,7 +329,7 @@ export const FileMachineProvider = ({
           onSubmit: async (data) => {
             if (data.method === 'overwrite') {
               codeManager.updateCodeStateEditor(data.code)
-              await kclManager.executeCode({ zoomToFit: true })
+              await kclManager.executeCode(true)
               await codeManager.writeToFile()
             } else if (data.method === 'newFile' && isDesktop()) {
               send({

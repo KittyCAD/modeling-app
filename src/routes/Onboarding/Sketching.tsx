@@ -8,7 +8,7 @@ export default function Sketching() {
     async function clearEditor() {
       // We do want to update both the state and editor here.
       codeManager.updateCodeStateEditor('')
-      await kclManager.executeCode({ zoomToFit: true })
+      await kclManager.executeCode(true)
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

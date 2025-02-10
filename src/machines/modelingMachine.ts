@@ -368,14 +368,12 @@ export type ModelingMachineEvent =
         tool: SketchTool
       }
     }
-  // | { type: 'Finish rectangle' | 'Finish center rectangle' | 'Finish circle three point' | 'Finish circle' }
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
   | { type: 'Finish circle three point' }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
-// | { type: 'xstate.done.actor.actor-circle-three-point' }
 
 export type MoveDesc = { line: number; snippet: string }
 
