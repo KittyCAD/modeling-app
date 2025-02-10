@@ -69,7 +69,7 @@ snapshot_kind: text
     "name": "patternLinear3d",
     "sourceRange": [
       189,
-      276,
+      277,
       0
     ],
     "type": "StdLibCall",
@@ -85,37 +85,37 @@ snapshot_kind: text
     "labeledArgs": {
       "axis": {
         "sourceRange": [
-          323,
-          332,
+          324,
+          333,
           0
         ]
       },
       "distance": {
         "sourceRange": [
-          347,
           348,
+          349,
           0
         ]
       },
       "instances": {
         "sourceRange": [
-          364,
           365,
+          366,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      287,
-      367,
+      288,
+      369,
       0
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "sourceRange": [
-        306,
-        312,
+        307,
+        313,
         0
       ]
     }

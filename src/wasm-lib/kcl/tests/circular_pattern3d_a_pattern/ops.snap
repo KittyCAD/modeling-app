@@ -69,7 +69,7 @@ snapshot_kind: text
     "name": "patternLinear3d",
     "sourceRange": [
       189,
-      276,
+      277,
       0
     ],
     "type": "StdLibCall",
@@ -85,51 +85,51 @@ snapshot_kind: text
     "labeledArgs": {
       "arcDegrees": {
         "sourceRange": [
-          397,
-          400,
+          398,
+          401,
           0
         ]
       },
       "axis": {
         "sourceRange": [
-          325,
-          334,
+          326,
+          335,
           0
         ]
       },
       "center": {
         "sourceRange": [
-          347,
-          362,
+          348,
+          363,
           0
         ]
       },
       "instances": {
         "sourceRange": [
-          378,
-          380,
+          379,
+          381,
           0
         ]
       },
       "rotateDuplicates": {
         "sourceRange": [
-          423,
-          428,
+          424,
+          429,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      287,
-      430,
+      288,
+      432,
       0
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "sourceRange": [
-        308,
-        314,
+        309,
+        315,
         0
       ]
     }
