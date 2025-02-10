@@ -728,7 +728,6 @@ async fn inner_pattern_linear_2d(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
-    let axis = axis;
     let [x, y] = axis;
     let axis_len = f64::sqrt(x * x + y * y);
     let normalized_axis = kcmc::shared::Point2d::from([x / axis_len, y / axis_len]);
@@ -813,7 +812,6 @@ async fn inner_pattern_linear_3d(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
-    let axis = axis;
     let [x, y, z] = axis;
     let axis_len = f64::sqrt(x * x + y * y + z * z);
     let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
@@ -1009,6 +1007,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
         use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_2d(
     sketch_set: SketchSet,
     instances: u32,
@@ -1123,6 +1122,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
         use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_3d(
     solid_set: SolidSet,
     instances: u32,
