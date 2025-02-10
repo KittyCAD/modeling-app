@@ -1592,6 +1592,9 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
 
+    // The text to prompt popover gets in the way of pointOnSegment click otherwise
+    const moveToClearToolBarPopover = scene.makeMouseHelpers(590, 500)[1]
+
     const [pointOnSegment] = scene.makeMouseHelpers(590, 141)
     const [profileEnd] = scene.makeMouseHelpers(970, 105)
     const profileEndMv = scene.makeMouseHelpers(951, 101)[1]
@@ -1608,6 +1611,7 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
     const [rectEnd] = scene.makeMouseHelpers(757, 395)
 
     await test.step('enter sketch and setup', async () => {
+      await moveToClearToolBarPopover()
       await pointOnSegment({ shouldDbClick: true })
       await page.waitForTimeout(600)
 
@@ -1715,6 +1719,9 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
 
+    // The text to prompt popover gets in the way of pointOnSegment click otherwise
+    const moveToClearToolBarPopover = scene.makeMouseHelpers(590, 500)[1]
+
     const [pointOnSegment] = scene.makeMouseHelpers(590, 141)
     const [segment1Click] = scene.makeMouseHelpers(616, 131)
     const sketchIsDrawnProperly = async () => {
@@ -1726,6 +1733,7 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
     }
 
     await test.step('enter sketch and setup', async () => {
+      await moveToClearToolBarPopover()
       await pointOnSegment({ shouldDbClick: true })
       await page.waitForTimeout(600)
 
