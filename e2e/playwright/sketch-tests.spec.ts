@@ -1661,6 +1661,7 @@ profile002 = startProfileAt([11.19, 5.02], sketch001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
+profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07], p3 = [18.75, -4.41])
 `
       )
     })
@@ -1690,6 +1691,9 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
     const [rectStart] = scene.makeMouseHelpers(794, 322)
     const [rectEnd] = scene.makeMouseHelpers(757, 395)
 
+    const [circ3PStart] = scene.makeMouseHelpers(854, 332)
+    const [circ3PEnd] = scene.makeMouseHelpers(870, 275)
+
     await test.step('enter sketch and setup', async () => {
       await moveToClearToolBarPopover()
       await pointOnSegment({ shouldDbClick: true })
@@ -1703,7 +1707,7 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       await profileEnd()
       await page.waitForTimeout(100)
       await newProfileEnd()
-      await editor.expectEditor.toContain(`|> line(end = [-11.4, 0.71])`)
+      await editor.expectEditor.toContain(`|> line(end = [-11.35, 0.73])`)
       await toolbar.lineBtn.click()
       await page.waitForTimeout(100)
     })
@@ -1713,7 +1717,7 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       await page.mouse.down()
       await dragSegmentTo()
       await page.mouse.up()
-      await editor.expectEditor.toContain(`line(end = [4.16, -4.51])`)
+      await editor.expectEditor.toContain(`line(end = [4.22, -4.49])`)
     })
 
     await test.step('edit existing rect', async () => {
@@ -1722,7 +1726,7 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       await rectDragTo()
       await page.mouse.up()
       await editor.expectEditor.toContain(
-        `angledLine([-7, 10.2], %, $rectangleSegmentA001)`
+        `angledLine([-7, 10.27], %, $rectangleSegmentA001)`
       )
     })
 
@@ -1732,7 +1736,17 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       await dragCircleTo()
       await page.mouse.up()
       await editor.expectEditor.toContain(
-        `profile003 = circle({ center = [6.92, -4.2], radius = 4.77 }, sketch001)`
+        `profile003 = circle({ center = [6.92, -4.2], radius = 4.81 }, sketch001)`
+      )
+    })
+
+    await test.step('edit existing circle three point', async () => {
+      await circ3PStart()
+      await page.mouse.down()
+      await circ3PEnd()
+      await page.mouse.up()
+      await editor.expectEditor.toContain(
+        `profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07], p3 = [19.73, -1.33])`
       )
     })
 
@@ -1741,7 +1755,7 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       await page.waitForTimeout(100)
       await rectStart()
       await editor.expectEditor.toContain(
-        `profile004 = startProfileAt([15.62, -3.83], sketch001)`
+        `profile005 = startProfileAt([15.68, -3.84], sketch001)`
       )
       await page.waitForTimeout(100)
       await rectEnd()
@@ -1749,7 +1763,7 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
         `|> angledLine([180, 1.97], %, $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) + 90,
-       3.88
+       3.89
      ], %)
   |> angledLine([
        segAng(rectangleSegmentA002),
