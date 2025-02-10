@@ -986,7 +986,7 @@ impl Path {
             Path::CircleThreePoint { p1, p2, p3, .. } => {
                 let circle_center =
                     crate::std::utils::calculate_circle_from_3_points([(*p1).into(), (*p2).into(), (*p3).into()]);
-                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], &p1);
+                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], p1);
                 let center_point = [circle_center.center.x, circle_center.center.y];
                 GetTangentialInfoFromPathsResult::Circle {
                     center: center_point,
