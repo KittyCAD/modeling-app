@@ -65,6 +65,7 @@ mod fs;
 pub mod lint;
 mod log;
 mod lsp;
+mod modules;
 mod parsing;
 mod settings;
 #[cfg(test)]
@@ -87,9 +88,10 @@ pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
+pub use modules::ModuleId;
 pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
-pub use source_range::{ModuleId, SourceRange};
+pub use source_range::SourceRange;
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.

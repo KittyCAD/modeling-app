@@ -9,11 +9,11 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations, kcl_value, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ExecOutcome, ExecutorSettings,
-        KclValue, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, Operation, ProgramMemory, SolidLazyIds, UnitAngle,
-        UnitLen,
+        KclValue, Operation, ProgramMemory, SolidLazyIds, UnitAngle, UnitLen,
     },
+    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
     parsing::ast::types::NonCodeValue,
-    source_range::{ModuleId, SourceRange},
+    source_range::SourceRange,
 };
 
 /// State for executing a program.
