@@ -1559,18 +1559,17 @@ async fn kcl_test_linear_pattern3d_filleted_sketch() {
 part001 = cube([0,0], 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
-  |> fillet({
-    radius: 10,
-    tags: [getOppositeEdge(line1)]
-  }, %)
+    |> fillet({
+      radius: 10,
+      tags: [getOppositeEdge(line1)]
+    }, %)
 
 pattn1 = patternLinear3d(
      part001,
      axis = [1, 0, 0],
      instances = 4,
      distance = 40
- )
-
+)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1596,7 +1595,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d(axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false, part001) 
+pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false) 
 
 "#;
 
@@ -1623,8 +1622,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d(axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false, part001) 
-
+pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
