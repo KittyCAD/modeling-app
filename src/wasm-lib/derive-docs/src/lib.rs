@@ -21,6 +21,18 @@ use syn::{
 };
 use unbox::unbox;
 
+/// Describes an argument of a stdlib function.
+#[derive(Deserialize, Debug)]
+struct ArgMetadata {
+    /// Docs for the argument.
+    docs: String,
+
+    /// If this argument is optional, it should still be included in completion snippets.
+    /// Does not do anything if the argument is already required.
+    #[serde(default)]
+    include_in_snippet: bool,
+}
+
 #[derive(Deserialize, Debug)]
 struct StdlibMetadata {
     /// The name of the function in the API.
@@ -58,7 +70,7 @@ struct StdlibMetadata {
 
     /// Key = argument name, value = argument doc.
     #[serde(default)]
-    arg_docs: HashMap<String, String>,
+    args: HashMap<String, ArgMetadata>,
 }
 
 #[proc_macro_attribute]
@@ -300,17 +312,19 @@ fn do_stdlib_inner(
 
         let ty_string = rust_type_to_openapi_type(&ty_string);
         let required = !ty_ident.to_string().starts_with("Option <");
-        let description = if let Some(s) = metadata.arg_docs.get(&arg_name) {
+        let arg_meta = metadata.args.get(&arg_name);
+        let description = if let Some(s) = arg_meta.map(|arg| &arg.docs) {
             quote! { #s }
         } else if metadata.keywords && ty_string != "Args" && ty_string != "ExecState" {
             errors.push(Error::new_spanned(
                 &arg,
-                "Argument was not documented in the arg_docs block",
+                "Argument was not documented in the args block",
             ));
             continue;
         } else {
             quote! { String::new() }
         };
+        let include_in_snippet = required || arg_meta.map(|arg| arg.include_in_snippet).unwrap_or_default();
         let label_required = !(i == 0 && metadata.unlabeled_first);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
@@ -324,6 +338,7 @@ fn do_stdlib_inner(
                     required: #required,
                     label_required: #label_required,
                     description: #description.to_string(),
+                    include_in_snippet: #include_in_snippet,
                 }
             });
         }
@@ -386,6 +401,7 @@ fn do_stdlib_inner(
                 required: true,
                 label_required: true,
                 description: String::new(),
+                include_in_snippet: true,
             })
         }
     } else {
@@ -815,7 +831,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::execution::ContextType::Mock,
             };
 
-            if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new(&ctx.settings)).await {
+            if let Err(e) = ctx.run(&program, &mut crate::ExecState::new(&ctx.settings)).await {
                     return Err(miette::Report::new(crate::errors::Report {
                         error: e,
                         filename: format!("{}{}", #fn_name, #index),

@@ -29,8 +29,8 @@ describe('library rectangleTool helper functions', () => {
 segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
 ], %, $rectangleSegmentC001)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
-|> close(%)
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> close()
 `
       // Create ast
       const _ast = assertParse(sourceCode)
@@ -82,8 +82,8 @@ segAng(rectangleSegmentA001),
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 `
       const recasted = recast(ast)
       expect(recasted).toEqual(expectedSourceCode)

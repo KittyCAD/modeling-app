@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing parametric.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -44,13 +45,14 @@ description: Program memory after executing parametric.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   284,
-                  302,
+                  305,
                   0
                 ],
                 "tag": null,
@@ -60,19 +62,8 @@ description: Program memory after executing parametric.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  308,
-                  326,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
+                  311,
                   332,
-                  356,
                   0
                 ],
                 "tag": null,
@@ -82,8 +73,8 @@ description: Program memory after executing parametric.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  362,
-                  393,
+                  338,
+                  365,
                   0
                 ],
                 "tag": null,
@@ -93,8 +84,8 @@ description: Program memory after executing parametric.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  399,
-                  430,
+                  371,
+                  405,
                   0
                 ],
                 "tag": null,
@@ -104,8 +95,19 @@ description: Program memory after executing parametric.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  436,
-                  444,
+                  411,
+                  445,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  451,
+                  459,
                   0
                 ],
                 "tag": null,
@@ -121,7 +123,7 @@ description: Program memory after executing parametric.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       284,
-                      302,
+                      305,
                       0
                     ]
                   },
@@ -140,28 +142,28 @@ description: Program memory after executing parametric.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      308,
-                      326,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    5.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    8.0,
-                    5.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
+                      311,
                       332,
-                      356,
+                      0
+                    ]
+                  },
+                  "from": [
+                    0.0,
+                    5.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    8.0,
+                    5.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      338,
+                      365,
                       0
                     ]
                   },
@@ -180,8 +182,8 @@ description: Program memory after executing parametric.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      362,
-                      393,
+                      371,
+                      405,
                       0
                     ]
                   },
@@ -200,8 +202,8 @@ description: Program memory after executing parametric.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      399,
-                      430,
+                      411,
+                      445,
                       0
                     ]
                   },
@@ -220,8 +222,8 @@ description: Program memory after executing parametric.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      436,
-                      444,
+                      451,
+                      459,
                       0
                     ]
                   },
@@ -240,6 +242,7 @@ description: Program memory after executing parametric.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -285,6 +288,8 @@ description: Program memory after executing parametric.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

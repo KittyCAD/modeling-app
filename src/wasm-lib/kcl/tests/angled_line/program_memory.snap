@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing angled_line.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -31,13 +32,14 @@ description: Program memory after executing angled_line.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   73,
-                  94,
+                  97,
                   0
                 ],
                 "tag": null,
@@ -47,13 +49,13 @@ description: Program memory after executing angled_line.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  100,
-                  130,
+                  103,
+                  142,
                   0
                 ],
                 "tag": {
-                  "end": 129,
-                  "start": 123,
+                  "end": 141,
+                  "start": 135,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -63,8 +65,8 @@ description: Program memory after executing angled_line.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  136,
-                  159,
+                  148,
+                  174,
                   0
                 ],
                 "tag": null,
@@ -74,8 +76,8 @@ description: Program memory after executing angled_line.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  165,
-                  202,
+                  180,
+                  217,
                   0
                 ],
                 "tag": null,
@@ -85,8 +87,8 @@ description: Program memory after executing angled_line.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  208,
-                  232,
+                  223,
+                  250,
                   0
                 ],
                 "tag": null,
@@ -96,8 +98,8 @@ description: Program memory after executing angled_line.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  238,
-                  246,
+                  256,
+                  264,
                   0
                 ],
                 "tag": null,
@@ -113,7 +115,7 @@ description: Program memory after executing angled_line.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       73,
-                      94,
+                      97,
                       0
                     ]
                   },
@@ -132,8 +134,8 @@ description: Program memory after executing angled_line.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      100,
-                      130,
+                      103,
+                      142,
                       0
                     ]
                   },
@@ -142,8 +144,8 @@ description: Program memory after executing angled_line.kcl
                     15.04
                   ],
                   "tag": {
-                    "end": 129,
-                    "start": 123,
+                    "end": 141,
+                    "start": 135,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -157,8 +159,8 @@ description: Program memory after executing angled_line.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      136,
-                      159,
+                      148,
+                      174,
                       0
                     ]
                   },
@@ -177,8 +179,8 @@ description: Program memory after executing angled_line.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      165,
-                      202,
+                      180,
+                      217,
                       0
                     ]
                   },
@@ -197,8 +199,8 @@ description: Program memory after executing angled_line.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      208,
-                      232,
+                      223,
+                      250,
                       0
                     ]
                   },
@@ -217,8 +219,8 @@ description: Program memory after executing angled_line.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      238,
-                      246,
+                      256,
+                      264,
                       0
                     ]
                   },
@@ -237,6 +239,7 @@ description: Program memory after executing angled_line.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -294,8 +297,8 @@ description: Program memory after executing angled_line.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          100,
-                          130,
+                          103,
+                          142,
                           0
                         ]
                       },
@@ -304,8 +307,8 @@ description: Program memory after executing angled_line.kcl
                         15.040000000000001
                       ],
                       "tag": {
-                        "end": 129,
-                        "start": 123,
+                        "end": 141,
+                        "start": 135,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -319,13 +322,13 @@ description: Program memory after executing angled_line.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        100,
-                        130,
+                        103,
+                        142,
                         0
                       ],
                       "tag": {
-                        "end": 129,
-                        "start": 123,
+                        "end": 141,
+                        "start": 135,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -335,14 +338,16 @@ description: Program memory after executing angled_line.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        123,
-                        129,
+                        135,
+                        141,
                         0
                       ]
                     }
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -385,8 +390,8 @@ description: Program memory after executing angled_line.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  100,
-                  130,
+                  103,
+                  142,
                   0
                 ]
               },
@@ -395,8 +400,8 @@ description: Program memory after executing angled_line.kcl
                 15.040000000000001
               ],
               "tag": {
-                "end": 129,
-                "start": 123,
+                "end": 141,
+                "start": 135,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -410,13 +415,13 @@ description: Program memory after executing angled_line.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                100,
-                130,
+                103,
+                142,
                 0
               ],
               "tag": {
-                "end": 129,
-                "start": 123,
+                "end": 141,
+                "start": 135,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -426,8 +431,8 @@ description: Program memory after executing angled_line.kcl
           "__meta": [
             {
               "sourceRange": [
-                123,
-                129,
+                135,
+                141,
                 0
               ]
             }

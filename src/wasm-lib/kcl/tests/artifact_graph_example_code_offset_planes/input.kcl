@@ -4,4 +4,4 @@ offsetPlane003 = offsetPlane("YZ", 10)
 
 sketch002 = startSketchOn(offsetPlane001)
   |> startProfileAt([0, 0], %)
-  |> line([6.78, 15.01], %)
+  |> line(end = [6.78, 15.01])

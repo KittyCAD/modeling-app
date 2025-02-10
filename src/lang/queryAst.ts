@@ -5,6 +5,7 @@ import {
   ArtifactGraph,
   BinaryExpression,
   CallExpression,
+  CallExpressionKw,
   Expr,
   ExpressionStatement,
   ObjectExpression,
@@ -22,12 +23,15 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   recast,
+  kclSettings,
+  unitLenToUnitLength,
+  unitAngToUnitAngle,
 } from './wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
-import { getAngle } from '../lib/utils'
-import { getFirstArg } from './std/sketch'
+import { getAngle, isArray } from '../lib/utils'
+import { ARG_TAG, getArgForEnd, getFirstArg } from './std/sketch'
 import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
@@ -35,7 +39,12 @@ import {
 import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { findKwArg } from './util'
 import { codeRefFromRange } from './std/artifactGraph'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+
+export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
+export const ARG_INDEX_FIELD = 'arg index'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -48,7 +57,8 @@ export function getNodeFromPath<T>(
   node: Program,
   path: PathToNode,
   stopAt?: SyntaxType | SyntaxType[],
-  returnEarly = false
+  returnEarly = false,
+  replacement?: any
 ):
   | {
       node: T
@@ -60,9 +70,14 @@ export function getNodeFromPath<T>(
   let stopAtNode = null
   let successfulPaths: PathToNode = []
   let pathsExplored: PathToNode = []
+  let parent = null as any
+  let parentEdge = null
   for (const pathItem of path) {
     if (typeof currentNode[pathItem[0]] !== 'object') {
       if (stopAtNode) {
+        if (replacement && parent && parentEdge) {
+          parent[parentEdge] = replacement
+        }
         return {
           node: stopAtNode,
           shallowPath: pathsExplored,
@@ -92,6 +107,8 @@ export function getNodeFromPath<T>(
       console.error(error.stack)
       return error
     }
+    parent = currentNode
+    parentEdge = pathItem[0]
     currentNode = currentNode?.[pathItem[0]]
     successfulPaths.push(pathItem)
     if (!stopAtNode) {
@@ -99,7 +116,7 @@ export function getNodeFromPath<T>(
     }
     if (
       typeof stopAt !== 'undefined' &&
-      (Array.isArray(stopAt)
+      (isArray(stopAt)
         ? stopAt.includes(currentNode.type)
         : currentNode.type === stopAt)
     ) {
@@ -114,6 +131,9 @@ export function getNodeFromPath<T>(
         }
       }
     }
+  }
+  if (replacement && parent && parentEdge) {
+    parent[parentEdge] = replacement
   }
   return {
     node: stopAtNode || currentNode,
@@ -151,6 +171,7 @@ export function getNodeFromPathCurry(
 type KCLNode = Node<
   | Expr
   | ExpressionStatement
+  | ImportStatement
   | VariableDeclaration
   | VariableDeclarator
   | ReturnStatement
@@ -193,6 +214,22 @@ export function traverse(
         [index, 'index'],
       ])
     )
+  } else if (_node.type === 'CallExpressionKw') {
+    _traverse(_node.callee, [...pathToNode, ['callee', 'CallExpressionKw']])
+    if (_node.unlabeled !== null) {
+      _traverse(_node.unlabeled, [
+        ...pathToNode,
+        ['unlabeled', 'Unlabeled arg'],
+      ])
+    }
+    _node.arguments.forEach((arg, index) =>
+      _traverse(arg.arg, [
+        ...pathToNode,
+        ['arguments', 'CallExpressionKw'],
+        [index, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
+      ])
+    )
   } else if (_node.type === 'BinaryExpression') {
     _traverse(_node.left, [...pathToNode, ['left', 'BinaryExpression']])
     _traverse(_node.right, [...pathToNode, ['right', 'BinaryExpression']])
@@ -231,10 +268,14 @@ export function traverse(
     // hmm this smell
     _traverse(_node.object, [...pathToNode, ['object', 'MemberExpression']])
     _traverse(_node.property, [...pathToNode, ['property', 'MemberExpression']])
-  } else if ('body' in _node && Array.isArray(_node.body)) {
-    _node.body.forEach((expression, index) =>
+  } else if (_node.type === 'ImportStatement') {
+    // Do nothing.
+  } else if ('body' in _node && isArray(_node.body)) {
+    // TODO: Program should have a type field, but it currently doesn't.
+    const program = node as Node<Program>
+    program.body.forEach((expression, index) => {
       _traverse(expression, [...pathToNode, ['body', ''], [index, 'index']])
-    )
+    })
   }
   option?.leave?.(_node)
 }
@@ -457,10 +498,10 @@ export function isLinesParallelAndConstrained(
       ast,
       secondaryLine?.codeRef?.range
     )
-    const _secondaryNode = getNodeFromPath<CallExpression>(
+    const _secondaryNode = getNodeFromPath<CallExpression | CallExpressionKw>(
       ast,
       secondaryPath,
-      'CallExpression'
+      ['CallExpression', 'CallExpressionKw']
     )
     if (err(_secondaryNode)) return _secondaryNode
     const secondaryNode = _secondaryNode.node
@@ -494,12 +535,17 @@ export function isLinesParallelAndConstrained(
       Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
     // is secondary line fully constrain, or has constrain type of 'angle'
-    const secondaryFirstArg = getFirstArg(secondaryNode)
+    const secondaryFirstArg =
+      secondaryNode.type === 'CallExpression'
+        ? getFirstArg(secondaryNode)
+        : getArgForEnd(secondaryNode)
     if (err(secondaryFirstArg)) return secondaryFirstArg
 
+    const isAbsolute = false // ADAM: TODO
     const constraintType = getConstraintType(
       secondaryFirstArg.val,
-      secondaryNode.callee.name as ToolTip
+      secondaryNode.callee.name as ToolTip,
+      isAbsolute
     )
 
     const constraintLevelMeta = getConstraintLevelFromSourceRange(
@@ -600,27 +646,27 @@ export function findUsesOfTagInPipe(
     'segEndY',
     'segLen',
   ]
-  const nodeMeta = getNodeFromPath<CallExpression>(
+  const nodeMeta = getNodeFromPath<CallExpression | CallExpressionKw>(
     ast,
     pathToNode,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
   if (err(nodeMeta)) {
     console.error(nodeMeta)
     return []
   }
   const node = nodeMeta.node
-  if (node.type !== 'CallExpression') return []
+  if (node.type !== 'CallExpressionKw' && node.type !== 'CallExpression')
+    return []
   const tagIndex = node.callee.name === 'close' ? 1 : 2
-  const thirdParam = node.arguments[tagIndex]
-  if (
-    !(thirdParam?.type === 'TagDeclarator' || thirdParam?.type === 'Identifier')
-  )
+  const tagParam =
+    node.type === 'CallExpression'
+      ? node.arguments[tagIndex]
+      : findKwArg(ARG_TAG, node)
+  if (!(tagParam?.type === 'TagDeclarator' || tagParam?.type === 'Identifier'))
     return []
   const tag =
-    thirdParam?.type === 'TagDeclarator'
-      ? String(thirdParam.value)
-      : thirdParam.name
+    tagParam?.type === 'TagDeclarator' ? String(tagParam.value) : tagParam.name
 
   const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     ast,
@@ -674,7 +720,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   traverse(pipeExpression, {
     enter(node) {
       if (
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         (node.callee.name === 'extrude' || node.callee.name === 'revolve')
       ) {
         extruded = true
@@ -693,6 +739,17 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
             node.callee.name === 'loft') &&
           node.arguments?.[1]?.type === 'Identifier' &&
           node.arguments[1].name === varDec.id.name
+        ) {
+          extruded = true
+        }
+        if (
+          node.type === 'CallExpressionKw' &&
+          node.callee.type === 'Identifier' &&
+          (node.callee.name === 'extrude' ||
+            node.callee.name === 'revolve' ||
+            node.callee.name === 'loft') &&
+          node.unlabeled?.type === 'Identifier' &&
+          node.unlabeled?.name === varDec.id.name
         ) {
           extruded = true
         }
@@ -717,21 +774,31 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
         let hasCircle = false
         for (const pipe of node.init.body) {
           if (
-            pipe.type === 'CallExpression' &&
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
             pipe.callee.name === 'startProfileAt'
           ) {
             hasStartProfileAt = true
           }
           if (
-            pipe.type === 'CallExpression' &&
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
             pipe.callee.name === 'startSketchOn'
           ) {
             hasStartSketchOn = true
           }
-          if (pipe.type === 'CallExpression' && pipe.callee.name === 'close') {
+          if (
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
+            pipe.callee.name === 'close'
+          ) {
             hasClose = true
           }
-          if (pipe.type === 'CallExpression' && pipe.callee.name === 'circle') {
+          if (
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
+            pipe.callee.name === 'circle'
+          ) {
             hasCircle = true
           }
         }
@@ -749,6 +816,13 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
         theMap?.[node?.arguments?.[1]?.name]
       ) {
         delete theMap[node.arguments[1].name]
+      } else if (
+        node.type === 'CallExpressionKw' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
+        node.unlabeled?.type === 'Identifier' &&
+        theMap?.[node?.unlabeled?.name]
+      ) {
+        delete theMap[node.unlabeled.name]
       }
     },
   })
@@ -765,7 +839,8 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
       ) {
         for (const pipe of node.init.body) {
           if (
-            pipe.type === 'CallExpression' &&
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
             pipe.callee.name === 'extrude'
           ) {
             theMap[node.id.name] = true
@@ -773,9 +848,12 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
           }
         }
       } else if (
-        node.type === 'CallExpression' &&
-        node.callee.name === 'extrude' &&
-        node.arguments[1]?.type === 'Identifier'
+        (node.type === 'CallExpression' &&
+          node.callee.name === 'extrude' &&
+          node.arguments[1]?.type === 'Identifier') ||
+        (node.type === 'CallExpressionKw' &&
+          node.callee.name === 'extrude' &&
+          node.unlabeled?.type === 'Identifier')
       ) {
         theMap[node.moduleId] = true
       }
@@ -791,4 +869,25 @@ export function getObjExprProperty(
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }
+}
+
+/**
+ * Given KCL, returns the settings annotation object if it exists.
+ */
+export function getSettingsAnnotation(
+  kcl: string | Node<Program>
+): KclSettingsAnnotation | Error {
+  const metaSettings = kclSettings(kcl)
+  if (err(metaSettings)) return metaSettings
+
+  const settings: KclSettingsAnnotation = {}
+  // No settings in the KCL.
+  if (!metaSettings) return settings
+
+  settings.defaultLengthUnit = unitLenToUnitLength(
+    metaSettings.defaultLengthUnits
+  )
+  settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
+
+  return settings
 }

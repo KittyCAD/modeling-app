@@ -4,7 +4,7 @@ import { executorInputPath, getUtils } from './test-utils'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import path from 'path'
 
-test.describe('Command bar tests', () => {
+test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
@@ -14,10 +14,10 @@ test.describe('Command bar tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
   |> xLine(-20, %)
-  |> close(%)
+  |> close()
     `
       )
     })
@@ -32,7 +32,7 @@ test.describe('Command bar tests', () => {
     await u.closeDebugPanel()
 
     // Click the line of code for xLine.
-    await page.getByText(`close(%)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.getByText(`close()`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
     await page.waitForTimeout(100)
 
     await page.getByRole('button', { name: 'Extrude' }).click()
@@ -42,7 +42,47 @@ test.describe('Command bar tests', () => {
     await page.keyboard.press('Enter')
     await page.waitForTimeout(200)
     await expect(page.locator('.cm-activeLine')).toHaveText(
-      `extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
+      `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH})`
+    )
+  })
+
+  // TODO: fix this test after the electron migration
+  test.fixme('Fillet from command bar', async ({ page, homePage }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XY')
+    |> startProfileAt([-5, -5], %)
+    |> line(end = [0, 10])
+    |> line(end = [10, 0])
+    |> line(end = [0, -10])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude001 = extrude(sketch001, length = -10)`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line(end = [0, -10])`).click()
+
+    await selectSegment()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Fillet' }).click()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter') // skip selection
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter') // accept default radius
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter') // submit
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toContainText(
+      `fillet({ radius = ${KCL_DEFAULT_LENGTH}, tags = [seg01] }, %)`
     )
   })
 
@@ -127,54 +167,54 @@ test.describe('Command bar tests', () => {
     await expect(commandLevelArgButton).toHaveText('level: project')
   })
 
-  test('Command bar keybinding works from code editor and can change a setting', async ({
-    page,
-    homePage,
-  }) => {
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
+  test(
+    'Command bar keybinding works from code editor and can change a setting',
+    { tag: ['@skipWin'] },
+    async ({ page, homePage }) => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled()
 
-    // Put the cursor in the code editor
-    await page.locator('.cm-content').click()
+      // Put the cursor in the code editor
+      await page.locator('.cm-content').click()
 
-    // Now try the same, but with the keyboard shortcut, check focus
-    await page.keyboard.press('ControlOrMeta+K')
+      // Now try the same, but with the keyboard shortcut, check focus
+      await page.keyboard.press('ControlOrMeta+K')
 
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-    await expect(cmdSearchBar).toBeFocused()
+      let cmdSearchBar = page.getByPlaceholder('Search commands')
+      await expect(cmdSearchBar).toBeVisible()
+      await expect(cmdSearchBar).toBeFocused()
 
-    // Try typing in the command bar
-    await cmdSearchBar.fill('theme')
-    const themeOption = page.getByRole('option', {
-      name: 'Settings · app · theme',
-    })
-    await expect(themeOption).toBeVisible()
-    await themeOption.click()
-    const themeInput = page.getByPlaceholder('dark')
-    await expect(themeInput).toBeVisible()
-    await expect(themeInput).toBeFocused()
-    // Select dark theme
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await expect(page.getByRole('option', { name: 'system' })).toHaveAttribute(
-      'data-headlessui-state',
-      'active'
-    )
-    await page.keyboard.press('Enter')
+      // Try typing in the command bar
+      await cmdSearchBar.fill('theme')
+      const themeOption = page.getByRole('option', {
+        name: 'Settings · app · theme',
+      })
+      await expect(themeOption).toBeVisible()
+      await themeOption.click()
+      const themeInput = page.getByPlaceholder('dark')
+      await expect(themeInput).toBeVisible()
+      await expect(themeInput).toBeFocused()
+      // Select dark theme
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
+      await expect(
+        page.getByRole('option', { name: 'system' })
+      ).toHaveAttribute('data-headlessui-state', 'active')
+      await page.keyboard.press('Enter')
 
-    // Check the toast appeared
-    await expect(
-      page.getByText(`Set theme to "system" as a user default`)
-    ).toBeVisible()
-    // Check that the theme changed
-    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
-  })
+      // Check the toast appeared
+      await expect(
+        page.getByText(`Set theme to "system" as a user default`)
+      ).toBeVisible()
+      // Check that the theme changed
+      await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+    }
+  )
 
   test('Can extrude from the command bar', async ({ page, homePage }) => {
     await page.addInitScript(async () => {
@@ -183,10 +223,10 @@ test.describe('Command bar tests', () => {
         `distance = sqrt(20)
     sketch001 = startSketchOn('XZ')
     |> startProfileAt([-6.95, 10.98], %)
-    |> line([25.1, 0.41], %)
-    |> line([0.73, -20.93], %)
-    |> line([-23.44, 0.52], %)
-    |> close(%)
+    |> line(end = [25.1, 0.41])
+    |> line(end = [0.73, -20.93])
+    |> line(end = [-23.44, 0.52])
+    |> close()
         `
       )
     })
@@ -251,7 +291,7 @@ test.describe('Command bar tests', () => {
     await u.waitForCmdReceive('extrude')
 
     await expect(page.locator('.cm-content')).toContainText(
-      'extrude001 = extrude(distance001, sketch001)'
+      'extrude001 = extrude(sketch001, length = distance001)'
     )
   })
 

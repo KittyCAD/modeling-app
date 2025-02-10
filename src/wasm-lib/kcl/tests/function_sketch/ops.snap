@@ -9,14 +9,14 @@ snapshot_kind: text
     "name": "box",
     "functionSourceRange": [
       6,
-      205,
+      220,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      215,
-      228,
+      230,
+      243,
       0
     ]
   },
@@ -43,23 +43,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          182,
-          183,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          185,
-          186,
+          200,
+          201,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      174,
-      187,
+      183,
+      202,
       0
     ],
     "type": "StdLibCall",

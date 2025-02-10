@@ -1,24 +1,459 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
+use schemars::JsonSchema;
 
-use super::cad_op::{OpArg, Operation};
 use crate::{
+    engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
+        annotations,
+        cad_op::{OpArg, Operation},
+        state::ModuleState,
+        BodyType, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ModuleRepr, ProgramMemory,
+        TagEngineInfo, TagIdentifier,
     },
+    fs::FileSystem,
     parsing::ast::types::{
-        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
-        CallExpressionKw, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-        ObjectExpression, PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
+        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
+        CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector, ItemVisibility,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef, NonCodeValue, ObjectExpression,
+        PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
     },
-    source_range::SourceRange,
+    source_range::{ModuleId, SourceRange},
     std::{
         args::{Arg, KwArgs},
         FunctionKind,
     },
 };
+
+enum StatementKind<'a> {
+    Declaration { name: &'a str },
+    Expression,
+}
+
+impl ExecutorContext {
+    async fn handle_annotations(
+        &self,
+        annotations: impl Iterator<Item = (&NonCodeValue, SourceRange)>,
+        scope: annotations::AnnotationScope,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        for (annotation, source_range) in annotations {
+            if annotation.annotation_name() == Some(annotations::SETTINGS) {
+                if scope == annotations::AnnotationScope::Module {
+                    let old_units = exec_state.length_unit();
+                    exec_state
+                        .mod_local
+                        .settings
+                        .update_from_annotation(annotation, source_range)?;
+                    let new_units = exec_state.length_unit();
+                    if old_units != new_units {
+                        self.engine.set_units(new_units.into(), source_range).await?;
+                    }
+                } else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "Settings can only be modified at the top level scope of a file".to_owned(),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+            }
+            // TODO warn on unknown annotations
+        }
+        Ok(())
+    }
+
+    /// Execute an AST's program.
+    #[async_recursion]
+    pub(super) async fn exec_program<'a>(
+        &'a self,
+        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        exec_state: &mut ExecState,
+        body_type: BodyType,
+    ) -> Result<Option<KclValue>, KclError> {
+        self.handle_annotations(
+            program
+                .non_code_meta
+                .start_nodes
+                .iter()
+                .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
+            annotations::AnnotationScope::Module,
+            exec_state,
+        )
+        .await?;
+
+        let mut last_expr = None;
+        // Iterate over the body of the program.
+        for statement in &program.body {
+            match statement {
+                BodyItem::ImportStatement(import_stmt) => {
+                    let source_range = SourceRange::from(import_stmt);
+                    let module_id = self.open_module(&import_stmt.path, exec_state, source_range).await?;
+
+                    match &import_stmt.selector {
+                        ImportSelector::List { items } => {
+                            let (_, module_memory, module_exports) = self
+                                .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
+                                .await?;
+                            for import_item in items {
+                                // Extract the item from the module.
+                                let item =
+                                    module_memory
+                                        .get(&import_item.name.name, import_item.into())
+                                        .map_err(|_err| {
+                                            KclError::UndefinedValue(KclErrorDetails {
+                                                message: format!("{} is not defined in module", import_item.name.name),
+                                                source_ranges: vec![SourceRange::from(&import_item.name)],
+                                            })
+                                        })?;
+                                // Check that the item is allowed to be imported.
+                                if !module_exports.contains(&import_item.name.name) {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!(
+                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                            import_item.name.name
+                                        ),
+                                        source_ranges: vec![SourceRange::from(&import_item.name)],
+                                    }));
+                                }
+
+                                // Add the item to the current module.
+                                exec_state.mut_memory().add(
+                                    import_item.identifier(),
+                                    item.clone(),
+                                    SourceRange::from(&import_item.name),
+                                )?;
+
+                                if let ItemVisibility::Export = import_stmt.visibility {
+                                    exec_state
+                                        .mod_local
+                                        .module_exports
+                                        .push(import_item.identifier().to_owned());
+                                }
+                            }
+                        }
+                        ImportSelector::Glob(_) => {
+                            let (_, module_memory, module_exports) = self
+                                .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
+                                .await?;
+                            for name in module_exports.iter() {
+                                let item = module_memory.get(name, source_range).map_err(|_err| {
+                                    KclError::Internal(KclErrorDetails {
+                                        message: format!("{} is not defined in module (but was exported?)", name),
+                                        source_ranges: vec![source_range],
+                                    })
+                                })?;
+                                exec_state.mut_memory().add(name, item.clone(), source_range)?;
+
+                                if let ItemVisibility::Export = import_stmt.visibility {
+                                    exec_state.mod_local.module_exports.push(name.clone());
+                                }
+                            }
+                        }
+                        ImportSelector::None { .. } => {
+                            let name = import_stmt.module_name().unwrap();
+                            let item = KclValue::Module {
+                                value: module_id,
+                                meta: vec![source_range.into()],
+                            };
+                            exec_state.mut_memory().add(&name, item, source_range)?;
+                        }
+                    }
+                    last_expr = None;
+                }
+                BodyItem::ExpressionStatement(expression_statement) => {
+                    let metadata = Metadata::from(expression_statement);
+                    last_expr = Some(
+                        self.execute_expr(
+                            &expression_statement.expression,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
+                        .await?,
+                    );
+                }
+                BodyItem::VariableDeclaration(variable_declaration) => {
+                    let var_name = variable_declaration.declaration.id.name.to_string();
+                    let source_range = SourceRange::from(&variable_declaration.declaration.init);
+                    let metadata = Metadata { source_range };
+
+                    let memory_item = self
+                        .execute_expr(
+                            &variable_declaration.declaration.init,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Declaration { name: &var_name },
+                        )
+                        .await?;
+                    exec_state.mut_memory().add(&var_name, memory_item, source_range)?;
+
+                    // Track exports.
+                    if let ItemVisibility::Export = variable_declaration.visibility {
+                        exec_state.mod_local.module_exports.push(var_name);
+                    }
+                    last_expr = None;
+                }
+                BodyItem::ReturnStatement(return_statement) => {
+                    let metadata = Metadata::from(return_statement);
+                    let value = self
+                        .execute_expr(
+                            &return_statement.argument,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
+                        .await?;
+                    exec_state.mut_memory().return_ = Some(value);
+                    last_expr = None;
+                }
+            }
+        }
+
+        if BodyType::Root == body_type {
+            // Flush the batch queue.
+            self.engine
+                .flush_batch(
+                    // True here tells the engine to flush all the end commands as well like fillets
+                    // and chamfers where the engine would otherwise eat the ID of the segments.
+                    true,
+                    SourceRange::new(program.end, program.end, program.module_id),
+                )
+                .await?;
+        }
+
+        Ok(last_expr)
+    }
+
+    async fn open_module(
+        &self,
+        path: &ImportPath,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<ModuleId, KclError> {
+        match path {
+            ImportPath::Kcl { filename } => {
+                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
+                    project_dir.join(filename)
+                } else {
+                    std::path::PathBuf::from(filename)
+                };
+
+                if exec_state.mod_local.import_stack.contains(&resolved_path) {
+                    return Err(KclError::ImportCycle(KclErrorDetails {
+                        message: format!(
+                            "circular import of modules is not allowed: {} -> {}",
+                            exec_state
+                                .mod_local
+                                .import_stack
+                                .iter()
+                                .map(|p| p.as_path().to_string_lossy())
+                                .collect::<Vec<_>>()
+                                .join(" -> "),
+                            resolved_path.to_string_lossy()
+                        ),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+
+                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
+                    return Ok(*id);
+                }
+
+                let source = self.fs.read_to_string(&resolved_path, source_range).await?;
+                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
+                // TODO handle parsing errors properly
+                let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
+                let repr = ModuleRepr::Kcl(parsed);
+
+                Ok(exec_state.add_module(id, resolved_path, repr))
+            }
+            ImportPath::Foreign { path } => {
+                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
+                    project_dir.join(path)
+                } else {
+                    std::path::PathBuf::from(path)
+                };
+
+                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
+                    return Ok(*id);
+                }
+
+                let geom = super::import::import_foreign(&resolved_path, None, exec_state, self, source_range).await?;
+                let repr = ModuleRepr::Foreign(geom);
+                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
+                Ok(exec_state.add_module(id, resolved_path, repr))
+            }
+            i => Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Unsupported import: `{i}`"),
+                source_ranges: vec![source_range],
+            })),
+        }
+    }
+
+    async fn exec_module(
+        &self,
+        module_id: ModuleId,
+        exec_state: &mut ExecState,
+        exec_kind: ExecutionKind,
+        source_range: SourceRange,
+    ) -> Result<(Option<KclValue>, ProgramMemory, Vec<String>), KclError> {
+        let old_units = exec_state.length_unit();
+        // TODO It sucks that we have to clone the whole module AST here
+        let info = exec_state.global.module_infos[&module_id].clone();
+
+        match &info.repr {
+            ModuleRepr::Root => Err(KclError::ImportCycle(KclErrorDetails {
+                message: format!(
+                    "circular import of modules is not allowed: {} -> {}",
+                    exec_state
+                        .mod_local
+                        .import_stack
+                        .iter()
+                        .map(|p| p.as_path().to_string_lossy())
+                        .collect::<Vec<_>>()
+                        .join(" -> "),
+                    info.path.display()
+                ),
+                source_ranges: vec![source_range],
+            })),
+            ModuleRepr::Kcl(program) => {
+                let mut local_state = ModuleState {
+                    import_stack: exec_state.mod_local.import_stack.clone(),
+                    ..ModuleState::new(&self.settings)
+                };
+                local_state.import_stack.push(info.path.clone());
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                let original_execution = self.engine.replace_execution_kind(exec_kind);
+
+                let result = self
+                    .exec_program(program, exec_state, crate::execution::BodyType::Root)
+                    .await;
+
+                let new_units = exec_state.length_unit();
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                if new_units != old_units {
+                    self.engine.set_units(old_units.into(), Default::default()).await?;
+                }
+                self.engine.replace_execution_kind(original_execution);
+
+                let result = result.map_err(|err| {
+                    if let KclError::ImportCycle(_) = err {
+                        // It was an import cycle.  Keep the original message.
+                        err.override_source_ranges(vec![source_range])
+                    } else {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!(
+                                "Error loading imported file. Open it to view more details. {}: {}",
+                                info.path.display(),
+                                err.message()
+                            ),
+                            source_ranges: vec![source_range],
+                        })
+                    }
+                })?;
+
+                Ok((result, local_state.memory, local_state.module_exports))
+            }
+            ModuleRepr::Foreign(geom) => {
+                let geom = super::import::send_to_engine(geom.clone(), self).await?;
+                Ok((Some(KclValue::ImportedGeometry(geom)), ProgramMemory::new(), Vec::new()))
+            }
+        }
+    }
+
+    #[async_recursion]
+    async fn execute_expr<'a: 'async_recursion>(
+        &self,
+        init: &Expr,
+        exec_state: &mut ExecState,
+        metadata: &Metadata,
+        statement_kind: StatementKind<'a>,
+    ) -> Result<KclValue, KclError> {
+        let item = match init {
+            Expr::None(none) => KclValue::from(none),
+            Expr::Literal(literal) => KclValue::from(literal),
+            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
+            Expr::Identifier(identifier) => {
+                let value = exec_state.memory().get(&identifier.name, identifier.into())?.clone();
+                if let KclValue::Module { value: module_id, meta } = value {
+                    let (result, _, _) = self
+                        .exec_module(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
+                        .await?;
+                    result.unwrap_or_else(|| {
+                        // The module didn't have a return value.  Currently,
+                        // the only way to have a return value is with the final
+                        // statement being an expression statement.
+                        //
+                        // TODO: Make a warning when we support them in the
+                        // execution phase.
+                        let mut new_meta = vec![metadata.to_owned()];
+                        new_meta.extend(meta);
+                        KclValue::KclNone {
+                            value: Default::default(),
+                            meta: new_meta,
+                        }
+                    })
+                } else {
+                    value
+                }
+            }
+            Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
+            Expr::FunctionExpression(function_expression) => {
+                // Cloning memory here is crucial for semantics so that we close
+                // over variables.  Variables defined lexically later shouldn't
+                // be available to the function body.
+                KclValue::Function {
+                    expression: function_expression.clone(),
+                    meta: vec![metadata.to_owned()],
+                    func: None,
+                    memory: Box::new(exec_state.memory().clone()),
+                }
+            }
+            Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
+            Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
+            Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
+            Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
+                StatementKind::Declaration { name } => {
+                    let message = format!(
+                        "you cannot declare variable {name} as %, because % can only be used in function calls"
+                    );
+
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message,
+                        source_ranges: vec![pipe_substitution.into()],
+                    }));
+                }
+                StatementKind::Expression => match exec_state.mod_local.pipe_value.clone() {
+                    Some(x) => x,
+                    None => {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: "cannot use % outside a pipe expression".to_owned(),
+                            source_ranges: vec![pipe_substitution.into()],
+                        }));
+                    }
+                },
+            },
+            Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
+            Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
+            Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
+            Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
+            Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
+            Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
+            Expr::LabelledExpression(expr) => {
+                let result = self
+                    .execute_expr(&expr.expr, exec_state, metadata, statement_kind)
+                    .await?;
+                exec_state
+                    .mut_memory()
+                    .add(&expr.label.name, result.clone(), init.into())?;
+                // TODO this lets us use the label as a variable name, but not as a tag in most cases
+                result
+            }
+        };
+        Ok(item)
+    }
+}
 
 impl BinaryPart {
     #[async_recursion]
@@ -862,7 +1297,7 @@ impl Node<IfExpression> {
             .await?
             .get_bool()?;
         if cond {
-            let block_result = ctx.inner_execute(&self.then_val, exec_state, BodyType::Block).await?;
+            let block_result = ctx.exec_program(&self.then_val, exec_state, BodyType::Block).await?;
             // Block must end in an expression, so this has to be Some.
             // Enforced by the parser.
             // See https://github.com/KittyCAD/modeling-app/issues/4015
@@ -881,9 +1316,7 @@ impl Node<IfExpression> {
                 .await?
                 .get_bool()?;
             if cond {
-                let block_result = ctx
-                    .inner_execute(&else_if.then_val, exec_state, BodyType::Block)
-                    .await?;
+                let block_result = ctx.exec_program(&else_if.then_val, exec_state, BodyType::Block).await?;
                 // Block must end in an expression, so this has to be Some.
                 // Enforced by the parser.
                 // See https://github.com/KittyCAD/modeling-app/issues/4015
@@ -892,7 +1325,7 @@ impl Node<IfExpression> {
         }
 
         // Run the final `else` branch.
-        ctx.inner_execute(&self.final_else, exec_state, BodyType::Block)
+        ctx.exec_program(&self.final_else, exec_state, BodyType::Block)
             .await
             .map(|expr| expr.unwrap())
     }
@@ -998,5 +1431,344 @@ impl Node<PipeExpression> {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
+    }
+}
+
+/// For each argument given,
+/// assign it to a parameter of the function, in the given block of function memory.
+/// Returns Err if too few/too many arguments were given for the function.
+fn assign_args_to_params(
+    function_expression: NodeRef<'_, FunctionExpression>,
+    args: Vec<Arg>,
+    mut fn_memory: ProgramMemory,
+) -> Result<ProgramMemory, KclError> {
+    let num_args = function_expression.number_of_args();
+    let (min_params, max_params) = num_args.into_inner();
+    let n = args.len();
+
+    // Check if the user supplied too many arguments
+    // (we'll check for too few arguments below).
+    let err_wrong_number_args = KclError::Semantic(KclErrorDetails {
+        message: if min_params == max_params {
+            format!("Expected {min_params} arguments, got {n}")
+        } else {
+            format!("Expected {min_params}-{max_params} arguments, got {n}")
+        },
+        source_ranges: vec![function_expression.into()],
+    });
+    if n > max_params {
+        return Err(err_wrong_number_args);
+    }
+
+    // Add the arguments to the memory.  A new call frame should have already
+    // been created.
+    for (index, param) in function_expression.params.iter().enumerate() {
+        if let Some(arg) = args.get(index) {
+            // Argument was provided.
+            fn_memory.add(&param.identifier.name, arg.value.clone(), (&param.identifier).into())?;
+        } else {
+            // Argument was not provided.
+            if let Some(ref default_val) = param.default_value {
+                // If the corresponding parameter is optional,
+                // then it's fine, the user doesn't need to supply it.
+                fn_memory.add(
+                    &param.identifier.name,
+                    default_val.clone().into(),
+                    (&param.identifier).into(),
+                )?;
+            } else {
+                // But if the corresponding parameter was required,
+                // then the user has called with too few arguments.
+                return Err(err_wrong_number_args);
+            }
+        }
+    }
+    Ok(fn_memory)
+}
+
+fn assign_args_to_params_kw(
+    function_expression: NodeRef<'_, FunctionExpression>,
+    mut args: crate::std::args::KwArgs,
+    mut fn_memory: ProgramMemory,
+) -> Result<ProgramMemory, KclError> {
+    // Add the arguments to the memory.  A new call frame should have already
+    // been created.
+    let source_ranges = vec![function_expression.into()];
+    for param in function_expression.params.iter() {
+        if param.labeled {
+            let arg = args.labeled.get(&param.identifier.name);
+            let arg_val = match arg {
+                Some(arg) => arg.value.clone(),
+                None => match param.default_value {
+                    Some(ref default_val) => KclValue::from(default_val.clone()),
+                    None => {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            source_ranges,
+                            message: format!(
+                                "This function requires a parameter {}, but you haven't passed it one.",
+                                param.identifier.name
+                            ),
+                        }));
+                    }
+                },
+            };
+            fn_memory.add(&param.identifier.name, arg_val, (&param.identifier).into())?;
+        } else {
+            let Some(unlabeled) = args.unlabeled.take() else {
+                let param_name = &param.identifier.name;
+                return Err(if args.labeled.contains_key(param_name) {
+                    KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        message: format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
+                    })
+                } else {
+                    KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        message: "This function expects an unlabeled first parameter, but you haven't passed it one."
+                            .to_owned(),
+                    })
+                });
+            };
+            fn_memory.add(
+                &param.identifier.name,
+                unlabeled.value.clone(),
+                (&param.identifier).into(),
+            )?;
+        }
+    }
+    Ok(fn_memory)
+}
+
+pub(crate) async fn call_user_defined_function(
+    args: Vec<Arg>,
+    memory: &ProgramMemory,
+    function_expression: NodeRef<'_, FunctionExpression>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<Option<KclValue>, KclError> {
+    // Create a new environment to execute the function body in so that local
+    // variables shadow variables in the parent scope.  The new environment's
+    // parent should be the environment of the closure.
+    let mut body_memory = memory.clone();
+    let body_env = body_memory.new_env_for_call(memory.current_env);
+    body_memory.current_env = body_env;
+    let fn_memory = assign_args_to_params(function_expression, args, body_memory)?;
+
+    // Execute the function body using the memory we just created.
+    let (result, fn_memory) = {
+        let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
+        let result = ctx
+            .exec_program(&function_expression.body, exec_state, BodyType::Block)
+            .await;
+        // Restore the previous memory.
+        let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
+
+        (result, fn_memory)
+    };
+
+    result.map(|_| fn_memory.return_)
+}
+
+pub(crate) async fn call_user_defined_function_kw(
+    args: crate::std::args::KwArgs,
+    memory: &ProgramMemory,
+    function_expression: NodeRef<'_, FunctionExpression>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<Option<KclValue>, KclError> {
+    // Create a new environment to execute the function body in so that local
+    // variables shadow variables in the parent scope.  The new environment's
+    // parent should be the environment of the closure.
+    let mut body_memory = memory.clone();
+    let body_env = body_memory.new_env_for_call(memory.current_env);
+    body_memory.current_env = body_env;
+    let fn_memory = assign_args_to_params_kw(function_expression, args, body_memory)?;
+
+    // Execute the function body using the memory we just created.
+    let (result, fn_memory) = {
+        let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
+        let result = ctx
+            .exec_program(&function_expression.body, exec_state, BodyType::Block)
+            .await;
+        // Restore the previous memory.
+        let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
+
+        (result, fn_memory)
+    };
+
+    result.map(|_| fn_memory.return_)
+}
+
+/// A function being used as a parameter into a stdlib function.  This is a
+/// closure, plus everything needed to execute it.
+pub struct FunctionParam<'a> {
+    pub inner: Option<&'a MemoryFunction>,
+    pub memory: ProgramMemory,
+    pub fn_expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+    pub meta: Vec<Metadata>,
+    pub ctx: ExecutorContext,
+}
+
+impl FunctionParam<'_> {
+    pub async fn call(&self, exec_state: &mut ExecState, args: Vec<Arg>) -> Result<Option<KclValue>, KclError> {
+        if let Some(inner) = self.inner {
+            inner(
+                args,
+                self.memory.clone(),
+                self.fn_expr.clone(),
+                self.meta.clone(),
+                exec_state,
+                self.ctx.clone(),
+            )
+            .await
+        } else {
+            call_user_defined_function(args, &self.memory, self.fn_expr.as_ref(), exec_state, &self.ctx).await
+        }
+    }
+}
+
+impl JsonSchema for FunctionParam<'_> {
+    fn schema_name() -> String {
+        "FunctionParam".to_owned()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        // TODO: Actually generate a reasonable schema.
+        gen.subschema_for::<()>()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Parameter};
+
+    #[test]
+    fn test_assign_args_to_params() {
+        // Set up a little framework for this test.
+        fn mem(number: usize) -> KclValue {
+            KclValue::Int {
+                value: number as i64,
+                meta: Default::default(),
+            }
+        }
+        fn ident(s: &'static str) -> Node<Identifier> {
+            Node::no_src(Identifier {
+                name: s.to_owned(),
+                digest: None,
+            })
+        }
+        fn opt_param(s: &'static str) -> Parameter {
+            Parameter {
+                identifier: ident(s),
+                type_: None,
+                default_value: Some(DefaultParamVal::none()),
+                labeled: true,
+                digest: None,
+            }
+        }
+        fn req_param(s: &'static str) -> Parameter {
+            Parameter {
+                identifier: ident(s),
+                type_: None,
+                default_value: None,
+                labeled: true,
+                digest: None,
+            }
+        }
+        fn additional_program_memory(items: &[(String, KclValue)]) -> ProgramMemory {
+            let mut program_memory = ProgramMemory::new();
+            for (name, item) in items {
+                program_memory
+                    .add(name.as_str(), item.clone(), SourceRange::default())
+                    .unwrap();
+            }
+            program_memory
+        }
+        // Declare the test cases.
+        for (test_name, params, args, expected) in [
+            ("empty", Vec::new(), Vec::new(), Ok(ProgramMemory::new())),
+            (
+                "all params required, and all given, should be OK",
+                vec![req_param("x")],
+                vec![mem(1)],
+                Ok(additional_program_memory(&[("x".to_owned(), mem(1))])),
+            ),
+            (
+                "all params required, none given, should error",
+                vec![req_param("x")],
+                vec![],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange::default()],
+                    message: "Expected 1 arguments, got 0".to_owned(),
+                })),
+            ),
+            (
+                "all params optional, none given, should be OK",
+                vec![opt_param("x")],
+                vec![],
+                Ok(additional_program_memory(&[("x".to_owned(), KclValue::none())])),
+            ),
+            (
+                "mixed params, too few given",
+                vec![req_param("x"), opt_param("y")],
+                vec![],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange::default()],
+                    message: "Expected 1-2 arguments, got 0".to_owned(),
+                })),
+            ),
+            (
+                "mixed params, minimum given, should be OK",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1)],
+                Ok(additional_program_memory(&[
+                    ("x".to_owned(), mem(1)),
+                    ("y".to_owned(), KclValue::none()),
+                ])),
+            ),
+            (
+                "mixed params, maximum given, should be OK",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1), mem(2)],
+                Ok(additional_program_memory(&[
+                    ("x".to_owned(), mem(1)),
+                    ("y".to_owned(), mem(2)),
+                ])),
+            ),
+            (
+                "mixed params, too many given",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1), mem(2), mem(3)],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange::default()],
+                    message: "Expected 1-2 arguments, got 3".to_owned(),
+                })),
+            ),
+        ] {
+            // Run each test.
+            let func_expr = &Node::no_src(FunctionExpression {
+                params,
+                body: Node {
+                    inner: crate::parsing::ast::types::Program {
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                        shebang: None,
+                        digest: None,
+                    },
+                    start: 0,
+                    end: 0,
+                    module_id: ModuleId::default(),
+                },
+                return_type: None,
+                digest: None,
+            });
+            let args = args.into_iter().map(Arg::synthetic).collect();
+            let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
+            assert_eq!(
+                actual, expected,
+                "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
+            );
+        }
     }
 }

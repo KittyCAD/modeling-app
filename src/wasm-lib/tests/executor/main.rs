@@ -2,7 +2,7 @@ mod cache;
 
 use kcl_lib::{
     test_server::{execute_and_snapshot, execute_and_snapshot_no_auth},
-    UnitLength,
+    ExecError, UnitLength,
 };
 
 /// The minimum permissible difference between asserted twenty-twenty images.
@@ -30,7 +30,7 @@ async fn kcl_test_fillet_duplicate_tags() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([203, 249, 0])], message: "Duplicate tags are not allowed." }"#,
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([229, 275, 0])], message: "Duplicate tags are not allowed." }"#,
     );
 }
 
@@ -38,18 +38,18 @@ async fn kcl_test_fillet_duplicate_tags() {
 async fn kcl_test_execute_engine_error_return() {
     let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
-  |> line([10.50433, -1.19122], %)
-  |> line([8.01362, -5.48731], %)
-  |> line([-1.02877, -6.76825], %)
-  |> line([-11.53311, 2.81559], %)
-  |> extrude(4, %)
+  |> line(end = [10.50433, -1.19122])
+  |> line(end = [8.01362, -5.48731])
+  |> line(end = [-1.02877, -6.76825])
+  |> line(end = [-11.53311, 2.81559])
+  |> extrude(length = 4)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([216, 229, 0])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]" }"#,
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([228, 247, 0])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]" }"#,
     );
 }
 
@@ -154,10 +154,10 @@ async fn kcl_test_negative_args() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"boxSketch = startSketchAt([0, 0])
-    |> line([0, 10], %)
+    |> line(end = [0, 10])
     |> tangentialArcToRelative([-5, 5], %)
-    |> line([5, -15], %)
-    |> extrude(10, %)
+    |> line(end = [5, -15])
+    |> extrude(length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -167,10 +167,10 @@ async fn kcl_test_basic_tangential_arc_with_point() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_tangential_arc_to() {
     let code = r#"boxSketch = startSketchAt([0, 0])
-    |> line([0, 10], %)
+    |> line(end = [0, 10])
     |> tangentialArcTo([-5, 15], %)
-    |> line([5, -15], %)
-    |> extrude(10, %)
+    |> line(end = [5, -15])
+    |> extrude(length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -186,11 +186,11 @@ length = 12
 fn box = (sk1, sk2, scale, plane) => {
   boxsketch = startSketchOn(plane)
     |> startProfileAt([sk1, sk2], %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
   return boxsketch
 }
 
@@ -218,44 +218,44 @@ wallMountL = 8
 
 bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %)
+  |> line(end = [0, wallMountL])
   |> tangentialArc({ radius: filletR, offset: 90 }, %)
-  |> line([-shelfMountL, 0], %)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL, 0], %)
+  |> line(end = [-shelfMountL, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [shelfMountL, 0])
   |> tangentialArc({
        radius: filletR - thickness,
        offset: -90
      }, %)
-  |> line([0, -wallMountL], %)
-  |> close(%)
-  |> extrude(width, %)
+  |> line(end = [0, -wallMountL])
+  |> close()
+  |> extrude(length = width)
 
 part001 = startSketchOn('XY')
   |> startProfileAt([-15.53, -10.28], %)
-  |> line([10.49, -2.08], %)
-  |> line([10.42, 8.47], %)
-  |> line([-19.16, 5.1], %)
-  |> close(%)
-  |> extrude(4, %)
+  |> line(end = [10.49, -2.08])
+  |> line(end = [10.42, 8.47])
+  |> line(end = [-19.16, 5.1])
+  |> close()
+  |> extrude(length = 4)
 
 part002 = startSketchOn('-XZ')
   |> startProfileAt([-9.35, 19.18], %)
-  |> line([32.14, -2.47], %)
-  |> line([8.39, -3.73], %)
-  |> close(%)
+  |> line(end = [32.14, -2.47])
+  |> line(end = [8.39, -3.73])
+  |> close()
 
 part003 = startSketchOn('-XZ')
   |> startProfileAt([13.82, 16.51], %)
-  |> line([-6.24, -30.82], %)
-  |> line([8.39, -3.73], %)
-  |> close(%)
+  |> line(end = [-6.24, -30.82])
+  |> line(end = [8.39, -3.73])
+  |> close()
 
 part004 = startSketchOn('YZ')
   |> startProfileAt([19.04, 20.22], %)
-  |> line([9.44, -30.16], %)
-  |> line([8.39, -3.73], %)
-  |> close(%)
+  |> line(end = [9.44, -30.16])
+  |> line(end = [8.39, -3.73])
+  |> close()
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -266,13 +266,13 @@ part004 = startSketchOn('YZ')
 async fn kcl_test_holes() {
     let code = r#"square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 10], %)
-  |> line([10, 0], %)
-  |> line([0, -10], %)
-  |> close(%)
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> line(end = [0, -10])
+  |> close()
   |> hole(circle({ center: [2, 2], radius: .5 }, %), %)
   |> hole(circle({ center: [2, 8], radius: .5 }, %), %)
-  |> extrude(2, %)
+  |> extrude(length = 2)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -285,9 +285,9 @@ async fn optional_params() {
     fn other_circle = (pos, radius, tag?) => {
       sg = startSketchOn('XY')
         |> startProfileAt(pos, %)
-        |> arc({angleEnd: 360, angleStart: 0, radius: radius}, %)
-        |> close(%)
-        |> extrude(2, %)
+        |> arc({angleEnd = 360, angleStart = 0, radius}, %)
+        |> close()
+        |> extrude(length = 2)
 
       return sg
   }
@@ -307,15 +307,15 @@ async fn kcl_test_rounded_with_holes() {
 fn roundedRectangle = (pos, w, l, cornerRadius) => {
   rr = startSketchOn('XY')
     |> startProfileAt([pos[0] - w/2, 0], %)
-    |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
+    |> line(endAbsolute = [pos[0] - w/2, pos[1] - l/2 + cornerRadius])
     |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, $arc0)
-    |> lineTo([pos[0] + w/2 - cornerRadius, pos[1] - l/2], %)
+    |> line(endAbsolute = [pos[0] + w/2 - cornerRadius, pos[1] - l/2])
     |> tarc([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
-    |> lineTo([pos[0] + w/2, pos[1] + l/2 - cornerRadius], %)
+    |> line(endAbsolute = [pos[0] + w/2, pos[1] + l/2 - cornerRadius])
     |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, $arc2)
-    |> lineTo([pos[0] - w/2 + cornerRadius, pos[1] + l/2], %)
+    |> line(endAbsolute = [pos[0] - w/2 + cornerRadius, pos[1] + l/2])
     |> tarc([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
-    |> close(%)
+    |> close()
   return rr
 }
 
@@ -327,7 +327,7 @@ part = roundedRectangle([0, 0], 20, 20, 4)
   |> hole(circle({ center: [holeIndex, holeIndex], radius: holeRadius }, %), %)
   |> hole(circle({ center: [-holeIndex, -holeIndex], radius: holeRadius }, %), %)
   |> hole(circle({ center: [holeIndex, -holeIndex], radius: holeRadius }, %), %)
-  |> extrude(2, %)
+  |> extrude(length = 2)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -336,7 +336,7 @@ part = roundedRectangle([0, 0], 20, 20, 4)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_top_level_expression() {
-    let code = r#"startSketchOn('XY') |> circle({ center: [0,0], radius: 22 }, %) |> extrude(14, %)"#;
+    let code = r#"startSketchOn('XY') |> circle({ center: [0,0], radius: 22 }, %) |> extrude(length = 14)"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("top_level_expression", &result);
@@ -349,7 +349,7 @@ distance = 5
 part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,1], instances: num, distance: distance - 1}, %)
-    |> extrude(1, %)
+    |> extrude(length = 1)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -361,7 +361,7 @@ async fn kcl_test_patterns_linear_basic() {
     let code = r#"part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,1], instances: 13, distance: 4}, %)
-    |> extrude(1, %)
+    |> extrude(length = 1)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -372,11 +372,11 @@ async fn kcl_test_patterns_linear_basic() {
 async fn kcl_test_patterns_linear_basic_3d() {
     let code = r#"part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> line([0,1], %)
-    |> line([1, 0], %)
-    |> line([0, -1], %)
-    |> close(%)
-    |> extrude(1, %)
+    |> line(end = [0,1])
+    |> line(end = [1, 0])
+    |> line(end = [0, -1])
+    |> close()
+    |> extrude(length = 1)
     |> patternLinear3d({axis: [1, 0, 1], instances: 4, distance: 6}, %)
 "#;
 
@@ -389,7 +389,7 @@ async fn kcl_test_patterns_linear_basic_negative_distance() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,1], instances: 13, distance: -2}, %)
-    |> extrude(1, %)
+    |> extrude(length = 1)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -401,7 +401,7 @@ async fn kcl_test_patterns_linear_basic_negative_axis() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,-1], instances: 13, distance: 2}, %)
-    |> extrude(1, %)
+    |> extrude(length = 1)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -416,12 +416,12 @@ async fn kcl_test_patterns_linear_basic_holes() {
 
 rectangle = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 50], %)
-  |> line([50, 0], %)
-  |> line([0, -50], %)
-  |> close(%)
+  |> line(end = [0, 50])
+  |> line(end = [50, 0])
+  |> line(end = [0, -50])
+  |> close()
   |> hole(circles, %)
-  |> extrude(10, %)
+  |> extrude(length = 10)
 
 "#;
 
@@ -434,7 +434,7 @@ async fn kcl_test_patterns_circular_basic_2d() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternCircular2d({center: [20, 20], instances: 13, arcDegrees: 210, rotateDuplicates: true}, %)
-    |> extrude(1, %)
+    |> extrude(length = 1)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -445,11 +445,11 @@ async fn kcl_test_patterns_circular_basic_2d() {
 async fn kcl_test_patterns_circular_basic_3d() {
     let code = r#"part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> line([0,1], %)
-    |> line([1, 0], %)
-    |> line([0, -1], %)
-    |> close(%)
-    |> extrude(1, %)
+    |> line(end = [0,1])
+    |> line(end = [1, 0])
+    |> line(end = [0, -1])
+    |> close()
+    |> extrude(length = 1)
     |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 41, arcDegrees: 360, rotateDuplicates: false}, %)
 "#;
 
@@ -461,11 +461,11 @@ async fn kcl_test_patterns_circular_basic_3d() {
 async fn kcl_test_patterns_circular_3d_tilted_axis() {
     let code = r#"part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> line([0,1], %)
-    |> line([1, 0], %)
-    |> line([0, -1], %)
-    |> close(%)
-    |> extrude(1, %)
+    |> line(end = [0,1])
+    |> line(end = [1, 0])
+    |> line(end = [0, -1])
+    |> close()
+    |> extrude(length = 1)
     |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], instances: 11, arcDegrees: 360, rotateDuplicates: true}, %)
 "#;
 
@@ -558,11 +558,11 @@ async fn kcl_test_cube_mm() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
 
   return sg
 }
@@ -579,11 +579,11 @@ async fn kcl_test_cube_cm() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
 
   return sg
 }
@@ -600,11 +600,11 @@ async fn kcl_test_cube_m() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
 
   return sg
 }
@@ -621,11 +621,11 @@ async fn kcl_test_cube_in() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
 
   return sg
 }
@@ -642,11 +642,11 @@ async fn kcl_test_cube_ft() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
 
   return sg
 }
@@ -663,11 +663,11 @@ async fn kcl_test_cube_yd() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
 
   return sg
 }
@@ -685,30 +685,33 @@ async fn kcl_test_error_sketch_on_arc_face() {
   sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
   |> tangentialArcToRelative([0, scale], %, $here)
-  |> line([scale, 0], %)
-  |> line([0, -scale], %)
+  |> line(end = [scale, 0])
+  |> line(end = [0, -scale])
 
   return sg
 }
 part001 = cube([0, 0], 20)
-  |> close(%)
-  |> extrude(20, %)
+  |> close()
+  |> extrude(length = 20)
 
 part002 = startSketchOn(part001, part001.sketch.tags.here)
   |> startProfileAt([0, 0], %)
-  |> line([5, 0], %)
-  |> line([5, 5], %)
-  |> line([0, 5], %)
-  |> close(%)
-  |> extrude(1, %)
+  |> line(end = [5, 0])
+  |> line(end = [5, 5])
+  |> line(end = [0, 5])
+  |> close()
+  |> extrude(length = 1)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
 
-    assert!(result.is_err());
+    let err = result.err().unwrap();
+    let ExecError::Kcl(err) = err else {
+        panic!("Expected KCL error, found {err}");
+    };
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([88, 133, 0]), SourceRange([210, 226, 0])], message: "could not sketch tangential arc, because its center would be infinitely far away in the X direction" }"#
+        err.error.message(),
+        "could not sketch tangential arc, because its center would be infinitely far away in the X direction"
     );
 }
 
@@ -717,31 +720,31 @@ async fn kcl_test_sketch_on_face_of_face() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }
 part001 = cube([0,0], 20)
-    |> close(%)
-    |> extrude(20, %)
+    |> close()
+    |> extrude(length = 20)
 
 part002 = startSketchOn(part001, "end")
   |> startProfileAt([0, 0], %)
-  |> line([0, 10], %)
-  |> line([10, 0], %)
-  |> line([0, -10], %)
-  |> close(%)
-  |> extrude(5, %)
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> line(end = [0, -10])
+  |> close()
+  |> extrude(length = 5)
 
 part003 = startSketchOn(part002, "end")
   |> startProfileAt([0, 0], %)
-  |> line([0, 5], %)
-  |> line([5, 0], %)
-  |> line([0, -5], %)
-  |> close(%)
-  |> extrude(5, %)
+  |> line(end = [0, 5])
+  |> line(end = [5, 0])
+  |> line(end = [0, -5])
+  |> close()
+  |> extrude(length = 5)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -752,21 +755,21 @@ part003 = startSketchOn(part002, "end")
 async fn kcl_test_stdlib_kcl_error_right_code_path() {
     let code = r#"square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 10], %)
-  |> line([10, 0], %)
-  |> line([0, -10], %)
-  |> close(%)
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> line(end = [0, -10])
+  |> close()
   |> hole(circle({ center: [2, 2], radius: .5 }), %)
   |> hole(circle({ center: [2, 8], radius: .5 }, %), %)
-  |> extrude(2, %)
+  |> extrude(length = 2)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([151, 189, 0])], message: "Expected an argument at index 1" }"#,
-    );
+    let err = result.err().unwrap();
+    let ExecError::Kcl(err) = err else {
+        panic!("Expected KCL error, found {err}");
+    };
+    assert_eq!(err.error.message(), "Expected an argument at index 1");
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -774,19 +777,19 @@ async fn kcl_test_sketch_on_face_circle() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }
 part001 = cube([0,0], 20)
-    |> close(%)
-    |> extrude(20, %)
+    |> close()
+    |> extrude(length = 20)
 
 part002 = startSketchOn(part001, "end")
   |> circle({ center: [0, 0], radius: 5 }, %) 
-  |> extrude(5, %)
+  |> extrude(length = 5)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -802,10 +805,10 @@ async fn kcl_test_stdlib_kcl_error_circle() {
 fn rectShape = (pos, w, l) => {
   rr = startSketchOn('XY')
   |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-  |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
-  |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
-  |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
-  |> close(%, $edge4)
+  |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
+  |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
+  |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
+  |> close(tag = $edge4)
   return rr
 }
 
@@ -819,7 +822,7 @@ part = rectShape([0, 0], 20, 20)
   |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
   |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
   |> hole(circle('XY', [holeIndex, -holeIndex], holeRadius), %)
-  |> extrude(2, %)
+  |> extrude(length = 2)
   |> fillet({
        radius: 4,
        tags: [
@@ -832,10 +835,13 @@ part = rectShape([0, 0], 20, 20)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
-    assert!(result.is_err());
+    let err = result.err().unwrap();
+    let ExecError::Kcl(err) = err else {
+        panic!("Expected KCL error, found {err}");
+    };
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([870, 874, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)" }"#,
+        err.error.message(),
+        "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)"
     );
 }
 
@@ -843,14 +849,14 @@ part = rectShape([0, 0], 20, 20)
 async fn kcl_test_simple_revolve() {
     let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
-     |> line([2, 0], %)
-     |> line([0, -6], %)
-     |> line([4, -6], %)
-     |> line([0, -6], %)
-     |> line([-3.75, -4.5], %)
-     |> line([0, -5.5], %)
-     |> line([-2, 0], %)
-     |> close(%)
+     |> line(end = [2, 0])
+     |> line(end = [0, -6])
+     |> line(end = [4, -6])
+     |> line(end = [0, -6])
+     |> line(end = [-3.75, -4.5])
+     |> line(end = [0, -5.5])
+     |> line(end = [-2, 0])
+     |> close()
      |> revolve({axis: 'y'}, %)
 
 "#;
@@ -863,14 +869,14 @@ async fn kcl_test_simple_revolve() {
 async fn kcl_test_simple_revolve_uppercase() {
     let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
-     |> line([2, 0], %)
-     |> line([0, -6], %)
-     |> line([4, -6], %)
-     |> line([0, -6], %)
-     |> line([-3.75, -4.5], %)
-     |> line([0, -5.5], %)
-     |> line([-2, 0], %)
-     |> close(%)
+     |> line(end = [2, 0])
+     |> line(end = [0, -6])
+     |> line(end = [4, -6])
+     |> line(end = [0, -6])
+     |> line(end = [-3.75, -4.5])
+     |> line(end = [0, -5.5])
+     |> line(end = [-2, 0])
+     |> close()
      |> revolve({axis: 'Y'}, %)
 
 "#;
@@ -883,14 +889,14 @@ async fn kcl_test_simple_revolve_uppercase() {
 async fn kcl_test_simple_revolve_negative() {
     let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
-     |> line([2, 0], %)
-     |> line([0, -6], %)
-     |> line([4, -6], %)
-     |> line([0, -6], %)
-     |> line([-3.75, -4.5], %)
-     |> line([0, -5.5], %)
-     |> line([-2, 0], %)
-     |> close(%)
+     |> line(end = [2, 0])
+     |> line(end = [0, -6])
+     |> line(end = [4, -6])
+     |> line(end = [0, -6])
+     |> line(end = [-3.75, -4.5])
+     |> line(end = [0, -5.5])
+     |> line(end = [-2, 0])
+     |> close()
      |> revolve({axis: '-Y', angle: 180}, %)
 
 "#;
@@ -903,14 +909,14 @@ async fn kcl_test_simple_revolve_negative() {
 async fn kcl_test_revolve_bad_angle_low() {
     let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
-     |> line([2, 0], %)
-     |> line([0, -6], %)
-     |> line([4, -6], %)
-     |> line([0, -6], %)
-     |> line([-3.75, -4.5], %)
-     |> line([0, -5.5], %)
-     |> line([-2, 0], %)
-     |> close(%)
+     |> line(end = [2, 0])
+     |> line(end = [0, -6])
+     |> line(end = [4, -6])
+     |> line(end = [0, -6])
+     |> line(end = [-3.75, -4.5])
+     |> line(end = [0, -5.5])
+     |> line(end = [-2, 0])
+     |> close()
      |> revolve({axis: 'y', angle: -455}, %)
 
 "#;
@@ -918,24 +924,25 @@ async fn kcl_test_revolve_bad_angle_low() {
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
 
     assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 308, 0])], message: "Expected angle to be between -360 and 360 and not 0, found `-455`" }"#
-    );
+    assert!(result
+        .err()
+        .unwrap()
+        .to_string()
+        .contains("Expected angle to be between -360 and 360 and not 0, found `-455`"));
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_bad_angle_high() {
     let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
-     |> line([2, 0], %)
-     |> line([0, -6], %)
-     |> line([4, -6], %)
-     |> line([0, -6], %)
-     |> line([-3.75, -4.5], %)
-     |> line([0, -5.5], %)
-     |> line([-2, 0], %)
-     |> close(%)
+     |> line(end = [2, 0])
+     |> line(end = [0, -6])
+     |> line(end = [4, -6])
+     |> line(end = [0, -6])
+     |> line(end = [-3.75, -4.5])
+     |> line(end = [0, -5.5])
+     |> line(end = [-2, 0])
+     |> close()
      |> revolve({axis: 'y', angle: 455}, %)
 
 "#;
@@ -943,24 +950,25 @@ async fn kcl_test_revolve_bad_angle_high() {
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
 
     assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 307, 0])], message: "Expected angle to be between -360 and 360 and not 0, found `455`" }"#
-    );
+    assert!(result
+        .err()
+        .unwrap()
+        .to_string()
+        .contains("Expected angle to be between -360 and 360 and not 0, found `455`"));
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_custom_angle() {
     let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
-     |> line([2, 0], %)
-     |> line([0, -6], %)
-     |> line([4, -6], %)
-     |> line([0, -6], %)
-     |> line([-3.75, -4.5], %)
-     |> line([0, -5.5], %)
-     |> line([-2, 0], %)
-     |> close(%)
+     |> line(end = [2, 0])
+     |> line(end = [0, -6])
+     |> line(end = [4, -6])
+     |> line(end = [0, -6])
+     |> line(end = [-3.75, -4.5])
+     |> line(end = [0, -5.5])
+     |> line(end = [-2, 0])
+     |> close()
      |> revolve({axis: 'y', angle: 180}, %)
 
 "#;
@@ -973,14 +981,14 @@ async fn kcl_test_simple_revolve_custom_angle() {
 async fn kcl_test_simple_revolve_custom_axis() {
     let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
-     |> line([2, 0], %)
-     |> line([0, -6], %)
-     |> line([4, -6], %)
-     |> line([0, -6], %)
-     |> line([-3.75, -4.5], %)
-     |> line([0, -5.5], %)
-     |> line([-2, 0], %)
-     |> close(%)
+     |> line(end = [2, 0])
+     |> line(end = [0, -6])
+     |> line(end = [4, -6])
+     |> line(end = [0, -6])
+     |> line(end = [-3.75, -4.5])
+     |> line(end = [0, -5.5])
+     |> line(end = [-2, 0])
+     |> close()
      |> revolve({axis: {custom: {axis: [0, -1], origin: [0,0]}}, angle: 180}, %)
 
 "#;
@@ -993,18 +1001,18 @@ async fn kcl_test_simple_revolve_custom_axis() {
 async fn kcl_test_revolve_on_edge() {
     let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 10], %)
-  |> line([10, 0], %)
-  |> line([0, -10], %, $revolveAxis)
-  |> close(%)
-  |> extrude(10, %)
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> line(end = [0, -10], tag = $revolveAxis)
+  |> close()
+  |> extrude(length = 10)
 
 sketch001 = startSketchOn(box, "end")
   |> startProfileAt([5, 10], %)
-  |> line([0, -10], %)
-  |> line([2, 0], %)
-  |> line([0, 10], %)
-  |> close(%)
+  |> line(end = [0, -10])
+  |> line(end = [2, 0])
+  |> line(end = [0, 10])
+  |> close()
   |> revolve({ axis: getOppositeEdge(revolveAxis), angle: 90 }, %)
 
 "#;
@@ -1017,18 +1025,18 @@ sketch001 = startSketchOn(box, "end")
 async fn kcl_test_revolve_on_edge_get_edge() {
     let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 10], %)
-  |> line([10, 0], %)
-  |> line([0, -10], %, $revolveAxis)
-  |> close(%)
-  |> extrude(10, %)
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> line(end = [0, -10], tag = $revolveAxis)
+  |> close()
+  |> extrude(length = 10)
 
 sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
-  |> line([0, -10], %)
-  |> line([2, 0], %)
-  |> line([0, 10], %)
-  |> close(%)
+  |> line(end = [0, -10])
+  |> line(end = [2, 0])
+  |> line(end = [0, 10])
+  |> close()
   |> revolve({ axis: revolveAxis, angle: 90 }, %)
 
 "#;
@@ -1047,11 +1055,11 @@ sketch001 = startSketchOn(box, revolveAxis)
 async fn kcl_test_revolve_on_face_circle_edge() {
     let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 20], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %, $revolveAxis) 
-  |> close(%)
-  |> extrude(20, %)
+  |> line(end = [0, 20])
+  |> line(end = [20, 0])
+  |> line(end = [0, -20], tag = $revolveAxis) 
+  |> close()
+  |> extrude(length = 20)
 
 sketch001 = startSketchOn(box, "END")
   |> circle({ center: [10,10], radius: 4 }, %)
@@ -1069,11 +1077,11 @@ sketch001 = startSketchOn(box, "END")
 async fn kcl_test_revolve_on_face_circle() {
     let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 20], %)
-  |> line([20, 0], %, $revolveAxis)
-  |> line([0, -20], %) 
-  |> close(%)
-  |> extrude(20, %)
+  |> line(end = [0, 20])
+  |> line(end = [20, 0], tag = $revolveAxis)
+  |> line(end = [0, -20]) 
+  |> close()
+  |> extrude(length = 20)
 
 sketch001 = startSketchOn(box, "END")
   |> circle({ center: [10,10], radius: 4 }, %)
@@ -1091,18 +1099,18 @@ sketch001 = startSketchOn(box, "END")
 async fn kcl_test_revolve_on_face() {
     let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 10], %)
-  |> line([10, 0], %)
-  |> line([0, -10], %)
-  |> close(%, $revolveAxis)
-  |> extrude(10, %)
+  |> line(end = [0, 10])
+  |> line(end = [10, 0])
+  |> line(end = [0, -10])
+  |> close(tag = $revolveAxis)
+  |> extrude(length = 10)
 
 sketch001 = startSketchOn(box, "end")
   |> startProfileAt([5, 10], %)
-  |> line([0, -10], %)
-  |> line([2, 0], %)
-  |> line([0, 10], %)
-  |> close(%)
+  |> line(end = [0, -10])
+  |> line(end = [2, 0])
+  |> line(end = [0, 10])
+  |> close()
   |> revolve({
       axis: 'y',
       angle: -90,
@@ -1131,23 +1139,23 @@ async fn kcl_test_basic_revolve_circle() {
 async fn kcl_test_simple_revolve_sketch_on_edge() {
     let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
-     |> line([2, 0], %)
-     |> line([0, -6], %)
-     |> line([4, -6], %)
-     |> line([0, -6], %)
-     |> line([-3.75, -4.5], %)
-     |> line([0, -5.5], %)
-     |> line([-2, 0], %)
-     |> close(%)
+     |> line(end = [2, 0])
+     |> line(end = [0, -6])
+     |> line(end = [4, -6])
+     |> line(end = [0, -6])
+     |> line(end = [-3.75, -4.5])
+     |> line(end = [0, -5.5])
+     |> line(end = [-2, 0])
+     |> close()
      |> revolve({axis: 'y', angle: 180}, %)
 
 part002 = startSketchOn(part001, 'end')
     |> startProfileAt([4.5, -5], %)
-    |> line([0, 5], %)
-    |> line([5, 0], %)
-    |> line([0, -5], %)
-    |> close(%)
-    |> extrude(5, %)
+    |> line(end = [0, 5])
+    |> line(end = [5, 0])
+    |> line(end = [0, -5])
+    |> close()
+    |> extrude(length = 5)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1164,7 +1172,7 @@ async fn kcl_test_plumbus_fillets() {
        angleStart: 0,
        radius: radius
      }, %, $arc1)
-  |> close(%)
+  |> close()
 
   return sg
 }
@@ -1194,11 +1202,11 @@ fn pentagon = (len) => {
 }
 
 p = pentagon(32)
-  |> extrude(10, %)
+  |> extrude(length = 10)
 
 circle0 = make_circle(p, p.sketch.tags.a, [0, 0], 2.5)
 plumbus0 = circle0
-  |> extrude(10, %)
+  |> extrude(length = 10)
   |> fillet({
        radius: 0.5,
        tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1)]
@@ -1206,7 +1214,7 @@ plumbus0 = circle0
 
 circle1 = make_circle(p, p.sketch.tags.b, [0, 0], 2.5)
 plumbus1 = circle1
-   |> extrude(10, %)
+   |> extrude(length = 10)
    |> fillet({
         radius: 0.5,
         tags: [circle1.tags.arc1, getOppositeEdge(circle1.tags.arc1)]
@@ -1241,10 +1249,10 @@ async fn kcl_test_member_expression_in_params() {
       }
   })
     |> circle({ center: [0, 0], radius: capDia / 2 }, %)
-    |> extrude(capHeadLength, %)
+    |> extrude(length = capHeadLength)
   screw = startSketchOn(screwHead, "start")
     |> circle({ center: [0, 0], radius: dia / 2 }, %)
-    |> extrude(length, %)
+    |> extrude(length = length)
   return screw
 }
 
@@ -1279,13 +1287,13 @@ filletR = 0.25
 // Sketch the bracket and extrude with fillets
 bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, $outerEdge)
-  |> line([-shelfMountL, 0], %)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, $innerEdge)
-  |> line([0, -wallMountL + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
+  |> line(end = [0, wallMountL], tag = $outerEdge)
+  |> line(end = [-shelfMountL, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [shelfMountL - thickness, 0], tag = $innerEdge)
+  |> line(end = [0, -wallMountL + thickness])
+  |> close()
+  |> extrude(length = width)
   |> fillet({
        radius: filletR,
        tags: [getNextAdjacentEdge(innerEdge)]
@@ -1304,23 +1312,23 @@ bracket = startSketchOn('XY')
 async fn kcl_test_error_empty_start_sketch_on_string() {
     let code = r#"part001 = startSketchOn('-XZ')
   |> startProfileAt([75.75, 184.25], %)
-  |> line([190.03, -118.13], %)
-  |> line([-33.38, -202.86], %)
-  |> line([-315.86, -64.2], %)
+  |> line(end = [190.03, -118.13])
+  |> line(end = [-33.38, -202.86])
+  |> line(end = [-315.86, -64.2])
   |> tangentialArcTo([-147.66, 121.34], %)
-  |> close(%)
-  |> extrude(100, %)
+  |> close()
+  |> extrude(length = 100)
 
 secondSketch = startSketchOn(part001, '')
   |> circle({ center: [-20, 50], radius: 40 }, %)
-  |> extrude(20, %)
+  |> extrude(length = 20)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([283, 285, 0])], message: "Argument at index 1 was supposed to be type Option<kcl_lib::std::sketch::FaceTag> but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([297, 299, 0])], message: "Argument at index 1 was supposed to be type Option<kcl_lib::std::sketch::FaceTag> but found string (text)" }"#
     );
 }
 
@@ -1334,24 +1342,24 @@ dia = 4
 fn squareHole = (l, w) => {
   squareHoleSketch = startSketchOn('XY')
   |> startProfileAt([-width / 2, -length / 2], %)
-  |> lineTo([width / 2, -length / 2], %)
-  |> lineTo([width / 2, length / 2], %)
-  |> lineTo([-width / 2, length / 2], %)
-  |> close(%)
+  |> line(endAbsolute = [width / 2, -length / 2])
+  |> line(endAbsolute = [width / 2, length / 2])
+  |> line(endAbsolute = [-width / 2, length / 2])
+  |> close()
   return squareHoleSketch
 }
 
 extrusion = startSketchOn('XY')
   |> circle({ center: [0, 0], radius: dia/2 }, %)
   |> hole(squareHole(length, width, height), %)
-  |> extrude(height, %)
+  |> extrude(length = height)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([68, 334, 0]), SourceRange([428, 461, 0])], message: "Expected 2 arguments, got 3" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([68, 360, 0]), SourceRange([454, 487, 0])], message: "Expected 2 arguments, got 3" }"#
     );
 }
 
@@ -1361,23 +1369,23 @@ async fn kcl_test_array_of_sketches() {
 
 profile001 = plane001
   |> startProfileAt([40.82, 240.82], %)
-  |> line([235.72, -8.16], %)
-  |> line([13.27, -253.07], %)
-  |> line([-247.97, -19.39], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [235.72, -8.16])
+  |> line(end = [13.27, -253.07])
+  |> line(end = [-247.97, -19.39])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
 profile002 = plane001
   |> startProfileAt([47.17, -71.91], %)
-  |> line([247.96, -4.03], %)
-  |> line([-17.26, -116.79], %)
-  |> line([-235.87, 12.66], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [247.96, -4.03])
+  |> line(end = [-17.26, -116.79])
+  |> line(end = [-235.87, 12.66])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
 sketch001 = [profile001, profile002]
 
-extrude(10, sketch001)
+ extrude(sketch001, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1390,21 +1398,21 @@ async fn kcl_test_circular_pattern3d_array_of_extrudes() {
 
 sketch001 = plane001
   |> startProfileAt([40.82, 240.82], %)
-  |> line([235.72, -8.16], %)
-  |> line([13.27, -253.07], %)
-  |> line([-247.97, -19.39], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(10, %)
+  |> line(end = [235.72, -8.16])
+  |> line(end = [13.27, -253.07])
+  |> line(end = [-247.97, -19.39])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 10)
 
 sketch002 = plane001
   |> startProfileAt([47.17, -71.91], %)
-  |> line([247.96, -4.03], %)
-  |> line([-17.26, -116.79], %)
-  |> line([-235.87, 12.66], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(10, %)
+  |> line(end = [247.96, -4.03])
+  |> line(end = [-17.26, -116.79])
+  |> line(end = [-235.87, 12.66])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 10)
 
 
 let extrudes = [sketch001, sketch002] 
@@ -1440,16 +1448,16 @@ holeDia = 0.5
 
 sketch001 = startSketchOn("XZ")
   |> startProfileAt([-foot1Length, 0], %)
-  |> line([0, thickness], %, $cornerFillet1)
-  |> line([foot1Length, 0], %)
-  |> line([0, height], %, $fillet1)
-  |> line([foot2Length, 0], %)
-  |> line([0, -thickness], %, $cornerFillet2)
-  |> line([-foot2Length+thickness, 0], %)
-  |> line([0, -height], %, $fillet2)
-  |> close(%)
+  |> line(end = [0, thickness], tag = $cornerFillet1)
+  |> line(end = [foot1Length, 0])
+  |> line(end = [0, height], tag = $fillet1)
+  |> line(end = [foot2Length, 0])
+  |> line(end = [0, -thickness], tag = $cornerFillet2)
+  |> line(end = [-foot2Length+thickness, 0])
+  |> line(end = [0, -height], tag = $fillet2)
+  |> close()
 
-baseExtrusion = extrude(width, sketch001)
+baseExtrusion = extrude(sketch001, length = width)
   |> fillet({
     radius: cornerFilletRad,
     tags: [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1), getOppositeEdge(cornerFillet2)],
@@ -1488,16 +1496,16 @@ holeDia = 0.5
 
 sketch001 = startSketchOn("XZ")
   |> startProfileAt([-foot1Length, 0], %)
-  |> line([0, thickness], %, $cornerChamfer1)
-  |> line([foot1Length, 0], %)
-  |> line([0, height], %, $chamfer1)
-  |> line([foot2Length, 0], %)
-  |> line([0, -thickness], %, $cornerChamfer2)
-  |> line([-foot2Length+thickness, 0], %)
-  |> line([0, -height], %, $chamfer2)
-  |> close(%)
+  |> line(end = [0, thickness], tag = $cornerChamfer1)
+  |> line(end = [foot1Length, 0])
+  |> line(end = [0, height], tag = $chamfer1)
+  |> line(end = [foot2Length, 0])
+  |> line(end = [0, -thickness], tag = $cornerChamfer2)
+  |> line(end = [-foot2Length+thickness, 0])
+  |> line(end = [0, -height], tag = $chamfer2)
+  |> close()
 
-baseExtrusion = extrude(width, sketch001)
+baseExtrusion = extrude(sketch001, length = width)
   |> chamfer({
     length: cornerChamferRad,
     tags: [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1), getOppositeEdge(cornerChamfer2)],
@@ -1523,13 +1531,13 @@ async fn kcl_test_shell_with_tag() {
   |> xLine(305.11, %, $seg01)
   |> yLine(-291.85, %)
   |> xLine(-segLen(seg01), %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(40.14, %)
-  |> shell({
-    faces: [seg01],
-    thickness: 3.14,
-  }, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 40.14)
+  |> shell(
+    faces = [seg01],
+    thickness = 3.14,
+  )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1541,15 +1549,15 @@ async fn kcl_test_linear_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }
 part001 = cube([0,0], 20)
-    |> close(%, $line1)
-    |> extrude(20, %)
+    |> close(tag = $line1)
+    |> extrude(length = 20)
   |> fillet({
     radius: 10,
     tags: [getOppositeEdge(line1)]
@@ -1572,15 +1580,15 @@ async fn kcl_test_circular_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }
 part001 = cube([0,0], 20)
-    |> close(%, $line1)
-    |> extrude(20, %)
+    |> close(tag = $line1)
+    |> extrude(length = 20)
   |> fillet({
     radius: 10,
     tags: [getOppositeEdge(line1)]
@@ -1599,15 +1607,15 @@ async fn kcl_test_circular_pattern3d_chamfered_sketch() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }
 part001 = cube([0,0], 20)
-    |> close(%, $line1)
-    |> extrude(20, %)
+    |> close(tag = $line1)
+    |> extrude(length = 20)
   |> chamfer({
     length: 10,
     tags: [getOppositeEdge(line1)]
@@ -1626,15 +1634,15 @@ async fn kcl_test_tag_chamfer_with_more_than_one_edge_should_fail() {
     let code = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }
 part001 = cube([0,0], 20)
-    |> close(%, $line1)
-    |> extrude(20, %)
+    |> close(tag = $line1)
+    |> extrude(length = 20)
   |> chamfer({
     length: 10,
     tags: [line1, getOppositeEdge(line1)]
@@ -1644,10 +1652,13 @@ part001 = cube([0,0], 20)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
-    assert!(result.is_err());
+    let err = result.err().unwrap();
+    let ExecError::Kcl(err) = err else {
+        panic!("Expected KCL error, found {err}");
+    };
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([259, 345, 0])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
+        err.error.message(),
+        "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag."
     );
 }
 
@@ -1736,7 +1747,7 @@ async fn kcl_test_arc_error_same_start_end() {
        angleEnd: 180,
        radius: 1.5
      }, %)
-  |> close(%)
+  |> close()
   |> patternCircular2d({
        arcDegrees: 360,
        center: [0, 0],
@@ -1758,11 +1769,11 @@ async fn kcl_test_angled_line_to_x_90() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToX({ angle: 90, to: 10 }, %)
-  |> line([0, 10], %)
-  |> line([-10, 0], %)
-  |> close(%)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
 
-example = extrude(10, exampleSketch)
+example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
@@ -1778,11 +1789,11 @@ async fn kcl_test_angled_line_to_x_270() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToX({ angle: 270, to: 10 }, %)
-  |> line([0, 10], %)
-  |> line([-10, 0], %)
-  |> close(%)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
 
-example = extrude(10, exampleSketch)
+example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
@@ -1798,11 +1809,11 @@ async fn kcl_test_angled_line_to_y_0() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle: 0, to: 20 }, %)
-  |> line([-20, 0], %)
+  |> line(end = [-20, 0])
   |> angledLineToY({ angle: 70, to: 10 }, %)
-  |> close(%)
+  |> close()
 
-example = extrude(10, exampleSketch)
+example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
@@ -1818,11 +1829,11 @@ async fn kcl_test_angled_line_to_y_180() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle: 180, to: 20 }, %)
-  |> line([-20, 0], %)
+  |> line(end = [-20, 0])
   |> angledLineToY({ angle: 70, to: 10 }, %)
-  |> close(%)
+  |> close()
 
-example = extrude(10, exampleSketch)
+example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
@@ -1839,10 +1850,10 @@ async fn kcl_test_angled_line_of_x_length_90() {
   |> startProfileAt([0, 0], %)
   |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
   |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
-  |> line([0, -5], %)
-  |> close(%, $edge3)
+  |> line(end = [0, -5])
+  |> close(tag = $edge3)
 
-extrusion = extrude(10, sketch001)
+extrusion = extrude(sketch001, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
@@ -1859,10 +1870,10 @@ async fn kcl_test_angled_line_of_x_length_270() {
   |> startProfileAt([0, 0], %)
   |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
   |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
-  |> line([0, -5], %)
-  |> close(%, $edge3)
+  |> line(end = [0, -5])
+  |> close(tag = $edge3)
 
-extrusion = extrude(10, sketch001)
+extrusion = extrude(sketch001, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
@@ -1877,21 +1888,21 @@ extrusion = extrude(10, sketch001)
 async fn kcl_test_angled_line_of_y_length_0() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([10, 0], %)
+  |> line(end = [10, 0])
   |> angledLineOfYLength({ angle: 0, length: 10 }, %)
-  |> line([0, 10], %)
+  |> line(end = [0, 10])
   |> angledLineOfYLength({ angle: 135, length: 10 }, %)
-  |> line([-10, 0], %)
-  |> line([0, -30], %)
+  |> line(end = [-10, 0])
+  |> line(end = [0, -30])
 
-example = extrude(10, exampleSketch)
+example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 142, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 145, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
@@ -1899,21 +1910,21 @@ example = extrude(10, exampleSketch)
 async fn kcl_test_angled_line_of_y_length_180() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([10, 0], %)
+  |> line(end = [10, 0])
   |> angledLineOfYLength({ angle: 180, length: 10 }, %)
-  |> line([0, 10], %)
+  |> line(end = [0, 10])
   |> angledLineOfYLength({ angle: 135, length: 10 }, %)
-  |> line([-10, 0], %)
-  |> line([0, -30], %)
+  |> line(end = [-10, 0])
+  |> line(end = [0, -30])
 
-example = extrude(10, exampleSketch)
+example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 144, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 147, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -1921,21 +1932,21 @@ example = extrude(10, exampleSketch)
 async fn kcl_test_angled_line_of_y_length_negative_180() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([10, 0], %)
+  |> line(end = [10, 0])
   |> angledLineOfYLength({ angle: -180, length: 10 }, %)
-  |> line([0, 10], %)
+  |> line(end = [0, 10])
   |> angledLineOfYLength({ angle: 135, length: 10 }, %)
-  |> line([-10, 0], %)
-  |> line([0, -30], %)
+  |> line(end = [-10, 0])
+  |> line(end = [0, -30])
 
-example = extrude(10, exampleSketch)
+example = extrude(exampleSketch, length = 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 145, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 148, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -1984,13 +1995,13 @@ async fn kcl_test_error_no_auth_websocket() {
   |> xLine(305.11, %, $seg01)
   |> yLine(-291.85, %)
   |> xLine(-segLen(seg01), %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(40.14, %)
-  |> shell({
-    faces: [seg01],
-    thickness: 3.14,
-  }, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 40.14)
+  |> shell(
+    faces = [seg01],
+    thickness = 3.14,
+  )
 "#;
 
     let result = execute_and_snapshot_no_auth(code, UnitLength::Mm, None).await;

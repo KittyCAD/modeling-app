@@ -62,19 +62,19 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// exampleSketch = startSketchOn("-XZ")
 ///   |> circle({ center = [0, 0], radius = 10 }, %)
 ///
-/// example = extrude(5, exampleSketch)
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([-15, 0], %)
-///   |> line([30, 0], %)
-///   |> line([0, 30], %)
-///   |> line([-30, 0], %)
-///   |> close(%)
+///   |> line(end = [30, 0])
+///   |> line(end = [0, 30])
+///   |> line(end = [-30, 0])
+///   |> close()
 ///   |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
 ///
-/// example = extrude(5, exampleSketch)
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 #[stdlib {
     name = "circle",
@@ -154,7 +154,7 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     let p2 = args.get_kw_arg("p2")?;
     let p3 = args.get_kw_arg("p3")?;
     let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
-    let tag = args.get_kw_arg_opt("tag");
+    let tag = args.get_kw_arg_opt("tag")?;
 
     let sketch = inner_circle_three_point(p1, p2, p3, sketch_surface_or_group, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -167,19 +167,18 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 /// ```no_run
 /// exampleSketch = startSketchOn("XY")
 ///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
-///
-/// example = extrude(5, exampleSketch)
+///   |> extrude(length = 5)
 /// ```
 #[stdlib {
     name = "circleThreePoint",
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        p1 = "1st point to derive the circle.",
-        p2 = "2nd point to derive the circle.",
-        p3 = "3rd point to derive the circle.",
-        sketch_surface_or_group = "Plane or surface to sketch on.",
-        tag = "Identifier for the circle to reference elsewhere.",
+    args = {
+        p1 = {docs = "1st point to derive the circle."},
+        p2 = {docs = "2nd point to derive the circle."},
+        p3 = {docs = "3rd point to derive the circle."},
+        sketch_surface_or_group = {docs = "Plane or surface to sketch on."},
+        tag = {docs = "Identifier for the circle to reference elsewhere."},
     }
 }]
 async fn inner_circle_three_point(
@@ -262,7 +261,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     inscribed = true,
 ///   }, %)
 ///
-/// example = extrude(5, hex)
+/// example = extrude(hex, length = 5)
 /// ```
 ///
 /// ```no_run
@@ -274,7 +273,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     center = [10, 10],
 ///     inscribed = false,
 ///   }, %)
-/// example = extrude(5, square)
+/// example = extrude(square, length = 5)
 /// ```
 #[stdlib {
     name = "polygon",

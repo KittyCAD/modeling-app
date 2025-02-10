@@ -1,7 +1,7 @@
 // TODO optimise size of CompilationError
 #![allow(clippy::result_large_err)]
 
-use std::{cell::RefCell, collections::HashMap, str::FromStr};
+use std::{cell::RefCell, collections::BTreeMap, str::FromStr};
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, separated_pair, terminated},
@@ -755,8 +755,8 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
         .end;
 
     // Sort the array's elements (i.e. expression nodes) from the noncode nodes.
-    let (elements, non_code_nodes): (Vec<_>, HashMap<usize, _>) = elements.into_iter().enumerate().fold(
-        (Vec::new(), HashMap::new()),
+    let (elements, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = elements.into_iter().enumerate().fold(
+        (Vec::new(), BTreeMap::new()),
         |(mut elements, mut non_code_nodes), (i, e)| {
             match e {
                 NonCodeOr::NonCode(x) => {
@@ -898,8 +898,8 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
     .parse_next(i)?;
 
     // Sort the object's properties from the noncode nodes.
-    let (properties, non_code_nodes): (Vec<_>, HashMap<usize, _>) = properties.into_iter().enumerate().fold(
-        (Vec::new(), HashMap::new()),
+    let (properties, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = properties.into_iter().enumerate().fold(
+        (Vec::new(), BTreeMap::new()),
         |(mut properties, mut non_code_nodes), (i, e)| {
             match e {
                 NonCodeOr::NonCode(x) => {
@@ -2586,8 +2586,20 @@ fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         .parse_next(i)
 }
 
-fn typecheck_all(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
-    // Type check the arguments.
+/// Typecheck the arguments in a keyword fn call.
+fn typecheck_all_kw(std_fn: Box<dyn StdLibFn>, args: &[&LabeledArg]) -> PResult<()> {
+    for arg in args {
+        let label = &arg.label;
+        let expr = &arg.arg;
+        if let Some(spec_arg) = std_fn.args(false).iter().find(|spec_arg| spec_arg.name == label.name) {
+            typecheck(spec_arg, &expr)?;
+        }
+    }
+    Ok(())
+}
+
+/// Type check the arguments in a positional fn call.
+fn typecheck_all_positional(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
     for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
         let Some(arg) = &args.get(i) else {
             // The executor checks the number of arguments, so we don't need to check it here.
@@ -2614,7 +2626,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(*arg),
-                        format!("Expected a tag declarator like `$name`, found {:?}", e),
+                        format!(
+                            "Expected a tag declarator like `$name`, found {}",
+                            e.human_friendly_type()
+                        ),
                     )
                     .into(),
                 ));
@@ -2627,7 +2642,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(*arg),
-                        format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                        format!(
+                            "Expected a tag identifier like `tagName`, found {}",
+                            e.human_friendly_type()
+                        ),
                     )
                     .into(),
                 ));
@@ -2665,7 +2683,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
 
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         let just_args: Vec<_> = args.iter().collect();
-        typecheck_all(std_fn, &just_args)?;
+        typecheck_all_positional(std_fn, &just_args)?;
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
@@ -2689,6 +2707,10 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
 
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
     let args = labeled_arguments(i)?;
+    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
+        let just_args: Vec<_> = args.iter().collect();
+        typecheck_all_kw(std_fn, &just_args)?;
+    }
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
@@ -3437,7 +3459,7 @@ mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn pipes_on_pipes_minimal() {
         let test_program = r#"startSketchAt([0, 0])
-        |> lineTo([0, -0], %) // MoveRelative
+        |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
@@ -3786,8 +3808,8 @@ firstExtrude = startSketchOn('XY')
   |> line([0, 8], %)
   |> line([20, 0], %)
   |> line([0, -8], %)
-  |> close(%)
-  |> extrude(2, %)
+  |> close()
+  |> extrude(length=2)
 
 secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
@@ -4279,8 +4301,8 @@ let other_thing = 2 * cos(3)"#;
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
+    |> close()
+    |> extrude(length=h)
 
   return myBox
 }
@@ -4557,6 +4579,7 @@ mod snapshot_tests {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();
+                println!("{}", $test_kcl_program);
                 let tokens = crate::parsing::token::lex($test_kcl_program, module_id).unwrap();
                 print_tokens(tokens.as_slice());
                 ParseContext::init();
@@ -4580,7 +4603,7 @@ mod snapshot_tests {
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
-    |> extrude(10, %)
+    |> extrude(length=10)
 "#
     );
     snapshot_test!(b, "myVar = min(5 , -legLen(5, 4))"); // Space before comma
@@ -4645,7 +4668,7 @@ mod snapshot_tests {
     snapshot_test!(y, "sg = startSketchAt(pos)");
     snapshot_test!(z, "sg = startSketchAt(pos) |> line([0, -scale], %)");
     snapshot_test!(aa, r#"sg = -scale"#);
-    snapshot_test!(ab, "lineTo({ to: [0, -1] })");
+    snapshot_test!(ab, "line(endAbsolute = [0, -1])");
     snapshot_test!(ac, "myArray = [0..10]");
     snapshot_test!(
         ad,
@@ -4665,20 +4688,19 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"mySketch = startSketchAt([0,0])
-        |> lineTo([0, 1], %, $myPath)
-        |> lineTo([1, 1], %)
-        |> lineTo([1, 0], %, $rightPath)
-        |> close(%)"#
+        |> line(endAbsolute = [0, 1], tag = $myPath)
+        |> line(endAbsolute = [1, 1])
+        |> line(endAbsolute = [1, 0], tag = $rightPath)
+        |> close()"#
     );
-    snapshot_test!(ag, "mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)");
+    snapshot_test!(
+        ag,
+        "mySketch = startSketchAt([0,0]) |> line(endAbsolute = [1, 1]) |> close()"
+    );
     snapshot_test!(ah, "myBox = startSketchAt(p)");
     snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
-    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line([0, l], %)"#);
-    snapshot_test!(ak, "lineTo({ to: [0, 1] })");
-    snapshot_test!(al, "lineTo({ to: [0, 1], from: [3, 3] })");
-    snapshot_test!(am, "lineTo({to:[0, 1]})");
-    snapshot_test!(an, "lineTo({ to: [0, 1], from: [3, 3]})");
-    snapshot_test!(ao, "lineTo({ to: [0, 1],from: [3, 3] })");
+    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line(end = [0, l])"#);
+    snapshot_test!(ak, "line(endAbsolute = [0, 1])");
     snapshot_test!(ap, "mySketch = startSketchAt([0,0])");
     snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);

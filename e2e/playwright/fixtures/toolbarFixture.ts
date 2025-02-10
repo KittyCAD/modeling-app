@@ -20,6 +20,7 @@ export class ToolbarFixture {
   shellButton!: Locator
   revolveButton!: Locator
   offsetPlaneButton!: Locator
+  helixButton!: Locator
   startSketchBtn!: Locator
   lineBtn!: Locator
   rectangleBtn!: Locator
@@ -29,7 +30,6 @@ export class ToolbarFixture {
   createFileBtn!: Locator
   fileCreateToast!: Locator
   filePane!: Locator
-  exeIndicator!: Locator
   treeInputField!: Locator
   /** The sidebar button for the Feature Tree pane */
   featureTreeId = 'feature-tree' as const
@@ -50,6 +50,7 @@ export class ToolbarFixture {
     this.shellButton = page.getByTestId('shell')
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
+    this.helixButton = page.getByTestId('helix')
     this.startSketchBtn = page.getByTestId('sketch')
     this.lineBtn = page.getByTestId('line')
     this.rectangleBtn = page.getByTestId('corner-rectangle')
@@ -62,11 +63,14 @@ export class ToolbarFixture {
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
     this.fileCreateToast = page.getByText('Successfully created')
-    this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
   }
 
   get logoLink() {
     return this.page.getByTestId('app-logo')
+  }
+
+  get exeIndicator() {
+    return this.page.getByTestId('model-state-indicator-receive-reliable')
   }
 
   startSketchPlaneSelection = async () =>
@@ -137,7 +141,8 @@ export class ToolbarFixture {
   }
 
   /**
-   * Get a specific operation button from the Feature Tree pane
+   * Get a specific operation button from the Feature Tree pane.
+   * Index is 0-based.
    */
   async getFeatureTreeOperation(operationName: string, operationIndex: number) {
     await this.openFeatureTreePane()

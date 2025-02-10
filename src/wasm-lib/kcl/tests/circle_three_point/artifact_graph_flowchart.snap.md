@@ -6,7 +6,7 @@ flowchart LR
     4[Solid2d]
   end
   1["Plane<br>[12, 31, 0]"]
-  5["Sweep Extrusion<br>[109, 131, 0]"]
+  5["Sweep Extrusion<br>[104, 124, 0]"]
   6[Wall]
   7["Cap Start"]
   8["Cap End"]

@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing big_number_angle_to_match_length_y.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -31,18 +32,19 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   66,
-                  92,
+                  101,
                   0
                 ],
                 "tag": {
-                  "end": 91,
-                  "start": 85,
+                  "end": 100,
+                  "start": 94,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -52,8 +54,8 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  98,
-                  154,
+                  107,
+                  163,
                   0
                 ],
                 "tag": null,
@@ -63,8 +65,8 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  160,
-                  168,
+                  169,
+                  177,
                   0
                 ],
                 "tag": null,
@@ -80,7 +82,7 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                     "id": "[uuid]",
                     "sourceRange": [
                       66,
-                      92,
+                      101,
                       0
                     ]
                   },
@@ -89,8 +91,8 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                     0.0
                   ],
                   "tag": {
-                    "end": 91,
-                    "start": 85,
+                    "end": 100,
+                    "start": 94,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -104,8 +106,8 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      98,
-                      154,
+                      107,
+                      163,
                       0
                     ]
                   },
@@ -124,8 +126,8 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      160,
-                      168,
+                      169,
+                      177,
                       0
                     ]
                   },
@@ -144,6 +146,7 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -202,7 +205,7 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                         "id": "[uuid]",
                         "sourceRange": [
                           66,
-                          92,
+                          101,
                           0
                         ]
                       },
@@ -211,8 +214,8 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                         0.0
                       ],
                       "tag": {
-                        "end": 91,
-                        "start": 85,
+                        "end": 100,
+                        "start": 94,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -227,12 +230,12 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                       "id": "[uuid]",
                       "sourceRange": [
                         66,
-                        92,
+                        101,
                         0
                       ],
                       "tag": {
-                        "end": 91,
-                        "start": 85,
+                        "end": 100,
+                        "start": 94,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -242,14 +245,16 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                   "__meta": [
                     {
                       "sourceRange": [
-                        85,
-                        91,
+                        94,
+                        100,
                         0
                       ]
                     }
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -293,7 +298,7 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                 "id": "[uuid]",
                 "sourceRange": [
                   66,
-                  92,
+                  101,
                   0
                 ]
               },
@@ -302,8 +307,8 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                 0.0
               ],
               "tag": {
-                "end": 91,
-                "start": 85,
+                "end": 100,
+                "start": 94,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -318,12 +323,12 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
               "id": "[uuid]",
               "sourceRange": [
                 66,
-                92,
+                101,
                 0
               ],
               "tag": {
-                "end": 91,
-                "start": 85,
+                "end": 100,
+                "start": 94,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -333,8 +338,8 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
           "__meta": [
             {
               "sourceRange": [
-                85,
-                91,
+                94,
+                100,
                 0
               ]
             }

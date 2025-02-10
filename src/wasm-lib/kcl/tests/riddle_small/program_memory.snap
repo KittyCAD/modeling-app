@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing riddle_small.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -140,13 +141,14 @@ description: Program memory after executing riddle_small.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   199,
-                  214,
+                  217,
                   0
                 ],
                 "tag": null,
@@ -156,19 +158,8 @@ description: Program memory after executing riddle_small.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  220,
-                  236,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
+                  223,
                   242,
-                  258,
                   0
                 ],
                 "tag": null,
@@ -178,8 +169,19 @@ description: Program memory after executing riddle_small.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  264,
-                  272,
+                  248,
+                  267,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  273,
+                  281,
                   0
                 ],
                 "tag": null,
@@ -195,7 +197,7 @@ description: Program memory after executing riddle_small.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       199,
-                      214,
+                      217,
                       0
                     ]
                   },
@@ -214,28 +216,28 @@ description: Program memory after executing riddle_small.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      220,
-                      236,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -25.0,
-                    34.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -25.0,
-                    33.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
+                      223,
                       242,
-                      258,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -25.0,
+                    34.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -25.0,
+                    33.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      248,
+                      267,
                       0
                     ]
                   },
@@ -254,8 +256,8 @@ description: Program memory after executing riddle_small.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      264,
-                      272,
+                      273,
+                      281,
                       0
                     ]
                   },
@@ -274,6 +276,7 @@ description: Program memory after executing riddle_small.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XZ",
                 "origin": {
                   "x": 0.0,
@@ -319,6 +322,8 @@ description: Program memory after executing riddle_small.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

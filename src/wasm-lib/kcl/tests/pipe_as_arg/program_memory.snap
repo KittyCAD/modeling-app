@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing pipe_as_arg.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -487,171 +488,181 @@ description: Program memory after executing pipe_as_arg.kcl
                       {
                         "arguments": [
                           {
-                            "end": 211,
-                            "name": "p1",
-                            "start": 209,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          {
-                            "end": 214,
-                            "start": 213,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
+                            "type": "LabeledArg",
+                            "label": {
+                              "type": "Identifier",
+                              "name": "endAbsolute"
+                            },
+                            "arg": {
+                              "end": 223,
+                              "name": "p1",
+                              "start": 221,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
                           }
                         ],
                         "callee": {
-                          "end": 208,
-                          "name": "lineTo",
+                          "end": 206,
+                          "name": "line",
                           "start": 202,
                           "type": "Identifier"
                         },
-                        "end": 215,
+                        "end": 224,
                         "start": 202,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
                           {
-                            "end": 232,
-                            "name": "p2",
-                            "start": 230,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          {
-                            "end": 235,
-                            "start": 234,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
+                            "type": "LabeledArg",
+                            "label": {
+                              "type": "Identifier",
+                              "name": "endAbsolute"
+                            },
+                            "arg": {
+                              "end": 253,
+                              "name": "p2",
+                              "start": 251,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
                           }
                         ],
                         "callee": {
-                          "end": 229,
-                          "name": "lineTo",
-                          "start": 223,
+                          "end": 236,
+                          "name": "line",
+                          "start": 232,
                           "type": "Identifier"
                         },
-                        "end": 236,
-                        "start": 223,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "end": 254,
+                        "start": 232,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
                           {
-                            "end": 253,
-                            "name": "p3",
-                            "start": 251,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          {
-                            "end": 256,
-                            "start": 255,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
+                            "type": "LabeledArg",
+                            "label": {
+                              "type": "Identifier",
+                              "name": "endAbsolute"
+                            },
+                            "arg": {
+                              "end": 283,
+                              "name": "p3",
+                              "start": 281,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
                           }
                         ],
                         "callee": {
-                          "end": 250,
-                          "name": "lineTo",
-                          "start": 244,
+                          "end": 266,
+                          "name": "line",
+                          "start": 262,
                           "type": "Identifier"
                         },
-                        "end": 257,
-                        "start": 244,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "end": 284,
+                        "start": 262,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
                           {
-                            "end": 274,
-                            "name": "p0",
-                            "start": 272,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          {
-                            "end": 277,
-                            "start": 276,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
+                            "type": "LabeledArg",
+                            "label": {
+                              "type": "Identifier",
+                              "name": "endAbsolute"
+                            },
+                            "arg": {
+                              "end": 313,
+                              "name": "p0",
+                              "start": 311,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
                           }
                         ],
                         "callee": {
-                          "end": 271,
-                          "name": "lineTo",
-                          "start": 265,
+                          "end": 296,
+                          "name": "line",
+                          "start": 292,
                           "type": "Identifier"
                         },
-                        "end": 278,
-                        "start": 265,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "end": 314,
+                        "start": 292,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
                           {
-                            "end": 293,
-                            "start": 292,
+                            "end": 329,
+                            "start": 328,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 291,
+                          "end": 327,
                           "name": "close",
-                          "start": 286,
+                          "start": 322,
                           "type": "Identifier"
                         },
-                        "end": 294,
-                        "start": 286,
+                        "end": 330,
+                        "start": 322,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 316,
-                            "name": "length",
-                            "start": 310,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          {
-                            "end": 319,
-                            "start": 318,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
+                            "type": "LabeledArg",
+                            "label": {
+                              "type": "Identifier",
+                              "name": "length"
+                            },
+                            "arg": {
+                              "end": 361,
+                              "name": "length",
+                              "start": 355,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
                           }
                         ],
                         "callee": {
-                          "end": 309,
+                          "end": 345,
                           "name": "extrude",
-                          "start": 302,
+                          "start": 338,
                           "type": "Identifier"
                         },
-                        "end": 320,
-                        "start": 302,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "end": 362,
+                        "start": 338,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       }
                     ],
-                    "end": 320,
+                    "end": 362,
                     "start": 177,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 320,
+                  "end": 362,
                   "start": 170,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 322,
+              "end": 364,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "6": [
@@ -669,7 +680,7 @@ description: Program memory after executing pipe_as_arg.kcl
               },
               "start": 24
             },
-            "end": 322,
+            "end": 364,
             "params": [
               {
                 "type": "Parameter",
@@ -728,7 +739,7 @@ description: Program memory after executing pipe_as_arg.kcl
             {
               "sourceRange": [
                 7,
-                322,
+                364,
                 0
               ]
             }
@@ -741,19 +752,19 @@ description: Program memory after executing pipe_as_arg.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 353,
+                    "end": 395,
                     "left": {
-                      "end": 349,
+                      "end": 391,
                       "name": "x",
-                      "start": 348,
+                      "start": 390,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
                     "operator": "*",
                     "right": {
-                      "end": 353,
+                      "end": 395,
                       "raw": "2",
-                      "start": 352,
+                      "start": 394,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -761,32 +772,32 @@ description: Program memory after executing pipe_as_arg.kcl
                         "suffix": "None"
                       }
                     },
-                    "start": 348,
+                    "start": 390,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 353,
-                  "start": 341,
+                  "end": 395,
+                  "start": 383,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 355,
-              "start": 337
+              "end": 397,
+              "start": 379
             },
-            "end": 355,
+            "end": 397,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 335,
+                  "end": 377,
                   "name": "x",
-                  "start": 334,
+                  "start": 376,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 333,
+            "start": 375,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -1274,171 +1285,181 @@ description: Program memory after executing pipe_as_arg.kcl
                                 {
                                   "arguments": [
                                     {
-                                      "end": 211,
-                                      "name": "p1",
-                                      "start": 209,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 214,
-                                      "start": 213,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "endAbsolute"
+                                      },
+                                      "arg": {
+                                        "end": 223,
+                                        "name": "p1",
+                                        "start": 221,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 208,
-                                    "name": "lineTo",
+                                    "end": 206,
+                                    "name": "line",
                                     "start": 202,
                                     "type": "Identifier"
                                   },
-                                  "end": 215,
+                                  "end": 224,
                                   "start": 202,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 232,
-                                      "name": "p2",
-                                      "start": 230,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 235,
-                                      "start": 234,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "endAbsolute"
+                                      },
+                                      "arg": {
+                                        "end": 253,
+                                        "name": "p2",
+                                        "start": 251,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 229,
-                                    "name": "lineTo",
-                                    "start": 223,
+                                    "end": 236,
+                                    "name": "line",
+                                    "start": 232,
                                     "type": "Identifier"
                                   },
-                                  "end": 236,
-                                  "start": 223,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "end": 254,
+                                  "start": 232,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 253,
-                                      "name": "p3",
-                                      "start": 251,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 256,
-                                      "start": 255,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "endAbsolute"
+                                      },
+                                      "arg": {
+                                        "end": 283,
+                                        "name": "p3",
+                                        "start": 281,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 250,
-                                    "name": "lineTo",
-                                    "start": 244,
+                                    "end": 266,
+                                    "name": "line",
+                                    "start": 262,
                                     "type": "Identifier"
                                   },
-                                  "end": 257,
-                                  "start": 244,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "end": 284,
+                                  "start": 262,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 274,
-                                      "name": "p0",
-                                      "start": 272,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 277,
-                                      "start": 276,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "endAbsolute"
+                                      },
+                                      "arg": {
+                                        "end": 313,
+                                        "name": "p0",
+                                        "start": 311,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 271,
-                                    "name": "lineTo",
-                                    "start": 265,
+                                    "end": 296,
+                                    "name": "line",
+                                    "start": 292,
                                     "type": "Identifier"
                                   },
-                                  "end": 278,
-                                  "start": 265,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "end": 314,
+                                  "start": 292,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 293,
-                                      "start": 292,
+                                      "end": 329,
+                                      "start": 328,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 291,
+                                    "end": 327,
                                     "name": "close",
-                                    "start": 286,
+                                    "start": 322,
                                     "type": "Identifier"
                                   },
-                                  "end": 294,
-                                  "start": 286,
+                                  "end": 330,
+                                  "start": 322,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 316,
-                                      "name": "length",
-                                      "start": 310,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 319,
-                                      "start": 318,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "length"
+                                      },
+                                      "arg": {
+                                        "end": 361,
+                                        "name": "length",
+                                        "start": 355,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 309,
+                                    "end": 345,
                                     "name": "extrude",
-                                    "start": 302,
+                                    "start": 338,
                                     "type": "Identifier"
                                   },
-                                  "end": 320,
-                                  "start": 302,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "end": 362,
+                                  "start": 338,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 }
                               ],
-                              "end": 320,
+                              "end": 362,
                               "start": 177,
                               "type": "PipeExpression",
                               "type": "PipeExpression"
                             },
-                            "end": 320,
+                            "end": 362,
                             "start": 170,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 322,
+                        "end": 364,
                         "nonCodeMeta": {
                           "nonCodeNodes": {
                             "6": [
@@ -1456,7 +1477,7 @@ description: Program memory after executing pipe_as_arg.kcl
                         },
                         "start": 24
                       },
-                      "end": 322,
+                      "end": 364,
                       "params": [
                         {
                           "type": "Parameter",
@@ -1515,7 +1536,7 @@ description: Program memory after executing pipe_as_arg.kcl
                       {
                         "sourceRange": [
                           7,
-                          322,
+                          364,
                           0
                         ]
                       }
@@ -1531,8 +1552,8 @@ description: Program memory after executing pipe_as_arg.kcl
           "__meta": [
             {
               "sourceRange": [
-                333,
-                355,
+                375,
+                397,
                 0
               ]
             }
@@ -1543,13 +1564,14 @@ description: Program memory after executing pipe_as_arg.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   202,
-                  215,
+                  224,
                   0
                 ],
                 "tag": null,
@@ -1559,8 +1581,8 @@ description: Program memory after executing pipe_as_arg.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  223,
-                  236,
+                  232,
+                  254,
                   0
                 ],
                 "tag": null,
@@ -1570,8 +1592,8 @@ description: Program memory after executing pipe_as_arg.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  244,
-                  257,
+                  262,
+                  284,
                   0
                 ],
                 "tag": null,
@@ -1581,8 +1603,8 @@ description: Program memory after executing pipe_as_arg.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  265,
-                  278,
+                  292,
+                  314,
                   0
                 ],
                 "tag": null,
@@ -1598,7 +1620,7 @@ description: Program memory after executing pipe_as_arg.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       202,
-                      215,
+                      224,
                       0
                     ]
                   },
@@ -1617,8 +1639,8 @@ description: Program memory after executing pipe_as_arg.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      223,
-                      236,
+                      232,
+                      254,
                       0
                     ]
                   },
@@ -1637,8 +1659,8 @@ description: Program memory after executing pipe_as_arg.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      244,
-                      257,
+                      262,
+                      284,
                       0
                     ]
                   },
@@ -1657,8 +1679,8 @@ description: Program memory after executing pipe_as_arg.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      265,
-                      278,
+                      292,
+                      314,
                       0
                     ]
                   },
@@ -1677,8 +1699,8 @@ description: Program memory after executing pipe_as_arg.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      286,
-                      294,
+                      322,
+                      330,
                       0
                     ]
                   },
@@ -1697,6 +1719,7 @@ description: Program memory after executing pipe_as_arg.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -1742,6 +1765,8 @@ description: Program memory after executing pipe_as_arg.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1779,9 +1804,9 @@ description: Program memory after executing pipe_as_arg.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 381,
+                    "end": 423,
                     "raw": "200",
-                    "start": 378,
+                    "start": 420,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1789,18 +1814,18 @@ description: Program memory after executing pipe_as_arg.kcl
                       "suffix": "None"
                     }
                   },
-                  "end": 381,
-                  "start": 371,
+                  "end": 423,
+                  "start": 413,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 383,
-              "start": 367
+              "end": 425,
+              "start": 409
             },
-            "end": 383,
+            "end": 425,
             "params": [],
-            "start": 364,
+            "start": 406,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -2288,171 +2313,181 @@ description: Program memory after executing pipe_as_arg.kcl
                                 {
                                   "arguments": [
                                     {
-                                      "end": 211,
-                                      "name": "p1",
-                                      "start": 209,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 214,
-                                      "start": 213,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "endAbsolute"
+                                      },
+                                      "arg": {
+                                        "end": 223,
+                                        "name": "p1",
+                                        "start": 221,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 208,
-                                    "name": "lineTo",
+                                    "end": 206,
+                                    "name": "line",
                                     "start": 202,
                                     "type": "Identifier"
                                   },
-                                  "end": 215,
+                                  "end": 224,
                                   "start": 202,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 232,
-                                      "name": "p2",
-                                      "start": 230,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 235,
-                                      "start": 234,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "endAbsolute"
+                                      },
+                                      "arg": {
+                                        "end": 253,
+                                        "name": "p2",
+                                        "start": 251,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 229,
-                                    "name": "lineTo",
-                                    "start": 223,
+                                    "end": 236,
+                                    "name": "line",
+                                    "start": 232,
                                     "type": "Identifier"
                                   },
-                                  "end": 236,
-                                  "start": 223,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "end": 254,
+                                  "start": 232,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 253,
-                                      "name": "p3",
-                                      "start": 251,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 256,
-                                      "start": 255,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "endAbsolute"
+                                      },
+                                      "arg": {
+                                        "end": 283,
+                                        "name": "p3",
+                                        "start": 281,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 250,
-                                    "name": "lineTo",
-                                    "start": 244,
+                                    "end": 266,
+                                    "name": "line",
+                                    "start": 262,
                                     "type": "Identifier"
                                   },
-                                  "end": 257,
-                                  "start": 244,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "end": 284,
+                                  "start": 262,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 274,
-                                      "name": "p0",
-                                      "start": 272,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 277,
-                                      "start": 276,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "endAbsolute"
+                                      },
+                                      "arg": {
+                                        "end": 313,
+                                        "name": "p0",
+                                        "start": 311,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 271,
-                                    "name": "lineTo",
-                                    "start": 265,
+                                    "end": 296,
+                                    "name": "line",
+                                    "start": 292,
                                     "type": "Identifier"
                                   },
-                                  "end": 278,
-                                  "start": 265,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "end": 314,
+                                  "start": 292,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 293,
-                                      "start": 292,
+                                      "end": 329,
+                                      "start": 328,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 291,
+                                    "end": 327,
                                     "name": "close",
-                                    "start": 286,
+                                    "start": 322,
                                     "type": "Identifier"
                                   },
-                                  "end": 294,
-                                  "start": 286,
+                                  "end": 330,
+                                  "start": 322,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 316,
-                                      "name": "length",
-                                      "start": 310,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 319,
-                                      "start": 318,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "length"
+                                      },
+                                      "arg": {
+                                        "end": 361,
+                                        "name": "length",
+                                        "start": 355,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 309,
+                                    "end": 345,
                                     "name": "extrude",
-                                    "start": 302,
+                                    "start": 338,
                                     "type": "Identifier"
                                   },
-                                  "end": 320,
-                                  "start": 302,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "end": 362,
+                                  "start": 338,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 }
                               ],
-                              "end": 320,
+                              "end": 362,
                               "start": 177,
                               "type": "PipeExpression",
                               "type": "PipeExpression"
                             },
-                            "end": 320,
+                            "end": 362,
                             "start": 170,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 322,
+                        "end": 364,
                         "nonCodeMeta": {
                           "nonCodeNodes": {
                             "6": [
@@ -2470,7 +2505,7 @@ description: Program memory after executing pipe_as_arg.kcl
                         },
                         "start": 24
                       },
-                      "end": 322,
+                      "end": 364,
                       "params": [
                         {
                           "type": "Parameter",
@@ -2529,7 +2564,7 @@ description: Program memory after executing pipe_as_arg.kcl
                       {
                         "sourceRange": [
                           7,
-                          322,
+                          364,
                           0
                         ]
                       }
@@ -2542,19 +2577,19 @@ description: Program memory after executing pipe_as_arg.kcl
                         "body": [
                           {
                             "argument": {
-                              "end": 353,
+                              "end": 395,
                               "left": {
-                                "end": 349,
+                                "end": 391,
                                 "name": "x",
-                                "start": 348,
+                                "start": 390,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 353,
+                                "end": 395,
                                 "raw": "2",
-                                "start": 352,
+                                "start": 394,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2562,32 +2597,32 @@ description: Program memory after executing pipe_as_arg.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 348,
+                              "start": 390,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "end": 353,
-                            "start": 341,
+                            "end": 395,
+                            "start": 383,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 355,
-                        "start": 337
+                        "end": 397,
+                        "start": 379
                       },
-                      "end": 355,
+                      "end": 397,
                       "params": [
                         {
                           "type": "Parameter",
                           "identifier": {
-                            "end": 335,
+                            "end": 377,
                             "name": "x",
-                            "start": 334,
+                            "start": 376,
                             "type": "Identifier"
                           }
                         }
                       ],
-                      "start": 333,
+                      "start": 375,
                       "type": "FunctionExpression"
                     },
                     "memory": {
@@ -3075,171 +3110,181 @@ description: Program memory after executing pipe_as_arg.kcl
                                           {
                                             "arguments": [
                                               {
-                                                "end": 211,
-                                                "name": "p1",
-                                                "start": 209,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              {
-                                                "end": 214,
-                                                "start": 213,
-                                                "type": "PipeSubstitution",
-                                                "type": "PipeSubstitution"
+                                                "type": "LabeledArg",
+                                                "label": {
+                                                  "type": "Identifier",
+                                                  "name": "endAbsolute"
+                                                },
+                                                "arg": {
+                                                  "end": 223,
+                                                  "name": "p1",
+                                                  "start": 221,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                }
                                               }
                                             ],
                                             "callee": {
-                                              "end": 208,
-                                              "name": "lineTo",
+                                              "end": 206,
+                                              "name": "line",
                                               "start": 202,
                                               "type": "Identifier"
                                             },
-                                            "end": 215,
+                                            "end": 224,
                                             "start": 202,
-                                            "type": "CallExpression",
-                                            "type": "CallExpression"
+                                            "type": "CallExpressionKw",
+                                            "type": "CallExpressionKw",
+                                            "unlabeled": null
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 232,
-                                                "name": "p2",
-                                                "start": 230,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              {
-                                                "end": 235,
-                                                "start": 234,
-                                                "type": "PipeSubstitution",
-                                                "type": "PipeSubstitution"
+                                                "type": "LabeledArg",
+                                                "label": {
+                                                  "type": "Identifier",
+                                                  "name": "endAbsolute"
+                                                },
+                                                "arg": {
+                                                  "end": 253,
+                                                  "name": "p2",
+                                                  "start": 251,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                }
                                               }
                                             ],
                                             "callee": {
-                                              "end": 229,
-                                              "name": "lineTo",
-                                              "start": 223,
+                                              "end": 236,
+                                              "name": "line",
+                                              "start": 232,
                                               "type": "Identifier"
                                             },
-                                            "end": 236,
-                                            "start": 223,
-                                            "type": "CallExpression",
-                                            "type": "CallExpression"
+                                            "end": 254,
+                                            "start": 232,
+                                            "type": "CallExpressionKw",
+                                            "type": "CallExpressionKw",
+                                            "unlabeled": null
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 253,
-                                                "name": "p3",
-                                                "start": 251,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              {
-                                                "end": 256,
-                                                "start": 255,
-                                                "type": "PipeSubstitution",
-                                                "type": "PipeSubstitution"
+                                                "type": "LabeledArg",
+                                                "label": {
+                                                  "type": "Identifier",
+                                                  "name": "endAbsolute"
+                                                },
+                                                "arg": {
+                                                  "end": 283,
+                                                  "name": "p3",
+                                                  "start": 281,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                }
                                               }
                                             ],
                                             "callee": {
-                                              "end": 250,
-                                              "name": "lineTo",
-                                              "start": 244,
+                                              "end": 266,
+                                              "name": "line",
+                                              "start": 262,
                                               "type": "Identifier"
                                             },
-                                            "end": 257,
-                                            "start": 244,
-                                            "type": "CallExpression",
-                                            "type": "CallExpression"
+                                            "end": 284,
+                                            "start": 262,
+                                            "type": "CallExpressionKw",
+                                            "type": "CallExpressionKw",
+                                            "unlabeled": null
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 274,
-                                                "name": "p0",
-                                                "start": 272,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              {
-                                                "end": 277,
-                                                "start": 276,
-                                                "type": "PipeSubstitution",
-                                                "type": "PipeSubstitution"
+                                                "type": "LabeledArg",
+                                                "label": {
+                                                  "type": "Identifier",
+                                                  "name": "endAbsolute"
+                                                },
+                                                "arg": {
+                                                  "end": 313,
+                                                  "name": "p0",
+                                                  "start": 311,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                }
                                               }
                                             ],
                                             "callee": {
-                                              "end": 271,
-                                              "name": "lineTo",
-                                              "start": 265,
+                                              "end": 296,
+                                              "name": "line",
+                                              "start": 292,
                                               "type": "Identifier"
                                             },
-                                            "end": 278,
-                                            "start": 265,
-                                            "type": "CallExpression",
-                                            "type": "CallExpression"
+                                            "end": 314,
+                                            "start": 292,
+                                            "type": "CallExpressionKw",
+                                            "type": "CallExpressionKw",
+                                            "unlabeled": null
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 293,
-                                                "start": 292,
+                                                "end": 329,
+                                                "start": 328,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 291,
+                                              "end": 327,
                                               "name": "close",
-                                              "start": 286,
+                                              "start": 322,
                                               "type": "Identifier"
                                             },
-                                            "end": 294,
-                                            "start": 286,
+                                            "end": 330,
+                                            "start": 322,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 316,
-                                                "name": "length",
-                                                "start": 310,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              {
-                                                "end": 319,
-                                                "start": 318,
-                                                "type": "PipeSubstitution",
-                                                "type": "PipeSubstitution"
+                                                "type": "LabeledArg",
+                                                "label": {
+                                                  "type": "Identifier",
+                                                  "name": "length"
+                                                },
+                                                "arg": {
+                                                  "end": 361,
+                                                  "name": "length",
+                                                  "start": 355,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                }
                                               }
                                             ],
                                             "callee": {
-                                              "end": 309,
+                                              "end": 345,
                                               "name": "extrude",
-                                              "start": 302,
+                                              "start": 338,
                                               "type": "Identifier"
                                             },
-                                            "end": 320,
-                                            "start": 302,
-                                            "type": "CallExpression",
-                                            "type": "CallExpression"
+                                            "end": 362,
+                                            "start": 338,
+                                            "type": "CallExpressionKw",
+                                            "type": "CallExpressionKw",
+                                            "unlabeled": null
                                           }
                                         ],
-                                        "end": 320,
+                                        "end": 362,
                                         "start": 177,
                                         "type": "PipeExpression",
                                         "type": "PipeExpression"
                                       },
-                                      "end": 320,
+                                      "end": 362,
                                       "start": 170,
                                       "type": "ReturnStatement",
                                       "type": "ReturnStatement"
                                     }
                                   ],
-                                  "end": 322,
+                                  "end": 364,
                                   "nonCodeMeta": {
                                     "nonCodeNodes": {
                                       "6": [
@@ -3257,7 +3302,7 @@ description: Program memory after executing pipe_as_arg.kcl
                                   },
                                   "start": 24
                                 },
-                                "end": 322,
+                                "end": 364,
                                 "params": [
                                   {
                                     "type": "Parameter",
@@ -3316,7 +3361,7 @@ description: Program memory after executing pipe_as_arg.kcl
                                 {
                                   "sourceRange": [
                                     7,
-                                    322,
+                                    364,
                                     0
                                   ]
                                 }
@@ -3332,8 +3377,8 @@ description: Program memory after executing pipe_as_arg.kcl
                     "__meta": [
                       {
                         "sourceRange": [
-                          333,
-                          355,
+                          375,
+                          397,
                           0
                         ]
                       }
@@ -3349,8 +3394,8 @@ description: Program memory after executing pipe_as_arg.kcl
           "__meta": [
             {
               "sourceRange": [
-                364,
-                383,
+                406,
+                425,
                 0
               ]
             }

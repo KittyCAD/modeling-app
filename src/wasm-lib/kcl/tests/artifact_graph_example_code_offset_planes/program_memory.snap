@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing artifact_graph_example_code_offset_planes.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -30,6 +31,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 0.0,
@@ -61,6 +63,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 0.0,
@@ -92,6 +95,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 10.0,
@@ -130,7 +134,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
                   "id": "[uuid]",
                   "sourceRange": [
                     197,
-                    219,
+                    222,
                     0
                   ]
                 },
@@ -149,6 +153,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "Custom",
               "origin": {
                 "x": 0.0,
@@ -194,6 +199,8 @@ description: Program memory after executing artifact_graph_example_code_offset_p
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },

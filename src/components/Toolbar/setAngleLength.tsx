@@ -39,7 +39,10 @@ export function angleLengthInfo({
     }
   | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, 'CallExpression')
+    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
+      'CallExpression',
+      'CallExpressionKw',
+    ])
   )
   const _err1 = nodes.find(err)
   if (_err1 instanceof Error) return _err1
@@ -47,7 +50,8 @@ export function angleLengthInfo({
   const isAllTooltips = nodes.every((meta) => {
     if (err(meta)) return false
     return (
-      meta.node?.type === 'CallExpression' &&
+      (meta.node?.type === 'CallExpressionKw' ||
+        meta.node?.type === 'CallExpression') &&
       toolTips.includes(meta.node.callee.name as any)
     )
   })

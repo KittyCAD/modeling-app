@@ -28,7 +28,14 @@ try {
   console.log(e)
 }
 
-child_process.spawnSync('git', ['clone', URL_GIT_KCL_SAMPLES, DIR_KCL_SAMPLES])
+child_process.spawnSync('git', [
+  'clone',
+  '--single-branch',
+  '--branch',
+  'achalmers/kw-appearance',
+  URL_GIT_KCL_SAMPLES,
+  DIR_KCL_SAMPLES,
+])
 
 // @ts-expect-error
 let files = await fs.readdir(DIR_KCL_SAMPLES)

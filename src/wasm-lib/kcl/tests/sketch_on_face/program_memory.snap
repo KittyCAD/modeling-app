@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing sketch_on_face.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -39,7 +40,7 @@ description: Program memory after executing sketch_on_face.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   74,
-                  105,
+                  114,
                   0
                 ]
               },
@@ -48,8 +49,8 @@ description: Program memory after executing sketch_on_face.kcl
                 28.35
               ],
               "tag": {
-                "end": 104,
-                "start": 99,
+                "end": 113,
+                "start": 108,
                 "type": "TagDeclarator",
                 "value": "here"
               },
@@ -64,12 +65,12 @@ description: Program memory after executing sketch_on_face.kcl
               "id": "[uuid]",
               "sourceRange": [
                 74,
-                105,
+                114,
                 0
               ],
               "tag": {
-                "end": 104,
-                "start": 99,
+                "end": 113,
+                "start": 108,
                 "type": "TagDeclarator",
                 "value": "here"
               },
@@ -79,8 +80,8 @@ description: Program memory after executing sketch_on_face.kcl
           "__meta": [
             {
               "sourceRange": [
-                99,
-                104,
+                108,
+                113,
                 0
               ]
             }
@@ -91,18 +92,19 @@ description: Program memory after executing sketch_on_face.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   74,
-                  105,
+                  114,
                   0
                 ],
                 "tag": {
-                  "end": 104,
-                  "start": 99,
+                  "end": 113,
+                  "start": 108,
                   "type": "TagDeclarator",
                   "value": "here"
                 },
@@ -112,8 +114,8 @@ description: Program memory after executing sketch_on_face.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  111,
-                  135,
+                  120,
+                  147,
                   0
                 ],
                 "tag": null,
@@ -123,8 +125,8 @@ description: Program memory after executing sketch_on_face.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  141,
-                  165,
+                  153,
+                  180,
                   0
                 ],
                 "tag": null,
@@ -134,8 +136,8 @@ description: Program memory after executing sketch_on_face.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  171,
-                  179,
+                  186,
+                  194,
                   0
                 ],
                 "tag": null,
@@ -151,7 +153,7 @@ description: Program memory after executing sketch_on_face.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       74,
-                      105,
+                      114,
                       0
                     ]
                   },
@@ -160,8 +162,8 @@ description: Program memory after executing sketch_on_face.kcl
                     28.35
                   ],
                   "tag": {
-                    "end": 104,
-                    "start": 99,
+                    "end": 113,
+                    "start": 108,
                     "type": "TagDeclarator",
                     "value": "here"
                   },
@@ -175,8 +177,8 @@ description: Program memory after executing sketch_on_face.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      111,
-                      135,
+                      120,
+                      147,
                       0
                     ]
                   },
@@ -195,8 +197,8 @@ description: Program memory after executing sketch_on_face.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      141,
-                      165,
+                      153,
+                      180,
                       0
                     ]
                   },
@@ -215,8 +217,8 @@ description: Program memory after executing sketch_on_face.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      171,
-                      179,
+                      186,
+                      194,
                       0
                     ]
                   },
@@ -235,6 +237,7 @@ description: Program memory after executing sketch_on_face.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -293,7 +296,7 @@ description: Program memory after executing sketch_on_face.kcl
                         "id": "[uuid]",
                         "sourceRange": [
                           74,
-                          105,
+                          114,
                           0
                         ]
                       },
@@ -302,8 +305,8 @@ description: Program memory after executing sketch_on_face.kcl
                         28.35
                       ],
                       "tag": {
-                        "end": 104,
-                        "start": 99,
+                        "end": 113,
+                        "start": 108,
                         "type": "TagDeclarator",
                         "value": "here"
                       },
@@ -318,12 +321,12 @@ description: Program memory after executing sketch_on_face.kcl
                       "id": "[uuid]",
                       "sourceRange": [
                         74,
-                        105,
+                        114,
                         0
                       ],
                       "tag": {
-                        "end": 104,
-                        "start": 99,
+                        "end": 113,
+                        "start": 108,
                         "type": "TagDeclarator",
                         "value": "here"
                       },
@@ -333,14 +336,16 @@ description: Program memory after executing sketch_on_face.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        99,
-                        104,
+                        108,
+                        113,
                         0
                       ]
                     }
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -376,13 +381,14 @@ description: Program memory after executing sketch_on_face.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  275,
-                  291,
+                  296,
+                  315,
                   0
                 ],
                 "tag": null,
@@ -392,8 +398,8 @@ description: Program memory after executing sketch_on_face.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  297,
-                  313,
+                  321,
+                  340,
                   0
                 ],
                 "tag": null,
@@ -403,8 +409,8 @@ description: Program memory after executing sketch_on_face.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  319,
-                  336,
+                  346,
+                  366,
                   0
                 ],
                 "tag": null,
@@ -414,8 +420,8 @@ description: Program memory after executing sketch_on_face.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  342,
-                  350,
+                  372,
+                  380,
                   0
                 ],
                 "tag": null,
@@ -430,8 +436,8 @@ description: Program memory after executing sketch_on_face.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      275,
-                      291,
+                      296,
+                      315,
                       0
                     ]
                   },
@@ -450,8 +456,8 @@ description: Program memory after executing sketch_on_face.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      297,
-                      313,
+                      321,
+                      340,
                       0
                     ]
                   },
@@ -470,8 +476,8 @@ description: Program memory after executing sketch_on_face.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      319,
-                      336,
+                      346,
+                      366,
                       0
                     ]
                   },
@@ -490,8 +496,8 @@ description: Program memory after executing sketch_on_face.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      342,
-                      350,
+                      372,
+                      380,
                       0
                     ]
                   },
@@ -510,6 +516,7 @@ description: Program memory after executing sketch_on_face.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "here",
                 "xAxis": {
                   "x": 1.0,
@@ -529,18 +536,19 @@ description: Program memory after executing sketch_on_face.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
                         74,
-                        105,
+                        114,
                         0
                       ],
                       "tag": {
-                        "end": 104,
-                        "start": 99,
+                        "end": 113,
+                        "start": 108,
                         "type": "TagDeclarator",
                         "value": "here"
                       },
@@ -550,8 +558,8 @@ description: Program memory after executing sketch_on_face.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        111,
-                        135,
+                        120,
+                        147,
                         0
                       ],
                       "tag": null,
@@ -561,8 +569,8 @@ description: Program memory after executing sketch_on_face.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        141,
-                        165,
+                        153,
+                        180,
                         0
                       ],
                       "tag": null,
@@ -572,8 +580,8 @@ description: Program memory after executing sketch_on_face.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        171,
-                        179,
+                        186,
+                        194,
                         0
                       ],
                       "tag": null,
@@ -589,7 +597,7 @@ description: Program memory after executing sketch_on_face.kcl
                           "id": "[uuid]",
                           "sourceRange": [
                             74,
-                            105,
+                            114,
                             0
                           ]
                         },
@@ -598,8 +606,8 @@ description: Program memory after executing sketch_on_face.kcl
                           28.35
                         ],
                         "tag": {
-                          "end": 104,
-                          "start": 99,
+                          "end": 113,
+                          "start": 108,
                           "type": "TagDeclarator",
                           "value": "here"
                         },
@@ -613,8 +621,8 @@ description: Program memory after executing sketch_on_face.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            111,
-                            135,
+                            120,
+                            147,
                             0
                           ]
                         },
@@ -633,8 +641,8 @@ description: Program memory after executing sketch_on_face.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            141,
-                            165,
+                            153,
+                            180,
                             0
                           ]
                         },
@@ -653,8 +661,8 @@ description: Program memory after executing sketch_on_face.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            171,
-                            179,
+                            186,
+                            194,
                             0
                           ]
                         },
@@ -673,6 +681,7 @@ description: Program memory after executing sketch_on_face.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -731,7 +740,7 @@ description: Program memory after executing sketch_on_face.kcl
                               "id": "[uuid]",
                               "sourceRange": [
                                 74,
-                                105,
+                                114,
                                 0
                               ]
                             },
@@ -740,8 +749,8 @@ description: Program memory after executing sketch_on_face.kcl
                               28.35
                             ],
                             "tag": {
-                              "end": 104,
-                              "start": 99,
+                              "end": 113,
+                              "start": 108,
                               "type": "TagDeclarator",
                               "value": "here"
                             },
@@ -756,12 +765,12 @@ description: Program memory after executing sketch_on_face.kcl
                             "id": "[uuid]",
                             "sourceRange": [
                               74,
-                              105,
+                              114,
                               0
                             ],
                             "tag": {
-                              "end": 104,
-                              "start": 99,
+                              "end": 113,
+                              "start": 108,
                               "type": "TagDeclarator",
                               "value": "here"
                             },
@@ -771,14 +780,16 @@ description: Program memory after executing sketch_on_face.kcl
                         "__meta": [
                           {
                             "sourceRange": [
-                              99,
-                              104,
+                              108,
+                              113,
                               0
                             ]
                           }
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -814,8 +825,8 @@ description: Program memory after executing sketch_on_face.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      210,
-                      238,
+                      231,
+                      259,
                       0
                     ]
                   }
@@ -834,20 +845,22 @@ description: Program memory after executing sketch_on_face.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    244,
-                    269,
+                    265,
+                    290,
                     0
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
               "__meta": [
                 {
                   "sourceRange": [
-                    244,
-                    269,
+                    265,
+                    290,
                     0
                   ]
                 }
@@ -862,8 +875,8 @@ description: Program memory after executing sketch_on_face.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  244,
-                  269,
+                  265,
+                  290,
                   0
                 ]
               }

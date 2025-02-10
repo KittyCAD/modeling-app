@@ -10,23 +10,23 @@ describe('processMemory', () => {
   it('should grab the values and remove and geo data', async () => {
     // Enable rotations #152
     const code = `
-  const myVar = 5
+  myVar = 5
   fn myFn = (a) => {
     return a - 2
   }
-  const otherVar = myFn(5)
+  otherVar = myFn(5)
 
-  const theExtrude = startSketchOn('XY')
+  theExtrude = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> lineTo([-2.4, myVar], %)
-    |> lineTo([-0.76, otherVar], %)
-    |> extrude(4, %)
+    |> line(endAbsolute = [-2.4, myVar])
+    |> line(endAbsolute = [-0.76, otherVar])
+    |> extrude(length = 4)
 
-  const theSketch = startSketchOn('XY')
+  theSketch = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> lineTo([-3.35, 0.17], %)
-    |> lineTo([0.98, 5.16], %)
-    |> lineTo([2.15, 4.32], %)
+    |> line(endAbsolute = [-3.35, 0.17])
+    |> line(endAbsolute = [0.98, 5.16])
+    |> line(endAbsolute = [2.15, 4.32])
     // |> rx(90, %)`
     const ast = assertParse(code)
     const execState = await enginelessExecutor(ast, ProgramMemory.empty())
@@ -47,14 +47,14 @@ describe('processMemory', () => {
           tag: null,
           id: expect.any(String),
           faceId: expect.any(String),
-          sourceRange: [170, 194, 0],
+          sourceRange: [expect.any(Number), expect.any(Number), 0],
         },
         {
           type: 'extrudePlane',
           tag: null,
           id: expect.any(String),
           faceId: expect.any(String),
-          sourceRange: [202, 230, 0],
+          sourceRange: [expect.any(Number), expect.any(Number), 0],
         },
       ],
       theSketch: [

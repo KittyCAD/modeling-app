@@ -5,7 +5,7 @@ import { getUtils, executorInputPath } from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 
-test.describe('Regression tests', () => {
+test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
   // bugs we found that don't fit neatly into other categories
   test('bad model has inline error #3251', async ({
     context,
@@ -21,10 +21,10 @@ test.describe('Regression tests', () => {
         'persistCode',
         `sketch2 = startSketchOn("XY")
   sketch001 = startSketchAt([-0, -0])
-    |> line([0, 0], %)
-    |> line([-4.84, -5.29], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`
+    |> line(end = [0, 0])
+    |> line(end = [-4.84, -5.29])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()`
       )
     })
 
@@ -67,9 +67,9 @@ test.describe('Regression tests', () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(50, sketch001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 50)
 `
       )
     })
@@ -126,9 +126,9 @@ extrude001 = extrude(50, sketch001)
         'persistCode',
         `sketch001 = startSketchOn('-XZ')
   |> startProfileAt([-6.95, 4.98], %)
-  |> line([25.1, 0.41], %)
-  |> line([0.73, -14.93], %)
-  |> line([-23.44, 0.52], %)`
+  |> line(end = [25.1, 0.41])
+  |> line(end = [0.73, -14.93])
+  |> line(end = [-23.44, 0.52])`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -187,11 +187,11 @@ extrude001 = extrude(50, sketch001)
         'persistCode',
         `part = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 1], %)
-  |> line([1, 0], %)
-  |> line([0, -1], %)
-  |> close(%)
-  |> extrude(1, %)
+  |> line(end = [0, 1])
+  |> line(end = [1, 0])
+  |> line(end = [0, -1])
+  |> close()
+  |> extrude(length = 1)
   |> patternLinear3d({
         axis: [1, 0, 1],
         repetitions: 3,
@@ -239,12 +239,6 @@ extrude001 = extrude(50, sketch001)
     'Position _ Is Out Of Range... regression test',
     { tag: ['@skipWin'] },
     async ({ context, page, homePage }) => {
-      // SKip on windows, its being weird.
-      test.skip(
-        process.platform === 'win32',
-        'This test is being weird on windows'
-      )
-
       const u = await getUtils(page)
       // const PUR = 400 / 37.5 //pixeltoUnitRatio
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -255,11 +249,11 @@ extrude001 = extrude(50, sketch001)
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
       |> yLineTo(0, %)
-      |> close(%)
+      |> close()
       |>
   
-    example = extrude(5, exampleSketch)
-    shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
+    example = extrude(exampleSketch, length = 5)
+    shell(exampleSketch, faces = ['end'], thickness = 0.25)`
         )
       })
 
@@ -311,7 +305,7 @@ extrude001 = extrude(50, sketch001)
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
       |> yLineTo(0, %)
-      |> close(%)
+      |> close()
   
       thing: "blah"`)
 
@@ -320,6 +314,7 @@ extrude001 = extrude(50, sketch001)
   )
 
   test('when engine fails export we handle the failure and alert the user', async ({
+    scene,
     page,
     homePage,
   }) => {
@@ -389,10 +384,7 @@ extrude001 = extrude(50, sketch001)
     await page.keyboard.press('End')
     await page.keyboard.press('Enter')
 
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+    await scene.waitForExecutionDone()
 
     // Now try exporting
 
@@ -425,13 +417,6 @@ extrude001 = extrude(50, sketch001)
     'ensure you can not export while an export is already going',
     { tag: ['@skipLinux', '@skipWin'] },
     async ({ page, homePage }) => {
-      // This is being weird on ubuntu and windows.
-      test.skip(
-        // eslint-disable-next-line jest/valid-title
-        process.platform === 'linux' || process.platform === 'win32',
-        'This test is being weird on ubuntu'
-      )
-
       const u = await getUtils(page)
       await test.step('Set up the code and durations', async () => {
         await page.addInitScript(
@@ -560,8 +545,6 @@ extrude001 = extrude(50, sketch001)
     page,
     homePage,
   }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
 
     // Constants and locators

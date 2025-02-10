@@ -42,6 +42,7 @@ import {
 } from 'components/Toolbar/EqualLength'
 import { revolveSketch } from 'lang/modifyAst/addRevolve'
 import {
+  addHelix,
   addOffsetPlane,
   addSweep,
   deleteFromSelection,
@@ -70,7 +71,8 @@ import {
 } from 'components/Toolbar/SetAbsDistance'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, reportRejection, trap } from 'lib/trap'
-import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
+import { getFaceDetails } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr } from 'lib/planes'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
@@ -275,6 +277,7 @@ export type ModelingMachineEvent =
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
+  | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
@@ -1449,28 +1452,52 @@ export const modelingMachine = setup({
       }
     ),
     extrudeAstMod: fromPromise<
-      void,
+      unknown,
       ModelingCommandSchema['Extrude'] | undefined
     >(async ({ input }) => {
-      if (!input) return Promise.reject('No input provided')
-      const { selection, distance } = input
+      if (!input) return new Error('No input provided')
+      const { selection, distance, nodeToEdit } = input
+      const isEditing =
+        nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number'
       let ast = structuredClone(kclManager.ast)
       let extrudeName: string | undefined = undefined
+
+      // If this is an edit flow, first we're going to remove the old extrusion
+      if (isEditing) {
+        // Extract the plane name from the node to edit
+        const extrudeNameNode = getNodeFromPath<VariableDeclaration>(
+          ast,
+          nodeToEdit,
+          'VariableDeclaration'
+        )
+        if (err(extrudeNameNode)) {
+          console.error('Error extracting plane name')
+        } else {
+          extrudeName = extrudeNameNode.node.declaration.id.name
+        }
+
+        // Removing the old extrusion statement
+        const newBody = [...ast.body]
+        newBody.splice(nodeToEdit[1][0] as number, 1)
+        ast.body = newBody
+      }
 
       const pathToNode = getNodePathFromSourceRange(
         ast,
         selection.graphSelections[0]?.codeRef.range
       )
       // Add an extrude statement to the AST
-      const extrudeSketchRes = extrudeSketch(
-        ast,
+      const extrudeSketchRes = extrudeSketch({
+        node: ast,
         pathToNode,
-        false,
-        'variableName' in distance
-          ? distance.variableIdentifierAst
-          : distance.valueAst
-      )
-      if (err(extrudeSketchRes)) return Promise.reject(extrudeSketchRes)
+        shouldPipe: false,
+        distance:
+          'variableName' in distance
+            ? distance.variableIdentifierAst
+            : distance.valueAst,
+        extrudeName,
+      })
+      if (err(extrudeSketchRes)) return extrudeSketchRes
       const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
       // Insert the distance variable if the user has provided a variable name
@@ -1514,30 +1541,37 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         // Extract inputs
         const ast = kclManager.ast
-        const { plane: selection, distance } = input
+        const { plane: selection, distance, nodeToEdit } = input
+
+        let insertIndex: number | undefined = undefined
+        let planeName: string | undefined = undefined
+
+        // If this is an edit flow, first we're going to remove the old plane
+        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+          // Extract the plane name from the node to edit
+          const planeNameNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+          if (err(planeNameNode)) {
+            console.error('Error extracting plane name')
+          } else {
+            planeName = planeNameNode.node.declaration.id.name
+          }
+
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0], 1)
+          ast.body = newBody
+          insertIndex = nodeToEdit[1][0]
+        }
 
         // Extract the default plane from selection
         const plane = selection.otherSelections[0]
         if (!(plane && plane instanceof Object && 'name' in plane))
           return trap('No plane selected')
 
-        // Insert the distance variable if it exists
-        if (
-          'variableName' in distance &&
-          distance.variableName &&
-          distance.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(
-            distance.insertIndex,
-            0,
-            distance.variableDeclarationAst
-          )
-          ast.body = newBody
-        }
-
         // Get the default plane name from the selection
-
         const offsetPlaneResult = addOffsetPlane({
           node: ast,
           defaultPlane: plane.name,
@@ -1545,13 +1579,99 @@ export const modelingMachine = setup({
             'variableName' in distance
               ? distance.variableIdentifierAst
               : distance.valueAst,
+          insertIndex,
+          planeName,
         })
+
+        // Insert the distance variable if the user has provided a variable name
+        if (
+          'variableName' in distance &&
+          distance.variableName &&
+          typeof offsetPlaneResult.pathToNode[1][0] === 'number'
+        ) {
+          const insertIndex = Math.min(
+            offsetPlaneResult.pathToNode[1][0],
+            distance.insertIndex
+          )
+          const newBody = [...offsetPlaneResult.modifiedAst.body]
+          newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
+          offsetPlaneResult.modifiedAst.body = newBody
+          // Since we inserted a new variable, we need to update the path to the extrude argument
+          offsetPlaneResult.pathToNode[1][0]++
+        }
 
         const updateAstResult = await kclManager.updateAst(
           offsetPlaneResult.modifiedAst,
           true,
           {
             focusPath: [offsetPlaneResult.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
+    helixAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Helix'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const {
+          revolutions,
+          angleStart,
+          counterClockWise,
+          radius,
+          axis,
+          length,
+        } = input
+
+        for (const variable of [revolutions, angleStart, radius, length]) {
+          // Insert the variable if it exists
+          if (
+            'variableName' in variable &&
+            variable.variableName &&
+            variable.insertIndex !== undefined
+          ) {
+            const newBody = [...ast.body]
+            newBody.splice(
+              variable.insertIndex,
+              0,
+              variable.variableDeclarationAst
+            )
+            ast.body = newBody
+          }
+        }
+
+        const valueOrVariable = (variable: KclCommandValue) =>
+          'variableName' in variable
+            ? variable.variableIdentifierAst
+            : variable.valueAst
+
+        const result = addHelix({
+          node: ast,
+          revolutions: valueOrVariable(revolutions),
+          angleStart: valueOrVariable(angleStart),
+          counterClockWise,
+          radius: valueOrVariable(radius),
+          axis,
+          length: valueOrVariable(length),
+        })
+
+        const updateAstResult = await kclManager.updateAst(
+          result.modifiedAst,
+          true,
+          {
+            focusPath: [result.pathToNode],
           }
         )
 
@@ -1681,6 +1801,12 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness } = input
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
 
         // Insert the thickness variable if it exists
         if (
@@ -1706,6 +1832,7 @@ export const modelingMachine = setup({
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
+          dependencies,
         })
         if (err(shellResult)) {
           return err(shellResult)
@@ -1745,12 +1872,19 @@ export const modelingMachine = setup({
           type: EdgeTreatmentType.Fillet,
           radius,
         }
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
 
         // Apply fillet to selection
         const filletResult = await applyEdgeTreatmentToSelection(
           ast,
           selection,
-          parameters
+          parameters,
+          dependencies
         )
         if (err(filletResult)) return filletResult
       }
@@ -1772,12 +1906,19 @@ export const modelingMachine = setup({
           type: EdgeTreatmentType.Chamfer,
           length,
         }
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
 
         // Apply chamfer to selection
         const chamferResult = await applyEdgeTreatmentToSelection(
           ast,
           selection,
-          parameters
+          parameters,
+          dependencies
         )
         if (err(chamferResult)) return chamferResult
       }
@@ -1899,6 +2040,11 @@ export const modelingMachine = setup({
 
         'Offset plane': {
           target: 'Applying offset plane',
+          reenter: true,
+        },
+
+        Helix: {
+          target: 'Applying helix',
           reenter: true,
         },
 
@@ -2655,6 +2801,19 @@ export const modelingMachine = setup({
         id: 'offsetPlaneAstMod',
         input: ({ event }) => {
           if (event.type !== 'Offset plane') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying helix': {
+      invoke: {
+        src: 'helixAstMod',
+        id: 'helixAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Helix') return undefined
           return event.data
         },
         onDone: ['idle'],

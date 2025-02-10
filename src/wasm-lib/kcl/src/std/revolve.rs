@@ -49,14 +49,14 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
-///     |> line([2, 0], %)
-///     |> line([0, -6], %)
-///     |> line([4, -6], %)
-///     |> line([0, -6], %)
-///     |> line([-3.75, -4.5], %)
-///     |> line([0, -5.5], %)
-///     |> line([-2, 0], %)
-///     |> close(%)
+///     |> line(end = [2, 0])
+///     |> line(end = [0, -6])
+///     |> line(end = [4, -6])
+///     |> line(end = [0, -6])
+///     |> line(end = [-3.75, -4.5])
+///     |> line(end = [0, -5.5])
+///     |> line(end = [-2, 0])
+///     |> close()
 ///     |> revolve({axis = 'y'}, %) // default angle is 360
 /// ```
 ///
@@ -73,46 +73,46 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
-///     |> line([2, 0], %)
-///     |> line([0, -6], %)
-///     |> line([4, -6], %)
-///     |> line([0, -6], %)
-///     |> line([-3.75, -4.5], %)
-///     |> line([0, -5.5], %)
-///     |> line([-2, 0], %)
-///     |> close(%)
+///     |> line(end = [2, 0])
+///     |> line(end = [0, -6])
+///     |> line(end = [4, -6])
+///     |> line(end = [0, -6])
+///     |> line(end = [-3.75, -4.5])
+///     |> line(end = [0, -5.5])
+///     |> line(end = [-2, 0])
+///     |> close()
 ///     |> revolve({axis = 'y', angle = 180}, %)
 /// ```
 ///
 /// ```no_run
 /// part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
-///     |> line([2, 0], %)
-///     |> line([0, -6], %)
-///     |> line([4, -6], %)
-///     |> line([0, -6], %)
-///     |> line([-3.75, -4.5], %)
-///     |> line([0, -5.5], %)
-///     |> line([-2, 0], %)
-///     |> close(%)
+///     |> line(end = [2, 0])
+///     |> line(end = [0, -6])
+///     |> line(end = [4, -6])
+///     |> line(end = [0, -6])
+///     |> line(end = [-3.75, -4.5])
+///     |> line(end = [0, -5.5])
+///     |> line(end = [-2, 0])
+///     |> close()
 ///     |> revolve({axis = 'y', angle = 180}, %)
 /// part002 = startSketchOn(part001, 'end')
 ///     |> startProfileAt([4.5, -5], %)
-///     |> line([0, 5], %)
-///     |> line([5, 0], %)
-///     |> line([0, -5], %)
-///     |> close(%)
-///     |> extrude(5, %)
+///     |> line(end = [0, 5])
+///     |> line(end = [5, 0])
+///     |> line(end = [0, -5])
+///     |> close()
+///     |> extrude(length = 5)
 /// ```
 ///
 /// ```no_run
 /// box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
-///     |> line([0, 20], %)
-///     |> line([20, 0], %)
-///     |> line([0, -20], %)
-///     |> close(%)
-///     |> extrude(20, %)
+///     |> line(end = [0, 20])
+///     |> line(end = [20, 0])
+///     |> line(end = [0, -20])
+///     |> close()
+///     |> extrude(length = 20)
 ///
 /// sketch001 = startSketchOn(box, "END")
 ///     |> circle({ center = [10,10], radius = 4 }, %)
@@ -125,11 +125,11 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
-///     |> line([0, 20], %)
-///     |> line([20, 0], %)
-///     |> line([0, -20], %, $revolveAxis)
-///     |> close(%)
-///     |> extrude(20, %)
+///     |> line(end = [0, 20])
+///     |> line(end = [20, 0])
+///     |> line(end = [0, -20], tag = $revolveAxis)
+///     |> close()
+///     |> extrude(length = 20)
 ///
 /// sketch001 = startSketchOn(box, "END")
 ///     |> circle({ center = [10,10], radius = 4 }, %)
@@ -142,11 +142,11 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
-///     |> line([0, 20], %)
-///     |> line([20, 0], %)
-///     |> line([0, -20], %, $revolveAxis)
-///     |> close(%)
-///     |> extrude(20, %)
+///     |> line(end = [0, 20])
+///     |> line(end = [20, 0])
+///     |> line(end = [0, -20], tag = $revolveAxis)
+///     |> close()
+///     |> extrude(length = 20)
 ///
 /// sketch001 = startSketchOn(box, "END")
 ///     |> circle({ center = [10,10], radius = 4 }, %)
@@ -160,10 +160,10 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// sketch001 = startSketchOn('XY')
 ///   |> startProfileAt([10, 0], %)
-///   |> line([5, -5], %)
-///   |> line([5, 5], %)
-///   |> lineTo([profileStartX(%), profileStartY(%)], %)
-///   |> close(%)
+///   |> line(end = [5, -5])
+///   |> line(end = [5, 5])
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
 ///
 /// part001 = revolve({
 ///   axis = {
@@ -230,5 +230,5 @@ async fn inner_revolve(
         }
     }
 
-    do_post_extrude(sketch, 0.0, exec_state, args).await
+    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
 }

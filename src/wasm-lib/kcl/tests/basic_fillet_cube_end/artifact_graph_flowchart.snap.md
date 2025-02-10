@@ -2,14 +2,14 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[35, 60, 0]"]
-    3["Segment<br>[66, 90, 0]"]
-    4["Segment<br>[96, 112, 0]"]
-    5["Segment<br>[118, 144, 0]"]
-    6["Segment<br>[150, 158, 0]"]
+    3["Segment<br>[66, 99, 0]"]
+    4["Segment<br>[105, 124, 0]"]
+    5["Segment<br>[130, 165, 0]"]
+    6["Segment<br>[171, 179, 0]"]
     7[Solid2d]
   end
   1["Plane<br>[10, 29, 0]"]
-  8["Sweep Extrusion<br>[164, 178, 0]"]
+  8["Sweep Extrusion<br>[185, 205, 0]"]
   9[Wall]
   10[Wall]
   11[Wall]
@@ -24,8 +24,8 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  23["EdgeCut Fillet<br>[184, 268, 0]"]
-  24["EdgeCut Fillet<br>[184, 268, 0]"]
+  23["EdgeCut Fillet<br>[211, 295, 0]"]
+  24["EdgeCut Fillet<br>[211, 295, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4

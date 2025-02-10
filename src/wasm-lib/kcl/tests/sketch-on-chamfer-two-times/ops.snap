@@ -27,49 +27,48 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          447,
-          450,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          452,
-          461,
+          482,
+          485,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      439,
-      462,
+      454,
+      486,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        462,
+        471,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          475,
-          506,
+          499,
+          530,
           0
         ]
       },
       "solid": {
         "sourceRange": [
-          508,
-          509,
+          532,
+          533,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      468,
-      510,
+      492,
+      534,
       0
     ],
     "type": "StdLibCall",
@@ -79,63 +78,30 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          524,
-          555,
+          548,
+          579,
           0
         ]
       },
       "solid": {
-        "sourceRange": [
-          557,
-          558,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          560,
-          566,
-          0
-        ]
-      }
-    },
-    "name": "chamfer",
-    "sourceRange": [
-      516,
-      567,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
         "sourceRange": [
           581,
-          648,
-          0
-        ]
-      },
-      "solid": {
-        "sourceRange": [
-          650,
-          651,
+          582,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          653,
-          659,
+          584,
+          590,
           0
         ]
       }
     },
     "name": "chamfer",
     "sourceRange": [
-      573,
-      660,
+      540,
+      591,
       0
     ],
     "type": "StdLibCall",
@@ -145,23 +111,30 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          688,
-          698,
+          605,
+          672,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          674,
+          675,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          700,
-          705,
+          677,
+          683,
           0
         ]
       }
     },
-    "name": "startSketchOn",
+    "name": "chamfer",
     "sourceRange": [
-      674,
-      706,
+      597,
+      684,
       0
     ],
     "type": "StdLibCall",
@@ -171,23 +144,49 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          1127,
-          1137,
+          712,
+          722,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          1139,
-          1144,
+          724,
+          729,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1113,
-      1145,
+      698,
+      730,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1160,
+          1170,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          1172,
+          1177,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      1146,
+      1178,
       0
     ],
     "type": "StdLibCall",
@@ -197,26 +196,25 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          1563,
-          1565,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          1567,
-          1576,
+          1625,
+          1627,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1555,
-      1577,
+      1597,
+      1628,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        1605,
+        1614,
+        0
+      ]
+    }
   }
 ]

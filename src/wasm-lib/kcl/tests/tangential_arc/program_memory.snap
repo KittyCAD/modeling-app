@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing tangential_arc.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -31,13 +32,14 @@ description: Program memory after executing tangential_arc.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   39,
-                  55,
+                  58,
                   0
                 ],
                 "tag": null,
@@ -47,8 +49,8 @@ description: Program memory after executing tangential_arc.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  61,
-                  106,
+                  64,
+                  109,
                   0
                 ],
                 "tag": null,
@@ -58,8 +60,8 @@ description: Program memory after executing tangential_arc.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  112,
-                  129,
+                  115,
+                  135,
                   0
                 ],
                 "tag": null,
@@ -75,7 +77,7 @@ description: Program memory after executing tangential_arc.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       39,
-                      55,
+                      58,
                       0
                     ]
                   },
@@ -94,8 +96,8 @@ description: Program memory after executing tangential_arc.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      61,
-                      106,
+                      64,
+                      109,
                       0
                     ]
                   },
@@ -119,8 +121,8 @@ description: Program memory after executing tangential_arc.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      112,
-                      129,
+                      115,
+                      135,
                       0
                     ]
                   },
@@ -139,6 +141,7 @@ description: Program memory after executing tangential_arc.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -184,6 +187,8 @@ description: Program memory after executing tangential_arc.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

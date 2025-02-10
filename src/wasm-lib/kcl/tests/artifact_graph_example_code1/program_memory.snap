@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing artifact_graph_example_code1.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -31,13 +32,14 @@ description: Program memory after executing artifact_graph_example_code1.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   70,
-                  86,
+                  89,
                   0
                 ],
                 "tag": null,
@@ -47,13 +49,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  92,
-                  119,
+                  95,
+                  131,
                   0
                 ],
                 "tag": {
-                  "end": 118,
-                  "start": 112,
+                  "end": 130,
+                  "start": 124,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -63,13 +65,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  125,
-                  150,
+                  137,
+                  171,
                   0
                 ],
                 "tag": {
-                  "end": 149,
-                  "start": 143,
+                  "end": 170,
+                  "start": 164,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -79,8 +81,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  156,
-                  203,
+                  177,
+                  233,
                   0
                 ],
                 "tag": null,
@@ -96,7 +98,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       70,
-                      86,
+                      89,
                       0
                     ]
                   },
@@ -115,8 +117,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      92,
-                      119,
+                      95,
+                      131,
                       0
                     ]
                   },
@@ -125,8 +127,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     5.0
                   ],
                   "tag": {
-                    "end": 118,
-                    "start": 112,
+                    "end": 130,
+                    "start": 124,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -140,8 +142,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      125,
-                      150,
+                      137,
+                      171,
                       0
                     ]
                   },
@@ -150,8 +152,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     5.0
                   ],
                   "tag": {
-                    "end": 149,
-                    "start": 143,
+                    "end": 170,
+                    "start": 164,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -165,8 +167,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      156,
-                      203,
+                      177,
+                      233,
                       0
                     ]
                   },
@@ -185,8 +187,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      209,
-                      217,
+                      239,
+                      246,
                       0
                     ]
                   },
@@ -205,6 +207,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -262,8 +265,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          92,
-                          119,
+                          95,
+                          131,
                           0
                         ]
                       },
@@ -272,8 +275,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         5.0
                       ],
                       "tag": {
-                        "end": 118,
-                        "start": 112,
+                        "end": 130,
+                        "start": 124,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -287,13 +290,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        92,
-                        119,
+                        95,
+                        131,
                         0
                       ],
                       "tag": {
-                        "end": 118,
-                        "start": 112,
+                        "end": 130,
+                        "start": 124,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -303,8 +306,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        112,
-                        118,
+                        124,
+                        130,
                         0
                       ]
                     }
@@ -321,8 +324,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          125,
-                          150,
+                          137,
+                          171,
                           0
                         ]
                       },
@@ -331,8 +334,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         5.0
                       ],
                       "tag": {
-                        "end": 149,
-                        "start": 143,
+                        "end": 170,
+                        "start": 164,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -346,13 +349,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        125,
-                        150,
+                        137,
+                        171,
                         0
                       ],
                       "tag": {
-                        "end": 149,
-                        "start": 143,
+                        "end": 170,
+                        "start": 164,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -362,14 +365,16 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        143,
-                        149,
+                        164,
+                        170,
                         0
                       ]
                     }
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -414,13 +419,14 @@ description: Program memory after executing artifact_graph_example_code1.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  385,
-                  400,
+                  423,
+                  441,
                   0
                 ],
                 "tag": null,
@@ -430,8 +436,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  406,
-                  422,
+                  447,
+                  466,
                   0
                 ],
                 "tag": null,
@@ -441,8 +447,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  428,
-                  475,
+                  472,
+                  528,
                   0
                 ],
                 "tag": null,
@@ -457,8 +463,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      385,
-                      400,
+                      423,
+                      441,
                       0
                     ]
                   },
@@ -477,8 +483,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      406,
-                      422,
+                      447,
+                      466,
                       0
                     ]
                   },
@@ -497,8 +503,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      428,
-                      475,
+                      472,
+                      528,
                       0
                     ]
                   },
@@ -517,8 +523,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      481,
-                      489,
+                      534,
+                      541,
                       0
                     ]
                   },
@@ -537,6 +543,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg02",
                 "xAxis": {
                   "x": 1.0,
@@ -556,13 +563,14 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
                         70,
-                        86,
+                        89,
                         0
                       ],
                       "tag": null,
@@ -572,13 +580,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        92,
-                        119,
+                        95,
+                        131,
                         0
                       ],
                       "tag": {
-                        "end": 118,
-                        "start": 112,
+                        "end": 130,
+                        "start": 124,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -588,13 +596,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        125,
-                        150,
+                        137,
+                        171,
                         0
                       ],
                       "tag": {
-                        "end": 149,
-                        "start": 143,
+                        "end": 170,
+                        "start": 164,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -604,8 +612,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        156,
-                        203,
+                        177,
+                        233,
                         0
                       ],
                       "tag": null,
@@ -621,7 +629,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                           "id": "[uuid]",
                           "sourceRange": [
                             70,
-                            86,
+                            89,
                             0
                           ]
                         },
@@ -640,8 +648,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            92,
-                            119,
+                            95,
+                            131,
                             0
                           ]
                         },
@@ -650,8 +658,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                           5.0
                         ],
                         "tag": {
-                          "end": 118,
-                          "start": 112,
+                          "end": 130,
+                          "start": 124,
                           "type": "TagDeclarator",
                           "value": "seg01"
                         },
@@ -665,8 +673,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            125,
-                            150,
+                            137,
+                            171,
                             0
                           ]
                         },
@@ -675,8 +683,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                           5.0
                         ],
                         "tag": {
-                          "end": 149,
-                          "start": 143,
+                          "end": 170,
+                          "start": 164,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -690,8 +698,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            156,
-                            203,
+                            177,
+                            233,
                             0
                           ]
                         },
@@ -710,8 +718,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            209,
-                            217,
+                            239,
+                            246,
                             0
                           ]
                         },
@@ -730,6 +738,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -787,8 +796,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                92,
-                                119,
+                                95,
+                                131,
                                 0
                               ]
                             },
@@ -797,8 +806,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                               5.0
                             ],
                             "tag": {
-                              "end": 118,
-                              "start": 112,
+                              "end": 130,
+                              "start": 124,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -812,13 +821,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              92,
-                              119,
+                              95,
+                              131,
                               0
                             ],
                             "tag": {
-                              "end": 118,
-                              "start": 112,
+                              "end": 130,
+                              "start": 124,
                               "type": "TagDeclarator",
                               "value": "seg01"
                             },
@@ -828,8 +837,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         "__meta": [
                           {
                             "sourceRange": [
-                              112,
-                              118,
+                              124,
+                              130,
                               0
                             ]
                           }
@@ -846,8 +855,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                125,
-                                150,
+                                137,
+                                171,
                                 0
                               ]
                             },
@@ -856,8 +865,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                               5.0
                             ],
                             "tag": {
-                              "end": 149,
-                              "start": 143,
+                              "end": 170,
+                              "start": 164,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -871,13 +880,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              125,
-                              150,
+                              137,
+                              171,
                               0
                             ],
                             "tag": {
-                              "end": 149,
-                              "start": 143,
+                              "end": 170,
+                              "start": 164,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -887,14 +896,16 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         "__meta": [
                           {
                             "sourceRange": [
-                              143,
-                              149,
+                              164,
+                              170,
                               0
                             ]
                           }
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -939,8 +950,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      314,
-                      346,
+                      352,
+                      384,
                       0
                     ]
                   }
@@ -959,20 +970,22 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    352,
-                    379,
+                    390,
+                    417,
                     0
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
               "__meta": [
                 {
                   "sourceRange": [
-                    352,
-                    379,
+                    390,
+                    417,
                     0
                   ]
                 }
@@ -987,8 +1000,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  352,
-                  379,
+                  390,
+                  417,
                   0
                 ]
               }
@@ -1007,8 +1020,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  92,
-                  119,
+                  95,
+                  131,
                   0
                 ]
               },
@@ -1017,8 +1030,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 5.0
               ],
               "tag": {
-                "end": 118,
-                "start": 112,
+                "end": 130,
+                "start": 124,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1032,13 +1045,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                92,
-                119,
+                95,
+                131,
                 0
               ],
               "tag": {
-                "end": 118,
-                "start": 112,
+                "end": 130,
+                "start": 124,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1048,8 +1061,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
           "__meta": [
             {
               "sourceRange": [
-                112,
-                118,
+                124,
+                130,
                 0
               ]
             }
@@ -1067,8 +1080,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  125,
-                  150,
+                  137,
+                  171,
                   0
                 ]
               },
@@ -1077,8 +1090,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 5.0
               ],
               "tag": {
-                "end": 149,
-                "start": 143,
+                "end": 170,
+                "start": 164,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1092,13 +1105,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                125,
-                150,
+                137,
+                171,
                 0
               ],
               "tag": {
-                "end": 149,
-                "start": 143,
+                "end": 170,
+                "start": 164,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1108,8 +1121,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
           "__meta": [
             {
               "sourceRange": [
-                143,
-                149,
+                164,
+                170,
                 0
               ]
             }
@@ -1126,7 +1139,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     70,
-                    86,
+                    89,
                     0
                   ]
                 },
@@ -1145,8 +1158,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    92,
-                    119,
+                    95,
+                    131,
                     0
                   ]
                 },
@@ -1155,8 +1168,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   5.0
                 ],
                 "tag": {
-                  "end": 118,
-                  "start": 112,
+                  "end": 130,
+                  "start": 124,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1170,8 +1183,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    125,
-                    150,
+                    137,
+                    171,
                     0
                   ]
                 },
@@ -1180,8 +1193,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   5.0
                 ],
                 "tag": {
-                  "end": 149,
-                  "start": 143,
+                  "end": 170,
+                  "start": 164,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1195,8 +1208,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    156,
-                    203,
+                    177,
+                    233,
                     0
                   ]
                 },
@@ -1215,8 +1228,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    209,
-                    217,
+                    239,
+                    246,
                     0
                   ]
                 },
@@ -1235,6 +1248,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -1292,8 +1306,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        92,
-                        119,
+                        95,
+                        131,
                         0
                       ]
                     },
@@ -1302,8 +1316,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       5.0
                     ],
                     "tag": {
-                      "end": 118,
-                      "start": 112,
+                      "end": 130,
+                      "start": 124,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1317,13 +1331,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      92,
-                      119,
+                      95,
+                      131,
                       0
                     ],
                     "tag": {
-                      "end": 118,
-                      "start": 112,
+                      "end": 130,
+                      "start": 124,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1333,8 +1347,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      112,
-                      118,
+                      124,
+                      130,
                       0
                     ]
                   }
@@ -1351,8 +1365,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        125,
-                        150,
+                        137,
+                        171,
                         0
                       ]
                     },
@@ -1361,8 +1375,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       5.0
                     ],
                     "tag": {
-                      "end": 149,
-                      "start": 143,
+                      "end": 170,
+                      "start": 164,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1376,13 +1390,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      125,
-                      150,
+                      137,
+                      171,
                       0
                     ],
                     "tag": {
-                      "end": 149,
-                      "start": 143,
+                      "end": 170,
+                      "start": 164,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1392,14 +1406,16 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      143,
-                      149,
+                      164,
+                      170,
                       0
                     ]
                   }
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1424,8 +1440,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    385,
-                    400,
+                    423,
+                    441,
                     0
                   ]
                 },
@@ -1444,8 +1460,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    406,
-                    422,
+                    447,
+                    466,
                     0
                   ]
                 },
@@ -1464,8 +1480,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    428,
-                    475,
+                    472,
+                    528,
                     0
                   ]
                 },
@@ -1484,8 +1500,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    481,
-                    489,
+                    534,
+                    541,
                     0
                   ]
                 },
@@ -1504,6 +1520,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,
@@ -1523,13 +1540,14 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
                       70,
-                      86,
+                      89,
                       0
                     ],
                     "tag": null,
@@ -1539,13 +1557,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      92,
-                      119,
+                      95,
+                      131,
                       0
                     ],
                     "tag": {
-                      "end": 118,
-                      "start": 112,
+                      "end": 130,
+                      "start": 124,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1555,13 +1573,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      125,
-                      150,
+                      137,
+                      171,
                       0
                     ],
                     "tag": {
-                      "end": 149,
-                      "start": 143,
+                      "end": 170,
+                      "start": 164,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1571,8 +1589,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      156,
-                      203,
+                      177,
+                      233,
                       0
                     ],
                     "tag": null,
@@ -1588,7 +1606,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         "id": "[uuid]",
                         "sourceRange": [
                           70,
-                          86,
+                          89,
                           0
                         ]
                       },
@@ -1607,8 +1625,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          92,
-                          119,
+                          95,
+                          131,
                           0
                         ]
                       },
@@ -1617,8 +1635,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         5.0
                       ],
                       "tag": {
-                        "end": 118,
-                        "start": 112,
+                        "end": 130,
+                        "start": 124,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1632,8 +1650,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          125,
-                          150,
+                          137,
+                          171,
                           0
                         ]
                       },
@@ -1642,8 +1660,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                         5.0
                       ],
                       "tag": {
-                        "end": 149,
-                        "start": 143,
+                        "end": 170,
+                        "start": 164,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1657,8 +1675,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          156,
-                          203,
+                          177,
+                          233,
                           0
                         ]
                       },
@@ -1677,8 +1695,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          209,
-                          217,
+                          239,
+                          246,
                           0
                         ]
                       },
@@ -1697,6 +1715,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XY",
                     "origin": {
                       "x": 0.0,
@@ -1754,8 +1773,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                           "__geoMeta": {
                             "id": "[uuid]",
                             "sourceRange": [
-                              92,
-                              119,
+                              95,
+                              131,
                               0
                             ]
                           },
@@ -1764,8 +1783,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                             5.0
                           ],
                           "tag": {
-                            "end": 118,
-                            "start": 112,
+                            "end": 130,
+                            "start": 124,
                             "type": "TagDeclarator",
                             "value": "seg01"
                           },
@@ -1779,13 +1798,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            92,
-                            119,
+                            95,
+                            131,
                             0
                           ],
                           "tag": {
-                            "end": 118,
-                            "start": 112,
+                            "end": 130,
+                            "start": 124,
                             "type": "TagDeclarator",
                             "value": "seg01"
                           },
@@ -1795,8 +1814,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "__meta": [
                         {
                           "sourceRange": [
-                            112,
-                            118,
+                            124,
+                            130,
                             0
                           ]
                         }
@@ -1813,8 +1832,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                           "__geoMeta": {
                             "id": "[uuid]",
                             "sourceRange": [
-                              125,
-                              150,
+                              137,
+                              171,
                               0
                             ]
                           },
@@ -1823,8 +1842,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                             5.0
                           ],
                           "tag": {
-                            "end": 149,
-                            "start": 143,
+                            "end": 170,
+                            "start": 164,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -1838,13 +1857,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            125,
-                            150,
+                            137,
+                            171,
                             0
                           ],
                           "tag": {
-                            "end": 149,
-                            "start": 143,
+                            "end": 170,
+                            "start": 164,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -1854,14 +1873,16 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                       "__meta": [
                         {
                           "sourceRange": [
-                            143,
-                            149,
+                            164,
+                            170,
                             0
                           ]
                         }
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -1906,8 +1927,8 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    314,
-                    346,
+                    352,
+                    384,
                     0
                   ]
                 }
@@ -1926,20 +1947,22 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  352,
-                  379,
+                  390,
+                  417,
                   0
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
             "__meta": [
               {
                 "sourceRange": [
-                  352,
-                  379,
+                  390,
+                  417,
                   0
                 ]
               }

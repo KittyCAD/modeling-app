@@ -36,12 +36,12 @@ filletRadius = 2
 
 mountingPlateSketch = startSketchOn("XY")
   |> startProfileAt([-width / 2, -length / 2], %)
-  |> lineTo([width / 2, -length / 2], %, $edge1)
-  |> lineTo([width / 2, length / 2], %, $edge2)
-  |> lineTo([-width / 2, length / 2], %, $edge3)
-  |> close(%, $edge4)
+  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
+  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
+  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
+  |> close(tag = $edge4)
 
-mountingPlate = extrude(thickness, mountingPlateSketch)
+mountingPlate = extrude(mountingPlateSketch, length = thickness)
   |> fillet({
        radius = filletRadius,
        tags = [
@@ -63,12 +63,12 @@ filletRadius = 1
 
 mountingPlateSketch = startSketchOn("XY")
   |> startProfileAt([-width / 2, -length / 2], %)
-  |> lineTo([width / 2, -length / 2], %, $edge1)
-  |> lineTo([width / 2, length / 2], %, $edge2)
-  |> lineTo([-width / 2, length / 2], %, $edge3)
-  |> close(%, $edge4)
+  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
+  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
+  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
+  |> close(tag = $edge4)
 
-mountingPlate = extrude(thickness, mountingPlateSketch)
+mountingPlate = extrude(mountingPlateSketch, length = thickness)
   |> fillet({
        radius = filletRadius,
        tolerance = 0.000001,

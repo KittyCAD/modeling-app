@@ -49,7 +49,7 @@ use crate::{
         token::TokenStream,
         PIPE_OPERATOR,
     },
-    CacheInformation, ExecState, ModuleId, OldAstState, Program, SourceRange,
+    ModuleId, Program, SourceRange,
 };
 const SEMANTIC_TOKEN_TYPES: [SemanticTokenType; 10] = [
     SemanticTokenType::NUMBER,
@@ -102,12 +102,6 @@ pub struct Backend {
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
     pub ast_map: DashMap<String, Node<crate::parsing::ast::types::Program>>,
-    /// Last successful execution.
-    /// This gets set to None when execution errors, or we want to bust the cache on purpose to
-    /// force a re-execution.
-    /// We do not need to manually bust the cache for changed units, that's handled by the cache
-    /// information.
-    pub last_successful_ast_state: Arc<RwLock<Option<OldAstState>>>,
     /// Memory maps.
     pub memory_map: DashMap<String, crate::execution::ProgramMemory>,
     /// Current code.
@@ -192,7 +186,6 @@ impl Backend {
             diagnostics_map: Default::default(),
             symbols_map: Default::default(),
             semantic_tokens_map: Default::default(),
-            last_successful_ast_state: Default::default(),
             is_initialized: Default::default(),
         })
     }
@@ -267,10 +260,7 @@ impl crate::lsp::backend::Backend for Backend {
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
         if force {
-            // Bust the execution cache.
-            let mut old_ast_state = self.last_successful_ast_state.write().await;
-            *old_ast_state = None;
-            drop(old_ast_state);
+            crate::bust_cache().await;
         }
 
         let filename = params.uri.to_string();
@@ -688,52 +678,27 @@ impl Backend {
             return Ok(());
         }
 
-        let mut last_successful_ast_state = self.last_successful_ast_state.write().await;
+        match executor_ctx.run_with_caching(ast.clone()).await {
+            Err(err) => {
+                self.memory_map.remove(params.uri.as_str());
+                self.add_to_diagnostics(params, &[err.error], false).await;
 
-        let mut exec_state = if let Some(last_successful_ast_state) = last_successful_ast_state.clone() {
-            last_successful_ast_state.exec_state
-        } else {
-            ExecState::new(&executor_ctx.settings)
-        };
+                // Since we already published the diagnostics we don't really care about the error
+                // string.
+                Err(anyhow::anyhow!("failed to execute code"))
+            }
+            Ok(outcome) => {
+                let memory = outcome.memory;
+                self.memory_map.insert(params.uri.to_string(), memory.clone());
 
-        if let Err(err) = executor_ctx
-            .run(
-                CacheInformation {
-                    old: last_successful_ast_state.clone(),
-                    new_ast: ast.ast.clone(),
-                },
-                &mut exec_state,
-            )
-            .await
-        {
-            self.memory_map.remove(params.uri.as_str());
-            self.add_to_diagnostics(params, &[err], false).await;
+                // Send the notification to the client that the memory was updated.
+                self.client
+                    .send_notification::<custom_notifications::MemoryUpdated>(memory)
+                    .await;
 
-            // Update the last successful ast state to be None.
-            *last_successful_ast_state = None;
-
-            // Since we already published the diagnostics we don't really care about the error
-            // string.
-            return Err(anyhow::anyhow!("failed to execute code"));
+                Ok(())
+            }
         }
-
-        // Update the last successful ast state.
-        *last_successful_ast_state = Some(OldAstState {
-            ast: ast.ast.clone(),
-            exec_state: exec_state.clone(),
-            settings: executor_ctx.settings.clone(),
-        });
-        drop(last_successful_ast_state);
-
-        self.memory_map
-            .insert(params.uri.to_string(), exec_state.memory().clone());
-
-        // Send the notification to the client that the memory was updated.
-        self.client
-            .send_notification::<custom_notifications::MemoryUpdated>(exec_state.mod_local.memory)
-            .await;
-
-        Ok(())
     }
 
     pub fn get_semantic_token_type_index(&self, token_type: &SemanticTokenType) -> Option<u32> {
