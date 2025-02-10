@@ -1473,12 +1473,13 @@ export class SceneEntities {
 
     sceneInfra.setCallbacks({
       onMove: async (args) => {
+        const firstProfileIndex = Number(updatedSketchNodePaths[0][1][0])
         const nodePathWithCorrectedIndexForTruncatedAst =
           structuredClone(updatedEntryNodePath)
+        
         nodePathWithCorrectedIndexForTruncatedAst[1][0] =
           Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          firstProfileIndex
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
