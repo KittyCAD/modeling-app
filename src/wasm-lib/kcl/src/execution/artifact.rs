@@ -865,11 +865,6 @@ fn artifacts_to_update(
             }
             if let Some(path) = last_path {
                 for face in &face_info.faces {
-                    let sub_type = match face.cap {
-                        ExtrusionFaceCapType::Top => CapSubType::End,
-                        ExtrusionFaceCapType::Bottom => CapSubType::Start,
-                        ExtrusionFaceCapType::None | ExtrusionFaceCapType::Both => continue,
-                    };
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
                     };

@@ -11,7 +11,6 @@ use crate::{
     errors::KclError,
     execution::{ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::shapes::circle_three_point,
 };
 
 type Point2D = kcmc::shared::Point2d<f64>;
