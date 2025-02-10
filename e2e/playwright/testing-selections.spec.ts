@@ -63,10 +63,6 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await page.mouse.click(700, 200)
     await page.waitForTimeout(700) // wait for animation
 
-    // select a plane
-    await page.mouse.click(700, 200)
-    await page.waitForTimeout(700) // wait for animation
-
     const startXPx = 600
     await u.closeDebugPanel()
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
@@ -260,64 +256,64 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-        |> startProfileAt([-79.26, 95.04], %)
-        |> line(end=[112.54, 127.64], %, $seg02)
-        |> line(end=[170.36, -121.61], %, $seg01)
-        |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-        |> close(%)
-extrude001 = extrude(50, sketch001)
+  |> startProfileAt([-79.26, 95.04], %)
+  |> line(end = [112.54, 127.64], tag = $seg02)
+  |> line(end = [170.36, -121.61], tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 50)
 sketch005 = startSketchOn(extrude001, 'END')
   |> startProfileAt([23.24, 136.52], %)
-  |> line(end=[-8.44, 36.61], %)
-  |> line(end=[49.4, 2.05], %)
-  |> line(end=[29.69, -46.95], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [-8.44, 36.61])
+  |> line(end = [49.4, 2.05])
+  |> line(end = [29.69, -46.95])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch003 = startSketchOn(extrude001, seg01)
   |> startProfileAt([21.23, 17.81], %)
-  |> line(end=[51.97, 21.32], %)
-  |> line(end=[4.07, -22.75], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [51.97, 21.32])
+  |> line(end = [4.07, -22.75])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch002 = startSketchOn(extrude001, seg02)
   |> startProfileAt([-100.54, 16.99], %)
-  |> line(end=[0, 20.03], %)
-  |> line(end=[62.61, 0], %, $seg03)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude002 = extrude(50, sketch002)
+  |> line(end = [0, 20.03])
+  |> line(end = [62.61, 0], tag = $seg03)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(sketch002, length = 50)
 sketch004 = startSketchOn(extrude002, seg03)
   |> startProfileAt([57.07, 134.77], %)
-  |> line(end=[-4.72, 22.84], %)
-  |> line(end=[28.8, 6.71], %)
-  |> line(end=[9.19, -25.33], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude003 = extrude(20, sketch004)
+  |> line(end = [-4.72, 22.84])
+  |> line(end = [28.8, 6.71])
+  |> line(end = [9.19, -25.33])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude003 = extrude(sketch004, length = 20)
 pipeLength = 40
 pipeSmallDia = 10
 pipeLargeDia = 20
 thickness = 0.5
 part009 = startSketchOn('XY')
   |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
-  |> line(end=[thickness, 0], %)
-  |> line(end=[0, -1], %)
+  |> line(end = [thickness, 0])
+  |> line(end = [0, -1])
   |> angledLineToX({
        angle = 60,
        to = pipeSmallDia + thickness
      }, %)
-  |> line(end=[0, -pipeLength], %)
+  |> line(end = [0, -pipeLength])
   |> angledLineToX({
        angle = -60,
        to = pipeLargeDia + thickness
      }, %)
-  |> line(end=[0, -1], %)
-  |> line(end=[-thickness, 0], %)
-  |> line(end=[0, 1], %)
+  |> line(end = [0, -1])
+  |> line(end = [-thickness, 0])
+  |> line(end = [0, 1])
   |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
-  |> line(end=[0, pipeLength], %)
+  |> line(end = [0, pipeLength])
   |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
-  |> close(%)
+  |> close()
 rev = revolve({ axis = 'y' }, part009)
 sketch006 = startSketchOn('XY')
 profile001 = circle({
@@ -334,12 +330,12 @@ profile002 = startProfileAt([86.92, -63.81], sketch006)
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 profile003 = startProfileAt([40.16, -120.48], sketch006)
-  |> line(end=[26.95, 24.21], %)
-  |> line(end=[20.91, -28.61], %)
-  |> line(end=[32.46, 18.71], %)
+  |> line(end = [26.95, 24.21])
+  |> line(end = [20.91, -28.61])
+  |> line(end = [32.46, 18.71])
 
 `
       )
@@ -449,7 +445,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     const codeToBeDeletedSnippet =
       'profile003 = startProfileAt([40.16, -120.48], sketch006)'
     await expect(page.locator('.cm-activeLine')).toHaveText(
-      '  |> line([20.91, -28.61], %)'
+      '  |> line(end = [20.91, -28.61])'
     )
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')

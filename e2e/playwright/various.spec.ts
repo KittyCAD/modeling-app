@@ -532,11 +532,11 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
 
   await expect.poll(u.normalisedEditorCode).toContain(
     u.normalisedCode(`sketch002 = startSketchOn(extrude001, seg01)
-profile001 = startProfileAt([-12.88, 6.66], sketch002)
-  |> line(end = [2.71, -0.22], %)
-  |> line(end = [-2.87, -1.38], %)
-  |> lineTo(endAbsolute = [profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+profile001 = startProfileAt([-12.34, 12.34], sketch002)
+  |> line(end = [12.34, -12.34])
+  |> line(end = [-12.34, -12.34])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 `)
   )
 
