@@ -1,6 +1,6 @@
 //! The executor for the AST.
 
-use std::{path::PathBuf, sync::Arc};
+use std::{fmt, path::PathBuf, sync::Arc};
 
 use anyhow::Result;
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
@@ -26,13 +26,13 @@ pub use state::{ExecState, IdGenerator, MetaSettings};
 
 use crate::{
     engine::EngineManager,
-    errors::KclError,
+    errors::{KclError, KclErrorDetails},
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
     },
-    fs::FileManager,
-    parsing::ast::types::{Expr, FunctionExpression, Node, NodeRef, Program},
+    fs::{FileManager, FileSystem},
+    parsing::ast::types::{Expr, FunctionExpression, ImportPath, Node, NodeRef, Program},
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
@@ -169,8 +169,60 @@ pub struct ModuleInfo {
     /// The ID of the module.
     id: ModuleId,
     /// Absolute path of the module's source file.
-    path: std::path::PathBuf,
+    path: ModulePath,
     repr: ModuleRepr,
+}
+
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
+pub enum ModulePath {
+    Local(std::path::PathBuf),
+    Std(String),
+}
+
+impl ModulePath {
+    fn expect_path(&self) -> &std::path::PathBuf {
+        match self {
+            ModulePath::Local(p) => p,
+            _ => unreachable!(),
+        }
+    }
+
+    pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<String, KclError> {
+        match self {
+            ModulePath::Local(p) => fs.read_to_string(p, source_range).await,
+            ModulePath::Std(_) => unimplemented!(),
+        }
+    }
+
+    pub(crate) fn from_import_path(path: &ImportPath, project_directory: &Option<PathBuf>) -> Self {
+        match path {
+            ImportPath::Kcl { filename: path } | ImportPath::Foreign { path } => {
+                let resolved_path = if let Some(project_dir) = project_directory {
+                    project_dir.join(path)
+                } else {
+                    std::path::PathBuf::from(path)
+                };
+                ModulePath::Local(resolved_path)
+            }
+            ImportPath::Std { path } => {
+                // For now we only support importing from singly-nested modules inside std.
+                assert_eq!(path.len(), 2);
+                assert_eq!(&path[0], "std");
+
+                ModulePath::Std(path[1].clone())
+            }
+        }
+    }
+}
+
+impl fmt::Display for ModulePath {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ModulePath::Local(path) => path.display().fmt(f),
+            ModulePath::Std(s) => write!(f, "std::{s}"),
+        }
+    }
 }
 
 #[allow(clippy::large_enum_variant)]
@@ -179,6 +231,47 @@ pub enum ModuleRepr {
     Root,
     Kcl(Node<Program>),
     Foreign(import::PreImportedGeometry),
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct ModuleLoader {
+    /// The stack of import statements for detecting circular module imports.
+    /// If this is empty, we're not currently executing an import statement.
+    pub import_stack: Vec<PathBuf>,
+}
+
+impl ModuleLoader {
+    pub(crate) fn cycle_check(&self, path: &ModulePath, source_range: SourceRange) -> Result<(), KclError> {
+        if self.import_stack.contains(path.expect_path()) {
+            return Err(KclError::ImportCycle(KclErrorDetails {
+                message: format!(
+                    "circular import of modules is not allowed: {} -> {}",
+                    self.import_stack
+                        .iter()
+                        .map(|p| p.as_path().to_string_lossy())
+                        .collect::<Vec<_>>()
+                        .join(" -> "),
+                    path,
+                ),
+                source_ranges: vec![source_range],
+            }));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn enter_module(&mut self, path: &ModulePath) {
+        if let ModulePath::Local(ref path) = path {
+            self.import_stack.push(path.clone());
+        }
+    }
+
+    pub(crate) fn leave_module(&mut self, path: &ModulePath) {
+        if let ModulePath::Local(ref path) = path {
+            let popped = self.import_stack.pop().unwrap();
+            assert_eq!(path, &popped);
+        }
+    }
 }
 
 /// Metadata.
