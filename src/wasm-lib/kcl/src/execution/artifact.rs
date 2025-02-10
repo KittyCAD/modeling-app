@@ -590,7 +590,7 @@ fn artifacts_to_update(
     responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
     current_plane_id: Option<Uuid>,
     _ast: &Node<Program>,
-    _exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
     // TODO: Build path-to-node from artifact_command source range.  Right now,
     // we're serializing an empty array, and the TS wrapper fills it in with the
@@ -827,48 +827,32 @@ fn artifacts_to_update(
                         source_ranges: vec![range],
                     })
                 })?;
-                let extra_artifact = _exec_artifacts.values().find_map(|a| {
+                let extra_artifact = exec_artifacts.values().find(|a| {
                     if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
-                        if *id == face_id.0 {
-                            return Some(a.clone());
-                        }
+                        *id == face_id.0
+                    } else {
+                        false
                     }
-                    None
                 });
-                let sketch_on_face_source_range = extra_artifact.and_then(|a| match a {
-                    Artifact::StartSketchOnFace { source_range, .. } => Some(source_range),
-                    _ => None,
-                });
-                let mut wall_artifact = Wall {
-                    id: face_id,
-                    seg_id: curve_id,
-                    edge_cut_edge_ids: Vec::new(),
-                    sweep_id: path.sweep_id.expect("Expected sweep_id to be Some"),
-                    path_ids: Vec::new(),
-                    face_code_ref: CodeRef {
-                        range,
-                        path_to_node: path_to_node.clone(),
-                    },
-                };
+                let sketch_on_face_source_range = extra_artifact
+                    .and_then(|a| match a {
+                        Artifact::StartSketchOnFace { source_range, .. } => Some(*source_range),
+                        // TODO: If we didn't find it, it's probably a bug.
+                        _ => None,
+                    })
+                    .unwrap_or_default();
 
-                if let Some(sketch_on_face_source_range) = sketch_on_face_source_range {
-                    wall_artifact.face_code_ref = CodeRef {
-                        range: sketch_on_face_source_range,
-                        path_to_node: path_to_node.clone(),
-                    };
-                }
-                let wall = Wall {
+                return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
                     seg_id: curve_id,
                     edge_cut_edge_ids: Vec::new(),
                     sweep_id: path_sweep_id,
-                    path_ids: vec![],
+                    path_ids: Vec::new(),
                     face_code_ref: CodeRef {
-                        range,
-                        path_to_node: path_to_node.clone(),
+                        range: sketch_on_face_source_range,
+                        path_to_node: Vec::new(),
                     },
-                };
-                return_arr.push(Artifact::Wall(wall));
+                }));
                 let mut new_seg = seg.clone();
                 new_seg.surface_id = Some(face_id);
                 return_arr.push(Artifact::Segment(new_seg));
@@ -883,7 +867,7 @@ fn artifacts_to_update(
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
                     };
-                    let cap = face.clone().cap;
+                    let cap = face.cap;
                     let path_sweep_id = path.sweep_id.ok_or_else(|| {
                         KclError::Internal(KclErrorDetails {
                             message:format!(
@@ -892,39 +876,33 @@ fn artifacts_to_update(
                             source_ranges: vec![range],
                         })
                     })?;
-                    let extra_artifact = _exec_artifacts.values().find(|a| {
+                    let extra_artifact = exec_artifacts.values().find(|a| {
                         if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
                             *id == face_id.0
                         } else {
                             false
                         }
                     });
-                    let sketch_on_face_source_range = extra_artifact.and_then(|a| match a {
-                        Artifact::StartSketchOnFace { source_range, .. } => Some(source_range),
-                        _ => None,
-                    });
-                    let mut cap_artifact = Cap {
+                    let sketch_on_face_source_range = extra_artifact
+                        .and_then(|a| match a {
+                            Artifact::StartSketchOnFace { source_range, .. } => Some(*source_range),
+                            _ => None,
+                        })
+                        .unwrap_or_default();
+                    return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
                         sub_type: match cap {
                             ExtrusionFaceCapType::Bottom => CapSubType::Start,
                             _ => CapSubType::End,
                         },
                         edge_cut_edge_ids: Vec::new(),
-                        sweep_id: path.sweep_id.expect("Expected sweep_id to be Some"),
+                        sweep_id: path_sweep_id,
                         path_ids: Vec::new(),
                         face_code_ref: CodeRef {
-                            range,
-                            path_to_node: path_to_node.clone(),
+                            range: sketch_on_face_source_range,
+                            path_to_node: Vec::new(),
                         },
-                    };
-                    if let Some(sketch_on_face_source_range) = sketch_on_face_source_range {
-                        let range = sketch_on_face_source_range;
-                        cap_artifact.face_code_ref = CodeRef {
-                            range: *range,
-                            path_to_node: path_to_node.clone(),
-                        };
-                    }
-                    return_arr.push(Artifact::Cap(cap_artifact));
+                    }));
                     let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {
                         continue;
                     };
