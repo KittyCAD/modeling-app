@@ -20,7 +20,7 @@ flowchart LR
   11[Wall]
   12[Wall]
   13["Cap Start"]
-  14["Plane<br>[298, 351, 0]"]
+  14["Cap End"]
   15["SweepEdge Opposite"]
   16["SweepEdge Adjacent"]
   17["SweepEdge Opposite"]
@@ -59,7 +59,7 @@ flowchart LR
   8 --- 11
   8 --- 12
   8 --- 13
-  8 x--> 14
+  8 --- 14
   8 --- 15
   8 --- 16
   8 --- 17
@@ -68,7 +68,7 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
-  14 --- 23
+  14 <--x 23
   23 --- 24
   23 ---- 26
   23 --- 25
