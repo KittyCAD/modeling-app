@@ -161,7 +161,9 @@ impl Node<NonCodeNode> {
             NonCodeValue::NewLine => "\n\n".to_string(),
             NonCodeValue::Annotation { name, properties } => {
                 let mut result = "@".to_owned();
-                result.push_str(&name.name);
+                if let Some(name) = name {
+                    result.push_str(&name.name);
+                }
                 if let Some(properties) = properties {
                     result.push('(');
                     result.push_str(
