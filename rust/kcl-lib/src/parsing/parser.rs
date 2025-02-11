@@ -747,8 +747,6 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
     .parse_next(i)?;
     ignore_whitespace(i);
 
-    let maybe_closing_bracket: PResult<TokenSlice<'_>> = peek(take_until(0.., "]")).parse_next(i);
-    let has_closing_bracket = maybe_closing_bracket.is_ok();
     let maybe_end = close_bracket(i).map_err(|e| {
         if let Some(mut err) = e.clone().into_inner() {
             err.cause = Some(CompilationError::fatal(
@@ -762,20 +760,24 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
         }
     });
 
-    // if there is a closing bracket at some point, but it's not the next token after skipping the
-    // whitespace and ignoring a trailing comma, it's likely that they forgot a comma between some
-    // of the elements
-    if has_closing_bracket && maybe_end.is_err() {
-        // safe to unwrap here because we checked it was Ok above
-        let start_range = maybe_closing_bracket.unwrap().as_source_range();
-        let e = ContextError {
-            context: vec![],
-            cause: Some(CompilationError::fatal(
-                start_range,
-                "Unexpected character encountered. You might be missing a comma in between elements.",
-            )),
-        };
-        return Err(ErrMode::Cut(e));
+    if maybe_end.is_err() {
+        // if there is a closing bracket at some point, but it's not the next token after skipping the
+        // whitespace and ignoring a trailing comma, it's likely that they forgot a comma between some
+        // of the elements
+        let maybe_closing_bracket: PResult<TokenSlice<'_>> = peek(take_until(0.., "]")).parse_next(i);
+        let has_closing_bracket = maybe_closing_bracket.is_ok();
+        if has_closing_bracket {
+            // safe to unwrap here because we checked it was Ok above
+            let start_range = maybe_closing_bracket.unwrap().as_source_range();
+            let e = ContextError {
+                context: vec![],
+                cause: Some(CompilationError::fatal(
+                    start_range,
+                    "Unexpected character encountered. You might be missing a comma in between elements.",
+                )),
+            };
+            return Err(ErrMode::Cut(e));
+        }
     }
     let end = maybe_end?.end;
 
@@ -937,10 +939,6 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
     ignore_trailing_comma(i);
     ignore_whitespace(i);
 
-    let maybe_closing_brace: PResult<TokenSlice<'_>> = peek(take_until(0.., "}")).parse_next(i);
-    let has_closing_brace = maybe_closing_brace.is_ok();
-    // This will be an error if the next token is not a `}`, this can be because they forgot to
-    // include a `}` entirely or they forgot a comma somewhere in the object
     let maybe_end = close_brace(i).map_err(|e| {
         if let Some(mut err) = e.clone().into_inner() {
             err.cause = Some(CompilationError::fatal(
@@ -953,20 +951,24 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
             e
         }
     });
-    // if there is a closing brace at some point, but it's not the next token after skipping the
-    // whitespace and ignoring a trailing comma, it's likely that they forgot a comma between some
-    // of the properties
-    if has_closing_brace && maybe_end.is_err() {
-        // okay to unwrap here because we checked it was Ok above
-        let start_range = maybe_closing_brace.unwrap().as_source_range();
-        let e = ContextError {
-            context: vec![],
-            cause: Some(CompilationError::fatal(
-                start_range,
-                "Unexpected character encountered. You might be missing a comma in between properties.",
-            )),
-        };
-        return Err(ErrMode::Cut(e));
+    if maybe_end.is_err() {
+        // if there is a closing brace at some point, but it's not the next token after skipping the
+        // whitespace and ignoring a trailing comma, it's likely that they forgot a comma between some
+        // of the properties
+        let maybe_closing_brace: PResult<TokenSlice<'_>> = peek(take_until(0.., "}")).parse_next(i);
+        let has_closing_brace = maybe_closing_brace.is_ok();
+        if has_closing_brace {
+            // okay to unwrap here because we checked it was Ok above
+            let start_range = maybe_closing_brace.unwrap().as_source_range();
+            let e = ContextError {
+                context: vec![],
+                cause: Some(CompilationError::fatal(
+                    start_range,
+                    "Unexpected character encountered. You might be missing a comma in between properties.",
+                )),
+            };
+            return Err(ErrMode::Cut(e));
+        }
     }
 
     let end = maybe_end?.end;
@@ -3936,7 +3938,7 @@ height = [obj["a"] - 1, 0]"#;
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_second_missing_space() {
         let code = r#"obj = { a: 1, b: 2 }
-    height = [obj["a"] -1, 0]"#;
+height = [obj["a"] -1, 0]"#;
         crate::parsing::top_level_parse(code).unwrap();
     }
 
