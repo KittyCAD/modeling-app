@@ -1,6 +1,5 @@
 import { ToolTip } from 'lang/langHelpers'
 import {
-  ProgramMemory,
   Path,
   SourceRange,
   Program,
@@ -10,14 +9,15 @@ import {
   Literal,
   BinaryPart,
   CallExpressionKw,
+  VariableMap,
 } from '../wasm'
 import { LineInputsType } from './sketchcombos'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export interface ModifyAstBase {
   node: Node<Program>
-  // TODO #896: Remove ProgramMemory from this interface
-  previousProgramMemory: ProgramMemory
+  // TODO #896: Remove memory variables from this interface
+  variables: VariableMap
   pathToNode: PathToNode
 }
 

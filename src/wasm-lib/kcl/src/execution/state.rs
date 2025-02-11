@@ -9,7 +9,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations, kcl_value, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ExecOutcome, ExecutorSettings,
-        KclValue, Operation, ProgramMemory, SolidLazyIds, UnitAngle, UnitLen,
+        KclValue, Operation, ProgramMemory, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
     parsing::ast::types::NonCodeValue,
@@ -27,6 +27,8 @@ pub struct ExecState {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalState {
+    /// Program variable bindings.
+    pub memory: ProgramMemory,
     /// The stable artifact ID generator.
     pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
@@ -50,13 +52,9 @@ pub struct GlobalState {
     pub mod_loader: ModuleLoader,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ModuleState {
-    /// Program variable bindings.
-    pub memory: ProgramMemory,
-    /// Dynamic state that follows dynamic flow of the program.
-    pub dynamic_state: DynamicState,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
@@ -99,7 +97,11 @@ impl ExecState {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
-            memory: self.mod_local.memory,
+            variables: self
+                .memory()
+                .find_all_in_current_env(|_| true)
+                .map(|(k, v)| (k.clone(), v.clone()))
+                .collect(),
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
@@ -107,12 +109,28 @@ impl ExecState {
         }
     }
 
+    pub fn to_mock_wasm_outcome(self) -> ExecOutcome {
+        // Fields are opt-in so that we don't accidentally leak private internal
+        // state when we add more to ExecState.
+        ExecOutcome {
+            variables: self
+                .memory()
+                .find_all_in_current_env(|_| true)
+                .map(|(k, v)| (k.clone(), v.clone()))
+                .collect(),
+            operations: Default::default(),
+            artifacts: Default::default(),
+            artifact_commands: Default::default(),
+            artifact_graph: Default::default(),
+        }
+    }
+
     pub fn memory(&self) -> &ProgramMemory {
-        &self.mod_local.memory
+        &self.global.memory
     }
 
     pub fn mut_memory(&mut self) -> &mut ProgramMemory {
-        &mut self.mod_local.memory
+        &mut self.global.memory
     }
 
     pub fn next_uuid(&mut self) -> Uuid {
@@ -148,11 +166,29 @@ impl ExecState {
     pub fn angle_unit(&self) -> UnitAngle {
         self.mod_local.settings.default_angle_units
     }
+
+    pub(super) fn circular_import_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
+        KclError::ImportCycle(KclErrorDetails {
+            message: format!(
+                "circular import of modules is not allowed: {} -> {}",
+                self.global
+                    .mod_loader
+                    .import_stack
+                    .iter()
+                    .map(|p| p.as_path().to_string_lossy())
+                    .collect::<Vec<_>>()
+                    .join(" -> "),
+                path,
+            ),
+            source_ranges: vec![source_range],
+        })
+    }
 }
 
 impl GlobalState {
     fn new(settings: &ExecutorSettings) -> Self {
         let mut global = GlobalState {
+            memory: ProgramMemory::new(),
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
@@ -181,8 +217,6 @@ impl GlobalState {
 impl ModuleState {
     pub(super) fn new(exec_settings: &ExecutorSettings) -> Self {
         ModuleState {
-            memory: Default::default(),
-            dynamic_state: Default::default(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
             operations: Default::default(),
@@ -236,46 +270,6 @@ impl MetaSettings {
         }
 
         Ok(())
-    }
-}
-
-/// Dynamic state that depends on the dynamic flow of the program, like the call
-/// stack.  If the language had exceptions, for example, you could store the
-/// stack of exception handlers here.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
-pub struct DynamicState {
-    pub solid_ids: Vec<SolidLazyIds>,
-}
-
-impl DynamicState {
-    #[must_use]
-    pub(super) fn merge(&self, memory: &ProgramMemory) -> Self {
-        let mut merged = self.clone();
-        merged.append(memory);
-        merged
-    }
-
-    fn append(&mut self, memory: &ProgramMemory) {
-        for env in &memory.environments {
-            for item in env.bindings.values() {
-                if let KclValue::Solid { value } = item {
-                    self.solid_ids.push(SolidLazyIds::from(value.as_ref()));
-                }
-            }
-        }
-    }
-
-    pub(crate) fn edge_cut_ids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<uuid::Uuid> {
-        self.solid_ids
-            .iter()
-            .flat_map(|eg| {
-                if eg.sketch_id == sketch_id {
-                    eg.edge_cuts.clone()
-                } else {
-                    Vec::new()
-                }
-            })
-            .collect::<Vec<_>>()
     }
 }
 

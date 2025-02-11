@@ -105,7 +105,7 @@ export async function applyConstraintHorzVertDistance({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
   })
   if (err(transformed)) return Promise.reject(transformed)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -142,7 +142,7 @@ export async function applyConstraintHorzVertDistance({
       ast: kclManager.ast,
       selectionRanges,
       transformInfos,
-      programMemory: kclManager.programMemory,
+      memVars: kclManager.variables,
       forceSegName: segName,
       forceValueUsedInTransform: finalValue,
     })
@@ -195,7 +195,7 @@ export function applyConstraintHorzVertAlign({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     forceValueUsedInTransform: finalValue,
   })
   if (err(retval)) return retval

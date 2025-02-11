@@ -440,50 +440,10 @@ description: Program memory after executing riddle_small.kcl
             "start": 20,
             "type": "FunctionExpression"
           },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "ANSWER": {
-                    "type": "Number",
-                    "value": 41803.0,
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          9,
-                          14,
-                          0
-                        ]
-                      }
-                    ]
-                  },
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  }
-                },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0,
-            "return": null
-          },
+          "memory": [
+            0,
+            1
+          ],
           "__meta": [
             {
               "sourceRange": [
@@ -521,9 +481,49 @@ description: Program memory after executing riddle_small.kcl
           ]
         }
       },
+      "snapshots": [
+        {
+          "parent_snapshot": null,
+          "data": {
+            "ox": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "oy": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "r": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "t": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "xs": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "ys": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            }
+          }
+        }
+      ],
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

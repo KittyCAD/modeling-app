@@ -249,7 +249,11 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     })
   })
 
-  test('Solids should be select and deletable', async ({ page, homePage }) => {
+  test('Solids should be select and deletable', async ({
+    page,
+    homePage,
+    scene,
+  }) => {
     test.setTimeout(90_000)
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -343,10 +347,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+    await scene.waitForExecutionDone()
 
     await u.openAndClearDebugPanel()
     await u.sendCustomCmd({
@@ -940,6 +941,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
   test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
     page,
     homePage,
+    scene,
   }) => {
     const cases = [
       {
@@ -975,6 +977,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({
@@ -1008,6 +1011,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
   test("Hovering and selection of extruded faces works, and is not overridden shortly after user's click", async ({
     page,
     homePage,
+    scene,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -1026,6 +1030,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({
@@ -1059,19 +1064,19 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
       .poll(() => u.getGreatestPixDiff(extrudeWall, noHoverColor))
       .toBeLessThan(15)
     await page.mouse.move(nothing.x, nothing.y)
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(1000)
     await page.mouse.move(extrudeWall.x, extrudeWall.y)
     await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
     await expect(page.getByTestId('hover-highlight').first()).toContainText(
       removeAfterFirstParenthesis(extrudeText)
     )
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(1000)
     await expect(
       await u.getGreatestPixDiff(extrudeWall, hoverColor)
     ).toBeLessThan(15)
     await page.mouse.click(extrudeWall.x, extrudeWall.y)
     await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${extrudeText}`)
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(1000)
     await expect(
       await u.getGreatestPixDiff(extrudeWall, selectColor)
     ).toBeLessThan(15)
@@ -1082,7 +1087,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     ).toBeLessThan(15)
 
     await page.mouse.move(nothing.x, nothing.y)
-    await page.waitForTimeout(300)
+    await page.waitForTimeout(1000)
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
     // because of shading, color is not exact everywhere on the face
@@ -1096,11 +1101,11 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await expect(page.getByTestId('hover-highlight').first()).toContainText(
       removeAfterFirstParenthesis(capText)
     )
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(1000)
     await expect(await u.getGreatestPixDiff(cap, hoverColor)).toBeLessThan(15)
     await page.mouse.click(cap.x, cap.y)
     await expect(page.locator('.cm-activeLine')).toHaveText(`|> ${capText}`)
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(1000)
     await expect(await u.getGreatestPixDiff(cap, selectColor)).toBeLessThan(15)
     await page.waitForTimeout(1000)
     // check color stays there, i.e. not overridden (this was a bug previously)
@@ -1147,7 +1152,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
   |> line(end = [4.95, -8])
   |> line(end = [-20.38, -10.12])
   |> line(end = [-15.79, 17.08])
-  
+
     fn yohey = (pos) => {
   sketch004 = startSketchOn('XZ')
   ${extrudeAndEditBlockedInFunction}
@@ -1157,7 +1162,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
   |> line(end = [-15.79, 17.08])
   return ''
     }
-  
+
     yohey([15.79, -34.6])
     `
         )

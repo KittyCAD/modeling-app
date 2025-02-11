@@ -1,5 +1,4 @@
 import {
-  ProgramMemory,
   Path,
   Sketch,
   SourceRange,
@@ -14,6 +13,7 @@ import {
   Identifier,
   sketchFromKclValue,
   topLevelRange,
+  VariableMap,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
@@ -365,7 +365,7 @@ function getTagKwArg(): SketchLineHelperKw['getTag'] {
 export const line: SketchLineHelperKw = {
   add: ({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     replaceExistingCallback,
@@ -504,7 +504,7 @@ export const line: SketchLineHelperKw = {
 export const lineTo: SketchLineHelperKw = {
   add: ({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     replaceExistingCallback,
@@ -1629,7 +1629,7 @@ export const angledLine: SketchLineHelper = {
 export const angledLineOfXLength: SketchLineHelper = {
   add: ({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     replaceExistingCallback,
@@ -1653,10 +1653,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     const { node: varDec } = nodeMeta2
 
     const variableName = varDec.id.name
-    const sketch = sketchFromKclValue(
-      previousProgramMemory?.get(variableName),
-      variableName
-    )
+    const sketch = sketchFromKclValue(variables[variableName], variableName)
     if (err(sketch)) {
       return sketch
     }
@@ -1745,7 +1742,7 @@ export const angledLineOfXLength: SketchLineHelper = {
 export const angledLineOfYLength: SketchLineHelper = {
   add: ({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     replaceExistingCallback,
@@ -1768,10 +1765,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     if (err(nodeMeta2)) return nodeMeta2
     const { node: varDec } = nodeMeta2
     const variableName = varDec.id.name
-    const sketch = sketchFromKclValue(
-      previousProgramMemory?.get(variableName),
-      variableName
-    )
+    const sketch = sketchFromKclValue(variables[variableName], variableName)
     if (err(sketch)) return sketch
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
@@ -2109,7 +2103,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     }
     return new Error('not implemented')
   },
-  updateArgs: ({ node, pathToNode, input, previousProgramMemory }) => {
+  updateArgs: ({ node, pathToNode, input, variables }) => {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
@@ -2136,10 +2130,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
 
     const { node: varDec } = nodeMeta2
     const varName = varDec.declaration.id.name
-    const sketch = sketchFromKclValue(
-      previousProgramMemory.get(varName),
-      varName
-    )
+    const sketch = sketchFromKclValue(variables[varName], varName)
     if (err(sketch)) return sketch
     const intersectPath = sketch.paths.find(
       ({ tag }: Path) => tag && tag.value === intersectTagName
@@ -2313,7 +2304,7 @@ export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
 
 export function changeSketchArguments(
   node: Node<Program>,
-  programMemory: ProgramMemory,
+  variables: VariableMap,
   sourceRangeOrPath:
     | {
         type: 'sourceRange'
@@ -2347,7 +2338,7 @@ export function changeSketchArguments(
 
     return updateArgs({
       node: _node,
-      previousProgramMemory: programMemory,
+      variables,
       pathToNode: shallowPath,
       input,
     })
@@ -2364,7 +2355,7 @@ export function changeSketchArguments(
 
     return updateArgs({
       node: _node,
-      previousProgramMemory: programMemory,
+      variables,
       pathToNode: shallowPath,
       input,
     })
@@ -2435,7 +2426,7 @@ export function compareVec2Epsilon2(
 
 interface CreateLineFnCallArgs {
   node: Node<Program>
-  programMemory: ProgramMemory
+  variables: VariableMap
   input: SegmentInputs
   fnName: ToolTip
   pathToNode: PathToNode
@@ -2444,7 +2435,7 @@ interface CreateLineFnCallArgs {
 
 export function addNewSketchLn({
   node: _node,
-  programMemory: previousProgramMemory,
+  variables,
   fnName,
   pathToNode,
   input: segmentInput,
@@ -2474,7 +2465,7 @@ export function addNewSketchLn({
   )
   return add({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     spliceBetween,
@@ -2487,7 +2478,7 @@ export function addCallExpressionsToPipe({
   expressions,
 }: {
   node: Node<Program>
-  programMemory: ProgramMemory
+  variables: VariableMap
   pathToNode: PathToNode
   expressions: Node<CallExpression | CallExpressionKw>[]
 }) {
@@ -2511,7 +2502,7 @@ export function addCloseToPipe({
   pathToNode,
 }: {
   node: Program
-  programMemory: ProgramMemory
+  variables: VariableMap
   pathToNode: PathToNode
 }) {
   const _node = { ...node }
@@ -2532,7 +2523,7 @@ export function addCloseToPipe({
 
 export function replaceSketchLine({
   node,
-  programMemory,
+  variables,
   pathToNode: _pathToNode,
   fnName,
   segmentInput,
@@ -2540,7 +2531,7 @@ export function replaceSketchLine({
   referencedSegment,
 }: {
   node: Node<Program>
-  programMemory: ProgramMemory
+  variables: VariableMap
   pathToNode: PathToNode
   fnName: ToolTip
   segmentInput: SegmentInputs
@@ -2564,7 +2555,7 @@ export function replaceSketchLine({
       : sketchLineHelperMap[fnName]
   const addRetVal = add({
     node: _node,
-    previousProgramMemory: programMemory,
+    variables,
     pathToNode: _pathToNode,
     referencedSegment,
     segmentInput,

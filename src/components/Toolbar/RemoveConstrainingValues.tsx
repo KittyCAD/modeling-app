@@ -88,7 +88,7 @@ export function applyRemoveConstrainingValues({
     ast: kclManager.ast,
     selectionRanges: updatedSelectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
   })
 }

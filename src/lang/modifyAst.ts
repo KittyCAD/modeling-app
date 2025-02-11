@@ -18,13 +18,13 @@ import {
   UnaryExpression,
   BinaryExpression,
   PathToNode,
-  ProgramMemory,
   SourceRange,
   sketchFromKclValue,
   isPathToNodeNumber,
   parse,
   formatNumber,
   ArtifactGraph,
+  VariableMap,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -1230,7 +1230,7 @@ export function replaceValueAtNodePath({
 
 export function moveValueIntoNewVariablePath(
   ast: Node<Program>,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   pathToNode: PathToNode,
   variableName: string
 ): {
@@ -1243,11 +1243,7 @@ export function moveValueIntoNewVariablePath(
 
   if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
 
-  const { insertIndex } = findAllPreviousVariablesPath(
-    ast,
-    programMemory,
-    pathToNode
-  )
+  const { insertIndex } = findAllPreviousVariablesPath(ast, memVars, pathToNode)
   let _node = structuredClone(ast)
   const boop = replacer(_node, variableName)
   if (trap(boop)) return { modifiedAst: ast }
@@ -1263,7 +1259,7 @@ export function moveValueIntoNewVariablePath(
 
 export function moveValueIntoNewVariable(
   ast: Node<Program>,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   sourceRange: SourceRange,
   variableName: string
 ): {
@@ -1275,11 +1271,7 @@ export function moveValueIntoNewVariable(
   const { isSafe, value, replacer } = meta
   if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
 
-  const { insertIndex } = findAllPreviousVariables(
-    ast,
-    programMemory,
-    sourceRange
-  )
+  const { insertIndex } = findAllPreviousVariables(ast, memVars, sourceRange)
   let _node = structuredClone(ast)
   const replaced = replacer(_node, variableName)
   if (trap(replaced)) return { modifiedAst: ast }
@@ -1301,7 +1293,7 @@ export function moveValueIntoNewVariable(
 export function deleteSegmentFromPipeExpression(
   dependentRanges: SourceRange[],
   modifiedAst: Node<Program>,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   code: string,
   pathToNode: PathToNode
 ): Node<Program> | Error {
@@ -1333,7 +1325,7 @@ export function deleteSegmentFromPipeExpression(
       callExp.shallowPath,
       constraintInfo.argPosition,
       _modifiedAst,
-      programMemory
+      memVars
     )
     if (!transform) return
     _modifiedAst = transform.modifiedAst
@@ -1362,7 +1354,7 @@ export function removeSingleConstraintInfo(
   pathToCallExp: PathToNode,
   argDetails: SimplifiedArgDetails,
   ast: Node<Program>,
-  programMemory: ProgramMemory
+  memVars: VariableMap
 ):
   | {
       modifiedAst: Node<Program>
@@ -1379,7 +1371,7 @@ export function removeSingleConstraintInfo(
     ast,
     selectionRanges: [pathToCallExp],
     transformInfos: [transform],
-    programMemory,
+    memVars,
     referenceSegName: '',
   })
   if (err(retval)) return false
@@ -1389,7 +1381,7 @@ export function removeSingleConstraintInfo(
 export async function deleteFromSelection(
   ast: Node<Program>,
   selection: Selection,
-  programMemory: ProgramMemory,
+  variables: VariableMap,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)
 ): Promise<Node<Program> | Error> {
@@ -1518,7 +1510,7 @@ export async function deleteFromSelection(
               return
             }
             const sketchToPreserve = sketchFromKclValue(
-              programMemory.get(sketchName),
+              variables[sketchName],
               sketchName
             )
             if (err(sketchToPreserve)) return sketchToPreserve

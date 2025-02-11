@@ -166,7 +166,7 @@ pub async fn import_foreign(
 pub struct PreImportedGeometry {
     id: Uuid,
     command: mcmd::ImportFiles,
-    source_range: SourceRange,
+    pub source_range: SourceRange,
 }
 
 pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) -> Result<ImportedGeometry, KclError> {

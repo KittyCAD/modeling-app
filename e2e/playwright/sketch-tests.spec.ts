@@ -10,6 +10,7 @@ import {
   TEST_COLORS,
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
+import { SceneFixture } from './fixtures/sceneFixture'
 
 test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -188,7 +189,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     const doEditSegmentsByDraggingHandle = async (
       page: Page,
       homePage: HomePageFixture,
-      openPanes: string[]
+      openPanes: string[],
+      scene: SceneFixture
     ) => {
       // Load the app with the code panes
       await page.addInitScript(async () => {
@@ -204,6 +206,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
 
       const u = await getUtils(page)
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
@@ -321,7 +324,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     test(
       'code pane open at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage }) => {
+      async ({ page, homePage, scene }) => {
         // Load the app with the code panes
         await page.addInitScript(async () => {
           localStorage.setItem(
@@ -334,14 +337,14 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
             })
           )
         })
-        await doEditSegmentsByDraggingHandle(page, homePage, ['code'])
+        await doEditSegmentsByDraggingHandle(page, homePage, ['code'], scene)
       }
     )
 
     test(
       'code pane closed at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage }) => {
+      async ({ page, homePage, scene }) => {
         // Load the app with the code panes
         await page.addInitScript(async (persistModelingContext) => {
           localStorage.setItem(
@@ -349,7 +352,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
             JSON.stringify({ openPanes: [] })
           )
         }, PERSIST_MODELING_CONTEXT)
-        await doEditSegmentsByDraggingHandle(page, homePage, [])
+        await doEditSegmentsByDraggingHandle(page, homePage, [], scene)
       }
     )
   })
@@ -551,6 +554,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
   test('Can edit a sketch that has been revolved in the same pipe', async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -566,6 +570,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     })
 
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })

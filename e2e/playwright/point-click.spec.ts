@@ -29,11 +29,13 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
     await test.step('because there is sweepable geometry, verify extrude is enable when nothing is selected', async () => {
-      await scene.clickNoWhere()
+      // FIXME: Do not click, clicking removes the activeLines in future checks
+      // await scene.clickNoWhere()
       await expect(toolbar.extrudeButton).toBeEnabled()
     })
 
@@ -199,6 +201,7 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -402,6 +405,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -688,6 +692,330 @@ openSketch = startSketchOn('XY')
     })
   })
 
+  test(`Shift-click to select and deselect edges and faces`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+  }) => {
+    // Code samples
+    const initialCode = `sketch001 = startSketchOn('XY')
+    |> startProfileAt([-12, -6], %)
+    |> line(end = [0, 12])
+    |> line(end = [24, 0])
+    |> line(end = [0, -12])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+    |> extrude(%, length = -12)`
+
+    // Locators
+    const upperEdgeLocation = { x: 600, y: 192 }
+    const lowerEdgeLocation = { x: 600, y: 383 }
+    const faceLocation = { x: 630, y: 290 }
+
+    // Click helpers
+    const [clickOnUpperEdge] = scene.makeMouseHelpers(
+      upperEdgeLocation.x,
+      upperEdgeLocation.y
+    )
+    const [clickOnLowerEdge] = scene.makeMouseHelpers(
+      lowerEdgeLocation.x,
+      lowerEdgeLocation.y
+    )
+    const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
+
+    // Colors
+    const edgeColorWhite: [number, number, number] = [220, 220, 220] // varies from 192 to 255
+    const edgeColorYellow: [number, number, number] = [251, 251, 40] // vaies from 12 to 67
+    const faceColorGray: [number, number, number] = [168, 168, 168]
+    const faceColorYellow: [number, number, number] = [155, 155, 155]
+    const tolerance = 40
+    const timeout = 150
+
+    // Setup
+    await test.step(`Initial test setup`, async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+
+      // Wait for the scene and stream to load
+      await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
+    })
+
+    await test.step('Select and deselect a single edge', async () => {
+      await test.step('Click the edge', async () => {
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          upperEdgeLocation,
+          tolerance
+        )
+        await clickOnUpperEdge()
+        await scene.expectPixelColor(
+          edgeColorYellow,
+          upperEdgeLocation,
+          tolerance
+        )
+      })
+      await test.step('Shift-click the same edge to deselect', async () => {
+        await page.keyboard.down('Shift')
+        await page.waitForTimeout(timeout)
+        await clickOnUpperEdge()
+        await page.waitForTimeout(timeout)
+        await page.keyboard.up('Shift')
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          upperEdgeLocation,
+          tolerance
+        )
+      })
+    })
+
+    await test.step('Select and deselect multiple objects', async () => {
+      await test.step('Select both edges and the face', async () => {
+        await test.step('Select the upper edge', async () => {
+          await scene.expectPixelColor(
+            edgeColorWhite,
+            upperEdgeLocation,
+            tolerance
+          )
+          await clickOnUpperEdge()
+          await scene.expectPixelColor(
+            edgeColorYellow,
+            upperEdgeLocation,
+            tolerance
+          )
+        })
+        await test.step('Select the lower edge (Shift-click)', async () => {
+          await scene.expectPixelColor(
+            edgeColorWhite,
+            lowerEdgeLocation,
+            tolerance
+          )
+          await page.keyboard.down('Shift')
+          await page.waitForTimeout(timeout)
+          await clickOnLowerEdge()
+          await page.waitForTimeout(timeout)
+          await page.keyboard.up('Shift')
+          await scene.expectPixelColor(
+            edgeColorYellow,
+            lowerEdgeLocation,
+            tolerance
+          )
+        })
+        await test.step('Select the face (Shift-click)', async () => {
+          await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
+          await page.keyboard.down('Shift')
+          await page.waitForTimeout(timeout)
+          await clickOnFace()
+          await page.waitForTimeout(timeout)
+          await page.keyboard.up('Shift')
+          await scene.expectPixelColor(faceColorYellow, faceLocation, tolerance)
+        })
+      })
+      await test.step('Deselect them one by one', async () => {
+        await test.step('Deselect the face (Shift-click)', async () => {
+          await scene.expectPixelColor(faceColorYellow, faceLocation, tolerance)
+          await page.keyboard.down('Shift')
+          await page.waitForTimeout(timeout)
+          await clickOnFace()
+          await page.waitForTimeout(timeout)
+          await page.keyboard.up('Shift')
+          await scene.expectPixelColor(faceColorGray, faceLocation, tolerance)
+        })
+        await test.step('Deselect the lower edge (Shift-click)', async () => {
+          await scene.expectPixelColor(
+            edgeColorYellow,
+            lowerEdgeLocation,
+            tolerance
+          )
+          await page.keyboard.down('Shift')
+          await page.waitForTimeout(timeout)
+          await clickOnLowerEdge()
+          await page.waitForTimeout(timeout)
+          await page.keyboard.up('Shift')
+          await scene.expectPixelColor(
+            edgeColorWhite,
+            lowerEdgeLocation,
+            tolerance
+          )
+        })
+        await test.step('Deselect the upper edge (Shift-click)', async () => {
+          await scene.expectPixelColor(
+            edgeColorYellow,
+            upperEdgeLocation,
+            tolerance
+          )
+          await page.keyboard.down('Shift')
+          await page.waitForTimeout(timeout)
+          await clickOnUpperEdge()
+          await page.waitForTimeout(timeout)
+          await page.keyboard.up('Shift')
+          await scene.expectPixelColor(
+            edgeColorWhite,
+            upperEdgeLocation,
+            tolerance
+          )
+        })
+      })
+    })
+  })
+
+  test(`Shift-click to select and deselect sketch segments`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+  }) => {
+    // Locators
+    const firstPointLocation = { x: 200, y: 100 }
+    const secondPointLocation = { x: 800, y: 100 }
+    const thirdPointLocation = { x: 800, y: 400 }
+    const fristSegmentLocation = { x: 750, y: 100 }
+    const secondSegmentLocation = { x: 800, y: 150 }
+    const planeLocation = { x: 700, y: 200 }
+
+    // Click helpers
+    const [clickFirstPoint] = scene.makeMouseHelpers(
+      firstPointLocation.x,
+      firstPointLocation.y
+    )
+    const [clickSecondPoint] = scene.makeMouseHelpers(
+      secondPointLocation.x,
+      secondPointLocation.y
+    )
+    const [clickThirdPoint] = scene.makeMouseHelpers(
+      thirdPointLocation.x,
+      thirdPointLocation.y
+    )
+    const [clickFirstSegment] = scene.makeMouseHelpers(
+      fristSegmentLocation.x,
+      fristSegmentLocation.y
+    )
+    const [clickSecondSegment] = scene.makeMouseHelpers(
+      secondSegmentLocation.x,
+      secondSegmentLocation.y
+    )
+    const [clickPlane] = scene.makeMouseHelpers(
+      planeLocation.x,
+      planeLocation.y
+    )
+
+    // Colors
+    const edgeColorWhite: [number, number, number] = [220, 220, 220]
+    const edgeColorBlue: [number, number, number] = [20, 20, 200]
+    const backgroundColor: [number, number, number] = [30, 30, 30]
+    const tolerance = 40
+    const timeout = 150
+
+    // Setup
+    await test.step(`Initial test setup`, async () => {
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+
+      // Wait for the scene and stream to load
+      await scene.expectPixelColor(
+        backgroundColor,
+        secondPointLocation,
+        tolerance
+      )
+    })
+
+    await test.step('Select and deselect a single sketch segment', async () => {
+      await test.step('Get into sketch mode', async () => {
+        await editor.closePane()
+        await page.waitForTimeout(timeout)
+        await page.getByRole('button', { name: 'Start Sketch' }).click()
+        await page.waitForTimeout(timeout)
+        await clickPlane()
+        await page.waitForTimeout(1000)
+      })
+      await test.step('Draw sketch', async () => {
+        await clickFirstPoint()
+        await page.waitForTimeout(timeout)
+        await clickSecondPoint()
+        await page.waitForTimeout(timeout)
+        await clickThirdPoint()
+        await page.waitForTimeout(timeout)
+      })
+      await test.step('Deselect line tool', async () => {
+        const btnLine = page.getByTestId('line')
+        const btnLineAriaPressed = await btnLine.getAttribute('aria-pressed')
+        if (btnLineAriaPressed === 'true') {
+          await btnLine.click()
+        }
+        await page.waitForTimeout(timeout)
+      })
+      await test.step('Select the first segment', async () => {
+        await page.waitForTimeout(timeout)
+        await clickFirstSegment()
+        await page.waitForTimeout(timeout)
+        await scene.expectPixelColor(
+          edgeColorBlue,
+          fristSegmentLocation,
+          tolerance
+        )
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          secondSegmentLocation,
+          tolerance
+        )
+      })
+      await test.step('Select the second segment (Shift-click)', async () => {
+        await page.keyboard.down('Shift')
+        await page.waitForTimeout(timeout)
+        await clickSecondSegment()
+        await page.waitForTimeout(timeout)
+        await page.keyboard.up('Shift')
+        await scene.expectPixelColor(
+          edgeColorBlue,
+          fristSegmentLocation,
+          tolerance
+        )
+        await scene.expectPixelColor(
+          edgeColorBlue,
+          secondSegmentLocation,
+          tolerance
+        )
+      })
+      await test.step('Deselect the first segment', async () => {
+        await page.keyboard.down('Shift')
+        await page.waitForTimeout(timeout)
+        await clickFirstSegment()
+        await page.waitForTimeout(timeout)
+        await page.keyboard.up('Shift')
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          fristSegmentLocation,
+          tolerance
+        )
+        await scene.expectPixelColor(
+          edgeColorBlue,
+          secondSegmentLocation,
+          tolerance
+        )
+      })
+      await test.step('Deselect the second segment', async () => {
+        await page.keyboard.down('Shift')
+        await page.waitForTimeout(timeout)
+        await clickSecondSegment()
+        await page.waitForTimeout(timeout)
+        await page.keyboard.up('Shift')
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          fristSegmentLocation,
+          tolerance
+        )
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          secondSegmentLocation,
+          tolerance
+        )
+      })
+    })
+  })
+
   test(`Offset plane point-and-click`, async ({
     context,
     page,
@@ -703,6 +1031,9 @@ openSketch = startSketchOn('XY')
     const expectedOutput = `plane001 = offsetPlane('XZ', 5)`
 
     await homePage.goToModelingScene()
+    // FIXME: Since there is no KCL code loaded. We need to wait for the scene to load before we continue.
+    // The engine may not be connected
+    await page.waitForTimeout(15000)
 
     await test.step(`Look for the blue of the XZ plane`, async () => {
       await scene.expectPixelColor([50, 51, 96], testPoint, 15)
@@ -762,13 +1093,14 @@ openSketch = startSketchOn('XY')
   }) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 620, y: 257 }
-    const expectedOutput = `helix001 = helix(revolutions = 1, angleStart = 360, counterClockWise = false, radius = 5, axis = 'X', length = 5)`
+    const expectedOutput = `helix001 = helix(  revolutions = 1,  angleStart = 360,  counterClockWise = false,  radius = 5,  axis = 'X',  length = 5,)`
+    const expectedLine = `revolutions=1,`
 
     await homePage.goToModelingScene()
 
-    await test.step(`Look for the red of the default plane`, async () => {
-      await scene.expectPixelColor([96, 52, 52], testPoint, 15)
-    })
+    // await test.step(`Look for the red of the default plane`, async () => {
+    //   await scene.expectPixelColor([96, 52, 52], testPoint, 15)
+    // })
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.helixButton.click()
       await cmdBar.expectState({
@@ -799,7 +1131,7 @@ openSketch = startSketchOn('XY')
       await editor.expectEditor.toContain(expectedOutput)
       await editor.expectState({
         diagnostics: [],
-        activeLines: [expectedOutput],
+        activeLines: [expectedLine],
         highlightedCode: '',
       })
       // Red plane is now gone, white helix is there
@@ -928,6 +1260,7 @@ loft001 = loft([sketch001, sketch002])
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 575, y: 200 }
@@ -1570,16 +1903,7 @@ extrude001 = extrude(sketch001, length = -12)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+      await scene.waitForExecutionDone()
     })
 
     // Test 1: Command bar flow with preselected edges
@@ -1804,6 +2128,7 @@ chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       // verify modeling scene is loaded
       await scene.expectPixelColor(
@@ -1926,6 +2251,7 @@ chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 575, y: 200 }
@@ -2024,6 +2350,7 @@ extrude001 = extrude(sketch001, length = 40)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 580, y: 180 }

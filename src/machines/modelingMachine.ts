@@ -1,6 +1,5 @@
 import {
   PathToNode,
-  ProgramMemory,
   VariableDeclaration,
   VariableDeclarator,
   parse,
@@ -735,7 +734,7 @@ export const modelingMachine = setup({
         const modifiedAst = await deleteFromSelection(
           ast,
           selectionRanges.graphSelections[0],
-          kclManager.programMemory,
+          kclManager.variables,
           getFaceDetails
         )
         if (err(modifiedAst)) {
@@ -746,8 +745,7 @@ export const modelingMachine = setup({
         const testExecute = await executeAst({
           ast: modifiedAst,
           engineCommandManager,
-          // We make sure to send an empty program memory to denote we mean mock mode.
-          programMemoryOverride: ProgramMemory.empty(),
+          isMock: true,
         })
         if (testExecute.errors.length) {
           toast.error(errorMessage)
@@ -1256,7 +1254,7 @@ export const modelingMachine = setup({
           selectionRanges,
           'horizontal',
           kclManager.ast,
-          kclManager.programMemory
+          kclManager.variables
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1293,7 +1291,7 @@ export const modelingMachine = setup({
           selectionRanges,
           'vertical',
           kclManager.ast,
-          kclManager.programMemory
+          kclManager.variables
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint

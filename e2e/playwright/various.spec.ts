@@ -32,15 +32,18 @@ test.fixme('Units menu', async ({ page, homePage }) => {
   await expect(unitsMenuButton).toContainText('mm')
 })
 
-test('Successful export shows a success toast', async ({ page, homePage }) => {
-  // FYI this test doesn't work with only engine running locally
-  // And you will need to have the KittyCAD CLI installed
-  const u = await getUtils(page)
-  await page.addInitScript(async () => {
-    ;(window as any).playwrightSkipFilePicker = true
-    localStorage.setItem(
-      'persistCode',
-      `topAng = 25
+test(
+  'Successful export shows a success toast',
+  { tag: '@skipLocalEngine' },
+  async ({ page, homePage }) => {
+    // FYI this test doesn't work with only engine running locally
+    // And you will need to have the KittyCAD CLI installed
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      ;(window as any).playwrightSkipFilePicker = true
+      localStorage.setItem(
+        'persistCode',
+        `topAng = 25
 bottomAng = 35
 baseLen = 3.5
 baseHeight = 1
@@ -78,26 +81,27 @@ part001 = startSketchOn('-XZ')
 |> xLineTo(ZERO, %)
 |> close()
 |> extrude(length = 4)`
+      )
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.waitForCmdReceive('extrude')
+    await page.waitForTimeout(1000)
+    await u.clearAndCloseDebugPanel()
+
+    await doExport(
+      {
+        type: 'gltf',
+        storage: 'embedded',
+        presentation: 'pretty',
+      },
+      page
     )
-  })
-  await page.setBodyDimensions({ width: 1200, height: 500 })
-
-  await homePage.goToModelingScene()
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.waitForCmdReceive('extrude')
-  await page.waitForTimeout(1000)
-  await u.clearAndCloseDebugPanel()
-
-  await doExport(
-    {
-      type: 'gltf',
-      storage: 'embedded',
-      presentation: 'pretty',
-    },
-    page
-  )
-})
+  }
+)
 
 test('Paste should not work unless an input is focused', async ({
   page,
@@ -461,7 +465,7 @@ test('Delete key does not navigate back', async ({ page, homePage }) => {
   await expect.poll(() => page.url()).not.toContain('/settings')
 })
 
-test('Sketch on face', async ({ page, homePage }) => {
+test('Sketch on face', async ({ page, homePage, scene, cmdBar }) => {
   test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
@@ -487,11 +491,7 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
   await page.setBodyDimensions({ width: 1200, height: 500 })
 
   await homePage.goToModelingScene()
-
-  // wait for execution done
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
+  await scene.waitForExecutionDone()
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -595,10 +595,9 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
   await expect(page.getByTestId('command-bar')).toBeVisible()
   await page.waitForTimeout(100)
 
-  await page.getByRole('button', { name: 'arrow right Continue' }).click()
-  await page.waitForTimeout(100)
+  await cmdBar.progressCmdBar()
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  await page.getByRole('button', { name: 'checkmark Submit command' }).click()
+  await cmdBar.progressCmdBar()
 
   const result2 = result.genNext`
 const sketch002 = extrude(sketch002, length = ${[5, 5]} + 7)`

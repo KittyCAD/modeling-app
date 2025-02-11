@@ -96,7 +96,7 @@ export async function applyConstraintAngleBetween({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
   })
   if (err(transformed1)) return Promise.reject(transformed1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -135,7 +135,7 @@ export async function applyConstraintAngleBetween({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     forceSegName: segName,
     forceValueUsedInTransform: finalValue,
   })

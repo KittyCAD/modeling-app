@@ -109,7 +109,7 @@ export async function applyConstraintLength({
     ast,
     selectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: distanceExpression,
   })
@@ -148,7 +148,7 @@ export async function applyConstraintAngleLength({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
   })
   if (err(sketched)) return Promise.reject(sketched)
@@ -200,7 +200,7 @@ export async function applyConstraintAngleLength({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
   })

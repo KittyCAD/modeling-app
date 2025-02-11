@@ -46,7 +46,7 @@ export function intersectInfo({
     isLinesParallelAndConstrained(
       kclManager.ast,
       engineCommandManager.artifactGraph,
-      kclManager.programMemory,
+      kclManager.variables,
       selectionRanges.graphSelections[0],
       selectionRanges.graphSelections[1]
     )
@@ -148,7 +148,7 @@ export async function applyConstraintIntersect({
     ast: structuredClone(kclManager.ast),
     selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
   })
   if (err(transform1)) return Promise.reject(transform1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -186,7 +186,7 @@ export async function applyConstraintIntersect({
     ast: kclManager.ast,
     selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     forceSegName: segName,
     forceValueUsedInTransform: finalValue,
   })

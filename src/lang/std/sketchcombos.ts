@@ -17,12 +17,12 @@ import {
   BinaryPart,
   VariableDeclarator,
   PathToNode,
-  ProgramMemory,
   sketchFromKclValue,
   Literal,
   SourceRange,
   LiteralValue,
   LabeledArg,
+  VariableMap,
 } from '../wasm'
 import { getNodeFromPath, getNodeFromPathCurry } from '../queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
@@ -1808,14 +1808,14 @@ export function transformSecondarySketchLinesTagFirst({
   ast,
   selectionRanges,
   transformInfos,
-  programMemory,
+  memVars,
   forceSegName,
   forceValueUsedInTransform,
 }: {
   ast: Node<Program>
   selectionRanges: Selections
   transformInfos: TransformInfo[]
-  programMemory: ProgramMemory
+  memVars: VariableMap
   forceSegName?: string
   forceValueUsedInTransform?: BinaryPart
 }):
@@ -1851,7 +1851,7 @@ export function transformSecondarySketchLinesTagFirst({
     },
     referencedSegmentRange: primarySelection,
     transformInfos,
-    programMemory,
+    memVars,
     referenceSegName: tag,
     forceValueUsedInTransform,
   })
@@ -1885,7 +1885,7 @@ export function transformAstSketchLines({
   ast,
   selectionRanges,
   transformInfos,
-  programMemory,
+  memVars,
   referenceSegName,
   forceValueUsedInTransform,
   referencedSegmentRange,
@@ -1893,7 +1893,7 @@ export function transformAstSketchLines({
   ast: Node<Program>
   selectionRanges: Selections | PathToNode[]
   transformInfos: TransformInfo[]
-  programMemory: ProgramMemory
+  memVars: VariableMap
   referenceSegName: string
   referencedSegmentRange?: SourceRange
   forceValueUsedInTransform?: BinaryPart
@@ -2009,7 +2009,7 @@ export function transformAstSketchLines({
     })
 
     const varName = varDec.node.id.name
-    let kclVal = programMemory.get(varName)
+    let kclVal = memVars[varName]
     let sketch
     if (kclVal?.type === 'Solid') {
       sketch = kclVal.value.sketch
@@ -2040,7 +2040,7 @@ export function transformAstSketchLines({
     // Note to ADAM: Here is where the replaceExisting call gets sent.
     const replacedSketchLine = replaceSketchLine({
       node: node,
-      programMemory,
+      variables: memVars,
       pathToNode: _pathToNode,
       referencedSegment,
       fnName: transformTo || (call.node.callee.name as ToolTip),
