@@ -872,7 +872,6 @@ fn artifacts_to_update(
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
                     };
-                    let cap = face.cap;
                     let path_sweep_id = path.sweep_id.ok_or_else(|| {
                         KclError::Internal(KclErrorDetails {
                             message:format!(
