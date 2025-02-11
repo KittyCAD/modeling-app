@@ -880,7 +880,7 @@ export class SceneEntities {
         let intersection2d = intersectionPoint?.twoD
         const intersectsProfileStart = args.intersects
           .map(({ object }) => getParentGroup(object, [PROFILE_START]))
-          .find((a) => a?.name === PROFILE_START)
+          .find(isGroupStartProfileForCurrentProfile(sketchEntryNodePath))
 
         let modifiedAst: Program | Error = structuredClone(kclManager.ast)
 
@@ -1961,7 +1961,7 @@ export class SceneEntities {
       draftInfo &&
       intersects
         .map(({ object }) => getParentGroup(object, [PROFILE_START]))
-        .find((a) => a?.name === PROFILE_START)
+        .find(isGroupStartProfileForCurrentProfile(sketchEntryNodePath))
     const intersection2d = intersectsProfileStart
       ? new Vector2(
           intersectsProfileStart.position.x,
@@ -2840,4 +2840,14 @@ function computeSelectionFromSourceRangeAndAST(
     otherSelections: [],
   }
   return selection
+}
+
+function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
+  return (group: Group<Object3DEventMap> | null) => {
+    if (group?.name !== PROFILE_START) return false
+    const groupExpressionIndex = Number(group.userData.pathToNode[1][0])
+    const isProfileStartOfCurrentExpr =
+      groupExpressionIndex === sketchEntryNodePath[1][0]
+    return isProfileStartOfCurrentExpr
+  }
 }

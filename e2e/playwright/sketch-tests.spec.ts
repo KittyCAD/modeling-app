@@ -1348,6 +1348,85 @@ test.describe(`Sketching with offset planes`, () => {
 })
 
 test.describe('multi-profile sketching', () => {
+  test(`snapToProfile start only works for current profile`, async ({
+    context,
+    page,
+    scene,
+    toolbar,
+    editor,
+    homePage,
+  }) => {
+    // We seed the scene with a single offset plane
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
+profile002 = startProfileAt([40.68, 87.67], sketch001)
+  |> xLine(239.17, %)
+profile003 = startProfileAt([206.63, -56.73], sketch001)
+  |> xLine(-156.32, %)
+`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [onSegmentClick] = scene.makeMouseHelpers(604, 349)
+    const [endOfLowerSegClick, endOfLowerSegMove] = scene.makeMouseHelpers(
+      697,
+      360
+    )
+    const [profileStartOfHigherSegClick, profileStartOfHigherSegMove] =
+      scene.makeMouseHelpers(677, 78)
+    const tanArcLocation = { x: 624, y: 340 } as const
+
+    await test.step('enter sketch mode', async () => {
+      await onSegmentClick({ shouldDbClick: true })
+      await page.waitForTimeout(600)
+    })
+
+    const codeFromTangentialArc = `  |> tangentialArcTo([39.49, 88.22], %)`
+    await test.step('check that tangential tool does not snap to other profile starts', async () => {
+      await toolbar.tangentialArcBtn.click()
+      await endOfLowerSegMove()
+      await endOfLowerSegClick()
+      await profileStartOfHigherSegClick()
+      await editor.expectEditor.toContain(codeFromTangentialArc)
+      await editor.expectEditor.not.toContain(
+        `[profileStartX(%), profileStartY(%)]`
+      )
+    })
+
+    await test.step('remove tangential arc code to reset', async () => {
+      await scene.expectPixelColor(TEST_COLORS.WHITE, tanArcLocation, 15)
+      await editor.replaceCode(codeFromTangentialArc, '')
+      // check pixel is now gray at tanArcLocation to verify code has executed
+      await scene.expectPixelColor([26, 26, 26], tanArcLocation, 15)
+      await editor.expectEditor.not.toContain(
+        `tangentialArcTo([39.49, 88.22], %)`
+      )
+    })
+
+    await test.step('check that tangential tool does snap to current profile start', async () => {
+      await expect
+        .poll(async () => {
+          await toolbar.lineBtn.click()
+          return toolbar.lineBtn.getAttribute('aria-pressed')
+        })
+        .toBe('true')
+      await profileStartOfHigherSegMove()
+      await endOfLowerSegMove()
+      await endOfLowerSegClick()
+      await profileStartOfHigherSegClick()
+      await editor.expectEditor.toContain('line(end = [-10.82, 144.95])')
+      await editor.expectEditor.not.toContain(
+        `[profileStartX(%), profileStartY(%)]`
+      )
+    })
+  })
   test('Can add multiple profiles to a sketch (all tool types)', async ({
     scene,
     toolbar,
