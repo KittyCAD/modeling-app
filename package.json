@@ -96,6 +96,7 @@
     "files:set-version": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
     "files:set-notes": "./scripts/set-files-notes.sh",
     "files:flip-to-nightly": "./scripts/flip-files-to-nightly.sh",
+    "files:flip-to-nightly:windows": "./scripts/flip-files-to-nightly.ps1",
     "files:invalidate-bucket": "./scripts/invalidate-files-bucket.sh",
     "files:invalidate-bucket:nightly": "./scripts/invalidate-files-bucket.sh --nightly",
     "postinstall": "yarn fetch:samples && yarn xstate:typegen && ./node_modules/.bin/electron-rebuild",
