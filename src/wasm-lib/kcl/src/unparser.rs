@@ -16,11 +16,16 @@ impl Program {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
 
-        let result = self
+        let mut result = self
             .shebang
             .as_ref()
             .map(|sh| format!("{}\n\n", sh.inner.content))
             .unwrap_or_default();
+
+        for start in &self.non_code_meta.start_nodes {
+            result.push_str(&start.recast(options, indentation_level));
+        }
+        let result = result; // Remove mutation.
 
         let result = self
             .body
@@ -48,17 +53,9 @@ impl Program {
             })
             .enumerate()
             .fold(result, |mut output, (index, recast_str)| {
-                let start_string = if index == 0 {
+                let start_string = if index == 0 && self.non_code_meta.start_nodes.is_empty() {
                     // We need to indent.
-                    if self.non_code_meta.start_nodes.is_empty() {
-                        indentation.to_string()
-                    } else {
-                        self.non_code_meta
-                            .start_nodes
-                            .iter()
-                            .map(|start| start.recast(options, indentation_level))
-                            .collect()
-                    }
+                    indentation.to_string()
                 } else {
                     // Do nothing, we already applied the indentation elsewhere.
                     String::new()
@@ -798,6 +795,38 @@ mod tests {
     use crate::{parsing::ast::types::FormatOptions, ModuleId};
 
     #[test]
+    fn test_recast_annotations_without_body_items() {
+        let input = r#"@settings(defaultLengthUnit = in)
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_annotations_in_function_body() {
+        let input = r#"fn myFunc() {
+  @meta(yes = true)
+  x = 2
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_annotations_in_function_body_without_items() {
+        let input = r#"fn myFunc() {
+  @meta(yes = true)
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
     fn test_recast_if_else_if_same() {
         let input = r#"b = if false {
   3
@@ -1327,6 +1356,18 @@ part001 = startSketchOn('XY')
   |> close()
 "#
         );
+    }
+
+    #[test]
+    fn test_recast_empty_function_body_with_comments() {
+        let input = r#"fn myFunc() {
+  // Yo yo my comments.
+}
+"#;
+
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
     }
 
     #[test]
