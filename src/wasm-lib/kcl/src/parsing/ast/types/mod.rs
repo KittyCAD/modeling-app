@@ -28,7 +28,8 @@ use crate::{
     execution::{annotations, KclValue, Metadata, TagIdentifier},
     parsing::{ast::digest::Digest, PIPE_OPERATOR},
     pretty::NumericSuffix,
-    source_range::{ModuleId, SourceRange},
+    source_range::SourceRange,
+    ModuleId,
 };
 
 mod condition;
