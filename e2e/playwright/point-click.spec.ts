@@ -29,11 +29,13 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
     await test.step('because there is sweepable geometry, verify extrude is enable when nothing is selected', async () => {
-      await scene.clickNoWhere()
+      // FIXME: Do not click, clicking removes the activeLines in future checks
+      // await scene.clickNoWhere()
       await expect(toolbar.extrudeButton).toBeEnabled()
     })
 
@@ -199,6 +201,7 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -422,6 +425,7 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -727,6 +731,9 @@ openSketch = startSketchOn('XY')
     const expectedOutput = `plane001 = offsetPlane('XZ', 5)`
 
     await homePage.goToModelingScene()
+    // FIXME: Since there is no KCL code loaded. We need to wait for the scene to load before we continue.
+    // The engine may not be connected
+    await page.waitForTimeout(15000)
 
     await test.step(`Look for the blue of the XZ plane`, async () => {
       await scene.expectPixelColor([50, 51, 96], testPoint, 15)
@@ -952,6 +959,7 @@ loft001 = loft([sketch001, sketch002])
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 575, y: 200 }
@@ -1594,16 +1602,7 @@ extrude001 = extrude(sketch001, length = -12)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
-      // verify modeling scene is loaded
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
-
-      // wait for stream to load
-      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+      await scene.waitForExecutionDone()
     })
 
     // Test 1: Command bar flow with preselected edges
@@ -1828,6 +1827,7 @@ chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       // verify modeling scene is loaded
       await scene.expectPixelColor(
@@ -1950,6 +1950,7 @@ chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 575, y: 200 }
@@ -2048,6 +2049,7 @@ extrude001 = extrude(sketch001, length = 40)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 580, y: 180 }
