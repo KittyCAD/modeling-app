@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing import_whole.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {

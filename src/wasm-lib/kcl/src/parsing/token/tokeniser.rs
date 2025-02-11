@@ -13,7 +13,7 @@ use winnow::{
 use super::TokenStream;
 use crate::{
     parsing::token::{Token, TokenType},
-    source_range::ModuleId,
+    ModuleId,
 };
 
 lazy_static! {

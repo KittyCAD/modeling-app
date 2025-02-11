@@ -131,7 +131,7 @@ mod tests {
             ast::types::{Literal, LiteralValue},
             token::NumericSuffix,
         },
-        source_range::ModuleId,
+        ModuleId,
     };
 
     #[test]

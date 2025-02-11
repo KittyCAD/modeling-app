@@ -7,7 +7,7 @@ use crate::{
     exec::ArtifactCommand,
     execution::{ArtifactGraph, Operation},
     parsing::ast::types::{Node, Program},
-    source_range::ModuleId,
+    ModuleId,
 };
 
 /// Deserialize the data from a snapshot.
