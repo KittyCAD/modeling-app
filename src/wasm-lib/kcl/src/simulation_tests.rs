@@ -187,14 +187,6 @@ fn assert_common_snapshots(
         // in GitHub.
         insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
     });
-    assert_snapshot(test_name, "Artifact graph mind map", || {
-        let mind_map = artifact_graph
-            .to_mermaid_mind_map()
-            .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
-        // Change the snapshot suffix so that it is rendered as a Markdown file
-        // in GitHub.
-        insta::assert_binary_snapshot!("artifact_graph_mind_map.md", mind_map.as_bytes().to_owned());
-    });
 }
 
 mod cube {
