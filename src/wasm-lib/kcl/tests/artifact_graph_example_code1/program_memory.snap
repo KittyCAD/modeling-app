@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing artifact_graph_example_code1.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
