@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed helix_simple.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -26,43 +27,43 @@ description: Operations executed helix_simple.kcl
     "labeledArgs": {
       "angleStart": {
         "sourceRange": [
-          170,
-          171,
+          173,
+          174,
           0
         ]
       },
       "axis": {
         "sourceRange": [
-          234,
-          241,
+          247,
+          254,
           0
         ]
       },
       "ccw": {
         "sourceRange": [
-          179,
-          183,
+          184,
+          188,
           0
         ]
       },
       "length": {
         "sourceRange": [
-          211,
-          213,
+          220,
+          222,
           0
         ]
       },
       "radius": {
         "sourceRange": [
-          224,
-          225,
+          235,
+          236,
           0
         ]
       },
       "revolutions": {
         "sourceRange": [
-          199,
-          200,
+          206,
+          207,
           0
         ]
       }
@@ -70,7 +71,7 @@ description: Operations executed helix_simple.kcl
     "name": "helix",
     "sourceRange": [
       151,
-      242,
+      257,
       0
     ],
     "type": "StdLibCall",
