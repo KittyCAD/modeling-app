@@ -335,7 +335,7 @@ impl CallExpressionKw {
                 .map(|arg| arg.recast(options, indentation_level, ctxt)),
         );
         let args = arg_list.clone().join(", ");
-        if arg_list.len() >= 4 || (arg_list.len() >= 2 && args.len() >= 60) {
+        if arg_list.len() >= 4 {
             let inner_indentation = if ctxt == ExprContext::Pipe {
                 options.get_indentation_offset_pipe(indentation_level + 1)
             } else {
@@ -1481,18 +1481,9 @@ hole_diam = 5
 fn rectShape(pos, w, l) {
   rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> line(
-         endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)],
-         tag = $edge1,
-       )
-    |> line(
-         endAbsolute = [pos[0] + w / 2, pos[1] + l / 2],
-         tag = $edge2,
-       )
-    |> line(
-         endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2],
-         tag = $edge3,
-       )
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
+    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
     |> close($edge4)
   return rr
 }
