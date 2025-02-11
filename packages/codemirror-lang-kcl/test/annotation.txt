@@ -5,9 +5,24 @@
 ==>
 Program(Annotation(AnnotationName))
 
+# alone and anonymous
+
+@
+
+==>
+Program(Annotation(AnnotationName))
+
 # empty
 
 @ann()
+
+==>
+Program(Annotation(AnnotationName,
+                   AnnotationList))
+
+# empty and anonymous
+
+@()
 
 ==>
 Program(Annotation(AnnotationName,
@@ -31,6 +46,16 @@ Program(Annotation(AnnotationName,
 Program(Annotation(AnnotationName,
                    AnnotationList(AnnotationProperty(PropertyName,
                                                      MultOp,
+                                                     Number))))
+
+# anonymous
+
+@(a=1)
+
+==>
+Program(Annotation(AnnotationName,
+                   AnnotationList(AnnotationProperty(PropertyName,
+                                                     Equals,
                                                      Number))))
 
 # complex expr
