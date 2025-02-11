@@ -1271,6 +1271,19 @@ impl NonCodeMeta {
             .iter()
             .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
     }
+
+    /// Get the non-code meta immediately before the ith node in the AST that self is attached to.
+    ///
+    /// Returns an empty slice if there is no non-code metadata associated with the node.
+    pub fn get(&self, i: usize) -> &[Node<NonCodeNode>] {
+        if i == 0 {
+            &self.start_nodes
+        } else if let Some(meta) = self.non_code_nodes.get(&(i - 1)) {
+            meta
+        } else {
+            &[]
+        }
+    }
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -1495,7 +1508,7 @@ impl ImportStatement {
             ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => s.split('.'),
             _ => return None,
         };
-        let name = parts.next()?;
+        let path = parts.next()?;
         let _ext = parts.next()?;
         let rest = parts.next();
 
@@ -1503,7 +1516,7 @@ impl ImportStatement {
             return None;
         }
 
-        Some(name.to_owned())
+        path.rsplit('/').next().map(str::to_owned)
     }
 }
 
