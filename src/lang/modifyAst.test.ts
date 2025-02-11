@@ -315,7 +315,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('100 + 100') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -329,7 +329,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -343,7 +343,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -357,7 +357,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -371,7 +371,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -557,7 +557,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     const modifiedAst = deleteSegmentFromPipeExpression(
       [],
       ast,
-      execState.memory,
+      execState.variables,
       code,
       pathToNode
     )
@@ -639,7 +639,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       const modifiedAst = deleteSegmentFromPipeExpression(
         dependentSegments,
         ast,
-        execState.memory,
+        execState.variables,
         code,
         pathToNode
       )
@@ -745,7 +745,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         pathToNode,
         argPosition,
         ast,
-        execState.memory
+        execState.variables
       )
       if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
@@ -794,7 +794,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         pathToNode,
         argPosition,
         ast,
-        execState.memory
+        execState.variables
       )
       if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
@@ -978,7 +978,7 @@ sketch002 = startSketchOn({
           codeRef: codeRefFromRange(range, ast),
           artifact,
         },
-        execState.memory,
+        execState.variables,
         async () => {
           await new Promise((resolve) => setTimeout(resolve, 100))
           return {

@@ -3232,6 +3232,21 @@ impl FunctionExpression {
 
         None
     }
+
+    #[cfg(test)]
+    pub fn dummy() -> Box<Node<Self>> {
+        Box::new(Node::new(
+            FunctionExpression {
+                params: Vec::new(),
+                body: Node::new(Program::default(), 0, 0, ModuleId::default()),
+                return_type: None,
+                digest: None,
+            },
+            0,
+            0,
+            ModuleId::default(),
+        ))
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

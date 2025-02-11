@@ -4909,9 +4909,13 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
           }
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

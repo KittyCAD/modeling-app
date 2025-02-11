@@ -11,26 +11,44 @@ use crate::{
     walk::Node as WalkNode,
 };
 
+use super::ProgramMemory;
+
 lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
-    static ref OLD_AST_MEMORY: Arc<RwLock<Option<OldAstState>>> = Default::default();
+    static ref OLD_AST: Arc<RwLock<Option<OldAstState>>> = Default::default();
+    // The last successful run's memory. Not cleared after an unssuccessful run.
+    static ref PREV_MEMORY: Arc<RwLock<Option<ProgramMemory>>> = Default::default();
 }
 
 /// Read the old ast memory from the lock.
-pub(super) async fn read_old_ast_memory() -> Option<OldAstState> {
-    let old_ast = OLD_AST_MEMORY.read().await;
+pub(super) async fn read_old_ast() -> Option<OldAstState> {
+    let old_ast = OLD_AST.read().await;
     old_ast.clone()
 }
 
-pub(super) async fn write_old_ast_memory(old_state: OldAstState) {
-    let mut old_ast = OLD_AST_MEMORY.write().await;
+pub(super) async fn write_old_ast(old_state: OldAstState) {
+    let mut old_ast = OLD_AST.write().await;
     *old_ast = Some(old_state);
 }
 
+pub(super) async fn read_old_memory() -> Option<ProgramMemory> {
+    let old_mem = PREV_MEMORY.read().await;
+    old_mem.clone()
+}
+
+pub(super) async fn write_old_memory(mem: ProgramMemory) {
+    let mut old_mem = PREV_MEMORY.write().await;
+    *old_mem = Some(mem);
+}
+
 pub async fn bust_cache() {
-    let mut old_ast = OLD_AST_MEMORY.write().await;
-    // Set the cache to None.
+    let mut old_ast = OLD_AST.write().await;
     *old_ast = None;
+}
+
+pub async fn clear_mem_cache() {
+    let mut old_mem = PREV_MEMORY.write().await;
+    *old_mem = None;
 }
 
 /// Information for the caching an AST and smartly re-executing it if we can.

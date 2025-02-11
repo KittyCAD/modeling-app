@@ -7,7 +7,6 @@ use tower_lsp::{
 };
 
 use crate::{
-    execution::ProgramMemory,
     lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
     parsing::ast::types::{Node, Program},
 };
@@ -2163,9 +2162,6 @@ async fn test_kcl_lsp_on_change_update_ast() {
         .await;
 
     assert!(ast != server.ast_map.get("file:///test.kcl").unwrap().clone());
-
-    // Make sure we never updated the memory since we aren't running the engine.
-    assert!(server.memory_map.get("file:///test.kcl").is_none());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2186,9 +2182,6 @@ async fn kcl_test_kcl_lsp_on_change_update_memory() {
         })
         .await;
 
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-
     // Send change file.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
@@ -2203,9 +2196,6 @@ async fn kcl_test_kcl_lsp_on_change_update_memory() {
             }],
         })
         .await;
-
-    // Make sure the memory is the same.
-    assert_eq!(memory, server.memory_map.get("file:///test.kcl").unwrap().clone());
 
     // Update the text.
     let new_text = r#"thing = 2"#.to_string();
@@ -2223,8 +2213,6 @@ async fn kcl_test_kcl_lsp_on_change_update_memory() {
             }],
         })
         .await;
-
-    assert!(memory != server.memory_map.get("file:///test.kcl").unwrap().clone());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 10)]
@@ -2265,9 +2253,6 @@ part001 = cube([0,0], 20)
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(ast.body.len(), 2);
 
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-
     // Send change file.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
@@ -2282,9 +2267,6 @@ part001 = cube([0,0], 20)
             }],
         })
         .await;
-
-    // Make sure the memory is the same.
-    assert_eq!(memory, server.memory_map.get("file:///test.kcl").unwrap().clone());
 
     let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
@@ -2303,9 +2285,6 @@ part001 = cube([0,0], 20)
 
     let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::M);
-
-    // Make sure it forced a memory update.
-    assert!(memory != server.memory_map.get("file:///test.kcl").unwrap().clone());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2323,10 +2302,6 @@ async fn kcl_test_kcl_lsp_empty_file_execute_ok() {
             },
         })
         .await;
-
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2454,9 +2429,6 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Send change file.
     server
@@ -2479,9 +2451,6 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(ast, default_hashed);
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2511,9 +2480,6 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2545,11 +2511,6 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
         .insert("file:///test.kcl".to_string(), Node::<Program>::default());
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert_eq!(ast, Node::<Program>::default());
-    server
-        .memory_map
-        .insert("file:///test.kcl".to_string(), ProgramMemory::default());
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
 
     // Send change file, but the code is the same.
     server
@@ -2569,9 +2530,6 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2604,9 +2562,6 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2632,13 +2587,6 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
     // Assure we have one diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
-    // Clear ONLY the memory.
-    server
-        .memory_map
-        .insert("file:///test.kcl".to_string(), ProgramMemory::default());
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
-
     // Send change file, but the code is the same.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
@@ -2657,9 +2605,6 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2692,9 +2637,6 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2720,13 +2662,6 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
     // Assure we have one diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
-    // Clear ONLY the memory.
-    server
-        .memory_map
-        .insert("file:///test.kcl".to_string(), ProgramMemory::default());
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
-
     let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
@@ -2748,9 +2683,6 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2783,19 +2715,9 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    // Clear ONLY the memory.
-    server
-        .memory_map
-        .insert("file:///test.kcl".to_string(), ProgramMemory::default());
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
 
     let units = server.executor_ctx().await.clone().unwrap().settings.units;
     assert_eq!(units, crate::settings::types::UnitLength::Mm);
@@ -2818,9 +2740,6 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2853,19 +2772,9 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    // Clear ONLY the memory.
-    server
-        .memory_map
-        .insert("file:///test.kcl".to_string(), ProgramMemory::default());
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
 
     // Update the units to the _same_ units.
     let units = server.executor_ctx().await.clone().unwrap().settings.units;
@@ -2887,19 +2796,9 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    // Clear ONLY the memory.
-    server
-        .memory_map
-        .insert("file:///test.kcl".to_string(), ProgramMemory::default());
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
 
     assert_eq!(server.can_execute().await, true);
 
@@ -2933,10 +2832,6 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != default_hashed);
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    // Now it should be the default memory.
-    assert!(memory == ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2968,10 +2863,6 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    // Now it should NOT be the default memory.
-    assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -3219,9 +3110,6 @@ part001 = startSketchOn('XY')
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl");
-    assert!(memory.is_none());
 
     // Send change file, but the code is the same.
     server
@@ -3241,9 +3129,6 @@ part001 = startSketchOn('XY')
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl");
-    assert!(memory.is_none());
 
     // Assure we have diagnostics.
 
@@ -3284,9 +3169,6 @@ part001 = startSketchOn('XY')
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl");
-    assert!(memory.is_none());
 
     // Send change file, but the code is the same.
     server
@@ -3314,9 +3196,6 @@ NEW_LINT = 1"#
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
     assert!(ast != Node::<Program>::default());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl");
-    assert!(memory.is_none());
 
     // Assure we have diagnostics.
 
@@ -3357,9 +3236,6 @@ part001 = startSketchOn('XY')
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl");
     assert!(ast.is_none());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl");
-    assert!(memory.is_none());
 
     // Send change file, but the code is the same.
     server
@@ -3387,9 +3263,6 @@ NEW_LINT = 1"#
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl");
     assert!(ast.is_none());
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl");
-    assert!(memory.is_none());
 
     // Assure we have diagnostics.
 
@@ -3439,10 +3312,6 @@ part001 = startSketchOn('XY')
     let semantic_tokens_map = server.semantic_tokens_map.get("file:///test.kcl").unwrap().clone();
     assert!(!semantic_tokens_map.is_empty());
 
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
-
     // Send change file, but the code is the same.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
@@ -3477,10 +3346,6 @@ NEW_LINT = 1"#
     // Get the semantic tokens map.
     let semantic_tokens_map = server.semantic_tokens_map.get("file:///test.kcl").unwrap().clone();
     assert!(!semantic_tokens_map.is_empty());
-
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl");
-    assert!(memory.is_none());
 
     // Assure we have diagnostics.
 
@@ -3534,10 +3399,6 @@ part001 = startSketchOn('XY')
     let semantic_tokens_map = server.semantic_tokens_map.get("file:///test.kcl").unwrap().clone();
     assert!(!semantic_tokens_map.is_empty());
 
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
-
     // Send change file, but the code is the same.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
@@ -3576,10 +3437,6 @@ part001 = startSketchOn('XY')
     // Get the semantic tokens map.
     let semantic_tokens_map = server.semantic_tokens_map.get("file:///test.kcl").unwrap().clone();
     assert!(!semantic_tokens_map.is_empty());
-
-    // Get the memory.
-    let memory = server.memory_map.get("file:///test.kcl");
-    assert!(memory.is_none());
 
     // Assure we have diagnostics.
 

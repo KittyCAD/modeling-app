@@ -313,37 +313,10 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
             "start": 7,
             "type": "FunctionExpression"
           },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  }
-                },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0,
-            "return": null
-          },
+          "memory": [
+            0,
+            1
+          ],
           "__meta": [
             {
               "sourceRange": [
@@ -1065,9 +1038,39 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
           }
         }
       },
+      "snapshots": [
+        {
+          "parent_snapshot": null,
+          "data": {
+            "cube": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "myCircle": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "part001": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            },
+            "part002": {
+              "type": "Tombstone",
+              "value": null,
+              "__meta": []
+            }
+          }
+        }
+      ],
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }
