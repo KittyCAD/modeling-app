@@ -1,21 +1,22 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed import_whole.kcl
+snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
-      "data": {
+      "faces": {
         "sourceRange": [
-          89,
-          126,
+          97,
+          104,
           0
         ]
       },
-      "solid_set": {
+      "thickness": {
         "sourceRange": [
-          128,
-          129,
+          118,
+          122,
           0
         ]
       }
@@ -23,7 +24,7 @@ description: Operations executed import_whole.kcl
     "name": "shell",
     "sourceRange": [
       83,
-      130,
+      123,
       0
     ],
     "type": "StdLibCall",

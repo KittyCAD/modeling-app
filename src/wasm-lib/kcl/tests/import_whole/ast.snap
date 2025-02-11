@@ -26,7 +26,7 @@ description: Result of parsing import_whole.kcl
       },
       {
         "declaration": {
-          "end": 130,
+          "end": 123,
           "id": {
             "end": 71,
             "name": "bar",
@@ -45,67 +45,45 @@ description: Result of parsing import_whole.kcl
               {
                 "arguments": [
                   {
-                    "end": 126,
-                    "properties": [
-                      {
-                        "end": 106,
-                        "key": {
-                          "end": 96,
-                          "name": "faces",
-                          "start": 91,
-                          "type": "Identifier"
-                        },
-                        "start": 91,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "end": 105,
-                              "raw": "'end'",
-                              "start": 100,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": "end"
-                            }
-                          ],
-                          "end": 106,
-                          "start": 99,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "end": 124,
-                        "key": {
-                          "end": 117,
-                          "name": "thickness",
-                          "start": 108,
-                          "type": "Identifier"
-                        },
-                        "start": 108,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 124,
-                          "raw": "0.25",
-                          "start": 120,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "faces"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 103,
+                          "raw": "'end'",
+                          "start": 98,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": {
-                            "value": 0.25,
-                            "suffix": "None"
-                          }
+                          "value": "end"
                         }
-                      }
-                    ],
-                    "start": 89,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                      ],
+                      "end": 104,
+                      "start": 97,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   },
                   {
-                    "end": 129,
-                    "start": 128,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "thickness"
+                    },
+                    "arg": {
+                      "end": 122,
+                      "raw": "0.25",
+                      "start": 118,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.25,
+                        "suffix": "None"
+                      }
+                    }
                   }
                 ],
                 "callee": {
@@ -114,13 +92,14 @@ description: Result of parsing import_whole.kcl
                   "start": 83,
                   "type": "Identifier"
                 },
-                "end": 130,
+                "end": 123,
                 "start": 83,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 130,
+            "end": 123,
             "start": 74,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -128,14 +107,14 @@ description: Result of parsing import_whole.kcl
           "start": 68,
           "type": "VariableDeclarator"
         },
-        "end": 130,
+        "end": 123,
         "kind": "const",
         "start": 68,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 131,
+    "end": 124,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [

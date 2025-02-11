@@ -4,7 +4,7 @@ pub mod types;
 
 use crate::{
     parsing::ast::types::{BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberObject},
-    source_range::ModuleId,
+    ModuleId,
 };
 
 impl BodyItem {

@@ -425,6 +425,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -559,6 +560,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -604,6 +606,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -639,6 +643,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -696,6 +701,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -715,6 +721,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -849,6 +856,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -894,6 +902,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1022,6 +1032,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

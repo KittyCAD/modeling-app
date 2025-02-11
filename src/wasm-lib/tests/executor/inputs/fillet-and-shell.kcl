@@ -75,7 +75,7 @@ m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLengt
 
 m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), screwHeight)
 
-shell({
-  faces: ['end'],
-  thickness: caseThickness
-}, case)
+shell(
+  faces = ['end'],
+  thickness = caseThickness
+)

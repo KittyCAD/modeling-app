@@ -1,8 +1,6 @@
-import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
 import { StateMachineCommandSetConfig } from 'lib/commandTypes'
 import { isDesktop } from 'lib/isDesktop'
-import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
 import { projectsMachine } from 'machines/projectsMachine'
 
 export type ProjectsCommandSchema = {
@@ -23,7 +21,6 @@ export type ProjectsCommandSchema = {
   'Import file from URL': {
     name: string
     code?: string
-    units: UnitLength_type
     method: 'newProject' | 'existingProject'
     projectName?: string
   }
@@ -156,15 +153,6 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
           const lineCount = value?.trim().split('\n').length
           return `${lineCount} line${lineCount === 1 ? '' : 's'}`
         },
-      },
-      units: {
-        inputType: 'options',
-        required: false,
-        skip: true,
-        options: baseUnitsUnion.map((unit) => ({
-          name: baseUnitLabels[unit],
-          value: unit,
-        })),
       },
     },
     reviewMessage(commandBarContext) {

@@ -1,4 +1,4 @@
-import { OnboardingButtons, useDemoCode, useDismiss } from '.'
+import { OnboardingButtons, useDemoCode } from '.'
 import { useEffect } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { APP_NAME } from 'lib/constants'
@@ -7,7 +7,6 @@ import { sceneInfra } from 'lib/singletons'
 
 export default function FutureWork() {
   const { send } = useModelingContext()
-  const dismiss = useDismiss()
 
   // Reset the code, the camera, and the modeling state
   useDemoCode()
@@ -19,7 +18,7 @@ export default function FutureWork() {
 
   return (
     <div className="fixed grid justify-center items-center inset-0 bg-chalkboard-100/50 z-50">
-      <div className="max-w-full xl:max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
+      <div className="relative max-w-full xl:max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
         <h1 className="text-2xl font-bold">Future Work</h1>
         <p className="my-4">
           We have curves, cuts, multi-profile sketch mode, and many more CAD
@@ -59,9 +58,6 @@ export default function FutureWork() {
         <OnboardingButtons
           currentSlug={onboardingPaths.FUTURE_WORK}
           className="mt-6"
-          dismiss={dismiss}
-          next={dismiss}
-          nextText="Finish"
         />
       </div>
     </div>

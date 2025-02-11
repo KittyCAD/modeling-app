@@ -26,9 +26,11 @@ import {
   MAKE_TOAST_MESSAGES,
 } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
-import { reportRejection } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
+import { DefaultPlaneStr } from 'lib/planes'
+import { defaultPlaneStrToKey } from 'lib/planes'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1404,6 +1406,8 @@ export class EngineCommandManager extends EventTarget {
     commandId: string
   }
   settings: SettingsViaQueryString
+  width: number = 1337
+  height: number = 1337
 
   /**
    * Export intent traxcks the intent of the export. If it is null there is no
@@ -1508,6 +1512,9 @@ export class EngineCommandManager extends EventTarget {
     if (width === 0 || height === 0) {
       return
     }
+
+    this.width = width
+    this.height = height
 
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
@@ -1820,6 +1827,9 @@ export class EngineCommandManager extends EventTarget {
     if (!this.engineConnection?.isReady()) {
       return
     }
+
+    this.width = streamWidth
+    this.height = streamHeight
 
     const resizeCmd: EngineCommand = {
       type: 'modeling_cmd_req',
@@ -2170,6 +2180,16 @@ export class EngineCommandManager extends EventTarget {
     )
   }
 
+  getDefaultPlaneId(name: DefaultPlaneStr): string | Error {
+    const key = defaultPlaneStrToKey(name)
+    if (!this.defaultPlanes) {
+      return new Error('Default planes not initialized')
+    } else if (err(key)) {
+      return key
+    }
+    return this.defaultPlanes[key]
+  }
+
   async setPlaneHidden(id: string, hidden: boolean) {
     if (this.engineConnection === undefined) return
 
@@ -2228,7 +2248,11 @@ export class EngineCommandManager extends EventTarget {
     commandTypeToTarget: string
   ): string | undefined {
     for (const [artifactId, artifact] of this.artifactGraph) {
-      if ('codeRef' in artifact && isOverlap(range, artifact.codeRef.range)) {
+      if (
+        'codeRef' in artifact &&
+        artifact.codeRef &&
+        isOverlap(range, artifact.codeRef.range)
+      ) {
         if (commandTypeToTarget === artifact.type) return artifactId
       }
     }

@@ -32,7 +32,7 @@ child_process.spawnSync('git', [
   'clone',
   '--single-branch',
   '--branch',
-  'achalmers/kwargs-line',
+  'achalmers/kw-appearance',
   URL_GIT_KCL_SAMPLES,
   DIR_KCL_SAMPLES,
 ])

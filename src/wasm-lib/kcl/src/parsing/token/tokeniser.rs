@@ -7,13 +7,13 @@ use winnow::{
     prelude::*,
     stream::{Location, Stream},
     token::{any, none_of, one_of, take_till, take_until},
-    Located, Stateful,
+    LocatingSlice, Stateful,
 };
 
 use super::TokenStream;
 use crate::{
     parsing::token::{Token, TokenType},
-    source_range::ModuleId,
+    ModuleId,
 };
 
 lazy_static! {
@@ -65,13 +65,13 @@ lazy_static! {
 pub(super) fn lex(i: &str, module_id: ModuleId) -> Result<TokenStream, ParseError<Input<'_>, ContextError>> {
     let state = State::new(module_id);
     let input = Input {
-        input: Located::new(i),
+        input: LocatingSlice::new(i),
         state,
     };
     Ok(TokenStream::new(repeat(0.., token).parse(input)?))
 }
 
-pub(super) type Input<'a> = Stateful<Located<&'a str>, State>;
+pub(super) type Input<'a> = Stateful<LocatingSlice<&'a str>, State>;
 
 #[derive(Debug, Clone)]
 pub(super) struct State {
@@ -361,7 +361,7 @@ fn keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
 
 #[cfg(test)]
 mod tests {
-    use winnow::Located;
+    use winnow::LocatingSlice;
 
     use super::*;
     use crate::parsing::token::TokenSlice;
@@ -373,7 +373,7 @@ mod tests {
     {
         let state = State::new(ModuleId::default());
         let mut input = Input {
-            input: Located::new(s),
+            input: LocatingSlice::new(s),
             state,
         };
         assert!(p.parse_next(&mut input).is_err(), "parsed {s} but should have failed");
@@ -388,7 +388,7 @@ mod tests {
     {
         let state = State::new(ModuleId::default());
         let mut input = Input {
-            input: Located::new(s),
+            input: LocatingSlice::new(s),
             state,
         };
         let res = p.parse_next(&mut input);
@@ -422,7 +422,7 @@ mod tests {
 
         let module_id = ModuleId::from_usize(1);
         let input = Input {
-            input: Located::new("0.0000000000"),
+            input: LocatingSlice::new("0.0000000000"),
             state: State::new(module_id),
         };
 

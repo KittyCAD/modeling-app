@@ -333,6 +333,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "c",
               "xAxis": {
                 "x": 1.0,
@@ -352,6 +353,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -485,6 +487,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XY",
                     "origin": {
                       "x": 0.0,
@@ -709,6 +712,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -837,6 +842,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -912,6 +919,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "a",
               "xAxis": {
                 "x": 1.0,
@@ -931,6 +939,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -1064,6 +1073,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XY",
                     "origin": {
                       "x": 0.0,
@@ -1288,6 +1298,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -1416,6 +1428,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1948,6 +1962,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "value": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
@@ -2081,6 +2096,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         "on": {
                           "type": "plane",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "XY",
                           "origin": {
                             "x": 0.0,
@@ -2305,6 +2321,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -2409,6 +2427,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -2542,6 +2561,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -2766,6 +2786,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2801,6 +2823,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -2878,6 +2901,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "a",
                 "xAxis": {
                   "x": 1.0,
@@ -2897,6 +2921,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -3030,6 +3055,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -3254,6 +3280,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -3382,6 +3410,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -3433,6 +3463,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -3510,6 +3541,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "c",
                 "xAxis": {
                   "x": 1.0,
@@ -3529,6 +3561,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -3662,6 +3695,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -3886,6 +3920,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -4014,6 +4050,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

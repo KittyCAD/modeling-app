@@ -16,7 +16,8 @@ import {
   SegmentArtifact,
 } from 'lang/std/artifactGraph'
 import { err, reportRejection } from 'lib/trap'
-import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
+import { getFaceDetails } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr } from 'lib/planes'
 import { getNodeFromPath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { CallExpression, CallExpressionKw, defaultSourceRange } from 'lang/wasm'

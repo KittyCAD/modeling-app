@@ -148,6 +148,7 @@ description: Program memory after executing poop_chute.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -571,6 +572,7 @@ description: Program memory after executing poop_chute.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "YZ",
                 "origin": {
                   "x": 0.0,
@@ -677,6 +679,8 @@ description: Program memory after executing poop_chute.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1102,6 +1106,7 @@ description: Program memory after executing poop_chute.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "YZ",
               "origin": {
                 "x": 0.0,
@@ -1208,6 +1213,8 @@ description: Program memory after executing poop_chute.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1227,6 +1234,7 @@ description: Program memory after executing poop_chute.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -1650,6 +1658,7 @@ description: Program memory after executing poop_chute.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "YZ",
                 "origin": {
                   "x": 0.0,
@@ -1756,6 +1765,8 @@ description: Program memory after executing poop_chute.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

@@ -19,6 +19,8 @@ test.describe(
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      // FIXME: Cannot use scene.waitForExecutionDone() since there is no KCL code
+      await page.waitForTimeout(10000)
       await u.openDebugPanel()
 
       const coord =

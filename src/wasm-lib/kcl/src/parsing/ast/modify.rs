@@ -6,6 +6,7 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 
+use super::types::{CallExpressionKw, Identifier, LabeledArg, LiteralValue};
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -14,11 +15,9 @@ use crate::{
         ArrayExpression, CallExpression, ConstraintLevel, FormatOptions, Literal, Node, PipeExpression,
         PipeSubstitution, VariableDeclarator,
     },
-    source_range::{ModuleId, SourceRange},
-    Program,
+    source_range::SourceRange,
+    ModuleId, Program,
 };
-
-use super::types::{CallExpressionKw, Identifier, LabeledArg, LiteralValue};
 
 type Point3d = kcmc::shared::Point3d<f64>;
 

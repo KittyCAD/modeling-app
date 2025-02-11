@@ -490,6 +490,11 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('ArrowLeft')
     await page.keyboard.press('ArrowRight')
 
+    // FIXME: lsp errors do not propagate to the frontend until engine is connected and code is executed
+    // This timeout is to wait for engine connection. LSP and code execution errors should be handled differently
+    // LSP can emit errors as fast as it waits and show them in the editor
+    await page.waitForTimeout(10000)
+
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
@@ -641,7 +646,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     width = 0.500
     height = 0.500
     dia = 4
-  
+
     fn squareHole = (l, w) => {
   squareHoleSketch = startSketchOn('XY')
   |> startProfileAt([-width / 2, -length / 2], %)
@@ -714,7 +719,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     |> line(end = [0, -10], tag = $revolveAxis)
     |> close()
     |> extrude(length = 10)
-  
+
     sketch001 = startSketchOn(box, revolveAxis)
     |> startProfileAt([5, 10], %)
     |> line(end = [0, -10])

@@ -306,7 +306,6 @@ export const projectsMachine = setup({
             return {
               code: '',
               name: '',
-              units: 'mm',
               method: 'existingProject',
               projects: context.projects,
             }
@@ -314,7 +313,6 @@ export const projectsMachine = setup({
           return {
             code: event.data.code || '',
             name: event.data.name,
-            units: event.data.units,
             method: event.data.method,
             projectName: event.data.projectName,
             projects: context.projects,

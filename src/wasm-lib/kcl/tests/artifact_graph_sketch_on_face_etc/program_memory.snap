@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing artifact_graph_sketch_on_face_etc.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -32,6 +31,7 @@ snapshot_kind: text
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -165,6 +165,7 @@ snapshot_kind: text
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XZ",
                 "origin": {
                   "x": 0.0,
@@ -271,6 +272,8 @@ snapshot_kind: text
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -306,6 +309,7 @@ snapshot_kind: text
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -429,6 +433,7 @@ snapshot_kind: text
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg01",
                 "xAxis": {
                   "x": 1.0,
@@ -448,6 +453,7 @@ snapshot_kind: text
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -581,6 +587,7 @@ snapshot_kind: text
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XZ",
                       "origin": {
                         "x": 0.0,
@@ -687,6 +694,8 @@ snapshot_kind: text
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -748,6 +757,8 @@ snapshot_kind: text
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -783,6 +794,7 @@ snapshot_kind: text
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -916,6 +928,7 @@ snapshot_kind: text
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -935,6 +948,7 @@ snapshot_kind: text
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -1058,6 +1072,7 @@ snapshot_kind: text
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "seg01",
                       "xAxis": {
                         "x": 1.0,
@@ -1077,6 +1092,7 @@ snapshot_kind: text
                       "solid": {
                         "type": "Solid",
                         "id": "[uuid]",
+                        "artifactId": "[uuid]",
                         "value": [
                           {
                             "faceId": "[uuid]",
@@ -1210,6 +1226,7 @@ snapshot_kind: text
                           "on": {
                             "type": "plane",
                             "id": "[uuid]",
+                            "artifactId": "[uuid]",
                             "value": "XZ",
                             "origin": {
                               "x": 0.0,
@@ -1316,6 +1333,8 @@ snapshot_kind: text
                               ]
                             }
                           },
+                          "artifactId": "[uuid]",
+                          "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
                           },
@@ -1377,6 +1396,8 @@ snapshot_kind: text
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1499,6 +1520,8 @@ snapshot_kind: text
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1534,6 +1557,7 @@ snapshot_kind: text
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -1657,6 +1681,7 @@ snapshot_kind: text
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg02",
                 "xAxis": {
                   "x": 1.0,
@@ -1676,6 +1701,7 @@ snapshot_kind: text
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -1809,6 +1835,7 @@ snapshot_kind: text
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -1828,6 +1855,7 @@ snapshot_kind: text
                       "solid": {
                         "type": "Solid",
                         "id": "[uuid]",
+                        "artifactId": "[uuid]",
                         "value": [
                           {
                             "faceId": "[uuid]",
@@ -1951,6 +1979,7 @@ snapshot_kind: text
                           "on": {
                             "type": "face",
                             "id": "[uuid]",
+                            "artifactId": "[uuid]",
                             "value": "seg01",
                             "xAxis": {
                               "x": 1.0,
@@ -1970,6 +1999,7 @@ snapshot_kind: text
                             "solid": {
                               "type": "Solid",
                               "id": "[uuid]",
+                              "artifactId": "[uuid]",
                               "value": [
                                 {
                                   "faceId": "[uuid]",
@@ -2103,6 +2133,7 @@ snapshot_kind: text
                                 "on": {
                                   "type": "plane",
                                   "id": "[uuid]",
+                                  "artifactId": "[uuid]",
                                   "value": "XZ",
                                   "origin": {
                                     "x": 0.0,
@@ -2209,6 +2240,8 @@ snapshot_kind: text
                                     ]
                                   }
                                 },
+                                "artifactId": "[uuid]",
+                                "originalId": "[uuid]",
                                 "units": {
                                   "type": "Mm"
                                 },
@@ -2270,6 +2303,8 @@ snapshot_kind: text
                               ]
                             }
                           },
+                          "artifactId": "[uuid]",
+                          "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
                           },
@@ -2392,6 +2427,8 @@ snapshot_kind: text
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -2453,6 +2490,8 @@ snapshot_kind: text
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2698,6 +2737,7 @@ snapshot_kind: text
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XZ",
               "origin": {
                 "x": 0.0,
@@ -2804,6 +2844,8 @@ snapshot_kind: text
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -2908,6 +2950,7 @@ snapshot_kind: text
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -2927,6 +2970,7 @@ snapshot_kind: text
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -3060,6 +3104,7 @@ snapshot_kind: text
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XZ",
                     "origin": {
                       "x": 0.0,
@@ -3166,6 +3211,8 @@ snapshot_kind: text
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -3227,6 +3274,8 @@ snapshot_kind: text
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -3336,6 +3385,7 @@ snapshot_kind: text
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -3355,6 +3405,7 @@ snapshot_kind: text
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -3478,6 +3529,7 @@ snapshot_kind: text
                   "on": {
                     "type": "face",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "seg01",
                     "xAxis": {
                       "x": 1.0,
@@ -3497,6 +3549,7 @@ snapshot_kind: text
                     "solid": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
@@ -3630,6 +3683,7 @@ snapshot_kind: text
                         "on": {
                           "type": "plane",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "XZ",
                           "origin": {
                             "x": 0.0,
@@ -3736,6 +3790,8 @@ snapshot_kind: text
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -3797,6 +3853,8 @@ snapshot_kind: text
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -3919,6 +3977,8 @@ snapshot_kind: text
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -4023,6 +4083,7 @@ snapshot_kind: text
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,
@@ -4042,6 +4103,7 @@ snapshot_kind: text
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -4175,6 +4237,7 @@ snapshot_kind: text
                   "on": {
                     "type": "face",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -4194,6 +4257,7 @@ snapshot_kind: text
                     "solid": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
@@ -4317,6 +4381,7 @@ snapshot_kind: text
                         "on": {
                           "type": "face",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "seg01",
                           "xAxis": {
                             "x": 1.0,
@@ -4336,6 +4401,7 @@ snapshot_kind: text
                           "solid": {
                             "type": "Solid",
                             "id": "[uuid]",
+                            "artifactId": "[uuid]",
                             "value": [
                               {
                                 "faceId": "[uuid]",
@@ -4469,6 +4535,7 @@ snapshot_kind: text
                               "on": {
                                 "type": "plane",
                                 "id": "[uuid]",
+                                "artifactId": "[uuid]",
                                 "value": "XZ",
                                 "origin": {
                                   "x": 0.0,
@@ -4575,6 +4642,8 @@ snapshot_kind: text
                                   ]
                                 }
                               },
+                              "artifactId": "[uuid]",
+                              "originalId": "[uuid]",
                               "units": {
                                 "type": "Mm"
                               },
@@ -4636,6 +4705,8 @@ snapshot_kind: text
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -4758,6 +4829,8 @@ snapshot_kind: text
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -4819,6 +4892,8 @@ snapshot_kind: text
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },

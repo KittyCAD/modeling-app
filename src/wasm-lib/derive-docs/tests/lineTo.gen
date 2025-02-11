@@ -17,7 +17,7 @@ mod test_examples_line_to {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(program.into(), &mut crate::ExecState::new(&ctx.settings))
+            .run(&program, &mut crate::ExecState::new(&ctx.settings))
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -74,7 +74,7 @@ mod test_examples_line_to {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(program.into(), &mut crate::ExecState::new(&ctx.settings))
+            .run(&program, &mut crate::ExecState::new(&ctx.settings))
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {

@@ -36,6 +36,7 @@ import {
 import { err, trap } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
+import { isArray } from 'lib/utils'
 import { Artifact, getSweepFromSuspectedPath } from 'lang/std/artifactGraph'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { findKwArg } from 'lang/util'
@@ -866,10 +867,7 @@ export async function deleteEdgeTreatment(
   if (!inPipe) {
     const varDecPathStep = varDec.shallowPath[1]
 
-    if (
-      !Array.isArray(varDecPathStep) ||
-      typeof varDecPathStep[0] !== 'number'
-    ) {
+    if (!isArray(varDecPathStep) || typeof varDecPathStep[0] !== 'number') {
       return new Error(
         'Invalid shallowPath structure: expected a number at shallowPath[1][0]'
       )
@@ -935,7 +933,7 @@ export async function deleteEdgeTreatment(
     if (err(pipeExpressionNode)) return pipeExpressionNode
 
     // Ensure that the PipeExpression.body is an array
-    if (!Array.isArray(pipeExpressionNode.node.body)) {
+    if (!isArray(pipeExpressionNode.node.body)) {
       return new Error('PipeExpression body is not an array')
     }
 
@@ -945,10 +943,7 @@ export async function deleteEdgeTreatment(
     // Remove VariableDeclarator if PipeExpression.body is empty
     if (pipeExpressionNode.node.body.length === 0) {
       const varDecPathStep = varDec.shallowPath[1]
-      if (
-        !Array.isArray(varDecPathStep) ||
-        typeof varDecPathStep[0] !== 'number'
-      ) {
+      if (!isArray(varDecPathStep) || typeof varDecPathStep[0] !== 'number') {
         return new Error(
           'Invalid shallowPath structure: expected a number at shallowPath[1][0]'
         )

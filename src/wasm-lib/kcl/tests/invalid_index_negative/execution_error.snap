@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Error from executing invalid_index_negative.kcl
-snapshot_kind: text
 ---
 KCL Semantic error
 

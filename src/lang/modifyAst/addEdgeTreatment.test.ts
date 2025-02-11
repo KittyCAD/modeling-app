@@ -293,7 +293,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   const selection: Selections = {
     graphSelections: segmentRanges.map((segmentRange) => {
       const maybeArtifact = [...artifactGraph].find(([, a]) => {
-        if (!('codeRef' in a)) return false
+        if (!('codeRef' in a && a.codeRef)) return false
         return isOverlap(a.codeRef.range, segmentRange)
       })
       return {

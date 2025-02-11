@@ -533,7 +533,7 @@ impl KclValue {
             )
             .await
         } else {
-            crate::execution::call_user_defined_function(
+            crate::execution::exec_ast::call_user_defined_function(
                 args,
                 closure_memory.as_ref(),
                 expression.as_ref(),
@@ -568,7 +568,7 @@ impl KclValue {
         if let Some(_func) = func {
             todo!("Implement calling KCL stdlib fns that are aliased. Part of https://github.com/KittyCAD/modeling-app/issues/4600");
         } else {
-            crate::execution::call_user_defined_function_kw(
+            crate::execution::exec_ast::call_user_defined_function_kw(
                 args.kw_args,
                 closure_memory.as_ref(),
                 expression.as_ref(),

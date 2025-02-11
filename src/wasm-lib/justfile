@@ -22,10 +22,15 @@ copy-exec-test-into-sim-test test_name:
     zoo kcl fmt -w kcl/tests/{{test_name}}/input.kcl
     just new-sim-test {{test_name}}
 
-# Create a new KCL deterministic simulation test case.
+# Create a new, empty KCL deterministic simulation test case.
 new-sim-test test_name render_to_png="true":
+    mkdir kcl/tests/{{test_name}}
+    touch kcl/tests/{{test_name}}/input.kcl
     # Add the various tests for this new test case.
     cat kcl/tests/simtest.tmpl | sed "s/TEST_NAME_HERE/{{test_name}}/" | sed "s/RENDER_TO_PNG/{{render_to_png}}/" >> kcl/src/simulation_tests.rs
+
+# Run a KCL deterministic simulation test case and accept output.
+run-sim-test test_name:
     # Run all the tests for the first time, in the right order.
     {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::parse
     {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::unparse

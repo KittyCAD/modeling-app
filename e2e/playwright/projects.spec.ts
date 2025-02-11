@@ -455,7 +455,7 @@ test.describe('Can export from electron app', () => {
   for (const method of exportMethods) {
     test(
       `Can export using ${method}`,
-      { tag: '@electron' },
+      { tag: ['@electron', '@skipLocalEngine'] },
       async ({ context, page }, testInfo) => {
         await context.folderSetupFn(async (dir) => {
           const bracketDir = path.join(dir, 'bracket')

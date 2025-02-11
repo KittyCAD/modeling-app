@@ -22,6 +22,7 @@ import {
 import { isDesktop } from 'lib/isDesktop'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { isArray } from 'lib/utils'
 
 export function Toolbar({
   className = '',
@@ -121,7 +122,7 @@ export function Toolbar({
     return toolbarConfig[currentMode].items.map((maybeIconConfig) => {
       if (maybeIconConfig === 'break') {
         return 'break'
-      } else if (Array.isArray(maybeIconConfig)) {
+      } else if (isArray(maybeIconConfig)) {
         return maybeIconConfig.map(resolveItemConfig)
       } else {
         return resolveItemConfig(maybeIconConfig)
@@ -180,7 +181,7 @@ export function Toolbar({
                 className="h-5 w-[1px] block bg-chalkboard-30 dark:bg-chalkboard-80"
               />
             )
-          } else if (Array.isArray(maybeIconConfig)) {
+          } else if (isArray(maybeIconConfig)) {
             // A button with a dropdown
             return (
               <ActionButtonDropdown

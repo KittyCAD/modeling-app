@@ -402,17 +402,17 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "data": {
+      "faces": {
         "sourceRange": [
-          2053,
-          2103,
+          2067,
+          2074,
           0
         ]
       },
-      "solid_set": {
+      "thickness": {
         "sourceRange": [
-          2105,
-          2109,
+          2088,
+          2101,
           0
         ]
       }
@@ -420,10 +420,16 @@ snapshot_kind: text
     "name": "shell",
     "sourceRange": [
       2047,
-      2110,
+      2102,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        2053,
+        2057,
+        0
+      ]
+    }
   }
 ]

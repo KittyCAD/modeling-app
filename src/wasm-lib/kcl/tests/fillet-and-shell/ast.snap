@@ -2582,68 +2582,45 @@ description: Result of parsing fillet-and-shell.kcl
         "type": "ExpressionStatement"
       },
       {
-        "end": 2110,
+        "end": 2102,
         "expression": {
           "arguments": [
             {
-              "end": 2103,
-              "properties": [
-                {
-                  "end": 2072,
-                  "key": {
-                    "end": 2062,
-                    "name": "faces",
-                    "start": 2057,
-                    "type": "Identifier"
-                  },
-                  "start": 2057,
-                  "type": "ObjectProperty",
-                  "value": {
-                    "elements": [
-                      {
-                        "end": 2071,
-                        "raw": "'end'",
-                        "start": 2066,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": "end"
-                      }
-                    ],
-                    "end": 2072,
-                    "start": 2065,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "faces"
+              },
+              "arg": {
+                "elements": [
+                  {
+                    "end": 2073,
+                    "raw": "'end'",
+                    "start": 2068,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "end"
                   }
-                },
-                {
-                  "end": 2101,
-                  "key": {
-                    "end": 2085,
-                    "name": "thickness",
-                    "start": 2076,
-                    "type": "Identifier"
-                  },
-                  "start": 2076,
-                  "type": "ObjectProperty",
-                  "value": {
-                    "end": 2101,
-                    "name": "caseThickness",
-                    "start": 2088,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  }
-                }
-              ],
-              "start": 2053,
-              "type": "ObjectExpression",
-              "type": "ObjectExpression"
+                ],
+                "end": 2074,
+                "start": 2067,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
             },
             {
-              "end": 2109,
-              "name": "case",
-              "start": 2105,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "thickness"
+              },
+              "arg": {
+                "end": 2101,
+                "name": "caseThickness",
+                "start": 2088,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
             }
           ],
           "callee": {
@@ -2652,17 +2629,24 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 2047,
             "type": "Identifier"
           },
-          "end": 2110,
+          "end": 2102,
           "start": 2047,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "end": 2057,
+            "name": "case",
+            "start": 2053,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
         },
         "start": 2047,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 2111,
+    "end": 2103,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [

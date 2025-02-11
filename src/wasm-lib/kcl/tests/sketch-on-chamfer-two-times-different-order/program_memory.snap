@@ -31,6 +31,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -247,6 +248,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XZ",
                 "origin": {
                   "x": 0.0,
@@ -541,6 +543,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -609,6 +613,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -793,6 +798,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg03",
                 "xAxis": {
                   "x": 1.0,
@@ -812,6 +818,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -1028,6 +1035,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XZ",
                       "origin": {
                         "x": 0.0,
@@ -1322,6 +1330,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1595,6 +1605,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2317,6 +2329,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XZ",
               "origin": {
                 "x": 0.0,
@@ -2611,6 +2624,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -2750,6 +2765,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg03",
               "xAxis": {
                 "x": 1.0,
@@ -2769,6 +2785,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -2985,6 +3002,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XZ",
                     "origin": {
                       "x": 0.0,
@@ -3279,6 +3297,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -3552,6 +3572,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -3691,6 +3713,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg04",
               "xAxis": {
                 "x": 1.0,
@@ -3710,6 +3733,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -3926,6 +3950,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XZ",
                     "origin": {
                       "x": 0.0,
@@ -4220,6 +4245,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -4448,6 +4475,8 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },

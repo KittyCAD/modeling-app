@@ -221,6 +221,8 @@ const newVar = myVar + 1`
           },
         ],
         id: expect.any(String),
+        originalId: expect.any(String),
+        artifactId: expect.any(String),
         units: {
           type: 'Mm',
         },

@@ -1,12 +1,16 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager, engineCommandManager } from 'lib/singletons'
+import { kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { ProgramMemory, Expr, parse, resultIsOk } from 'lang/wasm'
+import { Expr } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
-import { executeAst } from 'lang/langHelpers'
-import { err, trap } from 'lib/trap'
+import {
+  getCalculatedKclExpressionValue,
+  programMemoryFromVariables,
+} from './kclHelpers'
+import { parse, resultIsOk } from 'lang/wasm'
+import { err } from 'lib/trap'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -48,7 +52,20 @@ export function useCalculateKclExpression({
     bodyPath: [],
   })
   const [valueNode, setValueNode] = useState<Expr | null>(null)
-  const [calcResult, setCalcResult] = useState('NAN')
+  // Gotcha: If we do not attempt to parse numeric literals instantly it means that there is an async action to verify
+  // the value is good. This means all E2E tests have a race condition on when they can hit "next" in the command bar.
+  // Most scenarios automatically pass a numeric literal. We can try to parse that first, otherwise make it go through the slow
+  // async method.
+  // If we pass in numeric literals, we should instantly parse them, they have nothing to do with application memory
+  const _code_value = `const __result__ = ${value}`
+  const codeValueParseResult = parse(_code_value)
+  let isValueParsable = true
+  if (err(codeValueParseResult) || !resultIsOk(codeValueParseResult)) {
+    isValueParsable = false
+  }
+  const initialCalcResult: number | string =
+    Number.isNaN(Number(value)) || !isValueParsable ? 'NAN' : value
+  const [calcResult, setCalcResult] = useState(initialCalcResult)
   const [newVariableName, setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
 
@@ -86,37 +103,25 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const _code = `const __result__ = ${value}`
-      const pResult = parse(_code)
-      if (err(pResult) || !resultIsOk(pResult)) return
-      const ast = pResult.program
-
-      const _programMem: ProgramMemory = ProgramMemory.empty()
-      for (const { key, value } of availableVarInfo.variables) {
-        const error = _programMem.set(key, {
-          type: 'String',
-          value,
-          __meta: [],
-        })
-        if (trap(error, { suppress: true })) return
-      }
-      const { execState } = await executeAst({
-        ast,
-        engineCommandManager,
-        // We make sure to send an empty program memory to denote we mean mock mode.
-        programMemoryOverride: kclManager.programMemory.clone(),
-      })
-      const resultDeclaration = ast.body.find(
-        (a) =>
-          a.type === 'VariableDeclaration' &&
-          a.declaration.id?.name === '__result__'
+      const programMemory = programMemoryFromVariables(
+        availableVarInfo.variables
       )
-      const init =
-        resultDeclaration?.type === 'VariableDeclaration' &&
-        resultDeclaration?.declaration.init
-      const result = execState.memory?.get('__result__')?.value
-      setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
-      init && setValueNode(init)
+      if (programMemory instanceof Error) {
+        setCalcResult('NAN')
+        setValueNode(null)
+        return
+      }
+      const result = await getCalculatedKclExpressionValue({
+        value,
+        programMemory,
+      })
+      if (result instanceof Error || 'errors' in result) {
+        setCalcResult('NAN')
+        setValueNode(null)
+        return
+      }
+      setCalcResult(result?.valueAsString || 'NAN')
+      result?.astNode && setValueNode(result.astNode)
     }
     if (!value) return
     execAstAndSetResult().catch(() => {

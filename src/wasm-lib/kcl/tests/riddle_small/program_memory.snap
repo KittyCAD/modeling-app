@@ -140,6 +140,7 @@ description: Program memory after executing riddle_small.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -274,6 +275,7 @@ description: Program memory after executing riddle_small.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XZ",
                 "origin": {
                   "x": 0.0,
@@ -319,6 +321,8 @@ description: Program memory after executing riddle_small.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

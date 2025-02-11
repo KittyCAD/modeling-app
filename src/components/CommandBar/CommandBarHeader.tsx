@@ -156,6 +156,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     )}
                     {arg.inputType === 'kcl' &&
                       !!argValue &&
+                      typeof argValue === 'object' &&
                       'variableName' in (argValue as KclCommandValue) && (
                         <>
                           <CustomIcon
@@ -195,6 +196,7 @@ function ReviewingButton() {
       type="submit"
       form="review-form"
       className="w-fit !p-0 rounded-sm hover:shadow"
+      data-testid="command-bar-submit"
       iconStart={{
         icon: 'checkmark',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
@@ -213,6 +215,7 @@ function GatheringArgsButton() {
       type="submit"
       form="arg-form"
       className="w-fit !p-0 rounded-sm hover:shadow"
+      data-testid="command-bar-continue"
       iconStart={{
         icon: 'arrowRight',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',

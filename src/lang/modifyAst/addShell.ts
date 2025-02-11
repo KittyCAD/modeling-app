@@ -17,6 +17,8 @@ import {
   createObjectExpression,
   createArrayExpression,
   createVariableDeclaration,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
 } from 'lang/modifyAst'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
@@ -121,13 +123,14 @@ export function addShell({
   }
 
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
-  const shell = createCallExpressionStdLib('shell', [
-    createObjectExpression({
-      faces: createArrayExpression(expressions),
-      thickness,
-    }),
+  const shell = createCallExpressionStdLibKw(
+    'shell',
     createIdentifier(extrudeNode.node.id.name),
-  ])
+    [
+      createLabeledArg('faces', createArrayExpression(expressions)),
+      createLabeledArg('thickness', thickness),
+    ]
+  )
   const declaration = createVariableDeclaration(name, shell)
 
   // TODO: check if we should append at the end like here or right after the extrude
@@ -137,8 +140,7 @@ export function addShell({
     [modifiedAst.body.length - 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['unlabeled', 'CallExpressionKw'],
   ]
   return {
     modifiedAst,
