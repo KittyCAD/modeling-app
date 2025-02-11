@@ -7,6 +7,10 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
         "sourceRange": [
           60,
           64,
@@ -26,6 +30,10 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "angleStart": {
+        "value": {
+          "type": "Number",
+          "value": 0.0
+        },
         "sourceRange": [
           173,
           174,
@@ -33,6 +41,11 @@ snapshot_kind: text
         ]
       },
       "axis": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "edge001",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
           247,
           254,
@@ -40,6 +53,10 @@ snapshot_kind: text
         ]
       },
       "ccw": {
+        "value": {
+          "type": "Bool",
+          "value": true
+        },
         "sourceRange": [
           184,
           188,
@@ -47,6 +64,10 @@ snapshot_kind: text
         ]
       },
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0
+        },
         "sourceRange": [
           220,
           222,
@@ -54,6 +75,10 @@ snapshot_kind: text
         ]
       },
       "radius": {
+        "value": {
+          "type": "Number",
+          "value": 5.0
+        },
         "sourceRange": [
           235,
           236,
@@ -61,6 +86,10 @@ snapshot_kind: text
         ]
       },
       "revolutions": {
+        "value": {
+          "type": "Number",
+          "value": 5.0
+        },
         "sourceRange": [
           206,
           207,
