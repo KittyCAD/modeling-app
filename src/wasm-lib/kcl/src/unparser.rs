@@ -161,7 +161,9 @@ impl Node<NonCodeNode> {
             NonCodeValue::NewLine => "\n\n".to_string(),
             NonCodeValue::Annotation { name, properties } => {
                 let mut result = "@".to_owned();
-                result.push_str(&name.name);
+                if let Some(name) = name {
+                    result.push_str(&name.name);
+                }
                 if let Some(properties) = properties {
                     result.push('(');
                     result.push_str(
@@ -793,7 +795,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{parsing::ast::types::FormatOptions, source_range::ModuleId};
+    use crate::{parsing::ast::types::FormatOptions, ModuleId};
 
     #[test]
     fn test_recast_if_else_if_same() {

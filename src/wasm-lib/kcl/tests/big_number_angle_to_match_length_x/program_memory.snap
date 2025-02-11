@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing big_number_angle_to_match_length_x.kcl
-snapshot_kind: text
 ---
 {
   "environments": [

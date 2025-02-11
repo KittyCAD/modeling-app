@@ -128,7 +128,7 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
                             properties: new_properties,
                         },
                     ) => {
-                        name.digest == new_name.digest
+                        name.as_ref().map(|n| n.digest) == new_name.as_ref().map(|n| n.digest)
                             && properties
                                 .as_ref()
                                 .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())

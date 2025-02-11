@@ -1,0 +1,336 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing helix_simple.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 137,
+          "id": {
+            "end": 43,
+            "name": "helper001",
+            "start": 34,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 64,
+                    "raw": "'XZ'",
+                    "start": 60,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "XZ"
+                  }
+                ],
+                "callee": {
+                  "end": 59,
+                  "name": "startSketchOn",
+                  "start": 46,
+                  "type": "Identifier"
+                },
+                "end": 65,
+                "start": 46,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 88,
+                        "raw": "0",
+                        "start": 87,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 91,
+                        "raw": "0",
+                        "start": 90,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 92,
+                    "start": 86,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 95,
+                    "start": 94,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 85,
+                  "name": "startProfileAt",
+                  "start": 71,
+                  "type": "Identifier"
+                },
+                "end": 96,
+                "start": 71,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 115,
+                          "raw": "0",
+                          "start": 114,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 119,
+                          "raw": "10",
+                          "start": 117,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 10.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 120,
+                      "start": 113,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tag"
+                    },
+                    "arg": {
+                      "end": 136,
+                      "start": 128,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "edge001"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 106,
+                  "name": "line",
+                  "start": 102,
+                  "type": "Identifier"
+                },
+                "end": 137,
+                "start": 102,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 137,
+            "start": 46,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 34,
+          "type": "VariableDeclarator"
+        },
+        "end": 137,
+        "kind": "const",
+        "start": 34,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 242,
+          "id": {
+            "end": 148,
+            "name": "helixPath",
+            "start": 139,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "angleStart"
+                },
+                "arg": {
+                  "end": 171,
+                  "raw": "0",
+                  "start": 170,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "ccw"
+                },
+                "arg": {
+                  "end": 183,
+                  "raw": "true",
+                  "start": 179,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": true
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "revolutions"
+                },
+                "arg": {
+                  "end": 200,
+                  "raw": "5",
+                  "start": 199,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 5.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "length"
+                },
+                "arg": {
+                  "end": 213,
+                  "raw": "10",
+                  "start": 211,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 10.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "radius"
+                },
+                "arg": {
+                  "end": 225,
+                  "raw": "5",
+                  "start": 224,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 5.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "axis"
+                },
+                "arg": {
+                  "end": 241,
+                  "name": "edge001",
+                  "start": 234,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "callee": {
+              "end": 156,
+              "name": "helix",
+              "start": 151,
+              "type": "Identifier"
+            },
+            "end": 242,
+            "start": 151,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
+          },
+          "start": 139,
+          "type": "VariableDeclarator"
+        },
+        "end": 242,
+        "kind": "const",
+        "start": 139,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 243,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 139,
+            "start": 137,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 33,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Create a helix around an edge.",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}
