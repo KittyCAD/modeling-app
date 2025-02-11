@@ -5,7 +5,7 @@ pub mod project;
 use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
-use serde::{Deserializer, Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
@@ -132,7 +132,12 @@ pub struct AppSettings {
     #[serde(default, alias = "dismissWebBanner", skip_serializing_if = "is_default")]
     pub dismiss_web_banner: bool,
     /// When the user is idle, teardown the stream after some time.
-    #[serde(default, deserialize_with = "deserialize_stream_idle_mode", alias = "streamIdleMode", skip_serializing_if = "is_default")]
+    #[serde(
+        default,
+        deserialize_with = "deserialize_stream_idle_mode",
+        alias = "streamIdleMode",
+        skip_serializing_if = "is_default"
+    )]
     stream_idle_mode: Option<u32>,
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
@@ -145,27 +150,27 @@ pub struct AppSettings {
 
 fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
 where
-  D: Deserializer<'de>,
+    D: Deserializer<'de>,
 {
-  #[derive(Deserialize)]
-  #[serde(untagged)]
-  enum StreamIdleModeValue {
-    Number(u32),
-    String(String),
-    Boolean(bool),
-  }
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum StreamIdleModeValue {
+        Number(u32),
+        String(String),
+        Boolean(bool),
+    }
 
-  const DEFAULT_TIMEOUT: u32 = 1000 * 60 * 5;
+    const DEFAULT_TIMEOUT: u32 = 1000 * 60 * 5;
 
-  Ok(match StreamIdleModeValue::deserialize(deserializer) {
-    Ok(StreamIdleModeValue::Number(value)) => Some(value),
-    Ok(StreamIdleModeValue::String(value)) => Some(value.parse::<u32>().unwrap_or(DEFAULT_TIMEOUT)),
-    // The old type of this value. I'm willing to say no one used it but
-    // we can never guarantee it.
-    Ok(StreamIdleModeValue::Boolean(true)) => Some(DEFAULT_TIMEOUT),
-    Ok(StreamIdleModeValue::Boolean(false)) => None,
-    _ => None
-  })
+    Ok(match StreamIdleModeValue::deserialize(deserializer) {
+        Ok(StreamIdleModeValue::Number(value)) => Some(value),
+        Ok(StreamIdleModeValue::String(value)) => Some(value.parse::<u32>().unwrap_or(DEFAULT_TIMEOUT)),
+        // The old type of this value. I'm willing to say no one used it but
+        // we can never guarantee it.
+        Ok(StreamIdleModeValue::Boolean(true)) => Some(DEFAULT_TIMEOUT),
+        Ok(StreamIdleModeValue::Boolean(false)) => None,
+        _ => None,
+    })
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
