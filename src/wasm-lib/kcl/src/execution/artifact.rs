@@ -864,6 +864,11 @@ fn artifacts_to_update(
             }
             if let Some(path) = last_path {
                 for face in &face_info.faces {
+                    let sub_type = match face.cap {
+                        ExtrusionFaceCapType::Top => CapSubType::End,
+                        ExtrusionFaceCapType::Bottom => CapSubType::Start,
+                        ExtrusionFaceCapType::None | ExtrusionFaceCapType::Both => continue,
+                    };
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
                     };
@@ -891,10 +896,7 @@ fn artifacts_to_update(
                         .unwrap_or_default();
                     return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
-                        sub_type: match cap {
-                            ExtrusionFaceCapType::Bottom => CapSubType::Start,
-                            _ => CapSubType::End,
-                        },
+                        sub_type,
                         edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
                         path_ids: Vec::new(),
