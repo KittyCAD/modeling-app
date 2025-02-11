@@ -115,7 +115,7 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
   PipeSubstitution { "%" }
 
   identifier { (@asciiLetter | "_") (@asciiLetter | @digit | "_")* }
-  AnnotationName { "@" identifier }
+  AnnotationName { "@" identifier? }
   PropertyName { identifier }
   TagDeclarator { "$" identifier }
 
