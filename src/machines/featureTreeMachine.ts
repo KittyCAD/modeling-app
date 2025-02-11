@@ -1,12 +1,17 @@
 import { getArtifactFromRange } from 'lang/std/artifactGraph'
-import { SourceRange } from 'lang/wasm'
+import { ProgramMemory, SourceRange } from 'lang/wasm'
 import { enterEditFlow, EnterEditFlowProps } from 'lib/operations'
-import { engineCommandManager } from 'lib/singletons'
+import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import toast from 'react-hot-toast'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { assign, fromPromise, setup } from 'xstate'
 import { commandBarActor } from './commandBarMachine'
+import { deleteFromSelection } from 'lang/modifyAst'
+import { getFaceDetails } from 'clientSideScene/sceneEntities'
+import { Selection } from 'lib/selections'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { executeAst } from 'lang/langHelpers'
 
 type FeatureTreeEvent =
   | {
@@ -19,7 +24,7 @@ type FeatureTreeEvent =
     }
   | {
       type: 'deleteOperation'
-      data: { targetSourceRange: SourceRange }
+      data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | {
       type: 'enterEditFlow'
@@ -68,6 +73,59 @@ export const featureTreeMachine = setup({
               resolve(result)
             })
             .catch(reject)
+        })
+      }
+    ),
+    deleteOperation: fromPromise(
+      ({
+        input,
+      }: {
+        input: EnterEditFlowProps & { targetSourceRange: SourceRange }
+      }) => {
+        // TODO: migrate modelingMachine 'AST delete selection' to a promise and leverage it
+        return new Promise(async (resolve, reject) => {
+          const errorMessage =
+            'Unable to delete selection. Please edit manually in code pane.'
+          try {
+            let ast = kclManager.ast
+            const pathToNode = getNodePathFromSourceRange(
+              ast,
+              input.targetSourceRange!
+            )
+            const selection: Selection = {
+              codeRef: {
+                range: input.targetSourceRange!,
+                pathToNode,
+              },
+              artifact: input.artifact,
+            }
+            const modifiedAst = await deleteFromSelection(
+              ast,
+              selection,
+              kclManager.programMemory,
+              getFaceDetails
+            )
+            if (err(modifiedAst)) {
+              reject(errorMessage)
+              return
+            }
+            const testExecute = await executeAst({
+              ast: modifiedAst,
+              engineCommandManager,
+              // We make sure to send an empty program memory to denote we mean mock mode.
+              programMemoryOverride: ProgramMemory.empty(),
+            })
+            if (testExecute.errors.length) {
+              toast.error(errorMessage)
+              return
+            }
+
+            await kclManager.updateAst(modifiedAst, true)
+            await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
+            resolve(testExecute)
+          } catch (e) {
+            reject(e)
+          }
         })
       }
     ),
@@ -238,18 +296,45 @@ export const featureTreeMachine = setup({
             },
           },
         },
-        deletingSelection: {
-          on: {
-            operationsChanged: {
-              target: 'done',
-            },
-          },
-          entry: ['sendSelectionEvent', 'sendDeleteSelection'],
-        },
+
         done: {
           always: '#featureTree.idle',
         },
+
+        deletingSelection: {
+          invoke: {
+            src: 'deleteOperation',
+            input: ({ context }) => {
+              const artifact = context.targetSourceRange
+                ? getArtifactFromRange(
+                    context.targetSourceRange,
+                    engineCommandManager.artifactGraph
+                  ) ?? undefined
+                : undefined
+              return {
+                // currentOperation is guaranteed to be defined here
+                operation: context.currentOperation!,
+                artifact,
+                targetSourceRange: context.targetSourceRange!,
+              }
+            },
+            onDone: {
+              target: 'done',
+              reenter: true,
+            },
+            onError: {
+              target: 'done',
+              reenter: true,
+              actions: ({ event }) => {
+                if ('error' in event && err(event.error)) {
+                  toast.error(event.error.message)
+                }
+              },
+            },
+          },
+        },
       },
+
       initial: 'selecting',
       entry: 'sendSelectionEvent',
       exit: ['clearContext'],

@@ -347,6 +347,7 @@ const OperationItem = (props: {
         type: 'deleteOperation',
         data: {
           targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
         },
       })
     }
