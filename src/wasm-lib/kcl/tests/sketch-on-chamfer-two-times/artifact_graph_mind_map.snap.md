@@ -4,14 +4,22 @@ mindmap
     Plane
       Path
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
           EdgeCut Fillet
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
           Plane
             Path
               Segment
@@ -22,12 +30,20 @@ mindmap
               Solid2d
         Segment
         Sweep Extrusion
-          Cap End
-          Cap End
-          Cap End
-          Cap End
+          Wall
+          Wall
+          Wall
+          Wall
           Cap Start
           Cap End
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Solid2d
     Plane
       Path
@@ -40,19 +56,35 @@ mindmap
     Plane
       Path
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
         Sweep Extrusion
+          Wall
+          Wall
+          Wall
+          Wall
           Cap End
-          Cap End
-          Cap End
-          Cap End
-          Cap End
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Solid2d
 ```

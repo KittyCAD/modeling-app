@@ -9,41 +9,57 @@ flowchart LR
     7["Segment<br>[432, 440, 0]"]
     8[Solid2d]
   end
-  subgraph path19 [Path]
-    19["Path<br>[736, 770, 0]"]
-    20["Segment<br>[776, 824, 0]"]
-    21["Segment<br>[830, 931, 0]"]
-    22["Segment<br>[937, 1057, 0]"]
-    23["Segment<br>[1063, 1119, 0]"]
-    24["Segment<br>[1125, 1133, 0]"]
-    25[Solid2d]
+  subgraph path27 [Path]
+    27["Path<br>[736, 770, 0]"]
+    28["Segment<br>[776, 824, 0]"]
+    29["Segment<br>[830, 931, 0]"]
+    30["Segment<br>[937, 1057, 0]"]
+    31["Segment<br>[1063, 1119, 0]"]
+    32["Segment<br>[1125, 1133, 0]"]
+    33[Solid2d]
   end
-  subgraph path26 [Path]
-    26["Path<br>[1184, 1219, 0]"]
-    27["Segment<br>[1225, 1273, 0]"]
-    28["Segment<br>[1279, 1381, 0]"]
-    29["Segment<br>[1387, 1507, 0]"]
-    30["Segment<br>[1513, 1569, 0]"]
-    31["Segment<br>[1575, 1583, 0]"]
-    32[Solid2d]
+  subgraph path34 [Path]
+    34["Path<br>[1184, 1219, 0]"]
+    35["Segment<br>[1225, 1273, 0]"]
+    36["Segment<br>[1279, 1381, 0]"]
+    37["Segment<br>[1387, 1507, 0]"]
+    38["Segment<br>[1513, 1569, 0]"]
+    39["Segment<br>[1575, 1583, 0]"]
+    40[Solid2d]
   end
   1["Plane<br>[12, 31, 0]"]
   9["Sweep Extrusion<br>[454, 486, 0]"]
-  10["Cap End"]
-  11["Cap End"]
-  12["Cap End"]
-  13["Cap End"]
+  10[Wall]
+  11[Wall]
+  12[Wall]
+  13[Wall]
   14["Cap Start"]
   15["Cap End"]
-  16["EdgeCut Fillet<br>[492, 534, 0]"]
-  17["Plane<br>[1184, 1219, 0]"]
-  18["Plane<br>[736, 770, 0]"]
-  33["Sweep Extrusion<br>[1597, 1628, 0]"]
-  34["Cap End"]
-  35["Cap End"]
-  36["Cap End"]
-  37["Cap End"]
-  38["Cap End"]
+  16["SweepEdge Opposite"]
+  17["SweepEdge Adjacent"]
+  18["SweepEdge Opposite"]
+  19["SweepEdge Adjacent"]
+  20["SweepEdge Opposite"]
+  21["SweepEdge Adjacent"]
+  22["SweepEdge Opposite"]
+  23["SweepEdge Adjacent"]
+  24["EdgeCut Fillet<br>[492, 534, 0]"]
+  25["Plane<br>[1184, 1219, 0]"]
+  26["Plane<br>[736, 770, 0]"]
+  41["Sweep Extrusion<br>[1597, 1628, 0]"]
+  42[Wall]
+  43[Wall]
+  44[Wall]
+  45[Wall]
+  46["Cap End"]
+  47["SweepEdge Opposite"]
+  48["SweepEdge Adjacent"]
+  49["SweepEdge Opposite"]
+  50["SweepEdge Adjacent"]
+  51["SweepEdge Opposite"]
+  52["SweepEdge Adjacent"]
+  53["SweepEdge Opposite"]
+  54["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -52,40 +68,72 @@ flowchart LR
   2 --- 7
   2 ---- 9
   2 --- 8
-  3 x--> 13
-  4 x--> 12
-  4 --- 16
-  5 x--> 11
-  6 x--> 10
-  6 x--> 18
+  3 --- 13
+  3 --- 22
+  3 --- 23
+  4 --- 12
+  4 --- 20
+  4 --- 21
+  4 --- 24
+  5 --- 11
+  5 --- 18
+  5 --- 19
+  6 --- 10
+  6 --- 16
+  6 --- 17
+  6 x--> 26
   9 --- 10
   9 --- 11
   9 --- 12
   9 --- 13
   9 --- 14
   9 --- 15
-  17 --- 26
-  18 --- 19
-  19 --- 20
-  19 --- 21
-  19 --- 22
-  19 --- 23
-  19 --- 24
-  19 --- 25
+  9 --- 16
+  9 --- 17
+  9 --- 18
+  9 --- 19
+  9 --- 20
+  9 --- 21
+  9 --- 22
+  9 --- 23
+  25 --- 34
   26 --- 27
-  26 --- 28
-  26 --- 29
-  26 --- 30
-  26 --- 31
-  26 ---- 33
-  26 --- 32
-  27 x--> 37
-  28 x--> 36
-  29 x--> 35
-  30 x--> 34
-  33 --- 34
-  33 --- 35
-  33 --- 36
-  33 --- 37
-  33 --- 38
+  27 --- 28
+  27 --- 29
+  27 --- 30
+  27 --- 31
+  27 --- 32
+  27 --- 33
+  34 --- 35
+  34 --- 36
+  34 --- 37
+  34 --- 38
+  34 --- 39
+  34 ---- 41
+  34 --- 40
+  35 --- 45
+  35 --- 53
+  35 --- 54
+  36 --- 44
+  36 --- 51
+  36 --- 52
+  37 --- 43
+  37 --- 49
+  37 --- 50
+  38 --- 42
+  38 --- 47
+  38 --- 48
+  41 --- 42
+  41 --- 43
+  41 --- 44
+  41 --- 45
+  41 --- 46
+  41 --- 47
+  41 --- 48
+  41 --- 49
+  41 --- 50
+  41 --- 51
+  41 --- 52
+  41 --- 53
+  41 --- 54
 ```

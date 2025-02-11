@@ -12,14 +12,26 @@ flowchart LR
   end
   1["Plane<br>[228, 247, 0]"]
   10["Sweep Extrusion<br>[465, 488, 0]"]
-  11["Cap End"]
-  12["Cap End"]
-  13["Cap End"]
-  14["Cap End"]
-  15["Cap End"]
-  16["Cap End"]
+  11[Wall]
+  12[Wall]
+  13[Wall]
+  14[Wall]
+  15[Wall]
+  16[Wall]
   17["Cap Start"]
   18["Cap End"]
+  19["SweepEdge Opposite"]
+  20["SweepEdge Adjacent"]
+  21["SweepEdge Opposite"]
+  22["SweepEdge Adjacent"]
+  23["SweepEdge Opposite"]
+  24["SweepEdge Adjacent"]
+  25["SweepEdge Opposite"]
+  26["SweepEdge Adjacent"]
+  27["SweepEdge Opposite"]
+  28["SweepEdge Adjacent"]
+  29["SweepEdge Opposite"]
+  30["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -29,12 +41,24 @@ flowchart LR
   2 --- 8
   2 ---- 10
   2 --- 9
-  3 x--> 16
-  4 x--> 15
-  5 x--> 14
-  6 x--> 13
-  7 x--> 12
-  8 x--> 11
+  3 --- 16
+  3 --- 29
+  3 --- 30
+  4 --- 15
+  4 --- 27
+  4 --- 28
+  5 --- 14
+  5 --- 25
+  5 --- 26
+  6 --- 13
+  6 --- 23
+  6 --- 24
+  7 --- 12
+  7 --- 21
+  7 --- 22
+  8 --- 11
+  8 --- 19
+  8 --- 20
   10 --- 11
   10 --- 12
   10 --- 13
@@ -43,4 +67,16 @@ flowchart LR
   10 --- 16
   10 --- 17
   10 --- 18
+  10 --- 19
+  10 --- 20
+  10 --- 21
+  10 --- 22
+  10 --- 23
+  10 --- 24
+  10 --- 25
+  10 --- 26
+  10 --- 27
+  10 --- 28
+  10 --- 29
+  10 --- 30
 ```

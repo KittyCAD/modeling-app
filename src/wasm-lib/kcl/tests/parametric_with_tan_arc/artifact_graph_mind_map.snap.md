@@ -4,31 +4,63 @@ mindmap
     Plane
       Path
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Segment
-          Cap End
+          Wall
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Sweep Extrusion
-          Cap End
-          Cap End
-          Cap End
-          Cap End
-          Cap End
-          Cap End
-          Cap End
-          Cap End
+          Wall
+          Wall
+          Wall
+          Wall
+          Wall
+          Wall
+          Wall
+          Wall
           Cap Start
           Cap End
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
+          SweepEdge Opposite
+          SweepEdge Adjacent
         Solid2d
 ```

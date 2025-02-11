@@ -45,40 +45,80 @@ flowchart LR
   1["Plane<br>[399, 432, 0]"]
   29["Plane<br>[1899, 1920, 0]"]
   41["Sweep Extrusion<br>[2366, 2387, 0]"]
-  42["Cap End"]
-  43["Cap End"]
-  44["Cap End"]
-  45["Cap End"]
-  46["Cap End"]
-  47["Cap End"]
-  48["Cap End"]
-  49["Cap End"]
-  50["Cap End"]
-  51["Cap End"]
-  52["Cap End"]
-  53["Cap End"]
-  54["Cap End"]
-  55["Cap End"]
-  56["Cap End"]
-  57["Cap End"]
-  58["Cap End"]
-  59["Cap End"]
-  60["Cap End"]
-  61["Cap End"]
-  62["Cap End"]
-  63["Cap End"]
-  64["Cap End"]
-  65["Cap End"]
-  66["Cap End"]
+  42[Wall]
+  43[Wall]
+  44[Wall]
+  45[Wall]
+  46[Wall]
+  47[Wall]
+  48[Wall]
+  49[Wall]
+  50[Wall]
+  51[Wall]
+  52[Wall]
+  53[Wall]
+  54[Wall]
+  55[Wall]
+  56[Wall]
+  57[Wall]
+  58[Wall]
+  59[Wall]
+  60[Wall]
+  61[Wall]
+  62[Wall]
+  63[Wall]
+  64[Wall]
+  65[Wall]
+  66["Cap Start"]
   67["Cap End"]
-  68["Cap End"]
-  69["Cap End"]
-  70["Cap End"]
-  71["Cap End"]
-  72["Cap End"]
-  73["Cap End"]
-  74["Cap Start"]
-  75["Cap End"]
+  68["SweepEdge Opposite"]
+  69["SweepEdge Adjacent"]
+  70["SweepEdge Opposite"]
+  71["SweepEdge Adjacent"]
+  72["SweepEdge Opposite"]
+  73["SweepEdge Adjacent"]
+  74["SweepEdge Opposite"]
+  75["SweepEdge Adjacent"]
+  76["SweepEdge Opposite"]
+  77["SweepEdge Adjacent"]
+  78["SweepEdge Opposite"]
+  79["SweepEdge Adjacent"]
+  80["SweepEdge Opposite"]
+  81["SweepEdge Adjacent"]
+  82["SweepEdge Opposite"]
+  83["SweepEdge Adjacent"]
+  84["SweepEdge Opposite"]
+  85["SweepEdge Adjacent"]
+  86["SweepEdge Opposite"]
+  87["SweepEdge Adjacent"]
+  88["SweepEdge Opposite"]
+  89["SweepEdge Adjacent"]
+  90["SweepEdge Opposite"]
+  91["SweepEdge Adjacent"]
+  92["SweepEdge Opposite"]
+  93["SweepEdge Adjacent"]
+  94["SweepEdge Opposite"]
+  95["SweepEdge Adjacent"]
+  96["SweepEdge Opposite"]
+  97["SweepEdge Adjacent"]
+  98["SweepEdge Opposite"]
+  99["SweepEdge Adjacent"]
+  100["SweepEdge Opposite"]
+  101["SweepEdge Adjacent"]
+  102["SweepEdge Opposite"]
+  103["SweepEdge Adjacent"]
+  104["SweepEdge Opposite"]
+  105["SweepEdge Adjacent"]
+  106["SweepEdge Opposite"]
+  107["SweepEdge Adjacent"]
+  108["SweepEdge Opposite"]
+  109["SweepEdge Adjacent"]
+  110["SweepEdge Opposite"]
+  111["SweepEdge Adjacent"]
+  112["SweepEdge Opposite"]
+  113["SweepEdge Adjacent"]
+  114["SweepEdge Opposite"]
+  115["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -107,30 +147,78 @@ flowchart LR
   2 --- 27
   2 ---- 41
   2 --- 28
-  3 x--> 42
-  4 x--> 43
-  5 x--> 44
-  6 x--> 45
-  7 x--> 46
-  8 x--> 47
-  9 x--> 48
-  10 x--> 49
-  11 x--> 50
-  12 x--> 51
-  13 x--> 52
-  14 x--> 53
-  15 x--> 54
-  16 x--> 55
-  17 x--> 56
-  18 x--> 57
-  19 x--> 58
-  20 x--> 59
-  21 x--> 60
-  22 x--> 61
-  23 x--> 62
-  24 x--> 63
-  25 x--> 64
-  26 x--> 65
+  3 --- 42
+  3 --- 68
+  3 --- 69
+  4 --- 43
+  4 --- 70
+  4 --- 71
+  5 --- 44
+  5 --- 72
+  5 --- 73
+  6 --- 45
+  6 --- 74
+  6 --- 75
+  7 --- 46
+  7 --- 76
+  7 --- 77
+  8 --- 47
+  8 --- 78
+  8 --- 79
+  9 --- 48
+  9 --- 80
+  9 --- 81
+  10 --- 49
+  10 --- 82
+  10 --- 83
+  11 --- 50
+  11 --- 84
+  11 --- 85
+  12 --- 51
+  12 --- 86
+  12 --- 87
+  13 --- 52
+  13 --- 88
+  13 --- 89
+  14 --- 53
+  14 --- 90
+  14 --- 91
+  15 --- 54
+  15 --- 92
+  15 --- 93
+  16 --- 55
+  16 --- 94
+  16 --- 95
+  17 --- 56
+  17 --- 96
+  17 --- 97
+  18 --- 57
+  18 --- 98
+  18 --- 99
+  19 --- 58
+  19 --- 100
+  19 --- 101
+  20 --- 59
+  20 --- 102
+  20 --- 103
+  21 --- 60
+  21 --- 104
+  21 --- 105
+  22 --- 61
+  22 --- 106
+  22 --- 107
+  23 --- 62
+  23 --- 108
+  23 --- 109
+  24 --- 63
+  24 --- 110
+  24 --- 111
+  25 --- 64
+  25 --- 112
+  25 --- 113
+  26 --- 65
+  26 --- 114
+  26 --- 115
   29 --- 30
   30 --- 31
   30 --- 32
@@ -176,4 +264,44 @@ flowchart LR
   41 --- 73
   41 --- 74
   41 --- 75
+  41 --- 76
+  41 --- 77
+  41 --- 78
+  41 --- 79
+  41 --- 80
+  41 --- 81
+  41 --- 82
+  41 --- 83
+  41 --- 84
+  41 --- 85
+  41 --- 86
+  41 --- 87
+  41 --- 88
+  41 --- 89
+  41 --- 90
+  41 --- 91
+  41 --- 92
+  41 --- 93
+  41 --- 94
+  41 --- 95
+  41 --- 96
+  41 --- 97
+  41 --- 98
+  41 --- 99
+  41 --- 100
+  41 --- 101
+  41 --- 102
+  41 --- 103
+  41 --- 104
+  41 --- 105
+  41 --- 106
+  41 --- 107
+  41 --- 108
+  41 --- 109
+  41 --- 110
+  41 --- 111
+  41 --- 112
+  41 --- 113
+  41 --- 114
+  41 --- 115
 ```

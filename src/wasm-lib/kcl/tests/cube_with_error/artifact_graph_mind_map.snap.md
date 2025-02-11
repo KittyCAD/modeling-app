@@ -4,19 +4,19 @@ mindmap
     Plane
       Path
         Segment
-          Cap End
+          Wall
         Segment
-          Cap End
+          Wall
         Segment
-          Cap End
+          Wall
         Segment
-          Cap End
+          Wall
         Segment
         Sweep Extrusion
-          Cap End
-          Cap End
-          Cap End
-          Cap End
+          Wall
+          Wall
+          Wall
+          Wall
           Cap Start
           Cap End
         Solid2d
