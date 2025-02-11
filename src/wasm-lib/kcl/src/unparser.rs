@@ -331,8 +331,25 @@ impl CallExpressionKw {
                 .iter()
                 .map(|arg| arg.recast(options, indentation_level, ctxt)),
         );
-        let args = arg_list.join(", ");
-        format!("{indent}{name}({args})")
+        let args = arg_list.clone().join(", ");
+        if arg_list.len() >= 4 {
+            let inner_indentation = if ctxt == ExprContext::Pipe {
+                options.get_indentation_offset_pipe(indentation_level + 1)
+            } else {
+                options.get_indentation(indentation_level + 1)
+            };
+            let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
+            args.push(',');
+            let args = args;
+            let end_indent = if ctxt == ExprContext::Pipe {
+                options.get_indentation_offset_pipe(indentation_level)
+            } else {
+                options.get_indentation(indentation_level)
+            };
+            format!("{indent}{name}(\n{inner_indentation}{args}\n{end_indent})")
+        } else {
+            format!("{indent}{name}({args})")
+        }
     }
 }
 
@@ -1060,13 +1077,13 @@ sphere = startSketchOn('XZ')
      }, %)
   |> close()
   |> revolve({ axis: 'x' }, %)
-  |> patternCircular3d({
+  |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
        repetitions = 10,
        arcDegrees = 360,
        rotateDuplicates = true
-     }, %)
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')
@@ -1127,13 +1144,13 @@ sphere = startSketchOn('XZ')
      }, %)
   |> close()
   |> revolve({ axis = 'x' }, %)
-  |> patternCircular3d({
+  |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
        repetitions = 10,
        arcDegrees = 360,
-       rotateDuplicates = true
-     }, %)
+       rotateDuplicates = true,
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')
@@ -1458,11 +1475,11 @@ tabs_r = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
+  |> patternLinear3d(
        axis = [0, -1, 0],
        repetitions = 1,
        distance = length - 10
-     }, %)
+     )
   // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
        plane: {
@@ -1485,11 +1502,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
-       axis = [0, -1, 0],
-       repetitions = 1,
-       distance = length - 10
-     }, %)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1583,11 +1596,7 @@ tabs_r = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
-       axis = [0, -1, 0],
-       repetitions = 1,
-       distance = length - 10
-     }, %)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
        plane = {
@@ -1610,11 +1619,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
-       axis = [0, -1, 0],
-       repetitions = 1,
-       distance = length - 10
-     }, %)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 "#
         );
     }

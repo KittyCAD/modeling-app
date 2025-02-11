@@ -9,7 +9,7 @@ Repeat a 2-dimensional sketch some number of times along a partial or
 complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orentation of the solid with respect to the center of the circle is maintained.
 
 ```js
-patternCircular2d(data: CircularPattern2dData, sketch_set: SketchSet) -> [Sketch]
+patternCircular2d(sketch_set: SketchSet, instances: integer, center: [number], arc_degrees: number, rotate_duplicates: bool, use_original?: bool) -> [Sketch]
 ```
 
 
@@ -17,8 +17,12 @@ patternCircular2d(data: CircularPattern2dData, sketch_set: SketchSet) -> [Sketch
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`CircularPattern2dData`](/docs/kcl/types/CircularPattern2dData) | Data for a circular pattern on a 2D sketch. | Yes |
-| `sketch_set` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
+| `sketch_set` | [`SketchSet`](/docs/kcl/types/SketchSet) | Which sketch(es) to pattern | Yes |
+| `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
+| `center` | `[number]` | The center about which to make the pattern. This is a 2D vector. | Yes |
+| `arc_degrees` | `number` | The arc angle (in degrees) to place the repetitions. Must be greater than 0. | Yes |
+| `rotate_duplicates` | `bool` | Whether or not to rotate the duplicates as they are copied. | Yes |
+| `use_original` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 
@@ -34,12 +38,12 @@ exampleSketch = startSketchOn('XZ')
   |> line(end = [-1, 0])
   |> line(end = [0, -5])
   |> close()
-  |> patternCircular2d({
+  |> patternCircular2d(
        center = [0, 0],
        instances = 13,
        arcDegrees = 360,
-       rotateDuplicates = true
-     }, %)
+       rotateDuplicates = true,
+     )
 
 example = extrude(exampleSketch, length = 1)
 ```
