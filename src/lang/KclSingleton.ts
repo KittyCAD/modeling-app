@@ -58,6 +58,7 @@ export class KclManager {
       nonCodeNodes: {},
       startNodes: [],
     },
+    trivia: [],
   }
   private _execState: ExecState = emptyExecState()
   private _programMemory: ProgramMemory = ProgramMemory.empty()
@@ -239,6 +240,7 @@ export class KclManager {
         nonCodeNodes: {},
         startNodes: [],
       },
+      trivia: [],
     }
   }
 

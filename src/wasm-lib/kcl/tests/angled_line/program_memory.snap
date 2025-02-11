@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing angled_line.kcl
-snapshot_kind: text
 ---
 {
   "environments": [

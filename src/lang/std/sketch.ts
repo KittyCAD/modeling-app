@@ -2270,6 +2270,7 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
           startNodes: [],
           nonCodeNodes: [],
         },
+        trivia: [],
       },
       pathToNode,
     }
@@ -2854,6 +2855,8 @@ function addTagKw(): addTagFn {
         ...primaryCallExp,
         start: callExpr.node.start,
         end: callExpr.node.end,
+        moduleId: callExpr.node.moduleId,
+        trivia: callExpr.node.trivia,
       })
     }
 
