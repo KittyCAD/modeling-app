@@ -174,6 +174,9 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
 
+      // FIXME: No KCL code, unable to wait for engine execution
+      await page.waitForTimeout(10000)
+
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
