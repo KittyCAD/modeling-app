@@ -94,7 +94,9 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
 
   // Deep Link: Case of a cold start from Windows or Linux
-  const zooProtocolArg = process.argv.find(a => a.startsWith(ZOO_STUDIO_PROTOCOL + '://'))
+  const zooProtocolArg = process.argv.find((a) =>
+    a.startsWith(ZOO_STUDIO_PROTOCOL + '://')
+  )
   if (!pathToOpen && zooProtocolArg) {
     pathToOpen = zooProtocolArg
     console.log('Retrieved deep link from argv', pathToOpen)
