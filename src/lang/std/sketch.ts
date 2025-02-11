@@ -7,6 +7,7 @@ import {
   Program,
   PipeExpression,
   CallExpression,
+  CallExpressionKw,
   VariableDeclarator,
   Expr,
   VariableDeclaration,
@@ -18,6 +19,7 @@ import {
   getNodeFromPath,
   getNodeFromPathCurry,
   getObjExprProperty,
+  LABELED_ARG_FIELD,
 } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
@@ -25,7 +27,11 @@ import {
   isNotLiteralArrayOrStatic,
 } from 'lang/std/sketchcombos'
 import { toolTips, ToolTip } from 'lang/langHelpers'
-import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
+import {
+  createPipeExpression,
+  mutateKwArg,
+  splitPathAtPipeExpression,
+} from '../modifyAst'
 
 import {
   SketchLineHelper,
@@ -38,25 +44,33 @@ import {
   SimplifiedArgDetails,
   RawArgs,
   CreatedSketchExprResult,
+  SketchLineHelperKw,
 } from 'lang/std/stdTypes'
 
 import {
   createLiteral,
   createTagDeclarator,
   createCallExpression,
+  createCallExpressionStdLibKw,
   createArrayExpression,
+  createLabeledArg,
   createPipeSubstitution,
   createObjectExpression,
   mutateArrExp,
   mutateObjExpProp,
   findUniqueName,
 } from 'lang/modifyAst'
-import { roundOff, getLength, getAngle } from 'lib/utils'
+import { roundOff, getLength, getAngle, isArray } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { EdgeCutInfo } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { findKwArg, findKwArgAny, findKwArgAnyIndex } from 'lang/util'
+
+export const ARG_TAG = 'tag'
+export const ARG_END = 'end'
+export const ARG_END_ABSOLUTE = 'endAbsolute'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -82,7 +96,7 @@ export function createFirstArg(
   sketchFn: ToolTip,
   val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
 ): Expr | Error {
-  if (Array.isArray(val)) {
+  if (isArray(val)) {
     if (
       [
         'angledLine',
@@ -90,8 +104,6 @@ export function createFirstArg(
         'angledLineOfYLength',
         'angledLineToX',
         'angledLineToY',
-        'line',
-        'lineTo',
       ].includes(sketchFn)
     )
       return createArrayExpression(val)
@@ -145,7 +157,7 @@ const constrainInfo = (
 })
 
 const commonConstraintInfoHelper = (
-  callExp: CallExpression,
+  callExp: CallExpression | CallExpressionKw,
   inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']],
   stdLibFnName: ConstrainInfo['stdLibFnName'],
   abbreviatedInputs: [
@@ -161,22 +173,56 @@ const commonConstraintInfoHelper = (
   code: string,
   pathToNode: PathToNode
 ) => {
-  if (callExp.type !== 'CallExpression') return []
-  const firstArg = callExp.arguments?.[0]
+  if (callExp.type !== 'CallExpression' && callExp.type !== 'CallExpressionKw')
+    return []
+  const firstArg = (() => {
+    switch (callExp.type) {
+      case 'CallExpression':
+        return callExp.arguments[0]
+      case 'CallExpressionKw':
+        return findKwArgAny([ARG_END, ARG_END_ABSOLUTE], callExp)
+    }
+  })()
+  if (firstArg === undefined) {
+    return []
+  }
   const isArr = firstArg.type === 'ArrayExpression'
   if (!isArr && firstArg.type !== 'ObjectExpression') return []
   const pipeExpressionIndex = pathToNode.findIndex(
     ([_, nodeName]) => nodeName === 'PipeExpression'
   )
   const pathToBase = pathToNode.slice(0, pipeExpressionIndex + 2)
-  const pathToArrayExpression: PathToNode = [
-    ...pathToBase,
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
-    isArr
-      ? ['elements', 'ArrayExpression']
-      : ['properties', 'ObjectExpression'],
-  ]
+  const argIndex = (() => {
+    switch (callExp.type) {
+      case 'CallExpression':
+        return 0
+      case 'CallExpressionKw':
+        return findKwArgAnyIndex([ARG_END, ARG_END_ABSOLUTE], callExp)
+    }
+  })()
+  if (argIndex === undefined) {
+    return []
+  }
+
+  // Construct the pathToNode.
+  const pathToArrayExpression: PathToNode = (() => {
+    const isKw = callExp.type === 'CallExpressionKw'
+    let path: PathToNode = [
+      ...pathToBase,
+      ['arguments', callExp.type],
+      [argIndex, 'index'],
+    ]
+    if (isKw) {
+      path.push(['arg', LABELED_ARG_FIELD])
+    }
+    path.push(
+      isArr
+        ? ['elements', 'ArrayExpression']
+        : ['properties', 'ObjectExpression']
+    )
+    return path
+  })()
+
   const pathToFirstArg: PathToNode = isArr
     ? [...pathToArrayExpression, [0, 'index']]
     : [
@@ -294,93 +340,19 @@ function getTag(index = 2): SketchLineHelper['getTag'] {
   }
 }
 
-export const lineTo: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
-    if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
-    const to = segmentInput.to
-    const _node = { ...node }
-    const nodeMeta = getNodeFromPath<PipeExpression>(
-      _node,
-      pathToNode,
-      'PipeExpression'
-    )
-    if (err(nodeMeta)) return nodeMeta
-    const { node: pipe } = nodeMeta
-
-    const newVals: [Expr, Expr] = [
-      createLiteral(roundOff(to[0], 2)),
-      createLiteral(roundOff(to[1], 2)),
-    ]
-
-    const newLine = createCallExpression('lineTo', [
-      createArrayExpression(newVals),
-      createPipeSubstitution(),
-    ])
-    const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-    if (replaceExistingCallback) {
-      const result = replaceExistingCallback([
-        {
-          type: 'arrayItem',
-          index: 0,
-          argType: 'xAbsolute',
-          expr: createLiteral(roundOff(to[0], 2)),
-        },
-        {
-          type: 'arrayItem',
-          index: 1,
-          argType: 'yAbsolute',
-          expr: createLiteral(roundOff(to[1], 2)),
-        },
-      ])
-      if (err(result)) return result
-      const { callExp, valueUsedInTransform } = result
-      pipe.body[callIndex] = callExp
-      return {
-        modifiedAst: _node,
-        pathToNode,
-        valueUsedInTransform: valueUsedInTransform,
-      }
-    } else {
-      pipe.body = [...pipe.body, newLine]
-    }
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  updateArgs: ({ node, pathToNode, input }) => {
-    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
-    const { to } = input
-    const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
-    if (err(nodeMeta)) return nodeMeta
-    const { node: callExpression } = nodeMeta
-
-    const toArrExp = createArrayExpression([
-      createLiteral(to[0]),
-      createLiteral(to[1]),
-    ])
-
-    mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
-      mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (callExp, ...args) =>
-    commonConstraintInfoHelper(
-      callExp,
-      ['xAbsolute', 'yAbsolute'],
-      'lineTo',
-      [{ arrayInput: 0 }, { arrayInput: 1 }],
-      ...args
-    ),
+function getTagKwArg(): SketchLineHelperKw['getTag'] {
+  return (callExp: CallExpressionKw) => {
+    if (callExp.type !== 'CallExpressionKw')
+      return new Error('Not a CallExpressionKw')
+    const arg = findKwArg(ARG_TAG, callExp)
+    if (!arg) return new Error('No argument')
+    if (arg.type !== 'TagDeclarator')
+      return new Error('Tag not a TagDeclarator')
+    return arg.value
+  }
 }
 
-export const line: SketchLineHelper = {
+export const line: SketchLineHelperKw = {
   add: ({
     node,
     previousProgramMemory,
@@ -392,7 +364,7 @@ export const line: SketchLineHelper = {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<PipeExpression | CallExpression>(
+    const nodeMeta = getNodeFromPath<PipeExpression | CallExpressionKw>(
       _node,
       pathToNode,
       'PipeExpression'
@@ -415,10 +387,12 @@ export const line: SketchLineHelper = {
       !replaceExistingCallback &&
       pipe.type === 'PipeExpression'
     ) {
-      const callExp = createCallExpression('line', [
-        createArrayExpression([newXVal, newYVal]),
-        createPipeSubstitution(),
-      ])
+      const callExp = createCallExpressionStdLibKw(
+        'line',
+        null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+        // TODO: ADAM: This should have a tag sometimes.
+        [createLabeledArg(ARG_END, createArrayExpression([newXVal, newYVal]))]
+      )
       const pathToNodeIndex = pathToNode.findIndex(
         (x) => x[1] === 'PipeExpression'
       )
@@ -437,7 +411,7 @@ export const line: SketchLineHelper = {
       }
     }
 
-    if (replaceExistingCallback && pipe.type !== 'CallExpression') {
+    if (replaceExistingCallback && pipe.type !== 'CallExpressionKw') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const result = replaceExistingCallback([
         {
@@ -463,10 +437,11 @@ export const line: SketchLineHelper = {
       }
     }
 
-    const callExp = createCallExpression('line', [
-      createArrayExpression([newXVal, newYVal]),
-      createPipeSubstitution(),
-    ])
+    const callExp = createCallExpressionStdLibKw(
+      'line',
+      null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+      [createLabeledArg(ARG_END, createArrayExpression([newXVal, newYVal]))]
+    )
     if (pipe.type === 'PipeExpression') {
       pipe.body = [...pipe.body, callExp]
       return {
@@ -474,7 +449,7 @@ export const line: SketchLineHelper = {
         pathToNode: [
           ...pathToNode,
           ['body', 'PipeExpression'],
-          [pipe.body.length - 1, 'CallExpression'],
+          [pipe.body.length - 1, 'CallExpressionKw'],
         ],
       }
     } else {
@@ -489,7 +464,7 @@ export const line: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
 
@@ -498,22 +473,166 @@ export const line: SketchLineHelper = {
       createLiteral(roundOff(to[1] - from[1], 2)),
     ])
 
-    if (callExpression.arguments?.[0].type === 'ObjectExpression') {
-      mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
+    mutateKwArg(ARG_END, callExpression, toArrExp)
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp, ...args) =>
+    commonConstraintInfoHelper(
+      callExp,
+      ['xRelative', 'yRelative'],
+      'line',
+      [{ arrayInput: 0 }, { arrayInput: 1 }],
+      ...args
+    ),
+}
+
+export const lineTo: SketchLineHelperKw = {
+  add: ({
+    node,
+    previousProgramMemory,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    spliceBetween,
+  }) => {
+    if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const to = segmentInput.to
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<PipeExpression | CallExpressionKw>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
+    const { node: pipe } = nodeMeta
+    const nodeMeta2 = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
+    if (err(nodeMeta2)) return nodeMeta2
+    const { node: varDec } = nodeMeta2
+
+    const newXVal = createLiteral(roundOff(to[0], 2))
+    const newYVal = createLiteral(roundOff(to[1], 2))
+
+    if (
+      spliceBetween &&
+      !replaceExistingCallback &&
+      pipe.type === 'PipeExpression'
+    ) {
+      const callExp = createCallExpressionStdLibKw(
+        'line',
+        null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+        [
+          createLabeledArg(
+            ARG_END_ABSOLUTE,
+            createArrayExpression([newXVal, newYVal])
+          ),
+        ]
+      )
+      const pathToNodeIndex = pathToNode.findIndex(
+        (x) => x[1] === 'PipeExpression'
+      )
+      const pipeIndex = pathToNode[pathToNodeIndex + 1][0]
+      if (typeof pipeIndex === 'undefined' || typeof pipeIndex === 'string') {
+        return new Error('pipeIndex is undefined')
+      }
+      pipe.body = [
+        ...pipe.body.slice(0, pipeIndex),
+        callExp,
+        ...pipe.body.slice(pipeIndex),
+      ]
+      return {
+        modifiedAst: _node,
+        pathToNode,
+      }
+    }
+
+    if (replaceExistingCallback && pipe.type !== 'CallExpressionKw') {
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      const result = replaceExistingCallback([
+        {
+          type: 'arrayItem',
+          index: 0,
+          argType: 'xRelative',
+          expr: newXVal,
+        },
+        {
+          type: 'arrayItem',
+          index: 1,
+          argType: 'yRelative',
+          expr: newYVal,
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode: [...pathToNode],
+        valueUsedInTransform,
+      }
+    }
+
+    const callExp = createCallExpressionStdLibKw(
+      'line',
+      null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+      [
+        createLabeledArg(
+          ARG_END_ABSOLUTE,
+          createArrayExpression([newXVal, newYVal])
+        ),
+      ]
+    )
+    if (pipe.type === 'PipeExpression') {
+      pipe.body = [...pipe.body, callExp]
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode,
+          ['body', 'PipeExpression'],
+          [pipe.body.length - 1, 'CallExpressionKw'],
+        ],
+      }
     } else {
-      mutateArrExp(callExpression.arguments?.[0], toArrExp)
+      varDec.init = createPipeExpression([varDec.init, callExp])
     }
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+    const { node: callExpression } = nodeMeta
+
+    const toArrExp = createArrayExpression([
+      createLiteral(roundOff(to[0] - from[0], 2)),
+      createLiteral(roundOff(to[1] - from[1], 2)),
+    ])
+
+    mutateKwArg(ARG_END_ABSOLUTE, callExpression, toArrExp)
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
       callExp,
-      ['xRelative', 'yRelative'],
+      ['xAbsolute', 'yAbsolute'],
       'line',
       [{ arrayInput: 0 }, { arrayInput: 1 }],
       ...args
@@ -1835,6 +1954,7 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
           startNodes: [],
           nonCodeNodes: [],
         },
+        trivia: [],
       },
       pathToNode,
     }
@@ -1855,8 +1975,6 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
 }
 
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
-  line,
-  lineTo,
   xLine,
   yLine,
   xLineTo,
@@ -1869,6 +1987,11 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineThatIntersects,
   tangentialArcTo,
   circle,
+} as const
+
+export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
+  line,
+  lineTo,
 } as const
 
 export function changeSketchArguments(
@@ -1890,12 +2013,16 @@ export function changeSketchArguments(
     sourceRangeOrPath.type === 'sourceRange'
       ? getNodePathFromSourceRange(_node, sourceRangeOrPath.sourceRange)
       : sourceRangeOrPath.pathToNode
-  const nodeMeta = getNodeFromPath<CallExpression>(_node, thePath)
+  const nodeMeta = getNodeFromPath<CallExpression | CallExpressionKw>(
+    _node,
+    thePath
+  )
   if (err(nodeMeta)) return nodeMeta
 
   const { node: callExpression, shallowPath } = nodeMeta
 
-  if (callExpression?.callee?.name in sketchLineHelperMap) {
+  const fnName = callExpression?.callee?.name
+  if (fnName in sketchLineHelperMap) {
     const { updateArgs } = sketchLineHelperMap[callExpression.callee.name]
     if (!updateArgs) {
       return new Error('not a sketch line helper')
@@ -1908,8 +2035,25 @@ export function changeSketchArguments(
       input,
     })
   }
+  if (fnName in sketchLineHelperMapKw) {
+    const isAbsolute =
+      callExpression.type === 'CallExpressionKw' &&
+      findKwArg('endAbsolute', callExpression) !== undefined
+    const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
+    const { updateArgs } = sketchLineHelperMapKw[correctFnName]
+    if (!updateArgs) {
+      return new Error('not a sketch line keyword helper')
+    }
 
-  return new Error(`not a sketch line helper: ${callExpression?.callee?.name}`)
+    return updateArgs({
+      node: _node,
+      previousProgramMemory: programMemory,
+      pathToNode: shallowPath,
+      input,
+    })
+  }
+
+  return new Error(`not a sketch line helper: ${fnName}`)
 }
 
 export function getConstraintInfo(
@@ -1920,6 +2064,22 @@ export function getConstraintInfo(
   const fnName = callExpression?.callee?.name || ''
   if (!(fnName in sketchLineHelperMap)) return []
   return sketchLineHelperMap[fnName].getConstraintInfo(
+    callExpression,
+    code,
+    pathToNode
+  )
+}
+
+export function getConstraintInfoKw(
+  callExpression: Node<CallExpressionKw>,
+  code: string,
+  pathToNode: PathToNode
+): ConstrainInfo[] {
+  const fnName = callExpression?.callee?.name || ''
+  const isAbsolute = findKwArg('endAbsolute', callExpression) !== undefined
+  if (!(fnName in sketchLineHelperMapKw)) return []
+  const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
+  return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
     callExpression,
     code,
     pathToNode
@@ -1973,9 +2133,10 @@ export function addNewSketchLn({
     }
   | Error {
   const node = structuredClone(_node)
-  const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
+  const { add, updateArgs } =
+    sketchLineHelperMap?.[fnName] || sketchLineHelperMapKw?.[fnName] || {}
   if (!add || !updateArgs) {
-    return new Error('not a sketch line helper')
+    return new Error(`${fnName} is not a sketch line helper`)
   }
 
   getNodeFromPath<Node<VariableDeclarator>>(
@@ -1983,7 +2144,7 @@ export function addNewSketchLn({
     pathToNode,
     'VariableDeclarator'
   )
-  getNodeFromPath<Node<PipeExpression | CallExpression>>(
+  getNodeFromPath<Node<PipeExpression | CallExpression | CallExpressionKw>>(
     node,
     pathToNode,
     'PipeExpression'
@@ -2005,7 +2166,7 @@ export function addCallExpressionsToPipe({
   node: Node<Program>
   programMemory: ProgramMemory
   pathToNode: PathToNode
-  expressions: Node<CallExpression>[]
+  expressions: Node<CallExpression | CallExpressionKw>[]
 }) {
   const _node = { ...node }
   const pipeExpression = getNodeFromPath<Node<PipeExpression>>(
@@ -2031,9 +2192,7 @@ export function addCloseToPipe({
   pathToNode: PathToNode
 }) {
   const _node = { ...node }
-  const closeExpression = createCallExpression('close', [
-    createPipeSubstitution(),
-  ])
+  const closeExpression = createCallExpressionStdLibKw('close', null, [])
   const pipeExpression = getNodeFromPath<PipeExpression>(
     _node,
     pathToNode,
@@ -2076,7 +2235,10 @@ export function replaceSketchLine({
   }
   const _node = { ...node }
 
-  const { add } = sketchLineHelperMap[fnName]
+  const { add } =
+    sketchLineHelperMap[fnName] === undefined
+      ? sketchLineHelperMapKw[fnName]
+      : sketchLineHelperMap[fnName]
   const addRetVal = add({
     node: _node,
     previousProgramMemory: programMemory,
@@ -2115,7 +2277,7 @@ export function replaceSketchLine({
  */
 function addTagToChamfer(
   tagInfo: AddTagInfo,
-  edgeCutMeta: EdgeCutInfo | null
+  edgeCutMeta: EdgeCutInfo
 ):
   | {
       modifiedAst: Node<Program>
@@ -2250,10 +2412,19 @@ export function addTagForSketchOnFace(
     }
   | Error {
   if (expressionName === 'close') {
-    return addTag(1)(tagInfo)
+    return addTagKw()(tagInfo)
   }
   if (expressionName === 'chamfer') {
+    if (edgeCutMeta === null) {
+      return new Error(
+        'Cannot add tag to chamfer because no edge cut was provided'
+      )
+    }
     return addTagToChamfer(tagInfo, edgeCutMeta)
+  }
+  if (expressionName in sketchLineHelperMapKw) {
+    const { addTag } = sketchLineHelperMapKw[expressionName]
+    return addTag(tagInfo)
   }
   if (expressionName in sketchLineHelperMap) {
     const { addTag } = sketchLineHelperMap[expressionName]
@@ -2321,6 +2492,66 @@ function addTag(tagIndex = 2): addTagFn {
   }
 }
 
+function addTagKw(): addTagFn {
+  return ({ node, pathToNode }) => {
+    const _node = { ...node }
+    // We have to allow for the possibility that the path is actually to a call expression.
+    // That's because if the parser reads something like `close()`, it doesn't know if this
+    // is a keyword or positional call.
+    // In fact, even something like `close(%)` could be either (because we allow 1 unlabeled
+    // starting param).
+    const callExpr = getNodeFromPath<Node<CallExpressionKw | CallExpression>>(
+      _node,
+      pathToNode,
+      ['CallExpressionKw', 'CallExpression']
+    )
+    if (err(callExpr)) return callExpr
+
+    // If the original node is a call expression, we'll need to change it to a call with keyword args.
+    const primaryCallExp: CallExpressionKw =
+      callExpr.node.type === 'CallExpressionKw'
+        ? callExpr.node
+        : {
+            type: 'CallExpressionKw',
+            callee: callExpr.node.callee,
+            unlabeled: callExpr.node.arguments.length
+              ? callExpr.node.arguments[0]
+              : null,
+            arguments: [],
+          }
+    const tagArg = findKwArg(ARG_TAG, primaryCallExp)
+    const tagDeclarator =
+      tagArg || createTagDeclarator(findUniqueName(_node, 'seg', 2))
+    const isTagExisting = !!tagArg
+    if (!isTagExisting) {
+      const labeledArg = createLabeledArg(ARG_TAG, tagDeclarator)
+      primaryCallExp.arguments.push(labeledArg)
+    }
+
+    // If we changed the node, we must replace the old node with the new node in the AST.
+    const mustReplaceNode = primaryCallExp.type !== callExpr.node.type
+    if (mustReplaceNode) {
+      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, {
+        ...primaryCallExp,
+        start: callExpr.node.start,
+        end: callExpr.node.end,
+        moduleId: callExpr.node.moduleId,
+        trivia: callExpr.node.trivia,
+      })
+    }
+
+    if ('value' in tagDeclarator) {
+      // Now TypeScript knows tagDeclarator has a value property
+      return {
+        modifiedAst: _node,
+        tag: String(tagDeclarator.value),
+      }
+    } else {
+      return new Error('Unable to assign tag without value')
+    }
+  }
+}
+
 export function getYComponent(
   angleDegree: number,
   xComponent: number
@@ -2349,12 +2580,21 @@ function getFirstArgValuesForXYFns(callExpression: CallExpression):
   | Error {
   // used for lineTo, line
   const firstArg = callExpression.arguments[0]
-  if (firstArg.type === 'ArrayExpression') {
-    return { val: [firstArg.elements[0], firstArg.elements[1]] }
+  return getValuesForXYFns(firstArg)
+}
+
+function getValuesForXYFns(arg: Expr):
+  | {
+      val: [Expr, Expr]
+      tag?: Expr
+    }
+  | Error {
+  if (arg.type === 'ArrayExpression') {
+    return { val: [arg.elements[0], arg.elements[1]] }
   }
-  if (firstArg.type === 'ObjectExpression') {
-    const to = firstArg.properties.find((p) => p.key.name === 'to')?.value
-    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
+  if (arg.type === 'ObjectExpression') {
+    const to = arg.properties.find((p) => p.key.name === 'to')?.value
+    const tag = arg.properties.find((p) => p.key.name === 'tag')?.value
     if (to?.type === 'ArrayExpression') {
       const [x, y] = to.elements
       return { val: [x, y], tag }
@@ -2471,6 +2711,48 @@ const getAngledLineThatIntersects = (
   return new Error('expected ArrayExpression or ObjectExpression')
 }
 
+/**
+Given a line call, return whether it's using absolute or relative end.
+*/
+export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
+  const name = lineCall?.callee?.name
+  switch (name) {
+    case 'line':
+      if (findKwArg(ARG_END, lineCall) !== undefined) {
+        return false
+      }
+      if (findKwArg(ARG_END_ABSOLUTE, lineCall) !== undefined) {
+        return true
+      }
+      return new Error(
+        `line call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
+      )
+  }
+  return new Error(`Unknown sketch function ${name}`)
+}
+
+/**
+Get the argument corresponding to 'end' or 'endAbsolute' or wherever the line actually ends.
+*/
+export function getArgForEnd(lineCall: CallExpressionKw):
+  | {
+      val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
+      tag?: Expr
+    }
+  | Error {
+  const name = lineCall?.callee?.name
+  let arg
+  if (name === 'line') {
+    arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], lineCall)
+  } else {
+    return new Error('cannot find end of line function: ' + name)
+  }
+  if (arg === undefined) {
+    return new Error("no end of the line was found in fn '" + name + "'")
+  }
+  return getValuesForXYFns(arg)
+}
+
 export function getFirstArg(callExp: CallExpression):
   | {
       val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
@@ -2478,9 +2760,6 @@ export function getFirstArg(callExp: CallExpression):
     }
   | Error {
   const name = callExp?.callee?.name
-  if (['lineTo', 'line'].includes(name)) {
-    return getFirstArgValuesForXYFns(callExp)
-  }
   if (
     [
       'angledLine',

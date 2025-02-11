@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing i_shape.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -37,7 +38,7 @@ description: Program memory after executing i_shape.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     438,
-                    475,
+                    478,
                     0
                   ]
                 },
@@ -56,8 +57,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    481,
-                    539,
+                    484,
+                    542,
                     0
                   ]
                 },
@@ -81,8 +82,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    545,
-                    575,
+                    548,
+                    578,
                     0
                   ]
                 },
@@ -101,8 +102,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    581,
-                    640,
+                    584,
+                    643,
                     0
                   ]
                 },
@@ -126,8 +127,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    646,
-                    705,
+                    649,
+                    708,
                     0
                   ]
                 },
@@ -146,8 +147,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    711,
-                    770,
+                    714,
+                    773,
                     0
                   ]
                 },
@@ -171,8 +172,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    776,
-                    828,
+                    779,
+                    831,
                     0
                   ]
                 },
@@ -191,8 +192,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    834,
-                    892,
+                    837,
+                    895,
                     0
                   ]
                 },
@@ -216,8 +217,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    898,
-                    934,
+                    901,
+                    937,
                     0
                   ]
                 },
@@ -236,8 +237,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    940,
-                    998,
+                    943,
+                    1001,
                     0
                   ]
                 },
@@ -261,8 +262,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1004,
-                    1034,
+                    1007,
+                    1037,
                     0
                   ]
                 },
@@ -281,8 +282,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1040,
-                    1099,
+                    1043,
+                    1102,
                     0
                   ]
                 },
@@ -306,8 +307,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1105,
-                    1168,
+                    1108,
+                    1171,
                     0
                   ]
                 },
@@ -326,8 +327,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1174,
-                    1234,
+                    1177,
+                    1237,
                     0
                   ]
                 },
@@ -351,8 +352,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1240,
-                    1273,
+                    1243,
+                    1276,
                     0
                   ]
                 },
@@ -371,8 +372,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1279,
-                    1338,
+                    1282,
+                    1341,
                     0
                   ]
                 },
@@ -396,8 +397,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1344,
-                    1380,
+                    1347,
+                    1383,
                     0
                   ]
                 },
@@ -416,8 +417,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1386,
-                    1445,
+                    1389,
+                    1448,
                     0
                   ]
                 },
@@ -441,8 +442,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1451,
-                    1506,
+                    1454,
+                    1509,
                     0
                   ]
                 },
@@ -461,8 +462,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1512,
-                    1572,
+                    1515,
+                    1575,
                     0
                   ]
                 },
@@ -486,8 +487,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1578,
-                    1702,
+                    1581,
+                    1705,
                     0
                   ]
                 },
@@ -506,8 +507,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1708,
-                    1768,
+                    1711,
+                    1771,
                     0
                   ]
                 },
@@ -531,8 +532,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1774,
-                    1807,
+                    1777,
+                    1810,
                     0
                   ]
                 },
@@ -551,8 +552,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1813,
-                    1872,
+                    1816,
+                    1875,
                     0
                   ]
                 },
@@ -576,8 +577,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1878,
-                    1886,
+                    1881,
+                    1889,
                     0
                   ]
                 },
@@ -596,6 +597,7 @@ description: Program memory after executing i_shape.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -641,6 +643,8 @@ description: Program memory after executing i_shape.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -739,13 +743,14 @@ description: Program memory after executing i_shape.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   438,
-                  475,
+                  478,
                   0
                 ],
                 "tag": null,
@@ -755,8 +760,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  481,
-                  539,
+                  484,
+                  542,
                   0
                 ],
                 "tag": null,
@@ -766,8 +771,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  545,
-                  575,
+                  548,
+                  578,
                   0
                 ],
                 "tag": null,
@@ -777,8 +782,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  581,
-                  640,
+                  584,
+                  643,
                   0
                 ],
                 "tag": null,
@@ -788,8 +793,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  646,
-                  705,
+                  649,
+                  708,
                   0
                 ],
                 "tag": null,
@@ -799,8 +804,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  711,
-                  770,
+                  714,
+                  773,
                   0
                 ],
                 "tag": null,
@@ -810,8 +815,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  776,
-                  828,
+                  779,
+                  831,
                   0
                 ],
                 "tag": null,
@@ -821,8 +826,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  834,
-                  892,
+                  837,
+                  895,
                   0
                 ],
                 "tag": null,
@@ -832,8 +837,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  898,
-                  934,
+                  901,
+                  937,
                   0
                 ],
                 "tag": null,
@@ -843,8 +848,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  940,
-                  998,
+                  943,
+                  1001,
                   0
                 ],
                 "tag": null,
@@ -854,8 +859,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1004,
-                  1034,
+                  1007,
+                  1037,
                   0
                 ],
                 "tag": null,
@@ -865,8 +870,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1040,
-                  1099,
+                  1043,
+                  1102,
                   0
                 ],
                 "tag": null,
@@ -876,8 +881,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1105,
-                  1168,
+                  1108,
+                  1171,
                   0
                 ],
                 "tag": null,
@@ -887,8 +892,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1174,
-                  1234,
+                  1177,
+                  1237,
                   0
                 ],
                 "tag": null,
@@ -898,8 +903,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1240,
-                  1273,
+                  1243,
+                  1276,
                   0
                 ],
                 "tag": null,
@@ -909,8 +914,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1279,
-                  1338,
+                  1282,
+                  1341,
                   0
                 ],
                 "tag": null,
@@ -920,8 +925,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1344,
-                  1380,
+                  1347,
+                  1383,
                   0
                 ],
                 "tag": null,
@@ -931,8 +936,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1386,
-                  1445,
+                  1389,
+                  1448,
                   0
                 ],
                 "tag": null,
@@ -942,8 +947,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1451,
-                  1506,
+                  1454,
+                  1509,
                   0
                 ],
                 "tag": null,
@@ -953,8 +958,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1512,
-                  1572,
+                  1515,
+                  1575,
                   0
                 ],
                 "tag": null,
@@ -964,8 +969,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1578,
-                  1702,
+                  1581,
+                  1705,
                   0
                 ],
                 "tag": null,
@@ -975,8 +980,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1708,
-                  1768,
+                  1711,
+                  1771,
                   0
                 ],
                 "tag": null,
@@ -986,8 +991,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1774,
-                  1807,
+                  1777,
+                  1810,
                   0
                 ],
                 "tag": null,
@@ -997,8 +1002,8 @@ description: Program memory after executing i_shape.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1813,
-                  1872,
+                  1816,
+                  1875,
                   0
                 ],
                 "tag": null,
@@ -1014,7 +1019,7 @@ description: Program memory after executing i_shape.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       438,
-                      475,
+                      478,
                       0
                     ]
                   },
@@ -1033,8 +1038,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      481,
-                      539,
+                      484,
+                      542,
                       0
                     ]
                   },
@@ -1058,8 +1063,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      545,
-                      575,
+                      548,
+                      578,
                       0
                     ]
                   },
@@ -1078,8 +1083,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      581,
-                      640,
+                      584,
+                      643,
                       0
                     ]
                   },
@@ -1103,8 +1108,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      646,
-                      705,
+                      649,
+                      708,
                       0
                     ]
                   },
@@ -1123,8 +1128,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      711,
-                      770,
+                      714,
+                      773,
                       0
                     ]
                   },
@@ -1148,8 +1153,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      776,
-                      828,
+                      779,
+                      831,
                       0
                     ]
                   },
@@ -1168,8 +1173,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      834,
-                      892,
+                      837,
+                      895,
                       0
                     ]
                   },
@@ -1193,8 +1198,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      898,
-                      934,
+                      901,
+                      937,
                       0
                     ]
                   },
@@ -1213,8 +1218,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      940,
-                      998,
+                      943,
+                      1001,
                       0
                     ]
                   },
@@ -1238,8 +1243,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1004,
-                      1034,
+                      1007,
+                      1037,
                       0
                     ]
                   },
@@ -1258,8 +1263,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1040,
-                      1099,
+                      1043,
+                      1102,
                       0
                     ]
                   },
@@ -1283,8 +1288,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1105,
-                      1168,
+                      1108,
+                      1171,
                       0
                     ]
                   },
@@ -1303,8 +1308,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1174,
-                      1234,
+                      1177,
+                      1237,
                       0
                     ]
                   },
@@ -1328,8 +1333,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1240,
-                      1273,
+                      1243,
+                      1276,
                       0
                     ]
                   },
@@ -1348,8 +1353,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1279,
-                      1338,
+                      1282,
+                      1341,
                       0
                     ]
                   },
@@ -1373,8 +1378,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1344,
-                      1380,
+                      1347,
+                      1383,
                       0
                     ]
                   },
@@ -1393,8 +1398,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1386,
-                      1445,
+                      1389,
+                      1448,
                       0
                     ]
                   },
@@ -1418,8 +1423,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1451,
-                      1506,
+                      1454,
+                      1509,
                       0
                     ]
                   },
@@ -1438,8 +1443,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1512,
-                      1572,
+                      1515,
+                      1575,
                       0
                     ]
                   },
@@ -1463,8 +1468,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1578,
-                      1702,
+                      1581,
+                      1705,
                       0
                     ]
                   },
@@ -1483,8 +1488,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1708,
-                      1768,
+                      1711,
+                      1771,
                       0
                     ]
                   },
@@ -1508,8 +1513,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1774,
-                      1807,
+                      1777,
+                      1810,
                       0
                     ]
                   },
@@ -1528,8 +1533,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1813,
-                      1872,
+                      1816,
+                      1875,
                       0
                     ]
                   },
@@ -1553,8 +1558,8 @@ description: Program memory after executing i_shape.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1878,
-                      1886,
+                      1881,
+                      1889,
                       0
                     ]
                   },
@@ -1573,6 +1578,7 @@ description: Program memory after executing i_shape.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -1618,6 +1624,8 @@ description: Program memory after executing i_shape.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1671,8 +1679,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1923,
-                    1936,
+                    1926,
+                    1939,
                     0
                   ]
                 },
@@ -1691,8 +1699,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1942,
-                    2000,
+                    1945,
+                    2003,
                     0
                   ]
                 },
@@ -1716,8 +1724,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2006,
-                    2042,
+                    2009,
+                    2045,
                     0
                   ]
                 },
@@ -1736,8 +1744,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2048,
-                    2107,
+                    2051,
+                    2110,
                     0
                   ]
                 },
@@ -1761,8 +1769,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2113,
-                    2127,
+                    2116,
+                    2130,
                     0
                   ]
                 },
@@ -1781,8 +1789,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2133,
-                    2193,
+                    2136,
+                    2196,
                     0
                   ]
                 },
@@ -1806,8 +1814,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2199,
-                    2238,
+                    2202,
+                    2241,
                     0
                   ]
                 },
@@ -1826,8 +1834,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2244,
-                    2303,
+                    2247,
+                    2306,
                     0
                   ]
                 },
@@ -1851,8 +1859,8 @@ description: Program memory after executing i_shape.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2309,
-                    2317,
+                    2312,
+                    2320,
                     0
                   ]
                 },
@@ -1871,6 +1879,7 @@ description: Program memory after executing i_shape.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -1910,20 +1919,22 @@ description: Program memory after executing i_shape.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1896,
-                  1917,
+                  1899,
+                  1920,
                   0
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
             "__meta": [
               {
                 "sourceRange": [
-                  1896,
-                  1917,
+                  1899,
+                  1920,
                   0
                 ]
               }

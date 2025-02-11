@@ -38,6 +38,8 @@ export type ModelingCommandSchema = {
     machine: components['schemas']['MachineInfoResponse']
   }
   Extrude: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
@@ -69,8 +71,18 @@ export type ModelingCommandSchema = {
     length: KclCommandValue
   }
   'Offset plane': {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
     plane: Selections
     distance: KclCommandValue
+  }
+  Helix: {
+    revolutions: KclCommandValue
+    angleStart: KclCommandValue
+    counterClockWise: boolean
+    radius: KclCommandValue
+    axis: string
+    length: KclCommandValue
   }
   'change tool': {
     tool: SketchTool
@@ -279,6 +291,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'extrude',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
@@ -415,6 +434,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Offset a plane.',
     icon: 'plane',
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       plane: {
         inputType: 'selection',
         selectionTypes: ['plane'],
@@ -423,6 +449,53 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
       },
       distance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  Helix: {
+    description: 'Create a helix or spiral in 3D about an axis.',
+    icon: 'helix',
+    status: 'development',
+    needsReview: true,
+    args: {
+      revolutions: {
+        inputType: 'kcl',
+        defaultValue: '1',
+        required: true,
+        warningMessage:
+          'The helix workflow is new and under tested. Please break it and report issues.',
+      },
+      angleStart: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
+      counterClockWise: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'True', isCurrent: false, value: true },
+          { name: 'False', isCurrent: true, value: false },
+        ],
+      },
+      radius: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      axis: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+          { name: 'Z Axis', isCurrent: false, value: 'Z' },
+        ],
+      },
+      length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,

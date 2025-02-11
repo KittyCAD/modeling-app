@@ -3,7 +3,6 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -46,7 +45,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
+    - uses: actions/create-github-app-token@v1
+      id: app-token
+      with:
+        app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+        private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
     - uses: actions/checkout@v4
+      with:
+        token: ${{ steps.app-token.outputs.token }}
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
@@ -126,20 +133,20 @@ jobs:
     - name: build web
       shell: bash
       run: yarn tronb:vite:dev
-    # - name: Run ubuntu/chrome snapshots
-    #   if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
-    #   shell: bash
-    #   # TODO: break this in its own job, for now it's not slowing down the overall execution as ubuntu is the quickest,
-    #   # but we could do better. This forces a large 1/1 shard of all 20 snapshot tests that runs in about 3 minutes.
-    #   run: |
-    #     PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=1/1
-    #   env:
-    #     CI: true
-    #     NODE_ENV: development
-    #     VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    #     VITE_KC_SKIP_AUTH: true
-    #     token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    #     snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - name: Run ubuntu/chrome snapshots
+      if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
+      shell: bash
+      # TODO: break this in its own job, for now it's not slowing down the overall execution as ubuntu is the quickest,
+      # but we could do better. This forces a large 1/1 shard of all 20 snapshot tests that runs in about 3 minutes.
+      run: |
+        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=1/1
+      env:
+        CI: true
+        NODE_ENV: development
+        VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        VITE_KC_SKIP_AUTH: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
@@ -153,29 +160,29 @@ jobs:
       continue-on-error: true
       run: rm -r test-results
     - name: check for changes
-      if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
+      if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 && github.ref != 'refs/heads/main' }}
       shell: bash
       id: git-check
       run: |
-          git add .
+          git add e2e/playwright/snapshot-tests.spec.ts-snapshots
           if git status | grep -q "Changes to be committed"
           then echo "modified=true" >> $GITHUB_OUTPUT
           else echo "modified=false" >> $GITHUB_OUTPUT
           fi
-    # - name: Commit changes, if any
-    #   if: steps.git-check.outputs.modified == 'true'
-    #   shell: bash
-    #   run: |
-    #     git add .
-    #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
-    #     git config --local user.name "github-actions[bot]"
-    #     git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-    #     git fetch origin
-    #     echo ${{ github.head_ref }}
-    #     git checkout ${{ github.head_ref }}
-    #     git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
-    #     git push
-    #     git push origin ${{ github.head_ref }}
+    - name: Commit changes, if any
+      if: steps.git-check.outputs.modified == 'true'
+      shell: bash
+      run: |
+        git add e2e/playwright/snapshot-tests.spec.ts-snapshots
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        git fetch origin
+        echo ${{ github.head_ref }}
+        git checkout ${{ github.head_ref }}
+        git commit -m "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
+        git push
+        git push origin ${{ github.head_ref }}
     # only upload artifacts if there's actually changes
     - uses: actions/upload-artifact@v4
       if: steps.git-check.outputs.modified == 'true'

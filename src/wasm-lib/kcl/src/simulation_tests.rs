@@ -7,7 +7,7 @@ use crate::{
     exec::ArtifactCommand,
     execution::{ArtifactGraph, Operation},
     parsing::ast::types::{Node, Program},
-    source_range::ModuleId,
+    ModuleId,
 };
 
 /// Deserialize the data from a snapshot.
@@ -94,6 +94,11 @@ async fn execute(test_name: &str, render_to_png: bool) {
     .await;
     match exec_res {
         Ok((exec_state, png)) => {
+            let fail_path_str = format!("tests/{test_name}/execution_error.snap");
+            let fail_path = Path::new(&fail_path_str);
+            if std::fs::exists(fail_path).unwrap() {
+                panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl/{fail_path_str}")
+            }
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
@@ -114,6 +119,9 @@ async fn execute(test_name: &str, render_to_png: bool) {
             );
         }
         Err(e) => {
+            let ok_path_str = format!("tests/{test_name}/program_memory.snap");
+            let ok_path = Path::new(&ok_path_str);
+            let previously_passed = std::fs::exists(ok_path).unwrap();
             match e.error {
                 crate::errors::ExecError::Kcl(error) => {
                     // Snapshot the KCL error with a fancy graphical report.
@@ -125,6 +133,10 @@ async fn execute(test_name: &str, render_to_png: bool) {
                         kcl_source: read("input.kcl", test_name),
                     };
                     let report = miette::Report::new(report);
+                    if previously_passed {
+                        eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl/{ok_path_str} and other associated passing artifacts");
+                        panic!("{report:?}");
+                    }
                     let report = format!("{:?}", report);
 
                     assert_snapshot(test_name, "Error from executing", || {
@@ -1929,5 +1941,26 @@ mod array_elem_pop_fail {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, false).await
+    }
+}
+mod helix_simple {
+    const TEST_NAME: &str = "helix_simple";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
     }
 }

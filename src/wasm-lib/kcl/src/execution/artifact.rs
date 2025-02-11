@@ -8,10 +8,12 @@ use kittycad_modeling_cmds::{
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
     EnableSketchMode, ModelingCmd, SketchModeDisable,
 };
+use schemars::JsonSchema;
 use serde::{ser::SerializeSeq, Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    errors::KclErrorDetails,
     parsing::ast::types::{Node, Program},
     KclError, SourceRange,
 };
@@ -36,7 +38,7 @@ pub struct ArtifactCommand {
     pub command: ModelingCmd,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Artifact.ts")]
 pub struct ArtifactId(Uuid);
 
@@ -269,6 +271,17 @@ pub struct EdgeCutEdge {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct Helix {
+    pub id: ArtifactId,
+    /// The axis of the helix.  Currently this is always an edge ID, but we may
+    /// add axes to the graph.
+    pub axis_id: Option<ArtifactId>,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
     Plane(Plane),
@@ -293,6 +306,7 @@ pub enum Artifact {
     SweepEdge(SweepEdge),
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
+    Helix(Helix),
 }
 
 impl Artifact {
@@ -310,6 +324,7 @@ impl Artifact {
             Artifact::SweepEdge(a) => a.id,
             Artifact::EdgeCut(a) => a.id,
             Artifact::EdgeCutEdge(a) => a.id,
+            Artifact::Helix(a) => a.id,
         }
     }
 
@@ -329,6 +344,7 @@ impl Artifact {
             Artifact::SweepEdge(_) => None,
             Artifact::EdgeCut(a) => Some(&a.code_ref),
             Artifact::EdgeCutEdge(_) => None,
+            Artifact::Helix(a) => Some(&a.code_ref),
         }
     }
 
@@ -348,6 +364,7 @@ impl Artifact {
             Artifact::SweepEdge(_) => Some(new),
             Artifact::EdgeCut(a) => a.merge(new),
             Artifact::EdgeCutEdge(_) => Some(new),
+            Artifact::Helix(_) => Some(new),
         }
     }
 }
@@ -442,6 +459,12 @@ impl EdgeCut {
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactGraph {
     map: IndexMap<ArtifactId, Artifact>,
+}
+
+impl ArtifactGraph {
+    pub fn len(&self) -> usize {
+        self.map.len()
+    }
 }
 
 pub(super) fn build_artifact_graph(
@@ -595,9 +618,12 @@ fn artifacts_to_update(
         }
         ModelingCmd::EnableSketchMode(_) => {
             let current_plane_id = current_plane_id.ok_or_else(|| {
-                KclError::internal(format!(
-                    "Expected a current plane ID when processing EnableSketchMode command, but we have none: {id:?}"
-                ))
+                KclError::Internal(KclErrorDetails {
+                    message: format!(
+                        "Expected a current plane ID when processing EnableSketchMode command, but we have none: {id:?}"
+                    ),
+                    source_ranges: vec![range],
+                })
             })?;
             let existing_plane = artifacts.get(&ArtifactId::new(current_plane_id));
             match existing_plane {
@@ -626,9 +652,12 @@ fn artifacts_to_update(
         ModelingCmd::StartPath(_) => {
             let mut return_arr = Vec::new();
             let current_plane_id = current_plane_id.ok_or_else(|| {
-                KclError::internal(format!(
-                    "Expected a current plane ID when processing StartPath command, but we have none: {id:?}"
-                ))
+                KclError::Internal(KclErrorDetails {
+                    message: format!(
+                        "Expected a current plane ID when processing StartPath command, but we have none: {id:?}"
+                    ),
+                    source_ranges: vec![range],
+                })
             })?;
             return_arr.push(Artifact::Path(Path {
                 id,
@@ -730,9 +759,10 @@ fn artifacts_to_update(
                 // TODO: Using the first one.  Make sure to revisit this
                 // choice, don't think it matters for now.
                 path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
-                    KclError::internal(format!(
-                        "Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"
-                    ))
+                    KclError::Internal(KclErrorDetails {
+                        message: format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
+                        source_ranges: vec![range],
+                    })
                 })?),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
@@ -772,9 +802,12 @@ fn artifacts_to_update(
                 };
                 last_path = Some(path);
                 let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                    KclError::internal(format!(
-                        "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
-                    ))
+                    KclError::Internal(KclErrorDetails {
+                        message:format!(
+                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                        ),
+                        source_ranges: vec![range],
+                    })
                 })?;
                 return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
@@ -803,9 +836,12 @@ fn artifacts_to_update(
                         continue;
                     };
                     let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                        KclError::internal(format!(
-                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
-                        ))
+                        KclError::Internal(KclErrorDetails {
+                            message:format!(
+                                "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                            ),
+                            source_ranges: vec![range],
+                        })
                     })?;
                     return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
@@ -848,17 +884,23 @@ fn artifacts_to_update(
             let response_edge_id = match response {
                 OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(r) => {
                     let Some(edge_id) = r.edge else {
-                        return Err(KclError::internal(format!(
-                            "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: id={id:?}, {response:?}"
-                        )));
+                        return Err(KclError::Internal(KclErrorDetails {
+                            message:format!(
+                                "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: id={id:?}, {response:?}"
+                            ),
+                            source_ranges: vec![range],
+                        }));
                     };
                     edge_id.into()
                 }
                 OkModelingCmdResponse::Solid3dGetOppositeEdge(r) => r.edge.into(),
                 _ => {
-                    return Err(KclError::internal(format!(
-                        "Expected Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge response, but got: id={id:?}, {response:?}"
-                    )));
+                    return Err(KclError::Internal(KclErrorDetails {
+                        message:format!(
+                            "Expected Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge response, but got: id={id:?}, {response:?}"
+                        ),
+                        source_ranges: vec![range],
+                    }));
                 }
             };
 
@@ -895,6 +937,25 @@ fn artifacts_to_update(
             } else {
                 // TODO: Handle other types like SweepEdge.
             }
+            return Ok(return_arr);
+        }
+        ModelingCmd::EntityMakeHelixFromParams(_) => {
+            let return_arr = vec![Artifact::Helix(Helix {
+                id,
+                axis_id: None,
+                code_ref: CodeRef { range, path_to_node },
+            })];
+            return Ok(return_arr);
+        }
+        ModelingCmd::EntityMakeHelixFromEdge(helix) => {
+            let edge_id = ArtifactId::new(helix.edge_id);
+            let return_arr = vec![Artifact::Helix(Helix {
+                id,
+                axis_id: Some(edge_id),
+                code_ref: CodeRef { range, path_to_node },
+            })];
+            // We could add the reverse graph edge connecting from the edge to
+            // the helix here, but it's not useful right now.
             return Ok(return_arr);
         }
         _ => {}

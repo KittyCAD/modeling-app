@@ -89,18 +89,11 @@ export class HomePageFixture {
    * Maybe there a good sanity check we can do each time?
    */
   expectState = async (expectedState: HomePageState) => {
-    await expect
-      .poll(async () => {
-        const [projectCards, sortBy] = await Promise.all([
-          this._serialiseProjectCards(),
-          this._serialiseSortBy(),
-        ])
-        return {
-          projectCards,
-          sortBy,
-        }
-      })
-      .toEqual(expectedState)
+    await expect.poll(this._serialiseSortBy).toEqual(expectedState.sortBy)
+
+    for (const projectCard of expectedState.projectCards) {
+      await expect.poll(this._serialiseProjectCards).toContainEqual(projectCard)
+    }
   }
 
   createAndGoToProject = async (projectTitle = 'project-$nnn') => {

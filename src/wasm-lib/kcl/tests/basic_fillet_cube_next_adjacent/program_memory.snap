@@ -31,18 +31,19 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   66,
-                  90,
+                  99,
                   0
                 ],
                 "tag": {
-                  "end": 89,
-                  "start": 83,
+                  "end": 98,
+                  "start": 92,
                   "type": "TagDeclarator",
                   "value": "thing"
                 },
@@ -52,13 +53,13 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  96,
-                  121,
+                  105,
+                  139,
                   0
                 ],
                 "tag": {
-                  "end": 120,
-                  "start": 113,
+                  "end": 138,
+                  "start": 131,
                   "type": "TagDeclarator",
                   "value": "thing1"
                 },
@@ -68,13 +69,13 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  127,
-                  153,
+                  145,
+                  180,
                   0
                 ],
                 "tag": {
-                  "end": 152,
-                  "start": 145,
+                  "end": 179,
+                  "start": 172,
                   "type": "TagDeclarator",
                   "value": "thing2"
                 },
@@ -84,13 +85,13 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  159,
-                  176,
+                  186,
+                  206,
                   0
                 ],
                 "tag": {
-                  "end": 175,
-                  "start": 168,
+                  "end": 205,
+                  "start": 198,
                   "type": "TagDeclarator",
                   "value": "thing3"
                 },
@@ -106,7 +107,7 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       66,
-                      90,
+                      99,
                       0
                     ]
                   },
@@ -115,8 +116,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 89,
-                    "start": 83,
+                    "end": 98,
+                    "start": 92,
                     "type": "TagDeclarator",
                     "value": "thing"
                   },
@@ -130,8 +131,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      96,
-                      121,
+                      105,
+                      139,
                       0
                     ]
                   },
@@ -140,8 +141,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                     10.0
                   ],
                   "tag": {
-                    "end": 120,
-                    "start": 113,
+                    "end": 138,
+                    "start": 131,
                     "type": "TagDeclarator",
                     "value": "thing1"
                   },
@@ -155,8 +156,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      127,
-                      153,
+                      145,
+                      180,
                       0
                     ]
                   },
@@ -165,8 +166,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                     10.0
                   ],
                   "tag": {
-                    "end": 152,
-                    "start": 145,
+                    "end": 179,
+                    "start": 172,
                     "type": "TagDeclarator",
                     "value": "thing2"
                   },
@@ -180,8 +181,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      159,
-                      176,
+                      186,
+                      206,
                       0
                     ]
                   },
@@ -190,8 +191,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 175,
-                    "start": 168,
+                    "end": 205,
+                    "start": 198,
                     "type": "TagDeclarator",
                     "value": "thing3"
                   },
@@ -205,6 +206,7 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -263,7 +265,7 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                         "id": "[uuid]",
                         "sourceRange": [
                           66,
-                          90,
+                          99,
                           0
                         ]
                       },
@@ -272,8 +274,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 89,
-                        "start": 83,
+                        "end": 98,
+                        "start": 92,
                         "type": "TagDeclarator",
                         "value": "thing"
                       },
@@ -288,12 +290,12 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                       "id": "[uuid]",
                       "sourceRange": [
                         66,
-                        90,
+                        99,
                         0
                       ],
                       "tag": {
-                        "end": 89,
-                        "start": 83,
+                        "end": 98,
+                        "start": 92,
                         "type": "TagDeclarator",
                         "value": "thing"
                       },
@@ -303,8 +305,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        83,
-                        89,
+                        92,
+                        98,
                         0
                       ]
                     }
@@ -321,8 +323,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          96,
-                          121,
+                          105,
+                          139,
                           0
                         ]
                       },
@@ -331,8 +333,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                         10.0
                       ],
                       "tag": {
-                        "end": 120,
-                        "start": 113,
+                        "end": 138,
+                        "start": 131,
                         "type": "TagDeclarator",
                         "value": "thing1"
                       },
@@ -346,13 +348,13 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        96,
-                        121,
+                        105,
+                        139,
                         0
                       ],
                       "tag": {
-                        "end": 120,
-                        "start": 113,
+                        "end": 138,
+                        "start": 131,
                         "type": "TagDeclarator",
                         "value": "thing1"
                       },
@@ -362,8 +364,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        113,
-                        120,
+                        131,
+                        138,
                         0
                       ]
                     }
@@ -380,8 +382,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          127,
-                          153,
+                          145,
+                          180,
                           0
                         ]
                       },
@@ -390,8 +392,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                         10.0
                       ],
                       "tag": {
-                        "end": 152,
-                        "start": 145,
+                        "end": 179,
+                        "start": 172,
                         "type": "TagDeclarator",
                         "value": "thing2"
                       },
@@ -405,13 +407,13 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        127,
-                        153,
+                        145,
+                        180,
                         0
                       ],
                       "tag": {
-                        "end": 152,
-                        "start": 145,
+                        "end": 179,
+                        "start": 172,
                         "type": "TagDeclarator",
                         "value": "thing2"
                       },
@@ -421,8 +423,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        145,
-                        152,
+                        172,
+                        179,
                         0
                       ]
                     }
@@ -439,8 +441,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          159,
-                          176,
+                          186,
+                          206,
                           0
                         ]
                       },
@@ -449,8 +451,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 175,
-                        "start": 168,
+                        "end": 205,
+                        "start": 198,
                         "type": "TagDeclarator",
                         "value": "thing3"
                       },
@@ -464,13 +466,13 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        159,
-                        176,
+                        186,
+                        206,
                         0
                       ],
                       "tag": {
-                        "end": 175,
-                        "start": 168,
+                        "end": 205,
+                        "start": 198,
                         "type": "TagDeclarator",
                         "value": "thing3"
                       },
@@ -480,14 +482,16 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        168,
-                        175,
+                        198,
+                        205,
                         0
                       ]
                     }
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -540,7 +544,7 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   66,
-                  90,
+                  99,
                   0
                 ]
               },
@@ -549,8 +553,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                 0.0
               ],
               "tag": {
-                "end": 89,
-                "start": 83,
+                "end": 98,
+                "start": 92,
                 "type": "TagDeclarator",
                 "value": "thing"
               },
@@ -565,12 +569,12 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
               "id": "[uuid]",
               "sourceRange": [
                 66,
-                90,
+                99,
                 0
               ],
               "tag": {
-                "end": 89,
-                "start": 83,
+                "end": 98,
+                "start": 92,
                 "type": "TagDeclarator",
                 "value": "thing"
               },
@@ -580,8 +584,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
           "__meta": [
             {
               "sourceRange": [
-                83,
-                89,
+                92,
+                98,
                 0
               ]
             }
@@ -599,8 +603,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  96,
-                  121,
+                  105,
+                  139,
                   0
                 ]
               },
@@ -609,8 +613,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                 10.0
               ],
               "tag": {
-                "end": 120,
-                "start": 113,
+                "end": 138,
+                "start": 131,
                 "type": "TagDeclarator",
                 "value": "thing1"
               },
@@ -624,13 +628,13 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                96,
-                121,
+                105,
+                139,
                 0
               ],
               "tag": {
-                "end": 120,
-                "start": 113,
+                "end": 138,
+                "start": 131,
                 "type": "TagDeclarator",
                 "value": "thing1"
               },
@@ -640,8 +644,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
           "__meta": [
             {
               "sourceRange": [
-                113,
-                120,
+                131,
+                138,
                 0
               ]
             }
@@ -659,8 +663,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  127,
-                  153,
+                  145,
+                  180,
                   0
                 ]
               },
@@ -669,8 +673,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                 10.0
               ],
               "tag": {
-                "end": 152,
-                "start": 145,
+                "end": 179,
+                "start": 172,
                 "type": "TagDeclarator",
                 "value": "thing2"
               },
@@ -684,13 +688,13 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                127,
-                153,
+                145,
+                180,
                 0
               ],
               "tag": {
-                "end": 152,
-                "start": 145,
+                "end": 179,
+                "start": 172,
                 "type": "TagDeclarator",
                 "value": "thing2"
               },
@@ -700,8 +704,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
           "__meta": [
             {
               "sourceRange": [
-                145,
-                152,
+                172,
+                179,
                 0
               ]
             }
@@ -719,8 +723,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  159,
-                  176,
+                  186,
+                  206,
                   0
                 ]
               },
@@ -729,8 +733,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
                 0.0
               ],
               "tag": {
-                "end": 175,
-                "start": 168,
+                "end": 205,
+                "start": 198,
                 "type": "TagDeclarator",
                 "value": "thing3"
               },
@@ -744,13 +748,13 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                159,
-                176,
+                186,
+                206,
                 0
               ],
               "tag": {
-                "end": 175,
-                "start": 168,
+                "end": 205,
+                "start": 198,
                 "type": "TagDeclarator",
                 "value": "thing3"
               },
@@ -760,8 +764,8 @@ description: Program memory after executing basic_fillet_cube_next_adjacent.kcl
           "__meta": [
             {
               "sourceRange": [
-                168,
-                175,
+                198,
+                205,
                 0
               ]
             }

@@ -27,23 +27,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          158,
-          159,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          161,
-          162,
+          176,
+          177,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      150,
-      163,
+      159,
+      178,
       0
     ],
     "type": "StdLibCall",
@@ -53,23 +46,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          190,
-          245,
-          0
-        ]
-      },
-      "solid_set": {
-        "sourceRange": [
-          247,
+          205,
           260,
           0
         ]
+      },
+      "solid_set": {
+        "sourceRange": [
+          262,
+          275,
+          0
+        ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      174,
-      261,
+      189,
+      276,
       0
     ],
     "type": "StdLibCall",
@@ -79,23 +72,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          288,
-          343,
+          303,
+          358,
           0
         ]
       },
       "solid_set": {
         "sourceRange": [
-          345,
-          351,
+          360,
+          366,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      272,
-      352,
+      287,
+      367,
       0
     ],
     "type": "StdLibCall",

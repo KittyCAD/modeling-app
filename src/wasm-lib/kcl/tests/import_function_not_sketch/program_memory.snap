@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing import_function_not_sketch.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -109,10 +108,10 @@ snapshot_kind: text
                         "body": [
                           {
                             "argument": {
-                              "end": 368,
+                              "end": 388,
                               "moduleId": 1,
                               "raw": "5",
-                              "start": 367,
+                              "start": 387,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -120,21 +119,21 @@ snapshot_kind: text
                                 "suffix": "None"
                               }
                             },
-                            "end": 368,
+                            "end": 388,
                             "moduleId": 1,
-                            "start": 360,
+                            "start": 380,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 370,
+                        "end": 390,
                         "moduleId": 1,
-                        "start": 358
+                        "start": 378
                       },
-                      "end": 370,
+                      "end": 390,
                       "moduleId": 1,
                       "params": [],
-                      "start": 352,
+                      "start": 372,
                       "type": "FunctionExpression"
                     },
                     "memory": {
@@ -166,13 +165,14 @@ snapshot_kind: text
                               "value": {
                                 "type": "Solid",
                                 "id": "[uuid]",
+                                "artifactId": "[uuid]",
                                 "value": [
                                   {
                                     "faceId": "[uuid]",
                                     "id": "[uuid]",
                                     "sourceRange": [
                                       109,
-                                      124,
+                                      127,
                                       1
                                     ],
                                     "tag": null,
@@ -182,19 +182,8 @@ snapshot_kind: text
                                     "faceId": "[uuid]",
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      130,
-                                      146,
-                                      1
-                                    ],
-                                    "tag": null,
-                                    "type": "extrudePlane"
-                                  },
-                                  {
-                                    "faceId": "[uuid]",
-                                    "id": "[uuid]",
-                                    "sourceRange": [
+                                      133,
                                       152,
-                                      168,
                                       1
                                     ],
                                     "tag": null,
@@ -204,8 +193,8 @@ snapshot_kind: text
                                     "faceId": "[uuid]",
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      174,
-                                      190,
+                                      158,
+                                      177,
                                       1
                                     ],
                                     "tag": null,
@@ -215,8 +204,8 @@ snapshot_kind: text
                                     "faceId": "[uuid]",
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      196,
-                                      218,
+                                      183,
+                                      202,
                                       1
                                     ],
                                     "tag": null,
@@ -226,8 +215,8 @@ snapshot_kind: text
                                     "faceId": "[uuid]",
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      224,
-                                      242,
+                                      208,
+                                      233,
                                       1
                                     ],
                                     "tag": null,
@@ -237,8 +226,8 @@ snapshot_kind: text
                                     "faceId": "[uuid]",
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      248,
-                                      264,
+                                      239,
+                                      260,
                                       1
                                     ],
                                     "tag": null,
@@ -248,8 +237,19 @@ snapshot_kind: text
                                     "faceId": "[uuid]",
                                     "id": "[uuid]",
                                     "sourceRange": [
-                                      270,
-                                      278,
+                                      266,
+                                      285,
+                                      1
+                                    ],
+                                    "tag": null,
+                                    "type": "extrudePlane"
+                                  },
+                                  {
+                                    "faceId": "[uuid]",
+                                    "id": "[uuid]",
+                                    "sourceRange": [
+                                      291,
+                                      298,
                                       1
                                     ],
                                     "tag": null,
@@ -265,7 +265,7 @@ snapshot_kind: text
                                         "id": "[uuid]",
                                         "sourceRange": [
                                           109,
-                                          124,
+                                          127,
                                           1
                                         ]
                                       },
@@ -284,8 +284,8 @@ snapshot_kind: text
                                       "__geoMeta": {
                                         "id": "[uuid]",
                                         "sourceRange": [
-                                          130,
-                                          146,
+                                          133,
+                                          152,
                                           1
                                         ]
                                       },
@@ -304,8 +304,8 @@ snapshot_kind: text
                                       "__geoMeta": {
                                         "id": "[uuid]",
                                         "sourceRange": [
-                                          152,
-                                          168,
+                                          158,
+                                          177,
                                           1
                                         ]
                                       },
@@ -324,8 +324,8 @@ snapshot_kind: text
                                       "__geoMeta": {
                                         "id": "[uuid]",
                                         "sourceRange": [
-                                          174,
-                                          190,
+                                          183,
+                                          202,
                                           1
                                         ]
                                       },
@@ -344,8 +344,8 @@ snapshot_kind: text
                                       "__geoMeta": {
                                         "id": "[uuid]",
                                         "sourceRange": [
-                                          196,
-                                          218,
+                                          208,
+                                          233,
                                           1
                                         ]
                                       },
@@ -364,8 +364,8 @@ snapshot_kind: text
                                       "__geoMeta": {
                                         "id": "[uuid]",
                                         "sourceRange": [
-                                          224,
-                                          242,
+                                          239,
+                                          260,
                                           1
                                         ]
                                       },
@@ -384,8 +384,8 @@ snapshot_kind: text
                                       "__geoMeta": {
                                         "id": "[uuid]",
                                         "sourceRange": [
-                                          248,
-                                          264,
+                                          266,
+                                          285,
                                           1
                                         ]
                                       },
@@ -404,8 +404,8 @@ snapshot_kind: text
                                       "__geoMeta": {
                                         "id": "[uuid]",
                                         "sourceRange": [
-                                          270,
-                                          278,
+                                          291,
+                                          298,
                                           1
                                         ]
                                       },
@@ -424,6 +424,7 @@ snapshot_kind: text
                                   "on": {
                                     "type": "plane",
                                     "id": "[uuid]",
+                                    "artifactId": "[uuid]",
                                     "value": "XY",
                                     "origin": {
                                       "x": 0.0,
@@ -469,6 +470,8 @@ snapshot_kind: text
                                       ]
                                     }
                                   },
+                                  "artifactId": "[uuid]",
+                                  "originalId": "[uuid]",
                                   "units": {
                                     "type": "Mm"
                                   },
@@ -509,8 +512,8 @@ snapshot_kind: text
                     "__meta": [
                       {
                         "sourceRange": [
-                          352,
-                          370,
+                          372,
+                          390,
                           1
                         ]
                       }
@@ -540,10 +543,10 @@ snapshot_kind: text
               "body": [
                 {
                   "argument": {
-                    "end": 368,
+                    "end": 388,
                     "moduleId": 1,
                     "raw": "5",
-                    "start": 367,
+                    "start": 387,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -551,21 +554,21 @@ snapshot_kind: text
                       "suffix": "None"
                     }
                   },
-                  "end": 368,
+                  "end": 388,
                   "moduleId": 1,
-                  "start": 360,
+                  "start": 380,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 370,
+              "end": 390,
               "moduleId": 1,
-              "start": 358
+              "start": 378
             },
-            "end": 370,
+            "end": 390,
             "moduleId": 1,
             "params": [],
-            "start": 352,
+            "start": 372,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -597,13 +600,14 @@ snapshot_kind: text
                     "value": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
                             109,
-                            124,
+                            127,
                             1
                           ],
                           "tag": null,
@@ -613,19 +617,8 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            130,
-                            146,
-                            1
-                          ],
-                          "tag": null,
-                          "type": "extrudePlane"
-                        },
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [
+                            133,
                             152,
-                            168,
                             1
                           ],
                           "tag": null,
@@ -635,8 +628,8 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            174,
-                            190,
+                            158,
+                            177,
                             1
                           ],
                           "tag": null,
@@ -646,8 +639,8 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            196,
-                            218,
+                            183,
+                            202,
                             1
                           ],
                           "tag": null,
@@ -657,8 +650,8 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            224,
-                            242,
+                            208,
+                            233,
                             1
                           ],
                           "tag": null,
@@ -668,8 +661,8 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            248,
-                            264,
+                            239,
+                            260,
                             1
                           ],
                           "tag": null,
@@ -679,8 +672,19 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            270,
-                            278,
+                            266,
+                            285,
+                            1
+                          ],
+                          "tag": null,
+                          "type": "extrudePlane"
+                        },
+                        {
+                          "faceId": "[uuid]",
+                          "id": "[uuid]",
+                          "sourceRange": [
+                            291,
+                            298,
                             1
                           ],
                           "tag": null,
@@ -696,7 +700,7 @@ snapshot_kind: text
                               "id": "[uuid]",
                               "sourceRange": [
                                 109,
-                                124,
+                                127,
                                 1
                               ]
                             },
@@ -715,8 +719,8 @@ snapshot_kind: text
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                130,
-                                146,
+                                133,
+                                152,
                                 1
                               ]
                             },
@@ -735,8 +739,8 @@ snapshot_kind: text
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                152,
-                                168,
+                                158,
+                                177,
                                 1
                               ]
                             },
@@ -755,8 +759,8 @@ snapshot_kind: text
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                174,
-                                190,
+                                183,
+                                202,
                                 1
                               ]
                             },
@@ -775,8 +779,8 @@ snapshot_kind: text
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                196,
-                                218,
+                                208,
+                                233,
                                 1
                               ]
                             },
@@ -795,8 +799,8 @@ snapshot_kind: text
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                224,
-                                242,
+                                239,
+                                260,
                                 1
                               ]
                             },
@@ -815,8 +819,8 @@ snapshot_kind: text
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                248,
-                                264,
+                                266,
+                                285,
                                 1
                               ]
                             },
@@ -835,8 +839,8 @@ snapshot_kind: text
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                270,
-                                278,
+                                291,
+                                298,
                                 1
                               ]
                             },
@@ -855,6 +859,7 @@ snapshot_kind: text
                         "on": {
                           "type": "plane",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "XY",
                           "origin": {
                             "x": 0.0,
@@ -900,6 +905,8 @@ snapshot_kind: text
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -940,8 +947,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                352,
-                370,
+                372,
+                390,
                 1
               ]
             }

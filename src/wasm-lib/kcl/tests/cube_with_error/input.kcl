@@ -8,12 +8,12 @@ fn cube(length, center) {
   p3 = [l + x, -l + y]
 
   return startSketchAt(p0)
-    |> lineTo(p1, %)
-    |> lineTo(p2, %)
-    |> lineTo(p3, %)
-    |> lineTo(p0, %)
-    |> close(%)
-    |> extrude(length, %)
+    |> line(endAbsolute = p1)
+    |> line(endAbsolute = p2)
+    |> line(endAbsolute = p3)
+    |> line(endAbsolute = p0)
+    |> close()
+    |> extrude(length = length)
 }
 
 myCube = cube(40, [0, 0])

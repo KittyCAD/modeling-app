@@ -98,8 +98,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  525,
-                  547,
+                  531,
+                  553,
                   0
                 ]
               },
@@ -114,8 +114,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               ],
               "radius": 80.0,
               "tag": {
-                "end": 546,
-                "start": 538,
+                "end": 552,
+                "start": 544,
                 "type": "TagDeclarator",
                 "value": "arc_tag"
               },
@@ -129,13 +129,13 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                525,
-                547,
+                531,
+                553,
                 0
               ],
               "tag": {
-                "end": 546,
-                "start": 538,
+                "end": 552,
+                "start": 544,
                 "type": "TagDeclarator",
                 "value": "arc_tag"
               },
@@ -145,8 +145,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
           "__meta": [
             {
               "sourceRange": [
-                538,
-                546,
+                544,
+                552,
                 0
               ]
             }
@@ -282,8 +282,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    525,
-                    547,
+                    531,
+                    553,
                     0
                   ]
                 },
@@ -298,8 +298,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 ],
                 "radius": 80.0,
                 "tag": {
-                  "end": 546,
-                  "start": 538,
+                  "end": 552,
+                  "start": 544,
                   "type": "TagDeclarator",
                   "value": "arc_tag"
                 },
@@ -313,8 +313,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    555,
-                    563,
+                    561,
+                    569,
                     0
                   ]
                 },
@@ -333,6 +333,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "c",
               "xAxis": {
                 "x": 1.0,
@@ -352,6 +353,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -485,6 +487,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XY",
                     "origin": {
                       "x": 0.0,
@@ -709,6 +712,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -744,8 +749,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    436,
-                    458,
+                    442,
+                    464,
                     0
                   ]
                 }
@@ -764,8 +769,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  466,
-                  517,
+                  472,
+                  523,
                   0
                 ]
               }
@@ -782,8 +787,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        525,
-                        547,
+                        531,
+                        553,
                         0
                       ]
                     },
@@ -798,8 +803,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     ],
                     "radius": 80.0,
                     "tag": {
-                      "end": 546,
-                      "start": 538,
+                      "end": 552,
+                      "start": 544,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -813,13 +818,13 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      525,
-                      547,
+                      531,
+                      553,
                       0
                     ],
                     "tag": {
-                      "end": 546,
-                      "start": 538,
+                      "end": 552,
+                      "start": 544,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -829,22 +834,24 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      538,
-                      546,
+                      544,
+                      552,
                       0
                     ]
                   }
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
             "__meta": [
               {
                 "sourceRange": [
-                  466,
-                  517,
+                  472,
+                  523,
                   0
                 ]
               }
@@ -861,8 +868,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    525,
-                    547,
+                    531,
+                    553,
                     0
                   ]
                 },
@@ -877,8 +884,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 ],
                 "radius": 80.0,
                 "tag": {
-                  "end": 546,
-                  "start": 538,
+                  "end": 552,
+                  "start": 544,
                   "type": "TagDeclarator",
                   "value": "arc_tag"
                 },
@@ -892,8 +899,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    555,
-                    563,
+                    561,
+                    569,
                     0
                   ]
                 },
@@ -912,6 +919,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "a",
               "xAxis": {
                 "x": 1.0,
@@ -931,6 +939,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -1064,6 +1073,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XY",
                     "origin": {
                       "x": 0.0,
@@ -1288,6 +1298,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -1323,8 +1335,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    436,
-                    458,
+                    442,
+                    464,
                     0
                   ]
                 }
@@ -1343,8 +1355,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  466,
-                  517,
+                  472,
+                  523,
                   0
                 ]
               }
@@ -1361,8 +1373,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        525,
-                        547,
+                        531,
+                        553,
                         0
                       ]
                     },
@@ -1377,8 +1389,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     ],
                     "radius": 80.0,
                     "tag": {
-                      "end": 546,
-                      "start": 538,
+                      "end": 552,
+                      "start": 544,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -1392,13 +1404,13 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      525,
-                      547,
+                      531,
+                      553,
                       0
                     ],
                     "tag": {
-                      "end": 546,
-                      "start": 538,
+                      "end": 552,
+                      "start": 544,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -1408,22 +1420,24 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      538,
-                      546,
+                      544,
+                      552,
                       0
                     ]
                   }
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
             "__meta": [
               {
                 "sourceRange": [
-                  466,
-                  517,
+                  472,
+                  523,
                   0
                 ]
               }
@@ -1494,28 +1508,28 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       {
                         "arguments": [
                           {
-                            "end": 451,
+                            "end": 457,
                             "name": "p",
-                            "start": 450,
+                            "start": 456,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 457,
+                            "end": 463,
                             "name": "face",
-                            "start": 453,
+                            "start": 459,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 449,
+                          "end": 455,
                           "name": "startSketchOn",
-                          "start": 436,
+                          "start": 442,
                           "type": "Identifier"
                         },
-                        "end": 458,
-                        "start": 436,
+                        "end": 464,
+                        "start": 442,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -1524,40 +1538,40 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                           {
                             "elements": [
                               {
-                                "end": 492,
+                                "end": 498,
                                 "left": {
-                                  "end": 483,
+                                  "end": 489,
                                   "name": "x",
-                                  "start": 482,
+                                  "start": 488,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "+",
                                 "right": {
-                                  "end": 492,
+                                  "end": 498,
                                   "name": "radius",
-                                  "start": 486,
+                                  "start": 492,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 482,
+                                "start": 488,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               {
-                                "end": 512,
+                                "end": 518,
                                 "left": {
-                                  "end": 508,
+                                  "end": 514,
                                   "name": "triangleHeight",
-                                  "start": 494,
+                                  "start": 500,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 512,
+                                  "end": 518,
                                   "raw": "2",
-                                  "start": 511,
+                                  "start": 517,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1565,125 +1579,125 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 494,
+                                "start": 500,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             ],
-                            "end": 513,
-                            "start": 481,
+                            "end": 519,
+                            "start": 487,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           },
                           {
-                            "end": 516,
-                            "start": 515,
+                            "end": 522,
+                            "start": 521,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 480,
+                          "end": 486,
                           "name": "startProfileAt",
-                          "start": 466,
+                          "start": 472,
                           "type": "Identifier"
                         },
-                        "end": 517,
-                        "start": 466,
+                        "end": 523,
+                        "start": 472,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 533,
+                            "end": 539,
                             "name": "circ",
-                            "start": 529,
+                            "start": 535,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 536,
-                            "start": 535,
+                            "end": 542,
+                            "start": 541,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           },
                           {
-                            "end": 546,
-                            "start": 538,
+                            "end": 552,
+                            "start": 544,
                             "type": "TagDeclarator",
                             "type": "TagDeclarator",
                             "value": "arc_tag"
                           }
                         ],
                         "callee": {
-                          "end": 528,
+                          "end": 534,
                           "name": "arc",
-                          "start": 525,
+                          "start": 531,
                           "type": "Identifier"
                         },
-                        "end": 547,
-                        "start": 525,
+                        "end": 553,
+                        "start": 531,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 562,
-                            "start": 561,
+                            "end": 568,
+                            "start": 567,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 560,
+                          "end": 566,
                           "name": "close",
-                          "start": 555,
+                          "start": 561,
                           "type": "Identifier"
                         },
-                        "end": 563,
-                        "start": 555,
+                        "end": 569,
+                        "start": 561,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "end": 563,
-                    "start": 436,
+                    "end": 569,
+                    "start": 442,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 563,
-                  "start": 429,
+                  "end": 569,
+                  "start": 435,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 565,
-              "start": 425
+              "end": 571,
+              "start": 431
             },
-            "end": 565,
+            "end": 571,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 417,
+                  "end": 423,
                   "name": "x",
-                  "start": 416,
+                  "start": 422,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 423,
+                  "end": 429,
                   "name": "face",
-                  "start": 419,
+                  "start": 425,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 415,
+            "start": 421,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -1948,6 +1962,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "value": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
@@ -2081,6 +2096,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         "on": {
                           "type": "plane",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "XY",
                           "origin": {
                             "x": 0.0,
@@ -2305,6 +2321,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -2397,8 +2415,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
           "__meta": [
             {
               "sourceRange": [
-                415,
-                565,
+                421,
+                571,
                 0
               ]
             }
@@ -2409,6 +2427,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -2542,6 +2561,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -2766,6 +2786,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2801,18 +2823,19 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  525,
-                  547,
+                  531,
+                  553,
                   0
                 ],
                 "tag": {
-                  "end": 546,
-                  "start": 538,
+                  "end": 552,
+                  "start": 544,
                   "type": "TagDeclarator",
                   "value": "arc_tag"
                 },
@@ -2827,8 +2850,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      525,
-                      547,
+                      531,
+                      553,
                       0
                     ]
                   },
@@ -2843,8 +2866,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   ],
                   "radius": 80.0,
                   "tag": {
-                    "end": 546,
-                    "start": 538,
+                    "end": 552,
+                    "start": 544,
                     "type": "TagDeclarator",
                     "value": "arc_tag"
                   },
@@ -2858,8 +2881,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      555,
-                      563,
+                      561,
+                      569,
                       0
                     ]
                   },
@@ -2878,6 +2901,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "a",
                 "xAxis": {
                   "x": 1.0,
@@ -2897,6 +2921,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -3030,6 +3055,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -3254,6 +3280,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -3289,8 +3317,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      436,
-                      458,
+                      442,
+                      464,
                       0
                     ]
                   }
@@ -3309,8 +3337,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    466,
-                    517,
+                    472,
+                    523,
                     0
                   ]
                 }
@@ -3327,8 +3355,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          525,
-                          547,
+                          531,
+                          553,
                           0
                         ]
                       },
@@ -3343,8 +3371,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ],
                       "radius": 80.0,
                       "tag": {
-                        "end": 546,
-                        "start": 538,
+                        "end": 552,
+                        "start": 544,
                         "type": "TagDeclarator",
                         "value": "arc_tag"
                       },
@@ -3358,13 +3386,13 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        525,
-                        547,
+                        531,
+                        553,
                         0
                       ],
                       "tag": {
-                        "end": 546,
-                        "start": 538,
+                        "end": 552,
+                        "start": 544,
                         "type": "TagDeclarator",
                         "value": "arc_tag"
                       },
@@ -3374,22 +3402,24 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        538,
-                        546,
+                        544,
+                        552,
                         0
                       ]
                     }
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
               "__meta": [
                 {
                   "sourceRange": [
-                    466,
-                    517,
+                    472,
+                    523,
                     0
                   ]
                 }
@@ -3420,8 +3450,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  466,
-                  517,
+                  472,
+                  523,
                   0
                 ]
               }
@@ -3433,18 +3463,19 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  525,
-                  547,
+                  531,
+                  553,
                   0
                 ],
                 "tag": {
-                  "end": 546,
-                  "start": 538,
+                  "end": 552,
+                  "start": 544,
                   "type": "TagDeclarator",
                   "value": "arc_tag"
                 },
@@ -3459,8 +3490,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      525,
-                      547,
+                      531,
+                      553,
                       0
                     ]
                   },
@@ -3475,8 +3506,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   ],
                   "radius": 80.0,
                   "tag": {
-                    "end": 546,
-                    "start": 538,
+                    "end": 552,
+                    "start": 544,
                     "type": "TagDeclarator",
                     "value": "arc_tag"
                   },
@@ -3490,8 +3521,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      555,
-                      563,
+                      561,
+                      569,
                       0
                     ]
                   },
@@ -3510,6 +3541,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "c",
                 "xAxis": {
                   "x": 1.0,
@@ -3529,6 +3561,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -3662,6 +3695,7 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -3886,6 +3920,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -3921,8 +3957,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      436,
-                      458,
+                      442,
+                      464,
                       0
                     ]
                   }
@@ -3941,8 +3977,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    466,
-                    517,
+                    472,
+                    523,
                     0
                   ]
                 }
@@ -3959,8 +3995,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          525,
-                          547,
+                          531,
+                          553,
                           0
                         ]
                       },
@@ -3975,8 +4011,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ],
                       "radius": 80.0,
                       "tag": {
-                        "end": 546,
-                        "start": 538,
+                        "end": 552,
+                        "start": 544,
                         "type": "TagDeclarator",
                         "value": "arc_tag"
                       },
@@ -3990,13 +4026,13 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        525,
-                        547,
+                        531,
+                        553,
                         0
                       ],
                       "tag": {
-                        "end": 546,
-                        "start": 538,
+                        "end": 552,
+                        "start": 544,
                         "type": "TagDeclarator",
                         "value": "arc_tag"
                       },
@@ -4006,22 +4042,24 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        538,
-                        546,
+                        544,
+                        552,
                         0
                       ]
                     }
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
               "__meta": [
                 {
                   "sourceRange": [
-                    466,
-                    517,
+                    472,
+                    523,
                     0
                   ]
                 }
@@ -4052,8 +4090,8 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  466,
-                  517,
+                  472,
+                  523,
                   0
                 ]
               }

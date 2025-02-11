@@ -1,6 +1,7 @@
 import {
   ArtifactGraph,
   CallExpression,
+  CallExpressionKw,
   Expr,
   Identifier,
   ObjectExpression,
@@ -27,20 +28,22 @@ import {
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
+  ARG_TAG,
   getTagFromCallExpression,
   sketchLineHelperMap,
+  sketchLineHelperMapKw,
 } from '../std/sketch'
 import { err, trap } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
+import { isArray } from 'lib/utils'
 import { Artifact, getSweepFromSuspectedPath } from 'lang/std/artifactGraph'
-import {
-  kclManager,
-  engineCommandManager,
-  editorManager,
-  codeManager,
-} from 'lib/singletons'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { findKwArg } from 'lang/util'
+import { KclManager } from 'lang/KclSingleton'
+import { EngineCommandManager } from 'lang/std/engineConnection'
+import EditorManager from 'editor/manager'
+import CodeManager from 'lang/codeManager'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -62,21 +65,38 @@ export type EdgeTreatmentParameters = ChamferParameters | FilletParameters
 export async function applyEdgeTreatmentToSelection(
   ast: Node<Program>,
   selection: Selections,
-  parameters: EdgeTreatmentParameters
+  parameters: EdgeTreatmentParameters,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 ): Promise<void | Error> {
   // 1. clone and modify with edge treatment and tag
-  const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters)
+  const result = modifyAstWithEdgeTreatmentAndTag(
+    ast,
+    selection,
+    parameters,
+    dependencies
+  )
   if (err(result)) return result
   const { modifiedAst, pathToEdgeTreatmentNode } = result
 
   // 2. update ast
-  await updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode)
+  await updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode, dependencies)
 }
 
 export function modifyAstWithEdgeTreatmentAndTag(
   ast: Node<Program>,
   selections: Selections,
-  parameters: EdgeTreatmentParameters
+  parameters: EdgeTreatmentParameters,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 ):
   | { modifiedAst: Node<Program>; pathToEdgeTreatmentNode: Array<PathToNode> }
   | Error {
@@ -86,7 +106,7 @@ export function modifyAstWithEdgeTreatmentAndTag(
   const astResult = insertParametersIntoAst(clonedAst, parameters)
   if (err(astResult)) return astResult
 
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = dependencies.engineCommandManager.artifactGraph
 
   // Step 1: modify ast with tags and group them by extrude nodes (bodies)
   const extrudeToTagsMap: Map<
@@ -99,7 +119,8 @@ export function modifyAstWithEdgeTreatmentAndTag(
     const result = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
       selection,
-      artifactGraph
+      artifactGraph,
+      dependencies
     )
     if (err(result)) return result
     const { pathToSegmentNode, pathToExtrudeNode } = result
@@ -167,7 +188,10 @@ export function modifyAstWithEdgeTreatmentAndTag(
 
     let pathToEdgeTreatmentNode: PathToNode
 
-    if (extrudeDeclarator.init.type === 'CallExpression') {
+    if (
+      extrudeDeclarator.init.type === 'CallExpression' ||
+      extrudeDeclarator.init.type === 'CallExpressionKw'
+    ) {
       // 1. case when no edge treatment exists
 
       // modify ast with new edge treatment call by mutating the extrude node
@@ -252,7 +276,13 @@ function insertParametersIntoAst(
 export function getPathToExtrudeForSegmentSelection(
   ast: Program,
   selection: Selection,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
   const pathToSegmentNode = getNodePathFromSourceRange(
     ast,
@@ -268,7 +298,7 @@ export function getPathToExtrudeForSegmentSelection(
   const sketchVar = varDecNode.node.declaration.id.name
 
   const sketch = sketchFromKclValue(
-    kclManager.programMemory.get(sketchVar),
+    dependencies.kclManager.programMemory.get(sketchVar),
     sketchVar
   )
   if (trap(sketch)) return sketch
@@ -287,16 +317,28 @@ export function getPathToExtrudeForSegmentSelection(
 
 async function updateAstAndFocus(
   modifiedAst: Node<Program>,
-  pathToEdgeTreatmentNode: Array<PathToNode>
+  pathToEdgeTreatmentNode: Array<PathToNode>,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 ): Promise<void> {
-  const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-    focusPath: pathToEdgeTreatmentNode,
-  })
+  const updatedAst = await dependencies.kclManager.updateAst(
+    modifiedAst,
+    true,
+    {
+      focusPath: pathToEdgeTreatmentNode,
+    }
+  )
 
-  await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
+    updatedAst.newAst
+  )
 
   if (updatedAst?.selections) {
-    editorManager.selectRange(updatedAst?.selections)
+    dependencies.editorManager.selectRange(updatedAst?.selections)
   }
 }
 
@@ -304,15 +346,20 @@ export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode
 ): { modifiedAst: Program; tag: string } | Error {
-  const segmentNode = getNodeFromPath<CallExpression>(
+  const segmentNode = getNodeFromPath<CallExpression | CallExpressionKw>(
     astClone,
     pathToSegmentNode,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
   if (err(segmentNode)) return segmentNode
 
   // Check whether selection is a valid segment
-  if (!(segmentNode.node.callee.name in sketchLineHelperMap)) {
+  if (
+    !(
+      segmentNode.node.callee.name in sketchLineHelperMap ||
+      segmentNode.node.callee.name in sketchLineHelperMapKw
+    )
+  ) {
     return new Error('Selection is not a sketch segment')
   }
 
@@ -335,7 +382,7 @@ export function mutateAstWithTagForSketchSegment(
 export function getEdgeTagCall(
   tag: string,
   artifact: Artifact
-): Node<Identifier | CallExpression> {
+): Node<Identifier | CallExpression | CallExpressionKw> {
   let tagCall: Expr = createIdentifier(tag)
 
   // Modify the tag based on selectionType
@@ -371,6 +418,7 @@ function locateExtrudeDeclarator(
 
   if (
     extrudeInit.type !== 'CallExpression' &&
+    extrudeInit.type !== 'CallExpressionKw' &&
     extrudeInit.type !== 'PipeExpression'
   ) {
     return new Error('Extrude must be a PipeExpression or CallExpression')
@@ -382,7 +430,7 @@ function locateExtrudeDeclarator(
 function getPathToNodeOfEdgeTreatmentLiteral(
   pathToExtrudeNode: PathToNode,
   extrudeDeclarator: VariableDeclarator,
-  tag: Identifier | CallExpression,
+  tag: Identifier | CallExpression | CallExpressionKw,
   parameters: EdgeTreatmentParameters
 ): PathToNode {
   let pathToEdgeTreatmentObj: PathToNode = []
@@ -391,7 +439,7 @@ function getPathToNodeOfEdgeTreatmentLiteral(
   traverse(extrudeDeclarator.init, {
     enter(node, path) {
       if (
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         node.callee.name === parameters.type
       ) {
         inEdgeTreatment = true
@@ -407,7 +455,7 @@ function getPathToNodeOfEdgeTreatmentLiteral(
     },
     leave(node) {
       if (
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         node.callee.name === parameters.type
       ) {
         inEdgeTreatment = false
@@ -431,7 +479,7 @@ function getPathToNodeOfEdgeTreatmentLiteral(
 
 function hasTag(
   node: ObjectExpression,
-  tag: Identifier | CallExpression
+  tag: Identifier | CallExpression | CallExpressionKw
 ): boolean {
   return node.properties.some((prop) => {
     if (prop.key.name === 'tags' && prop.value.type === 'ArrayExpression') {
@@ -452,6 +500,25 @@ function hasTag(
             tag.arguments[0].type === 'Identifier' &&
             element.arguments[0].name === tag.arguments[0].name // tag name
         )
+      }
+      if (tag.type === 'CallExpressionKw') {
+        return prop.value.elements.some((element) => {
+          if (element.type !== 'CallExpressionKw') {
+            return false
+          }
+
+          const elementTag = findKwArg(ARG_TAG, element)
+          const tagTag = findKwArg(ARG_TAG, tag)
+
+          return (
+            element.callee.name === tag.callee.name && // edge location
+            elementTag !== undefined &&
+            elementTag.type === 'Identifier' &&
+            tagTag !== undefined &&
+            tagTag.type === 'Identifier' &&
+            elementTag.name === tagTag.name
+          )
+        })
       }
     }
     return false
@@ -527,7 +594,7 @@ export const hasValidEdgeTreatmentSelection = ({
   traverse(ast, {
     enter(node) {
       if (
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type == 'CallExpressionKw') &&
         (node.callee.name === 'extrude' || node.callee.name === 'revolve')
       ) {
         extrudeExists = true
@@ -549,16 +616,24 @@ export const hasValidEdgeTreatmentSelection = ({
   // selection exists:
   for (const selection of selectionRanges.graphSelections) {
     // check if all selections are in sketchLineHelperMap
-    const segmentNode = getNodeFromPath<Node<CallExpression>>(
-      ast,
-      selection.codeRef.pathToNode,
-      'CallExpression'
-    )
+    const segmentNode = getNodeFromPath<
+      Node<CallExpression | CallExpressionKw>
+    >(ast, selection.codeRef.pathToNode, ['CallExpression', 'CallExpressionKw'])
     if (err(segmentNode)) return false
-    if (segmentNode.node.type !== 'CallExpression') {
+    if (
+      !(
+        segmentNode.node.type === 'CallExpression' ||
+        segmentNode.node.type === 'CallExpressionKw'
+      )
+    ) {
       return false
     }
-    if (!(segmentNode.node.callee.name in sketchLineHelperMap)) {
+    if (
+      !(
+        segmentNode.node.callee.name in sketchLineHelperMap ||
+        segmentNode.node.callee.name in sketchLineHelperMapKw
+      )
+    ) {
       return false
     }
 
@@ -598,7 +673,8 @@ export const hasValidEdgeTreatmentSelection = ({
       traverse(ast, {
         enter(node) {
           if (
-            node.type === 'CallExpression' &&
+            (node.type === 'CallExpression' ||
+              node.type === 'CallExpressionKw') &&
             isEdgeTreatmentType(node.callee.name)
           ) {
             inEdgeTreatment = true
@@ -611,7 +687,8 @@ export const hasValidEdgeTreatmentSelection = ({
         },
         leave(node) {
           if (
-            node.type === 'CallExpression' &&
+            (node.type === 'CallExpression' ||
+              node.type === 'CallExpressionKw') &&
             isEdgeTreatmentType(node.callee.name)
           ) {
             inEdgeTreatment = false
@@ -637,9 +714,27 @@ export const isTagUsedInEdgeTreatment = ({
   callExp,
 }: {
   ast: Node<Program>
-  callExp: CallExpression
+  callExp: CallExpression | CallExpressionKw
 }): Array<EdgeTypes> => {
-  const tag = getTagFromCallExpression(callExp)
+  const tag: string | undefined = (() => {
+    switch (callExp.type) {
+      case 'CallExpression': {
+        const tag = getTagFromCallExpression(callExp)
+        if (err(tag)) return undefined
+        return tag
+      }
+      case 'CallExpressionKw': {
+        const tag = findKwArg(ARG_TAG, callExp)
+        if (tag === undefined) {
+          return undefined
+        }
+        if (tag.type !== 'TagDeclarator') {
+          return undefined
+        }
+        return tag.value
+      }
+    }
+  })()
   if (err(tag)) return []
 
   let inEdgeTreatment = false
@@ -651,7 +746,7 @@ export const isTagUsedInEdgeTreatment = ({
     enter: (node) => {
       // Check if we are entering an edge treatment call
       if (
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         isEdgeTreatmentType(node.callee.name)
       ) {
         inEdgeTreatment = true
@@ -669,7 +764,7 @@ export const isTagUsedInEdgeTreatment = ({
       if (
         inObj &&
         inEdgeTreatment &&
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         isEdgeType(node.callee.name)
       ) {
         inTagHelper = node.callee.name
@@ -695,7 +790,7 @@ export const isTagUsedInEdgeTreatment = ({
     },
     leave: (node) => {
       if (
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         isEdgeTreatmentType(node.callee.name)
       ) {
         inEdgeTreatment = false
@@ -713,7 +808,7 @@ export const isTagUsedInEdgeTreatment = ({
       if (
         inObj &&
         inEdgeTreatment &&
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         isEdgeType(node.callee.name)
       ) {
         inTagHelper = ''
@@ -772,10 +867,7 @@ export async function deleteEdgeTreatment(
   if (!inPipe) {
     const varDecPathStep = varDec.shallowPath[1]
 
-    if (
-      !Array.isArray(varDecPathStep) ||
-      typeof varDecPathStep[0] !== 'number'
-    ) {
+    if (!isArray(varDecPathStep) || typeof varDecPathStep[0] !== 'number') {
       return new Error(
         'Invalid shallowPath structure: expected a number at shallowPath[1][0]'
       )
@@ -841,7 +933,7 @@ export async function deleteEdgeTreatment(
     if (err(pipeExpressionNode)) return pipeExpressionNode
 
     // Ensure that the PipeExpression.body is an array
-    if (!Array.isArray(pipeExpressionNode.node.body)) {
+    if (!isArray(pipeExpressionNode.node.body)) {
       return new Error('PipeExpression body is not an array')
     }
 
@@ -851,10 +943,7 @@ export async function deleteEdgeTreatment(
     // Remove VariableDeclarator if PipeExpression.body is empty
     if (pipeExpressionNode.node.body.length === 0) {
       const varDecPathStep = varDec.shallowPath[1]
-      if (
-        !Array.isArray(varDecPathStep) ||
-        typeof varDecPathStep[0] !== 'number'
-      ) {
+      if (!isArray(varDecPathStep) || typeof varDecPathStep[0] !== 'number') {
         return new Error(
           'Invalid shallowPath structure: expected a number at shallowPath[1][0]'
         )

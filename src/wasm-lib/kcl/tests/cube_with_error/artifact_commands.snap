@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands cube_with_error.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -362,7 +363,7 @@ description: Artifact commands cube_with_error.kcl
     "cmdId": "[uuid]",
     "range": [
       202,
-      215,
+      224,
       0
     ],
     "command": {
@@ -382,8 +383,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      223,
-      236,
+      232,
+      254,
       0
     ],
     "command": {
@@ -403,8 +404,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      244,
-      257,
+      262,
+      284,
       0
     ],
     "command": {
@@ -424,8 +425,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      265,
-      278,
+      292,
+      314,
       0
     ],
     "command": {
@@ -445,8 +446,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      286,
-      294,
+      322,
+      329,
       0
     ],
     "command": {
@@ -457,8 +458,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      286,
-      294,
+      322,
+      329,
       0
     ],
     "command": {
@@ -468,8 +469,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      302,
-      320,
+      337,
+      361,
       0
     ],
     "command": {
@@ -488,8 +489,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      302,
-      320,
+      337,
+      361,
       0
     ],
     "command": {
@@ -502,8 +503,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      302,
-      320,
+      337,
+      361,
       0
     ],
     "command": {
@@ -513,8 +514,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      302,
-      320,
+      337,
+      361,
       0
     ],
     "command": {
@@ -525,8 +526,8 @@ description: Artifact commands cube_with_error.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      302,
-      320,
+      337,
+      361,
       0
     ],
     "command": {

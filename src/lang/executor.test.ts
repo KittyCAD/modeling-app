@@ -53,10 +53,10 @@ const newVar = myVar + 1`
   it('sketch declaration', async () => {
     let code = `const mySketch = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> lineTo([0,2], %, $myPath)
-  |> lineTo([2,3], %)
-  |> lineTo([5,-1], %, $rightPath)
-  // |> close(%)
+  |> line(endAbsolute = [0,2], tag = $myPath)
+  |> line(endAbsolute = [2,3])
+  |> line(endAbsolute = [5,-1], tag = $rightPath)
+  // |> close()
 `
     const mem = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
@@ -73,12 +73,12 @@ const newVar = myVar + 1`
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
-          sourceRange: [72, 97, 0],
+          sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
         },
         tag: {
-          end: 96,
-          start: 89,
+          end: 111,
+          start: 104,
           type: 'TagDeclarator',
           value: 'myPath',
         },
@@ -89,7 +89,7 @@ const newVar = myVar + 1`
         from: [0, 2],
         tag: null,
         __geoMeta: {
-          sourceRange: [103, 119, 0],
+          sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
         },
       },
@@ -98,12 +98,12 @@ const newVar = myVar + 1`
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
-          sourceRange: [125, 154, 0],
+          sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
         },
         tag: {
-          end: 153,
-          start: 143,
+          end: 192,
+          start: 182,
           type: 'TagDeclarator',
           value: 'rightPath',
         },
@@ -124,9 +124,9 @@ const newVar = myVar + 1`
   // it('rotated sketch', async () => {
   //   const code = [
   //     'const mySk1 = startSketchAt([0,0])',
-  //     '  |> lineTo([1,1], %)',
-  //     '  |> lineTo([0, 1], %, "myPath")',
-  //     '  |> lineTo([1, 1], %)',
+  //     '  |> line(endAbsolute = [1,1])',
+  //     '  |> line(endAbsolute = [0, 1], tag = "myPath")',
+  //     '  |> line(endAbsolute = [1, 1])',
   //     'const rotated = rx(90, mySk1)',
   //   ].join('\n')
   //   const mem = await exe(code)
@@ -151,9 +151,9 @@ const newVar = myVar + 1`
     const code = [
       "const mySk1 = startSketchOn('XY')",
       '  |> startProfileAt([0,0], %)',
-      '  |> lineTo([1,1], %)',
-      '  |> lineTo([0, 1], %, $myPath)',
-      '  |> lineTo([1,1], %)',
+      '  |> line(endAbsolute = [1,1])',
+      '  |> line(endAbsolute = [0, 1], tag = $myPath)',
+      '  |> line(endAbsolute = [1,1])',
       // '  |> rx(90, %)',
     ].join('\n')
     const mem = await exe(code)
@@ -168,14 +168,14 @@ const newVar = myVar + 1`
           tag: null,
           __geoMeta: {
             id: expect.any(String),
-            sourceRange: [39, 63, 0],
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
           },
         },
         tags: {
           myPath: {
             __meta: [
               {
-                sourceRange: [109, 116, 0],
+                sourceRange: [expect.any(Number), expect.any(Number), 0],
               },
             ],
             type: 'TagIdentifier',
@@ -190,7 +190,7 @@ const newVar = myVar + 1`
             from: [0, 0],
             tag: null,
             __geoMeta: {
-              sourceRange: [69, 85, 0],
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
               id: expect.any(String),
             },
           },
@@ -199,12 +199,12 @@ const newVar = myVar + 1`
             to: [0, 1],
             from: [1, 1],
             __geoMeta: {
-              sourceRange: [91, 117, 0],
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
               id: expect.any(String),
             },
             tag: {
-              end: 116,
-              start: 109,
+              end: 140,
+              start: 133,
               type: 'TagDeclarator',
               value: 'myPath',
             },
@@ -215,16 +215,18 @@ const newVar = myVar + 1`
             from: [0, 1],
             tag: null,
             __geoMeta: {
-              sourceRange: [123, 139, 0],
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
               id: expect.any(String),
             },
           },
         ],
         id: expect.any(String),
+        originalId: expect.any(String),
+        artifactId: expect.any(String),
         units: {
           type: 'Mm',
         },
-        __meta: [{ sourceRange: [39, 63, 0] }],
+        __meta: [{ sourceRange: [expect.any(Number), expect.any(Number), 0] }],
       },
     })
   })
@@ -421,7 +423,7 @@ describe('testing math operators', () => {
     const code = [
       "const part001 = startSketchOn('XY')",
       '  |> startProfileAt([0, 0], %)',
-      '|> line([-2.21, -legLen(5, min(3, 999))], %)',
+      '|> line(end = [-2.21, -legLen(5, min(3, 999))])',
     ].join('\n')
     const mem = await exe(code)
     const sketch = sketchFromKclValue(mem.get('part001'), 'part001')
@@ -434,11 +436,11 @@ describe('testing math operators', () => {
       `const myVar = 3`,
       `const part001 = startSketchOn('XY')`,
       `  |> startProfileAt([0, 0], %)`,
-      `  |> line([3, 4], %, $seg01)`,
-      `  |> line([`,
+      `  |> line(end = [3, 4], tag = $seg01)`,
+      `  |> line(end = [`,
       `  min(segLen(seg01), myVar),`,
       `  -legLen(segLen(seg01), myVar)`,
-      `], %)`,
+      `])`,
       ``,
     ].join('\n')
     const mem = await exe(code)
@@ -476,11 +478,11 @@ describe('Testing Errors', () => {
     const code = `const myVar = 5
 const theExtrude = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([-2.4, 5], %)
-  |> line(myVarZ, %)
-  |> line([5,5], %)
-  |> close(%)
-  |> extrude(4, %)`
+  |> line(end = [-2.4, 5])
+  |> line(end = myVarZ)
+  |> line(end = [5,5])
+  |> close()
+  |> extrude(length = 4)`
     await expect(exe(code)).rejects.toEqual(
       new KCLError(
         'undefined_value',

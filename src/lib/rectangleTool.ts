@@ -2,7 +2,9 @@ import {
   createArrayExpression,
   createBinaryExpression,
   createCallExpressionStdLib,
+  createCallExpressionStdLibKw,
   createIdentifier,
+  createLabeledArg,
   createLiteral,
   createPipeSubstitution,
   createTagDeclarator,
@@ -31,7 +33,7 @@ import {
  *  |> angledLine([0, 0], %, $a)
  *  |> angledLine([segAng(a) - 90, 0], %, $b)
  *  |> angledLine([segAng(a), -segLen(a)], %, $c)
- *  |> close(%)
+ *  |> close()
  */
 export const getRectangleCallExpressions = (
   rectangleOrigin: [number, number],
@@ -68,14 +70,16 @@ export const getRectangleCallExpressions = (
     createPipeSubstitution(),
     createTagDeclarator(tags[2]),
   ]),
-  createCallExpressionStdLib('lineTo', [
-    createArrayExpression([
-      createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
-      createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),
-    ]),
-    createPipeSubstitution(),
+  createCallExpressionStdLibKw('line', null, [
+    createLabeledArg(
+      'endAbsolute',
+      createArrayExpression([
+        createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
+        createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),
+      ])
+    ),
   ]), // close the rectangle
-  createCallExpressionStdLib('close', [createPipeSubstitution()]),
+  createCallExpressionStdLibKw('close', null, []),
 ]
 
 /**

@@ -348,7 +348,7 @@ description: Result of parsing riddle_small.kcl
       },
       {
         "declaration": {
-          "end": 291,
+          "end": 306,
           "id": {
             "end": 138,
             "name": "r",
@@ -424,40 +424,41 @@ description: Result of parsing riddle_small.kcl
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 206,
-                        "raw": "1",
-                        "start": 205,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 212,
+                          "raw": "1",
+                          "start": 211,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 215,
+                          "raw": "0",
+                          "start": 214,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         }
-                      },
-                      {
-                        "end": 209,
-                        "raw": "0",
-                        "start": 208,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 210,
-                    "start": 204,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 213,
-                    "start": 212,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                      ],
+                      "end": 216,
+                      "start": 210,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -466,178 +467,185 @@ description: Result of parsing riddle_small.kcl
                   "start": 199,
                   "type": "Identifier"
                 },
-                "end": 214,
+                "end": 217,
                 "start": 199,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 227,
-                        "raw": "0",
-                        "start": 226,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "argument": {
-                          "end": 231,
-                          "raw": "1",
-                          "start": 230,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 236,
+                          "raw": "0",
+                          "start": 235,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 1.0,
+                            "value": 0.0,
                             "suffix": "None"
                           }
                         },
-                        "end": 231,
-                        "operator": "-",
-                        "start": 229,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
-                    "end": 232,
-                    "start": 225,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 235,
-                    "start": 234,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 224,
-                  "name": "line",
-                  "start": 220,
-                  "type": "Identifier"
-                },
-                "end": 236,
-                "start": 220,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "argument": {
-                          "end": 250,
-                          "raw": "1",
-                          "start": 249,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "end": 250,
-                        "operator": "-",
-                        "start": 248,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      },
-                      {
-                        "end": 253,
-                        "raw": "0",
-                        "start": 252,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
+                        {
+                          "argument": {
+                            "end": 240,
+                            "raw": "1",
+                            "start": 239,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 1.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 240,
+                          "operator": "-",
+                          "start": 238,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
                         }
-                      }
-                    ],
-                    "end": 254,
-                    "start": 247,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 257,
-                    "start": 256,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 246,
-                  "name": "line",
-                  "start": 242,
-                  "type": "Identifier"
-                },
-                "end": 258,
-                "start": 242,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "end": 271,
-                    "start": 270,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 269,
-                  "name": "close",
-                  "start": 264,
-                  "type": "Identifier"
-                },
-                "end": 272,
-                "start": 264,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "end": 287,
-                    "raw": "1",
-                    "start": 286,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
+                      ],
+                      "end": 241,
+                      "start": 234,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
                     }
-                  },
+                  }
+                ],
+                "callee": {
+                  "end": 227,
+                  "name": "line",
+                  "start": 223,
+                  "type": "Identifier"
+                },
+                "end": 242,
+                "start": 223,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
                   {
-                    "end": 290,
-                    "start": 289,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "argument": {
+                            "end": 262,
+                            "raw": "1",
+                            "start": 261,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 1.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 262,
+                          "operator": "-",
+                          "start": 260,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        },
+                        {
+                          "end": 265,
+                          "raw": "0",
+                          "start": 264,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 266,
+                      "start": 259,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 252,
+                  "name": "line",
+                  "start": 248,
+                  "type": "Identifier"
+                },
+                "end": 267,
+                "start": 248,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 280,
+                    "start": 279,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 285,
-                  "name": "extrude",
-                  "start": 278,
+                  "end": 278,
+                  "name": "close",
+                  "start": 273,
                   "type": "Identifier"
                 },
-                "end": 291,
-                "start": 278,
+                "end": 281,
+                "start": 273,
                 "type": "CallExpression",
                 "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
+                    },
+                    "arg": {
+                      "end": 305,
+                      "raw": "1",
+                      "start": 304,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 294,
+                  "name": "extrude",
+                  "start": 287,
+                  "type": "Identifier"
+                },
+                "end": 306,
+                "start": 287,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 291,
+            "end": 306,
             "start": 141,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -645,14 +653,14 @@ description: Result of parsing riddle_small.kcl
           "start": 137,
           "type": "VariableDeclarator"
         },
-        "end": 291,
+        "end": 306,
         "kind": "const",
         "start": 137,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 292,
+    "end": 307,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [

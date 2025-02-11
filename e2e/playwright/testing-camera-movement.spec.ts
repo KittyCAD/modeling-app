@@ -3,13 +3,8 @@ import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
 import { getUtils } from './test-utils'
 
-test.describe('Testing Camera Movement', () => {
+test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
   test('Can move camera reliably', async ({ page, context, homePage }) => {
-    // TODO: fix this test on windows too after the electron migration
-    const winOrMac =
-      process.platform === 'win32' || process.platform === 'darwin'
-    // eslint-disable-next-line
-    test.skip(winOrMac, 'Skip on windows')
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -114,7 +109,8 @@ test.describe('Testing Camera Movement', () => {
       await page.keyboard.down('Shift')
       await page.mouse.move(600, 200)
       await page.mouse.down({ button: 'right' })
-      await page.mouse.move(700, 200, { steps: 2 })
+      // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
+      await page.mouse.move(700, 200)
       await page.mouse.up({ button: 'right' })
       await page.keyboard.up('Shift')
     }, [-19, -85, -85])
@@ -229,10 +225,10 @@ test.describe('Testing Camera Movement', () => {
       code += `\n  |> startProfileAt([8.12, -12.98], %)`
       // await expect(u.codeLocator).toHaveText(code)
       await u.canvasLocator.click({ position: { x, y } })
-      code += `\n  |> line([11.18, 0], %)`
+      code += `\n  |> line(end = [11.18, 0])`
       // await expect(u.codeLocator).toHaveText(code)
       await u.canvasLocator.click({ position: { x, y: 275 } })
-      code += `\n  |> line([0, 6.99], %)`
+      code += `\n  |> line(end = [0, 6.99])`
       // await expect(u.codeLocator).toHaveText(code)
 
       // click the line button
@@ -347,8 +343,6 @@ test.describe('Testing Camera Movement', () => {
     homePage,
     page,
   }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     /**
      * Currently we only allow zooming by scroll when no other camera movement is happening,
      * set within cameraMouseDragGuards in cameraControls.ts,

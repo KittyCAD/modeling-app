@@ -15,7 +15,7 @@ fn transform = (replicaId) => {
 fn layer = () => {
   return startSketchOn("XY") // or some other plane idk
     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
-    |> extrude(h, %)
+    |> extrude(length = h)
     // |> fillet({
     //        radius: h / 2.01,
     //        tags: [tag1, getOppositeEdge(tag1)]

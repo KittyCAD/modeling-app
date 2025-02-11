@@ -10,6 +10,7 @@ use crate::{
 pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
+pub(super) const NO_PRELUDE: &str = "no_prelude";
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub(super) enum AnnotationScope {
@@ -23,7 +24,7 @@ pub(super) fn expect_properties<'a>(
 ) -> Result<&'a [Node<ObjectProperty>], KclError> {
     match annotation {
         NonCodeValue::Annotation { name, properties } => {
-            assert_eq!(name.name, for_key);
+            assert_eq!(name.as_ref().unwrap().name, for_key);
             Ok(&**properties.as_ref().ok_or_else(|| {
                 KclError::Semantic(KclErrorDetails {
                     message: format!("Empty `{for_key}` annotation"),

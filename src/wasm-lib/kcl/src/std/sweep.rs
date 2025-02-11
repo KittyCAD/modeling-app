@@ -22,24 +22,14 @@ pub enum SweepPath {
     Helix(Box<Helix>),
 }
 
-/// Data for a sweep.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct SweepData {
-    /// The path to sweep along.
-    pub path: SweepPath,
-    /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
-    pub sectional: Option<bool>,
-    /// Tolerance for the sweep operation.
-    #[serde(default)]
-    pub tolerance: Option<f64>,
-}
-
 /// Extrude a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch): (SweepData, Sketch) = args.get_data_and_sketch()?;
+    let sketch = args.get_unlabeled_kw_arg("sketch")?;
+    let path: SweepPath = args.get_kw_arg("path")?;
+    let sectional = args.get_kw_arg_opt("sectional")?;
+    let tolerance = args.get_kw_arg_opt("tolerance")?;
 
-    let value = inner_sweep(data, sketch, exec_state, args).await?;
+    let value = inner_sweep(sketch, path, sectional, tolerance, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -57,17 +47,17 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
-///     |> line([0, 7], %)
+///     |> line(end = [0, 7])
 ///     |> tangentialArc({
 ///         offset: 90,
 ///         radius: 5
 ///     }, %)
-///     |> line([-3, 0], %)
+///     |> line(end = [-3, 0])
 ///     |> tangentialArc({
 ///         offset: -90,
 ///         radius: 5
 ///     }, %)
-///     |> line([0, 7], %)
+///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
 /// pipeHole = startSketchOn('XY')
@@ -82,37 +72,45 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         radius = 2,
 ///         }, %)              
 ///     |> hole(pipeHole, %)
-///     |> sweep({
-///         path: sweepPath,
-///     }, %)   
+///     |> sweep(path = sweepPath)   
 /// ```
 ///
 /// ```no_run
 /// // Create a spring by sweeping around a helix path.
 ///
 /// // Create a helix around the Z axis.
-/// helixPath = helix({
+/// helixPath = helix(
 ///     angleStart = 0,
 ///     ccw = true,
 ///     revolutions = 4,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Z',
-///  })
+///  )
 ///
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('YZ')
 ///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     |> sweep({ path = helixPath }, %)
+///     |> sweep(path = helixPath)
 /// ```
 #[stdlib {
     name = "sweep",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "The sketch that should be swept in space" },
+        path = { docs = "The path to sweep the sketch along" },
+        sectional = { docs = "If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components." },
+        tolerance = { docs = "Tolerance for this operation" },
+    }
 }]
 async fn inner_sweep(
-    data: SweepData,
     sketch: Sketch,
+    path: SweepPath,
+    sectional: Option<bool>,
+    tolerance: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -121,15 +119,15 @@ async fn inner_sweep(
         id,
         ModelingCmd::from(mcmd::Sweep {
             target: sketch.id.into(),
-            trajectory: match data.path {
+            trajectory: match path {
                 SweepPath::Sketch(sketch) => sketch.id.into(),
                 SweepPath::Helix(helix) => helix.value.into(),
             },
-            sectional: data.sectional.unwrap_or(false),
-            tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+            sectional: sectional.unwrap_or(false),
+            tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
         }),
     )
     .await?;
 
-    do_post_extrude(sketch, 0.0, exec_state, args).await
+    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
 }

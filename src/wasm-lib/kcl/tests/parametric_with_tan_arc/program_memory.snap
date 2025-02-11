@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing parametric_with_tan_arc.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -44,13 +45,14 @@ description: Program memory after executing parametric_with_tan_arc.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
                   266,
-                  290,
+                  293,
                   0
                 ],
                 "tag": null,
@@ -60,8 +62,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  296,
-                  347,
+                  299,
+                  350,
                   0
                 ],
                 "tag": null,
@@ -71,19 +73,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  353,
-                  379,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
+                  356,
                   385,
-                  409,
                   0
                 ],
                 "tag": null,
@@ -93,8 +84,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  415,
-                  440,
+                  391,
+                  418,
                   0
                 ],
                 "tag": null,
@@ -104,8 +95,19 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  446,
-                  529,
+                  424,
+                  452,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  458,
+                  541,
                   0
                 ],
                 "tag": null,
@@ -115,8 +117,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  535,
-                  560,
+                  547,
+                  575,
                   0
                 ],
                 "tag": null,
@@ -126,8 +128,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  566,
-                  574,
+                  581,
+                  589,
                   0
                 ],
                 "tag": null,
@@ -143,7 +145,7 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       266,
-                      290,
+                      293,
                       0
                     ]
                   },
@@ -162,8 +164,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      296,
-                      347,
+                      299,
+                      350,
                       0
                     ]
                   },
@@ -187,28 +189,28 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      353,
-                      379,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -0.7236,
-                    8.7236
-                  ],
-                  "tag": null,
-                  "to": [
-                    -9.7236,
-                    8.7236
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
+                      356,
                       385,
-                      409,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -0.7236,
+                    8.7236
+                  ],
+                  "tag": null,
+                  "to": [
+                    -9.7236,
+                    8.7236
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      391,
+                      418,
                       0
                     ]
                   },
@@ -227,8 +229,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      415,
-                      440,
+                      424,
+                      452,
                       0
                     ]
                   },
@@ -247,8 +249,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      446,
-                      529,
+                      458,
+                      541,
                       0
                     ]
                   },
@@ -272,8 +274,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      535,
-                      560,
+                      547,
+                      575,
                       0
                     ]
                   },
@@ -292,8 +294,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      566,
-                      574,
+                      581,
+                      589,
                       0
                     ]
                   },
@@ -312,6 +314,7 @@ description: Program memory after executing parametric_with_tan_arc.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -357,6 +360,8 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

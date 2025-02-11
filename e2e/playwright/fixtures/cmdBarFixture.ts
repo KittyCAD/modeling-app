@@ -26,11 +26,18 @@ type CmdBarSerialised =
 export class CmdBarFixture {
   public page: Page
   cmdBarOpenBtn!: Locator
+  cmdBarElement!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = page.getByTestId('command-bar-open-button')
+    this.cmdBarElement = page.getByTestId('command-bar')
   }
+
+  get currentArgumentInput() {
+    return this.page.getByTestId('cmd-bar-arg-value')
+  }
+
   reConstruct = (page: Page) => {
     this.page = page
   }
@@ -105,6 +112,9 @@ export class CmdBarFixture {
    * and assumes we are past the `pickCommand` step.
    */
   progressCmdBar = async (shouldFuzzProgressMethod = true) => {
+    // FIXME: Progressing the command bar is a race condition. We have an async useEffect that reports the final state via useCalculateKclExpression. If this does not run quickly enough, it will not "fail" the continue because you can press continue if the state is not ready. E2E tests do not know this.
+    // Wait 1250ms to assume the await executeAst of the KCL input field is finished
+    await this.page.waitForTimeout(1250)
     if (shouldFuzzProgressMethod || Math.random() > 0.5) {
       const arrowButton = this.page.getByRole('button', {
         name: 'arrow right Continue',
@@ -119,6 +129,23 @@ export class CmdBarFixture {
     } else {
       await this.page.keyboard.press('Enter')
     }
+  }
+
+  // Added data-testid to the command bar buttons
+  // command-bar-continue are the buttons to go to the next step
+  // does not include the submit which is the final button press
+  // aka the right arrow button
+  continue = async () => {
+    const continueButton = this.page.getByTestId('command-bar-continue')
+    await continueButton.click()
+  }
+
+  // Added data-testid to the command bar buttons
+  // command-bar-submit is the button for the final step to submit
+  // the command bar flow aka the checkmark button.
+  submit = async () => {
+    const submitButton = this.page.getByTestId('command-bar-submit')
+    await submitButton.click()
   }
 
   openCmdBar = async (selectCmd?: 'promptToEdit') => {

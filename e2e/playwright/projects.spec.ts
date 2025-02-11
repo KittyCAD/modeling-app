@@ -455,7 +455,7 @@ test.describe('Can export from electron app', () => {
   for (const method of exportMethods) {
     test(
       `Can export using ${method}`,
-      { tag: '@electron' },
+      { tag: ['@electron', '@skipLocalEngine'] },
       async ({ context, page }, testInfo) => {
         await context.folderSetupFn(async (dir) => {
           const bracketDir = path.join(dir, 'bracket')
@@ -1461,12 +1461,12 @@ test.fixme(
 
     await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
-  |> line([324.07, 27.199], %, $seg01)
-  |> line([118.328, -291.754], %)
-  |> line([-180.04, -202.08], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(200, sketch001)`)
+  |> line(end = [324.07, 27.199], tag = $seg01)
+  |> line(end = [118.328, -291.754])
+  |> line(end = [-180.04, -202.08])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 200)`)
     await page.waitForTimeout(800)
 
     async function getCameraZValue() {
@@ -1527,34 +1527,32 @@ test(
   { tag: '@electron' },
   async ({ context, page, cmdBar, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
-      await Promise.all([
-        fsp.mkdir(path.join(dir, 'router-template-slate'), { recursive: true }),
-        fsp.mkdir(path.join(dir, 'bracket'), { recursive: true }),
-      ])
-      await Promise.all([
-        fsp.copyFile(
-          path.join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs',
-            'router-template-slate.kcl'
-          ),
-          path.join(dir, 'router-template-slate', 'main.kcl')
+      await fsp.mkdir(path.join(dir, 'router-template-slate'), {
+        recursive: true,
+      })
+      await fsp.copyFile(
+        path.join(
+          'src',
+          'wasm-lib',
+          'tests',
+          'executor',
+          'inputs',
+          'router-template-slate.kcl'
         ),
-        fsp.copyFile(
-          path.join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs',
-            'focusrite_scarlett_mounting_braket.kcl'
-          ),
-          path.join(dir, 'bracket', 'main.kcl')
+        path.join(dir, 'router-template-slate', 'main.kcl')
+      )
+      await fsp.mkdir(path.join(dir, 'bracket'), { recursive: true })
+      await fsp.copyFile(
+        path.join(
+          'src',
+          'wasm-lib',
+          'tests',
+          'executor',
+          'inputs',
+          'focusrite_scarlett_mounting_braket.kcl'
         ),
-      ])
+        path.join(dir, 'bracket', 'main.kcl')
+      )
     })
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })

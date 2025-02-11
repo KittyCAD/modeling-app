@@ -63,7 +63,7 @@ pub struct LinearPattern3dData {
 
 /// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (num_repetitions, transform, extr) = args.get_pattern_transform_args()?;
+    let (num_repetitions, transform, extr, use_original) = args.get_pattern_transform_args()?;
 
     let solids = inner_pattern_transform(
         num_repetitions,
@@ -75,6 +75,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
             memory: *transform.memory,
         },
         extr,
+        use_original,
         exec_state,
         &args,
     )
@@ -84,7 +85,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 
 /// Repeat some 2D sketch, changing each repetition slightly.
 pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (num_repetitions, transform, sketch): (u32, super::FnAsArg<'_>, SketchSet) =
+    let (num_repetitions, transform, sketch, use_original): (u32, super::FnAsArg<'_>, SketchSet, Option<bool>) =
         super::args::FromArgs::from_args(&args, 0)?;
 
     let sketches = inner_pattern_transform_2d(
@@ -97,6 +98,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
             memory: *transform.memory,
         },
         sketch,
+        use_original,
         exec_state,
         &args,
     )
@@ -153,7 +155,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// // Sketch 4 cylinders.
 /// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
-///   |> extrude(5, %)
+///   |> extrude(length = 5)
 ///   |> patternTransform(4, transform, %)
 /// ```
 /// ```no_run
@@ -166,7 +168,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///
 /// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
-///   |> extrude(5, %)
+///   |> extrude(length = 5)
 ///   |> patternTransform(4, transform, %)
 /// ```
 /// ```no_run
@@ -181,12 +183,12 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///
 ///   return startSketchOn('XY')
 ///   |> startProfileAt(p0, %)
-///   |> lineTo(p1, %)
-///   |> lineTo(p2, %)
-///   |> lineTo(p3, %)
-///   |> lineTo(p0, %)
-///   |> close(%)
-///   |> extrude(length, %)
+///   |> line(endAbsolute = p1)
+///   |> line(endAbsolute = p2)
+///   |> line(endAbsolute = p3)
+///   |> line(endAbsolute = p0)
+///   |> close()
+///   |> extrude(length = length)
 /// }
 ///
 /// width = 20
@@ -221,12 +223,12 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   
 ///   return startSketchOn('XY')
 ///   |> startProfileAt(p0, %)
-///   |> lineTo(p1, %)
-///   |> lineTo(p2, %)
-///   |> lineTo(p3, %)
-///   |> lineTo(p0, %)
-///   |> close(%)
-///   |> extrude(length, %)
+///   |> line(endAbsolute = p1)
+///   |> line(endAbsolute = p2)
+///   |> line(endAbsolute = p3)
+///   |> line(endAbsolute = p0)
+///   |> close()
+///   |> extrude(length = length)
 /// }
 ///
 /// width = 20
@@ -262,7 +264,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// fn layer() {
 ///   return startSketchOn("XY") // or some other plane idk
 ///     |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
-///     |> extrude(h, %)
+///     |> extrude(length = h)
 /// }
 /// // The vase is 100 layers tall.
 /// // The 100 layers are replica of each other, with a slight transformation applied to each.
@@ -284,7 +286,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///        center: [0, 0],
 ///        inscribed: false
 ///      }, %)
-///   |> extrude(4, %)
+///   |> extrude(length = 4)
 ///   |> patternTransform(3, transform, %)
 /// ```
 #[stdlib {
@@ -295,6 +297,7 @@ async fn inner_pattern_transform<'a>(
     total_instances: u32,
     transform_function: FunctionParam<'a>,
     solid_set: SolidSet,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
@@ -310,7 +313,7 @@ async fn inner_pattern_transform<'a>(
         let t = make_transform::<Box<Solid>>(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
-    execute_pattern_transform(transform, solid_set, exec_state, args).await
+    execute_pattern_transform(transform, solid_set, use_original.unwrap_or_default(), exec_state, args).await
 }
 
 /// Just like patternTransform, but works on 2D sketches not 3D solids.
@@ -332,6 +335,7 @@ async fn inner_pattern_transform_2d<'a>(
     total_instances: u32,
     transform_function: FunctionParam<'a>,
     solid_set: SketchSet,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
@@ -347,14 +351,15 @@ async fn inner_pattern_transform_2d<'a>(
         let t = make_transform::<Box<Sketch>>(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
-    execute_pattern_transform(transform, solid_set, exec_state, args).await
+    execute_pattern_transform(transform, solid_set, use_original.unwrap_or_default(), exec_state, args).await
 }
 
-async fn execute_pattern_transform<'a, T: GeometryTrait>(
+async fn execute_pattern_transform<T: GeometryTrait>(
     transforms: Vec<Vec<Transform>>,
     geo_set: T::Set,
+    use_original: bool,
     exec_state: &mut ExecState,
-    args: &'a Args,
+    args: &Args,
 ) -> Result<Vec<T>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
@@ -368,7 +373,7 @@ async fn execute_pattern_transform<'a, T: GeometryTrait>(
 
     let mut output = Vec::new();
     for geo in starting {
-        let new = send_pattern_transform(transforms.clone(), &geo, exec_state, args).await?;
+        let new = send_pattern_transform(transforms.clone(), &geo, use_original, exec_state, args).await?;
         output.extend(new)
     }
     Ok(output)
@@ -379,6 +384,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     // https://github.com/KittyCAD/modeling-app/issues/2821
     transforms: Vec<Vec<Transform>>,
     solid: &T,
+    use_original: bool,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
@@ -388,7 +394,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: solid.id(),
+                entity_id: if use_original { solid.original_id() } else { solid.id() },
                 transform: Default::default(),
                 transforms,
             }),
@@ -414,9 +420,9 @@ async fn send_pattern_transform<T: GeometryTrait>(
     Ok(geometries)
 }
 
-async fn make_transform<'a, T: GeometryTrait>(
+async fn make_transform<T: GeometryTrait>(
     i: u32,
-    transform_function: &FunctionParam<'a>,
+    transform_function: &FunctionParam<'_>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<Vec<Transform>, KclError> {
@@ -602,6 +608,7 @@ fn array_to_point2d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<P
 trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
     fn id(&self) -> Uuid;
+    fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: Self::Set) -> Result<(), KclError>;
@@ -614,6 +621,9 @@ impl GeometryTrait for Box<Sketch> {
     }
     fn id(&self) -> Uuid {
         self.id
+    }
+    fn original_id(&self) -> Uuid {
+        self.original_id
     }
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
         let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
@@ -634,6 +644,11 @@ impl GeometryTrait for Box<Solid> {
     fn id(&self) -> Uuid {
         self.id
     }
+
+    fn original_id(&self) -> Uuid {
+        self.sketch.original_id
+    }
+
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
         array_to_point3d(val, source_ranges)
     }
@@ -674,7 +689,8 @@ mod tests {
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_set): (LinearPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
+    let (data, sketch_set, use_original): (LinearPattern2dData, SketchSet, Option<bool>) =
+        super::args::FromArgs::from_args(&args, 0)?;
 
     if data.axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
@@ -685,7 +701,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let sketches = inner_pattern_linear_2d(data, sketch_set, exec_state, args).await?;
+    let sketches = inner_pattern_linear_2d(data, sketch_set, use_original, exec_state, args).await?;
     Ok(sketches.into())
 }
 
@@ -701,7 +717,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 ///        distance = 4
 ///      }, %)
 ///
-/// example = extrude(1, exampleSketch)
+/// example = extrude(exampleSketch, length = 1)
 /// ```
 #[stdlib {
     name = "patternLinear2d",
@@ -709,6 +725,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 async fn inner_pattern_linear_2d(
     data: LinearPattern2dData,
     sketch_set: SketchSet,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
@@ -726,12 +743,20 @@ async fn inner_pattern_linear_2d(
             }]
         })
         .collect();
-    execute_pattern_transform(transforms, sketch_set, exec_state, &args).await
+    execute_pattern_transform(
+        transforms,
+        sketch_set,
+        use_original.unwrap_or_default(),
+        exec_state,
+        &args,
+    )
+    .await
 }
 
 /// A linear pattern on a 3D model.
 pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid_set): (LinearPattern3dData, SolidSet) = args.get_data_and_solid_set()?;
+    let (data, solid_set, use_original): (LinearPattern3dData, SolidSet, Option<bool>) =
+        super::args::FromArgs::from_args(&args, 0)?;
 
     if data.axis == [0.0, 0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
@@ -742,7 +767,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let solids = inner_pattern_linear_3d(data, solid_set, exec_state, args).await?;
+    let solids = inner_pattern_linear_3d(data, solid_set, use_original, exec_state, args).await?;
     Ok(solids.into())
 }
 
@@ -752,12 +777,12 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> line([0, 2], %)
-///   |> line([3, 1], %)
-///   |> line([0, -4], %)
-///   |> close(%)
+///   |> line(end = [0, 2])
+///   |> line(end = [3, 1])
+///   |> line(end = [0, -4])
+///   |> close()
 ///
-/// example = extrude(1, exampleSketch)
+/// example = extrude(exampleSketch, length = 1)
 ///   |> patternLinear3d({
 ///       axis = [1, 0, 1],
 ///       instances = 7,
@@ -771,6 +796,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 async fn inner_pattern_linear_3d(
     data: LinearPattern3dData,
     solid_set: SolidSet,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
@@ -788,7 +814,14 @@ async fn inner_pattern_linear_3d(
             }]
         })
         .collect();
-    execute_pattern_transform(transforms, solid_set, exec_state, &args).await
+    execute_pattern_transform(
+        transforms,
+        solid_set,
+        use_original.unwrap_or_default(),
+        exec_state,
+        &args,
+    )
+    .await
 }
 
 /// Data for a circular pattern on a 2D sketch.
@@ -807,6 +840,10 @@ pub struct CircularPattern2dData {
     pub arc_degrees: f64,
     /// Whether or not to rotate the duplicates as they are copied.
     pub rotate_duplicates: bool,
+    /// If the target being patterned is itself a pattern, then, should you use the original solid,
+    /// or the pattern?
+    #[serde(default)]
+    pub use_original: Option<bool>,
 }
 
 /// Data for a circular pattern on a 3D model.
@@ -827,6 +864,10 @@ pub struct CircularPattern3dData {
     pub arc_degrees: f64,
     /// Whether or not to rotate the duplicates as they are copied.
     pub rotate_duplicates: bool,
+    /// If the target being patterned is itself a pattern, then, should you use the original solid,
+    /// or the pattern?
+    #[serde(default)]
+    pub use_original: Option<bool>,
 }
 
 pub enum CircularPattern {
@@ -889,6 +930,13 @@ impl CircularPattern {
             CircularPattern::ThreeD(lp) => lp.rotate_duplicates,
         }
     }
+
+    pub fn use_original(&self) -> bool {
+        match self {
+            CircularPattern::TwoD(lp) => lp.use_original.unwrap_or_default(),
+            CircularPattern::ThreeD(lp) => lp.use_original.unwrap_or_default(),
+        }
+    }
 }
 
 /// A circular pattern on a 2D sketch.
@@ -907,10 +955,10 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([.5, 25], %)
-///   |> line([0, 5], %)
-///   |> line([-1, 0], %)
-///   |> line([0, -5], %)
-///   |> close(%)
+///   |> line(end = [0, 5])
+///   |> line(end = [-1, 0])
+///   |> line(end = [0, -5])
+///   |> close()
 ///   |> patternCircular2d({
 ///        center = [0, 0],
 ///        instances = 13,
@@ -918,7 +966,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 ///        rotateDuplicates = true
 ///      }, %)
 ///
-/// example = extrude(1, exampleSketch)
+/// example = extrude(exampleSketch, length = 1)
 /// ```
 #[stdlib {
     name = "patternCircular2d",
@@ -975,7 +1023,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 /// exampleSketch = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 1 }, %)
 ///
-/// example = extrude(-5, exampleSketch)
+/// example = extrude(exampleSketch, length = -5)
 ///   |> patternCircular3d({
 ///        axis = [1, -1, 0],
 ///        center = [10, -20, 0],
@@ -1055,7 +1103,11 @@ async fn pattern_circular(
             id,
             ModelingCmd::from(mcmd::EntityCircularPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: geometry.id(),
+                entity_id: if data.use_original() {
+                    geometry.original_id()
+                } else {
+                    geometry.id()
+                },
                 center: kcmc::shared::Point3d {
                     x: LengthUnit(center[0]),
                     y: LengthUnit(center[1]),

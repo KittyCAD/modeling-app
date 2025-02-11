@@ -247,7 +247,7 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
                   "id": "[uuid]",
                   "sourceRange": [
                     359,
-                    406,
+                    415,
                     0
                   ]
                 },
@@ -266,8 +266,8 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    412,
-                    420,
+                    421,
+                    428,
                     0
                   ]
                 },
@@ -286,6 +286,7 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "YZ",
               "origin": {
                 "x": 0.0,
@@ -465,6 +466,8 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -489,8 +492,8 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    494,
-                    516,
+                    502,
+                    527,
                     0
                   ]
                 },
@@ -509,8 +512,8 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    522,
-                    548,
+                    533,
+                    559,
                     0
                   ]
                 },
@@ -534,8 +537,8 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    554,
-                    586,
+                    565,
+                    597,
                     0
                   ]
                 },
@@ -559,6 +562,7 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XZ",
               "origin": {
                 "x": 0.0,
@@ -598,20 +602,22 @@ description: Program memory after executing artifact_graph_example_code_no_3d.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  459,
-                  488,
+                  467,
+                  496,
                   0
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
             "__meta": [
               {
                 "sourceRange": [
-                  459,
-                  488,
+                  467,
+                  496,
                   0
                 ]
               }

@@ -1,7 +1,6 @@
 ---
 source: kcl/src/parsing/parser.rs
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [

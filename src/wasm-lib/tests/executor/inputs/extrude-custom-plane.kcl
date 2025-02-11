@@ -1,12 +1,12 @@
 // create a sketch with name sketch000
 const sketch000 = startSketchOn('XY')
   |> startProfileAt([0.0, 0.0], %)
-  |> line([1.0, 1.0], %, $line000)
-  |> line([0.0, -1.0], %, $line001)
-  |> line([-1.0, 0.0], %, $line002)
+  |> line(end = [1.0, 1.0], tag = $line000)
+  |> line(end = [0.0, -1.0], tag = $line001)
+  |> line(end = [-1.0, 0.0], tag = $line002)
 
 // create an extrusion with name extrude000
-const extrude000 = extrude(1.0, sketch000)
+const extrude000 = extrude(sketch000, length = 1.0)
 
 // define a plane with name plane005
 const plane005 = {
@@ -21,9 +21,9 @@ const plane005 = {
 // create a sketch with name sketch001
 const sketch001 = startSketchOn(plane005)
   |> startProfileAt([0.100000, 0.250000], %)
-  |> line([0.075545, 0.494260], %, $line003)
-  |> line([0.741390, -0.113317], %, $line004)
-  |> line([-0.816935, -0.380943], %, $line005)
+  |> line(end = [0.075545, 0.494260], tag = $line003)
+  |> line(end = [0.741390, -0.113317], tag = $line004)
+  |> line(end = [-0.816935, -0.380943], tag = $line005)
 
 // create an extrusion with name extrude001
-const extrude001 = extrude(1.0, sketch001)
+const extrude001 = extrude(sketch001, length = 1.0)

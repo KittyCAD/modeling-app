@@ -31,10 +31,6 @@ win:
       arch:
         - x64
         - arm64
-    # - target: msi
-    #   arch:
-    #     - x64
-    #     - arm64
   signtoolOptions:
     sign: "./scripts/sign-win.js"
     signingHashAlgorithms:
@@ -47,15 +43,12 @@ win:
       mimeType: text/vnd.zoo.kcl
       description: Zoo KCL File
       role: Editor
-# msi:
-#   oneClick: false
-#   perMachine: true
 nsis:
   oneClick: false
   perMachine: true
   allowElevation: true
   installerIcon: "assets/icon.ico"
-  include: "./installer.nsh"
+  include: "./scripts/installer.nsh"
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:

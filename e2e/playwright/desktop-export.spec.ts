@@ -9,8 +9,8 @@ import fsp from 'fs/promises'
 
 test(
   'export works on the first try',
-  { tag: '@electron' },
-  async ({ page, context }, testInfo) => {
+  { tag: ['@electron', '@skipLocalEngine'] },
+  async ({ page, context, scene }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
@@ -118,8 +118,9 @@ test(
       // Close the file pane
       await u.closeFilePanel()
 
-      // wait for it to finish executing (todo: make this more robust)
-      await page.waitForTimeout(1000)
+      // FIXME: await scene.waitForExecutionDone() does not work. The modeling indicator stays in -receive-reliable and not execution done
+      await page.waitForTimeout(10000)
+
       // expect zero errors in guter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 

@@ -17,7 +17,7 @@ mod test_examples_line_to {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(program.into(), &mut crate::ExecState::new(&ctx.settings))
+            .run(&program, &mut crate::ExecState::new(&ctx.settings))
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -74,7 +74,7 @@ mod test_examples_line_to {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(program.into(), &mut crate::ExecState::new(&ctx.settings))
+            .run(&program, &mut crate::ExecState::new(&ctx.settings))
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -172,6 +172,7 @@ impl crate::docs::StdLibFn for LineTo {
                 required: true,
                 label_required: true,
                 description: String::new().to_string(),
+                include_in_snippet: true,
             },
             crate::docs::StdLibFnArg {
                 name: "sketch".to_string(),
@@ -180,6 +181,7 @@ impl crate::docs::StdLibFn for LineTo {
                 required: true,
                 label_required: true,
                 description: "the sketch you're adding the line to".to_string(),
+                include_in_snippet: true,
             },
         ]
     }
@@ -196,6 +198,7 @@ impl crate::docs::StdLibFn for LineTo {
             required: true,
             label_required: true,
             description: String::new(),
+            include_in_snippet: true,
         })
     }
 

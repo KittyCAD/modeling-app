@@ -19,16 +19,16 @@ const DEFAULT_V_DEGREE: u32 = 2;
 pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches")?;
     let v_degree: NonZeroU32 = args
-        .get_kw_arg_opt("vDegree")
+        .get_kw_arg_opt("vDegree")?
         .unwrap_or(NonZeroU32::new(DEFAULT_V_DEGREE).unwrap());
     // Attempt to approximate rational curves (such as arcs) using a bezier.
     // This will remove banding around interpolations between arcs and non-arcs.  It may produce errors in other scenarios
     // Over time, this field won't be necessary.
-    let bez_approximate_rational = args.get_kw_arg_opt("bezApproximateRational").unwrap_or(false);
+    let bez_approximate_rational = args.get_kw_arg_opt("bezApproximateRational")?.unwrap_or(false);
     // This can be set to override the automatically determined topological base curve, which is usually the first section encountered.
-    let base_curve_index: Option<u32> = args.get_kw_arg_opt("baseCurveIndex");
+    let base_curve_index: Option<u32> = args.get_kw_arg_opt("baseCurveIndex")?;
     // Tolerance for the loft operation.
-    let tolerance: Option<f64> = args.get_kw_arg_opt("tolerance");
+    let tolerance: Option<f64> = args.get_kw_arg_opt("tolerance")?;
 
     let value = inner_loft(
         sketches,
@@ -51,18 +51,18 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// // Loft a square and a triangle.
 /// squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
 /// triangleSketch = startSketchOn(offsetPlane('XY', 75))
 ///     |> startProfileAt([0, 125], %)
-///     |> line([-15, -30], %)
-///     |> line([30, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [-15, -30])
+///     |> line(end = [30, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
 /// loft([squareSketch, triangleSketch])
 /// ```
@@ -71,11 +71,11 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// // Loft a square, a circle, and another circle.
 /// squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
 /// circleSketch0 = startSketchOn(offsetPlane('XY', 75))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
@@ -90,11 +90,11 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// // Loft a square, a circle, and another circle with options.
 /// squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
 /// circleSketch0 = startSketchOn(offsetPlane('XY', 75))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
@@ -114,12 +114,12 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        sketches = "Which sketches to loft. Must include at least 2 sketches.",
-        v_degree = "Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction. This defaults to 2, if not specified.",
-        bez_approximate_rational = "Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary.",
-        base_curve_index = "This can be set to override the automatically determined topological base curve, which is usually the first section encountered.",
-        tolerance = "Tolerance for the loft operation.",
+    args = {
+        sketches = {docs = "Which sketches to loft. Must include at least 2 sketches."},
+        v_degree = {docs = "Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction. This defaults to 2, if not specified."},
+        bez_approximate_rational = {docs = "Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary."},
+        base_curve_index = {docs = "This can be set to override the automatically determined topological base curve, which is usually the first section encountered."},
+        tolerance = {docs = "Tolerance for the loft operation."},
     }
 }]
 async fn inner_loft(
@@ -159,5 +159,5 @@ async fn inner_loft(
     let mut sketch = sketches[0].clone();
     // Override its id with the loft id so we can get its faces later
     sketch.id = id;
-    do_post_extrude(sketch, 0.0, exec_state, args).await
+    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
 }

@@ -27,15 +27,8 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          92,
-          94,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          96,
-          97,
+          101,
+          103,
           0
         ]
       }
@@ -43,7 +36,7 @@ snapshot_kind: text
     "name": "extrude",
     "sourceRange": [
       84,
-      98,
+      104,
       0
     ],
     "type": "StdLibCall",
@@ -53,23 +46,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          121,
-          195,
+          127,
+          201,
           0
         ]
       },
       "solid": {
         "sourceRange": [
-          197,
-          198,
+          203,
+          204,
           0
         ]
       }
     },
     "name": "helixRevolutions",
     "sourceRange": [
-      104,
-      199,
+      110,
+      205,
       0
     ],
     "type": "StdLibCall",

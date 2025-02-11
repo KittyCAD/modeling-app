@@ -15,7 +15,7 @@ mod test_examples_some_function {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(program.into(), &mut crate::ExecState::new(&ctx.settings))
+            .run(&program, &mut crate::ExecState::new(&ctx.settings))
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -120,6 +120,7 @@ impl crate::docs::StdLibFn for SomeFunction {
             required: true,
             label_required: true,
             description: String::new(),
+            include_in_snippet: true,
         })
     }
 

@@ -161,7 +161,9 @@ impl Node<NonCodeNode> {
             NonCodeValue::NewLine => "\n\n".to_string(),
             NonCodeValue::Annotation { name, properties } => {
                 let mut result = "@".to_owned();
-                result.push_str(&name.name);
+                if let Some(name) = name {
+                    result.push_str(&name.name);
+                }
                 if let Some(properties) = properties {
                     result.push('(');
                     result.push_str(
@@ -793,7 +795,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{parsing::ast::types::FormatOptions, source_range::ModuleId};
+    use crate::{parsing::ast::types::FormatOptions, ModuleId};
 
     #[test]
     fn test_recast_if_else_if_same() {
@@ -882,17 +884,17 @@ fn rect(x, y, w, h) {
     |> xLine(w, %)
     |> yLine(h, %)
     |> xLine(-w, %)
-    |> close(%)
+    |> close()
     |> extrude(d, %)
 }
 
 fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
   startSketchOn('XY')
     |> startProfileAt([x1, y1], %)
-    |> lineTo([x2, y2], %)
-    |> lineTo([x3, y3], %)
-    |> lineTo([x4, y4], %)
-    |> close(%)
+    |> line(endAbsolute = [x2, y2])
+    |> line(endAbsolute = [x3, y3])
+    |> line(endAbsolute = [x4, y4])
+    |> close()
     |> extrude(d, %)
 }
 
@@ -956,7 +958,7 @@ fn o(c_x, c_y) {
          angle_start = 225 - a,
          angle_end = 45 + a
        }, %)
-    |> close(%)
+    |> close()
     |> extrude(d, %)
 
   startSketchOn('XY')
@@ -972,7 +974,7 @@ fn o(c_x, c_y) {
          angle_start = 45 - a,
          angle_end = 225 + a - 360
        }, %)
-    |> close(%)
+    |> close()
     |> extrude(d, %)
 }
 
@@ -1012,7 +1014,7 @@ insideRevolve = startSketchOn('XZ')
   |> line([overHangLength - thickness, 0], %)
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis: 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
@@ -1027,7 +1029,7 @@ sphere = startSketchOn('XZ')
        angle_end = -180,
        radius = sphereDia / 2 - 0.05
      }, %)
-  |> close(%)
+  |> close()
   |> revolve({ axis: 'x' }, %)
   |> patternCircular3d({
        axis = [0, 0, 1],
@@ -1051,7 +1053,7 @@ outsideRevolve = startSketchOn('XZ')
   |> line([-overHangLength, 0], %)
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis: 'y' }, %)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1079,7 +1081,7 @@ insideRevolve = startSketchOn('XZ')
   |> line([overHangLength - thickness, 0], %)
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis = 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
@@ -1094,7 +1096,7 @@ sphere = startSketchOn('XZ')
        angle_end = -180,
        radius = sphereDia / 2 - 0.05
      }, %)
-  |> close(%)
+  |> close()
   |> revolve({ axis = 'x' }, %)
   |> patternCircular3d({
        axis = [0, 0, 1],
@@ -1118,7 +1120,7 @@ outsideRevolve = startSketchOn('XZ')
   |> line([-overHangLength, 0], %)
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis = 'y' }, %)
 "#
         );
@@ -1245,7 +1247,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#;
 
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -1260,7 +1262,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#
         );
     }
@@ -1276,7 +1278,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#;
 
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -1291,7 +1293,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#
         );
     }
@@ -1306,7 +1308,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#;
 
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -1322,7 +1324,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#
         );
     }
@@ -1341,10 +1343,10 @@ hole_diam = 5
 fn rectShape = (pos, w, l) => {
   rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %,$edge1)
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
-    |> close(%, $edge4)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
+    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
+    |> close($edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
@@ -1371,14 +1373,14 @@ fn bracketSketch = (w, d, t) => {
 }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, $edge1)
-    |> lineTo([w / 2 + t, -t], %, $edge2)
-    |> lineTo([w / 2 + t, d + t], %, $edge3)
-    |> lineTo([w / 2, d + t], %, $edge4)
-    |> lineTo([w / 2, 0], %, $edge5)
-    |> lineTo([-w / 2, 0], %, $edge6)
-    |> lineTo([-w / 2, d + t], %, $edge7)
-    |> close(%, $edge8)
+    |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
+    |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
+    |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
+    |> line(endAbsolute = [w / 2, d + t], tag = $edge4)
+    |> line(endAbsolute = [w / 2, 0], tag = $edge5)
+    |> line(endAbsolute = [-w / 2, 0], tag = $edge6)
+    |> line(endAbsolute = [-w / 2, d + t], tag = $edge7)
+    |> close($edge8)
   return s
 }
 // build the body of the bracket
@@ -1406,7 +1408,7 @@ tabs_r = startSketchOn({
   |> line([10, -5], %)
   |> line([0, -10], %)
   |> line([-10, -5], %)
-  |> close(%)
+  |> close()
   |> hole(circle({
        center = [
          width / 2 + thk + hole_diam,
@@ -1433,7 +1435,7 @@ tabs_l = startSketchOn({
   |> line([-10, -5], %)
   |> line([0, -10], %)
   |> line([10, -5], %)
-  |> close(%)
+  |> close()
   |> hole(circle({
        center = [
          -width / 2 - thk - hole_diam,
@@ -1466,10 +1468,10 @@ hole_diam = 5
 fn rectShape(pos, w, l) {
   rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
-    |> close(%, $edge4)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
+    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
+    |> close($edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
@@ -1496,14 +1498,14 @@ fn bracketSketch(w, d, t) {
          }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, $edge1)
-    |> lineTo([w / 2 + t, -t], %, $edge2)
-    |> lineTo([w / 2 + t, d + t], %, $edge3)
-    |> lineTo([w / 2, d + t], %, $edge4)
-    |> lineTo([w / 2, 0], %, $edge5)
-    |> lineTo([-w / 2, 0], %, $edge6)
-    |> lineTo([-w / 2, d + t], %, $edge7)
-    |> close(%, $edge8)
+    |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
+    |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
+    |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
+    |> line(endAbsolute = [w / 2, d + t], tag = $edge4)
+    |> line(endAbsolute = [w / 2, 0], tag = $edge5)
+    |> line(endAbsolute = [-w / 2, 0], tag = $edge6)
+    |> line(endAbsolute = [-w / 2, d + t], tag = $edge7)
+    |> close($edge8)
   return s
 }
 // build the body of the bracket
@@ -1531,7 +1533,7 @@ tabs_r = startSketchOn({
   |> line([10, -5], %)
   |> line([0, -10], %)
   |> line([-10, -5], %)
-  |> close(%)
+  |> close()
   |> hole(circle({
        center = [
          width / 2 + thk + hole_diam,
@@ -1558,7 +1560,7 @@ tabs_l = startSketchOn({
   |> line([-10, -5], %)
   |> line([0, -10], %)
   |> line([10, -5], %)
-  |> close(%)
+  |> close()
   |> hole(circle({
        center = [
          -width / 2 - thk - hole_diam,
@@ -1584,7 +1586,7 @@ tabs_l = startSketchOn({
   |> line([0, scale], %)
   |> line([scale, 0], %)
   |> line([0, -scale], %)
-  |> close(%)
+  |> close()
   |> extrude(scale, %)
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -1598,7 +1600,7 @@ tabs_l = startSketchOn({
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
-    |> close(%)
+    |> close()
     |> extrude(scale, %)
 }
 "#
@@ -1615,7 +1617,7 @@ tabs_l = startSketchOn({
     |> line([0, scale], %)
     |> line([scale, 0], %) as bar
     |> line([0 as baz, -scale] as qux, %)
-    |> close(%)
+    |> close()
     |> extrude(scale, %)
 }
 
@@ -1831,10 +1833,10 @@ mySk1 = startSketchAt([0, 0])
         let some_program_string = r#"// comment at start
 mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([1, 1], %)
+  |> line(endAbsolute = [1, 1])
   // comment here
-  |> lineTo([0, 1], %, $myTag)
-  |> lineTo([1, 1], %)
+  |> line(endAbsolute = [0, 1], tag = $myTag)
+  |> line(endAbsolute = [1, 1])
   /* and
   here
   */
@@ -1852,10 +1854,10 @@ mySk1 = startSketchOn('XY')
             r#"// comment at start
 mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([1, 1], %)
+  |> line(endAbsolute = [1, 1])
   // comment here
-  |> lineTo([0, 1], %, $myTag)
-  |> lineTo([1, 1], %)
+  |> line(endAbsolute = [0, 1], tag = $myTag)
+  |> line(endAbsolute = [1, 1])
   /* and
   here */
   // a comment between pipe expression statements
@@ -2094,7 +2096,7 @@ firstExtrude = startSketchOn('XY')
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)
-  |> close(%)
+  |> close()
   |> extrude(h, %)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -2111,7 +2113,7 @@ firstExtrude = startSketchOn('XY')
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)
-  |> close(%)
+  |> close()
   |> extrude(h, %)
 "#
         );
@@ -2131,7 +2133,7 @@ firstExtrude = startSketchOn('XY')
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)
-  |> close(%)
+  |> close()
   |> extrude(h, %)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -2151,7 +2153,7 @@ firstExtrude = startSketchOn('XY')
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)
-  |> close(%)
+  |> close()
   |> extrude(h, %)
 "#
         );

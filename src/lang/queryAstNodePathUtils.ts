@@ -9,6 +9,7 @@ import {
 } from './wasm'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from './queryAst'
 
 function moreNodePathFromSourceRange(
   node: Node<
@@ -76,7 +77,8 @@ function moreNodePathFromSourceRange(
         const arg = args[argIndex].arg
         if (arg.start <= start && arg.end >= end) {
           path.push(['arguments', 'CallExpressionKw'])
-          path.push([argIndex, 'index'])
+          path.push([argIndex, ARG_INDEX_FIELD])
+          path.push(['arg', LABELED_ARG_FIELD])
           return moreNodePathFromSourceRange(arg, sourceRange, path)
         }
       }

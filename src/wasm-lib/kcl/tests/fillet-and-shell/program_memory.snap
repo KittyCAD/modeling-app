@@ -44,18 +44,19 @@ description: Program memory after executing fillet-and-shell.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  806,
-                  839,
+                  833,
+                  881,
                   0
                 ],
                 "tag": {
-                  "end": 838,
-                  "start": 832,
+                  "end": 880,
+                  "start": 874,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -65,13 +66,13 @@ description: Program memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  845,
                   887,
+                  944,
                   0
                 ],
                 "tag": {
-                  "end": 886,
-                  "start": 880,
+                  "end": 943,
+                  "start": 937,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -81,13 +82,13 @@ description: Program memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  893,
-                  927,
+                  950,
+                  999,
                   0
                 ],
                 "tag": {
-                  "end": 926,
-                  "start": 920,
+                  "end": 998,
+                  "start": 992,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -97,13 +98,13 @@ description: Program memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  933,
-                  949,
+                  1005,
+                  1024,
                   0
                 ],
                 "tag": {
-                  "end": 948,
-                  "start": 942,
+                  "end": 1023,
+                  "start": 1017,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -118,8 +119,8 @@ description: Program memory after executing fillet-and-shell.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      806,
-                      839,
+                      833,
+                      881,
                       0
                     ]
                   },
@@ -128,8 +129,8 @@ description: Program memory after executing fillet-and-shell.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 838,
-                    "start": 832,
+                    "end": 880,
+                    "start": 874,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -143,8 +144,8 @@ description: Program memory after executing fillet-and-shell.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      845,
                       887,
+                      944,
                       0
                     ]
                   },
@@ -153,8 +154,8 @@ description: Program memory after executing fillet-and-shell.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 886,
-                    "start": 880,
+                    "end": 943,
+                    "start": 937,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -168,8 +169,8 @@ description: Program memory after executing fillet-and-shell.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      893,
-                      927,
+                      950,
+                      999,
                       0
                     ]
                   },
@@ -178,8 +179,8 @@ description: Program memory after executing fillet-and-shell.kcl
                     73.0
                   ],
                   "tag": {
-                    "end": 926,
-                    "start": 920,
+                    "end": 998,
+                    "start": 992,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -193,8 +194,8 @@ description: Program memory after executing fillet-and-shell.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      933,
-                      949,
+                      1005,
+                      1024,
                       0
                     ]
                   },
@@ -203,8 +204,8 @@ description: Program memory after executing fillet-and-shell.kcl
                     73.0
                   ],
                   "tag": {
-                    "end": 948,
-                    "start": 942,
+                    "end": 1023,
+                    "start": 1017,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
@@ -218,6 +219,7 @@ description: Program memory after executing fillet-and-shell.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -257,8 +259,8 @@ description: Program memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    775,
-                    800,
+                    802,
+                    827,
                     0
                   ]
                 }
@@ -275,8 +277,8 @@ description: Program memory after executing fillet-and-shell.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          806,
-                          839,
+                          833,
+                          881,
                           0
                         ]
                       },
@@ -285,8 +287,8 @@ description: Program memory after executing fillet-and-shell.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 838,
-                        "start": 832,
+                        "end": 880,
+                        "start": 874,
                         "type": "TagDeclarator",
                         "value": "edge1"
                       },
@@ -300,13 +302,13 @@ description: Program memory after executing fillet-and-shell.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        806,
-                        839,
+                        833,
+                        881,
                         0
                       ],
                       "tag": {
-                        "end": 838,
-                        "start": 832,
+                        "end": 880,
+                        "start": 874,
                         "type": "TagDeclarator",
                         "value": "edge1"
                       },
@@ -316,8 +318,8 @@ description: Program memory after executing fillet-and-shell.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        832,
-                        838,
+                        874,
+                        880,
                         0
                       ]
                     }
@@ -334,8 +336,8 @@ description: Program memory after executing fillet-and-shell.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          845,
                           887,
+                          944,
                           0
                         ]
                       },
@@ -344,8 +346,8 @@ description: Program memory after executing fillet-and-shell.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 886,
-                        "start": 880,
+                        "end": 943,
+                        "start": 937,
                         "type": "TagDeclarator",
                         "value": "edge2"
                       },
@@ -359,13 +361,13 @@ description: Program memory after executing fillet-and-shell.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        845,
                         887,
+                        944,
                         0
                       ],
                       "tag": {
-                        "end": 886,
-                        "start": 880,
+                        "end": 943,
+                        "start": 937,
                         "type": "TagDeclarator",
                         "value": "edge2"
                       },
@@ -375,8 +377,8 @@ description: Program memory after executing fillet-and-shell.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        880,
-                        886,
+                        937,
+                        943,
                         0
                       ]
                     }
@@ -393,8 +395,8 @@ description: Program memory after executing fillet-and-shell.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          893,
-                          927,
+                          950,
+                          999,
                           0
                         ]
                       },
@@ -403,8 +405,8 @@ description: Program memory after executing fillet-and-shell.kcl
                         73.0
                       ],
                       "tag": {
-                        "end": 926,
-                        "start": 920,
+                        "end": 998,
+                        "start": 992,
                         "type": "TagDeclarator",
                         "value": "edge3"
                       },
@@ -418,13 +420,13 @@ description: Program memory after executing fillet-and-shell.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        893,
-                        927,
+                        950,
+                        999,
                         0
                       ],
                       "tag": {
-                        "end": 926,
-                        "start": 920,
+                        "end": 998,
+                        "start": 992,
                         "type": "TagDeclarator",
                         "value": "edge3"
                       },
@@ -434,8 +436,8 @@ description: Program memory after executing fillet-and-shell.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        920,
-                        926,
+                        992,
+                        998,
                         0
                       ]
                     }
@@ -452,8 +454,8 @@ description: Program memory after executing fillet-and-shell.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          933,
-                          949,
+                          1005,
+                          1024,
                           0
                         ]
                       },
@@ -462,8 +464,8 @@ description: Program memory after executing fillet-and-shell.kcl
                         73.0
                       ],
                       "tag": {
-                        "end": 948,
-                        "start": 942,
+                        "end": 1023,
+                        "start": 1017,
                         "type": "TagDeclarator",
                         "value": "edge4"
                       },
@@ -477,13 +479,13 @@ description: Program memory after executing fillet-and-shell.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        933,
-                        949,
+                        1005,
+                        1024,
                         0
                       ],
                       "tag": {
-                        "end": 948,
-                        "start": 942,
+                        "end": 1023,
+                        "start": 1017,
                         "type": "TagDeclarator",
                         "value": "edge4"
                       },
@@ -493,22 +495,24 @@ description: Program memory after executing fillet-and-shell.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        942,
-                        948,
+                        1017,
+                        1023,
                         0
                       ]
                     }
                   ]
                 }
               },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
               "__meta": [
                 {
                   "sourceRange": [
-                    775,
-                    800,
+                    802,
+                    827,
                     0
                   ]
                 }
@@ -553,8 +557,8 @@ description: Program memory after executing fillet-and-shell.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  775,
-                  800,
+                  802,
+                  827,
                   0
                 ]
               }
@@ -666,8 +670,8 @@ description: Program memory after executing fillet-and-shell.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  806,
-                  839,
+                  833,
+                  881,
                   0
                 ]
               },
@@ -676,8 +680,8 @@ description: Program memory after executing fillet-and-shell.kcl
                 0.0
               ],
               "tag": {
-                "end": 838,
-                "start": 832,
+                "end": 880,
+                "start": 874,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -691,13 +695,13 @@ description: Program memory after executing fillet-and-shell.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                806,
-                839,
+                833,
+                881,
                 0
               ],
               "tag": {
-                "end": 838,
-                "start": 832,
+                "end": 880,
+                "start": 874,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -707,8 +711,8 @@ description: Program memory after executing fillet-and-shell.kcl
           "__meta": [
             {
               "sourceRange": [
-                832,
-                838,
+                874,
+                880,
                 0
               ]
             }
@@ -726,8 +730,8 @@ description: Program memory after executing fillet-and-shell.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  845,
                   887,
+                  944,
                   0
                 ]
               },
@@ -736,8 +740,8 @@ description: Program memory after executing fillet-and-shell.kcl
                 0.0
               ],
               "tag": {
-                "end": 886,
-                "start": 880,
+                "end": 943,
+                "start": 937,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -751,13 +755,13 @@ description: Program memory after executing fillet-and-shell.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                845,
                 887,
+                944,
                 0
               ],
               "tag": {
-                "end": 886,
-                "start": 880,
+                "end": 943,
+                "start": 937,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -767,8 +771,8 @@ description: Program memory after executing fillet-and-shell.kcl
           "__meta": [
             {
               "sourceRange": [
-                880,
-                886,
+                937,
+                943,
                 0
               ]
             }
@@ -786,8 +790,8 @@ description: Program memory after executing fillet-and-shell.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  893,
-                  927,
+                  950,
+                  999,
                   0
                 ]
               },
@@ -796,8 +800,8 @@ description: Program memory after executing fillet-and-shell.kcl
                 73.0
               ],
               "tag": {
-                "end": 926,
-                "start": 920,
+                "end": 998,
+                "start": 992,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -811,13 +815,13 @@ description: Program memory after executing fillet-and-shell.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                893,
-                927,
+                950,
+                999,
                 0
               ],
               "tag": {
-                "end": 926,
-                "start": 920,
+                "end": 998,
+                "start": 992,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -827,8 +831,8 @@ description: Program memory after executing fillet-and-shell.kcl
           "__meta": [
             {
               "sourceRange": [
-                920,
-                926,
+                992,
+                998,
                 0
               ]
             }
@@ -846,8 +850,8 @@ description: Program memory after executing fillet-and-shell.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  933,
-                  949,
+                  1005,
+                  1024,
                   0
                 ]
               },
@@ -856,8 +860,8 @@ description: Program memory after executing fillet-and-shell.kcl
                 73.0
               ],
               "tag": {
-                "end": 948,
-                "start": 942,
+                "end": 1023,
+                "start": 1017,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -871,13 +875,13 @@ description: Program memory after executing fillet-and-shell.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                933,
-                949,
+                1005,
+                1024,
                 0
               ],
               "tag": {
-                "end": 948,
-                "start": 942,
+                "end": 1023,
+                "start": 1017,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -887,8 +891,8 @@ description: Program memory after executing fillet-and-shell.kcl
           "__meta": [
             {
               "sourceRange": [
-                942,
-                948,
+                1017,
+                1023,
                 0
               ]
             }
@@ -921,11 +925,11 @@ description: Program memory after executing fillet-and-shell.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1425,
+                    "end": 1512,
                     "id": {
-                      "end": 1230,
+                      "end": 1311,
                       "name": "screw",
-                      "start": 1225,
+                      "start": 1306,
                       "type": "Identifier"
                     },
                     "init": {
@@ -933,22 +937,22 @@ description: Program memory after executing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1251,
+                              "end": 1332,
                               "raw": "\"XY\"",
-                              "start": 1247,
+                              "start": 1328,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XY"
                             }
                           ],
                           "callee": {
-                            "end": 1246,
+                            "end": 1327,
                             "name": "startSketchOn",
-                            "start": 1233,
+                            "start": 1314,
                             "type": "Identifier"
                           },
-                          "end": 1252,
-                          "start": 1233,
+                          "end": 1333,
+                          "start": 1314,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -957,9 +961,9 @@ description: Program memory after executing fillet-and-shell.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 1277,
+                                  "end": 1358,
                                   "raw": "0",
-                                  "start": 1276,
+                                  "start": 1357,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -968,9 +972,9 @@ description: Program memory after executing fillet-and-shell.kcl
                                   }
                                 },
                                 {
-                                  "end": 1280,
+                                  "end": 1361,
                                   "raw": "0",
-                                  "start": 1279,
+                                  "start": 1360,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -979,81 +983,81 @@ description: Program memory after executing fillet-and-shell.kcl
                                   }
                                 }
                               ],
-                              "end": 1281,
-                              "start": 1275,
+                              "end": 1362,
+                              "start": 1356,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 1284,
-                              "start": 1283,
+                              "end": 1365,
+                              "start": 1364,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1274,
+                            "end": 1355,
                             "name": "startProfileAt",
-                            "start": 1260,
+                            "start": 1341,
                             "type": "Identifier"
                           },
-                          "end": 1285,
-                          "start": 1260,
+                          "end": 1366,
+                          "start": 1341,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1333,
+                              "end": 1414,
                               "properties": [
                                 {
-                                  "end": 1317,
+                                  "end": 1398,
                                   "key": {
-                                    "end": 1308,
+                                    "end": 1389,
                                     "name": "center",
-                                    "start": 1302,
+                                    "start": 1383,
                                     "type": "Identifier"
                                   },
-                                  "start": 1302,
+                                  "start": 1383,
                                   "type": "ObjectProperty",
                                   "value": {
                                     "elements": [
                                       {
-                                        "end": 1313,
+                                        "end": 1394,
                                         "name": "x",
-                                        "start": 1312,
+                                        "start": 1393,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       {
-                                        "end": 1316,
+                                        "end": 1397,
                                         "name": "y",
-                                        "start": 1315,
+                                        "start": 1396,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
-                                    "end": 1317,
-                                    "start": 1311,
+                                    "end": 1398,
+                                    "start": 1392,
                                     "type": "ArrayExpression",
                                     "type": "ArrayExpression"
                                   }
                                 },
                                 {
-                                  "end": 1331,
+                                  "end": 1412,
                                   "key": {
-                                    "end": 1325,
+                                    "end": 1406,
                                     "name": "radius",
-                                    "start": 1319,
+                                    "start": 1400,
                                     "type": "Identifier"
                                   },
-                                  "start": 1319,
+                                  "start": 1400,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1331,
+                                    "end": 1412,
                                     "raw": "2.5",
-                                    "start": 1328,
+                                    "start": 1409,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -1063,25 +1067,25 @@ description: Program memory after executing fillet-and-shell.kcl
                                   }
                                 }
                               ],
-                              "start": 1300,
+                              "start": 1381,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1336,
-                              "start": 1335,
+                              "end": 1417,
+                              "start": 1416,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1299,
+                            "end": 1380,
                             "name": "circle",
-                            "start": 1293,
+                            "start": 1374,
                             "type": "Identifier"
                           },
-                          "end": 1337,
-                          "start": 1293,
+                          "end": 1418,
+                          "start": 1374,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1090,55 +1094,55 @@ description: Program memory after executing fillet-and-shell.kcl
                             {
                               "arguments": [
                                 {
-                                  "end": 1391,
+                                  "end": 1472,
                                   "properties": [
                                     {
-                                      "end": 1374,
+                                      "end": 1455,
                                       "key": {
-                                        "end": 1365,
+                                        "end": 1446,
                                         "name": "center",
-                                        "start": 1359,
+                                        "start": 1440,
                                         "type": "Identifier"
                                       },
-                                      "start": 1359,
+                                      "start": 1440,
                                       "type": "ObjectProperty",
                                       "value": {
                                         "elements": [
                                           {
-                                            "end": 1370,
+                                            "end": 1451,
                                             "name": "x",
-                                            "start": 1369,
+                                            "start": 1450,
                                             "type": "Identifier",
                                             "type": "Identifier"
                                           },
                                           {
-                                            "end": 1373,
+                                            "end": 1454,
                                             "name": "y",
-                                            "start": 1372,
+                                            "start": 1453,
                                             "type": "Identifier",
                                             "type": "Identifier"
                                           }
                                         ],
-                                        "end": 1374,
-                                        "start": 1368,
+                                        "end": 1455,
+                                        "start": 1449,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       }
                                     },
                                     {
-                                      "end": 1389,
+                                      "end": 1470,
                                       "key": {
-                                        "end": 1382,
+                                        "end": 1463,
                                         "name": "radius",
-                                        "start": 1376,
+                                        "start": 1457,
                                         "type": "Identifier"
                                       },
-                                      "start": 1376,
+                                      "start": 1457,
                                       "type": "ObjectProperty",
                                       "value": {
-                                        "end": 1389,
+                                        "end": 1470,
                                         "raw": "1.25",
-                                        "start": 1385,
+                                        "start": 1466,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -1148,136 +1152,138 @@ description: Program memory after executing fillet-and-shell.kcl
                                       }
                                     }
                                   ],
-                                  "start": 1357,
+                                  "start": 1438,
                                   "type": "ObjectExpression",
                                   "type": "ObjectExpression"
                                 },
                                 {
-                                  "end": 1394,
-                                  "start": 1393,
+                                  "end": 1475,
+                                  "start": 1474,
                                   "type": "PipeSubstitution",
                                   "type": "PipeSubstitution"
                                 }
                               ],
                               "callee": {
-                                "end": 1356,
+                                "end": 1437,
                                 "name": "circle",
-                                "start": 1350,
+                                "start": 1431,
                                 "type": "Identifier"
                               },
-                              "end": 1395,
-                              "start": 1350,
+                              "end": 1476,
+                              "start": 1431,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             },
                             {
-                              "end": 1398,
-                              "start": 1397,
+                              "end": 1479,
+                              "start": 1478,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1349,
+                            "end": 1430,
                             "name": "hole",
-                            "start": 1345,
+                            "start": 1426,
                             "type": "Identifier"
                           },
-                          "end": 1399,
-                          "start": 1345,
+                          "end": 1480,
+                          "start": 1426,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1421,
-                              "name": "height",
-                              "start": 1415,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            {
-                              "end": 1424,
-                              "start": 1423,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "length"
+                              },
+                              "arg": {
+                                "end": 1511,
+                                "name": "height",
+                                "start": 1505,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              }
                             }
                           ],
                           "callee": {
-                            "end": 1414,
+                            "end": 1495,
                             "name": "extrude",
-                            "start": 1407,
+                            "start": 1488,
                             "type": "Identifier"
                           },
-                          "end": 1425,
-                          "start": 1407,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "end": 1512,
+                          "start": 1488,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         }
                       ],
-                      "end": 1425,
-                      "start": 1233,
+                      "end": 1512,
+                      "start": 1314,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 1225,
+                    "start": 1306,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1425,
+                  "end": 1512,
                   "kind": "const",
-                  "start": 1225,
+                  "start": 1306,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1440,
+                    "end": 1527,
                     "name": "screw",
-                    "start": 1435,
+                    "start": 1522,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1440,
-                  "start": 1428,
+                  "end": 1527,
+                  "start": 1515,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1442,
-              "start": 1221
+              "end": 1529,
+              "start": 1302
             },
-            "end": 1442,
+            "end": 1529,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1208,
+                  "end": 1289,
                   "name": "x",
-                  "start": 1207,
+                  "start": 1288,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1211,
+                  "end": 1292,
                   "name": "y",
-                  "start": 1210,
+                  "start": 1291,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1219,
+                  "end": 1300,
                   "name": "height",
-                  "start": 1213,
+                  "start": 1294,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 1206,
+            "start": 1287,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -1322,18 +1328,19 @@ description: Program memory after executing fillet-and-shell.kcl
                     "value": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            806,
-                            839,
+                            833,
+                            881,
                             0
                           ],
                           "tag": {
-                            "end": 838,
-                            "start": 832,
+                            "end": 880,
+                            "start": 874,
                             "type": "TagDeclarator",
                             "value": "edge1"
                           },
@@ -1343,13 +1350,13 @@ description: Program memory after executing fillet-and-shell.kcl
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            845,
                             887,
+                            944,
                             0
                           ],
                           "tag": {
-                            "end": 886,
-                            "start": 880,
+                            "end": 943,
+                            "start": 937,
                             "type": "TagDeclarator",
                             "value": "edge2"
                           },
@@ -1359,13 +1366,13 @@ description: Program memory after executing fillet-and-shell.kcl
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            893,
-                            927,
+                            950,
+                            999,
                             0
                           ],
                           "tag": {
-                            "end": 926,
-                            "start": 920,
+                            "end": 998,
+                            "start": 992,
                             "type": "TagDeclarator",
                             "value": "edge3"
                           },
@@ -1375,13 +1382,13 @@ description: Program memory after executing fillet-and-shell.kcl
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            933,
-                            949,
+                            1005,
+                            1024,
                             0
                           ],
                           "tag": {
-                            "end": 948,
-                            "start": 942,
+                            "end": 1023,
+                            "start": 1017,
                             "type": "TagDeclarator",
                             "value": "edge4"
                           },
@@ -1396,8 +1403,8 @@ description: Program memory after executing fillet-and-shell.kcl
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                806,
-                                839,
+                                833,
+                                881,
                                 0
                               ]
                             },
@@ -1406,8 +1413,8 @@ description: Program memory after executing fillet-and-shell.kcl
                               0.0
                             ],
                             "tag": {
-                              "end": 838,
-                              "start": 832,
+                              "end": 880,
+                              "start": 874,
                               "type": "TagDeclarator",
                               "value": "edge1"
                             },
@@ -1421,8 +1428,8 @@ description: Program memory after executing fillet-and-shell.kcl
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                845,
                                 887,
+                                944,
                                 0
                               ]
                             },
@@ -1431,8 +1438,8 @@ description: Program memory after executing fillet-and-shell.kcl
                               0.0
                             ],
                             "tag": {
-                              "end": 886,
-                              "start": 880,
+                              "end": 943,
+                              "start": 937,
                               "type": "TagDeclarator",
                               "value": "edge2"
                             },
@@ -1446,8 +1453,8 @@ description: Program memory after executing fillet-and-shell.kcl
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                893,
-                                927,
+                                950,
+                                999,
                                 0
                               ]
                             },
@@ -1456,8 +1463,8 @@ description: Program memory after executing fillet-and-shell.kcl
                               73.0
                             ],
                             "tag": {
-                              "end": 926,
-                              "start": 920,
+                              "end": 998,
+                              "start": 992,
                               "type": "TagDeclarator",
                               "value": "edge3"
                             },
@@ -1471,8 +1478,8 @@ description: Program memory after executing fillet-and-shell.kcl
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                933,
-                                949,
+                                1005,
+                                1024,
                                 0
                               ]
                             },
@@ -1481,8 +1488,8 @@ description: Program memory after executing fillet-and-shell.kcl
                               73.0
                             ],
                             "tag": {
-                              "end": 948,
-                              "start": 942,
+                              "end": 1023,
+                              "start": 1017,
                               "type": "TagDeclarator",
                               "value": "edge4"
                             },
@@ -1496,6 +1503,7 @@ description: Program memory after executing fillet-and-shell.kcl
                         "on": {
                           "type": "plane",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "XY",
                           "origin": {
                             "x": 0.0,
@@ -1535,8 +1543,8 @@ description: Program memory after executing fillet-and-shell.kcl
                           "__geoMeta": {
                             "id": "[uuid]",
                             "sourceRange": [
-                              775,
-                              800,
+                              802,
+                              827,
                               0
                             ]
                           }
@@ -1553,8 +1561,8 @@ description: Program memory after executing fillet-and-shell.kcl
                                 "__geoMeta": {
                                   "id": "[uuid]",
                                   "sourceRange": [
-                                    806,
-                                    839,
+                                    833,
+                                    881,
                                     0
                                   ]
                                 },
@@ -1563,8 +1571,8 @@ description: Program memory after executing fillet-and-shell.kcl
                                   0.0
                                 ],
                                 "tag": {
-                                  "end": 838,
-                                  "start": 832,
+                                  "end": 880,
+                                  "start": 874,
                                   "type": "TagDeclarator",
                                   "value": "edge1"
                                 },
@@ -1578,13 +1586,13 @@ description: Program memory after executing fillet-and-shell.kcl
                                 "faceId": "[uuid]",
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  806,
-                                  839,
+                                  833,
+                                  881,
                                   0
                                 ],
                                 "tag": {
-                                  "end": 838,
-                                  "start": 832,
+                                  "end": 880,
+                                  "start": 874,
                                   "type": "TagDeclarator",
                                   "value": "edge1"
                                 },
@@ -1594,8 +1602,8 @@ description: Program memory after executing fillet-and-shell.kcl
                             "__meta": [
                               {
                                 "sourceRange": [
-                                  832,
-                                  838,
+                                  874,
+                                  880,
                                   0
                                 ]
                               }
@@ -1612,8 +1620,8 @@ description: Program memory after executing fillet-and-shell.kcl
                                 "__geoMeta": {
                                   "id": "[uuid]",
                                   "sourceRange": [
-                                    845,
                                     887,
+                                    944,
                                     0
                                   ]
                                 },
@@ -1622,8 +1630,8 @@ description: Program memory after executing fillet-and-shell.kcl
                                   0.0
                                 ],
                                 "tag": {
-                                  "end": 886,
-                                  "start": 880,
+                                  "end": 943,
+                                  "start": 937,
                                   "type": "TagDeclarator",
                                   "value": "edge2"
                                 },
@@ -1637,13 +1645,13 @@ description: Program memory after executing fillet-and-shell.kcl
                                 "faceId": "[uuid]",
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  845,
                                   887,
+                                  944,
                                   0
                                 ],
                                 "tag": {
-                                  "end": 886,
-                                  "start": 880,
+                                  "end": 943,
+                                  "start": 937,
                                   "type": "TagDeclarator",
                                   "value": "edge2"
                                 },
@@ -1653,8 +1661,8 @@ description: Program memory after executing fillet-and-shell.kcl
                             "__meta": [
                               {
                                 "sourceRange": [
-                                  880,
-                                  886,
+                                  937,
+                                  943,
                                   0
                                 ]
                               }
@@ -1671,8 +1679,8 @@ description: Program memory after executing fillet-and-shell.kcl
                                 "__geoMeta": {
                                   "id": "[uuid]",
                                   "sourceRange": [
-                                    893,
-                                    927,
+                                    950,
+                                    999,
                                     0
                                   ]
                                 },
@@ -1681,8 +1689,8 @@ description: Program memory after executing fillet-and-shell.kcl
                                   73.0
                                 ],
                                 "tag": {
-                                  "end": 926,
-                                  "start": 920,
+                                  "end": 998,
+                                  "start": 992,
                                   "type": "TagDeclarator",
                                   "value": "edge3"
                                 },
@@ -1696,13 +1704,13 @@ description: Program memory after executing fillet-and-shell.kcl
                                 "faceId": "[uuid]",
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  893,
-                                  927,
+                                  950,
+                                  999,
                                   0
                                 ],
                                 "tag": {
-                                  "end": 926,
-                                  "start": 920,
+                                  "end": 998,
+                                  "start": 992,
                                   "type": "TagDeclarator",
                                   "value": "edge3"
                                 },
@@ -1712,8 +1720,8 @@ description: Program memory after executing fillet-and-shell.kcl
                             "__meta": [
                               {
                                 "sourceRange": [
-                                  920,
-                                  926,
+                                  992,
+                                  998,
                                   0
                                 ]
                               }
@@ -1730,8 +1738,8 @@ description: Program memory after executing fillet-and-shell.kcl
                                 "__geoMeta": {
                                   "id": "[uuid]",
                                   "sourceRange": [
-                                    933,
-                                    949,
+                                    1005,
+                                    1024,
                                     0
                                   ]
                                 },
@@ -1740,8 +1748,8 @@ description: Program memory after executing fillet-and-shell.kcl
                                   73.0
                                 ],
                                 "tag": {
-                                  "end": 948,
-                                  "start": 942,
+                                  "end": 1023,
+                                  "start": 1017,
                                   "type": "TagDeclarator",
                                   "value": "edge4"
                                 },
@@ -1755,13 +1763,13 @@ description: Program memory after executing fillet-and-shell.kcl
                                 "faceId": "[uuid]",
                                 "id": "[uuid]",
                                 "sourceRange": [
-                                  933,
-                                  949,
+                                  1005,
+                                  1024,
                                   0
                                 ],
                                 "tag": {
-                                  "end": 948,
-                                  "start": 942,
+                                  "end": 1023,
+                                  "start": 1017,
                                   "type": "TagDeclarator",
                                   "value": "edge4"
                                 },
@@ -1771,22 +1779,24 @@ description: Program memory after executing fillet-and-shell.kcl
                             "__meta": [
                               {
                                 "sourceRange": [
-                                  942,
-                                  948,
+                                  1017,
+                                  1023,
                                   0
                                 ]
                               }
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
                         "__meta": [
                           {
                             "sourceRange": [
-                              775,
-                              800,
+                              802,
+                              827,
                               0
                             ]
                           }
@@ -1831,8 +1841,8 @@ description: Program memory after executing fillet-and-shell.kcl
                       "__meta": [
                         {
                           "sourceRange": [
-                            775,
-                            800,
+                            802,
+                            827,
                             0
                           ]
                         }
@@ -1944,8 +1954,8 @@ description: Program memory after executing fillet-and-shell.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            806,
-                            839,
+                            833,
+                            881,
                             0
                           ]
                         },
@@ -1954,8 +1964,8 @@ description: Program memory after executing fillet-and-shell.kcl
                           0.0
                         ],
                         "tag": {
-                          "end": 838,
-                          "start": 832,
+                          "end": 880,
+                          "start": 874,
                           "type": "TagDeclarator",
                           "value": "edge1"
                         },
@@ -1969,13 +1979,13 @@ description: Program memory after executing fillet-and-shell.kcl
                         "faceId": "[uuid]",
                         "id": "[uuid]",
                         "sourceRange": [
-                          806,
-                          839,
+                          833,
+                          881,
                           0
                         ],
                         "tag": {
-                          "end": 838,
-                          "start": 832,
+                          "end": 880,
+                          "start": 874,
                           "type": "TagDeclarator",
                           "value": "edge1"
                         },
@@ -1985,8 +1995,8 @@ description: Program memory after executing fillet-and-shell.kcl
                     "__meta": [
                       {
                         "sourceRange": [
-                          832,
-                          838,
+                          874,
+                          880,
                           0
                         ]
                       }
@@ -2004,8 +2014,8 @@ description: Program memory after executing fillet-and-shell.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            845,
                             887,
+                            944,
                             0
                           ]
                         },
@@ -2014,8 +2024,8 @@ description: Program memory after executing fillet-and-shell.kcl
                           0.0
                         ],
                         "tag": {
-                          "end": 886,
-                          "start": 880,
+                          "end": 943,
+                          "start": 937,
                           "type": "TagDeclarator",
                           "value": "edge2"
                         },
@@ -2029,13 +2039,13 @@ description: Program memory after executing fillet-and-shell.kcl
                         "faceId": "[uuid]",
                         "id": "[uuid]",
                         "sourceRange": [
-                          845,
                           887,
+                          944,
                           0
                         ],
                         "tag": {
-                          "end": 886,
-                          "start": 880,
+                          "end": 943,
+                          "start": 937,
                           "type": "TagDeclarator",
                           "value": "edge2"
                         },
@@ -2045,8 +2055,8 @@ description: Program memory after executing fillet-and-shell.kcl
                     "__meta": [
                       {
                         "sourceRange": [
-                          880,
-                          886,
+                          937,
+                          943,
                           0
                         ]
                       }
@@ -2064,8 +2074,8 @@ description: Program memory after executing fillet-and-shell.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            893,
-                            927,
+                            950,
+                            999,
                             0
                           ]
                         },
@@ -2074,8 +2084,8 @@ description: Program memory after executing fillet-and-shell.kcl
                           73.0
                         ],
                         "tag": {
-                          "end": 926,
-                          "start": 920,
+                          "end": 998,
+                          "start": 992,
                           "type": "TagDeclarator",
                           "value": "edge3"
                         },
@@ -2089,13 +2099,13 @@ description: Program memory after executing fillet-and-shell.kcl
                         "faceId": "[uuid]",
                         "id": "[uuid]",
                         "sourceRange": [
-                          893,
-                          927,
+                          950,
+                          999,
                           0
                         ],
                         "tag": {
-                          "end": 926,
-                          "start": 920,
+                          "end": 998,
+                          "start": 992,
                           "type": "TagDeclarator",
                           "value": "edge3"
                         },
@@ -2105,8 +2115,8 @@ description: Program memory after executing fillet-and-shell.kcl
                     "__meta": [
                       {
                         "sourceRange": [
-                          920,
-                          926,
+                          992,
+                          998,
                           0
                         ]
                       }
@@ -2124,8 +2134,8 @@ description: Program memory after executing fillet-and-shell.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            933,
-                            949,
+                            1005,
+                            1024,
                             0
                           ]
                         },
@@ -2134,8 +2144,8 @@ description: Program memory after executing fillet-and-shell.kcl
                           73.0
                         ],
                         "tag": {
-                          "end": 948,
-                          "start": 942,
+                          "end": 1023,
+                          "start": 1017,
                           "type": "TagDeclarator",
                           "value": "edge4"
                         },
@@ -2149,13 +2159,13 @@ description: Program memory after executing fillet-and-shell.kcl
                         "faceId": "[uuid]",
                         "id": "[uuid]",
                         "sourceRange": [
-                          933,
-                          949,
+                          1005,
+                          1024,
                           0
                         ],
                         "tag": {
-                          "end": 948,
-                          "start": 942,
+                          "end": 1023,
+                          "start": 1017,
                           "type": "TagDeclarator",
                           "value": "edge4"
                         },
@@ -2165,8 +2175,8 @@ description: Program memory after executing fillet-and-shell.kcl
                     "__meta": [
                       {
                         "sourceRange": [
-                          942,
-                          948,
+                          1017,
+                          1023,
                           0
                         ]
                       }
@@ -2255,7 +2265,7 @@ description: Program memory after executing fillet-and-shell.kcl
                             "id": "[uuid]",
                             "sourceRange": [
                               467,
-                              549,
+                              558,
                               0
                             ]
                           },
@@ -2274,8 +2284,8 @@ description: Program memory after executing fillet-and-shell.kcl
                           "__geoMeta": {
                             "id": "[uuid]",
                             "sourceRange": [
-                              555,
-                              637,
+                              564,
+                              655,
                               0
                             ]
                           },
@@ -2294,8 +2304,8 @@ description: Program memory after executing fillet-and-shell.kcl
                           "__geoMeta": {
                             "id": "[uuid]",
                             "sourceRange": [
-                              643,
-                              727,
+                              661,
+                              754,
                               0
                             ]
                           },
@@ -2314,8 +2324,8 @@ description: Program memory after executing fillet-and-shell.kcl
                           "__geoMeta": {
                             "id": "[uuid]",
                             "sourceRange": [
-                              733,
-                              741,
+                              760,
+                              768,
                               0
                             ]
                           },
@@ -2334,6 +2344,7 @@ description: Program memory after executing fillet-and-shell.kcl
                       "on": {
                         "type": "plane",
                         "id": "[uuid]",
+                        "artifactId": "[uuid]",
                         "value": "XY",
                         "origin": {
                           "x": 0.0,
@@ -2379,6 +2390,8 @@ description: Program memory after executing fillet-and-shell.kcl
                           ]
                         }
                       },
+                      "artifactId": "[uuid]",
+                      "originalId": "[uuid]",
                       "units": {
                         "type": "Mm"
                       },
@@ -2468,8 +2481,8 @@ description: Program memory after executing fillet-and-shell.kcl
           "__meta": [
             {
               "sourceRange": [
-                1206,
-                1442,
+                1287,
+                1529,
                 0
               ]
             }
@@ -2538,7 +2551,7 @@ description: Program memory after executing fillet-and-shell.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     467,
-                    549,
+                    558,
                     0
                   ]
                 },
@@ -2557,8 +2570,8 @@ description: Program memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    555,
-                    637,
+                    564,
+                    655,
                     0
                   ]
                 },
@@ -2577,8 +2590,8 @@ description: Program memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    643,
-                    727,
+                    661,
+                    754,
                     0
                   ]
                 },
@@ -2597,8 +2610,8 @@ description: Program memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    733,
-                    741,
+                    760,
+                    768,
                     0
                   ]
                 },
@@ -2617,6 +2630,7 @@ description: Program memory after executing fillet-and-shell.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -2662,6 +2676,8 @@ description: Program memory after executing fillet-and-shell.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },

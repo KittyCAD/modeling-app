@@ -109,40 +109,41 @@ description: Program memory after executing sketch_in_object.kcl
                       {
                         "arguments": [
                           {
-                            "elements": [
-                              {
-                                "end": 88,
-                                "raw": "0",
-                                "start": 87,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "None"
+                            "type": "LabeledArg",
+                            "label": {
+                              "type": "Identifier",
+                              "name": "end"
+                            },
+                            "arg": {
+                              "elements": [
+                                {
+                                  "end": 94,
+                                  "raw": "0",
+                                  "start": 93,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                {
+                                  "end": 97,
+                                  "raw": "1",
+                                  "start": 96,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 }
-                              },
-                              {
-                                "end": 91,
-                                "raw": "1",
-                                "start": 90,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 1.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            ],
-                            "end": 92,
-                            "start": 86,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          },
-                          {
-                            "end": 95,
-                            "start": 94,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
+                              ],
+                              "end": 98,
+                              "start": 92,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
                           }
                         ],
                         "callee": {
@@ -151,81 +152,26 @@ description: Program memory after executing sketch_in_object.kcl
                           "start": 81,
                           "type": "Identifier"
                         },
-                        "end": 96,
+                        "end": 99,
                         "start": 81,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
                           {
-                            "elements": [
-                              {
-                                "end": 111,
-                                "raw": "1",
-                                "start": 110,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 1.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              {
-                                "end": 114,
-                                "raw": "0",
-                                "start": 113,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "None"
-                                }
-                              }
-                            ],
-                            "end": 115,
-                            "start": 109,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          },
-                          {
-                            "end": 118,
-                            "start": 117,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
-                          "end": 108,
-                          "name": "line",
-                          "start": 104,
-                          "type": "Identifier"
-                        },
-                        "end": 119,
-                        "start": 104,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "elements": [
-                              {
-                                "end": 134,
-                                "raw": "0",
-                                "start": 133,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              {
-                                "argument": {
-                                  "end": 138,
+                            "type": "LabeledArg",
+                            "label": {
+                              "type": "Identifier",
+                              "name": "end"
+                            },
+                            "arg": {
+                              "elements": [
+                                {
+                                  "end": 120,
                                   "raw": "1",
-                                  "start": 137,
+                                  "start": 119,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -233,72 +179,132 @@ description: Program memory after executing sketch_in_object.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "end": 138,
-                                "operator": "-",
-                                "start": 136,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            ],
-                            "end": 139,
-                            "start": 132,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          },
-                          {
-                            "end": 142,
-                            "start": 141,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
+                                {
+                                  "end": 123,
+                                  "raw": "0",
+                                  "start": 122,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                }
+                              ],
+                              "end": 124,
+                              "start": 118,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
                           }
                         ],
                         "callee": {
-                          "end": 131,
+                          "end": 111,
                           "name": "line",
-                          "start": 127,
+                          "start": 107,
                           "type": "Identifier"
                         },
-                        "end": 143,
-                        "start": 127,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "end": 125,
+                        "start": 107,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
                           {
-                            "end": 158,
-                            "start": 157,
+                            "type": "LabeledArg",
+                            "label": {
+                              "type": "Identifier",
+                              "name": "end"
+                            },
+                            "arg": {
+                              "elements": [
+                                {
+                                  "end": 146,
+                                  "raw": "0",
+                                  "start": 145,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                {
+                                  "argument": {
+                                    "end": 150,
+                                    "raw": "1",
+                                    "start": 149,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "end": 150,
+                                  "operator": "-",
+                                  "start": 148,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
+                                }
+                              ],
+                              "end": 151,
+                              "start": 144,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "end": 137,
+                          "name": "line",
+                          "start": 133,
+                          "type": "Identifier"
+                        },
+                        "end": 152,
+                        "start": 133,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "end": 167,
+                            "start": 166,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 156,
+                          "end": 165,
                           "name": "close",
-                          "start": 151,
+                          "start": 160,
                           "type": "Identifier"
                         },
-                        "end": 159,
-                        "start": 151,
+                        "end": 168,
+                        "start": 160,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "end": 159,
+                    "end": 168,
                     "start": 21,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 159,
+                  "end": 168,
                   "start": 14,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 161,
+              "end": 170,
               "start": 10
             },
-            "end": 161,
+            "end": 170,
             "params": [],
             "start": 7,
             "type": "FunctionExpression"
@@ -338,7 +344,7 @@ description: Program memory after executing sketch_in_object.kcl
             {
               "sourceRange": [
                 7,
-                161,
+                170,
                 0
               ]
             }
@@ -351,52 +357,52 @@ description: Program memory after executing sketch_in_object.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 385,
+                    "end": 403,
                     "properties": [
                       {
-                        "end": 381,
+                        "end": 399,
                         "key": {
-                          "end": 197,
+                          "end": 206,
                           "name": "thing1",
-                          "start": 191,
+                          "start": 200,
                           "type": "Identifier"
                         },
-                        "start": 191,
+                        "start": 200,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 381,
+                          "end": 399,
                           "properties": [
                             {
-                              "end": 375,
+                              "end": 393,
                               "key": {
-                                "end": 214,
+                                "end": 223,
                                 "name": "thing2",
-                                "start": 208,
+                                "start": 217,
                                 "type": "Identifier"
                               },
-                              "start": 208,
+                              "start": 217,
                               "type": "ObjectProperty",
                               "value": {
                                 "body": [
                                   {
                                     "arguments": [
                                       {
-                                        "end": 235,
+                                        "end": 244,
                                         "raw": "'XY'",
-                                        "start": 231,
+                                        "start": 240,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": "XY"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 230,
+                                      "end": 239,
                                       "name": "startSketchOn",
-                                      "start": 217,
+                                      "start": 226,
                                       "type": "Identifier"
                                     },
-                                    "end": 236,
-                                    "start": 217,
+                                    "end": 245,
+                                    "start": 226,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -405,9 +411,9 @@ description: Program memory after executing sketch_in_object.kcl
                                       {
                                         "elements": [
                                           {
-                                            "end": 265,
+                                            "end": 274,
                                             "raw": "0",
-                                            "start": 264,
+                                            "start": 273,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": {
@@ -416,9 +422,9 @@ description: Program memory after executing sketch_in_object.kcl
                                             }
                                           },
                                           {
-                                            "end": 268,
+                                            "end": 277,
                                             "raw": "0",
-                                            "start": 267,
+                                            "start": 276,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": {
@@ -427,149 +433,95 @@ description: Program memory after executing sketch_in_object.kcl
                                             }
                                           }
                                         ],
-                                        "end": 269,
-                                        "start": 263,
+                                        "end": 278,
+                                        "start": 272,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 272,
-                                        "start": 271,
+                                        "end": 281,
+                                        "start": 280,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 262,
+                                      "end": 271,
                                       "name": "startProfileAt",
-                                      "start": 248,
+                                      "start": 257,
                                       "type": "Identifier"
                                     },
-                                    "end": 273,
-                                    "start": 248,
+                                    "end": 282,
+                                    "start": 257,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "elements": [
-                                          {
-                                            "end": 292,
-                                            "raw": "0",
-                                            "start": 291,
-                                            "type": "Literal",
-                                            "type": "Literal",
-                                            "value": {
-                                              "value": 0.0,
-                                              "suffix": "None"
-                                            }
-                                          },
-                                          {
-                                            "end": 295,
-                                            "raw": "1",
-                                            "start": 294,
-                                            "type": "Literal",
-                                            "type": "Literal",
-                                            "value": {
-                                              "value": 1.0,
-                                              "suffix": "None"
-                                            }
-                                          }
-                                        ],
-                                        "end": 296,
-                                        "start": 290,
-                                        "type": "ArrayExpression",
-                                        "type": "ArrayExpression"
-                                      },
-                                      {
-                                        "end": 299,
-                                        "start": 298,
-                                        "type": "PipeSubstitution",
-                                        "type": "PipeSubstitution"
-                                      }
-                                    ],
-                                    "callee": {
-                                      "end": 289,
-                                      "name": "line",
-                                      "start": 285,
-                                      "type": "Identifier"
-                                    },
-                                    "end": 300,
-                                    "start": 285,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
-                                  },
-                                  {
-                                    "arguments": [
-                                      {
-                                        "elements": [
-                                          {
-                                            "end": 319,
-                                            "raw": "1",
-                                            "start": 318,
-                                            "type": "Literal",
-                                            "type": "Literal",
-                                            "value": {
-                                              "value": 1.0,
-                                              "suffix": "None"
-                                            }
-                                          },
-                                          {
-                                            "end": 322,
-                                            "raw": "0",
-                                            "start": 321,
-                                            "type": "Literal",
-                                            "type": "Literal",
-                                            "value": {
-                                              "value": 0.0,
-                                              "suffix": "None"
-                                            }
-                                          }
-                                        ],
-                                        "end": 323,
-                                        "start": 317,
-                                        "type": "ArrayExpression",
-                                        "type": "ArrayExpression"
-                                      },
-                                      {
-                                        "end": 326,
-                                        "start": 325,
-                                        "type": "PipeSubstitution",
-                                        "type": "PipeSubstitution"
-                                      }
-                                    ],
-                                    "callee": {
-                                      "end": 316,
-                                      "name": "line",
-                                      "start": 312,
-                                      "type": "Identifier"
-                                    },
-                                    "end": 327,
-                                    "start": 312,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
-                                  },
-                                  {
-                                    "arguments": [
-                                      {
-                                        "elements": [
-                                          {
-                                            "end": 346,
-                                            "raw": "0",
-                                            "start": 345,
-                                            "type": "Literal",
-                                            "type": "Literal",
-                                            "value": {
-                                              "value": 0.0,
-                                              "suffix": "None"
-                                            }
-                                          },
-                                          {
-                                            "argument": {
-                                              "end": 350,
+                                        "type": "LabeledArg",
+                                        "label": {
+                                          "type": "Identifier",
+                                          "name": "end"
+                                        },
+                                        "arg": {
+                                          "elements": [
+                                            {
+                                              "end": 307,
+                                              "raw": "0",
+                                              "start": 306,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 0.0,
+                                                "suffix": "None"
+                                              }
+                                            },
+                                            {
+                                              "end": 310,
                                               "raw": "1",
-                                              "start": 349,
+                                              "start": 309,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 1.0,
+                                                "suffix": "None"
+                                              }
+                                            }
+                                          ],
+                                          "end": 311,
+                                          "start": 305,
+                                          "type": "ArrayExpression",
+                                          "type": "ArrayExpression"
+                                        }
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 298,
+                                      "name": "line",
+                                      "start": 294,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 312,
+                                    "start": 294,
+                                    "type": "CallExpressionKw",
+                                    "type": "CallExpressionKw",
+                                    "unlabeled": null
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "type": "LabeledArg",
+                                        "label": {
+                                          "type": "Identifier",
+                                          "name": "end"
+                                        },
+                                        "arg": {
+                                          "elements": [
+                                            {
+                                              "end": 337,
+                                              "raw": "1",
+                                              "start": 336,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -577,86 +529,146 @@ description: Program memory after executing sketch_in_object.kcl
                                                 "suffix": "None"
                                               }
                                             },
-                                            "end": 350,
-                                            "operator": "-",
-                                            "start": 348,
-                                            "type": "UnaryExpression",
-                                            "type": "UnaryExpression"
-                                          }
-                                        ],
-                                        "end": 351,
-                                        "start": 344,
-                                        "type": "ArrayExpression",
-                                        "type": "ArrayExpression"
-                                      },
-                                      {
-                                        "end": 354,
-                                        "start": 353,
-                                        "type": "PipeSubstitution",
-                                        "type": "PipeSubstitution"
+                                            {
+                                              "end": 340,
+                                              "raw": "0",
+                                              "start": 339,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 0.0,
+                                                "suffix": "None"
+                                              }
+                                            }
+                                          ],
+                                          "end": 341,
+                                          "start": 335,
+                                          "type": "ArrayExpression",
+                                          "type": "ArrayExpression"
+                                        }
                                       }
                                     ],
                                     "callee": {
-                                      "end": 343,
+                                      "end": 328,
                                       "name": "line",
-                                      "start": 339,
+                                      "start": 324,
                                       "type": "Identifier"
                                     },
-                                    "end": 355,
-                                    "start": 339,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
+                                    "end": 342,
+                                    "start": 324,
+                                    "type": "CallExpressionKw",
+                                    "type": "CallExpressionKw",
+                                    "unlabeled": null
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 374,
-                                        "start": 373,
+                                        "type": "LabeledArg",
+                                        "label": {
+                                          "type": "Identifier",
+                                          "name": "end"
+                                        },
+                                        "arg": {
+                                          "elements": [
+                                            {
+                                              "end": 367,
+                                              "raw": "0",
+                                              "start": 366,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 0.0,
+                                                "suffix": "None"
+                                              }
+                                            },
+                                            {
+                                              "argument": {
+                                                "end": 371,
+                                                "raw": "1",
+                                                "start": 370,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 1.0,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "end": 371,
+                                              "operator": "-",
+                                              "start": 369,
+                                              "type": "UnaryExpression",
+                                              "type": "UnaryExpression"
+                                            }
+                                          ],
+                                          "end": 372,
+                                          "start": 365,
+                                          "type": "ArrayExpression",
+                                          "type": "ArrayExpression"
+                                        }
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 358,
+                                      "name": "line",
+                                      "start": 354,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 373,
+                                    "start": 354,
+                                    "type": "CallExpressionKw",
+                                    "type": "CallExpressionKw",
+                                    "unlabeled": null
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "end": 392,
+                                        "start": 391,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 372,
+                                      "end": 390,
                                       "name": "close",
-                                      "start": 367,
+                                      "start": 385,
                                       "type": "Identifier"
                                     },
-                                    "end": 375,
-                                    "start": 367,
+                                    "end": 393,
+                                    "start": 385,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "end": 375,
-                                "start": 217,
+                                "end": 393,
+                                "start": 226,
                                 "type": "PipeExpression",
                                 "type": "PipeExpression"
                               }
                             }
                           ],
-                          "start": 200,
+                          "start": 209,
                           "type": "ObjectExpression",
                           "type": "ObjectExpression"
                         }
                       }
                     ],
-                    "start": 185,
+                    "start": 194,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
-                  "end": 385,
-                  "start": 178,
+                  "end": 403,
+                  "start": 187,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 387,
-              "start": 174
+              "end": 405,
+              "start": 183
             },
-            "end": 387,
+            "end": 405,
             "params": [],
-            "start": 171,
+            "start": 180,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -766,40 +778,41 @@ description: Program memory after executing sketch_in_object.kcl
                                 {
                                   "arguments": [
                                     {
-                                      "elements": [
-                                        {
-                                          "end": 88,
-                                          "raw": "0",
-                                          "start": 87,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 0.0,
-                                            "suffix": "None"
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "end"
+                                      },
+                                      "arg": {
+                                        "elements": [
+                                          {
+                                            "end": 94,
+                                            "raw": "0",
+                                            "start": 93,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
+                                          },
+                                          {
+                                            "end": 97,
+                                            "raw": "1",
+                                            "start": 96,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 1.0,
+                                              "suffix": "None"
+                                            }
                                           }
-                                        },
-                                        {
-                                          "end": 91,
-                                          "raw": "1",
-                                          "start": 90,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 1.0,
-                                            "suffix": "None"
-                                          }
-                                        }
-                                      ],
-                                      "end": 92,
-                                      "start": 86,
-                                      "type": "ArrayExpression",
-                                      "type": "ArrayExpression"
-                                    },
-                                    {
-                                      "end": 95,
-                                      "start": 94,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                        ],
+                                        "end": 98,
+                                        "start": 92,
+                                        "type": "ArrayExpression",
+                                        "type": "ArrayExpression"
+                                      }
                                     }
                                   ],
                                   "callee": {
@@ -808,81 +821,26 @@ description: Program memory after executing sketch_in_object.kcl
                                     "start": 81,
                                     "type": "Identifier"
                                   },
-                                  "end": 96,
+                                  "end": 99,
                                   "start": 81,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "elements": [
-                                        {
-                                          "end": 111,
-                                          "raw": "1",
-                                          "start": 110,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 1.0,
-                                            "suffix": "None"
-                                          }
-                                        },
-                                        {
-                                          "end": 114,
-                                          "raw": "0",
-                                          "start": 113,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 0.0,
-                                            "suffix": "None"
-                                          }
-                                        }
-                                      ],
-                                      "end": 115,
-                                      "start": 109,
-                                      "type": "ArrayExpression",
-                                      "type": "ArrayExpression"
-                                    },
-                                    {
-                                      "end": 118,
-                                      "start": 117,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
-                                    }
-                                  ],
-                                  "callee": {
-                                    "end": 108,
-                                    "name": "line",
-                                    "start": 104,
-                                    "type": "Identifier"
-                                  },
-                                  "end": 119,
-                                  "start": 104,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
-                                },
-                                {
-                                  "arguments": [
-                                    {
-                                      "elements": [
-                                        {
-                                          "end": 134,
-                                          "raw": "0",
-                                          "start": 133,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 0.0,
-                                            "suffix": "None"
-                                          }
-                                        },
-                                        {
-                                          "argument": {
-                                            "end": 138,
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "end"
+                                      },
+                                      "arg": {
+                                        "elements": [
+                                          {
+                                            "end": 120,
                                             "raw": "1",
-                                            "start": 137,
+                                            "start": 119,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": {
@@ -890,72 +848,132 @@ description: Program memory after executing sketch_in_object.kcl
                                               "suffix": "None"
                                             }
                                           },
-                                          "end": 138,
-                                          "operator": "-",
-                                          "start": 136,
-                                          "type": "UnaryExpression",
-                                          "type": "UnaryExpression"
-                                        }
-                                      ],
-                                      "end": 139,
-                                      "start": 132,
-                                      "type": "ArrayExpression",
-                                      "type": "ArrayExpression"
-                                    },
-                                    {
-                                      "end": 142,
-                                      "start": 141,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
+                                          {
+                                            "end": 123,
+                                            "raw": "0",
+                                            "start": 122,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
+                                          }
+                                        ],
+                                        "end": 124,
+                                        "start": 118,
+                                        "type": "ArrayExpression",
+                                        "type": "ArrayExpression"
+                                      }
                                     }
                                   ],
                                   "callee": {
-                                    "end": 131,
+                                    "end": 111,
                                     "name": "line",
-                                    "start": 127,
+                                    "start": 107,
                                     "type": "Identifier"
                                   },
-                                  "end": 143,
-                                  "start": 127,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "end": 125,
+                                  "start": 107,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 158,
-                                      "start": 157,
+                                      "type": "LabeledArg",
+                                      "label": {
+                                        "type": "Identifier",
+                                        "name": "end"
+                                      },
+                                      "arg": {
+                                        "elements": [
+                                          {
+                                            "end": 146,
+                                            "raw": "0",
+                                            "start": 145,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
+                                          },
+                                          {
+                                            "argument": {
+                                              "end": 150,
+                                              "raw": "1",
+                                              "start": 149,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 1.0,
+                                                "suffix": "None"
+                                              }
+                                            },
+                                            "end": 150,
+                                            "operator": "-",
+                                            "start": 148,
+                                            "type": "UnaryExpression",
+                                            "type": "UnaryExpression"
+                                          }
+                                        ],
+                                        "end": 151,
+                                        "start": 144,
+                                        "type": "ArrayExpression",
+                                        "type": "ArrayExpression"
+                                      }
+                                    }
+                                  ],
+                                  "callee": {
+                                    "end": 137,
+                                    "name": "line",
+                                    "start": 133,
+                                    "type": "Identifier"
+                                  },
+                                  "end": 152,
+                                  "start": 133,
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": null
+                                },
+                                {
+                                  "arguments": [
+                                    {
+                                      "end": 167,
+                                      "start": 166,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 156,
+                                    "end": 165,
                                     "name": "close",
-                                    "start": 151,
+                                    "start": 160,
                                     "type": "Identifier"
                                   },
-                                  "end": 159,
-                                  "start": 151,
+                                  "end": 168,
+                                  "start": 160,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 }
                               ],
-                              "end": 159,
+                              "end": 168,
                               "start": 21,
                               "type": "PipeExpression",
                               "type": "PipeExpression"
                             },
-                            "end": 159,
+                            "end": 168,
                             "start": 14,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 161,
+                        "end": 170,
                         "start": 10
                       },
-                      "end": 161,
+                      "end": 170,
                       "params": [],
                       "start": 7,
                       "type": "FunctionExpression"
@@ -995,7 +1013,7 @@ description: Program memory after executing sketch_in_object.kcl
                       {
                         "sourceRange": [
                           7,
-                          161,
+                          170,
                           0
                         ]
                       }
@@ -1011,8 +1029,8 @@ description: Program memory after executing sketch_in_object.kcl
           "__meta": [
             {
               "sourceRange": [
-                171,
-                387,
+                180,
+                405,
                 0
               ]
             }
@@ -1029,7 +1047,7 @@ description: Program memory after executing sketch_in_object.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     81,
-                    96,
+                    99,
                     0
                   ]
                 },
@@ -1048,8 +1066,8 @@ description: Program memory after executing sketch_in_object.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    104,
-                    119,
+                    107,
+                    125,
                     0
                   ]
                 },
@@ -1068,8 +1086,8 @@ description: Program memory after executing sketch_in_object.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    127,
-                    143,
+                    133,
+                    152,
                     0
                   ]
                 },
@@ -1088,8 +1106,8 @@ description: Program memory after executing sketch_in_object.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    151,
-                    159,
+                    160,
+                    168,
                     0
                   ]
                 },
@@ -1108,6 +1126,7 @@ description: Program memory after executing sketch_in_object.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -1153,6 +1172,8 @@ description: Program memory after executing sketch_in_object.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1183,28 +1204,28 @@ description: Program memory after executing sketch_in_object.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            285,
-                            300,
-                            0
-                          ]
-                        },
-                        "from": [
-                          0.0,
-                          0.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          0.0,
-                          1.0
-                        ],
-                        "type": "ToPoint"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
+                            294,
                             312,
-                            327,
+                            0
+                          ]
+                        },
+                        "from": [
+                          0.0,
+                          0.0
+                        ],
+                        "tag": null,
+                        "to": [
+                          0.0,
+                          1.0
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": [
+                            324,
+                            342,
                             0
                           ]
                         },
@@ -1223,8 +1244,8 @@ description: Program memory after executing sketch_in_object.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            339,
-                            355,
+                            354,
+                            373,
                             0
                           ]
                         },
@@ -1243,8 +1264,8 @@ description: Program memory after executing sketch_in_object.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            367,
-                            375,
+                            385,
+                            393,
                             0
                           ]
                         },
@@ -1263,6 +1284,7 @@ description: Program memory after executing sketch_in_object.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -1302,20 +1324,22 @@ description: Program memory after executing sketch_in_object.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          248,
-                          273,
+                          257,
+                          282,
                           0
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
                     "__meta": [
                       {
                         "sourceRange": [
-                          248,
-                          273,
+                          257,
+                          282,
                           0
                         ]
                       }
@@ -1326,8 +1350,8 @@ description: Program memory after executing sketch_in_object.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    200,
-                    381,
+                    209,
+                    399,
                     0
                   ]
                 }
@@ -1337,8 +1361,8 @@ description: Program memory after executing sketch_in_object.kcl
           "__meta": [
             {
               "sourceRange": [
-                185,
-                385,
+                194,
+                403,
                 0
               ]
             }
