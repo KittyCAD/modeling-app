@@ -544,6 +544,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1330,6 +1331,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1604,6 +1606,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2622,6 +2625,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -3294,6 +3298,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                     }
                   },
                   "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -3568,6 +3573,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -4240,6 +4246,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                     }
                   },
                   "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -4469,6 +4476,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },

@@ -504,6 +504,7 @@ description: Program memory after executing fillet-and-shell.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1787,6 +1788,7 @@ description: Program memory after executing fillet-and-shell.kcl
                           }
                         },
                         "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -2389,6 +2391,7 @@ description: Program memory after executing fillet-and-shell.kcl
                         }
                       },
                       "artifactId": "[uuid]",
+                      "originalId": "[uuid]",
                       "units": {
                         "type": "Mm"
                       },
@@ -2674,6 +2677,7 @@ description: Program memory after executing fillet-and-shell.kcl
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },

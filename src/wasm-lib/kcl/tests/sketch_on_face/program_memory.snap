@@ -344,6 +344,7 @@ description: Program memory after executing sketch_on_face.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -787,6 +788,7 @@ description: Program memory after executing sketch_on_face.kcl
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -849,6 +851,7 @@ description: Program memory after executing sketch_on_face.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

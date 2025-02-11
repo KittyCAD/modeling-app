@@ -1,7 +1,7 @@
 // TODO optimise size of CompilationError
 #![allow(clippy::result_large_err)]
 
-use std::{cell::RefCell, collections::BTreeMap, str::FromStr};
+use std::{cell::RefCell, collections::BTreeMap};
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, separated_pair, terminated},
@@ -286,8 +286,8 @@ fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
 
 fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     let at = at_sign.parse_next(i)?;
-    let name = binding_name.parse_next(i)?;
-    let mut end = name.end;
+    let name = opt(binding_name).parse_next(i)?;
+    let mut end = name.as_ref().map(|n| n.end).unwrap_or(at.end);
 
     let properties = if peek(open_paren).parse_next(i).is_ok() {
         open_paren(i)?;
@@ -308,6 +308,7 @@ fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
                     value,
                     digest: None,
                 },
+                trivia: Vec::new(),
             }),
             comma_sep,
         )
@@ -319,6 +320,12 @@ fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     } else {
         None
     };
+
+    if name.is_none() && properties.is_none() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(at.as_source_range(), format!("Unexpected token: {}", at.value)).into(),
+        ));
+    }
 
     let value = NonCodeValue::Annotation { name, properties };
     Ok(Node::new(
@@ -420,6 +427,7 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
             non_code_meta,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -491,7 +499,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                 })?;
 
                 if token.numeric_suffix().is_some() {
-                    ParseContext::err(CompilationError::err(
+                    ParseContext::warn(CompilationError::err(
                         (&token).into(),
                         "Unit of Measure suffixes are experimental and currently do nothing.",
                     ));
@@ -822,6 +830,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectPr
             key,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -850,6 +859,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
             value: expr,
             digest: None,
         },
+        trivia: Vec::new(),
     };
 
     if sep.token_type == TokenType::Colon {
@@ -1117,9 +1127,25 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
     // Optional return type.
     let return_type = opt(return_type).parse_next(i)?;
     ignore_whitespace(i);
-    open_brace(i)?;
-    let body = function_body(i)?;
-    let end = close_brace(i)?.end;
+    let brace = open_brace(i)?;
+    let close: Option<(Vec<Vec<Token>>, Token)> = opt((repeat(0.., whitespace), close_brace)).parse_next(i)?;
+    let (body, end) = match close {
+        Some((_, end)) => (
+            Node::new(
+                Program {
+                    body: Vec::new(),
+                    non_code_meta: NonCodeMeta::default(),
+                    shebang: None,
+                    digest: None,
+                },
+                brace.end,
+                brace.end,
+                brace.module_id,
+            ),
+            end.end,
+        ),
+        None => (function_body(i)?, close_brace(i)?.end),
+    };
     let result = Node::new(
         FunctionExpression {
             params,
@@ -1587,6 +1613,14 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             )
             .into(),
         ));
+    } else if matches!(path, ImportPath::Std { .. }) && matches!(selector, ImportSelector::None { .. }) {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(start, end, module_id),
+                "the standard library cannot be imported as a part",
+            )
+            .into(),
+        ));
     }
 
     Ok(Node::boxed(
@@ -1639,13 +1673,34 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         }
 
         ImportPath::Kcl { filename: path_string }
-    } else if path_string.starts_with("std") {
+    } else if path_string.starts_with("std::") {
         ParseContext::warn(CompilationError::err(
             path_range,
             "explicit imports from the standard library are experimental, likely to be buggy, and likely to change.",
         ));
 
-        ImportPath::Std
+        let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
+
+        for s in &segments {
+            if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
+                return Err(ErrMode::Cut(
+                    CompilationError::fatal(path_range, "invalid path in import statement.").into(),
+                ));
+            }
+        }
+
+        // For now we only support importing from singly-nested modules inside std.
+        if segments.len() != 2 {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    format!("Invalid import path for import from std: {}.", path_string),
+                )
+                .into(),
+            ));
+        }
+
+        ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
         let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
         if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
@@ -1735,6 +1790,7 @@ fn return_stmt(i: &mut TokenSlice) -> PResult<Node<ReturnStatement>> {
         end: argument.end(),
         module_id: ret.module_id,
         inner: ReturnStatement { argument, digest: None },
+        trivia: Vec::new(),
     })
 }
 
@@ -1961,11 +2017,13 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                     init: val,
                     digest: None,
                 },
+                trivia: Vec::new(),
             },
             visibility,
             kind,
             digest: None,
         },
+        trivia: Vec::new(),
     }))
 }
 
@@ -2171,6 +2229,7 @@ fn unary_expression(i: &mut TokenSlice) -> PResult<Node<UnaryExpression>> {
             argument,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -2251,6 +2310,7 @@ fn expression_stmt(i: &mut TokenSlice) -> PResult<Node<ExpressionStatement>> {
             expression: val,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -2433,11 +2493,19 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
         (open_brace, parameters, close_brace).map(|(_, params, _)| Ok(FnArgType::Object { properties: params })),
         // Array types
-        (one_of(TokenType::Type), open_bracket, close_bracket).map(|(token, _, _)| {
-            FnArgPrimitive::from_str(&token.value)
-                .map(FnArgType::Array)
-                .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
-        }),
+        (
+            one_of(TokenType::Type),
+            opt(delimited(open_paren, uom_for_type, close_paren)),
+            open_bracket,
+            close_bracket,
+        )
+            .map(|(token, uom, _, _)| {
+                FnArgPrimitive::from_str(&token.value, uom)
+                    .map(FnArgType::Array)
+                    .ok_or_else(|| {
+                        CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
+                    })
+            }),
         // Primitive types
         (
             one_of(TokenType::Type),
@@ -2445,14 +2513,16 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
         )
             .map(|(token, suffix)| {
                 if suffix.is_some() {
-                    ParseContext::err(CompilationError::err(
+                    ParseContext::warn(CompilationError::err(
                         (&token).into(),
                         "Unit of Measure types are experimental and currently do nothing.",
                     ));
                 }
-                FnArgPrimitive::from_str(&token.value)
+                FnArgPrimitive::from_str(&token.value, suffix)
                     .map(FnArgType::Primitive)
-                    .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
+                    .ok_or_else(|| {
+                        CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
+                    })
             }),
     ))
     .parse_next(i)?
@@ -2516,8 +2586,7 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                  type_,
                  default_value,
              }| {
-                let identifier =
-                    Node::<Identifier>::try_from(arg_name).and_then(Node::<Identifier>::into_valid_binding_name)?;
+                let identifier = Node::<Identifier>::try_from(arg_name)?;
 
                 Ok(Parameter {
                     identifier,
@@ -2564,24 +2633,9 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError>
     Ok(())
 }
 
-impl Node<Identifier> {
-    fn into_valid_binding_name(self) -> Result<Node<Identifier>, CompilationError> {
-        // Make sure they are not assigning a variable to a stdlib function.
-        if crate::std::name_in_stdlib(&self.name) {
-            return Err(CompilationError::fatal(
-                SourceRange::from(&self),
-                format!("Cannot assign a variable to a reserved keyword: {}", self.name),
-            ));
-        }
-        Ok(self)
-    }
-}
-
 /// Introduce a new name, which binds some value.
 fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     identifier
-        .context(expected("an identifier, which will be the name of some value"))
-        .try_map(Node::<Identifier>::into_valid_binding_name)
         .context(expected("an identifier, which will be the name of some value"))
         .parse_next(i)
 }
@@ -2696,6 +2750,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
             arguments: args,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -2725,6 +2780,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
             arguments: args,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -4019,34 +4075,12 @@ e
     }
 
     #[test]
-    fn test_error_stdlib_in_fn_name() {
-        assert_err(
-            r#"fn cos = () => {
-            return 1
-        }"#,
-            "Cannot assign a variable to a reserved keyword: cos",
-            [3, 6],
-        );
-    }
-
-    #[test]
     fn test_error_keyword_in_fn_args() {
         assert_err(
             r#"fn thing = (let) => {
     return 1
 }"#,
             "Cannot assign a variable to a reserved keyword: let",
-            [12, 15],
-        )
-    }
-
-    #[test]
-    fn test_error_stdlib_in_fn_args() {
-        assert_err(
-            r#"fn thing = (cos) => {
-    return 1
-}"#,
-            "Cannot assign a variable to a reserved keyword: cos",
             [12, 15],
         )
     }
@@ -4093,6 +4127,27 @@ e
             "import path is not a valid identifier and must be aliased.",
             [7, 20],
         );
+    }
+
+    #[test]
+    fn std_fn_decl() {
+        let code = r#"/// Compute the cosine of a number (in radians).
+///
+/// ```
+/// exampleSketch = startSketchOn("XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle = 30,
+///     length = 3 / cos(toRadians(30)),
+///   }, %)
+///   |> yLineTo(0, %)
+///   |> close(%)
+///  
+/// example = extrude(5, exampleSketch)
+/// ```
+@(impl = std_rust)
+export fn cos(num: number(rad)): number(_) {}"#;
+        let _ast = crate::parsing::top_level_parse(code).unwrap();
     }
 
     #[test]

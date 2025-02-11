@@ -18,8 +18,8 @@ use winnow::{
 use crate::{
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
-    source_range::{ModuleId, SourceRange},
-    CompilationError,
+    source_range::SourceRange,
+    CompilationError, ModuleId,
 };
 
 mod tokeniser;
@@ -53,6 +53,21 @@ impl NumericSuffix {
 
     pub fn is_some(self) -> bool {
         self != Self::None
+    }
+
+    pub fn digestable_id(&self) -> &[u8] {
+        match self {
+            NumericSuffix::None => &[],
+            NumericSuffix::Count => b"_",
+            NumericSuffix::Mm => b"mm",
+            NumericSuffix::Cm => b"cm",
+            NumericSuffix::M => b"m",
+            NumericSuffix::Inch => b"in",
+            NumericSuffix::Ft => b"ft",
+            NumericSuffix::Yd => b"yd",
+            NumericSuffix::Deg => b"deg",
+            NumericSuffix::Rad => b"rad",
+        }
     }
 }
 

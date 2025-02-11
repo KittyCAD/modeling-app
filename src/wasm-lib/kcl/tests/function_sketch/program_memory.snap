@@ -622,6 +622,7 @@ description: Program memory after executing function_sketch.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

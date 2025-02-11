@@ -278,6 +278,7 @@ export function mutateObjExpProp(
         start: 0,
         end: 0,
         moduleId: 0,
+        trivia: [],
       })
     }
   }
@@ -431,10 +432,11 @@ export function addSweep(
 } {
   const modifiedAst = structuredClone(node)
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const sweep = createCallExpressionStdLib('sweep', [
-    createObjectExpression({ path: createIdentifier(pathDeclarator.id.name) }),
+  const sweep = createCallExpressionStdLibKw(
+    'sweep',
     createIdentifier(profileDeclarator.id.name),
-  ])
+    [createLabeledArg('path', createIdentifier(pathDeclarator.id.name))]
+  )
   const declaration = createVariableDeclaration(name, sweep)
   modifiedAst.body.push(declaration)
   const pathToNode: PathToNode = [
@@ -442,8 +444,9 @@ export function addSweep(
     [modifiedAst.body.length - 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['arguments', 'CallExpressionKw'],
+    [0, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
 
   return {
@@ -684,6 +687,63 @@ export function addOffsetPlane({
 }
 
 /**
+ * Append a helix to the AST
+ */
+export function addHelix({
+  node,
+  revolutions,
+  angleStart,
+  counterClockWise,
+  radius,
+  axis,
+  length,
+}: {
+  node: Node<Program>
+  revolutions: Expr
+  angleStart: Expr
+  counterClockWise: boolean
+  radius: Expr
+  axis: string
+  length: Expr
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
+  const variable = createVariableDeclaration(
+    name,
+    createCallExpressionStdLibKw(
+      'helix',
+      null, // Not in a pipeline
+      [
+        createLabeledArg('revolutions', revolutions),
+        createLabeledArg('angleStart', angleStart),
+        createLabeledArg('counterClockWise', createLiteral(counterClockWise)),
+        createLabeledArg('radius', radius),
+        createLabeledArg('axis', createLiteral(axis)),
+        createLabeledArg('length', length),
+      ]
+    )
+  )
+
+  // TODO: figure out smart insertion than just appending at the end
+  const argIndex = 0
+  modifiedAst.body.push(variable)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
  * Return a modified clone of an AST with a named constant inserted into the body
  */
 export function insertNamedConstant({
@@ -831,6 +891,7 @@ export function createLiteral(value: LiteralValue | number): Node<Literal> {
     moduleId: 0,
     value,
     raw,
+    trivia: [],
   }
 }
 
@@ -840,6 +901,7 @@ export function createTagDeclarator(value: string): Node<TagDeclarator> {
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     value,
   }
@@ -851,6 +913,7 @@ export function createIdentifier(name: string): Node<Identifier> {
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     name,
   }
@@ -862,6 +925,7 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
   }
 }
 
@@ -874,11 +938,13 @@ export function createCallExpressionStdLib(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
 
       name,
     },
@@ -896,11 +962,13 @@ export function createCallExpressionStdLibKw(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
 
       name,
     },
@@ -918,11 +986,13 @@ export function createCallExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
 
       name,
     },
@@ -938,6 +1008,7 @@ export function createArrayExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     nonCodeMeta: nonCodeMetaEmpty(),
     elements,
@@ -952,6 +1023,7 @@ export function createPipeExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     body,
     nonCodeMeta: nonCodeMetaEmpty(),
@@ -969,12 +1041,14 @@ export function createVariableDeclaration(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     declaration: {
       type: 'VariableDeclarator',
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
 
       id: createIdentifier(varName),
       init,
@@ -992,6 +1066,7 @@ export function createObjectExpression(properties: {
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
@@ -999,6 +1074,7 @@ export function createObjectExpression(properties: {
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
       key: createIdentifier(key),
 
       value,
@@ -1015,6 +1091,7 @@ export function createUnaryExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     operator,
     argument,
@@ -1031,6 +1108,7 @@ export function createBinaryExpression([left, operator, right]: [
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     operator,
     left,
@@ -1316,6 +1394,7 @@ export async function deleteFromSelection(
       varDec.node.init.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
+    selection.artifact?.type === 'helix' ||
     !selection.artifact // aka expected to be a shell at this point
   ) {
     let extrudeNameToDelete = ''
@@ -1323,7 +1402,8 @@ export async function deleteFromSelection(
     if (
       selection.artifact &&
       selection.artifact.type !== 'sweep' &&
-      selection.artifact.type !== 'plane'
+      selection.artifact.type !== 'plane' &&
+      selection.artifact.type !== 'helix'
     ) {
       const varDecName = varDec.node.id.name
       traverse(astClone, {
@@ -1362,13 +1442,17 @@ export async function deleteFromSelection(
       if (!pathToNode) return new Error('Could not find extrude variable')
     } else {
       pathToNode = selection.codeRef.pathToNode
-      const extrudeVarDec = getNodeFromPath<VariableDeclarator>(
-        astClone,
-        pathToNode,
-        'VariableDeclarator'
-      )
-      if (err(extrudeVarDec)) return extrudeVarDec
-      extrudeNameToDelete = extrudeVarDec.node.id.name
+      if (varDec.node.type !== 'VariableDeclarator') {
+        const callExp = getNodeFromPath<CallExpression>(
+          astClone,
+          pathToNode,
+          'CallExpression'
+        )
+        if (err(callExp)) return callExp
+        extrudeNameToDelete = callExp.node.callee.name
+      } else {
+        extrudeNameToDelete = varDec.node.id.name
+      }
     }
 
     const expressionIndex = pathToNode[1][0] as number

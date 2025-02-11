@@ -1765,6 +1765,7 @@ description: Program memory after executing pipe_as_arg.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

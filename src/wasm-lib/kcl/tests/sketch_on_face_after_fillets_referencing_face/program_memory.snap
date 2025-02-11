@@ -537,6 +537,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1448,6 +1449,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1526,6 +1528,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

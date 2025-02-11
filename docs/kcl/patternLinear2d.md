@@ -9,7 +9,7 @@ Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
 of distance between each repetition, some specified number of times.
 
 ```js
-patternLinear2d(data: LinearPattern2dData, sketch_set: SketchSet) -> [Sketch]
+patternLinear2d(data: LinearPattern2dData, sketch_set: SketchSet, use_original?: bool) -> [Sketch]
 ```
 
 
@@ -19,6 +19,7 @@ patternLinear2d(data: LinearPattern2dData, sketch_set: SketchSet) -> [Sketch]
 |----------|------|-------------|----------|
 | `data` | [`LinearPattern2dData`](/docs/kcl/types/LinearPattern2dData) | Data for a linear pattern on a 2D sketch. | Yes |
 | `sketch_set` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
+| `use_original` | `bool` |  | No |
 
 ### Returns
 

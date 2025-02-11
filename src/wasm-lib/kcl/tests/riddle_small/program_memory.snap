@@ -322,6 +322,7 @@ description: Program memory after executing riddle_small.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

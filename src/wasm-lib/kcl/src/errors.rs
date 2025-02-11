@@ -5,7 +5,8 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 use crate::{
     execution::{ArtifactCommand, ArtifactGraph, Operation},
     lsp::IntoDiagnostic,
-    source_range::{ModuleId, SourceRange},
+    source_range::SourceRange,
+    ModuleId,
 };
 
 /// How did the KCL execution fail

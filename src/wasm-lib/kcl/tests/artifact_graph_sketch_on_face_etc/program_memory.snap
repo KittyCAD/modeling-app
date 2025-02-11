@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing artifact_graph_sketch_on_face_etc.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -274,6 +273,7 @@ snapshot_kind: text
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -695,6 +695,7 @@ snapshot_kind: text
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -757,6 +758,7 @@ snapshot_kind: text
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1332,6 +1334,7 @@ snapshot_kind: text
                             }
                           },
                           "artifactId": "[uuid]",
+                          "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
                           },
@@ -1394,6 +1397,7 @@ snapshot_kind: text
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1517,6 +1521,7 @@ snapshot_kind: text
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2236,6 +2241,7 @@ snapshot_kind: text
                                   }
                                 },
                                 "artifactId": "[uuid]",
+                                "originalId": "[uuid]",
                                 "units": {
                                   "type": "Mm"
                                 },
@@ -2298,6 +2304,7 @@ snapshot_kind: text
                             }
                           },
                           "artifactId": "[uuid]",
+                          "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
                           },
@@ -2421,6 +2428,7 @@ snapshot_kind: text
                       }
                     },
                     "artifactId": "[uuid]",
+                    "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -2483,6 +2491,7 @@ snapshot_kind: text
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2836,6 +2845,7 @@ snapshot_kind: text
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -3202,6 +3212,7 @@ snapshot_kind: text
                     }
                   },
                   "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -3264,6 +3275,7 @@ snapshot_kind: text
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -3779,6 +3791,7 @@ snapshot_kind: text
                           }
                         },
                         "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -3841,6 +3854,7 @@ snapshot_kind: text
                     }
                   },
                   "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -3964,6 +3978,7 @@ snapshot_kind: text
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -4628,6 +4643,7 @@ snapshot_kind: text
                                 }
                               },
                               "artifactId": "[uuid]",
+                              "originalId": "[uuid]",
                               "units": {
                                 "type": "Mm"
                               },
@@ -4690,6 +4706,7 @@ snapshot_kind: text
                           }
                         },
                         "artifactId": "[uuid]",
+                        "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -4813,6 +4830,7 @@ snapshot_kind: text
                     }
                   },
                   "artifactId": "[uuid]",
+                  "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -4875,6 +4893,7 @@ snapshot_kind: text
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },

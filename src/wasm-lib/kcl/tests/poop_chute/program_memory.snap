@@ -680,6 +680,7 @@ description: Program memory after executing poop_chute.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1213,6 +1214,7 @@ description: Program memory after executing poop_chute.kcl
               }
             },
             "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1764,6 +1766,7 @@ description: Program memory after executing poop_chute.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

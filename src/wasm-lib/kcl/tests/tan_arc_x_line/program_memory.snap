@@ -1,8 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
 description: Program memory after executing tan_arc_x_line.kcl
-snapshot_kind: text
 ---
 {
   "environments": [

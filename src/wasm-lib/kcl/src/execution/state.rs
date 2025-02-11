@@ -9,10 +9,11 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations, kcl_value, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ExecOutcome, ExecutorSettings,
-        KclValue, ModuleInfo, ModuleRepr, Operation, ProgramMemory, SolidLazyIds, UnitAngle, UnitLen,
+        KclValue, Operation, ProgramMemory, SolidLazyIds, UnitAngle, UnitLen,
     },
+    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
     parsing::ast::types::NonCodeValue,
-    source_range::{ModuleId, SourceRange},
+    source_range::SourceRange,
 };
 
 /// State for executing a program.
@@ -29,7 +30,7 @@ pub struct GlobalState {
     /// The stable artifact ID generator.
     pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
-    pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
+    pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// Output map of UUIDs to artifacts.
@@ -45,6 +46,8 @@ pub struct GlobalState {
     pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Module loader.
+    pub mod_loader: ModuleLoader,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -59,9 +62,6 @@ pub struct ModuleState {
     pub pipe_value: Option<KclValue>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
-    /// The stack of import statements for detecting circular module imports.
-    /// If this is empty, we're not currently executing an import statement.
-    pub import_stack: Vec<std::path::PathBuf>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -124,15 +124,21 @@ impl ExecState {
         self.global.artifacts.insert(id, artifact);
     }
 
-    pub(super) fn add_module(&mut self, id: ModuleId, path: std::path::PathBuf, repr: ModuleRepr) -> ModuleId {
+    pub(super) fn next_module_id(&self) -> ModuleId {
+        ModuleId::from_usize(self.global.path_to_source_id.len())
+    }
+
+    pub(super) fn id_for_module(&self, path: &ModulePath) -> Option<ModuleId> {
+        self.global.path_to_source_id.get(path).cloned()
+    }
+
+    pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
 
         self.global.path_to_source_id.insert(path.clone(), id);
 
         let module_info = ModuleInfo { id, repr, path };
         self.global.module_infos.insert(id, module_info);
-
-        id
     }
 
     pub fn length_unit(&self) -> UnitLen {
@@ -154,6 +160,7 @@ impl GlobalState {
             artifact_commands: Default::default(),
             artifact_responses: Default::default(),
             artifact_graph: Default::default(),
+            mod_loader: Default::default(),
         };
 
         let root_id = ModuleId::default();
@@ -162,11 +169,11 @@ impl GlobalState {
             root_id,
             ModuleInfo {
                 id: root_id,
-                path: root_path.clone(),
+                path: ModulePath::Local(root_path.clone()),
                 repr: ModuleRepr::Root,
             },
         );
-        global.path_to_source_id.insert(root_path, root_id);
+        global.path_to_source_id.insert(ModulePath::Local(root_path), root_id);
         global
     }
 }
@@ -178,7 +185,6 @@ impl ModuleState {
             dynamic_state: Default::default(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
-            import_stack: Default::default(),
             operations: Default::default(),
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),

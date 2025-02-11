@@ -944,6 +944,7 @@ description: Program memory after executing cube.kcl
                 }
               },
               "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

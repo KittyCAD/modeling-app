@@ -94,12 +94,11 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
 
   // Deep Link: Case of a cold start from Windows or Linux
-  if (
-    !pathToOpen &&
-    process.argv.length > 1 &&
-    process.argv[1].indexOf(ZOO_STUDIO_PROTOCOL + '://') > -1
-  ) {
-    pathToOpen = process.argv[1]
+  const zooProtocolArg = process.argv.find((a) =>
+    a.startsWith(ZOO_STUDIO_PROTOCOL + '://')
+  )
+  if (!pathToOpen && zooProtocolArg) {
+    pathToOpen = zooProtocolArg
     console.log('Retrieved deep link from argv', pathToOpen)
   }
 
@@ -329,6 +328,7 @@ ipcMain.handle('kittycad', (event, data) => {
     )(data.args)
 })
 
+// Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
 ipcMain.handle('find_machine_api', () => {
   const timeoutAfterMs = 5000
   return new Promise((resolve, reject) => {
@@ -339,7 +339,6 @@ ipcMain.handle('find_machine_api', () => {
       console.error(error)
       resolve(null)
     })
-    console.log('Looking for machine API...')
     bonjourEt.find(
       { protocol: 'tcp', type: 'machine-api' },
       (service: Service) => {

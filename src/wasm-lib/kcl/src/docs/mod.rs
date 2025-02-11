@@ -118,7 +118,7 @@ impl StdLibFnArg {
         } else if self.type_ == "KclValue" && self.required {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, "3"))));
         }
-        self.get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index, in_keyword_fn)
+        self.get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index, in_keyword_fn, &self.name)
             .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))))
     }
 
@@ -136,6 +136,7 @@ impl StdLibFnArg {
         schema: &schemars::schema::Schema,
         index: usize,
         in_keyword_fn: bool,
+        name: &str,
     ) -> Result<Option<(usize, String)>> {
         match schema {
             schemars::schema::Schema::Object(o) => {
@@ -149,6 +150,10 @@ impl StdLibFnArg {
                     return Ok(Some((index, format!("${{{}:sketch{}}}", index, "000"))));
                 }
 
+                if name == "color" {
+                    let snippet = format!("${{{}:\"#ff0000\"}}", index);
+                    return Ok(Some((index, snippet)));
+                }
                 if let Some(serde_json::Value::Bool(nullable)) = o.extensions.get("nullable") {
                     if (!in_keyword_fn && *nullable) || (in_keyword_fn && !self.include_in_snippet) {
                         return Ok(None);
@@ -192,13 +197,9 @@ impl StdLibFnArg {
                             continue;
                         }
 
-                        if prop_name == "color" {
-                            fn_docs.push_str(&format!("\t{} = ${{{}:\"#ff0000\"}},\n", prop_name, i));
-                            i += 1;
-                            continue;
-                        }
-
-                        if let Some((new_index, snippet)) = self.get_autocomplete_snippet_from_schema(prop, i, false)? {
+                        if let Some((new_index, snippet)) =
+                            self.get_autocomplete_snippet_from_schema(prop, i, false, name)?
+                        {
                             fn_docs.push_str(&format!("\t{} = {},\n", prop_name, snippet));
                             i = new_index + 1;
                         }
@@ -223,7 +224,8 @@ impl StdLibFnArg {
                                                 .get_autocomplete_snippet_from_schema(
                                                     items,
                                                     index + (v as usize),
-                                                    in_keyword_fn
+                                                    in_keyword_fn,
+                                                    name
                                                 )
                                                 .unwrap()
                                                 .unwrap()
@@ -238,7 +240,7 @@ impl StdLibFnArg {
                                     index,
                                     format!(
                                         "[{}]",
-                                        self.get_autocomplete_snippet_from_schema(items, index, in_keyword_fn)?
+                                        self.get_autocomplete_snippet_from_schema(items, index, in_keyword_fn, name)?
                                             .ok_or_else(|| anyhow::anyhow!("expected snippet"))?
                                             .1
                                     ),
@@ -250,7 +252,7 @@ impl StdLibFnArg {
                             index,
                             format!(
                                 "[{}]",
-                                self.get_autocomplete_snippet_from_schema(items, index, in_keyword_fn)?
+                                self.get_autocomplete_snippet_from_schema(items, index, in_keyword_fn, name)?
                                     .ok_or_else(|| anyhow::anyhow!("expected snippet"))?
                                     .1
                             ),
@@ -293,7 +295,7 @@ impl StdLibFnArg {
                             return Ok(Some((index, parsed_enum_values[0].to_string())));
                         } else if let Some(item) = items.iter().next() {
                             if let Some((new_index, snippet)) =
-                                self.get_autocomplete_snippet_from_schema(item, index, in_keyword_fn)?
+                                self.get_autocomplete_snippet_from_schema(item, index, in_keyword_fn, name)?
                             {
                                 i = new_index + 1;
                                 fn_docs.push_str(&snippet);
@@ -302,7 +304,7 @@ impl StdLibFnArg {
                     } else if let Some(items) = &subschemas.any_of {
                         if let Some(item) = items.iter().next() {
                             if let Some((new_index, snippet)) =
-                                self.get_autocomplete_snippet_from_schema(item, index, in_keyword_fn)?
+                                self.get_autocomplete_snippet_from_schema(item, index, in_keyword_fn, name)?
                             {
                                 i = new_index + 1;
                                 fn_docs.push_str(&snippet);
@@ -1018,12 +1020,7 @@ mod tests {
         let snippet = appearance_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"appearance({
-	color = ${0:"#
-                .to_owned()
-                + "\"#"
-                + r#"ff0000"},
-}, ${1:%})${}"#
+            r#"appearance(${0:%}, color = ${1:"#.to_owned() + "\"#" + r#"ff0000"})${}"#
         );
     }
 
@@ -1038,12 +1035,7 @@ mod tests {
     fn get_autocomplete_snippet_sweep() {
         let sweep_fn: Box<dyn StdLibFn> = Box::new(crate::std::sweep::Sweep);
         let snippet = sweep_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"sweep({
-	path = ${0:sketch000},
-}, ${1:%})${}"#
-        );
+        assert_eq!(snippet, r#"sweep(${0:%}, path = ${1:sketch000})${}"#);
     }
 
     #[test]
