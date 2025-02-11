@@ -9,7 +9,9 @@ use cache::OldAstState;
 pub use cad_op::Operation;
 pub use exec_ast::FunctionParam;
 pub use geometry::*;
-pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine, ZOO_COORD_SYSTEM};
+pub(crate) use import::{
+    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
+};
 use indexmap::IndexMap;
 pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use kcmc::{
@@ -34,7 +36,7 @@ use crate::{
     fs::FileManager,
     parsing::ast::types::{Expr, FunctionExpression, Node, NodeRef, Program},
     settings::types::UnitLength,
-    source_range::{ModuleId, SourceRange},
+    source_range::SourceRange,
     std::{args::Arg, StdLib},
     ExecError, KclErrorWithOutputs,
 };
@@ -160,25 +162,6 @@ pub enum BodyType {
     Root,
     Sketch,
     Block,
-}
-
-/// Info about a module.  Right now, this is pretty minimal.  We hope to cache
-/// modules here in the future.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub struct ModuleInfo {
-    /// The ID of the module.
-    id: ModuleId,
-    /// Absolute path of the module's source file.
-    path: std::path::PathBuf,
-    repr: ModuleRepr,
-}
-
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub enum ModuleRepr {
-    Root,
-    Kcl(Node<Program>),
-    Foreign(import::PreImportedGeometry),
 }
 
 /// Metadata.
@@ -791,7 +774,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::errors::KclErrorDetails;
+    use crate::{errors::KclErrorDetails, ModuleId};
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]

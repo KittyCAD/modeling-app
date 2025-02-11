@@ -121,7 +121,9 @@ impl NonCodeValue {
                 ref mut name,
                 properties,
             } => {
-                hasher.update(name.compute_digest());
+                if let Some(name) = name {
+                    hasher.update(name.compute_digest());
+                }
                 if let Some(properties) = properties {
                     hasher.update(properties.len().to_ne_bytes());
                     for property in properties.iter_mut() {

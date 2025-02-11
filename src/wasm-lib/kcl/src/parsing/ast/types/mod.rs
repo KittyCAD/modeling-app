@@ -27,7 +27,9 @@ use crate::{
     errors::KclError,
     execution::{annotations, KclValue, Metadata, TagIdentifier},
     parsing::{ast::digest::Digest, PIPE_OPERATOR},
-    source_range::{ModuleId, SourceRange},
+    pretty::NumericSuffix,
+    source_range::SourceRange,
+    ModuleId,
 };
 
 mod condition;
@@ -868,6 +870,43 @@ impl Expr {
         }
     }
 
+    pub fn literal_bool(&self) -> Option<bool> {
+        match self {
+            Expr::Literal(lit) => match lit.value {
+                LiteralValue::Bool(b) => Some(b),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    pub fn literal_num(&self) -> Option<(f64, NumericSuffix)> {
+        match self {
+            Expr::Literal(lit) => match lit.value {
+                LiteralValue::Number { value, suffix } => Some((value, suffix)),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    pub fn literal_str(&self) -> Option<&str> {
+        match self {
+            Expr::Literal(lit) => match &lit.value {
+                LiteralValue::String(s) => Some(s),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    pub fn ident_name(&self) -> Option<&str> {
+        match self {
+            Expr::Identifier(ident) => Some(&ident.name),
+            _ => None,
+        }
+    }
+
     /// Describe this expression's type for a human, for typechecking.
     /// This is a best-effort function, it's OK to give a shitty string here (but we should work on improving it)
     pub fn human_friendly_type(&self) -> &'static str {
@@ -1089,7 +1128,7 @@ impl NonCodeNode {
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
-            NonCodeValue::Annotation { name, .. } => name.name.clone(),
+            n @ NonCodeValue::Annotation { .. } => n.annotation_name().unwrap_or("").to_owned(),
         }
     }
 
@@ -1158,7 +1197,7 @@ pub enum NonCodeValue {
     // This is also not a comment.
     NewLine,
     Annotation {
-        name: Node<Identifier>,
+        name: Option<Node<Identifier>>,
         properties: Option<Vec<Node<ObjectProperty>>>,
     },
 }
@@ -1166,7 +1205,7 @@ pub enum NonCodeValue {
 impl NonCodeValue {
     pub fn annotation_name(&self) -> Option<&str> {
         match self {
-            NonCodeValue::Annotation { name, .. } => Some(&name.name),
+            NonCodeValue::Annotation { name, .. } => name.as_ref().map(|i| &*i.name),
             _ => None,
         }
     }
@@ -1184,7 +1223,7 @@ impl NonCodeValue {
             ));
         }
         NonCodeValue::Annotation {
-            name: Identifier::new(annotations::SETTINGS),
+            name: Some(Identifier::new(annotations::SETTINGS)),
             properties: Some(properties),
         }
     }
@@ -1211,6 +1250,20 @@ impl NonCodeMeta {
     /// How many non-code values does this have?
     pub fn non_code_nodes_len(&self) -> usize {
         self.non_code_nodes.values().map(|x| x.len()).sum()
+    }
+
+    pub fn insert(&mut self, i: usize, new: Node<NonCodeNode>) {
+        self.non_code_nodes.entry(i).or_default().push(new);
+    }
+
+    pub fn contains(&self, pos: usize) -> bool {
+        if self.start_nodes.iter().any(|node| node.contains(pos)) {
+            return true;
+        }
+
+        self.non_code_nodes
+            .iter()
+            .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
     }
 }
 
@@ -1239,22 +1292,6 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
             start_nodes: helper.start_nodes,
             digest: None,
         })
-    }
-}
-
-impl NonCodeMeta {
-    pub fn insert(&mut self, i: usize, new: Node<NonCodeNode>) {
-        self.non_code_nodes.entry(i).or_default().push(new);
-    }
-
-    pub fn contains(&self, pos: usize) -> bool {
-        if self.start_nodes.iter().any(|node| node.contains(pos)) {
-            return true;
-        }
-
-        self.non_code_nodes
-            .iter()
-            .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
     }
 }
 
@@ -1382,14 +1419,14 @@ impl ImportSelector {
 pub enum ImportPath {
     Kcl { filename: String },
     Foreign { path: String },
-    Std,
+    Std { path: Vec<String> },
 }
 
 impl fmt::Display for ImportPath {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => write!(f, "{s}"),
-            ImportPath::Std => write!(f, "std"),
+            ImportPath::Std { path } => write!(f, "{}", path.join("::")),
         }
     }
 }
@@ -1746,7 +1783,7 @@ pub enum ItemVisibility {
 }
 
 impl ItemVisibility {
-    fn is_default(&self) -> bool {
+    pub fn is_default(&self) -> bool {
         matches!(self, Self::Default)
     }
 }
@@ -2941,16 +2978,14 @@ impl PipeExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema)]
 #[serde(tag = "type")]
-#[display(style = "snake_case")]
 pub enum FnArgPrimitive {
     /// A string type.
     String,
     /// A number type.
-    Number,
+    Number(NumericSuffix),
     /// A boolean type.
-    #[display("bool")]
     #[serde(rename = "bool")]
     Boolean,
     /// A tag.
@@ -2967,12 +3002,46 @@ impl FnArgPrimitive {
     pub fn digestable_id(&self) -> &[u8] {
         match self {
             FnArgPrimitive::String => b"string",
-            FnArgPrimitive::Number => b"number",
-            FnArgPrimitive::Boolean => b"boolean",
+            FnArgPrimitive::Number(suffix) => suffix.digestable_id(),
+            FnArgPrimitive::Boolean => b"bool",
             FnArgPrimitive::Tag => b"tag",
-            FnArgPrimitive::Sketch => b"sketch",
-            FnArgPrimitive::SketchSurface => b"sketch_surface",
-            FnArgPrimitive::Solid => b"solid",
+            FnArgPrimitive::Sketch => b"Sketch",
+            FnArgPrimitive::SketchSurface => b"SketchSurface",
+            FnArgPrimitive::Solid => b"Solid",
+        }
+    }
+
+    pub fn from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
+        match (s, suffix) {
+            ("string", None) => Some(FnArgPrimitive::String),
+            ("bool", None) => Some(FnArgPrimitive::Boolean),
+            ("tag", None) => Some(FnArgPrimitive::Tag),
+            ("Sketch", None) => Some(FnArgPrimitive::Sketch),
+            ("SketchSurface", None) => Some(FnArgPrimitive::SketchSurface),
+            ("Solid", None) => Some(FnArgPrimitive::Solid),
+            ("number", None) => Some(FnArgPrimitive::Number(NumericSuffix::None)),
+            ("number", Some(s)) => Some(FnArgPrimitive::Number(s)),
+            _ => None,
+        }
+    }
+}
+
+impl fmt::Display for FnArgPrimitive {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            FnArgPrimitive::Number(suffix) => {
+                write!(f, "number")?;
+                if *suffix != NumericSuffix::None {
+                    write!(f, "({suffix})")?;
+                }
+                Ok(())
+            }
+            FnArgPrimitive::String => write!(f, "string"),
+            FnArgPrimitive::Boolean => write!(f, "bool"),
+            FnArgPrimitive::Tag => write!(f, "tag"),
+            FnArgPrimitive::Sketch => write!(f, "Sketch"),
+            FnArgPrimitive::SketchSurface => write!(f, "SketchSurface"),
+            FnArgPrimitive::Solid => write!(f, "Solid"),
         }
     }
 }
@@ -3029,8 +3098,7 @@ pub struct Parameter {
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
     /// This is optional if the user defines a type.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(skip)]
+    #[serde(skip)]
     pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     /// If so, what is its default value?
@@ -3516,7 +3584,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: number, arg1: string, tag?: string) => {
+        let some_program_string = r#"fn thing = (arg0: number(mm), arg1: string, tag?: string) => {
     return arg0
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3531,7 +3599,10 @@ const cylinder = startSketchOn('-XZ')
         };
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
-        assert_eq!(params[0].type_, Some(FnArgType::Primitive(FnArgPrimitive::Number)));
+        assert_eq!(
+            params[0].type_,
+            Some(FnArgType::Primitive(FnArgPrimitive::Number(NumericSuffix::Mm)))
+        );
         assert_eq!(params[1].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
         assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
     }
@@ -3553,7 +3624,10 @@ const cylinder = startSketchOn('-XZ')
         };
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
-        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(
+            params[0].type_,
+            Some(FnArgType::Array(FnArgPrimitive::Number(NumericSuffix::None)))
+        );
         assert_eq!(params[1].type_, Some(FnArgType::Array(FnArgPrimitive::String)));
         assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
     }
@@ -3576,7 +3650,10 @@ const cylinder = startSketchOn('-XZ')
         };
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
-        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(
+            params[0].type_,
+            Some(FnArgType::Array(FnArgPrimitive::Number(NumericSuffix::None)))
+        );
         assert_eq!(
             params[1].type_,
             Some(FnArgType::Object {
@@ -3591,7 +3668,7 @@ const cylinder = startSketchOn('-XZ')
                             40,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number(NumericSuffix::None))),
                         default_value: None,
                         labeled: true,
                         digest: None,
@@ -3664,7 +3741,7 @@ const cylinder = startSketchOn('-XZ')
                             18,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number(NumericSuffix::None))),
                         default_value: None,
                         labeled: true,
                         digest: None

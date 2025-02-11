@@ -10,17 +10,17 @@ use crate::{
         annotations,
         cad_op::{OpArg, Operation},
         state::ModuleState,
-        BodyType, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ModuleRepr, ProgramMemory,
-        TagEngineInfo, TagIdentifier,
+        BodyType, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory, TagEngineInfo,
+        TagIdentifier,
     },
-    fs::FileSystem,
+    modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
         CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector, ItemVisibility,
         LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef, NonCodeValue, ObjectExpression,
         PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
     },
-    source_range::{ModuleId, SourceRange},
+    source_range::SourceRange,
     std::{
         args::{Arg, KwArgs},
         FunctionKind,
@@ -38,7 +38,8 @@ impl ExecutorContext {
         annotations: impl Iterator<Item = (&NonCodeValue, SourceRange)>,
         scope: annotations::AnnotationScope,
         exec_state: &mut ExecState,
-    ) -> Result<(), KclError> {
+    ) -> Result<bool, KclError> {
+        let mut no_prelude = false;
         for (annotation, source_range) in annotations {
             if annotation.annotation_name() == Some(annotations::SETTINGS) {
                 if scope == annotations::AnnotationScope::Module {
@@ -48,7 +49,7 @@ impl ExecutorContext {
                         .settings
                         .update_from_annotation(annotation, source_range)?;
                     let new_units = exec_state.length_unit();
-                    if old_units != new_units {
+                    if !self.engine.execution_kind().is_isolated() && old_units != new_units {
                         self.engine.set_units(new_units.into(), source_range).await?;
                     }
                 } else {
@@ -58,9 +59,19 @@ impl ExecutorContext {
                     }));
                 }
             }
+            if annotation.annotation_name() == Some(annotations::NO_PRELUDE) {
+                if scope == annotations::AnnotationScope::Module {
+                    no_prelude = true;
+                } else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "Prelude can only be skipped at the top level scope of a file".to_owned(),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+            }
             // TODO warn on unknown annotations
         }
-        Ok(())
+        Ok(no_prelude)
     }
 
     /// Execute an AST's program.
@@ -71,22 +82,32 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        self.handle_annotations(
-            program
-                .non_code_meta
-                .start_nodes
-                .iter()
-                .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
-            annotations::AnnotationScope::Module,
-            exec_state,
-        )
-        .await?;
+        if body_type == BodyType::Root {
+            let _no_prelude = self
+                .handle_annotations(
+                    program
+                        .non_code_meta
+                        .start_nodes
+                        .iter()
+                        .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
+                    annotations::AnnotationScope::Module,
+                    exec_state,
+                )
+                .await?;
+        }
 
         let mut last_expr = None;
         // Iterate over the body of the program.
-        for statement in &program.body {
+        for (i, statement) in program.body.iter().enumerate() {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
+                    if body_type != BodyType::Root {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: "Imports are only supported at the top-level of a file.".to_owned(),
+                            source_ranges: vec![import_stmt.into()],
+                        }));
+                    }
+
                     let source_range = SourceRange::from(import_stmt);
                     let module_id = self.open_module(&import_stmt.path, exec_state, source_range).await?;
 
@@ -178,6 +199,14 @@ impl ExecutorContext {
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
 
+                    let _meta_nodes = if i == 0 {
+                        &program.non_code_meta.start_nodes
+                    } else if let Some(meta) = program.non_code_meta.non_code_nodes.get(&(i - 1)) {
+                        meta
+                    } else {
+                        &Vec::new()
+                    };
+
                     let memory_item = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
@@ -231,63 +260,45 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
+        let resolved_path = ModulePath::from_import_path(path, &self.settings.project_directory);
         match path {
-            ImportPath::Kcl { filename } => {
-                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
-                    project_dir.join(filename)
-                } else {
-                    std::path::PathBuf::from(filename)
-                };
+            ImportPath::Kcl { .. } => {
+                exec_state.global.mod_loader.cycle_check(&resolved_path, source_range)?;
 
-                if exec_state.mod_local.import_stack.contains(&resolved_path) {
-                    return Err(KclError::ImportCycle(KclErrorDetails {
-                        message: format!(
-                            "circular import of modules is not allowed: {} -> {}",
-                            exec_state
-                                .mod_local
-                                .import_stack
-                                .iter()
-                                .map(|p| p.as_path().to_string_lossy())
-                                .collect::<Vec<_>>()
-                                .join(" -> "),
-                            resolved_path.to_string_lossy()
-                        ),
-                        source_ranges: vec![source_range],
-                    }));
+                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                    return Ok(id);
                 }
 
-                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
-                    return Ok(*id);
-                }
-
-                let source = self.fs.read_to_string(&resolved_path, source_range).await?;
-                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
+                let id = exec_state.next_module_id();
+                let source = resolved_path.source(&self.fs, source_range).await?;
                 // TODO handle parsing errors properly
                 let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
-                let repr = ModuleRepr::Kcl(parsed);
-
-                Ok(exec_state.add_module(id, resolved_path, repr))
+                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed));
+                Ok(id)
             }
-            ImportPath::Foreign { path } => {
-                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
-                    project_dir.join(path)
-                } else {
-                    std::path::PathBuf::from(path)
-                };
-
-                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
-                    return Ok(*id);
+            ImportPath::Foreign { .. } => {
+                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                    return Ok(id);
                 }
 
-                let geom = super::import::import_foreign(&resolved_path, None, exec_state, self, source_range).await?;
-                let repr = ModuleRepr::Foreign(geom);
-                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
-                Ok(exec_state.add_module(id, resolved_path, repr))
+                let id = exec_state.next_module_id();
+                let geom =
+                    super::import::import_foreign(resolved_path.expect_path(), None, exec_state, self, source_range)
+                        .await?;
+                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
+                Ok(id)
             }
-            i => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Unsupported import: `{i}`"),
-                source_ranges: vec![source_range],
-            })),
+            ImportPath::Std { .. } => {
+                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                    return Ok(id);
+                }
+
+                let id = exec_state.next_module_id();
+                let source = resolved_path.source(&self.fs, source_range).await?;
+                let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err().unwrap();
+                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed));
+                Ok(id)
+            }
         }
     }
 
@@ -307,22 +318,20 @@ impl ExecutorContext {
                 message: format!(
                     "circular import of modules is not allowed: {} -> {}",
                     exec_state
-                        .mod_local
+                        .global
+                        .mod_loader
                         .import_stack
                         .iter()
                         .map(|p| p.as_path().to_string_lossy())
                         .collect::<Vec<_>>()
                         .join(" -> "),
-                    info.path.display()
+                    info.path
                 ),
                 source_ranges: vec![source_range],
             })),
             ModuleRepr::Kcl(program) => {
-                let mut local_state = ModuleState {
-                    import_stack: exec_state.mod_local.import_stack.clone(),
-                    ..ModuleState::new(&self.settings)
-                };
-                local_state.import_stack.push(info.path.clone());
+                let mut local_state = ModuleState::new(&self.settings);
+                exec_state.global.mod_loader.enter_module(&info.path);
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
                 let original_execution = self.engine.replace_execution_kind(exec_kind);
 
@@ -332,7 +341,8 @@ impl ExecutorContext {
 
                 let new_units = exec_state.length_unit();
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-                if new_units != old_units {
+                exec_state.global.mod_loader.leave_module(&info.path);
+                if !exec_kind.is_isolated() && new_units != old_units {
                     self.engine.set_units(old_units.into(), Default::default()).await?;
                 }
                 self.engine.replace_execution_kind(original_execution);
@@ -345,7 +355,7 @@ impl ExecutorContext {
                         KclError::Semantic(KclErrorDetails {
                             message: format!(
                                 "Error loading imported file. Open it to view more details. {}: {}",
-                                info.path.display(),
+                                info.path,
                                 err.message()
                             ),
                             source_ranges: vec![source_range],
