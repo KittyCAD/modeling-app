@@ -1543,13 +1543,13 @@ sphere = startSketchOn('XZ')
      }, %)
   |> close()
   |> revolve({ axis: 'x' }, %)
-  |> patternCircular3d({
-       axis: [0, 0, 1],
-       center: [0, 0, 0],
-       repetitions: 10,
-       arcDegrees: 360,
-       rotateDuplicates: true
-     }, %)
+  |> patternCircular3d(
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       repetitions = 10,
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')
@@ -1644,13 +1644,13 @@ sphere = startSketchOn('XZ')
      }, %)
   |> close()
   |> revolve({ axis = 'x' }, %)
-  |> patternCircular3d({
+  |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
        repetitions = 10,
        arcDegrees = 360,
-       rotateDuplicates = true
-     }, %)
+       rotateDuplicates = true,
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')

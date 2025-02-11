@@ -440,13 +440,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_solid_set<'a, T>(&'a self) -> Result<(T, SolidSet), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_data_and_solid<'a, T>(&'a self) -> Result<(T, Box<Solid>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
@@ -940,72 +933,6 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Direction {
             "negative" => Some(Self::Negative),
             _ => None,
         }
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::patterns::CircularPattern3dData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, instances);
-        let_field_of!(obj, arc_degrees "arcDegrees");
-        let_field_of!(obj, rotate_duplicates "rotateDuplicates");
-        let_field_of!(obj, axis);
-        let_field_of!(obj, center);
-        let_field_of!(obj, use_original? "useOriginal");
-        Some(Self {
-            instances,
-            axis,
-            center,
-            arc_degrees,
-            rotate_duplicates,
-            use_original,
-        })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::patterns::CircularPattern2dData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, instances);
-        let_field_of!(obj, arc_degrees "arcDegrees");
-        let_field_of!(obj, rotate_duplicates "rotateDuplicates");
-        let_field_of!(obj, center);
-        let_field_of!(obj, use_original? "useOriginal");
-        Some(Self {
-            instances,
-            center,
-            arc_degrees,
-            rotate_duplicates,
-            use_original,
-        })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::patterns::LinearPattern3dData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, distance);
-        let_field_of!(obj, instances);
-        let_field_of!(obj, axis);
-        Some(Self {
-            instances,
-            distance,
-            axis,
-        })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::patterns::LinearPattern2dData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, distance);
-        let_field_of!(obj, instances);
-        let_field_of!(obj, axis);
-        Some(Self {
-            instances,
-            distance,
-            axis,
-        })
     }
 }
 

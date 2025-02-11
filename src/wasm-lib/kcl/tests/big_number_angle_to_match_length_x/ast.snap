@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing big_number_angle_to_match_length_x.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {

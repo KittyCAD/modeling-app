@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing helix_simple.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -86,7 +87,7 @@ description: Program memory after executing helix_simple.kcl
               {
                 "sourceRange": [
                   151,
-                  242,
+                  257,
                   0
                 ]
               }

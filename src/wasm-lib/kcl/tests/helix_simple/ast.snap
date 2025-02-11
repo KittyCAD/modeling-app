@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing helix_simple.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -171,7 +172,7 @@ description: Result of parsing helix_simple.kcl
       },
       {
         "declaration": {
-          "end": 242,
+          "end": 257,
           "id": {
             "end": 148,
             "name": "helixPath",
@@ -187,9 +188,9 @@ description: Result of parsing helix_simple.kcl
                   "name": "angleStart"
                 },
                 "arg": {
-                  "end": 171,
+                  "end": 174,
                   "raw": "0",
-                  "start": 170,
+                  "start": 173,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -205,9 +206,9 @@ description: Result of parsing helix_simple.kcl
                   "name": "ccw"
                 },
                 "arg": {
-                  "end": 183,
+                  "end": 188,
                   "raw": "true",
-                  "start": 179,
+                  "start": 184,
                   "type": "Literal",
                   "type": "Literal",
                   "value": true
@@ -220,9 +221,9 @@ description: Result of parsing helix_simple.kcl
                   "name": "revolutions"
                 },
                 "arg": {
-                  "end": 200,
+                  "end": 207,
                   "raw": "5",
-                  "start": 199,
+                  "start": 206,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -238,9 +239,9 @@ description: Result of parsing helix_simple.kcl
                   "name": "length"
                 },
                 "arg": {
-                  "end": 213,
+                  "end": 222,
                   "raw": "10",
-                  "start": 211,
+                  "start": 220,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -256,9 +257,9 @@ description: Result of parsing helix_simple.kcl
                   "name": "radius"
                 },
                 "arg": {
-                  "end": 225,
+                  "end": 236,
                   "raw": "5",
-                  "start": 224,
+                  "start": 235,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -274,9 +275,9 @@ description: Result of parsing helix_simple.kcl
                   "name": "axis"
                 },
                 "arg": {
-                  "end": 241,
+                  "end": 254,
                   "name": "edge001",
-                  "start": 234,
+                  "start": 247,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
@@ -288,7 +289,7 @@ description: Result of parsing helix_simple.kcl
               "start": 151,
               "type": "Identifier"
             },
-            "end": 242,
+            "end": 257,
             "start": 151,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -297,14 +298,14 @@ description: Result of parsing helix_simple.kcl
           "start": 139,
           "type": "VariableDeclarator"
         },
-        "end": 242,
+        "end": 257,
         "kind": "const",
         "start": 139,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 243,
+    "end": 258,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [

@@ -60,6 +60,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           localStorage.setItem('persistCode', file)
         }, file)
         await homePage.goToModelingScene()
+        await scene.waitForExecutionDone()
 
         const body1CapCoords = { x: 571, y: 351 }
         const greenCheckCoords = { x: 565, y: 345 }
@@ -76,7 +77,9 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           'Submitting to Text-to-CAD API...'
         )
         const successToast = page.getByText('Prompt to edit successful')
-        const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
+        const acceptBtn = page.getByRole('button', {
+          name: 'checkmark Accept',
+        })
         const rejectBtn = page.getByRole('button', { name: 'close Reject' })
 
         await test.step('wait for scene to load select body and check selection came through', async () => {
@@ -99,7 +102,9 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           await page.waitForTimeout(100)
           await cmdBar.progressCmdBar()
           await expect(submittingToast).toBeVisible()
-          await expect(submittingToast).not.toBeVisible({ timeout: 2 * 60_000 }) // can take a while
+          await expect(submittingToast).not.toBeVisible({
+            timeout: 2 * 60_000,
+          }) // can take a while
           await expect(successToast).toBeVisible()
         })
 
@@ -150,6 +155,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     const body1CapCoords = { x: 571, y: 351 }
     const [clickBody1Cap] = scene.makeMouseHelpers(

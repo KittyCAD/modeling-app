@@ -289,7 +289,10 @@ describe('testing addTagForSketchOnFace', () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> line(
+       endAbsolute = [profileStartX(%), profileStartY(%)],
+       tag = $seg02,
+     )
   |> close()
 extrude001 = extrude(sketch001, length = 100)
 ${insertCode}

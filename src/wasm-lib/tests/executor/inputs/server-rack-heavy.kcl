@@ -710,11 +710,11 @@ const sketch004fl = startSketchOn(extrude002fl, 'START')
      ], %, $rectangleSegmentC003fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude004fl = extrude(sketch004fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -731,11 +731,11 @@ const sketch005fl = startSketchOn(extrude002fl, 'START')
      ], %, $rectangleSegmentC004fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude005fl = extrude(sketch005fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -755,11 +755,11 @@ const sketch006fl = startSketchOn(extrude002fl, 'START')
      ], %, $rectangleSegmentC005fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude006fl = extrude(sketch006fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -776,11 +776,11 @@ const sketch007fl = startSketchOn(extrude001fl, 'START')
      ], %, $rectangleSegmentC006fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude007fl = extrude(sketch007fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -797,11 +797,11 @@ const sketch008fl = startSketchOn(extrude001fl, 'START')
      ], %, $rectangleSegmentC007fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude008fl = extrude(sketch008fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -821,11 +821,11 @@ const sketch009fl = startSketchOn(extrude001fl, 'START')
      ], %, $rectangleSegmentC008fl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude009fl = extrude(sketch009fl, length = -thickness)
 
 // define slots
@@ -839,11 +839,11 @@ const sketch010fl = startSketchOn(extrude001fl, 'START')
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: 2,
-       distance: 1.22
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = 2,
+       distance = 1.22
+     )
 const extrude010fl = extrude(sketch010fl, length = -thickness)
 
 // define slots
@@ -877,11 +877,11 @@ const sketch012fl = startSketchOn(extrude001fl, 'START')
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
   |> close()
-  |> patternLinear2d({
-       axis: [0, -1],
-       instances: 2,
-       distance: 1.22
-     }, %)
+  |> patternLinear2d(
+       axis = [0, -1],
+       instances = 2,
+       distance = 1.22
+     )
 const extrude012fl = extrude(sketch012fl, length = -thickness)
 
 // FRONT RIGHT VERTICAL RAIL
@@ -992,11 +992,11 @@ const sketch004fr = startSketchOn(extrude002fr, 'START')
      ], %, $rectangleSegmentC003fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude004fr = extrude(sketch004fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1016,11 +1016,11 @@ const sketch005fr = startSketchOn(extrude002fr, 'START')
      ], %, $rectangleSegmentC004fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude005fr = extrude(sketch005fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1040,11 +1040,11 @@ const sketch006fr = startSketchOn(extrude002fr, 'START')
      ], %, $rectangleSegmentC005fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude006fr = extrude(sketch006fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1064,11 +1064,11 @@ const sketch007fr = startSketchOn(extrude001fr, 'START')
      ], %, $rectangleSegmentC006fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude007fr = extrude(sketch007fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1088,11 +1088,11 @@ const sketch008fr = startSketchOn(extrude001fr, 'START')
      ], %, $rectangleSegmentC007fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude008fr = extrude(sketch008fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1112,11 +1112,11 @@ const sketch009fr = startSketchOn(extrude001fr, 'START')
      ], %, $rectangleSegmentC008fr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude009fr = extrude(sketch009fr, length = -thickness)
 
 // define slots
@@ -1133,11 +1133,11 @@ const sketch010fr = startSketchOn(extrude001fr, 'START')
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: 2,
-       distance: 1.22
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = 2,
+       distance = 1.22
+     )
 const extrude010fr = extrude(sketch010fr, length = -thickness)
 
 // define slots
@@ -1171,11 +1171,11 @@ const sketch012fr = startSketchOn(extrude001fr, 'START')
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
   |> close()
-  |> patternLinear2d({
-       axis: [0, -1],
-       instances: 2,
-       distance: 1.22
-     }, %)
+  |> patternLinear2d(
+       axis = [0, -1],
+       instances = 2,
+       distance = 1.22
+     )
 const extrude012fr = extrude(sketch012fr, length = -thickness)
 
 // RIGHT REAR VERTICAL RAIL
@@ -1286,11 +1286,11 @@ const sketch004rr = startSketchOn(extrude002rr, 'START')
      ], %, $rectangleSegmentC003rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude004rr = extrude(sketch004rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1310,11 +1310,11 @@ const sketch005rr = startSketchOn(extrude002rr, 'START')
      ], %, $rectangleSegmentC004rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude005rr = extrude(sketch005rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1334,11 +1334,11 @@ const sketch006rr = startSketchOn(extrude002rr, 'START')
      ], %, $rectangleSegmentC005rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude006rr = extrude(sketch006rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1358,11 +1358,11 @@ const sketch007rr = startSketchOn(extrude001rr, 'START')
      ], %, $rectangleSegmentC006rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude007rr = extrude(sketch007rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1382,11 +1382,11 @@ const sketch008rr = startSketchOn(extrude001rr, 'START')
      ], %, $rectangleSegmentC007rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude008rr = extrude(sketch008rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1406,11 +1406,11 @@ const sketch009rr = startSketchOn(extrude001rr, 'START')
      ], %, $rectangleSegmentC008rr)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude009rr = extrude(sketch009rr, length = -thickness)
 
 // define slots
@@ -1427,11 +1427,11 @@ const sketch010rr = startSketchOn(extrude001rr, 'START')
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: 2,
-       distance: 1.22
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = 2,
+       distance = 1.22
+     )
 const extrude010rr = extrude(sketch010rr, length = -thickness)
 
 // define slots
@@ -1465,11 +1465,11 @@ const sketch012rr = startSketchOn(extrude001rr, 'START')
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
   |> close()
-  |> patternLinear2d({
-       axis: [0, -1],
-       instances: 2,
-       distance: 1.22
-     }, %)
+  |> patternLinear2d(
+       axis = [0, -1],
+       instances = 2,
+       distance = 1.22
+     )
 const extrude012rr = extrude(sketch012rr, length = -thickness)
 
 // REAR LEFT VETCIAL RAIL
@@ -1579,11 +1579,11 @@ const sketch004rl = startSketchOn(extrude002rl, 'START')
      ], %, $rectangleSegmentC003rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude004rl = extrude(sketch004rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1603,11 +1603,11 @@ const sketch005rl = startSketchOn(extrude002rl, 'START')
      ], %, $rectangleSegmentC004rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     ) 
 const extrude005rl = extrude(sketch005rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1627,11 +1627,11 @@ const sketch006rl = startSketchOn(extrude002rl, 'START')
      ], %, $rectangleSegmentC005rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude006rl = extrude(sketch006rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1651,11 +1651,11 @@ const sketch007rl = startSketchOn(extrude001rl, 'START')
      ], %, $rectangleSegmentC006rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude007rl = extrude(sketch007rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1675,11 +1675,11 @@ const sketch008rl = startSketchOn(extrude001rl, 'START')
      ], %, $rectangleSegmentC007rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude008rl = extrude(sketch008rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
@@ -1699,11 +1699,11 @@ const sketch009rl = startSketchOn(extrude001rl, 'START')
      ], %, $rectangleSegmentC008rl)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
 const extrude009rl = extrude(sketch009rl, length = -thickness)
 
 // define slots
@@ -1720,11 +1720,11 @@ const sketch010rl = startSketchOn(extrude001rl, 'START')
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
   |> close()
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: 2,
-       distance: 1.22
-     }, %)
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = 2,
+       distance = 1.22
+     )
 const extrude010rl = extrude(sketch010rl, length = -thickness)
 
 // define slots
@@ -1758,11 +1758,11 @@ const sketch012rl = startSketchOn(extrude001rl, 'START')
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
   |> close()
-  |> patternLinear2d({
-       axis: [0, -1],
-       instances: 2,
-       distance: 1.22
-     }, %)
+  |> patternLinear2d(
+       axis = [0, -1],
+       instances = 2,
+       distance = 1.22
+     )
 const extrude012rl = extrude(sketch012rl, length = -thickness)
 
 // GENERATE SERVER MODELS

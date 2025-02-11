@@ -66,16 +66,16 @@ const peg = startSketchOn(s, 'end')
        -(pitch*(wbumps-1)/2),
        -(pitch*(lbumps-1)/2)
      ], radius: bumpDiam / 2 }, %)
-  |> patternLinear2d({
-       axis: [1, 0],
-       instances: wbumps,
-       distance: pitch
-     }, %)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: lbumps,
-       distance: pitch
-     }, %)
+  |> patternLinear2d(
+       axis = [1, 0],
+       instances = wbumps,
+       distance = pitch
+     )
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = lbumps,
+       distance = pitch
+     )
   |> extrude(bumpHeight, %)
   // |> patternTransform(int(totalBumps-1), tr, %)
 
