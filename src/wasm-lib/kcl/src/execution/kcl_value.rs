@@ -8,14 +8,15 @@ use crate::{
     errors::KclErrorDetails,
     exec::Sketch,
     execution::{
-        Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier,
+        ExecState, Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet,
+        TagIdentifier,
     },
     parsing::{
         ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
         token::NumericSuffix,
     },
     std::{args::Arg, FnAsArg},
-    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
+    ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
 use super::memory::EnvironmentRef;
@@ -670,6 +671,19 @@ impl From<UnitLen> for crate::UnitLength {
             UnitLen::M => crate::UnitLength::M,
             UnitLen::Mm => crate::UnitLength::Mm,
             UnitLen::Yards => crate::UnitLength::Yd,
+        }
+    }
+}
+
+impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
+    fn from(unit: UnitLen) -> Self {
+        match unit {
+            UnitLen::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
+            UnitLen::Feet => kittycad_modeling_cmds::units::UnitLength::Feet,
+            UnitLen::Inches => kittycad_modeling_cmds::units::UnitLength::Inches,
+            UnitLen::M => kittycad_modeling_cmds::units::UnitLength::Meters,
+            UnitLen::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
+            UnitLen::Yards => kittycad_modeling_cmds::units::UnitLength::Yards,
         }
     }
 }

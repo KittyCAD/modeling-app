@@ -40,10 +40,12 @@ export async function submitPromptToEditToQueue({
   code,
   token,
   artifactGraph,
+  projectName,
 }: {
   prompt: string
   selections: Selections
   code: string
+  projectName: string
   token?: string
   artifactGraph: ArtifactGraph
 }): Promise<Models['TextToCadIteration_type'] | Error> {
@@ -157,6 +159,8 @@ See later source ranges for more context. about the sweep`,
     original_source_code: code,
     prompt,
     source_ranges: ranges,
+    project_name:
+      projectName !== '' && projectName !== 'browser' ? projectName : undefined,
   }
   const url = VITE_KC_API_BASE_URL + '/ml/text-to-cad/iteration'
   const data: Models['TextToCadIteration_type'] | Error =
@@ -203,11 +207,13 @@ export async function doPromptEdit({
   code,
   token,
   artifactGraph,
+  projectName,
 }: {
   prompt: string
   selections: Selections
   code: string
   token?: string
+  projectName: string
   artifactGraph: ArtifactGraph
 }): Promise<Models['TextToCadIteration_type'] | Error> {
   const toastId = toast.loading('Submitting to Text-to-CAD API...')
@@ -217,6 +223,7 @@ export async function doPromptEdit({
     code,
     token,
     artifactGraph,
+    projectName,
   })
   if (err(submitResult)) return submitResult
 
@@ -269,12 +276,14 @@ export async function promptToEditFlow({
   code,
   token,
   artifactGraph,
+  projectName,
 }: {
   prompt: string
   selections: Selections
   code: string
   token?: string
   artifactGraph: ArtifactGraph
+  projectName: string
 }) {
   const result = await doPromptEdit({
     prompt,
@@ -282,6 +291,7 @@ export async function promptToEditFlow({
     code,
     token,
     artifactGraph,
+    projectName,
   })
   if (err(result)) return Promise.reject(result)
   const oldCode = codeManager.code

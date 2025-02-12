@@ -1,277 +1,243 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing double_map_fn.kcl
+description: Variables in memory after executing double_map_fn.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "increment": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 32,
-                    "left": {
-                      "end": 28,
-                      "name": "i",
-                      "start": 27,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    "operator": "+",
-                    "right": {
-                      "end": 32,
-                      "raw": "1",
-                      "start": 31,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.0,
-                        "suffix": "None"
-                      }
-                    },
-                    "start": 27,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "end": 32,
-                  "start": 20,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "__meta": []
+  },
+  "increment": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "argument": {
+              "end": 32,
+              "left": {
+                "end": 28,
+                "name": "i",
+                "start": 27,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "+",
+              "right": {
+                "end": 32,
+                "raw": "1",
+                "start": 31,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
                 }
-              ],
-              "end": 34,
-              "start": 16
+              },
+              "start": 27,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
             },
-            "end": 34,
-            "params": [
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 14,
-                  "name": "i",
-                  "start": 13,
-                  "type": "Identifier"
-                }
-              }
-            ],
-            "start": 12,
-            "type": "FunctionExpression"
-          },
-          "memory": [
-            0,
-            1
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                12,
-                34,
-                0
-              ]
-            }
-          ]
-        },
-        "xs": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Int",
-              "value": 0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    41,
-                    47,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": 1,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    41,
-                    47,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": 2,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    41,
-                    47,
-                    0
-                  ]
-                }
-              ]
-            }
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                47,
-                0
-              ]
-            }
-          ]
-        },
-        "ys": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 2.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    41,
-                    47,
-                    0
-                  ]
-                },
-                {
-                  "sourceRange": [
-                    31,
-                    32,
-                    0
-                  ]
-                },
-                {
-                  "sourceRange": [
-                    31,
-                    32,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 3.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    41,
-                    47,
-                    0
-                  ]
-                },
-                {
-                  "sourceRange": [
-                    31,
-                    32,
-                    0
-                  ]
-                },
-                {
-                  "sourceRange": [
-                    31,
-                    32,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 4.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    41,
-                    47,
-                    0
-                  ]
-                },
-                {
-                  "sourceRange": [
-                    31,
-                    32,
-                    0
-                  ]
-                },
-                {
-                  "sourceRange": [
-                    31,
-                    32,
-                    0
-                  ]
-                }
-              ]
-            }
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                84,
-                101,
-                0
-              ]
-            }
-          ]
-        }
+            "end": 32,
+            "start": 20,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 34,
+        "start": 16
       },
-      "snapshots": [
+      "end": 34,
+      "params": [
         {
-          "parent_snapshot": null,
-          "data": {
-            "increment": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            },
-            "xs": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            },
-            "ys": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            }
+          "type": "Parameter",
+          "identifier": {
+            "end": 14,
+            "name": "i",
+            "start": 13,
+            "type": "Identifier"
           }
         }
       ],
-      "parent": null
-    }
-  ],
-  "currentEnv": [
-    0,
-    0
-  ],
-  "callStack": []
+      "start": 12,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      0,
+      1
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          12,
+          34,
+          0
+        ]
+      }
+    ]
+  },
+  "xs": {
+    "type": "Array",
+    "value": [
+      {
+        "type": "Int",
+        "value": 0,
+        "__meta": [
+          {
+            "sourceRange": [
+              41,
+              47,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Int",
+        "value": 1,
+        "__meta": [
+          {
+            "sourceRange": [
+              41,
+              47,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Int",
+        "value": 2,
+        "__meta": [
+          {
+            "sourceRange": [
+              41,
+              47,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          41,
+          47,
+          0
+        ]
+      }
+    ]
+  },
+  "ys": {
+    "type": "Array",
+    "value": [
+      {
+        "type": "Number",
+        "value": 2.0,
+        "__meta": [
+          {
+            "sourceRange": [
+              41,
+              47,
+              0
+            ]
+          },
+          {
+            "sourceRange": [
+              31,
+              32,
+              0
+            ]
+          },
+          {
+            "sourceRange": [
+              31,
+              32,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 3.0,
+        "__meta": [
+          {
+            "sourceRange": [
+              41,
+              47,
+              0
+            ]
+          },
+          {
+            "sourceRange": [
+              31,
+              32,
+              0
+            ]
+          },
+          {
+            "sourceRange": [
+              31,
+              32,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 4.0,
+        "__meta": [
+          {
+            "sourceRange": [
+              41,
+              47,
+              0
+            ]
+          },
+          {
+            "sourceRange": [
+              31,
+              32,
+              0
+            ]
+          },
+          {
+            "sourceRange": [
+              31,
+              32,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          101,
+          0
+        ]
+      }
+    ]
+  }
 }

@@ -10,16 +10,17 @@ use crate::{
         annotations,
         cad_op::{OpArg, Operation},
         memory,
+        memory::ProgramMemory,
         state::ModuleState,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory,
-        TagEngineInfo, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, TagEngineInfo,
+        TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
         CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector, ItemVisibility,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef, NonCodeValue, ObjectExpression,
-        PipeExpression, Program, TagDeclarator, UnaryExpression, UnaryOperator,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef, NonCodeNode, NonCodeValue,
+        ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{
@@ -110,7 +111,10 @@ impl ExecutorContext {
                     }
 
                     let source_range = SourceRange::from(import_stmt);
-                    let module_id = self.open_module(&import_stmt.path, exec_state, source_range).await?;
+                    let meta_nodes = program.non_code_meta.get(i);
+                    let module_id = self
+                        .open_module(&import_stmt.path, meta_nodes, exec_state, source_range)
+                        .await?;
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
@@ -205,13 +209,7 @@ impl ExecutorContext {
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
 
-                    let _meta_nodes = if i == 0 {
-                        &program.non_code_meta.start_nodes
-                    } else if let Some(meta) = program.non_code_meta.non_code_nodes.get(&(i - 1)) {
-                        meta
-                    } else {
-                        &Vec::new()
-                    };
+                    let _meta_nodes = program.non_code_meta.get(i);
 
                     let memory_item = self
                         .execute_expr(
@@ -281,6 +279,7 @@ impl ExecutorContext {
     async fn open_module(
         &self,
         path: &ImportPath,
+        non_code_meta: &[Node<NonCodeNode>],
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
@@ -307,9 +306,9 @@ impl ExecutorContext {
                 }
 
                 let id = exec_state.next_module_id();
-                let geom =
-                    super::import::import_foreign(resolved_path.expect_path(), None, exec_state, self, source_range)
-                        .await?;
+                let path = resolved_path.expect_path();
+                let format = super::import::format_from_annotations(non_code_meta, path, source_range)?;
+                let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
                 exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
                 Ok(id)
             }
