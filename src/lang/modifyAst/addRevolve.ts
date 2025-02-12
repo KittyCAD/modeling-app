@@ -117,12 +117,9 @@ export function revolveSketch(
   const lastSketchNodePath =
     orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
   let sketchIndexInBody = Number(lastSketchNodePath[1][0])
-  if (typeof sketchIndexInBody !== 'number')
+  if (typeof sketchIndexInBody !== 'number') {
     return new Error('expected sketchIndexInBody to be a number')
-  clonedAst.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
-
-  if (typeof sketchIndexInBody !== 'number')
-    return new Error('expected insertIndex to be a number')
+  }
 
   // If an axis was selected in KCL, find the max index to insert the revolve command
   if (axisDeclaration) {
