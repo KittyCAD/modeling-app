@@ -159,7 +159,8 @@ See later source ranges for more context. about the sweep`,
     original_source_code: code,
     prompt,
     source_ranges: ranges,
-    project_name: projectName !== '' ? projectName : undefined,
+    project_name:
+      projectName !== '' && projectName !== 'browser' ? projectName : undefined,
   }
   const url = VITE_KC_API_BASE_URL + '/ml/text-to-cad/iteration'
   const data: Models['TextToCadIteration_type'] | Error =

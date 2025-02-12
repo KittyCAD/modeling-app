@@ -24,7 +24,8 @@ async function submitTextToCadPrompt(
 ): Promise<Models['TextToCad_type'] | Error> {
   const body: Models['TextToCadCreateBody_type'] = {
     prompt,
-    project_name: projectName !== '' ? projectName : undefined,
+    project_name:
+      projectName !== '' && projectName !== 'browser' ? projectName : undefined,
   }
   // Glb has a smaller footprint than gltf, should we want to render it.
   const url = VITE_KC_API_BASE_URL + '/ai/text-to-cad/glb?kcl=true'
