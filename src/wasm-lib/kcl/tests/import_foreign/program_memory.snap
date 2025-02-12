@@ -56,9 +56,13 @@ description: Program memory after executing import_foreign.kcl
           ]
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { Program, ProgramMemory, Expr } from '../../lang/wasm'
+import { Program, Expr, VariableMap } from '../../lang/wasm'
 import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
@@ -51,7 +51,7 @@ export function applyConstraintHorzVert(
   selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal',
   ast: Node<Program>,
-  programMemory: ProgramMemory
+  memVars: VariableMap
 ):
   | {
       modifiedAst: Node<Program>
@@ -66,7 +66,7 @@ export function applyConstraintHorzVert(
     ast,
     selectionRanges,
     transformInfos,
-    programMemory,
+    memVars,
     referenceSegName: '',
   })
 }

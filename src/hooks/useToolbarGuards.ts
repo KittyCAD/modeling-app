@@ -55,7 +55,7 @@ export function useConvertToVariable(range?: SourceRange) {
       const { modifiedAst: _modifiedAst, pathToReplacedNode } =
         moveValueIntoNewVariable(
           ast,
-          kclManager.programMemory,
+          kclManager.variables,
           range || context.selectionRanges.graphSelections[0]?.codeRef?.range,
           variableName
         )

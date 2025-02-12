@@ -1,4 +1,3 @@
-import { ProgramMemory } from 'lang/wasm'
 import { Selection } from 'lib/selections'
 import { getFaceDetails } from 'clientSideScene/sceneEntities'
 import { deleteFromSelection } from 'lang/modifyAst'
@@ -17,7 +16,7 @@ export async function deleteSelectionPromise(
   const modifiedAst = await deleteFromSelection(
     ast,
     selection,
-    kclManager.programMemory,
+    kclManager.variables,
     getFaceDetails
   )
   if (err(modifiedAst)) {
@@ -27,8 +26,7 @@ export async function deleteSelectionPromise(
   const testExecute = await executeAst({
     ast: modifiedAst,
     engineCommandManager,
-    // We make sure to send an empty program memory to denote we mean mock mode.
-    programMemoryOverride: ProgramMemory.empty(),
+    isMock: true,
   })
   if (testExecute.errors.length) {
     return new Error(deletionErrorMessage)

@@ -1,4 +1,4 @@
-import { assertParse, initPromise, programMemoryInit } from './wasm'
+import { assertParse, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 
 import path from 'node:path'
@@ -32,7 +32,7 @@ child_process.spawnSync('git', [
   'clone',
   '--single-branch',
   '--branch',
-  'achalmers/kw-appearance',
+  'achalmers/kw-pattern',
   URL_GIT_KCL_SAMPLES,
   DIR_KCL_SAMPLES,
 ])
@@ -72,7 +72,7 @@ describe('Test KCL Samples from public Github repository', () => {
           const ast = assertParse(code)
           await enginelessExecutor(
             ast,
-            programMemoryInit(),
+            false,
             file.pathFromProjectDirectoryToFirstFile
           )
         },

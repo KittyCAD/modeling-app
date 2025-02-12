@@ -80,13 +80,13 @@ const prepareToEditExtrude: PrepareToEditCallback =
     }
 
     // Convert the length argument from a string to a KCL expression
-    const distanceResult = await stringToKclExpression({
-      value: codeManager.code.slice(
+    const distanceResult = await stringToKclExpression(
+      codeManager.code.slice(
         operation.labeledArgs?.['length']?.sourceRange[0],
         operation.labeledArgs?.['length']?.sourceRange[1]
       ),
-      programMemory: kclManager.programMemory.clone(),
-    })
+      {}
+    )
     if (err(distanceResult) || 'errors' in distanceResult) {
       return baseCommand
     }
@@ -163,13 +163,13 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
 
   // Convert the distance argument from a string to a KCL expression
-  const distanceResult = await stringToKclExpression({
-    value: codeManager.code.slice(
+  const distanceResult = await stringToKclExpression(
+    codeManager.code.slice(
       operation.labeledArgs.offset.sourceRange[0],
       operation.labeledArgs.offset.sourceRange[1]
     ),
-    programMemory: kclManager.programMemory.clone(),
-  })
+    {}
+  )
 
   if (err(distanceResult) || 'errors' in distanceResult) {
     return baseCommand

@@ -578,7 +578,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ast: structuredClone(kclManager.ast),
             selectionRanges,
             transformInfos: transforms,
-            programMemory: kclManager.programMemory,
+            memVars: kclManager.variables,
             referenceSegName: '',
           })
           if (err(sketched)) return KCL_DEFAULT_LENGTH

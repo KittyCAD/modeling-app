@@ -9,7 +9,7 @@ Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
 of distance between each repetition, some specified number of times.
 
 ```js
-patternLinear2d(data: LinearPattern2dData, sketch_set: SketchSet, use_original?: bool) -> [Sketch]
+patternLinear2d(sketch_set: SketchSet, instances: integer, distance: number, axis: [number], use_original?: bool) -> [Sketch]
 ```
 
 
@@ -17,9 +17,11 @@ patternLinear2d(data: LinearPattern2dData, sketch_set: SketchSet, use_original?:
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`LinearPattern2dData`](/docs/kcl/types/LinearPattern2dData) | Data for a linear pattern on a 2D sketch. | Yes |
-| `sketch_set` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
-| `use_original` | `bool` |  | No |
+| `sketch_set` | [`SketchSet`](/docs/kcl/types/SketchSet) | The sketch(es) to duplicate | Yes |
+| `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
+| `distance` | `number` | Distance between each repetition. Also known as 'spacing'. | Yes |
+| `axis` | `[number]` | The axis of the pattern. A 2D vector. | Yes |
+| `use_original` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 
@@ -31,11 +33,7 @@ patternLinear2d(data: LinearPattern2dData, sketch_set: SketchSet, use_original?:
 ```js
 exampleSketch = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 1 }, %)
-  |> patternLinear2d({
-       axis = [1, 0],
-       instances = 7,
-       distance = 4
-     }, %)
+  |> patternLinear2d(axis = [1, 0], instances = 7, distance = 4)
 
 example = extrude(exampleSketch, length = 1)
 ```

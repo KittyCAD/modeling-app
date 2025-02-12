@@ -1057,7 +1057,7 @@ export const modelingMachine = setup({
           selectionRanges,
           'horizontal',
           kclManager.ast,
-          kclManager.programMemory
+          kclManager.variables
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1092,7 +1092,7 @@ export const modelingMachine = setup({
           selectionRanges,
           'vertical',
           kclManager.ast,
-          kclManager.programMemory
+          kclManager.variables
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint

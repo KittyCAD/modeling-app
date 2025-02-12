@@ -1969,9 +1969,13 @@ description: Program memory after executing artifact_graph_example_code1.kcl
           }
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

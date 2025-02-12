@@ -95,11 +95,11 @@ const tabsR = startSketchOn(tabPlane)
          getNextAdjacentEdge(edge13)
        ]
      }, %)
-  |> patternLinear3d({
-       axis: [0, -1, 0],
-       instances: 2,
-       distance: length + 2 * thk - (tabLength * 4 / 3)
-     }, %)
+  |> patternLinear3d(
+       axis = [0, -1, 0],
+       instances = 2,
+       distance = length + 2 * thk - (tabLength * 4 / 3)
+     )
 
 // build the tabs of the mounting bracket (left side)
 const tabsL = startSketchOn(tabPlane)
@@ -123,11 +123,11 @@ const tabsL = startSketchOn(tabPlane)
          getNextAdjacentEdge(edge22)
        ]
      }, %)
-  |> patternLinear3d({
-       axis: [0, -1, 0],
-       instances: 2,
-       distance: length + 2 * thk - (tabLength * 4 / 3)
-     }, %)
+  |> patternLinear3d(
+       axis = [0, -1, 0],
+       instances = 2,
+       distance = length + 2 * thk - (tabLength * 4 / 3)
+     )
 
 // define a plane for retention bumps
 const retPlane = {
