@@ -7,6 +7,7 @@ import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { reportRejection } from './trap'
 import { IndexLoaderData } from './types'
 import { copyFileShareLink } from './links'
+import { VITE_KC_KCL_SAMPLES_REF } from 'env'
 
 interface OnSubmitProps {
   sampleName: string
@@ -63,7 +64,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         const pathParts = data.sample.split('/')
         const projectPathPart = pathParts[0]
         const primaryKclFile = pathParts[1]
-        const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
+        const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/${VITE_KC_KCL_SAMPLES_REF}/${encodeURIComponent(
           projectPathPart
         )}/${encodeURIComponent(primaryKclFile)}`
 

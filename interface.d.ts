@@ -70,6 +70,7 @@ export interface IElectronAPI {
       VITE_KC_SKIP_AUTH: string
       VITE_KC_CONNECTION_TIMEOUT_MS: string
       VITE_KC_DEV_TOKEN: string
+      VITE_KC_KCL_SAMPLES_REF: string
       NODE_ENV: string
       PROD: string
       DEV: string
