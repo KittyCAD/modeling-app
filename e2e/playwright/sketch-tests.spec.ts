@@ -1304,7 +1304,7 @@ test.describe(`Sketching with offset planes`, () => {
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `offsetPlane001 = offsetPlane("XY", 10)`
+        `offsetPlane001 = offsetPlane("XY", offset = 10)`
       )
     })
 
@@ -1320,7 +1320,7 @@ test.describe(`Sketching with offset planes`, () => {
         await editor.expectState({
           activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
           diagnostics: [],
-          highlightedCode: 'offsetPlane("XY", 10)',
+          highlightedCode: 'offsetPlane("XY", offset = 10)',
         })
       })
 

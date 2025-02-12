@@ -24,7 +24,7 @@ sketch001 = startSketchOn('XZ')
 revolve001 = revolve({ axis = "X" }, sketch001)
 triangle()
   |> extrude(length = 30)
-plane001 = offsetPlane('XY', 10)
+plane001 = offsetPlane('XY', offset = 10)
 sketch002 = startSketchOn(plane001)
   |> startProfileAt([-20, 0], %)
   |> line(end = [5, -15])
@@ -54,7 +54,7 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentB001)
        center = [-1, 2],
        radius = .5
      }, %)
-plane001 = offsetPlane('XZ', -5)
+plane001 = offsetPlane('XZ', offset = -5)
 sketch003 = startSketchOn(plane001)
   |> circle({ center = [0, 0], radius = 5 }, %)
 `
@@ -116,7 +116,7 @@ test.describe('Feature Tree pane', () => {
       await testViewSource({
         operationName: 'Offset Plane',
         operationIndex: 0,
-        expectedActiveLine: "plane001 = offsetPlane('XY', 10)",
+        expectedActiveLine: "plane001 = offsetPlane('XY', offset = 10)",
       })
       await testViewSource({
         operationName: 'Extrude',
@@ -342,7 +342,7 @@ test.describe('Feature Tree pane', () => {
     toolbar,
     cmdBar,
   }) => {
-    const testCode = (value: string) => `p = offsetPlane('XY', ${value})`
+    const testCode = (value: string) => `p = offsetPlane('XY', offset = ${value})`
     const initialInput = '10'
     const initialCode = testCode(initialInput)
     const newInput = '5 + 10'

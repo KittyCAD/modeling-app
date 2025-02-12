@@ -75,7 +75,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('XY', 150))
+/// circleSketch = startSketchOn(offsetPlane('XY', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -91,7 +91,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('XZ', 150))
+/// circleSketch = startSketchOn(offsetPlane('XZ', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -107,7 +107,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('YZ', 150))
+/// circleSketch = startSketchOn(offsetPlane('YZ', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -123,7 +123,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('-XZ', -150))
+/// circleSketch = startSketchOn(offsetPlane('-XZ', offset = -150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -135,7 +135,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///   |> circle({ radius = 10, center = [0, 0] }, %)
 ///   
 /// // Triangle on the plane 4 units above
-/// startSketchOn(offsetPlane("XY", 4))
+/// startSketchOn(offsetPlane("XY", offset = 4))
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
