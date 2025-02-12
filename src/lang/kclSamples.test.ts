@@ -4,6 +4,7 @@ import { enginelessExecutor } from '../lib/testHelpers'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import child_process from 'node:child_process'
+import { VITE_KC_KCL_SAMPLES_REF } from 'env'
 
 // The purpose of these tests is to act as a first line of defense
 // if something gets real screwy with our KCL ecosystem.
@@ -28,14 +29,13 @@ try {
   console.log(e)
 }
 
-child_process.spawnSync('git', [
-  'clone',
-  '--single-branch',
-  '--branch',
-  'achalmers/kw-pattern',
-  URL_GIT_KCL_SAMPLES,
-  DIR_KCL_SAMPLES,
-])
+child_process.spawnSync('git', ['clone', URL_GIT_KCL_SAMPLES, DIR_KCL_SAMPLES])
+
+console.log('VITE_KC_KCL_SAMPLES_REF', VITE_KC_KCL_SAMPLES_REF)
+child_process.spawnSync('git', ['checkout', VITE_KC_KCL_SAMPLES_REF], {
+  cwd: DIR_KCL_SAMPLES,
+})
+console.log('VITE_KC_KCL_SAMPLES_REF', VITE_KC_KCL_SAMPLES_REF)
 
 // @ts-expect-error
 let files = await fs.readdir(DIR_KCL_SAMPLES)
