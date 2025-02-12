@@ -21,8 +21,8 @@ import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
 import { FileEntry } from 'lib/project'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { reportRejection } from 'lib/trap'
 import { normalizeLineEndings } from 'lib/codeEditor'
+import { reportRejection } from 'lib/trap'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -198,6 +198,7 @@ const FileTreeItem = ({
         codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
         return
       }
+
       if (isCurrentFile && eventType === 'change') {
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
