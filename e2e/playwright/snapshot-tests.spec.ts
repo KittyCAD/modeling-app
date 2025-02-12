@@ -455,7 +455,9 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
 
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+    const lineEndClick = () =>
+      page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+    await lineEndClick()
     await page.waitForTimeout(100)
 
     code += `
@@ -465,6 +467,11 @@ test(
     await page
       .getByRole('button', { name: 'arc Tangential Arc', exact: true })
       .click()
+
+    // click on the end of the profile to continue it
+    await page.waitForTimeout(300)
+    await lineEndClick()
+    await page.waitForTimeout(100)
 
     // click to continue profile
     await page.mouse.move(813, 392, { steps: 10 })
