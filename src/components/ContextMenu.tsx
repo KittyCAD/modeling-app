@@ -162,11 +162,7 @@ export function ContextMenuItem(props: ContextMenuItemProps) {
     >
       {icon && <ActionIcon icon={icon} bgClassName="!bg-transparent" />}
       <div className="flex-1">{children}</div>
-      {hotkey && (
-        <kbd className="px-1.5 py-0.5 rounded bg-primary/10 text-primary dark:bg-chalkboard-80 dark:text-chalkboard-40">
-          {hotkey}
-        </kbd>
-      )}
+      {hotkey && <kbd className="hotkey">{hotkey}</kbd>}
     </button>
   )
 }
