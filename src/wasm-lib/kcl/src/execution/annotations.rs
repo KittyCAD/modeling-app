@@ -1,8 +1,10 @@
 //! Data on available annotations.
 
-use super::kcl_value::{UnitAngle, UnitLen};
+use kittycad_modeling_cmds::coord::{System, KITTYCAD, OPENGL, VULKAN};
+
 use crate::{
     errors::KclErrorDetails,
+    execution::kcl_value::{UnitAngle, UnitLen},
     parsing::ast::types::{Expr, Node, NonCodeValue, ObjectProperty},
     KclError, SourceRange,
 };
@@ -11,6 +13,12 @@ pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 pub(super) const NO_PRELUDE: &str = "no_prelude";
+pub(super) const IMPORT_FORMAT: &str = "format";
+pub(super) const IMPORT_FORMAT_VALUES: [&str; 9] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "stp", "step", "stl"];
+pub(super) const IMPORT_COORDS: &str = "coords";
+pub(super) const IMPORT_COORDS_VALUES: [(&str, &System); 3] =
+    [("zoo", KITTYCAD), ("opengl", OPENGL), ("vulkan", VULKAN)];
+pub(super) const IMPORT_LENGTH_UNIT: &str = "lengthUnit";
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub(super) enum AnnotationScope {
@@ -36,6 +44,18 @@ pub(super) fn expect_properties<'a>(
     }
 }
 
+pub(super) fn unnamed_properties<'a>(
+    annotations: impl Iterator<Item = &'a NonCodeValue>,
+) -> Option<&'a [Node<ObjectProperty>]> {
+    for annotation in annotations {
+        if let NonCodeValue::Annotation { name: None, properties } = annotation {
+            return properties.as_deref();
+        }
+    }
+
+    None
+}
+
 pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
     match expr {
         Expr::Identifier(id) => Ok(&id.name),
@@ -57,7 +77,7 @@ impl UnitLen {
             "yd" => Ok(UnitLen::Yards),
             value => Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "Unexpected settings value: `{value}`; expected one of `mm`, `cm`, `m`, `inch`, `ft`, `yd`"
+                    "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `inch`, `ft`, `yd`"
                 ),
                 source_ranges: vec![source_range],
             })),
@@ -71,7 +91,7 @@ impl UnitAngle {
             "deg" => Ok(UnitAngle::Degrees),
             "rad" => Ok(UnitAngle::Radians),
             value => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Unexpected settings value: `{value}`; expected one of `deg`, `rad`"),
+                message: format!("Unexpected value for angle units: `{value}`; expected one of `deg`, `rad`"),
                 source_ranges: vec![source_range],
             })),
         }

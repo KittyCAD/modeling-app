@@ -13,7 +13,6 @@ import {
   PathToNode,
   PipeExpression,
   Program,
-  ProgramMemory,
   ReturnStatement,
   sketchFromKclValue,
   sketchFromKclValueOptional,
@@ -26,6 +25,7 @@ import {
   kclSettings,
   unitLenToUnitLength,
   unitAngToUnitAngle,
+  VariableMap,
 } from './wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
@@ -287,7 +287,7 @@ export interface PrevVariable<T> {
 
 export function findAllPreviousVariablesPath(
   ast: Program,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   path: PathToNode,
   type: 'number' | 'string' = 'number'
 ): {
@@ -325,7 +325,7 @@ export function findAllPreviousVariablesPath(
   bodyItems?.forEach?.((item) => {
     if (item.type !== 'VariableDeclaration' || item.end > startRange) return
     const varName = item.declaration.id.name
-    const varValue = programMemory?.get(varName)
+    const varValue = memVars[varName]
     if (!varValue || typeof varValue?.value !== type) return
     variables.push({
       key: varName,
@@ -342,7 +342,7 @@ export function findAllPreviousVariablesPath(
 
 export function findAllPreviousVariables(
   ast: Program,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   sourceRange: SourceRange,
   type: 'number' | 'string' = 'number'
 ): {
@@ -351,7 +351,7 @@ export function findAllPreviousVariables(
   insertIndex: number
 } {
   const path = getNodePathFromSourceRange(ast, sourceRange)
-  return findAllPreviousVariablesPath(ast, programMemory, path, type)
+  return findAllPreviousVariablesPath(ast, memVars, path, type)
 }
 
 type ReplacerFn = (
@@ -479,7 +479,7 @@ function isTypeInArrayExp(
 export function isLinesParallelAndConstrained(
   ast: Program,
   artifactGraph: ArtifactGraph,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   primaryLine: Selection,
   secondaryLine: Selection
 ):
@@ -509,7 +509,7 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declaration.id?.name
-    const sg = sketchFromKclValue(programMemory?.get(varName), varName)
+    const sg = sketchFromKclValue(memVars[varName], varName)
     if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
       sg,
@@ -589,11 +589,11 @@ export function isLinesParallelAndConstrained(
 export function hasExtrudeSketch({
   ast,
   selection,
-  programMemory,
+  memVars,
 }: {
   ast: Program
   selection: Selection
-  programMemory: ProgramMemory
+  memVars: VariableMap
 }): boolean {
   const varDecMeta = getNodeFromPath<VariableDeclaration>(
     ast,
@@ -607,7 +607,7 @@ export function hasExtrudeSketch({
   const varDec = varDecMeta.node
   if (varDec.type !== 'VariableDeclaration') return false
   const varName = varDec.declaration.id.name
-  const varValue = programMemory?.get(varName)
+  const varValue = memVars[varName]
   return (
     varValue?.type === 'Solid' ||
     !(sketchFromKclValueOptional(varValue, varName) instanceof Reason)

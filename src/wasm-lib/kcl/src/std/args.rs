@@ -188,7 +188,7 @@ impl Args {
         exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
     ) -> Result<&'e crate::execution::TagEngineInfo, KclError> {
-        if let KclValue::TagIdentifier(t) = exec_state.memory().get(&tag.value, self.source_range)? {
+        if let KclValue::TagIdentifier(t) = exec_state.memory().get_from_call_stack(&tag.value, self.source_range)? {
             Ok(t.info.as_ref().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Tag `{}` does not have engine info", tag.value),
@@ -255,11 +255,13 @@ impl Args {
                 ids.extend(
                     exec_state
                         .memory()
-                        .find_solids_on_sketch(solid.sketch.id)
-                        .iter()
-                        .flat_map(|eg| eg.get_all_edge_cut_ids()),
+                        .walk_call_stack()
+                        .filter(|v| matches!(v, KclValue::Solid { value } if value.sketch.id == sketch_id))
+                        .flat_map(|v| match v {
+                            KclValue::Solid { value } => value.get_all_edge_cut_ids(),
+                            _ => unreachable!(),
+                        }),
                 );
-                ids.extend(exec_state.mod_local.dynamic_state.edge_cut_ids_on_sketch(sketch_id));
                 traversed_sketches.push(sketch_id);
             }
 
@@ -434,13 +436,6 @@ impl Args {
     }
 
     pub(crate) fn get_data_and_sketch_surface<'a, T>(&'a self) -> Result<(T, SketchSurface, Option<TagNode>), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_data_and_solid_set<'a, T>(&'a self) -> Result<(T, SolidSet), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -940,72 +935,6 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Direction {
             "negative" => Some(Self::Negative),
             _ => None,
         }
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::patterns::CircularPattern3dData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, instances);
-        let_field_of!(obj, arc_degrees "arcDegrees");
-        let_field_of!(obj, rotate_duplicates "rotateDuplicates");
-        let_field_of!(obj, axis);
-        let_field_of!(obj, center);
-        let_field_of!(obj, use_original? "useOriginal");
-        Some(Self {
-            instances,
-            axis,
-            center,
-            arc_degrees,
-            rotate_duplicates,
-            use_original,
-        })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::patterns::CircularPattern2dData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, instances);
-        let_field_of!(obj, arc_degrees "arcDegrees");
-        let_field_of!(obj, rotate_duplicates "rotateDuplicates");
-        let_field_of!(obj, center);
-        let_field_of!(obj, use_original? "useOriginal");
-        Some(Self {
-            instances,
-            center,
-            arc_degrees,
-            rotate_duplicates,
-            use_original,
-        })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::patterns::LinearPattern3dData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, distance);
-        let_field_of!(obj, instances);
-        let_field_of!(obj, axis);
-        Some(Self {
-            instances,
-            distance,
-            axis,
-        })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::patterns::LinearPattern2dData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, distance);
-        let_field_of!(obj, instances);
-        let_field_of!(obj, axis);
-        Some(Self {
-            instances,
-            distance,
-            axis,
-        })
     }
 }
 

@@ -345,9 +345,13 @@ description: Program memory after executing big_number_angle_to_match_length_x.k
           ]
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

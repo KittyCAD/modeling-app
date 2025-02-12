@@ -104,7 +104,7 @@ export async function applyConstraintAbsDistance({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
   })
   if (err(transform1)) return Promise.reject(transform1)
@@ -124,7 +124,7 @@ export async function applyConstraintAbsDistance({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
   })
@@ -172,7 +172,7 @@ export function applyConstraintAxisAlign({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
   })

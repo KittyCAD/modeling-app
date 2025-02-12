@@ -39,7 +39,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{ExecState, KclValue, ProgramMemory},
+    execution::{EnvironmentRef, ExecState, KclValue},
     parsing::ast::types::FunctionExpression,
 };
 
@@ -305,5 +305,5 @@ pub enum Primitive {
 pub struct FnAsArg<'a> {
     pub func: Option<&'a crate::execution::MemoryFunction>,
     pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-    pub memory: Box<ProgramMemory>,
+    pub memory: EnvironmentRef,
 }

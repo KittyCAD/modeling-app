@@ -59,7 +59,14 @@ sweepSketch = startSketchOn('XY')
 
 
 // Create a helix around the Z axis.
-helixPath = helix(angleStart = 0, ccw = true, revolutions = 4, length = 10, radius = 5, axis = 'Z')
+helixPath = helix(
+  angleStart = 0,
+  ccw = true,
+  revolutions = 4,
+  length = 10,
+  radius = 5,
+  axis = 'Z',
+)
 
 // Create a spring by sweeping around the helix path.
 springSketch = startSketchOn('YZ')
