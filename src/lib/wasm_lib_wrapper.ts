@@ -28,6 +28,7 @@ import {
   clear_scene_and_bust_cache as ClearSceneAndBustCache,
   kcl_settings as KclSettings,
   change_kcl_settings as ChangeKclSettings,
+  get_kcl_version as GetKclVersion,
 } from '../wasm-lib/pkg/wasm_lib'
 
 type ModuleType = typeof import('../wasm-lib/pkg/wasm_lib')
@@ -117,4 +118,7 @@ export const kcl_settings: typeof KclSettings = (...args) => {
 }
 export const change_kcl_settings: typeof ChangeKclSettings = (...args) => {
   return getModule().change_kcl_settings(...args)
+}
+export const get_kcl_version: typeof GetKclVersion = () => {
+  return getModule().get_kcl_version()
 }

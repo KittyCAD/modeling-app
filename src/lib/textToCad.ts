@@ -16,6 +16,7 @@ import { commandBarMachine } from 'machines/commandBarMachine'
 import { getNextFileName } from './desktopFS'
 import { reportRejection } from './trap'
 import { toSync } from './utils'
+import { kclManager } from './singletons'
 
 async function submitTextToCadPrompt(
   prompt: string,
@@ -26,6 +27,7 @@ async function submitTextToCadPrompt(
     prompt,
     project_name:
       projectName !== '' && projectName !== 'browser' ? projectName : undefined,
+    kcl_version: kclManager.kclVersion,
   }
   // Glb has a smaller footprint than gltf, should we want to render it.
   const url = VITE_KC_API_BASE_URL + '/ai/text-to-cad/glb?kcl=true'
