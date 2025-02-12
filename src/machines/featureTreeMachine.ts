@@ -24,7 +24,7 @@ type FeatureTreeEvent =
     }
   | {
       type: 'deleteOperation'
-      data: { targetSourceRange: SourceRange; currentOperation: Operation }
+      data: { targetSourceRange: SourceRange }
     }
   | {
       type: 'enterEditFlow'
@@ -33,7 +33,6 @@ type FeatureTreeEvent =
   | { type: 'goToError' }
   | { type: 'codePaneOpened' }
   | { type: 'selected' }
-  | { type: 'operationsChanged' }
   | { type: 'done' }
   | { type: 'xstate.error.actor.prepareEditCommand'; error: Error }
   | { type: 'xstate.error.actor.prepareDeleteCommand'; error: Error }
@@ -163,7 +162,7 @@ export const featureTreeMachine = setup({
 
         deleteOperation: {
           target: 'deletingOperation',
-          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+          actions: ['saveTargetSourceRange'],
         },
 
         goToError: 'goingToError',
@@ -298,8 +297,6 @@ export const featureTreeMachine = setup({
                   ) ?? undefined
                 : undefined
               return {
-                // currentOperation is guaranteed to be defined here
-                operation: context.currentOperation!,
                 artifact,
                 targetSourceRange: context.targetSourceRange,
               }
