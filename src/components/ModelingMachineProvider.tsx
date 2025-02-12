@@ -1199,6 +1199,7 @@ export const ModelingMachineProvider = ({
             selections: input.selection,
             token,
             artifactGraph: engineCommandManager.artifactGraph,
+            projectName: context.project.name,
           })
         }),
       },
