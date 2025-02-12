@@ -471,35 +471,37 @@ export function getPlaneFromArtifact(
   return new Error(`Artifact type ${artifact.type} does not have a plane`)
 }
 
-const isExprSafe = (index: number, ast: Program): boolean => {
-  const expr = ast.body?.[index]
-  if (!expr) {
-    return false
-  }
-  if (expr.type === 'ImportStatement' || expr.type === 'ReturnStatement') {
-    return false
-  }
-  if (expr.type === 'VariableDeclaration') {
-    const init = expr.declaration?.init
-    if (!init) return false
-    if (init.type === 'CallExpression') {
-      return false
-    }
-    if (init.type === 'BinaryExpression' && isNodeSafe(init)) {
-      return true
-    }
-    if (init.type === 'Literal' || init.type === 'MemberExpression') {
-      return true
-    }
-  }
-  return false
-}
-
 const onlyConsecutivePaths = (
   orderedNodePaths: PathToNode[],
   originalPath: PathToNode,
   ast: Program
 ): PathToNode[] => {
+  const isExprSafe = (index: number, ast: Program): boolean => {
+    // we allow expressions between profiles, but only basic math expressions 5 + 6 etc
+    // because 5 + doSomeMath() might be okay, but we can't know if it's an abstraction on a stdlib
+    // call that involves a engine call, and we can't have that in sketch-mode/mock-execution
+    const expr = ast.body?.[index]
+    if (!expr) {
+      return false
+    }
+    if (expr.type === 'ImportStatement' || expr.type === 'ReturnStatement') {
+      return false
+    }
+    if (expr.type === 'VariableDeclaration') {
+      const init = expr.declaration?.init
+      if (!init) return false
+      if (init.type === 'CallExpression') {
+        return false
+      }
+      if (init.type === 'BinaryExpression' && isNodeSafe(init)) {
+        return true
+      }
+      if (init.type === 'Literal' || init.type === 'MemberExpression') {
+        return true
+      }
+    }
+    return false
+  }
   const originalIndex = Number(
     orderedNodePaths.find(
       (path) => path[1][0] === originalPath[1][0]
