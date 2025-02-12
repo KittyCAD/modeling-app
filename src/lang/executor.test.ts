@@ -2,12 +2,12 @@ import fs from 'node:fs'
 
 import {
   assertParse,
-  ProgramMemory,
   Sketch,
   initPromise,
   sketchFromKclValue,
   defaultArtifactGraph,
   topLevelRange,
+  VariableMap,
 } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
@@ -21,13 +21,13 @@ describe('test executor', () => {
     const code = `const myVar = 5
 const newVar = myVar + 1`
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(5)
-    expect(mem.get('newVar')?.value).toBe(6)
+    expect(mem['myVar']?.value).toBe(5)
+    expect(mem['newVar']?.value).toBe(6)
   })
   it('test assigning a var with a string', async () => {
     const code = `const myVar = "a str"`
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe('a str')
+    expect(mem['myVar']?.value).toBe('a str')
   })
   it('test assigning a var by cont concatenating two strings string execute', async () => {
     const code = fs.readFileSync(
@@ -35,7 +35,7 @@ const newVar = myVar + 1`
       'utf-8'
     )
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe('a str another str')
+    expect(mem['myVar']?.value).toBe('a str another str')
   })
   it('fn funcN = () => {} execute', async () => {
     const mem = await exe(
@@ -47,8 +47,8 @@ const newVar = myVar + 1`
         'const magicNum = funcN(9, theVar)',
       ].join('\n')
     )
-    expect(mem.get('theVar')?.value).toBe(60)
-    expect(mem.get('magicNum')?.value).toBe(69)
+    expect(mem['theVar']?.value).toBe(60)
+    expect(mem['magicNum']?.value).toBe(69)
   })
   it('sketch declaration', async () => {
     let code = `const mySketch = startSketchOn('XY')
@@ -60,7 +60,7 @@ const newVar = myVar + 1`
 `
     const mem = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
-    const sk = mem.get('mySketch')
+    const sk = mem['mySketch']
     expect(sk?.type).toEqual('Sketch')
     if (sk?.type !== 'Sketch') {
       return
@@ -117,7 +117,7 @@ const newVar = myVar + 1`
       'const myVar = 5 + 1 |> myFn(%)',
     ].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(7)
+    expect(mem['myVar']?.value).toBe(7)
   })
 
   // Enable rotations #152
@@ -130,15 +130,15 @@ const newVar = myVar + 1`
   //     'const rotated = rx(90, mySk1)',
   //   ].join('\n')
   //   const mem = await exe(code)
-  //   expect(mem.get('mySk1')?.value).toHaveLength(3)
-  //   expect(mem.get('rotated')?.type).toBe('Sketch')
+  //   expect(mem['mySk1']?.value).toHaveLength(3)
+  //   expect(mem['rotated')?.type).toBe('Sketch']
   //   if (
-  //     mem.get('mySk1')?.type !== 'Sketch' ||
-  //     mem.get('rotated')?.type !== 'Sketch'
+  //     mem['mySk1']?.type !== 'Sketch' ||
+  //     mem['rotated']?.type !== 'Sketch'
   //   )
   //     throw new Error('not a sketch')
-  //   expect(mem.get('mySk1')?.rotation).toEqual([0, 0, 0, 1])
-  //   expect(mem.get('rotated')?.rotation.map((a) => a.toFixed(4))).toEqual([
+  //   expect(mem['mySk1']?.rotation).toEqual([0, 0, 0, 1])
+  //   expect(mem['rotated']?.rotation.map((a) => a.toFixed(4))).toEqual([
   //     '0.7071',
   //     '0.0000',
   //     '0.0000',
@@ -157,7 +157,7 @@ const newVar = myVar + 1`
       // '  |> rx(90, %)',
     ].join('\n')
     const mem = await exe(code)
-    expect(mem.get('mySk1')).toEqual({
+    expect(mem['mySk1']).toEqual({
       type: 'Sketch',
       value: {
         type: 'Sketch',
@@ -236,7 +236,7 @@ const newVar = myVar + 1`
     )
     const mem = await exe(code)
     // TODO path to node is probably wrong here, zero indexes are not correct
-    expect(mem.get('three')).toEqual({
+    expect(mem['three']).toEqual({
       type: 'Number',
       value: 3,
       __meta: [
@@ -245,7 +245,7 @@ const newVar = myVar + 1`
         },
       ],
     })
-    expect(mem.get('yo')).toEqual({
+    expect(mem['yo']).toEqual({
       type: 'Array',
       value: [
         { type: 'Number', value: 1, __meta: [{ sourceRange: [28, 29, 0] }] },
@@ -263,9 +263,6 @@ const newVar = myVar + 1`
         },
       ],
     })
-    // Check that there are no other variables or environments.
-    expect(mem.numEnvironments()).toBe(1)
-    expect(mem.numVariables(0)).toBe(2)
   })
   it('execute object expression', async () => {
     const code = [
@@ -273,7 +270,7 @@ const newVar = myVar + 1`
       "const yo = {aStr: 'str', anum: 2, identifier: three, binExp: 4 + 5}",
     ].join('\n')
     const mem = await exe(code)
-    expect(mem.get('yo')).toEqual({
+    expect(mem['yo']).toEqual({
       type: 'Object',
       value: {
         aStr: {
@@ -309,7 +306,7 @@ const newVar = myVar + 1`
       '\n'
     )
     const mem = await exe(code)
-    expect(mem.get('myVar')).toEqual({
+    expect(mem['myVar']).toEqual({
       type: 'String',
       value: '123',
       __meta: [
@@ -325,80 +322,80 @@ describe('testing math operators', () => {
   it('can sum', async () => {
     const code = ['const myVar = 1 + 2'].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(3)
+    expect(mem['myVar']?.value).toBe(3)
   })
   it('can subtract', async () => {
     const code = ['const myVar = 1 - 2'].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(-1)
+    expect(mem['myVar']?.value).toBe(-1)
   })
   it('can multiply', async () => {
     const code = ['const myVar = 1 * 2'].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(2)
+    expect(mem['myVar']?.value).toBe(2)
   })
   it('can divide', async () => {
     const code = ['const myVar = 1 / 2'].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(0.5)
+    expect(mem['myVar']?.value).toBe(0.5)
   })
   it('can modulus', async () => {
     const code = ['const myVar = 5 % 2'].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(1)
+    expect(mem['myVar']?.value).toBe(1)
   })
   it('can do multiple operations', async () => {
     const code = ['const myVar = 1 + 2 * 3'].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(7)
+    expect(mem['myVar']?.value).toBe(7)
   })
   it('big example with parans', async () => {
     const code = ['const myVar = 1 + 2 * (3 - 4) / -5 + 6'].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(7.4)
+    expect(mem['myVar']?.value).toBe(7.4)
   })
   it('with identifier', async () => {
     const code = ['const yo = 6', 'const myVar = yo / 2'].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(3)
+    expect(mem['myVar']?.value).toBe(3)
   })
   it('with lots of testing', async () => {
     const code = ['const myVar = 2 * ((2 + 3 ) / 4 + 5)'].join('\n')
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(12.5)
+    expect(mem['myVar']?.value).toBe(12.5)
   })
   it('with callExpression at start', async () => {
     const code = 'const myVar = min(4, 100) + 2'
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(6)
+    expect(mem['myVar']?.value).toBe(6)
   })
   it('with callExpression at end', async () => {
     const code = 'const myVar = 2 + min(4, 100)'
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(6)
+    expect(mem['myVar']?.value).toBe(6)
   })
   it('with nested callExpression', async () => {
     const code = 'const myVar = 2 + min(100, legLen(5, 3))'
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(6)
+    expect(mem['myVar']?.value).toBe(6)
   })
   it('with unaryExpression', async () => {
     const code = 'const myVar = -min(100, 3)'
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(-3)
+    expect(mem['myVar']?.value).toBe(-3)
   })
   it('with unaryExpression in callExpression', async () => {
     const code = 'const myVar = min(-legLen(5, 4), 5)'
     const code2 = 'const myVar = min(5 , -legLen(5, 4))'
     const mem = await exe(code)
     const mem2 = await exe(code2)
-    expect(mem.get('myVar')?.value).toBe(-3)
-    expect(mem.get('myVar')?.value).toBe(mem2.get('myVar')?.value)
+    expect(mem['myVar']?.value).toBe(-3)
+    expect(mem['myVar']?.value).toBe(mem2['myVar']?.value)
   })
   it('with unaryExpression in ArrayExpression', async () => {
     const code = 'const myVar = [1,-legLen(5, 4)]'
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toEqual([
+    expect(mem['myVar']?.value).toEqual([
       {
         __meta: [
           {
@@ -426,7 +423,7 @@ describe('testing math operators', () => {
       '|> line(end = [-2.21, -legLen(5, min(3, 999))])',
     ].join('\n')
     const mem = await exe(code)
-    const sketch = sketchFromKclValue(mem.get('part001'), 'part001')
+    const sketch = sketchFromKclValue(mem['part001'], 'part001')
     // result of `-legLen(5, min(3, 999))` should be -4
     const yVal = (sketch as Sketch).paths?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
@@ -444,7 +441,7 @@ describe('testing math operators', () => {
       ``,
     ].join('\n')
     const mem = await exe(code)
-    const sketch = sketchFromKclValue(mem.get('part001'), 'part001')
+    const sketch = sketchFromKclValue(mem['part001'], 'part001')
     // expect -legLen(segLen('seg01'), myVar) to equal -4 setting the y value back to 0
     expect((sketch as Sketch).paths?.[1]?.from).toEqual([3, 4])
     expect((sketch as Sketch).paths?.[1]?.to).toEqual([6, 0])
@@ -454,7 +451,7 @@ describe('testing math operators', () => {
     )
     const removedUnaryExpMem = await exe(removedUnaryExp)
     const removedUnaryExpMemSketch = sketchFromKclValue(
-      removedUnaryExpMem.get('part001'),
+      removedUnaryExpMem['part001'],
       'part001'
     )
 
@@ -464,12 +461,12 @@ describe('testing math operators', () => {
   it('with nested callExpression and binaryExpression', async () => {
     const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toBe(5)
+    expect(mem['myVar']?.value).toBe(5)
   })
   it('can do power of math', async () => {
     const code = 'const myNeg2 = 4 ^ 2 - 3 ^ 2 * 2'
     const mem = await exe(code)
-    expect(mem.get('myNeg2')?.value).toBe(-2)
+    expect(mem['myNeg2']?.value).toBe(-2)
   })
 })
 
@@ -498,12 +495,9 @@ const theExtrude = startSketchOn('XY')
 
 // helpers
 
-async function exe(
-  code: string,
-  programMemory: ProgramMemory = ProgramMemory.empty()
-) {
+async function exe(code: string, variables: VariableMap = {}) {
   const ast = assertParse(code)
 
-  const execState = await enginelessExecutor(ast, programMemory)
-  return execState.memory
+  const execState = await enginelessExecutor(ast, true, undefined, variables)
+  return execState.variables
 }

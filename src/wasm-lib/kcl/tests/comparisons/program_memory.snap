@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing comparisons.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -28,9 +27,13 @@ snapshot_kind: text
           "__meta": []
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }

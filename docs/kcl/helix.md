@@ -33,7 +33,14 @@ helix(revolutions: number, angle_start: number, ccw?: bool, radius: number, axis
 
 ```js
 // Create a helix around the Z axis.
-helixPath = helix(angleStart = 0, ccw = true, revolutions = 5, length = 10, radius = 5, axis = 'Z')
+helixPath = helix(
+  angleStart = 0,
+  ccw = true,
+  revolutions = 5,
+  length = 10,
+  radius = 5,
+  axis = 'Z',
+)
 
 // Create a spring by sweeping around the helix path.
 springSketch = startSketchOn('YZ')
@@ -49,7 +56,14 @@ helper001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10], tag = $edge001)
 
-helixPath = helix(angleStart = 0, ccw = true, revolutions = 5, length = 10, radius = 5, axis = edge001)
+helixPath = helix(
+  angleStart = 0,
+  ccw = true,
+  revolutions = 5,
+  length = 10,
+  radius = 5,
+  axis = edge001,
+)
 
 // Create a spring by sweeping around the helix path.
 springSketch = startSketchOn('XY')
@@ -61,12 +75,19 @@ springSketch = startSketchOn('XY')
 
 ```js
 // Create a helix around a custom axis.
-helixPath = helix(angleStart = 0, ccw = true, revolutions = 5, length = 10, radius = 5, axis = {
+helixPath = helix(
+  angleStart = 0,
+  ccw = true,
+  revolutions = 5,
+  length = 10,
+  radius = 5,
+  axis = {
   custom = {
     axis = [0, 0, 1.0],
     origin = [0, 0.25, 0]
   }
-})
+},
+)
 
 // Create a spring by sweeping around the helix path.
 springSketch = startSketchOn('XY')

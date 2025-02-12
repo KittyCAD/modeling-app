@@ -47,7 +47,6 @@ import {
   PathToNode,
   PipeExpression,
   Program,
-  ProgramMemory,
   recast,
   Sketch,
   Solid,
@@ -61,6 +60,7 @@ import {
   SourceRange,
   topLevelRange,
   CallExpressionKw,
+  VariableMap,
 } from 'lang/wasm'
 import { calculate_circle_from_3_points } from '../wasm-lib/pkg/wasm_lib'
 import {
@@ -158,7 +158,6 @@ type Vec3Array = [number, number, number]
 export class SceneEntities {
   engineCommandManager: EngineCommandManager
   scene: Scene
-  sceneProgramMemory: ProgramMemory = ProgramMemory.empty()
   activeSegments: { [key: string]: Group } = {}
   intersectionPlane: Mesh | null = null
   axisGroup: Group | null = null
@@ -502,29 +501,25 @@ export class SceneEntities {
     selectionRanges?: Selections
   }): Promise<{
     truncatedAst: Node<Program>
-    programMemoryOverride: ProgramMemory
     sketch: Sketch
     variableDeclarationName: string
   }> {
-    const prepared = this.prepareTruncatedMemoryAndAst(
+    const prepared = this.prepareTruncatedAst(
       sketchPathToNode || [],
       maybeModdedAst
     )
     if (err(prepared)) return Promise.reject(prepared)
-    const { truncatedAst, programMemoryOverride, variableDeclarationName } =
-      prepared
+    const { truncatedAst, variableDeclarationName } = prepared
 
     const { execState } = await executeAst({
       ast: truncatedAst,
       engineCommandManager: this.engineCommandManager,
-      // We make sure to send an empty program memory to denote we mean mock mode.
-      programMemoryOverride,
+      isMock: true,
     })
-    const programMemory = execState.memory
     const sketch = sketchFromPathToNode({
       pathToNode: sketchPathToNode,
       ast: maybeModdedAst,
-      programMemory,
+      variables: execState.variables,
     })
     if (err(sketch)) return Promise.reject(sketch)
     if (!sketch) return Promise.reject('sketch not found')
@@ -532,11 +527,9 @@ export class SceneEntities {
     if (!isArray(sketch?.paths))
       return {
         truncatedAst,
-        programMemoryOverride,
         sketch,
         variableDeclarationName,
       }
-    this.sceneProgramMemory = programMemory
     const group = new Group()
     position && group.position.set(...position)
     group.userData = {
@@ -684,7 +677,6 @@ export class SceneEntities {
 
     return {
       truncatedAst,
-      programMemoryOverride,
       sketch,
       variableDeclarationName,
     }
@@ -733,7 +725,7 @@ export class SceneEntities {
     const variableDeclarationName = _node1.node?.declaration.id?.name || ''
 
     const sg = sketchFromKclValue(
-      kclManager.programMemory.get(variableDeclarationName),
+      kclManager.variables[variableDeclarationName],
       variableDeclarationName
     )
     if (err(sg)) return Promise.reject(sg)
@@ -742,7 +734,7 @@ export class SceneEntities {
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet, no need for `-1`
     const mod = addNewSketchLn({
       node: _ast,
-      programMemory: kclManager.programMemory,
+      variables: kclManager.variables,
       input: {
         type: 'straight-segment',
         to: lastSeg.to,
@@ -761,15 +753,14 @@ export class SceneEntities {
     if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
 
-    const { truncatedAst, programMemoryOverride, sketch } =
-      await this.setupSketch({
-        sketchPathToNode,
-        forward,
-        up,
-        position: origin,
-        maybeModdedAst: modifiedAst,
-        draftExpressionsIndices,
-      })
+    const { truncatedAst, sketch } = await this.setupSketch({
+      sketchPathToNode,
+      forward,
+      up,
+      position: origin,
+      maybeModdedAst: modifiedAst,
+      draftExpressionsIndices,
+    })
     sceneInfra.setCallbacks({
       onClick: async (args) => {
         if (!args) return
@@ -801,7 +792,7 @@ export class SceneEntities {
           ])
           modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,
-            programMemory: kclManager.programMemory,
+            variables: kclManager.variables,
             pathToNode: sketchPathToNode,
             expressions: [
               lastSegment.type === 'TangentialArcTo'
@@ -817,7 +808,7 @@ export class SceneEntities {
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
           modifiedAst = addCloseToPipe({
             node: modifiedAst,
-            programMemory: kclManager.programMemory,
+            variables: kclManager.variables,
             pathToNode: sketchPathToNode,
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
@@ -867,7 +858,7 @@ export class SceneEntities {
 
           const tmp = addNewSketchLn({
             node: kclManager.ast,
-            programMemory: kclManager.programMemory,
+            variables: kclManager.variables,
             input: {
               type: 'straight-segment',
               from: [lastSegment.to[0], lastSegment.to[1]],
@@ -908,7 +899,6 @@ export class SceneEntities {
           sketchPathToNode,
           draftInfo: {
             truncatedAst,
-            programMemoryOverride,
             variableDeclarationName,
           },
         })
@@ -949,7 +939,7 @@ export class SceneEntities {
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
-    const { programMemoryOverride, truncatedAst } = await this.setupSketch({
+    const { truncatedAst } = await this.setupSketch({
       sketchPathToNode,
       forward,
       up,
@@ -982,13 +972,10 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: truncatedAst,
           engineCommandManager: this.engineCommandManager,
-          // We make sure to send an empty program memory to denote we mean mock mode.
-          programMemoryOverride,
+          isMock: true,
         })
-        const programMemory = execState.memory
-        this.sceneProgramMemory = programMemory
         const sketch = sketchFromKclValue(
-          programMemory.get(variableDeclarationName),
+          execState.variables[variableDeclarationName],
           variableDeclarationName
         )
         if (err(sketch)) return Promise.reject(sketch)
@@ -1045,15 +1032,12 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: _ast,
           engineCommandManager: this.engineCommandManager,
-          // We make sure to send an empty program memory to denote we mean mock mode.
-          programMemoryOverride,
+          isMock: true,
         })
-        const programMemory = execState.memory
 
         // Prepare to update the THREEjs scene
-        this.sceneProgramMemory = programMemory
         const sketch = sketchFromKclValue(
-          programMemory.get(variableDeclarationName),
+          execState.variables[variableDeclarationName],
           variableDeclarationName
         )
         if (err(sketch)) return
@@ -1104,7 +1088,7 @@ export class SceneEntities {
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
-    const { programMemoryOverride, truncatedAst } = await this.setupSketch({
+    const { truncatedAst } = await this.setupSketch({
       sketchPathToNode,
       forward,
       up,
@@ -1144,13 +1128,10 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: truncatedAst,
           engineCommandManager: this.engineCommandManager,
-          // We make sure to send an empty program memory to denote we mean mock mode.
-          programMemoryOverride,
+          isMock: true,
         })
-        const programMemory = execState.memory
-        this.sceneProgramMemory = programMemory
         const sketch = sketchFromKclValue(
-          programMemory.get(variableDeclarationName),
+          execState.variables[variableDeclarationName],
           variableDeclarationName
         )
         if (err(sketch)) return Promise.reject(sketch)
@@ -1210,15 +1191,12 @@ export class SceneEntities {
           const { execState } = await executeAst({
             ast: _ast,
             engineCommandManager: this.engineCommandManager,
-            // We make sure to send an empty program memory to denote we mean mock mode.
-            programMemoryOverride,
+            isMock: true,
           })
-          const programMemory = execState.memory
 
           // Prepare to update the THREEjs scene
-          this.sceneProgramMemory = programMemory
           const sketch = sketchFromKclValue(
-            programMemory.get(variableDeclarationName),
+            execState.variables[variableDeclarationName],
             variableDeclarationName
           )
           if (err(sketch)) return
@@ -1605,7 +1583,7 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     await kclManager.executeAstMock(_ast)
 
-    const { programMemoryOverride, truncatedAst } = await this.setupSketch({
+    const { truncatedAst } = await this.setupSketch({
       sketchPathToNode,
       forward,
       up,
@@ -1634,7 +1612,7 @@ export class SceneEntities {
         if (sketchInit.type === 'PipeExpression') {
           const moddedResult = changeSketchArguments(
             modded,
-            kclManager.programMemory,
+            kclManager.variables,
             {
               type: 'path',
               pathToNode: [
@@ -1657,13 +1635,10 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: modded,
           engineCommandManager: this.engineCommandManager,
-          // We make sure to send an empty program memory to denote we mean mock mode.
-          programMemoryOverride,
+          isMock: true,
         })
-        const programMemory = execState.memory
-        this.sceneProgramMemory = programMemory
         const sketch = sketchFromKclValue(
-          programMemory.get(variableDeclarationName),
+          execState.variables[variableDeclarationName],
           variableDeclarationName
         )
         if (err(sketch)) return
@@ -1700,7 +1675,7 @@ export class SceneEntities {
         if (sketchInit.type === 'PipeExpression') {
           const moddedResult = changeSketchArguments(
             modded,
-            kclManager.programMemory,
+            kclManager.variables,
             {
               type: 'path',
               pathToNode: [
@@ -1788,7 +1763,7 @@ export class SceneEntities {
           const sketch = sketchFromPathToNode({
             pathToNode,
             ast: kclManager.ast,
-            programMemory: kclManager.programMemory,
+            variables: kclManager.variables,
           })
           if (trap(sketch)) return
           if (!sketch) {
@@ -1801,7 +1776,7 @@ export class SceneEntities {
             const prevSegment = sketch.paths[pipeIndex - 2]
             const mod = addNewSketchLn({
               node: kclManager.ast,
-              programMemory: kclManager.programMemory,
+              variables: kclManager.variables,
               input: {
                 type: 'straight-segment',
                 to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
@@ -1873,15 +1848,15 @@ export class SceneEntities {
       ...this.mouseEnterLeaveCallbacks(),
     })
   }
-  prepareTruncatedMemoryAndAst = (
+  prepareTruncatedAst = (
     sketchPathToNode: PathToNode,
     ast?: Node<Program>,
     draftSegment?: DraftSegment
   ) =>
-    prepareTruncatedMemoryAndAst(
+    prepareTruncatedAst(
       sketchPathToNode,
       ast || kclManager.ast,
-      kclManager.lastSuccessfulProgramMemory,
+      kclManager.lastSuccessfulVariables,
       draftSegment
     )
   onDragSegment({
@@ -1897,7 +1872,6 @@ export class SceneEntities {
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
       truncatedAst: Node<Program>
-      programMemoryOverride: ProgramMemory
       variableDeclarationName: string
     }
   }) {
@@ -2010,12 +1984,12 @@ export class SceneEntities {
           to: dragTo,
           from,
         },
-        previousProgramMemory: kclManager.programMemory,
+        variables: kclManager.variables,
       })
     } else {
       modded = changeSketchArguments(
         modifiedAst,
-        kclManager.programMemory,
+        kclManager.variables,
         {
           type: 'sourceRange',
           sourceRange: topLevelRange(node.start, node.end),
@@ -2028,10 +2002,9 @@ export class SceneEntities {
     modifiedAst = modded.modifiedAst
     const info = draftInfo
       ? draftInfo
-      : this.prepareTruncatedMemoryAndAst(pathToNode || [])
+      : this.prepareTruncatedAst(pathToNode || [])
     if (trap(info, { suppress: true })) return
-    const { truncatedAst, programMemoryOverride, variableDeclarationName } =
-      info
+    const { truncatedAst, variableDeclarationName } = info
     ;(async () => {
       const code = recast(modifiedAst)
       if (trap(code)) return
@@ -2042,13 +2015,11 @@ export class SceneEntities {
       const { execState } = await executeAst({
         ast: truncatedAst,
         engineCommandManager: this.engineCommandManager,
-        // We make sure to send an empty program memory to denote we mean mock mode.
-        programMemoryOverride,
+        isMock: true,
       })
-      const programMemory = execState.memory
-      this.sceneProgramMemory = programMemory
+      const variables = execState.variables
 
-      const maybeSketch = programMemory.get(variableDeclarationName)
+      const maybeSketch = variables[variableDeclarationName]
       let sketch: Sketch | undefined
       const sk = sketchFromKclValueOptional(
         maybeSketch,
@@ -2394,15 +2365,14 @@ export class SceneEntities {
 
 // calculations/pure-functions/easy to test so no excuse not to
 
-function prepareTruncatedMemoryAndAst(
+function prepareTruncatedAst(
   sketchPathToNode: PathToNode,
   ast: Node<Program>,
-  programMemory: ProgramMemory,
+  variables: VariableMap,
   draftSegment?: DraftSegment
 ):
   | {
       truncatedAst: Node<Program>
-      programMemoryOverride: ProgramMemory
       variableDeclarationName: string
     }
   | Error {
@@ -2417,7 +2387,7 @@ function prepareTruncatedMemoryAndAst(
   if (err(_node)) return _node
   const variableDeclarationName = _node.node?.declaration.id?.name || ''
   const sg = sketchFromKclValue(
-    programMemory.get(variableDeclarationName),
+    variables[variableDeclarationName],
     variableDeclarationName
   )
   if (err(sg)) return sg
@@ -2476,43 +2446,8 @@ function prepareTruncatedMemoryAndAst(
     body: [structuredClone(_ast.body[bodyIndex])],
   }
 
-  // Grab all the TagDeclarators and TagIdentifiers from memory.
-  let start = _node.node.start
-  const programMemoryOverride = programMemory.filterVariables(true, (value) => {
-    if (
-      !('__meta' in value) ||
-      value.__meta === undefined ||
-      value.__meta.length === 0 ||
-      value.__meta[0].sourceRange === undefined
-    ) {
-      return false
-    }
-
-    if (value.__meta[0].sourceRange[0] >= start) {
-      // We only want things before our start point.
-      return false
-    }
-
-    return value.type === 'TagIdentifier'
-  })
-  if (err(programMemoryOverride)) return programMemoryOverride
-
-  for (let i = 0; i < bodyIndex; i++) {
-    const node = _ast.body[i]
-    if (node.type !== 'VariableDeclaration') {
-      continue
-    }
-    const name = node.declaration.id.name
-    const memoryItem = programMemory.get(name)
-    if (!memoryItem) {
-      continue
-    }
-    const error = programMemoryOverride.set(name, structuredClone(memoryItem))
-    if (err(error)) return error
-  }
   return {
     truncatedAst,
-    programMemoryOverride,
     variableDeclarationName,
   }
 }
@@ -2532,11 +2467,11 @@ export function getParentGroup(
 export function sketchFromPathToNode({
   pathToNode,
   ast,
-  programMemory,
+  variables,
 }: {
   pathToNode: PathToNode
   ast: Program
-  programMemory: ProgramMemory
+  variables: VariableMap
 }): Sketch | null | Error {
   const _varDec = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
@@ -2545,7 +2480,7 @@ export function sketchFromPathToNode({
   )
   if (err(_varDec)) return _varDec
   const varDec = _varDec.node
-  const result = programMemory.get(varDec?.id?.name || '')
+  const result = variables[varDec?.id?.name || '']
   if (result?.type === 'Solid') {
     return result.value.sketch
   }
@@ -2584,7 +2519,7 @@ export function getSketchQuaternion(
   const sketch = sketchFromPathToNode({
     pathToNode: sketchPathToNode,
     ast: kclManager.ast,
-    programMemory: kclManager.programMemory,
+    variables: kclManager.variables,
   })
   if (err(sketch)) return sketch
   const zAxis = sketch?.on.zAxis || sketchNormalBackUp
@@ -2601,7 +2536,7 @@ export async function getSketchOrientationDetails(
   const sketch = sketchFromPathToNode({
     pathToNode: sketchPathToNode,
     ast: kclManager.ast,
-    programMemory: kclManager.programMemory,
+    variables: kclManager.variables,
   })
   if (err(sketch)) return Promise.reject(sketch)
   if (!sketch) return Promise.reject('sketch not found')

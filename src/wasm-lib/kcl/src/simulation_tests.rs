@@ -103,7 +103,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
             assert_snapshot(test_name, "Program memory after executing", || {
-                insta::assert_json_snapshot!("program_memory", exec_state.mod_local.memory, {
+                insta::assert_json_snapshot!("program_memory", exec_state.memory(), {
                     ".environments[].**[].from[]" => rounded_redaction(4),
                     ".environments[].**[].to[]" => rounded_redaction(4),
                     ".environments[].**[].x[]" => rounded_redaction(4),
@@ -186,14 +186,6 @@ fn assert_common_snapshots(
         // Change the snapshot suffix so that it is rendered as a Markdown file
         // in GitHub.
         insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
-    });
-    assert_snapshot(test_name, "Artifact graph mind map", || {
-        let mind_map = artifact_graph
-            .to_mermaid_mind_map()
-            .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
-        // Change the snapshot suffix so that it is rendered as a Markdown file
-        // in GitHub.
-        insta::assert_binary_snapshot!("artifact_graph_mind_map.md", mind_map.as_bytes().to_owned());
     });
 }
 

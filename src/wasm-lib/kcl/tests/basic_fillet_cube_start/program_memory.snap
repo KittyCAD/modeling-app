@@ -521,9 +521,13 @@ description: Program memory after executing basic_fillet_cube_start.kcl
           ]
         }
       },
+      "snapshots": [],
       "parent": null
     }
   ],
-  "currentEnv": 0,
-  "return": null
+  "currentEnv": [
+    0,
+    0
+  ],
+  "callStack": []
 }
