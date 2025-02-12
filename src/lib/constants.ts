@@ -1,5 +1,3 @@
-import { VITE_KC_KCL_SAMPLES_REF } from 'env'
-
 export const APP_NAME = 'Modeling App'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
@@ -107,7 +105,8 @@ export const MAKE_TOAST_MESSAGES = {
 
 /** The URL for the KCL samples manifest files */
 export const KCL_SAMPLES_MANIFEST_URLS = {
-  remote: `https://raw.githubusercontent.com/KittyCAD/kcl-samples/${VITE_KC_KCL_SAMPLES_REF}/manifest.json`,
+  // TODO: enable remote fetching again, maybe?
+  // remote: `https://raw.githubusercontent.com/KittyCAD/kcl-samples/${VITE_KC_KCL_SAMPLES_REF}/manifest.json`,
   localFallback: '/kcl-samples-manifest-fallback.json',
 } as const
 
