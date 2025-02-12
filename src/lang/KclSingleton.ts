@@ -396,8 +396,9 @@ export class KclManager {
     // updateArtifactGraph relies on updated executeState/variables
     this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
-    if (!isInterrupted)
+    if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
+    }
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
