@@ -1010,10 +1010,7 @@ function createCircleCenterHandle(
 function createCircleThreePointHandle(
   scale = 1,
   theme: Themes,
-  name:
-    | 'circle-three-point-handle1'
-    | 'circle-three-point-handle2'
-    | 'circle-three-point-handle3',
+  name: `circle-three-point-handle${'1' | '2' | '3'}`,
   color?: number
 ): Group {
   const circleCenterGroup = new Group()
