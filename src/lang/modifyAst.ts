@@ -60,12 +60,11 @@ import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { KclExpressionWithVariable } from 'lib/commandTypes'
-import { Artifact, getPathsFromArtifact } from './std/artifactGraph'
+import { Artifact, expandPath, expandPlane, getPathsFromArtifact } from './std/artifactGraph'
 import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
-import { kclManager } from 'lib/singletons'
-import React from 'react'
+import { engineCommandManager } from 'lib/singletons'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -107,10 +106,10 @@ export function insertNewStartProfileAt(
   insertType: 'start' | 'end' = 'end'
 ):
   | {
-      modifiedAst: Node<Program>
-      updatedSketchNodePaths: PathToNode[]
-      updatedEntryNodePath: PathToNode
-    }
+    modifiedAst: Node<Program>
+    updatedSketchNodePaths: PathToNode[]
+    updatedEntryNodePath: PathToNode
+  }
   | Error {
   const varDec = getNodeFromPath<VariableDeclarator>(
     node,
@@ -335,10 +334,10 @@ export function extrudeSketch({
   artifact?: Artifact
 }):
   | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
-      pathToExtrudeArg: PathToNode
-    }
+    modifiedAst: Node<Program>
+    pathToNode: PathToNode
+    pathToExtrudeArg: PathToNode
+  }
   | Error {
   const orderedSketchNodePaths = getPathsFromArtifact({
     artifact: artifact,
@@ -474,10 +473,10 @@ export function revolveSketch(
   angle: Expr = createLiteral(4)
 ):
   | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
-      pathToRevolveArg: PathToNode
-    }
+    modifiedAst: Node<Program>
+    pathToNode: PathToNode
+    pathToRevolveArg: PathToNode
+  }
   | Error {
   const _node = structuredClone(node)
   const _node1 = getNodeFromPath(_node, pathToNode)
@@ -678,8 +677,8 @@ export function addOffsetPlane({
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
-      ? modifiedAst.body.length
-      : 0
+        ? modifiedAst.body.length
+        : 0
 
   modifiedAst.body.length
     ? modifiedAst.body.splice(insertAt, 0, newPlane)
@@ -1143,11 +1142,11 @@ export function giveSketchFnCallTag(
   tag?: string
 ):
   | {
-      modifiedAst: Node<Program>
-      tag: string
-      isTagExisting: boolean
-      pathToNode: PathToNode
-    }
+    modifiedAst: Node<Program>
+    tag: string
+    isTagExisting: boolean
+    pathToNode: PathToNode
+  }
   | Error {
   const path = getNodePathFromSourceRange(ast, range)
   const maybeTag = (() => {
@@ -1313,11 +1312,11 @@ export function deleteSegmentFromPipeExpression(
     const constraintInfo =
       callExp.node.type === 'CallExpression'
         ? getConstraintInfo(callExp.node, code, path).find(({ sourceRange }) =>
-            isOverlap(sourceRange, range)
-          )
+          isOverlap(sourceRange, range)
+        )
         : getConstraintInfoKw(callExp.node, code, path).find(
-            ({ sourceRange }) => isOverlap(sourceRange, range)
-          )
+          ({ sourceRange }) => isOverlap(sourceRange, range)
+        )
     if (!constraintInfo) return
 
     if (!constraintInfo.argPosition) return
@@ -1357,9 +1356,9 @@ export function removeSingleConstraintInfo(
   memVars: VariableMap
 ):
   | {
-      modifiedAst: Node<Program>
-      pathToNodeMap: PathToNodeMap
-    }
+    modifiedAst: Node<Program>
+    pathToNodeMap: PathToNodeMap
+  }
   | false {
   const transform = removeSingleConstraint({
     pathToCallExp,
@@ -1386,6 +1385,21 @@ export async function deleteFromSelection(
     ({} as any)
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
+  console.log('deleting', selection, variables)
+  if (selection.artifact?.type === 'plane' && selection.artifact.pathIds.length) {
+    const plane = expandPlane(selection.artifact, engineCommandManager.artifactGraph)
+    console.log('plane expanded', plane)
+    for (const path of plane.paths.sort((a, b) => b.codeRef.range[0] - a.codeRef.range[0])) {
+      const varDec = getNodeFromPath<VariableDeclarator>(
+        ast,
+        path.codeRef.pathToNode,
+        'VariableDeclarator'
+      )
+      if (err(varDec)) return varDec
+      const bodyIndex = Number(varDec.shallowPath[1][0])
+      astClone.body.splice(bodyIndex, 1)
+    }
+  }
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
     selection?.codeRef?.pathToNode,
@@ -1463,7 +1477,7 @@ export async function deleteFromSelection(
     astClone.body.splice(expressionIndex, 1)
     if (extrudeNameToDelete) {
       await new Promise((resolve) => {
-        ;(async () => {
+        ; (async () => {
           let currentVariableName = ''
           const pathsDependingOnExtrude: Array<{
             path: PathToNode
@@ -1476,7 +1490,7 @@ export async function deleteFromSelection(
               }
             },
             enter: (node, path) => {
-              ;(async () => {
+              ; (async () => {
                 if (node.type === 'VariableDeclaration') {
                   currentVariableName = node.declaration.id.name
                 }
@@ -1626,8 +1640,8 @@ export function getInsertIndex(
   const insertIndex = !sketchNodePaths.length
     ? Number(planeNodePath[1][0]) + 1
     : insertType === 'start'
-    ? minIndex
-    : maxIndex + 1
+      ? minIndex
+      : maxIndex + 1
   return insertIndex
 }
 
@@ -1695,10 +1709,10 @@ export function splitPipedProfile(
   pathToPipe: PathToNode
 ):
   | {
-      modifiedAst: Program
-      pathToProfile: PathToNode
-      pathToPlane: PathToNode
-    }
+    modifiedAst: Program
+    pathToProfile: PathToNode
+    pathToPlane: PathToNode
+  }
   | Error {
   const _ast = structuredClone(ast)
   const varDec = getNodeFromPath<VariableDeclaration>(
@@ -1738,9 +1752,9 @@ export function splitPipedProfile(
     varDec.node.declaration.init.body.length <= 2
       ? firstCallOfNewPipe
       : createPipeExpression([
-          firstCallOfNewPipe,
-          ...varDec.node.declaration.init.body.slice(2),
-        ])
+        firstCallOfNewPipe,
+        ...varDec.node.declaration.init.body.slice(2),
+      ])
   )
   const index = getBodyIndex(pathToPipe)
   if (err(index)) return index
