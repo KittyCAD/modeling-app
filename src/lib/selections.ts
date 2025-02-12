@@ -671,6 +671,13 @@ export function codeToIdSelections(
             id: entry.artifact.solid2dId,
           }
         }
+        if (entry.artifact.type === 'plane') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
+          }
+        }
         if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
           if (!entry.artifact.surfaceId) return
           const wall = engineCommandManager.artifactGraph.get(

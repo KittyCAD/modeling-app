@@ -2540,7 +2540,7 @@ export function getParentGroup(
   return null
 }
 
-export function sketchFromPathToNode({
+function sketchFromPathToNode({
   pathToNode,
   ast,
   variables,
@@ -2603,23 +2603,13 @@ export function getSketchQuaternion(
 
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
-export async function getSketchOrientationDetails(
-  sketchEntryNodePath: PathToNode
-): Promise<{
+export async function getSketchOrientationDetails(sketch: Sketch): Promise<{
   quat: Quaternion
   sketchDetails: Omit<
     SketchDetails & { faceId?: string },
     'sketchNodePaths' | 'sketchEntryNodePath' | 'planeNodePath'
   >
 }> {
-  const sketch = sketchFromPathToNode({
-    pathToNode: sketchEntryNodePath,
-    ast: kclManager.ast,
-    variables: kclManager.variables,
-  })
-  if (err(sketch)) return Promise.reject(sketch)
-  if (!sketch) return Promise.reject('sketch not found')
-
   if (sketch.on.type === 'plane') {
     const zAxis = sketch?.on.zAxis
     return {
@@ -2632,30 +2622,24 @@ export async function getSketchOrientationDetails(
       },
     }
   }
+  const faceInfo = await getFaceDetails(sketch.on.id)
 
-  if (sketch.on.type === 'face') {
-    const faceInfo = await getFaceDetails(sketch.on.id)
-
-    if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
-      return Promise.reject('face info')
-    const { z_axis, y_axis, origin } = faceInfo
-    const quaternion = quaternionFromUpNForward(
-      new Vector3(y_axis.x, y_axis.y, y_axis.z),
-      new Vector3(z_axis.x, z_axis.y, z_axis.z)
-    )
-    return {
-      quat: quaternion,
-      sketchDetails: {
-        zAxis: [z_axis.x, z_axis.y, z_axis.z],
-        yAxis: [y_axis.x, y_axis.y, y_axis.z],
-        origin: [origin.x, origin.y, origin.z],
-        faceId: sketch.on.id,
-      },
-    }
-  }
-  return Promise.reject(
-    'sketch.on.type not recognized, has a new type been added?'
+  if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
+    return Promise.reject('face info')
+  const { z_axis, y_axis, origin } = faceInfo
+  const quaternion = quaternionFromUpNForward(
+    new Vector3(y_axis.x, y_axis.y, y_axis.z),
+    new Vector3(z_axis.x, z_axis.y, z_axis.z)
   )
+  return {
+    quat: quaternion,
+    sketchDetails: {
+      zAxis: [z_axis.x, z_axis.y, z_axis.z],
+      yAxis: [y_axis.x, y_axis.y, y_axis.z],
+      origin: [origin.x, origin.y, origin.z],
+      faceId: sketch.on.id,
+    },
+  }
 }
 
 /**

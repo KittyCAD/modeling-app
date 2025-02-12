@@ -107,6 +107,7 @@ import { promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -799,24 +800,34 @@ export const ModelingMachineProvider = ({
         }),
         'animate-to-sketch': fromPromise(
           async ({ input: { selectionRanges } }) => {
-            const sketchPathToNode =
-              selectionRanges.graphSelections[0]?.codeRef?.pathToNode
             const plane = getPlaneFromArtifact(
               selectionRanges.graphSelections[0].artifact,
               engineCommandManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
 
-            const info = await getSketchOrientationDetails(
-              sketchPathToNode || []
+            const sketch = Object.values(kclManager.execState.variables).find(
+              (variable) =>
+                variable?.type === 'Sketch' &&
+                variable.value.artifactId === plane.pathIds[0]
             )
+            if (!sketch || sketch.type !== 'Sketch')
+              return Promise.reject(new Error('No sketch'))
+            const info = await getSketchOrientationDetails(sketch.value)
+
             await letEngineAnimateAndSyncCamAfter(
               engineCommandManager,
               info?.sketchDetails?.faceId || ''
             )
+
+            const sketchArtifact = engineCommandManager.artifactGraph.get(
+              plane.pathIds[0]
+            )
+            if (sketchArtifact?.type !== 'path')
+              return Promise.reject(new Error('No sketch artifact'))
             const sketchPaths = getPathsFromArtifact({
-              artifact: selectionRanges.graphSelections[0].artifact,
-              sketchPathToNode: sketchPathToNode || [],
+              artifact: engineCommandManager.artifactGraph.get(plane.id),
+              sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
               artifactGraph: engineCommandManager.artifactGraph,
               ast: kclManager.ast,
             })
@@ -828,10 +839,15 @@ export const ModelingMachineProvider = ({
                 ? plane.codeRef
                 : null
             if (!codeRef) return Promise.reject(new Error('No plane codeRef'))
+            // codeRef.pathToNode is not always populated correctly
+            const planeNodePath = getNodePathFromSourceRange(
+              kclManager.ast,
+              codeRef.range
+            )
             return {
-              sketchEntryNodePath: sketchPathToNode || [],
+              sketchEntryNodePath: sketchArtifact.codeRef.pathToNode || [],
               sketchNodePaths: sketchPaths,
-              planeNodePath: codeRef.pathToNode,
+              planeNodePath,
               zAxis: info.sketchDetails.zAxis || null,
               yAxis: info.sketchDetails.yAxis || null,
               origin: info.sketchDetails.origin.map(

@@ -491,8 +491,7 @@ export function getPlaneFromArtifact(
   if (artifact.type === 'path') return getPlaneFromPath(artifact, graph)
   if (artifact.type === 'segment') return getPlaneFromSegment(artifact, graph)
   if (artifact.type === 'solid2d') return getPlaneFromSolid2D(artifact, graph)
-  if (artifact.type === 'cap') return getPlaneFromCap(artifact, graph)
-  if (artifact.type === 'wall') return getPlaneFromWall(artifact, graph)
+  if (artifact.type === 'wall' || artifact.type === 'cap') return artifact
   if (artifact.type === 'sweepEdge')
     return getPlaneFromSweepEdge(artifact, graph)
   return new Error(`Artifact type ${artifact.type} does not have a plane`)

@@ -76,7 +76,12 @@ export function isCursorInSketchCommandRange(
     artifactGraph
   )
   const firstEntry = [...overlappingEntries.values()]?.[0]
-  const parentId = firstEntry?.type === 'segment' ? firstEntry.pathId : false
+  const parentId =
+    firstEntry?.type === 'segment'
+      ? firstEntry.pathId
+      : firstEntry?.type === 'plane' && firstEntry.pathIds.length
+      ? firstEntry.pathIds[0]
+      : false
 
   return parentId
     ? parentId
