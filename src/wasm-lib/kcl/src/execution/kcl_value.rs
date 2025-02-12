@@ -8,14 +8,15 @@ use crate::{
     errors::KclErrorDetails,
     exec::Sketch,
     execution::{
-        Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier,
+        ExecState, Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet,
+        TagIdentifier,
     },
     parsing::{
         ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
         token::NumericSuffix,
     },
     std::{args::Arg, FnAsArg},
-    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
+    ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
 use super::memory::EnvironmentRef;

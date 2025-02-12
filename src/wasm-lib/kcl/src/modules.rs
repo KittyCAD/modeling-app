@@ -33,9 +33,8 @@ impl ModuleId {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct ModuleLoader {
+#[derive(Debug, Clone, Default)]
+pub(crate) struct ModuleLoader {
     /// The stack of import statements for detecting circular module imports.
     /// If this is empty, we're not currently executing an import statement.
     pub import_stack: Vec<PathBuf>,

@@ -17,7 +17,6 @@ import {
   modify_ast_for_sketch_wasm as ModifyAstForSketch,
   is_points_ccw as IsPointsCcw,
   get_tangential_arc_to_info as GetTangentialArcToInfo,
-  program_memory_init as ProgramMemoryInit,
   make_default_planes as MakeDefaultPlanes,
   coredump as CoreDump,
   toml_stringify as TomlStringify,
@@ -79,9 +78,6 @@ export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
   ...args
 ) => {
   return getModule().get_tangential_arc_to_info(...args)
-}
-export const program_memory_init: typeof ProgramMemoryInit = (...args) => {
-  return getModule().program_memory_init(...args)
 }
 export const make_default_planes: typeof MakeDefaultPlanes = (...args) => {
   return getModule().make_default_planes(...args)

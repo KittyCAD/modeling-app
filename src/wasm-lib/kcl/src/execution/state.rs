@@ -8,8 +8,8 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        annotations, kcl_value, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ExecOutcome, ExecutorSettings,
-        KclValue, Operation, ProgramMemory, UnitAngle, UnitLen,
+        annotations, kcl_value, memory::ProgramMemory, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId,
+        ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
     parsing::ast::types::NonCodeValue,
@@ -17,16 +17,14 @@ use crate::{
 };
 
 /// State for executing a program.
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone)]
 pub struct ExecState {
-    pub global: GlobalState,
-    pub mod_local: ModuleState,
+    pub(super) global: GlobalState,
+    pub(super) mod_local: ModuleState,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct GlobalState {
+#[derive(Debug, Clone)]
+pub(super) struct GlobalState {
     /// Program variable bindings.
     pub memory: ProgramMemory,
     /// The stable artifact ID generator.
@@ -52,9 +50,8 @@ pub struct GlobalState {
     pub mod_loader: ModuleLoader,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ModuleState {
+#[derive(Debug, Clone)]
+pub(super) struct ModuleState {
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
@@ -125,19 +122,19 @@ impl ExecState {
         }
     }
 
-    pub fn memory(&self) -> &ProgramMemory {
+    pub(crate) fn memory(&self) -> &ProgramMemory {
         &self.global.memory
     }
 
-    pub fn mut_memory(&mut self) -> &mut ProgramMemory {
+    pub(crate) fn mut_memory(&mut self) -> &mut ProgramMemory {
         &mut self.global.memory
     }
 
-    pub fn next_uuid(&mut self) -> Uuid {
+    pub(crate) fn next_uuid(&mut self) -> Uuid {
         self.global.id_generator.next_uuid()
     }
 
-    pub fn add_artifact(&mut self, artifact: Artifact) {
+    pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
     }

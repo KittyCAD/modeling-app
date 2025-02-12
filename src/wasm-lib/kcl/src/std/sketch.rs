@@ -218,7 +218,7 @@ async fn straight_line(
         }
     };
 
-    let id = exec_state.global.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
