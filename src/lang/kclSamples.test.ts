@@ -31,11 +31,9 @@ try {
 
 child_process.spawnSync('git', ['clone', URL_GIT_KCL_SAMPLES, DIR_KCL_SAMPLES])
 
-console.log('VITE_KC_KCL_SAMPLES_REF', VITE_KC_KCL_SAMPLES_REF)
 child_process.spawnSync('git', ['checkout', VITE_KC_KCL_SAMPLES_REF], {
   cwd: DIR_KCL_SAMPLES,
 })
-console.log('VITE_KC_KCL_SAMPLES_REF', VITE_KC_KCL_SAMPLES_REF)
 
 // @ts-expect-error
 let files = await fs.readdir(DIR_KCL_SAMPLES)
