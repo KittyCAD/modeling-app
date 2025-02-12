@@ -81,7 +81,10 @@ import { MachineManager } from 'components/MachineManagerProvider'
 import { addShell } from 'lang/modifyAst/addShell'
 import { KclCommandValue } from 'lib/commandTypes'
 import { ModelingMachineContext } from 'components/ModelingMachineProvider'
-import { deleteSelectionPromise, deletionErrorMessage } from 'lang/modifyAst/deleteSelection'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from 'lang/modifyAst/deleteSelection'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1924,7 +1927,11 @@ export const modelingMachine = setup({
       return cleanupFn
     }),
     deleteSelectionAstMod: fromPromise(
-      ({ input: { selectionRanges } }: { input: { selectionRanges: Selections } }) => {
+      ({
+        input: { selectionRanges },
+      }: {
+        input: { selectionRanges: Selections }
+      }) => {
         return new Promise((resolve, reject) => {
           if (!selectionRanges) {
             reject(new Error(deletionErrorMessage))

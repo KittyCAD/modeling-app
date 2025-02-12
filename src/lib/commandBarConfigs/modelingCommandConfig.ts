@@ -106,8 +106,7 @@ export type ModelingCommandSchema = {
     prompt: string
     selection: Selections
   }
-  'Delete selection': {
-  }
+  'Delete selection': {}
 }
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<

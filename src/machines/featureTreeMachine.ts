@@ -8,7 +8,10 @@ import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { assign, fromPromise, setup } from 'xstate'
 import { commandBarActor } from './commandBarMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { deleteSelectionPromise, deletionErrorMessage } from 'lang/modifyAst/deleteSelection'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from 'lang/modifyAst/deleteSelection'
 
 type FeatureTreeEvent =
   | {
