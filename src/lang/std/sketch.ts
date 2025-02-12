@@ -1322,7 +1322,7 @@ export const circleThreePoint: SketchLineHelperKw = {
         valueUsedInTransform,
       }
     }
-    return new Error('not implemented')
+    return new Error('replaceExistingCallback is missing')
   },
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'circle-three-point-segment') {
