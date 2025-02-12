@@ -52,7 +52,9 @@ impl From<StandardPlane> for PlaneData {
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
+    // let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
+    let std_plane = args.get_unlabeled_kw_arg("stdPlane")?;
+    let offset = args.get_kw_arg("offset")?;
     let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
     make_offset_plane_in_engine(&plane, exec_state, &args).await?;
     Ok(KclValue::Plane { value: Box::new(plane) })
@@ -143,6 +145,12 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 #[stdlib {
     name = "offsetPlane",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        std_plane = { docs = "Which standard plane (e.g. XY) should this new plane be created from?" },
+        offset = { docs = "Distance from the standard plane this new plane will be created at." },
+    }
 }]
 async fn inner_offset_plane(
     std_plane: StandardPlane,
