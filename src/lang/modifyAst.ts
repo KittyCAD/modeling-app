@@ -656,10 +656,11 @@ export function addOffsetPlane({
 
   const newPlane = createVariableDeclaration(
     newPlaneName,
-    createCallExpressionStdLib('offsetPlane', [
+    createCallExpressionStdLibKw(
+      'offsetPlane',
       createLiteral(defaultPlane.toUpperCase()),
-      offset,
-    ])
+      [createLabeledArg('offset', offset)]
+    )
   )
 
   const insertAt =

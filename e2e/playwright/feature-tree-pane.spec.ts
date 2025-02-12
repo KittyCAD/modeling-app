@@ -342,7 +342,8 @@ test.describe('Feature Tree pane', () => {
     toolbar,
     cmdBar,
   }) => {
-    const testCode = (value: string) => `p = offsetPlane('XY', offset = ${value})`
+    const testCode = (value: string) =>
+      `p = offsetPlane('XY', offset = ${value})`
     const initialInput = '10'
     const initialCode = testCode(initialInput)
     const newInput = '5 + 10'
