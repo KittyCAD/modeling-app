@@ -53,9 +53,6 @@ export const FeatureTreePane = () => {
         sendEditFlowStart: () => {
           modelingSend({ type: 'Enter sketch' })
         },
-        sendDeleteSelection: () => {
-          modelingSend({ type: 'Delete selection' })
-        },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
         },

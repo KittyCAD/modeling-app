@@ -5,7 +5,7 @@ import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
-import { Selections } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
@@ -105,6 +105,8 @@ export type ModelingCommandSchema = {
   'Prompt-to-edit': {
     prompt: string
     selection: Selections
+  }
+  'Delete selection': {
   }
 }
 

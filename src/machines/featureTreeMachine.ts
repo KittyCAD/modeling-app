@@ -1,17 +1,14 @@
-import { getArtifactFromRange } from 'lang/std/artifactGraph'
-import { ProgramMemory, SourceRange } from 'lang/wasm'
+import { Artifact, getArtifactFromRange } from 'lang/std/artifactGraph'
+import { SourceRange } from 'lang/wasm'
 import { enterEditFlow, EnterEditFlowProps } from 'lib/operations'
-import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import toast from 'react-hot-toast'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { assign, fromPromise, setup } from 'xstate'
 import { commandBarActor } from './commandBarMachine'
-import { deleteFromSelection } from 'lang/modifyAst'
-import { getFaceDetails } from 'clientSideScene/sceneEntities'
-import { Selection } from 'lib/selections'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { executeAst } from 'lang/langHelpers'
+import { deleteSelectionPromise, deletionErrorMessage } from 'lang/modifyAst/deleteSelection'
 
 type FeatureTreeEvent =
   | {
@@ -76,56 +73,42 @@ export const featureTreeMachine = setup({
         })
       }
     ),
-    deleteOperation: fromPromise(
+    sendDeleteCommand: fromPromise(
       ({
         input,
       }: {
-        input: EnterEditFlowProps & { targetSourceRange: SourceRange }
+        input: {
+          artifact: Artifact | undefined
+          targetSourceRange: SourceRange | undefined
+        }
       }) => {
-        // TODO: migrate modelingMachine 'AST delete selection' to a promise and leverage it
-        return new Promise(async (resolve, reject) => {
-          const errorMessage =
-            'Unable to delete selection. Please edit manually in code pane.'
-          try {
-            let ast = kclManager.ast
-            const pathToNode = getNodePathFromSourceRange(
-              ast,
-              input.targetSourceRange!
-            )
-            const selection: Selection = {
-              codeRef: {
-                range: input.targetSourceRange!,
-                pathToNode,
-              },
-              artifact: input.artifact,
-            }
-            const modifiedAst = await deleteFromSelection(
-              ast,
-              selection,
-              kclManager.programMemory,
-              getFaceDetails
-            )
-            if (err(modifiedAst)) {
-              reject(errorMessage)
-              return
-            }
-            const testExecute = await executeAst({
-              ast: modifiedAst,
-              engineCommandManager,
-              // We make sure to send an empty program memory to denote we mean mock mode.
-              programMemoryOverride: ProgramMemory.empty(),
-            })
-            if (testExecute.errors.length) {
-              toast.error(errorMessage)
-              return
-            }
-
-            await kclManager.updateAst(modifiedAst, true)
-            await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
-            resolve(testExecute)
-          } catch (e) {
-            reject(e)
+        return new Promise((resolve, reject) => {
+          const { targetSourceRange, artifact } = input
+          if (!targetSourceRange) {
+            reject(new Error(deletionErrorMessage))
+            return
           }
+
+          const pathToNode = getNodePathFromSourceRange(
+            kclManager.ast,
+            targetSourceRange
+          )
+          const selection = {
+            codeRef: {
+              range: targetSourceRange,
+              pathToNode,
+            },
+            artifact,
+          }
+          deleteSelectionPromise(selection)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              resolve(result)
+            })
+            .catch(reject)
         })
       }
     ),
@@ -303,7 +286,7 @@ export const featureTreeMachine = setup({
 
         deletingSelection: {
           invoke: {
-            src: 'deleteOperation',
+            src: 'sendDeleteCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
                 ? getArtifactFromRange(
@@ -315,7 +298,7 @@ export const featureTreeMachine = setup({
                 // currentOperation is guaranteed to be defined here
                 operation: context.currentOperation!,
                 artifact,
-                targetSourceRange: context.targetSourceRange!,
+                targetSourceRange: context.targetSourceRange,
               }
             },
             onDone: {
