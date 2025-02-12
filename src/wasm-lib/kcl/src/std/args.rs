@@ -358,10 +358,6 @@ impl Args {
         Ok(numbers)
     }
 
-    pub(crate) fn get_pattern_transform_args(&self) -> Result<(u32, FnAsArg<'_>, SolidSet, Option<bool>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_hypotenuse_leg(&self) -> Result<(f64, f64), KclError> {
         let numbers = self.get_number_array()?;
 
