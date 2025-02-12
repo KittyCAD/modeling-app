@@ -445,32 +445,6 @@ function getPlaneFromSolid2D(
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
 }
-function getPlaneFromCap(
-  cap: CapArtifact,
-  graph: ArtifactGraph
-): PlaneArtifact | WallArtifact | CapArtifact | Error {
-  const sweep = getArtifactOfTypes(
-    { key: cap.sweepId, types: ['sweep'] },
-    graph
-  )
-  if (err(sweep)) return sweep
-  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
-  if (err(path)) return path
-  return getPlaneFromPath(path, graph)
-}
-function getPlaneFromWall(
-  wall: WallArtifact,
-  graph: ArtifactGraph
-): PlaneArtifact | WallArtifact | CapArtifact | Error {
-  const sweep = getArtifactOfTypes(
-    { key: wall.sweepId, types: ['sweep'] },
-    graph
-  )
-  if (err(sweep)) return sweep
-  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
-  if (err(path)) return path
-  return getPlaneFromPath(path, graph)
-}
 function getPlaneFromSweepEdge(edge: SweepEdge, graph: ArtifactGraph) {
   const sweep = getArtifactOfTypes(
     { key: edge.sweepId, types: ['sweep'] },
@@ -623,10 +597,15 @@ export function getArtifactFromRange(
   artifactGraph: ArtifactGraph
 ): Artifact | null {
   for (const artifact of artifactGraph.values()) {
-    if ('codeRef' in artifact && artifact.codeRef) {
+    const codeRef =
+      'codeRef' in artifact
+        ? artifact.codeRef
+        : 'faceCodeRef' in artifact
+        ? artifact.faceCodeRef
+        : null
+    if (codeRef) {
       const match =
-        artifact.codeRef?.range[0] === range[0] &&
-        artifact.codeRef.range[1] === range[1]
+        codeRef?.range[0] === range[0] && codeRef.range[1] === range[1]
       if (match) return artifact
     }
   }

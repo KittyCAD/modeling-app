@@ -613,8 +613,14 @@ export function codeToIdSelections(
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          if (!('codeRef' in artifact && artifact.codeRef)) return null
-          return isOverlap(artifact.codeRef.range, selection.range)
+          const codeRef =
+            'codeRef' in artifact
+              ? artifact.codeRef
+              : 'faceCodeRef' in artifact
+              ? artifact.faceCodeRef
+              : null
+          if (!codeRef) return null
+          return isOverlap(codeRef.range, selection.range)
             ? {
                 artifact,
                 selection,
@@ -672,6 +678,20 @@ export function codeToIdSelections(
           }
         }
         if (entry.artifact.type === 'plane') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
+          }
+        }
+        if (entry.artifact.type === 'cap') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
+          }
+        }
+        if (entry.artifact.type === 'wall') {
           bestCandidate = {
             artifact: entry.artifact,
             selection,
