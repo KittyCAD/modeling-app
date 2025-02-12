@@ -62,7 +62,7 @@ export const FeatureTreePane = () => {
               )
             : null
 
-          if (!artifact || !('codeRef' in artifact)) {
+          if (!artifact) {
             modelingSend({
               type: 'Set selection',
               data: {
