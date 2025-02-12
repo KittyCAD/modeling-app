@@ -703,6 +703,16 @@ fn artifacts_to_update(
                     face_code_ref: wall.face_code_ref.clone(),
                 }));
             }
+            if let Some(Artifact::Cap(cap)) = plane {
+                return_arr.push(Artifact::Cap(Cap {
+                    id: current_plane_id.into(),
+                    sub_type: cap.sub_type,
+                    edge_cut_edge_ids: cap.edge_cut_edge_ids.clone(),
+                    sweep_id: cap.sweep_id,
+                    path_ids: vec![id],
+                    face_code_ref: cap.face_code_ref.clone(),
+                }));
+            }
             return Ok(return_arr);
         }
         ModelingCmd::ClosePath(_) | ModelingCmd::ExtendPath(_) => {
