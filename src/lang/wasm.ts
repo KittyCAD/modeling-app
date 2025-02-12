@@ -9,7 +9,6 @@ import {
   modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
-  program_memory_init,
   make_default_planes,
   coredump,
   toml_stringify,
@@ -43,9 +42,6 @@ import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
 import { ExecOutcome as RustExecOutcome } from 'wasm-lib/kcl/bindings/ExecOutcome'
-import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
-import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
-import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'

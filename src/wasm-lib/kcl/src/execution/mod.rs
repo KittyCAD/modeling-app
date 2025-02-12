@@ -39,7 +39,7 @@ pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
 };
 pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
-pub use memory::{EnvironmentRef, ProgramMemory};
+pub use memory::EnvironmentRef;
 pub use state::{ExecState, IdGenerator, MetaSettings};
 
 pub(crate) mod annotations;
@@ -821,7 +821,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{errors::KclErrorDetails, ModuleId};
+    use crate::{errors::KclErrorDetails, execution::memory::ProgramMemory, ModuleId};
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]

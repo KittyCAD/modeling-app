@@ -10,9 +10,10 @@ use crate::{
         annotations,
         cad_op::{OpArg, Operation},
         memory,
+        memory::ProgramMemory,
         state::ModuleState,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory,
-        TagEngineInfo, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, TagEngineInfo,
+        TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{

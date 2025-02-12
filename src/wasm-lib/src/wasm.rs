@@ -421,18 +421,6 @@ pub fn get_tangential_arc_to_info(
     }
 }
 
-/// Create the default program memory.
-#[wasm_bindgen]
-pub fn program_memory_init() -> Result<JsValue, String> {
-    console_error_panic_hook::set_once();
-
-    let memory = kcl_lib::exec::ProgramMemory::new();
-
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&memory).map_err(|e| e.to_string())
-}
-
 /// Get a coredump.
 #[wasm_bindgen]
 pub async fn coredump(core_dump_manager: kcl_lib::wasm_engine::CoreDumpManager) -> Result<JsValue, String> {

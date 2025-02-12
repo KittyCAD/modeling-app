@@ -6,12 +6,10 @@ use itertools::{EitherOrBoth, Itertools};
 use tokio::sync::RwLock;
 
 use crate::{
-    execution::{ExecState, ExecutorSettings},
+    execution::{memory::ProgramMemory, ExecState, ExecutorSettings},
     parsing::ast::types::{Node, NonCodeValue, Program},
     walk::Node as WalkNode,
 };
-
-use super::ProgramMemory;
 
 lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
