@@ -9,6 +9,7 @@ import {
   modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
+  get_kcl_version,
   make_default_planes,
   coredump,
   toml_stringify,
@@ -765,4 +766,11 @@ export function unitAngToUnitAngle(input: UnitAng): UnitAngle {
     default:
       return 'degrees'
   }
+}
+
+/**
+ * Get the KCL version currently being used.
+ */
+export function getKclVersion(): string {
+  return get_kcl_version()
 }

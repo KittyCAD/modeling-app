@@ -236,6 +236,11 @@ fn try_f64_to_i64(f: f64) -> Option<i64> {
     }
 }
 
+/// Get the version of the KCL library.
+pub fn version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

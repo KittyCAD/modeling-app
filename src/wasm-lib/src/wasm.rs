@@ -569,3 +569,11 @@ pub fn change_kcl_settings(code: &str, settings_str: &str) -> Result<String, Str
 
     Ok(formatted)
 }
+
+/// Get the version of the kcl library.
+#[wasm_bindgen]
+pub fn get_kcl_version() -> String {
+    console_error_panic_hook::set_once();
+
+    kcl_lib::version().to_string()
+}

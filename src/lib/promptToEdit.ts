@@ -161,6 +161,7 @@ See later source ranges for more context. about the sweep`,
     source_ranges: ranges,
     project_name:
       projectName !== '' && projectName !== 'browser' ? projectName : undefined,
+    kcl_version: kclManager.kclVersion,
   }
   const url = VITE_KC_API_BASE_URL + '/ml/text-to-cad/iteration'
   const data: Models['TextToCadIteration_type'] | Error =

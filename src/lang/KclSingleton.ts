@@ -16,6 +16,7 @@ import {
   clearSceneAndBustCache,
   emptyExecState,
   ExecState,
+  getKclVersion,
   initPromise,
   KclValue,
   parse,
@@ -74,6 +75,7 @@ export class KclManager {
   private _hasErrors = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
+  private _kclVersion: string | undefined = undefined
 
   engineCommandManager: EngineCommandManager
 
@@ -116,6 +118,16 @@ export class KclManager {
 
   get execState() {
     return this._execState
+  }
+
+  // Get the kcl version from the wasm module
+  // and store it in the singleton
+  // so we don't waste time getting it multiple times
+  get kclVersion() {
+    if (this._kclVersion === undefined) {
+      this._kclVersion = getKclVersion()
+    }
+    return this._kclVersion
   }
 
   get errors() {
