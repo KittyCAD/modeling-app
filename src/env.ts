@@ -15,7 +15,9 @@ export const VITE_KC_SKIP_AUTH = env.VITE_KC_SKIP_AUTH as string | undefined
 export const VITE_KC_CONNECTION_TIMEOUT_MS =
   env.VITE_KC_CONNECTION_TIMEOUT_MS as string | undefined
 export const VITE_KC_DEV_TOKEN = env.VITE_KC_DEV_TOKEN as string | undefined
-export const VITE_KC_KCL_SAMPLES_REF = env.VITE_KC_KCL_SAMPLES_REF as string | undefined
+export const VITE_KC_KCL_SAMPLES_REF = env.VITE_KC_KCL_SAMPLES_REF as
+  | string
+  | undefined
 export const PROD = env.PROD as string | undefined
 export const TEST = env.TEST as string | undefined
 export const DEV = env.DEV as string | undefined
