@@ -306,7 +306,7 @@ impl ExecutorContext {
 
                 let id = exec_state.next_module_id();
                 let path = resolved_path.expect_path();
-                let format = super::import::format_from_annotations(non_code_meta, &path, source_range)?;
+                let format = super::import::format_from_annotations(non_code_meta, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
                 exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
                 Ok(id)

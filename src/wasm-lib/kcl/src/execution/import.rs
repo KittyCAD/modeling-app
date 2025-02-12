@@ -165,7 +165,7 @@ pub(super) fn format_from_annotations(
 
     let mut result = None;
     for p in props {
-        if &p.key.name == annotations::IMPORT_FORMAT {
+        if p.key.name == annotations::IMPORT_FORMAT {
             result = Some(
                 get_import_format_from_extension(annotations::expect_ident(&p.value)?).map_err(|_| {
                     KclError::Semantic(KclErrorDetails {
@@ -222,7 +222,7 @@ fn set_coords(fmt: &mut InputFormat, coords_str: &str, source_range: SourceRange
     let mut coords = None;
     for (name, val) in annotations::IMPORT_COORDS_VALUES {
         if coords_str == name {
-            coords = Some(val.clone());
+            coords = Some(*val);
         }
     }
 
@@ -462,7 +462,7 @@ mod test {
         assert_eq!(
             fmt,
             InputFormat::Obj(kittycad_modeling_cmds::format::obj::import::Options {
-                coords: kittycad_modeling_cmds::coord::VULKAN.clone(),
+                coords: *kittycad_modeling_cmds::coord::VULKAN,
                 units: kittycad_modeling_cmds::units::UnitLength::Feet,
             })
         );
@@ -477,7 +477,7 @@ mod test {
         assert_eq!(
             fmt,
             InputFormat::Obj(kittycad_modeling_cmds::format::obj::import::Options {
-                coords: kittycad_modeling_cmds::coord::VULKAN.clone(),
+                coords: *kittycad_modeling_cmds::coord::VULKAN,
                 units: kittycad_modeling_cmds::units::UnitLength::Feet,
             })
         );
