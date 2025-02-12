@@ -1235,7 +1235,7 @@ fn layer = () => {
 const x = 5
 
 // The 10 layers are replicas of each other, with a transform applied to each.
-let shape = layer() |> patternTransform(10, transform, %)
+let shape = layer() |> patternTransform(instances = 10, transform = transform)
 "#;
 
         let result = parse_execute(ast).await;
