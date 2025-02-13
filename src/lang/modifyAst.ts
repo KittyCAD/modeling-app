@@ -25,6 +25,7 @@ import {
   formatNumber,
   ArtifactGraph,
   VariableMap,
+  KclValue,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -52,7 +53,7 @@ import {
   transformAstSketchLines,
 } from './std/sketchcombos'
 import { DefaultPlaneStr } from 'lib/planes'
-import { isOverlap, roundOff } from 'lib/utils'
+import { isArray, isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { SimplifiedArgDetails } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
@@ -65,6 +66,8 @@ import {
   expandCap,
   expandPlane,
   expandWall,
+  getArtifactOfTypes,
+  getArtifactsOfTypes,
   getPathsFromArtifact,
 } from './std/artifactGraph'
 import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
@@ -1391,12 +1394,11 @@ export async function deleteFromSelection(
     ({} as any)
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
-  console.log('deleting', selection, variables)
   if (
     (selection.artifact?.type === 'plane' ||
       selection.artifact?.type === 'cap' ||
       selection.artifact?.type === 'wall') &&
-    selection.artifact.pathIds.length
+    selection.artifact?.pathIds?.length
   ) {
     const plane =
       selection.artifact.type === 'plane'
@@ -1503,59 +1505,108 @@ export async function deleteFromSelection(
     if (extrudeNameToDelete) {
       await new Promise((resolve) => {
         ;(async () => {
-          let currentVariableName = ''
           const pathsDependingOnExtrude: Array<{
             path: PathToNode
-            sketchName: string
+            variable: KclValue
           }> = []
-          traverse(astClone, {
-            leave: (node) => {
-              if (node.type === 'VariableDeclaration') {
-                currentVariableName = ''
-              }
-            },
-            enter: (node, path) => {
-              ;(async () => {
-                if (node.type === 'VariableDeclaration') {
-                  currentVariableName = node.declaration.id.name
-                }
-                if (
-                  // match startSketchOn(${extrudeNameToDelete})
-                  node.type === 'CallExpression' &&
-                  node.callee.name === 'startSketchOn' &&
-                  node.arguments[0].type === 'Identifier' &&
-                  node.arguments[0].name === extrudeNameToDelete
-                ) {
-                  pathsDependingOnExtrude.push({
-                    path,
-                    sketchName: currentVariableName,
-                  })
-                }
-              })().catch(reportRejection)
-            },
-          })
           const roundLiteral = (x: number) => createLiteral(roundOff(x))
           const modificationDetails: {
-            parent: PipeExpression['body']
+            parentPipe: PipeExpression['body']
+            parentInit: VariableDeclarator
             faceDetails: Models['FaceIsPlanar_type']
-            lastKey: number
+            lastKey: number | string
           }[] = []
-          for (const { path, sketchName } of pathsDependingOnExtrude) {
-            const parent = getNodeFromPath<PipeExpression['body']>(
+          const wallArtifact =
+            selection.artifact?.type === 'wall'
+              ? selection.artifact
+              : selection.artifact?.type === 'segment' &&
+                selection.artifact.surfaceId
+              ? getArtifactOfTypes(
+                  { key: selection.artifact.surfaceId, types: ['wall'] },
+                  engineCommandManager.artifactGraph
+                )
+              : null
+          if (err(wallArtifact)) return
+          if (wallArtifact) {
+            const sweep = getArtifactOfTypes(
+              { key: wallArtifact.sweepId, types: ['sweep'] },
+              engineCommandManager.artifactGraph
+            )
+            if (err(sweep)) return
+            const wallsWithDependencies = Array.from(
+              getArtifactsOfTypes(
+                { keys: sweep.surfaceIds, types: ['wall', 'cap'] },
+                engineCommandManager.artifactGraph
+              ).values()
+            ).filter((wall) => wall?.pathIds?.length)
+            const wallIds = wallsWithDependencies.map((wall) => wall.id)
+            Object.entries(variables).forEach(([key, _var]) => {
+              if (
+                _var?.type === 'Face' &&
+                wallIds.includes(_var.value.artifactId)
+              ) {
+                const pathToStartSketchOn = getNodePathFromSourceRange(
+                  astClone,
+                  _var.value.__meta[0].sourceRange
+                )
+                pathsDependingOnExtrude.push({
+                  path: pathToStartSketchOn,
+                  variable: _var,
+                })
+              }
+              if (
+                _var?.type === 'Sketch' &&
+                _var.value.on.type === 'face' &&
+                wallIds.includes(_var.value.on.artifactId)
+              ) {
+                const pathToStartSketchOn = getNodePathFromSourceRange(
+                  astClone,
+                  _var.value.on.__meta[0].sourceRange
+                )
+                pathsDependingOnExtrude.push({
+                  path: pathToStartSketchOn,
+                  variable: {
+                    type: 'Face',
+                    value: _var.value.on,
+                  },
+                })
+              }
+            })
+          }
+          for (const { path, variable } of pathsDependingOnExtrude) {
+            // `parentPipe` and `parentInit` are the exact same node, but because it could either be an array or on object node
+            // putting them in two different variables was the only way to get TypeScript to stop complaining
+            // the reason why we're grabbing the parent and the last key is because we want to mutate the ast
+            // so `parent[lastKey]` does the trick, if there's a better way of doing this I'm all years
+            const parentPipe = getNodeFromPath<PipeExpression['body']>(
               astClone,
               path.slice(0, -1)
             )
-            if (err(parent)) {
+            const parentInit = getNodeFromPath<VariableDeclarator>(
+              astClone,
+              path.slice(0, -1)
+            )
+            if (err(parentPipe) || err(parentInit)) {
               return
             }
-            const sketchToPreserve = sketchFromKclValue(
-              variables[sketchName],
-              sketchName
-            )
-            if (err(sketchToPreserve)) return sketchToPreserve
+            if (!variable) return new Error('Could not find sketch')
+            const artifactId =
+              variable.type === 'Sketch'
+                ? variable.value.artifactId
+                : variable.type === 'Face'
+                ? variable.value.artifactId
+                : ''
+            if (!artifactId) return new Error('Sketch not on anything')
+            const onId =
+              variable.type === 'Sketch'
+                ? variable.value.on.id
+                : variable.type === 'Face'
+                ? variable.value.id
+                : ''
+            if (!onId) return new Error('Sketch not on anything')
             // Can't kick off multiple requests at once as getFaceDetails
             // is three engine calls in one and they conflict
-            const faceDetails = await getFaceDetails(sketchToPreserve.on.id)
+            const faceDetails = await getFaceDetails(onId)
             if (
               !(
                 faceDetails.origin &&
@@ -1566,14 +1617,20 @@ export async function deleteFromSelection(
             ) {
               return
             }
-            const lastKey = Number(path.slice(-1)[0][0])
+            const lastKey = path.slice(-1)[0][0]
             modificationDetails.push({
-              parent: parent.node,
+              parentPipe: parentPipe.node,
+              parentInit: parentInit.node,
               faceDetails,
               lastKey,
             })
           }
-          for (const { parent, faceDetails, lastKey } of modificationDetails) {
+          for (const {
+            parentInit,
+            parentPipe,
+            faceDetails,
+            lastKey,
+          } of modificationDetails) {
             if (
               !(
                 faceDetails.origin &&
@@ -1584,7 +1641,7 @@ export async function deleteFromSelection(
             ) {
               continue
             }
-            parent[lastKey] = createCallExpressionStdLib('startSketchOn', [
+            const expression = createCallExpressionStdLib('startSketchOn', [
               createObjectExpression({
                 plane: createObjectExpression({
                   origin: createObjectExpression({
@@ -1610,6 +1667,14 @@ export async function deleteFromSelection(
                 }),
               }),
             ])
+            if (
+              parentInit.type === 'VariableDeclarator' &&
+              lastKey === 'init'
+            ) {
+              parentInit[lastKey] = expression
+            } else if (isArray(parentPipe) && typeof lastKey === 'number') {
+              parentPipe[lastKey] = expression
+            }
           }
           resolve(true)
         })().catch(reportRejection)
@@ -1621,8 +1686,12 @@ export async function deleteFromSelection(
     return deleteEdgeTreatment(astClone, selection)
   } else if (varDec.node.init.type === 'PipeExpression') {
     const pipeBody = varDec.node.init.body
+    const doNotDeleteProfileIfItHasBeenExtruded = !(
+      selection?.artifact?.type === 'segment' && selection?.artifact?.surfaceId
+    )
     if (
       pipeBody[0].type === 'CallExpression' &&
+      doNotDeleteProfileIfItHasBeenExtruded &&
       (pipeBody[0].callee.name === 'startSketchOn' ||
         pipeBody[0].callee.name === 'startProfileAt')
     ) {
