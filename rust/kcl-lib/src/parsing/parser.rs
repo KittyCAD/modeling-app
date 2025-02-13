@@ -4,17 +4,17 @@
 use std::{cell::RefCell, collections::BTreeMap};
 
 use winnow::{
-    combinator::{alt, delimited, opt, peek, preceded, repeat, separated, separated_pair, terminated},
+    combinator::{alt, delimited, opt, peek, preceded, repeat, repeat_till, separated, separated_pair, terminated},
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
     stream::Stream,
-    token::{any, one_of, take_till, take_until},
+    token::{any, none_of, one_of, take_till},
 };
 
 use super::{
     ast::types::{Ascription, ImportPath, LabelledExpression},
-    token::NumericSuffix,
+    token::{NumericSuffix, RESERVED_WORDS},
 };
 use crate::{
     docs::StdLibFn,
@@ -746,13 +746,16 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
     )
     .context(expected("array contents, a list of elements (like [1, 2, 3])"))
     .parse_next(i)?;
+    ignore_trailing_comma(i);
     ignore_whitespace(i);
 
     let maybe_end = close_bracket(i).map_err(|e| {
         if let Some(mut err) = e.clone().into_inner() {
+            let start_range = open.as_source_range();
+            let end_range = i.as_source_range();
             err.cause = Some(CompilationError::fatal(
-                open.as_source_range(),
-                "Array is missing a closing bracket(`]`)",
+                SourceRange::from([start_range.start(), end_range.start(), end_range.module_id().as_usize()]),
+                "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
             ));
             ErrMode::Cut(err)
         } else {
@@ -762,18 +765,32 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
     });
 
     if maybe_end.is_err() {
-        // if there is a closing bracket at some point, but it's not the next token after skipping the
-        // whitespace and ignoring a trailing comma, it's likely that they forgot a comma between some
+        // if there is a closing bracket at some point, but it wasn't the next token, it's likely that they forgot a comma between some
         // of the elements
-        let maybe_closing_bracket: PResult<TokenSlice<'_>> = peek(take_until(0.., "]")).parse_next(i);
+        let maybe_closing_bracket: PResult<((), Token)> = peek(repeat_till(
+            0..,
+            none_of(|token: Token| {
+                // bail out early if we encounter something that is for sure not allowed in an
+                // array, otherwise we could seek to find a closing bracket until the end of the
+                // file
+                RESERVED_WORDS
+                    .keys()
+                    .chain([",,", "{", "}", "["].iter())
+                    .any(|word| *word == token.value)
+            })
+            .void(),
+            one_of(|term: Token| term.value == "]"),
+        ))
+        .parse_next(i);
         let has_closing_bracket = maybe_closing_bracket.is_ok();
         if has_closing_bracket {
+            let start_range = i.as_source_range();
             // safe to unwrap here because we checked it was Ok above
-            let start_range = maybe_closing_bracket.unwrap().as_source_range();
+            let end_range = maybe_closing_bracket.unwrap().1.as_source_range();
             let e = ContextError {
                 context: vec![],
                 cause: Some(CompilationError::fatal(
-                    start_range,
+                    SourceRange::from([start_range.start(), end_range.end(), end_range.module_id().as_usize()]),
                     "Unexpected character encountered. You might be missing a comma in between elements.",
                 )),
             };
@@ -942,9 +959,11 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
 
     let maybe_end = close_brace(i).map_err(|e| {
         if let Some(mut err) = e.clone().into_inner() {
+            let start_range = open.as_source_range();
+            let end_range = i.as_source_range();
             err.cause = Some(CompilationError::fatal(
-                open.as_source_range(),
-                "Object is missing a closing brace(`}`)",
+                SourceRange::from([start_range.start(), end_range.start(), end_range.module_id().as_usize()]),
+                "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
             ));
             ErrMode::Cut(err)
         } else {
@@ -953,18 +972,33 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
         }
     });
     if maybe_end.is_err() {
-        // if there is a closing brace at some point, but it's not the next token after skipping the
-        // whitespace and ignoring a trailing comma, it's likely that they forgot a comma between some
+        // if there is a closing brace at some point, but it wasn't the next token, it's likely that they forgot a comma between some
         // of the properties
-        let maybe_closing_brace: PResult<TokenSlice<'_>> = peek(take_until(0.., "}")).parse_next(i);
+        let maybe_closing_brace: PResult<((), Token)> = peek(repeat_till(
+            0..,
+            none_of(|token: Token| {
+                // bail out early if we encounter something that is for sure not allowed in an
+                // object, otherwise we could seek to find a closing brace until the end of the
+                // file
+                RESERVED_WORDS
+                    .keys()
+                    .chain([",,", "[", "]", "{"].iter())
+                    .any(|word| *word == token.value)
+            })
+            .void(),
+            one_of(|c: Token| c.value == "}"),
+        ))
+        .parse_next(i);
         let has_closing_brace = maybe_closing_brace.is_ok();
         if has_closing_brace {
+            let start_range = i.as_source_range();
             // okay to unwrap here because we checked it was Ok above
-            let start_range = maybe_closing_brace.unwrap().as_source_range();
+            let end_range = maybe_closing_brace.unwrap().1.as_source_range();
+
             let e = ContextError {
                 context: vec![],
                 cause: Some(CompilationError::fatal(
-                    start_range,
+                    SourceRange::from([start_range.start(), end_range.end(), end_range.module_id().as_usize()]),
                     "Unexpected character encountered. You might be missing a comma in between properties.",
                 )),
             };
@@ -4075,7 +4109,7 @@ z(-[["#,
     fn test_parse_weird_lots_of_fancy_brackets() {
         assert_err(
             r#"zz({{{{{{{{)iegAng{{{{{{{##"#,
-            "Object is missing a closing brace(`}`)",
+            "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
             [3, 4],
         );
     }
@@ -4621,7 +4655,11 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_array_missing_closing_bracket() {
         let some_program_string = r#"
 sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
-        assert_err(some_program_string, "Array is missing a closing bracket(`]`)", [51, 52]);
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
+            [51, 67],
+        );
     }
     #[test]
     fn test_parse_array_missing_comma() {
@@ -4634,23 +4672,50 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
         );
     }
     #[test]
+    fn test_parse_array_reserved_word_early_exit() {
+        // since there is an early exit if encountering a reserved word, the error should be about
+        // that and not the missing comma
+        let some_program_string = r#"
+sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 $sketch], %)"#;
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
+            [51, 52],
+        );
+    }
+    #[test]
     fn test_parse_array_random_brace() {
         let some_program_string = r#"
 sketch001 = startSketchOn('XZ') |> startProfileAt([}], %)"#;
         assert_err(
             some_program_string,
-            "Unexpected character encountered. You might be missing a comma in between elements.",
-            [52, 54],
+            "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
+            [51, 52],
         );
     }
 
     #[test]
     fn test_parse_object_missing_closing_brace() {
         let some_program_string = r#"{
-            foo = bar,
-        "#;
+            foo = bar,"#;
 
-        assert_err(some_program_string, "Object is missing a closing brace(`}`)", [0, 1]);
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
+            [0, 23],
+        );
+    }
+    #[test]
+    fn test_parse_object_reserved_word_early_exit() {
+        // since there is an early exit if encountering a reserved word, the error should be about
+        // that and not the missing comma
+        let some_program_string = r#"{bar = foo sketch = man}"#;
+
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
+            [0, 1],
+        );
     }
     #[test]
     fn test_parse_object_missing_comma() {
@@ -4668,13 +4733,24 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([}], %)"#;
     }
 
     #[test]
+    fn test_parse_object_missing_comma_one_line() {
+        let some_program_string = r#"{bar = foo bat = man}"#;
+
+        assert_err(
+            some_program_string,
+            "Unexpected character encountered. You might be missing a comma in between properties.",
+            [1, 21],
+        );
+    }
+
+    #[test]
     fn test_parse_object_random_bracket() {
         let some_program_string = r#"{]}"#;
 
         assert_err(
             some_program_string,
-            "Unexpected character encountered. You might be missing a comma in between properties.",
-            [1, 3],
+            "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
+            [0, 1],
         );
     }
 
