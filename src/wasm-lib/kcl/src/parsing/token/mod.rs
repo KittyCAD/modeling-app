@@ -24,7 +24,6 @@ use crate::{
 
 mod tokeniser;
 
-#[cfg(test)]
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
@@ -194,12 +193,18 @@ impl<'a> TokenSlice<'a> {
     }
 
     pub fn as_source_range(&self) -> SourceRange {
-        let first_token = self.token(0);
-        SourceRange::new(
-            first_token.start,
-            self.stream.tokens[self.end].end,
-            first_token.module_id,
-        )
+        let stream_len = self.stream.tokens.len();
+        let first_token = if stream_len == self.start {
+            &self.stream.tokens[self.start - 1]
+        } else {
+            self.token(0)
+        };
+        let last_token = if stream_len == self.end {
+            &self.stream.tokens[stream_len - 1]
+        } else {
+            self.token(self.end - self.start)
+        };
+        SourceRange::new(first_token.start, last_token.end, last_token.module_id)
     }
 }
 
