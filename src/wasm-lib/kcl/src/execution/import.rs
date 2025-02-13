@@ -287,7 +287,7 @@ pub struct PreImportedGeometry {
 }
 
 pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) -> Result<ImportedGeometry, KclError> {
-    if ctxt.is_mock() {
+    if ctxt.no_engine_commands() {
         return Ok(ImportedGeometry {
             id: pre.id,
             value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
