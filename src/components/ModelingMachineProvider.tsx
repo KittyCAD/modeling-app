@@ -100,6 +100,7 @@ import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import {
+  getFaceCodeRef,
   getPathsFromArtifact,
   getPlaneFromArtifact,
 } from 'lang/std/artifactGraph'
@@ -832,12 +833,7 @@ export const ModelingMachineProvider = ({
               ast: kclManager.ast,
             })
             if (err(sketchPaths)) return Promise.reject(sketchPaths)
-            let codeRef =
-              'faceCodeRef' in plane && plane.faceCodeRef
-                ? plane.faceCodeRef
-                : 'codeRef' in plane && plane.codeRef
-                ? plane.codeRef
-                : null
+            let codeRef = getFaceCodeRef(plane)
             if (!codeRef) return Promise.reject(new Error('No plane codeRef'))
             // codeRef.pathToNode is not always populated correctly
             const planeNodePath = getNodePathFromSourceRange(

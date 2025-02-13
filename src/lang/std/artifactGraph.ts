@@ -19,6 +19,7 @@ import {
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { err } from 'lib/trap'
+import { Cap, Plane, Wall } from 'wasm-lib/kcl/bindings/Artifact'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from 'lang/wasm'
 
@@ -599,17 +600,24 @@ export function getArtifactFromRange(
   artifactGraph: ArtifactGraph
 ): Artifact | null {
   for (const artifact of artifactGraph.values()) {
-    const codeRef =
-      'codeRef' in artifact
-        ? artifact.codeRef
-        : 'faceCodeRef' in artifact
-        ? artifact.faceCodeRef
-        : null
+    const codeRef = getFaceCodeRef(artifact)
     if (codeRef) {
       const match =
         codeRef?.range[0] === range[0] && codeRef.range[1] === range[1]
       if (match) return artifact
     }
+  }
+  return null
+}
+
+export function getFaceCodeRef(
+  artifact: Artifact | Plane | Wall | Cap
+): CodeRef | null {
+  if ('faceCodeRef' in artifact) {
+    return artifact.faceCodeRef
+  }
+  if ('codeRef' in artifact) {
+    return artifact.codeRef
   }
   return null
 }

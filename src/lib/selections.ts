@@ -40,6 +40,7 @@ import {
   CodeRef,
   getCodeRefsByArtifactId,
   ArtifactId,
+  getFaceCodeRef,
 } from 'lang/std/artifactGraph'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { DefaultPlaneStr } from './planes'
@@ -613,12 +614,7 @@ export function codeToIdSelections(
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          const codeRef =
-            'codeRef' in artifact
-              ? artifact.codeRef
-              : 'faceCodeRef' in artifact
-              ? artifact.faceCodeRef
-              : null
+          const codeRef = getFaceCodeRef(artifact)
           if (!codeRef) return null
           return isOverlap(codeRef.range, selection.range)
             ? {

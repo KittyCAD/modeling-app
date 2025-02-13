@@ -11,7 +11,7 @@ import {
   LiteralValue,
   NumericSuffix,
 } from './wasm'
-import { filterArtifacts } from 'lang/std/artifactGraph'
+import { filterArtifacts, getFaceCodeRef } from 'lang/std/artifactGraph'
 import { isArray, isOverlap } from 'lib/utils'
 
 /**
@@ -65,12 +65,7 @@ export function isCursorInSketchCommandRange(
     {
       types: ['segment', 'path', 'plane', 'cap', 'wall'],
       predicate: (artifact) => {
-        const codeRefRange =
-          'codeRef' in artifact
-            ? artifact?.codeRef.range
-            : 'faceCodeRef' in artifact
-            ? artifact?.faceCodeRef.range
-            : null
+        const codeRefRange = getFaceCodeRef(artifact)?.range
         return selectionRanges.graphSelections.some(
           (selection) =>
             isArray(selection?.codeRef?.range) &&
