@@ -898,7 +898,7 @@ export class SceneEntities {
             variables: kclManager.variables,
             pathToNode: sketchEntryNodePath,
             expressions: [
-              lastSegment.type === 'TangentialArcTo'
+              segmentName === 'tangentialArcTo'
                 ? createCallExpressionStdLib('tangentialArcTo', [
                     originCoords,
                     createPipeSubstitution(),
