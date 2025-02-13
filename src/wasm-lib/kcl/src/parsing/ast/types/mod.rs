@@ -1581,7 +1581,7 @@ pub struct CallExpression {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
     pub callee: Node<Identifier>,
     pub unlabeled: Option<Expr>,
@@ -1591,6 +1591,9 @@ pub struct CallExpressionKw {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
+
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1714,6 +1717,7 @@ impl CallExpressionKw {
             unlabeled,
             arguments,
             digest: None,
+            non_code_meta: Default::default(),
         }))
     }
 
