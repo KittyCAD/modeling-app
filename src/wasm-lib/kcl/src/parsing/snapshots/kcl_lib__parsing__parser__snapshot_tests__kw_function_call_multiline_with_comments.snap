@@ -52,7 +52,7 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 90,
-          "non_code_meta": {
+          "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
