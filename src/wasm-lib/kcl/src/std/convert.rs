@@ -27,9 +27,9 @@ pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(length = 5)
-///   |> patternTransform(n, fn(id) {
+///   |> patternTransform(instances = n, transform = fn(id) {
 ///   return { translate = [4 * id, 0, 0] }
-/// }, %)
+/// })
 /// ```
 #[stdlib {
     name = "int",

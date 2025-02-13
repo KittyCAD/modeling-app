@@ -156,18 +156,14 @@ pub(crate) const RETURN_NAME: &str = "__return";
 /// including other modules). Multiple interpretation runs should have fresh instances.
 ///
 /// See module docs.
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct ProgramMemory {
+#[derive(Debug, Clone)]
+pub(crate) struct ProgramMemory {
     environments: Vec<Environment>,
     /// Invariant: current_env.1.is_none()
     current_env: EnvironmentRef,
     /// Invariant: forall er in call_stack: er.1.is_none()
     call_stack: Vec<EnvironmentRef>,
     /// Statistics about the memory, should not be used for anything other than meta-info.
-    #[allow(dead_code)]
-    #[serde(skip)]
     pub(crate) stats: MemoryStats,
 }
 
@@ -573,7 +569,7 @@ pub(crate) struct MemoryStats {
 mod env {
     use super::*;
 
-    #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+    #[derive(Debug, Clone, PartialEq)]
     pub(super) struct Environment {
         bindings: IndexMap<String, KclValue>,
         // invariant: self.parent.is_none() => forall s in self.snapshots: s.parent_snapshot.is_none()
@@ -603,7 +599,7 @@ mod env {
         }
     }
 
-    #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+    #[derive(Debug, Clone, PartialEq)]
     struct Snapshot {
         /// The version of the owning environment's parent environment corresponding to this snapshot.
         parent_snapshot: Option<SnapshotRef>,

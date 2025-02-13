@@ -10,15 +10,16 @@ use crate::{
         annotations,
         cad_op::{OpArg, Operation},
         memory,
+        memory::ProgramMemory,
         state::ModuleState,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory,
-        TagEngineInfo, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, TagEngineInfo,
+        TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
-        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector, ItemVisibility,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef, NonCodeNode, NonCodeValue,
+        Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
+        CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
+        ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef,
         ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
@@ -36,37 +37,36 @@ enum StatementKind<'a> {
 impl ExecutorContext {
     async fn handle_annotations(
         &self,
-        annotations: impl Iterator<Item = (&NonCodeValue, SourceRange)>,
+        annotations: impl Iterator<Item = &Node<Annotation>>,
         scope: annotations::AnnotationScope,
         exec_state: &mut ExecState,
     ) -> Result<bool, KclError> {
         let mut no_prelude = false;
-        for (annotation, source_range) in annotations {
-            if annotation.annotation_name() == Some(annotations::SETTINGS) {
+        for annotation in annotations {
+            if annotation.name() == Some(annotations::SETTINGS) {
                 if scope == annotations::AnnotationScope::Module {
                     let old_units = exec_state.length_unit();
-                    exec_state
-                        .mod_local
-                        .settings
-                        .update_from_annotation(annotation, source_range)?;
+                    exec_state.mod_local.settings.update_from_annotation(annotation)?;
                     let new_units = exec_state.length_unit();
                     if !self.engine.execution_kind().is_isolated() && old_units != new_units {
-                        self.engine.set_units(new_units.into(), source_range).await?;
+                        self.engine
+                            .set_units(new_units.into(), annotation.as_source_range())
+                            .await?;
                     }
                 } else {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: "Settings can only be modified at the top level scope of a file".to_owned(),
-                        source_ranges: vec![source_range],
+                        source_ranges: vec![annotation.as_source_range()],
                     }));
                 }
             }
-            if annotation.annotation_name() == Some(annotations::NO_PRELUDE) {
+            if annotation.name() == Some(annotations::NO_PRELUDE) {
                 if scope == annotations::AnnotationScope::Module {
                     no_prelude = true;
                 } else {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: "Prelude can only be skipped at the top level scope of a file".to_owned(),
-                        source_ranges: vec![source_range],
+                        source_ranges: vec![annotation.as_source_range()],
                     }));
                 }
             }
@@ -86,11 +86,7 @@ impl ExecutorContext {
         if body_type == BodyType::Root {
             let _no_prelude = self
                 .handle_annotations(
-                    program
-                        .non_code_meta
-                        .start_nodes
-                        .iter()
-                        .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
+                    program.inner_attrs.iter(),
                     annotations::AnnotationScope::Module,
                     exec_state,
                 )
@@ -99,7 +95,7 @@ impl ExecutorContext {
 
         let mut last_expr = None;
         // Iterate over the body of the program.
-        for (i, statement) in program.body.iter().enumerate() {
+        for statement in &program.body {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
                     if body_type != BodyType::Root {
@@ -110,9 +106,9 @@ impl ExecutorContext {
                     }
 
                     let source_range = SourceRange::from(import_stmt);
-                    let meta_nodes = program.non_code_meta.get(i);
+                    let attrs = &import_stmt.outer_attrs;
                     let module_id = self
-                        .open_module(&import_stmt.path, meta_nodes, exec_state, source_range)
+                        .open_module(&import_stmt.path, attrs, exec_state, source_range)
                         .await?;
 
                     match &import_stmt.selector {
@@ -208,7 +204,7 @@ impl ExecutorContext {
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
 
-                    let _meta_nodes = program.non_code_meta.get(i);
+                    let _annotations = &variable_declaration.outer_attrs;
 
                     let memory_item = self
                         .execute_expr(
@@ -278,7 +274,7 @@ impl ExecutorContext {
     async fn open_module(
         &self,
         path: &ImportPath,
-        non_code_meta: &[Node<NonCodeNode>],
+        attrs: &[Node<Annotation>],
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
@@ -306,7 +302,7 @@ impl ExecutorContext {
 
                 let id = exec_state.next_module_id();
                 let path = resolved_path.expect_path();
-                let format = super::import::format_from_annotations(non_code_meta, path, source_range)?;
+                let format = super::import::format_from_annotations(attrs, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
                 exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
                 Ok(id)
@@ -1837,18 +1833,7 @@ mod test {
             // Run each test.
             let func_expr = &Node::no_src(FunctionExpression {
                 params,
-                body: Node {
-                    inner: crate::parsing::ast::types::Program {
-                        body: Vec::new(),
-                        non_code_meta: Default::default(),
-                        shebang: None,
-                        digest: None,
-                    },
-                    start: 0,
-                    end: 0,
-                    module_id: ModuleId::default(),
-                    trivia: Vec::new(),
-                },
+                body: crate::parsing::ast::types::Program::empty(),
                 return_type: None,
                 digest: None,
             });

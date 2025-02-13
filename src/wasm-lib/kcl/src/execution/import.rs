@@ -19,7 +19,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{annotations, kcl_value::UnitLen, ExecState, ExecutorContext, ImportedGeometry},
     fs::FileSystem,
-    parsing::ast::types::{Node, NonCodeNode},
+    parsing::ast::types::{Annotation, Node},
     source_range::SourceRange,
 };
 
@@ -155,16 +155,18 @@ pub async fn import_foreign(
 }
 
 pub(super) fn format_from_annotations(
-    non_code_meta: &[Node<NonCodeNode>],
+    annotations: &[Node<Annotation>],
     path: &Path,
     import_source_range: SourceRange,
 ) -> Result<Option<InputFormat>, KclError> {
-    let Some(props) = annotations::unnamed_properties(non_code_meta.iter().map(|n| &n.value)) else {
+    if annotations.is_empty() {
         return Ok(None);
-    };
+    }
+
+    let props = annotations.iter().flat_map(|a| a.properties.as_deref().unwrap_or(&[]));
 
     let mut result = None;
-    for p in props {
+    for p in props.clone() {
         if p.key.name == annotations::IMPORT_FORMAT {
             result = Some(
                 get_import_format_from_extension(annotations::expect_ident(&p.value)?).map_err(|_| {
@@ -287,7 +289,7 @@ pub struct PreImportedGeometry {
 }
 
 pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) -> Result<ImportedGeometry, KclError> {
-    if ctxt.is_mock() {
+    if ctxt.no_engine_commands() {
         return Ok(ImportedGeometry {
             id: pre.id,
             value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
@@ -422,8 +424,8 @@ mod test {
         // no format, no options
         let text = "@()\nimport '../foo.gltf' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
-        let non_code_meta = parsed.non_code_meta.get(0);
-        let fmt = format_from_annotations(non_code_meta, Path::new("../foo.gltf"), SourceRange::default())
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, Path::new("../foo.gltf"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -434,8 +436,8 @@ mod test {
         // format, no options
         let text = "@(format = gltf)\nimport '../foo.txt' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
-        let non_code_meta = parsed.non_code_meta.get(0);
-        let fmt = format_from_annotations(non_code_meta, Path::new("../foo.txt"), SourceRange::default())
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, Path::new("../foo.txt"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -444,7 +446,7 @@ mod test {
         );
 
         // format, no extension (wouldn't parse but might some day)
-        let fmt = format_from_annotations(non_code_meta, Path::new("../foo"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, Path::new("../foo"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -455,8 +457,8 @@ mod test {
         // format, options
         let text = "@(format = obj, coords = vulkan, lengthUnit = ft)\nimport '../foo.txt' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
-        let non_code_meta = parsed.non_code_meta.get(0);
-        let fmt = format_from_annotations(non_code_meta, Path::new("../foo.txt"), SourceRange::default())
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, Path::new("../foo.txt"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -470,8 +472,8 @@ mod test {
         // no format, options
         let text = "@(coords = vulkan, lengthUnit = ft)\nimport '../foo.obj' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
-        let non_code_meta = parsed.non_code_meta.get(0);
-        let fmt = format_from_annotations(non_code_meta, Path::new("../foo.obj"), SourceRange::default())
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, Path::new("../foo.obj"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -523,8 +525,8 @@ mod test {
     #[track_caller]
     fn assert_annotation_error(src: &str, path: &str, expected: &str) {
         let parsed = crate::Program::parse_no_errs(src).unwrap().ast;
-        let non_code_meta = parsed.non_code_meta.get(0);
-        let err = format_from_annotations(non_code_meta, Path::new(path), SourceRange::default()).unwrap_err();
+        let attrs = parsed.body[0].get_attrs();
+        let err = format_from_annotations(attrs, Path::new(path), SourceRange::default()).unwrap_err();
         assert!(
             err.message().contains(expected),
             "Expected: `{expected}`, found `{}`",

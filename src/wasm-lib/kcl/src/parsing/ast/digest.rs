@@ -1,13 +1,10 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
-use super::types::{
-    DefaultParamVal, ItemVisibility, LabelledExpression, LiteralValue, NonCodeMeta, NonCodeNode, NonCodeValue,
-    VariableKind,
-};
+use super::types::{DefaultParamVal, ItemVisibility, LabelledExpression, LiteralValue, VariableKind};
 use crate::parsing::ast::types::{
-    ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
-    ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
-    ImportSelector, ImportStatement, KclNone, Literal, LiteralIdentifier, MemberExpression, MemberObject,
+    Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression,
+    CallExpressionKw, ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression,
+    ImportItem, ImportSelector, ImportStatement, KclNone, Literal, LiteralIdentifier, MemberExpression, MemberObject,
     ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
     TagDeclarator, UnaryExpression, VariableDeclaration, VariableDeclarator,
 };
@@ -82,57 +79,28 @@ impl Program {
         for body_item in slf.body.iter_mut() {
             hasher.update(body_item.compute_digest());
         }
-        // This contains settings annotations.
-        hasher.update(slf.non_code_meta.compute_digest());
+        for attr in &mut slf.inner_attrs {
+            hasher.update(attr.compute_digest());
+        }
         if let Some(shebang) = &slf.shebang {
             hasher.update(&shebang.inner.content);
         }
     });
 }
 
-impl NonCodeMeta {
-    compute_digest!(|slf, hasher| {
-        for non_code_node in slf.start_nodes.iter_mut() {
-            hasher.update(non_code_node.compute_digest());
-        }
-        for (_, non_code_nodes) in slf.non_code_nodes.iter_mut() {
-            for non_code_node in non_code_nodes.iter_mut() {
-                hasher.update(non_code_node.compute_digest());
-            }
-        }
-    });
-}
-
-impl NonCodeNode {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.value.compute_digest());
-    });
-}
-
-impl NonCodeValue {
+impl Annotation {
     pub fn compute_digest(&mut self) -> Digest {
         let mut hasher = Sha256::new();
-        match self {
-            NonCodeValue::InlineComment { .. } => {}
-            NonCodeValue::BlockComment { .. } => {}
-            NonCodeValue::NewLineBlockComment { .. } => {}
-            NonCodeValue::NewLine => {}
-            NonCodeValue::Annotation {
-                ref mut name,
-                properties,
-            } => {
-                if let Some(name) = name {
-                    hasher.update(name.compute_digest());
-                }
-                if let Some(properties) = properties {
-                    hasher.update(properties.len().to_ne_bytes());
-                    for property in properties.iter_mut() {
-                        hasher.update(property.compute_digest());
-                    }
-                } else {
-                    hasher.update("no_properties");
-                }
+        if let Some(name) = &mut self.name {
+            hasher.update(name.compute_digest());
+        }
+        if let Some(properties) = &mut self.properties {
+            hasher.update(properties.len().to_ne_bytes());
+            for property in properties.iter_mut() {
+                hasher.update(property.compute_digest());
             }
+        } else {
+            hasher.update("no_properties");
         }
         hasher.finalize().into()
     }
@@ -140,12 +108,18 @@ impl NonCodeValue {
 
 impl BodyItem {
     pub fn compute_digest(&mut self) -> Digest {
-        match self {
+        let mut hasher = Sha256::new();
+        hasher.update(match self {
             BodyItem::ImportStatement(s) => s.compute_digest(),
             BodyItem::ExpressionStatement(es) => es.compute_digest(),
             BodyItem::VariableDeclaration(vs) => vs.compute_digest(),
             BodyItem::ReturnStatement(rs) => rs.compute_digest(),
+        });
+
+        for a in self.get_attrs_mut() {
+            hasher.update(a.compute_digest());
         }
+        hasher.finalize().into()
     }
 }
 
