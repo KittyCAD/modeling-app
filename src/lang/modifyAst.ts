@@ -1593,8 +1593,10 @@ export async function deleteFromSelection(
       return astClone
     }
   } else if (
-    varDec.node.init.type === 'CallExpressionKw' &&
-    varDec.node.init.callee.name === 'circleThreePoint'
+    // single expression profiles
+    (varDec.node.init.type === 'CallExpressionKw' ||
+      varDec.node.init.type === 'CallExpression') &&
+    ['circleThreePoint', 'circle'].includes(varDec.node.init.callee.name)
   ) {
     const varDecIndex = varDec.shallowPath[1][0] as number
     astClone.body.splice(varDecIndex, 1)
