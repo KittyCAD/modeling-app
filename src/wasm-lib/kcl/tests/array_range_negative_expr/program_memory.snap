@@ -27,8 +27,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
     "type": "Array",
     "value": [
       {
-        "type": "Int",
-        "value": -5,
+        "type": "Number",
+        "value": -5.0,
         "__meta": [
           {
             "sourceRange": [
@@ -40,8 +40,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": -4,
+        "type": "Number",
+        "value": -4.0,
         "__meta": [
           {
             "sourceRange": [
@@ -53,8 +53,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": -3,
+        "type": "Number",
+        "value": -3.0,
         "__meta": [
           {
             "sourceRange": [
@@ -66,8 +66,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": -2,
+        "type": "Number",
+        "value": -2.0,
         "__meta": [
           {
             "sourceRange": [
@@ -79,8 +79,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": -1,
+        "type": "Number",
+        "value": -1.0,
         "__meta": [
           {
             "sourceRange": [
@@ -92,8 +92,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 0,
+        "type": "Number",
+        "value": 0.0,
         "__meta": [
           {
             "sourceRange": [
@@ -105,8 +105,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 1,
+        "type": "Number",
+        "value": 1.0,
         "__meta": [
           {
             "sourceRange": [
@@ -118,8 +118,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 2,
+        "type": "Number",
+        "value": 2.0,
         "__meta": [
           {
             "sourceRange": [
@@ -131,8 +131,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 3,
+        "type": "Number",
+        "value": 3.0,
         "__meta": [
           {
             "sourceRange": [
@@ -144,8 +144,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 4,
+        "type": "Number",
+        "value": 4.0,
         "__meta": [
           {
             "sourceRange": [
@@ -157,8 +157,8 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 5,
+        "type": "Number",
+        "value": 5.0,
         "__meta": [
           {
             "sourceRange": [

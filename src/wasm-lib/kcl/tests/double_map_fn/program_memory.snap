@@ -96,8 +96,8 @@ description: Variables in memory after executing double_map_fn.kcl
     "type": "Array",
     "value": [
       {
-        "type": "Int",
-        "value": 0,
+        "type": "Number",
+        "value": 0.0,
         "__meta": [
           {
             "sourceRange": [
@@ -109,8 +109,8 @@ description: Variables in memory after executing double_map_fn.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 1,
+        "type": "Number",
+        "value": 1.0,
         "__meta": [
           {
             "sourceRange": [
@@ -122,8 +122,8 @@ description: Variables in memory after executing double_map_fn.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 2,
+        "type": "Number",
+        "value": 2.0,
         "__meta": [
           {
             "sourceRange": [

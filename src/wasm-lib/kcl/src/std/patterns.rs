@@ -446,7 +446,7 @@ async fn make_transform<T: GeometryTrait>(
     exec_state: &mut ExecState,
 ) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
-    let repetition_num = KclValue::Int {
+    let repetition_num = KclValue::Number {
         value: i.into(),
         meta: vec![source_range.into()],
     };
