@@ -74,23 +74,6 @@ Any KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `Int`|  | No |
-| `value` |`integer`|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
-
-
-----
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
 | `type` |enum: `String`|  | No |
 | `value` |`string`|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |

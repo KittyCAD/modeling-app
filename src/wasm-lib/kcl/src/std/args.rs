@@ -456,13 +456,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_float<'a, T>(&'a self) -> Result<(T, f64), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,
@@ -1391,7 +1384,6 @@ impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Number { value, meta: _ } => crate::try_f64_to_i64(*value),
-            KclValue::Int { value, meta: _ } => Some(*value),
             _ => None,
         }
     }
@@ -1428,7 +1420,6 @@ impl<'a> FromKclValue<'a> for u32 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Number { value, meta: _ } => crate::try_f64_to_u32(*value),
-            KclValue::Int { value, meta: _ } => Some(*value as u32),
             _ => None,
         }
     }
@@ -1444,7 +1435,6 @@ impl<'a> FromKclValue<'a> for u64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Number { value, meta: _ } => crate::try_f64_to_u64(*value),
-            KclValue::Int { value, meta: _ } => Some(*value as u64),
             _ => None,
         }
     }
@@ -1453,7 +1443,6 @@ impl<'a> FromKclValue<'a> for f64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Number { value, meta: _ } => Some(*value),
-            KclValue::Int { value, meta: _ } => Some(*value as f64),
             _ => None,
         }
     }

@@ -43,11 +43,6 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
-    Int {
-        value: i64,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
     String {
         value: String,
         #[serde(rename = "__meta")]
@@ -168,7 +163,6 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
-            KclValue::Int { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
             KclValue::Array { meta, .. } => to_vec_sr(&meta),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
@@ -200,7 +194,6 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
-            KclValue::Int { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Array { meta, .. } => to_vec_sr(meta),
@@ -218,7 +211,6 @@ impl KclValue {
             KclValue::Uuid { value: _, meta } => meta.clone(),
             KclValue::Bool { value: _, meta } => meta.clone(),
             KclValue::Number { value: _, meta } => meta.clone(),
-            KclValue::Int { value: _, meta } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
             KclValue::Array { value: _, meta } => meta.clone(),
             KclValue::Object { value: _, meta } => meta.clone(),
@@ -297,7 +289,6 @@ impl KclValue {
             KclValue::Face { .. } => "Face",
             KclValue::Bool { .. } => "boolean (true/false value)",
             KclValue::Number { .. } => "number",
-            KclValue::Int { .. } => "integer",
             KclValue::String { .. } => "string (text)",
             KclValue::Array { .. } => "array (list)",
             KclValue::Object { .. } => "object",
@@ -349,7 +340,6 @@ impl KclValue {
 
     pub(crate) fn as_usize(&self) -> Option<usize> {
         match self {
-            KclValue::Int { value, .. } if *value > 0 => Some(*value as usize),
             KclValue::Number { value, .. } => crate::try_f64_to_usize(*value),
             _ => None,
         }
@@ -357,7 +347,6 @@ impl KclValue {
 
     pub fn as_int(&self) -> Option<i64> {
         match self {
-            KclValue::Int { value, .. } => Some(*value),
             KclValue::Number { value, .. } => crate::try_f64_to_i64(*value),
             _ => None,
         }
@@ -440,8 +429,6 @@ impl KclValue {
     pub fn as_f64(&self) -> Option<f64> {
         if let KclValue::Number { value, meta: _ } = &self {
             Some(*value)
-        } else if let KclValue::Int { value, meta: _ } = &self {
-            Some(*value as f64)
         } else {
             None
         }

@@ -792,15 +792,6 @@ impl Node<UnaryExpression> {
                 }];
                 Ok(KclValue::Number { value: -value, meta })
             }
-            KclValue::Int { value, meta: _ } => {
-                let meta = vec![Metadata {
-                    source_range: self.into(),
-                }];
-                Ok(KclValue::Number {
-                    value: (-value) as f64,
-                    meta,
-                })
-            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "You can only negate numbers, but this is a {}",
@@ -1299,8 +1290,8 @@ impl Node<ArrayRangeExpression> {
         Ok(KclValue::Array {
             value: range
                 .into_iter()
-                .map(|num| KclValue::Int {
-                    value: num,
+                .map(|num| KclValue::Number {
+                    value: num as f64,
                     meta: meta.clone(),
                 })
                 .collect(),
@@ -1342,8 +1333,6 @@ fn article_for(s: &str) -> &'static str {
 pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<f64, KclError> {
     if let KclValue::Number { value: n, .. } = &v {
         Ok(*n)
-    } else if let KclValue::Int { value: n, .. } = &v {
-        Ok(*n as f64)
     } else {
         let actual_type = v.human_friendly_type();
         let article = if actual_type.starts_with(['a', 'e', 'i', 'o', 'u']) {
@@ -1460,15 +1449,6 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
         }))
     };
     match value {
-        KclValue::Int { value:num, meta: _ } => {
-            let maybe_int: Result<usize, _> = (*num).try_into();
-            if let Ok(uint) = maybe_int {
-                Ok(Property::UInt(uint))
-            }
-            else {
-                make_err(format!("'{num}' is negative, so you can't index an array with it"))
-            }
-        }
         KclValue::Number{value: num, meta:_} => {
             let num = *num;
             if num < 0.0 {
@@ -1731,8 +1711,8 @@ mod test {
     fn test_assign_args_to_params() {
         // Set up a little framework for this test.
         fn mem(number: usize) -> KclValue {
-            KclValue::Int {
-                value: number as i64,
+            KclValue::Number {
+                value: number as f64,
                 meta: Default::default(),
             }
         }
