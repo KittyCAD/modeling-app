@@ -887,7 +887,7 @@ fn labeled_arg_separator(i: &mut TokenSlice) -> PResult<()> {
     alt((
         // Normally you need a comma.
         comma_sep,
-        // But, if the array is ending, no need for a comma.
+        // But, if the argument list is ending, no need for a comma.
         peek(preceded(opt(whitespace), close_paren)).void(),
     ))
     .parse_next(i)
