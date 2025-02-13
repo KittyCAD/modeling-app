@@ -471,6 +471,12 @@ impl SketchSurface {
             SketchSurface::Face(face) => face.z_axis,
         }
     }
+    pub(crate) fn units(&self) -> UnitLen {
+        match self {
+            SketchSurface::Plane(plane) => plane.units,
+            SketchSurface::Face(face) => face.units,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -701,6 +707,7 @@ pub struct BasePath {
     /// The to point.
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
+    pub units: UnitLen,
     /// The tag of the path.
     pub tag: Option<TagNode>,
     /// Metadata.

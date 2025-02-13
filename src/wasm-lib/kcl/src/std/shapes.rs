@@ -90,6 +90,7 @@ async fn inner_circle(
         SketchOrSurface::SketchSurface(surface) => surface,
         SketchOrSurface::Sketch(group) => group.on,
     };
+    let units = sketch_surface.units();
     let sketch = crate::std::sketch::inner_start_profile_at(
         [data.center[0] + data.radius, data.center[1]],
         sketch_surface,
@@ -125,6 +126,7 @@ async fn inner_circle(
             from,
             to: from,
             tag: tag.clone(),
+            units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -402,6 +404,7 @@ async fn inner_polygon(
                 from: from.into(),
                 to: *vertex,
                 tag: tag.clone(),
+                units: sketch.units,
                 geo_meta: GeoMeta {
                     id,
                     metadata: args.source_range.into(),
@@ -437,6 +440,7 @@ async fn inner_polygon(
             from: from.into(),
             to: vertices[0],
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id: close_id,
                 metadata: args.source_range.into(),
