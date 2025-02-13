@@ -48,14 +48,38 @@ We recommend downloading the latest application binary from [our Releases page](
 
 ## Running a development build
 
-First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We always use the latest stable version of Rust, so you may need to run `rustup update stable`. Then, run:
+Install a node version manager such as [fnm](https://github.com/Schniz/fnm).
 
+```
+# macOS/Linux 
+curl -fsSL https://fnm.vercel.app/install | bash
+
+# Windows
+winget install Schniz.fnm
+```
+
+Then in the repo
+```
+fnm install --corepack-enabled
+```
+
+Install the NPM dependencies with:
 ```
 yarn install
 ```
 
-followed by:
+This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We always use the latest stable version of Rust, so you may need to run `rustup update stable`. We have package scripts to run rustup, see `package.json` for reference:
+```
+# macOS/Linux
+yarn install:rust
+yarn install:wasm-pack
 
+# Windows
+yarn install:rust:windows
+yarn install:wasm-pack:windows
+```
+
+Then to build the WASM layer, run:
 ```
 yarn build:wasm
 ```
@@ -74,7 +98,7 @@ Finally, to run the web app only, run:
 yarn start
 ```
 
-If you're not an KittyCAD employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
+If you're not a Zoo employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
 
 ### Development environment variables
 
