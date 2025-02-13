@@ -126,7 +126,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   if (
     operation.type !== 'StdLibCall' ||
     !operation.labeledArgs ||
-    !('std_plane' in operation.labeledArgs) ||
+    !('stdPlane' in operation.labeledArgs) ||
     !operation.labeledArgs.std_plane ||
     !('offset' in operation.labeledArgs) ||
     !operation.labeledArgs.offset
