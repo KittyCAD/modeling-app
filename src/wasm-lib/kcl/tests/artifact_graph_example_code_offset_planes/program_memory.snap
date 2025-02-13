@@ -1,228 +1,215 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing artifact_graph_example_code_offset_planes.kcl
+description: Variables in memory after executing artifact_graph_example_code_offset_planes.kcl
 snapshot_kind: text
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "offsetPlane001": {
-          "type": "Plane",
-          "value": {
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "__meta": []
+  },
+  "offsetPlane001": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 20.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  },
+  "offsetPlane002": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 50.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  },
+  "offsetPlane003": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 10.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  },
+  "sketch002": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
             "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "Custom",
-            "origin": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 20.0
-            },
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0
-            },
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": []
-          }
-        },
-        "offsetPlane002": {
-          "type": "Plane",
-          "value": {
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "Custom",
-            "origin": {
-              "x": 0.0,
-              "y": 50.0,
-              "z": 0.0
-            },
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": -1.0,
-              "z": 0.0
-            },
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": []
-          }
-        },
-        "offsetPlane003": {
-          "type": "Plane",
-          "value": {
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "Custom",
-            "origin": {
-              "x": 10.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "xAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0
-            },
-            "zAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": []
-          }
-        },
-        "sketch002": {
-          "type": "Sketch",
-          "value": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    224,
-                    249,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  6.78,
-                  15.01
-                ],
-                "type": "ToPoint"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "Custom",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 20.0
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Mm"
-              },
-              "__meta": []
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  193,
-                  218,
-                  0
-                ]
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  193,
-                  218,
-                  0
-                ]
-              }
+            "sourceRange": [
+              224,
+              249,
+              0
             ]
-          }
+          },
+          "from": [
+            0.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            6.78,
+            15.01
+          ],
+          "type": "ToPoint"
+        }
+      ],
+      "on": {
+        "type": "plane",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "Custom",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 20.0
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "units": {
+          "type": "Mm"
+        },
+        "__meta": []
+      },
+      "start": {
+        "from": [
+          0.0,
+          0.0
+        ],
+        "to": [
+          0.0,
+          0.0
+        ],
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            193,
+            218,
+            0
+          ]
         }
       },
-      "snapshots": [],
-      "parent": null
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            193,
+            218,
+            0
+          ]
+        }
+      ]
     }
-  ],
-  "currentEnv": [
-    0,
-    0
-  ],
-  "callStack": []
+  }
 }
