@@ -825,7 +825,7 @@ export class SceneEntities {
     if (err(sg)) return Promise.reject(sg)
     const lastSeg = sg?.paths?.slice(-1)[0] || sg.start
 
-    const index = sg.paths.length // because we've added a new segment that's not in the memory yet, no need for `-1`
+    const index = sg.paths.length // because we've added a new segment that's not in the memory yet, no need for `.length -1`
     const mod = addNewSketchLn({
       node: _ast,
       variables: kclManager.variables,
@@ -1203,7 +1203,11 @@ export class SceneEntities {
         await codeManager.updateEditorWithAstAndWriteToFile(_ast)
       },
     })
-    return { updatedEntryNodePath, updatedSketchNodePaths }
+    return {
+      updatedEntryNodePath,
+      updatedSketchNodePaths,
+      expressionIndexToDelete: insertIndex,
+    }
   }
   setupDraftCenterRectangle = async (
     sketchEntryNodePath: PathToNode,
@@ -1391,7 +1395,11 @@ export class SceneEntities {
         }
       },
     })
-    return { updatedEntryNodePath, updatedSketchNodePaths }
+    return {
+      updatedEntryNodePath,
+      updatedSketchNodePaths,
+      expressionIndexToDelete: insertIndex,
+    }
   }
   setupDraftCircleThreePoint = async (
     sketchEntryNodePath: PathToNode,
@@ -1569,7 +1577,11 @@ export class SceneEntities {
         }
       },
     })
-    return { updatedEntryNodePath, updatedSketchNodePaths }
+    return {
+      updatedEntryNodePath,
+      updatedSketchNodePaths,
+      expressionIndexToDelete: insertIndex,
+    }
   }
   setupDraftCircle = async (
     sketchEntryNodePath: PathToNode,
@@ -1750,7 +1762,11 @@ export class SceneEntities {
         }
       },
     })
-    return { updatedEntryNodePath, updatedSketchNodePaths }
+    return {
+      updatedEntryNodePath,
+      updatedSketchNodePaths,
+      expressionIndexToDelete: insertIndex,
+    }
   }
   setupSketchIdleCallbacks = ({
     sketchEntryNodePath,

@@ -1508,6 +1508,7 @@ export const ModelingMachineProvider = ({
               updatedEntryNodePath: sketchDetails.sketchEntryNodePath,
               updatedSketchNodePaths: sketchDetails.sketchNodePaths,
               updatedPlaneNodePath: sketchDetails.planeNodePath,
+              expressionIndexToDelete: -1,
             } as const
             if (
               !sketchDetails.sketchNodePaths.length &&
@@ -1521,22 +1522,44 @@ export const ModelingMachineProvider = ({
               sketchDetails.sketchEntryNodePath
             )
             if (err(doesNeedSplitting)) return reject(doesNeedSplitting)
-            if (!doesNeedSplitting) return existingSketchInfoNoOp
+            let moddedAst: Program = structuredClone(kclManager.ast)
+            let pathToProfile = sketchDetails.sketchEntryNodePath
+            let updatedSketchNodePaths = sketchDetails.sketchNodePaths
+            if (doesNeedSplitting) {
+              const splitResult = splitPipedProfile(
+                moddedAst,
+                sketchDetails.sketchEntryNodePath
+              )
+              if (err(splitResult)) return reject(splitResult)
+              moddedAst = splitResult.modifiedAst
+              pathToProfile = splitResult.pathToProfile
+              updatedSketchNodePaths = [pathToProfile]
+            }
 
-            const splitResult = splitPipedProfile(
-              kclManager.ast,
-              sketchDetails.sketchEntryNodePath
-            )
-            if (err(splitResult)) return reject(splitResult)
-
-            await kclManager.executeAstMock(splitResult.modifiedAst)
-            await codeManager.updateEditorWithAstAndWriteToFile(
-              splitResult.modifiedAst
-            )
+            const indexToDelete = sketchDetails?.expressionIndexToDelete || -1
+            if (indexToDelete >= 0) {
+              // this is the expression that was added when as sketch tool was used but not completed
+              // i.e first click for the center of the circle, but not the second click for the radius
+              // we added a circle to editor, but they bailed out early so we should remove it
+              moddedAst.body.splice(indexToDelete, 1)
+              // make sure the deleted expression is removed from the sketchNodePaths
+              updatedSketchNodePaths = updatedSketchNodePaths.filter(
+                (path) => path[1][0] !== indexToDelete
+              )
+              // if the deleted expression was the entryNodePath, we should just make it the first sketchNodePath
+              // as a safe default
+              pathToProfile =
+                pathToProfile[1][0] !== indexToDelete
+                  ? pathToProfile
+                  : updatedSketchNodePaths[0]
+            }
+            await kclManager.executeAstMock(moddedAst)
+            await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
             return {
-              updatedEntryNodePath: splitResult.pathToProfile,
-              updatedSketchNodePaths: [splitResult.pathToProfile],
+              updatedEntryNodePath: pathToProfile,
+              updatedSketchNodePaths: updatedSketchNodePaths,
               updatedPlaneNodePath: sketchDetails.planeNodePath,
+              expressionIndexToDelete: -1,
             }
           }
         ),
