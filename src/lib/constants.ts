@@ -104,11 +104,7 @@ export const MAKE_TOAST_MESSAGES = {
 }
 
 /** The URL for the KCL samples manifest files */
-export const KCL_SAMPLES_MANIFEST_URLS = {
-  remote:
-    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/manifest.json',
-  localFallback: '/kcl-samples-manifest-fallback.json',
-} as const
+export const KCL_SAMPLES_MANIFEST_URL = '/kcl-samples/manifest.json'
 
 /** URL parameter to create a file */
 export const CREATE_FILE_URL_PARAM = 'create-file'
