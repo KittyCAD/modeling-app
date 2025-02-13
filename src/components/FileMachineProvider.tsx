@@ -60,6 +60,7 @@ export const FileMachineProvider = ({
     markOnce('code/didLoadFile')
     async function fetchKclSamples() {
       const manifest = await getKclSamplesManifest()
+      console.log('manifest', manifest)
       const filteredFiles = manifest.filter((file) => !file.multipleFiles)
       setKclSamples(filteredFiles)
     }
