@@ -74,7 +74,6 @@ import {
 import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
-import { engineCommandManager } from 'lib/singletons'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -1391,6 +1390,7 @@ export async function deleteFromSelection(
   ast: Node<Program>,
   selection: Selection,
   variables: VariableMap,
+  artifactGraph: ArtifactGraph,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)
 ): Promise<Node<Program> | Error> {
@@ -1403,10 +1403,10 @@ export async function deleteFromSelection(
   ) {
     const plane =
       selection.artifact.type === 'plane'
-        ? expandPlane(selection.artifact, engineCommandManager.artifactGraph)
+        ? expandPlane(selection.artifact, artifactGraph)
         : selection.artifact.type === 'wall'
-        ? expandWall(selection.artifact, engineCommandManager.artifactGraph)
-        : expandCap(selection.artifact, engineCommandManager.artifactGraph)
+        ? expandWall(selection.artifact, artifactGraph)
+        : expandCap(selection.artifact, artifactGraph)
     for (const path of plane.paths.sort(
       (a, b) => b.codeRef.range[0] - a.codeRef.range[0]
     )) {
@@ -1534,20 +1534,20 @@ export async function deleteFromSelection(
                 selection.artifact.surfaceId
               ? getArtifactOfTypes(
                   { key: selection.artifact.surfaceId, types: ['wall'] },
-                  engineCommandManager.artifactGraph
+                  artifactGraph
                 )
               : null
           if (err(wallArtifact)) return
           if (wallArtifact) {
             const sweep = getArtifactOfTypes(
               { key: wallArtifact.sweepId, types: ['sweep'] },
-              engineCommandManager.artifactGraph
+              artifactGraph
             )
             if (err(sweep)) return
             const wallsWithDependencies = Array.from(
               getArtifactsOfTypes(
                 { keys: sweep.surfaceIds, types: ['wall', 'cap'] },
-                engineCommandManager.artifactGraph
+                artifactGraph
               ).values()
             ).filter((wall) => wall?.pathIds?.length)
             const wallIds = wallsWithDependencies.map((wall) => wall.id)

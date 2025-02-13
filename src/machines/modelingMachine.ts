@@ -741,6 +741,7 @@ export const modelingMachine = setup({
           ast,
           selectionRanges.graphSelections[0],
           kclManager.variables,
+          engineCommandManager.artifactGraph,
           getFaceDetails
         )
         if (err(modifiedAst)) {
