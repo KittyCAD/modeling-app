@@ -702,8 +702,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails } }) => {
             if (!sketchDetails) return
             if (kclManager.ast.body.length) {
-              // this assumes no changes have been made to the sketch besides what we did when entering the sketch
-              // i.e. doesn't account for user's adding code themselves, maybe we need store a flag userEditedSinceSketchMode?
               const newAst = structuredClone(kclManager.ast)
               const varDecIndex = sketchDetails.planeNodePath[1][0]
 
