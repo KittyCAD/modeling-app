@@ -684,11 +684,6 @@ export const modelingMachine = setup({
 
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: [pathToRevolveArg],
-          zoomToFit: true,
-          zoomOnRangeAndType: {
-            range: selection.graphSelections[0]?.codeRef.range,
-            type: 'path',
-          },
         })
 
         await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
@@ -1517,11 +1512,6 @@ export const modelingMachine = setup({
 
       const updatedAst = await kclManager.updateAst(modifiedAst, true, {
         focusPath: [pathToExtrudeArg],
-        zoomToFit: true,
-        zoomOnRangeAndType: {
-          range: selection.graphSelections[0]?.codeRef.range,
-          type: 'path',
-        },
       })
 
       await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
