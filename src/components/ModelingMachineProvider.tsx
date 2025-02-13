@@ -1551,8 +1551,11 @@ export const ModelingMachineProvider = ({
                   ? pathToProfile
                   : updatedSketchNodePaths[0]
             }
-            await kclManager.executeAstMock(moddedAst)
-            await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
+
+            if (doesNeedSplitting) {
+              await kclManager.executeAstMock(moddedAst)
+              await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
+            }
             return {
               updatedEntryNodePath: pathToProfile,
               updatedSketchNodePaths: updatedSketchNodePaths,
