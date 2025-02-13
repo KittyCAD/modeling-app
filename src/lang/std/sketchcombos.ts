@@ -21,7 +21,6 @@ import {
   Literal,
   SourceRange,
   LiteralValue,
-  recast,
   LabeledArg,
   VariableMap,
 } from '../wasm'
@@ -217,14 +216,19 @@ function createStdlibCallExpressionKw(
   tool: ToolTip,
   labeled: LabeledArg[],
   tag?: Expr,
-  valueUsedInTransform?: number
+  valueUsedInTransform?: number,
+  unlabeled?: Expr
 ): CreatedSketchExprResult {
   const args = labeled
   if (tag) {
     args.push(createLabeledArg(ARG_TAG, tag))
   }
   return {
-    callExp: createCallExpressionStdLibKw(tool, null, args),
+    callExp: createCallExpressionStdLibKw(
+      tool,
+      unlabeled ? unlabeled : null,
+      args
+    ),
     valueUsedInTransform,
   }
 }
@@ -1306,6 +1310,12 @@ export function getRemoveConstraintsTransform(
     },
   }
 
+  if (
+    sketchFnExp.type === 'CallExpressionKw' &&
+    sketchFnExp.callee.name === 'circleThreePoint'
+  ) {
+    return false
+  }
   const isAbsolute =
     // isAbsolute doesn't matter if the call is positional.
     sketchFnExp.type === 'CallExpression' ? false : isAbsoluteLine(sketchFnExp)
@@ -1320,7 +1330,6 @@ export function getRemoveConstraintsTransform(
       ? getFirstArg(sketchFnExp)
       : getArgForEnd(sketchFnExp)
   if (err(firstArg)) {
-    console.error(firstArg)
     return false
   }
 
@@ -1351,7 +1360,7 @@ export function getRemoveConstraintsTransform(
 
 export function removeSingleConstraint({
   pathToCallExp,
-  inputDetails,
+  inputDetails: inputToReplace,
   ast,
 }: {
   pathToCallExp: PathToNode
@@ -1384,12 +1393,12 @@ export function removeSingleConstraint({
       // So we should update the call expression to use the inputs, except for
       // the inputDetails, input where we should use the rawValue(s)
 
-      if (inputDetails.type === 'arrayItem') {
+      if (inputToReplace.type === 'arrayItem') {
         const values = inputs.map((arg) => {
           if (
             !(
               (arg.type === 'arrayItem' || arg.type === 'arrayOrObjItem') &&
-              arg.index === inputDetails.index
+              arg.index === inputToReplace.index
             )
           )
             return arg.expr
@@ -1397,9 +1406,9 @@ export function removeSingleConstraint({
             (rawValue) =>
               (rawValue.type === 'arrayItem' ||
                 rawValue.type === 'arrayOrObjItem') &&
-              rawValue.index === inputDetails.index
+              rawValue.index === inputToReplace.index
           )?.expr
-          return (arg.index === inputDetails.index && literal) || arg.expr
+          return (arg.index === inputToReplace.index && literal) || arg.expr
         })
         if (callExp.node.type === 'CallExpression') {
           return createStdlibCallExpression(
@@ -1428,66 +1437,110 @@ export function removeSingleConstraint({
         }
       }
       if (
-        inputDetails.type === 'arrayInObject' ||
-        inputDetails.type === 'objectProperty'
+        inputToReplace.type === 'arrayInObject' ||
+        inputToReplace.type === 'objectProperty'
       ) {
-        const arrayDetailsNameBetterLater: {
+        const arrayInput: {
           [key: string]: Parameters<typeof createArrayExpression>[0]
         } = {}
-        const otherThing: Parameters<typeof createObjectExpression>[0] = {}
-        inputs.forEach((arg) => {
+        const objInput: Parameters<typeof createObjectExpression>[0] = {}
+        const kwArgInput: ReturnType<typeof createLabeledArg>[] = []
+        inputs.forEach((currentArg) => {
           if (
-            arg.type !== 'objectProperty' &&
-            arg.type !== 'arrayOrObjItem' &&
-            arg.type !== 'arrayInObject'
+            // should be one of these, return early to make TS happy.
+            currentArg.type !== 'objectProperty' &&
+            currentArg.type !== 'arrayOrObjItem' &&
+            currentArg.type !== 'arrayInObject'
           )
             return
           const rawLiteralArrayInObject = rawArgs.find(
             (rawValue) =>
               rawValue.type === 'arrayInObject' &&
-              rawValue.key === inputDetails.key &&
-              rawValue.index === (arg.type === 'arrayInObject' ? arg.index : -1)
+              rawValue.key === currentArg.key &&
+              rawValue.index ===
+                (currentArg.type === 'arrayInObject' ? currentArg.index : -1)
           )
           const rawLiteralObjProp = rawArgs.find(
             (rawValue) =>
               (rawValue.type === 'objectProperty' ||
                 rawValue.type === 'arrayOrObjItem' ||
                 rawValue.type === 'arrayInObject') &&
-              rawValue.key === inputDetails.key
+              rawValue.key === inputToReplace.key
           )
           if (
-            inputDetails.type === 'arrayInObject' &&
+            inputToReplace.type === 'arrayInObject' &&
             rawLiteralArrayInObject?.type === 'arrayInObject' &&
-            rawLiteralArrayInObject?.index === inputDetails.index &&
-            rawLiteralArrayInObject?.key === inputDetails.key
+            rawLiteralArrayInObject?.index === inputToReplace.index &&
+            rawLiteralArrayInObject?.key === inputToReplace.key
           ) {
-            if (!arrayDetailsNameBetterLater[arg.key])
-              arrayDetailsNameBetterLater[arg.key] = []
-            arrayDetailsNameBetterLater[inputDetails.key][inputDetails.index] =
+            if (!arrayInput[currentArg.key]) {
+              arrayInput[currentArg.key] = []
+            }
+            arrayInput[inputToReplace.key][inputToReplace.index] =
               rawLiteralArrayInObject.expr
+            let existingKwgForKey = kwArgInput.find(
+              (kwArg) => kwArg.label.name === currentArg.key
+            )
+            if (!existingKwgForKey) {
+              existingKwgForKey = createLabeledArg(
+                currentArg.key,
+                createArrayExpression([])
+              )
+              kwArgInput.push(existingKwgForKey)
+            }
+            if (existingKwgForKey.arg.type === 'ArrayExpression') {
+              existingKwgForKey.arg.elements[inputToReplace.index] =
+                rawLiteralArrayInObject.expr
+            }
           } else if (
-            inputDetails.type === 'objectProperty' &&
+            inputToReplace.type === 'objectProperty' &&
             (rawLiteralObjProp?.type === 'objectProperty' ||
               rawLiteralObjProp?.type === 'arrayOrObjItem') &&
-            rawLiteralObjProp?.key === inputDetails.key &&
-            arg.key === inputDetails.key
+            rawLiteralObjProp?.key === inputToReplace.key &&
+            currentArg.key === inputToReplace.key
           ) {
-            otherThing[inputDetails.key] = rawLiteralObjProp.expr
-          } else if (arg.type === 'arrayInObject') {
-            if (!arrayDetailsNameBetterLater[arg.key])
-              arrayDetailsNameBetterLater[arg.key] = []
-            arrayDetailsNameBetterLater[arg.key][arg.index] = arg.expr
-          } else if (arg.type === 'objectProperty') {
-            otherThing[arg.key] = arg.expr
+            objInput[inputToReplace.key] = rawLiteralObjProp.expr
+          } else if (currentArg.type === 'arrayInObject') {
+            if (!arrayInput[currentArg.key]) arrayInput[currentArg.key] = []
+            arrayInput[currentArg.key][currentArg.index] = currentArg.expr
+            let existingKwgForKey = kwArgInput.find(
+              (kwArg) => kwArg.label.name === currentArg.key
+            )
+            if (!existingKwgForKey) {
+              existingKwgForKey = createLabeledArg(
+                currentArg.key,
+                createArrayExpression([])
+              )
+              kwArgInput.push(existingKwgForKey)
+            }
+            if (existingKwgForKey.arg.type === 'ArrayExpression') {
+              existingKwgForKey.arg.elements[currentArg.index] = currentArg.expr
+            }
+          } else if (currentArg.type === 'objectProperty') {
+            objInput[currentArg.key] = currentArg.expr
           }
         })
         const createObjParam: Parameters<typeof createObjectExpression>[0] = {}
-        Object.entries(arrayDetailsNameBetterLater).forEach(([key, value]) => {
+        Object.entries(arrayInput).forEach(([key, value]) => {
           createObjParam[key] = createArrayExpression(value)
         })
+        if (
+          callExp.node.callee.name === 'circleThreePoint' &&
+          callExp.node.type === 'CallExpressionKw'
+        ) {
+          // it's kwarg
+          const inputPlane = callExp.node.unlabeled as Expr
+          return createStdlibCallExpressionKw(
+            callExp.node.callee.name as any,
+            kwArgInput,
+            tag,
+            undefined,
+            inputPlane
+          )
+        }
         const objExp = createObjectExpression({
           ...createObjParam,
-          ...otherThing,
+          ...objInput,
         })
         return createStdlibCallExpression(
           callExp.node.callee.name as any,
@@ -1571,6 +1624,16 @@ function getTransformMapPathKw(
     }
   | false {
   const name = sketchFnExp.callee.name as ToolTip
+  if (name === 'circleThreePoint') {
+    const info = transformMap?.circleThreePoint?.free?.[constraintType]
+    if (info)
+      return {
+        toolTip: 'circleThreePoint',
+        lineInputType: 'free',
+        constraintType,
+      }
+    return false
+  }
   const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
   const nameAbsolute = name === 'line' ? 'lineTo' : name
   if (!toolTips.includes(name)) {
@@ -1988,6 +2051,13 @@ export function transformAstSketchLines({
               center: seg.center,
               radius: seg.radius,
               from,
+            }
+          : seg.type === 'CircleThreePoint'
+          ? {
+              type: 'circle-three-point-segment',
+              p1: seg.p1,
+              p2: seg.p2,
+              p3: seg.p3,
             }
           : {
               type: 'straight-segment',

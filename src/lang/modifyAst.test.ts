@@ -3,7 +3,6 @@ import {
   recast,
   initPromise,
   Identifier,
-  SourceRange,
   topLevelRange,
   LiteralValue,
   Literal,
@@ -25,6 +24,7 @@ import {
   deleteSegmentFromPipeExpression,
   removeSingleConstraintInfo,
   deleteFromSelection,
+  splitPipedProfile,
 } from './modifyAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe } from './queryAst'
@@ -134,7 +134,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -142,7 +142,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -150,7 +150,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -158,7 +158,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -166,7 +166,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -174,7 +174,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -182,7 +182,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -190,7 +190,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -198,7 +198,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
       ] satisfies Node<Identifier>[]),
       'yo',
@@ -217,7 +217,8 @@ describe('Testing addSketchTo', () => {
         end: 0,
         moduleId: 0,
         nonCodeMeta: { nonCodeNodes: {}, startNodes: [] },
-        trivia: [],
+        innerAttrs: [],
+        outerAttrs: [],
       },
       'yz'
     )
@@ -994,4 +995,64 @@ sketch002 = startSketchOn({
       expect(newCode).toBe(codeAfter)
     }
   )
+})
+
+describe('Testing splitPipedProfile', () => {
+  it('should split the pipe expression correctly', () => {
+    const codeBefore = `part001 = startSketchOn('XZ')
+  |> startProfileAt([1, 2], %)
+  |> line([3, 4], %)
+  |> line([5, 6], %)
+  |> close(%)
+extrude001 = extrude(5, part001)
+    `
+
+    const expectedCodeAfter = `sketch001 = startSketchOn('XZ')
+part001 = startProfileAt([1, 2], sketch001)
+  |> line([3, 4], %)
+  |> line([5, 6], %)
+  |> close(%)
+extrude001 = extrude(5, part001)
+    `
+
+    const ast = assertParse(codeBefore)
+
+    const codeOfInterest = `startSketchOn('XZ')`
+    const range: [number, number, number] = [
+      codeBefore.indexOf(codeOfInterest),
+      codeBefore.indexOf(codeOfInterest) + codeOfInterest.length,
+      0,
+    ]
+    const pathToPipe = getNodePathFromSourceRange(ast, range)
+
+    const result = splitPipedProfile(ast, pathToPipe)
+
+    if (err(result)) throw result
+
+    const newCode = recast(result.modifiedAst)
+    if (err(newCode)) throw newCode
+    expect(newCode.trim()).toBe(expectedCodeAfter.trim())
+  })
+  it('should return error for already split pipe', () => {
+    const codeBefore = `sketch001 = startSketchOn('XZ')
+part001 = startProfileAt([1, 2], sketch001)
+  |> line([3, 4], %)
+  |> line([5, 6], %)
+  |> close(%)
+extrude001 = extrude(5, part001)
+    `
+
+    const ast = assertParse(codeBefore)
+
+    const codeOfInterest = `startProfileAt([1, 2], sketch001)`
+    const range: [number, number, number] = [
+      codeBefore.indexOf(codeOfInterest),
+      codeBefore.indexOf(codeOfInterest) + codeOfInterest.length,
+      0,
+    ]
+    const pathToPipe = getNodePathFromSourceRange(ast, range)
+
+    const result = splitPipedProfile(ast, pathToPipe)
+    expect(result instanceof Error).toBe(true)
+  })
 })

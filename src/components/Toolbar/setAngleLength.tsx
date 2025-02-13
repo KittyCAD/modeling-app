@@ -74,10 +74,14 @@ export async function applyConstraintLength({
 }: {
   length: KclCommandValue
   selectionRanges: Selections
-}) {
+}): Promise<{
+  modifiedAst: Program
+  pathToNodeMap: PathToNodeMap
+  exprInsertIndex: number
+}> {
   const ast = kclManager.ast
   const angleLength = angleLengthInfo({ selectionRanges })
-  if (err(angleLength)) return angleLength
+  if (err(angleLength)) return Promise.reject(angleLength)
   const { transforms } = angleLength
 
   let distanceExpression: Expr = length.valueAst
@@ -98,7 +102,7 @@ export async function applyConstraintLength({
   }
 
   if (!isExprBinaryPart(distanceExpression)) {
-    return new Error('Invalid valueNode, is not a BinaryPart')
+    return Promise.reject('Invalid valueNode, is not a BinaryPart')
   }
 
   const retval = transformAstSketchLines({
@@ -116,6 +120,12 @@ export async function applyConstraintLength({
   return {
     modifiedAst: _modifiedAst,
     pathToNodeMap,
+    exprInsertIndex:
+      'variableName' in length &&
+      length.variableName &&
+      length.insertIndex !== undefined
+        ? length.insertIndex
+        : -1,
   }
 }
 
@@ -128,6 +138,7 @@ export async function applyConstraintAngleLength({
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
+  exprInsertIndex: number
 }> {
   const angleLength = angleLengthInfo({ selectionRanges, angleOrLength })
   if (err(angleLength)) return Promise.reject(angleLength)
@@ -212,5 +223,6 @@ export async function applyConstraintAngleLength({
   return {
     modifiedAst: _modifiedAst,
     pathToNodeMap,
+    exprInsertIndex: variableName ? newVariableInsertIndex : -1,
   }
 }

@@ -9,7 +9,11 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcmc::{
     id::ModelingCmdId,
-    websocket::{ModelingBatch, WebSocketRequest, WebSocketResponse},
+    ok_response::OkModelingCmdResponse,
+    websocket::{
+        BatchResponse, ModelingBatch, OkWebSocketResponseData, SuccessWebSocketResponse, WebSocketRequest,
+        WebSocketResponse,
+    },
     ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
@@ -220,6 +224,35 @@ impl crate::engine::EngineManager for EngineConnection {
                 self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
             }
             _ => {}
+        }
+
+        // In isolated mode, we don't send the command to the engine.
+        if self.execution_kind().is_isolated() {
+            return match &cmd {
+                WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
+                    let mut responses = HashMap::with_capacity(requests.len());
+                    for request in requests {
+                        responses.insert(
+                            request.cmd_id,
+                            BatchResponse::Success {
+                                response: OkModelingCmdResponse::Empty {},
+                            },
+                        );
+                    }
+                    Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
+                        request_id: Some(id),
+                        resp: OkWebSocketResponseData::ModelingBatch { responses },
+                        success: true,
+                    }))
+                }
+                _ => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
+                    request_id: Some(id),
+                    resp: OkWebSocketResponseData::Modeling {
+                        modeling_response: OkModelingCmdResponse::Empty {},
+                    },
+                    success: true,
+                })),
+            };
         }
 
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {

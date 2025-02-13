@@ -1,4 +1,5 @@
 import {
+  Expr,
   Artifact,
   ArtifactGraph,
   ArtifactId,
@@ -18,7 +19,8 @@ import {
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { err } from 'lib/trap'
-import { codeManager } from 'lib/singletons'
+import { Cap, Plane, Wall } from 'wasm-lib/kcl/bindings/Artifact'
+import { CapSubType } from 'wasm-lib/kcl/bindings/Artifact'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from 'lang/wasm'
 
@@ -37,10 +39,28 @@ export interface PlaneArtifactRich extends BaseArtifact {
   codeRef: CodeRef
 }
 
+export interface CapArtifactRich extends BaseArtifact {
+  type: 'cap'
+  subType: CapSubType
+  faceCodeRef: CodeRef
+  edgeCuts: Array<EdgeCut>
+  paths: Array<PathArtifact>
+  sweep?: SweepArtifact
+}
+export interface WallArtifactRich extends BaseArtifact {
+  type: 'wall'
+  id: ArtifactId
+  segment: PathArtifact
+  edgeCuts: Array<EdgeCut>
+  sweep: SweepArtifact
+  paths: Array<PathArtifact>
+  faceCodeRef: CodeRef
+}
+
 export interface PathArtifactRich extends BaseArtifact {
   type: 'path'
   /** A path must always lie on a plane */
-  plane: PlaneArtifact | WallArtifact
+  plane: PlaneArtifact | WallArtifact | CapArtifact
   /** A path must always contain 0 or more segments */
   segments: Array<SegmentArtifact>
   /** A path may not result in a sweep artifact */
@@ -51,7 +71,7 @@ export interface PathArtifactRich extends BaseArtifact {
 interface SegmentArtifactRich extends BaseArtifact {
   type: 'segment'
   path: PathArtifact
-  surf?: WallArtifact
+  surf: WallArtifact
   edges: Array<SweepEdge>
   edgeCut?: EdgeCut
   codeRef: CodeRef
@@ -151,6 +171,73 @@ export function expandPlane(
   }
 }
 
+export function expandWall(
+  wall: WallArtifact,
+  artifactGraph: ArtifactGraph
+): WallArtifactRich {
+  const { pathIds, sweepId: _s, edgeCutEdgeIds, ...keptProperties } = wall
+  const paths = pathIds?.length
+    ? Array.from(
+        getArtifactsOfTypes(
+          { keys: wall.pathIds, types: ['path'] },
+          artifactGraph
+        ).values()
+      )
+    : []
+  const sweep = artifactGraph.get(wall.sweepId) as SweepArtifact
+  const edgeCuts = edgeCutEdgeIds?.length
+    ? Array.from(
+        getArtifactsOfTypes(
+          { keys: wall.edgeCutEdgeIds, types: ['edgeCut'] },
+          artifactGraph
+        ).values()
+      )
+    : []
+  const segment = artifactGraph.get(wall.segId) as PathArtifact
+  return {
+    type: 'wall',
+    ...keptProperties,
+    paths,
+    sweep,
+    segment,
+    edgeCuts,
+  }
+}
+export function expandCap(
+  cap: CapArtifact,
+  artifactGraph: ArtifactGraph
+): CapArtifactRich {
+  const { pathIds, sweepId: _s, edgeCutEdgeIds, ...keptProperties } = cap
+  const paths = pathIds?.length
+    ? Array.from(
+        getArtifactsOfTypes(
+          { keys: cap.pathIds, types: ['path'] },
+          artifactGraph
+        ).values()
+      )
+    : []
+  const maybeSweep = getArtifactOfTypes(
+    { key: cap.sweepId, types: ['sweep'] },
+    artifactGraph
+  )
+  const sweep = err(maybeSweep) ? undefined : maybeSweep
+  const edgeCuts = edgeCutEdgeIds?.length
+    ? Array.from(
+        getArtifactsOfTypes(
+          { keys: cap.edgeCutEdgeIds, types: ['edgeCut'] },
+          artifactGraph
+        ).values()
+      )
+    : []
+  return {
+    type: 'cap',
+    ...keptProperties,
+    paths,
+    sweep,
+    edgeCuts,
+  }
+}
+
 export function expandPath(
   path: PathArtifact,
   artifactGraph: ArtifactGraph
@@ -239,6 +326,7 @@ export function expandSegment(
   if (err(path)) return path
   if (err(surf)) return surf
   if (err(edgeCut)) return edgeCut
+  if (!surf) return new Error('Segment does not have a surface')
 
   return {
     type: 'segment',
@@ -410,6 +498,186 @@ export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
   }
 }
 
+function getPlaneFromPath(
+  path: PathArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | CapArtifact | Error {
+  const plane = getArtifactOfTypes(
+    { key: path.planeId, types: ['plane', 'wall', 'cap'] },
+    graph
+  )
+  if (err(plane)) return plane
+  return plane
+}
+
+function getPlaneFromSegment(
+  segment: SegmentArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | CapArtifact | Error {
+  const path = getArtifactOfTypes(
+    { key: segment.pathId, types: ['path'] },
+    graph
+  )
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromSolid2D(
+  solid2D: Solid2D,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | CapArtifact | Error {
+  const path = getArtifactOfTypes(
+    { key: solid2D.pathId, types: ['path'] },
+    graph
+  )
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromSweepEdge(edge: SweepEdge, graph: ArtifactGraph) {
+  const sweep = getArtifactOfTypes(
+    { key: edge.sweepId, types: ['sweep'] },
+    graph
+  )
+  if (err(sweep)) return sweep
+  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+
+export function getPlaneFromArtifact(
+  artifact: Artifact | undefined,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | CapArtifact | Error {
+  if (!artifact) return new Error(`Artifact is undefined`)
+  if (artifact.type === 'plane') return artifact
+  if (artifact.type === 'path') return getPlaneFromPath(artifact, graph)
+  if (artifact.type === 'segment') return getPlaneFromSegment(artifact, graph)
+  if (artifact.type === 'solid2d') return getPlaneFromSolid2D(artifact, graph)
+  if (artifact.type === 'wall' || artifact.type === 'cap') return artifact
+  if (artifact.type === 'sweepEdge')
+    return getPlaneFromSweepEdge(artifact, graph)
+  return new Error(`Artifact type ${artifact.type} does not have a plane`)
+}
+
+const onlyConsecutivePaths = (
+  orderedNodePaths: PathToNode[],
+  originalPath: PathToNode,
+  ast: Program
+): PathToNode[] => {
+  const isExprSafe = (index: number, ast: Program): boolean => {
+    // we allow expressions between profiles, but only basic math expressions 5 + 6 etc
+    // because 5 + doSomeMath() might be okay, but we can't know if it's an abstraction on a stdlib
+    // call that involves a engine call, and we can't have that in sketch-mode/mock-execution
+    const expr = ast.body?.[index]
+    if (!expr) {
+      return false
+    }
+    if (expr.type === 'ImportStatement' || expr.type === 'ReturnStatement') {
+      return false
+    }
+    if (expr.type === 'VariableDeclaration') {
+      const init = expr.declaration?.init
+      if (!init) return false
+      if (init.type === 'CallExpression') {
+        return false
+      }
+      if (init.type === 'BinaryExpression' && isNodeSafe(init)) {
+        return true
+      }
+      if (init.type === 'Literal' || init.type === 'MemberExpression') {
+        return true
+      }
+    }
+    return false
+  }
+  const originalIndex = Number(
+    orderedNodePaths.find(
+      (path) => path[1][0] === originalPath[1][0]
+    )?.[1]?.[0] || 0
+  )
+
+  const minIndex = Number(orderedNodePaths[0][1][0])
+  const maxIndex = Number(orderedNodePaths[orderedNodePaths.length - 1][1][0])
+  const pathIndexMap: any = {}
+  orderedNodePaths.forEach((path) => {
+    const bodyIndex = Number(path[1][0])
+    pathIndexMap[bodyIndex] = path
+  })
+  const safePaths: PathToNode[] = []
+
+  // traverse expressions in either direction from the profile selected
+  // when the user entered sketch mode
+  for (let i = originalIndex; i <= maxIndex; i++) {
+    if (pathIndexMap[i]) {
+      safePaths.push(pathIndexMap[i])
+    } else if (!isExprSafe(i, ast)) {
+      break
+    }
+  }
+  for (let i = originalIndex - 1; i >= minIndex; i--) {
+    if (pathIndexMap[i]) {
+      safePaths.unshift(pathIndexMap[i])
+    } else if (!isExprSafe(i, ast)) {
+      break
+    }
+  }
+  return safePaths
+}
+
+export function getPathsFromPlaneArtifact(
+  planeArtifact: PlaneArtifact,
+  artifactGraph: ArtifactGraph,
+  ast: Program
+): PathToNode[] {
+  const nodePaths: PathToNode[] = []
+  for (const pathId of planeArtifact.pathIds) {
+    const path = artifactGraph.get(pathId)
+    if (!path) continue
+    if ('codeRef' in path && path.codeRef) {
+      // TODO should figure out why upstream the path is bad
+      const isNodePathBad = path.codeRef.pathToNode.length < 2
+      nodePaths.push(
+        isNodePathBad
+          ? getNodePathFromSourceRange(ast, path.codeRef.range)
+          : path.codeRef.pathToNode
+      )
+    }
+  }
+  return onlyConsecutivePaths(nodePaths, nodePaths[0], ast)
+}
+
+export function getPathsFromArtifact({
+  sketchPathToNode,
+  artifact,
+  artifactGraph,
+  ast,
+}: {
+  sketchPathToNode: PathToNode
+  artifact?: Artifact
+  artifactGraph: ArtifactGraph
+  ast: Program
+}): PathToNode[] | Error {
+  const plane = getPlaneFromArtifact(artifact, artifactGraph)
+  if (err(plane)) return plane
+  const paths = getArtifactsOfTypes(
+    { keys: plane.pathIds, types: ['path'] },
+    artifactGraph
+  )
+  let nodePaths = [...paths.values()]
+    .map((path) => path.codeRef.pathToNode)
+    .sort((a, b) => Number(a[1][0]) - Number(b[1][0]))
+  return onlyConsecutivePaths(nodePaths, sketchPathToNode, ast)
+}
+
+function isNodeSafe(node: Expr): boolean {
+  if (node.type === 'Literal' || node.type === 'MemberExpression') {
+    return true
+  }
+  if (node.type === 'BinaryExpression') {
+    return isNodeSafe(node.left) && isNodeSafe(node.right)
+  }
+  return false
+}
+
 /**
  * Get an artifact from a code source range
  */
@@ -418,12 +686,24 @@ export function getArtifactFromRange(
   artifactGraph: ArtifactGraph
 ): Artifact | null {
   for (const artifact of artifactGraph.values()) {
-    if ('codeRef' in artifact) {
+    const codeRef = getFaceCodeRef(artifact)
+    if (codeRef) {
       const match =
-        artifact.codeRef?.range[0] === range[0] &&
-        artifact.codeRef.range[1] === range[1]
+        codeRef?.range[0] === range[0] && codeRef.range[1] === range[1]
       if (match) return artifact
     }
+  }
+  return null
+}
+
+export function getFaceCodeRef(
+  artifact: Artifact | Plane | Wall | Cap
+): CodeRef | null {
+  if ('faceCodeRef' in artifact) {
+    return artifact.faceCodeRef
+  }
+  if ('codeRef' in artifact) {
+    return artifact.codeRef
   }
   return null
 }

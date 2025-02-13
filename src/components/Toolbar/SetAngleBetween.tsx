@@ -86,6 +86,7 @@ export async function applyConstraintAngleBetween({
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
+  exprInsertIndex: number
 }> {
   const info = angleBetweenInfo({ selectionRanges })
   if (err(info)) return Promise.reject(info)
@@ -122,6 +123,7 @@ export async function applyConstraintAngleBetween({
     return {
       modifiedAst,
       pathToNodeMap,
+      exprInsertIndex: -1,
     }
   }
 
@@ -141,6 +143,7 @@ export async function applyConstraintAngleBetween({
   const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
     transformed2
 
+  let exprInsertIndex = -1
   if (variableName) {
     const newBody = [..._modifiedAst.body]
     newBody.splice(
@@ -153,9 +156,11 @@ export async function applyConstraintAngleBetween({
       const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
       pathToNode[index][0] = Number(pathToNode[index][0]) + 1
     })
+    exprInsertIndex = newVariableInsertIndex
   }
   return {
     modifiedAst: _modifiedAst,
     pathToNodeMap: _pathToNodeMap,
+    exprInsertIndex,
   }
 }
