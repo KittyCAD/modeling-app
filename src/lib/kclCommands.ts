@@ -63,7 +63,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         const pathParts = data.sample.split('/')
         const projectPathPart = pathParts[0]
         const primaryKclFile = pathParts[1]
-        const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
+        // local only
+        const sampleCodeUrl = `/kcl-samples/${encodeURIComponent(
           projectPathPart
         )}/${encodeURIComponent(primaryKclFile)}`
 
