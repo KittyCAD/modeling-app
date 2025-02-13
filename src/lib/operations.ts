@@ -126,8 +126,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   if (
     operation.type !== 'StdLibCall' ||
     !operation.labeledArgs ||
-    !('stdPlane' in operation.labeledArgs) ||
-    !operation.labeledArgs.std_plane ||
+    !operation.unlabeledArg ||
     !('offset' in operation.labeledArgs) ||
     !operation.labeledArgs.offset
   ) {
@@ -135,11 +134,9 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
   // TODO: Implement conversion to arbitrary plane selection
   // once the Offset Plane command supports it.
+  const stdPlane = operation.unlabeledArg
   const planeName = codeManager.code
-    .slice(
-      operation.labeledArgs.std_plane.sourceRange[0],
-      operation.labeledArgs.std_plane.sourceRange[1]
-    )
+    .slice(stdPlane.sourceRange[0], stdPlane.sourceRange[1])
     .replaceAll(`'`, ``)
 
   if (!isDefaultPlaneStr(planeName)) {
