@@ -1424,6 +1424,16 @@ export async function deleteFromSelection(
       selection.artifact.type === 'cap' ||
       selection.artifact.type === 'wall'
     ) {
+      // Delete the sketch node, which would not work if
+      // we continued down the traditional code path below.
+      // faceCodeRef's pathToNode is empty for some reason
+      // so using source range instead
+      const sketchVarDec = getNodePathFromSourceRange(
+        astClone,
+        selection.artifact.faceCodeRef.range
+      )
+      const sketchBodyIndex = Number(sketchVarDec[1][0])
+      astClone.body.splice(sketchBodyIndex, 1)
       return astClone
     }
   }
