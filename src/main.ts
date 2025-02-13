@@ -68,7 +68,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
 // https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
-if (!singleInstanceLock) {
+if (!singleInstanceLock && !process.env.IS_PLAYWRIGHT) {
   app.quit()
 } else {
   registerStartupListeners()
