@@ -80,10 +80,11 @@ export function isCursorInSketchCommandRange(
   const parentId =
     firstEntry?.type === 'segment'
       ? firstEntry.pathId
-      : (firstEntry?.type === 'plane' ||
+      : ((firstEntry?.type === 'plane' ||
           firstEntry?.type === 'cap' ||
           firstEntry?.type === 'wall') &&
-        firstEntry.pathIds.length
+          firstEntry.pathIds?.length) ||
+        false
       ? firstEntry.pathIds[0]
       : false
 

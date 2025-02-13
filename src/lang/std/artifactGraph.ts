@@ -20,6 +20,7 @@ import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { err } from 'lib/trap'
 import { Cap, Plane, Wall } from 'wasm-lib/kcl/bindings/Artifact'
+import { CapSubType } from 'wasm-lib/kcl/bindings/Artifact'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from 'lang/wasm'
 
@@ -36,6 +37,15 @@ export interface PlaneArtifactRich extends BaseArtifact {
   type: 'plane'
   paths: Array<PathArtifact>
   codeRef: CodeRef
+}
+
+export interface CapArtifactRich extends BaseArtifact {
+  type: 'cap'
+  subType: CapSubType
+  faceCodeRef: CodeRef
+  edgeCuts: Array<EdgeCut>
+  paths: Array<PathArtifact>
+  sweep?: SweepArtifact
 }
 
 export interface PathArtifactRich extends BaseArtifact {
@@ -149,6 +159,41 @@ export function expandPlane(
     id: plane.id,
     paths: Array.from(paths.values()),
     codeRef: plane.codeRef,
+  }
+}
+
+export function expandCap(
+  cap: CapArtifact,
+  artifactGraph: ArtifactGraph
+): CapArtifactRich {
+  const { pathIds, sweepId: _s, edgeCutEdgeIds, ...keptProperties } = cap
+  const paths = pathIds?.length
+    ? Array.from(
+        getArtifactsOfTypes(
+          { keys: cap.pathIds, types: ['path'] },
+          artifactGraph
+        ).values()
+      )
+    : []
+  const maybeSweep = getArtifactOfTypes(
+    { key: cap.sweepId, types: ['sweep'] },
+    artifactGraph
+  )
+  const sweep = err(maybeSweep) ? undefined : maybeSweep
+  const edgeCuts = edgeCutEdgeIds?.length
+    ? Array.from(
+        getArtifactsOfTypes(
+          { keys: cap.edgeCutEdgeIds, types: ['edgeCut'] },
+          artifactGraph
+        ).values()
+      )
+    : []
+  return {
+    type: 'cap',
+    ...keptProperties,
+    paths,
+    sweep,
+    edgeCuts,
   }
 }
 
