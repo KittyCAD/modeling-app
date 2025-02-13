@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pierremtb/issue5346-Multi-second-blank-screen-on-second-instance-of-the-app-workers-1 ]
   pull_request:
 
 concurrency:
