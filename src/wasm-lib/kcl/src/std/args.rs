@@ -331,7 +331,7 @@ impl Args {
         )
     }
 
-    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
+    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>, ty: NumericType) -> Result<KclValue, KclError> {
         let array = f
             .into_iter()
             .map(|n| KclValue::Number {
@@ -339,7 +339,7 @@ impl Args {
                 meta: vec![Metadata {
                     source_range: self.source_range,
                 }],
-                ty: NumericType::Unknown,
+                ty: ty.clone(),
             })
             .collect::<Vec<_>>();
         Ok(KclValue::Array {
@@ -405,7 +405,7 @@ impl Args {
         let mut numbers = numbers.into_iter();
         let (a, ta) = numbers.next().unwrap();
         let (b, tb) = numbers.next().unwrap();
-        let ty = ta.combine(&tb);
+        let ty = ta.combine_eq(&tb);
         Ok((a, b, ty))
     }
 

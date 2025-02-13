@@ -238,6 +238,7 @@ async fn inner_circle_three_point(
             from,
             to: from,
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),

@@ -700,34 +700,34 @@ impl Node<BinaryExpression> {
             return Ok(KclValue::Bool { value: raw_value, meta });
         }
 
-        let left = parse_number_as_f64(&left_value, self.left.clone().into())?;
-        let right = parse_number_as_f64(&right_value, self.right.clone().into())?;
+        let (left, lty) = parse_number_as_f64(&left_value, self.left.clone().into())?;
+        let (right, rty) = parse_number_as_f64(&right_value, self.right.clone().into())?;
 
         let value = match self.operator {
             BinaryOperator::Add => KclValue::Number {
                 value: left + right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_add(lty, rty),
             },
             BinaryOperator::Sub => KclValue::Number {
                 value: left - right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_add(lty, rty),
             },
             BinaryOperator::Mul => KclValue::Number {
                 value: left * right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_mul(lty, rty),
             },
             BinaryOperator::Div => KclValue::Number {
                 value: left / right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_div(lty, rty),
             },
             BinaryOperator::Mod => KclValue::Number {
                 value: left % right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_div(lty, rty),
             },
             BinaryOperator::Pow => KclValue::Number {
                 value: left.powf(right),
@@ -1305,7 +1305,7 @@ impl Node<ArrayRangeExpression> {
                 .into_iter()
                 .map(|num| KclValue::Number {
                     value: num as f64,
-                    ty: NumericType::Unknown,
+                    ty: NumericType::count(),
                     meta: meta.clone(),
                 })
                 .collect(),
@@ -1344,9 +1344,9 @@ fn article_for(s: &str) -> &'static str {
     }
 }
 
-pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<f64, KclError> {
-    if let KclValue::Number { value: n, .. } = &v {
-        Ok(*n)
+pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<(f64, NumericType), KclError> {
+    if let KclValue::Number { value: n, ty, .. } = &v {
+        Ok((*n, ty.clone()))
     } else {
         let actual_type = v.human_friendly_type();
         let article = if actual_type.starts_with(['a', 'e', 'i', 'o', 'u']) {
