@@ -134,7 +134,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -142,7 +142,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -150,7 +150,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -158,7 +158,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -166,7 +166,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -174,7 +174,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -182,7 +182,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -190,7 +190,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
         {
           type: 'Identifier',
@@ -198,7 +198,7 @@ describe('Testing findUniqueName', () => {
           start: 0,
           end: 0,
           moduleId: 0,
-          trivia: [],
+          outerAttrs: [],
         },
       ] satisfies Node<Identifier>[]),
       'yo',
@@ -217,7 +217,8 @@ describe('Testing addSketchTo', () => {
         end: 0,
         moduleId: 0,
         nonCodeMeta: { nonCodeNodes: {}, startNodes: [] },
-        trivia: [],
+        innerAttrs: [],
+        outerAttrs: [],
       },
       'yz'
     )

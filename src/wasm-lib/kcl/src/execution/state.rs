@@ -12,7 +12,7 @@ use crate::{
         ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
-    parsing::ast::types::NonCodeValue,
+    parsing::ast::types::Annotation,
     source_range::SourceRange,
 };
 
@@ -236,21 +236,20 @@ pub struct MetaSettings {
 impl MetaSettings {
     pub(crate) fn update_from_annotation(
         &mut self,
-        annotation: &NonCodeValue,
-        source_range: SourceRange,
+        annotation: &crate::parsing::ast::types::Node<Annotation>,
     ) -> Result<(), KclError> {
-        let properties = annotations::expect_properties(annotations::SETTINGS, annotation, source_range)?;
+        let properties = annotations::expect_properties(annotations::SETTINGS, annotation)?;
 
         for p in properties {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = kcl_value::UnitLen::from_str(value, source_range)?;
+                    let value = kcl_value::UnitLen::from_str(value, annotation.as_source_range())?;
                     self.default_length_units = value;
                 }
                 annotations::SETTINGS_UNIT_ANGLE => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = kcl_value::UnitAngle::from_str(value, source_range)?;
+                    let value = kcl_value::UnitAngle::from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
                 }
                 name => {
@@ -260,7 +259,7 @@ impl MetaSettings {
                             annotations::SETTINGS_UNIT_LENGTH,
                             annotations::SETTINGS_UNIT_ANGLE
                         ),
-                        source_ranges: vec![source_range],
+                        source_ranges: vec![annotation.as_source_range()],
                     }))
                 }
             }
