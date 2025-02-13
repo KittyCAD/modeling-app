@@ -47,15 +47,15 @@ const case = startSketchOn('XY')
   |> line(endAbsolute = [0, caseLength], $edge3)
   |> close(tag = $edge4)
   |> extrude(length = caseHeight)
-  |> fillet({
-    radius: 1,
-    tags: [
+  |> fillet(
+    radius = 1,
+    tags = [
     getNextAdjacentEdge(edge1),
     getNextAdjacentEdge(edge2),
     getNextAdjacentEdge(edge3),
     getNextAdjacentEdge(edge4)
     ],
-  }, %)
+  )
 
 
 fn m25Screw = (x, y, height) => {

@@ -44,17 +44,17 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "sourceRange": [
-          245,
-          320,
+          254,
+          255,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "sourceRange": [
-          322,
-          323,
+          264,
+          297,
           0
         ]
       }
@@ -62,7 +62,7 @@ snapshot_kind: text
     "name": "fillet",
     "sourceRange": [
       238,
-      324,
+      298,
       0
     ],
     "type": "StdLibCall",

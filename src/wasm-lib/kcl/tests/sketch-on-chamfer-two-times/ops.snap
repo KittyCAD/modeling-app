@@ -50,17 +50,17 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "sourceRange": [
-          499,
-          530,
+          508,
+          510,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "sourceRange": [
-          532,
-          533,
+          519,
+          526,
           0
         ]
       }
@@ -68,125 +68,7 @@ snapshot_kind: text
     "name": "fillet",
     "sourceRange": [
       492,
-      534,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          548,
-          579,
-          0
-        ]
-      },
-      "solid": {
-        "sourceRange": [
-          581,
-          582,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          584,
-          590,
-          0
-        ]
-      }
-    },
-    "name": "chamfer",
-    "sourceRange": [
-      540,
-      591,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          605,
-          672,
-          0
-        ]
-      },
-      "solid": {
-        "sourceRange": [
-          674,
-          675,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          677,
-          683,
-          0
-        ]
-      }
-    },
-    "name": "chamfer",
-    "sourceRange": [
-      597,
-      684,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          712,
-          722,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          724,
-          729,
-          0
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      698,
-      730,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1160,
-          1170,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          1172,
-          1177,
-          0
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      1146,
-      1178,
+      527,
       0
     ],
     "type": "StdLibCall",
@@ -196,23 +78,141 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          1625,
-          1627,
+          550,
+          552,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          576,
+          582,
+          0
+        ]
+      },
+      "tags": {
+        "sourceRange": [
+          561,
+          568,
+          0
+        ]
+      }
+    },
+    "name": "chamfer",
+    "sourceRange": [
+      533,
+      583,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          606,
+          608,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          649,
+          655,
+          0
+        ]
+      },
+      "tags": {
+        "sourceRange": [
+          617,
+          641,
+          0
+        ]
+      }
+    },
+    "name": "chamfer",
+    "sourceRange": [
+      589,
+      656,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          684,
+          694,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          696,
+          701,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      670,
+      702,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1132,
+          1142,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          1144,
+          1149,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      1118,
+      1150,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          1597,
+          1599,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1597,
-      1628,
+      1569,
+      1600,
       0
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "sourceRange": [
-        1605,
-        1614,
+        1577,
+        1586,
         0
       ]
     }

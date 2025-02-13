@@ -24,8 +24,8 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  23["EdgeCut Fillet<br>[223, 309, 0]"]
-  24["EdgeCut Fillet<br>[223, 309, 0]"]
+  23["EdgeCut Fillet<br>[223, 304, 0]"]
+  24["EdgeCut Fillet<br>[223, 304, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -45,7 +45,7 @@ flowchart LR
   6 --- 9
   6 --- 15
   6 --- 16
-  6 --- 23
+  6 --- 24
   8 --- 9
   8 --- 10
   8 --- 11
@@ -60,5 +60,5 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
-  15 <--x 24
+  15 <--x 23
 ```

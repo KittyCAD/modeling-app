@@ -211,12 +211,12 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
         beforeChamferSnippet: `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)
-      chamfer({length = 30,tags = [
+      chamfer(length = 30,tags = [
       seg01,
       getNextAdjacentEdge(yo),
       getNextAdjacentEdge(seg02),
       getOppositeEdge(seg01)
-    ]}, %)`,
+    ])`,
 
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, seg03)',
@@ -236,14 +236,14 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         beforeChamferSnippet: `angledLine([
          segAng(rectangleSegmentA001) - 90,
          217.26
-       ], %, $seg01)chamfer({
+       ], %, $seg01)chamfer(
          length = 30,
          tags = [
            seg01,
            getNextAdjacentEdge(yo),
            getNextAdjacentEdge(seg02)
          ]
-       }, %)`,
+       )`,
 
         afterChamferSelectSnippet:
           'sketch003 = startSketchOn(extrude001, seg04)',
@@ -260,13 +260,13 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         clickCoords: { x: 677, y: 87 },
         cameraPos: { x: -6200, y: 1500, z: 6200 },
         cameraTarget: { x: 8300, y: 1100, z: 4800 },
-        beforeChamferSnippet: `angledLine([0, 268.43], %, $rectangleSegmentA001)chamfer({
+        beforeChamferSnippet: `angledLine([0, 268.43], %, $rectangleSegmentA001)chamfer(
          length = 30,
          tags = [
            getNextAdjacentEdge(yo),
            getNextAdjacentEdge(seg02)
          ]
-       }, %)`,
+       )`,
         afterChamferSelectSnippet:
           'sketch004 = startSketchOn(extrude001, seg05)',
         afterRectangle1stClickSnippet:
@@ -282,10 +282,10 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         clickCoords: { x: 620, y: 300 },
         cameraPos: { x: -1100, y: -7700, z: 1600 },
         cameraTarget: { x: 1450, y: 670, z: 4000 },
-        beforeChamferSnippet: `chamfer({
+        beforeChamferSnippet: `chamfer(
          length = 30,
          tags = [getNextAdjacentEdge(yo)]
-       }, %)`,
+       )`,
         afterChamferSelectSnippet:
           'sketch005 = startSketchOn(extrude001, seg06)',
         afterRectangle1stClickSnippet:
@@ -415,12 +415,12 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
         beforeChamferSnippet: `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)
-      chamfer({length=30,tags=[
+      chamfer(extrude001,length=30,tags=[
       seg01,
       getNextAdjacentEdge(yo),
       getNextAdjacentEdge(seg02),
       getOppositeEdge(seg01)
-    ]}, extrude001)`,
+    ])`,
         beforeChamferSnippetEnd: '}, extrude001)',
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, seg03)',
@@ -447,18 +447,20 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
-chamf = chamfer({
+chamf = chamfer(
+       extrude001,
        length = 30,
-       tags = [getOppositeEdge(seg01)]
-     }, extrude001, $seg03)
-  |> chamfer({
+       tags = [getOppositeEdge(seg01)],
+       tag = $seg03
+      )
+  |> chamfer(
        length = 30,
        tags = [
          seg01,
          getNextAdjacentEdge(yo),
          getNextAdjacentEdge(seg02)
        ]
-     }, %)
+     )
 sketch002 = startSketchOn(extrude001, seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
   |> angledLine([0, 11.39], %, $rectangleSegmentA002)
@@ -1492,9 +1494,9 @@ sketch002 = startSketchOn('XZ')
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = 'fillet({ radius = 5, tags = [seg01] }, %)'
+    const firstFilletDeclaration = 'fillet( radius = 5, tags = [seg01] )'
     const secondFilletDeclaration =
-      'fillet({       radius = 5,       tags = [getOppositeEdge(seg01)]     }, %)'
+      'fillet(       radius = 5,       tags = [getOppositeEdge(seg01)]     )'
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -1594,7 +1596,7 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(firstFilletDeclaration)
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|>fillet({radius=5,tags=[seg01]},%)'],
+        activeLines: ['|>fillet(radius=5,tags=[seg01])'],
         highlightedCode: '',
       })
     })
@@ -1726,18 +1728,17 @@ extrude001 = extrude(sketch001, length = -12)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
-  |> fillet({ radius = 5, tags = [seg01] }, %) // fillet01
-  |> fillet({ radius = 5, tags = [seg02] }, %) // fillet02
-fillet03 = fillet({  radius = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)
-fillet04 = fillet({  radius = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)
+  |> fillet( radius = 5, tags = [seg01] ) // fillet01
+  |> fillet( radius = 5, tags = [seg02] ) // fillet02
+fillet03 = fillet(  extrude001, radius = 5,  tags = [getOppositeEdge(seg01)])
+fillet04 = fillet(  extrude001, radius = 5,  tags = [getOppositeEdge(seg02)])
 `
-    const pipedFilletDeclaration = 'fillet({ radius = 5, tags = [seg01] }, %)'
-    const secondPipedFilletDeclaration =
-      'fillet({ radius = 5, tags = [seg02] }, %)'
+    const pipedFilletDeclaration = 'fillet( radius = 5, tags = [seg01] )'
+    const secondPipedFilletDeclaration = 'fillet( radius = 5, tags = [seg02] )'
     const standaloneFilletDeclaration =
-      'fillet03 = fillet({  radius = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)'
+      'fillet03 = fillet(  extrude001, radius = 5,  tags = [getOppositeEdge(seg01)])'
     const secondStandaloneFilletDeclaration =
-      'fillet04 = fillet({  radius = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)'
+      'fillet04 = fillet(  extrude001, radius = 5,  tags = [getOppositeEdge(seg02)])'
 
     // Locators
     const pipedFilletEdgeLocation = { x: 600, y: 193 }
@@ -1871,9 +1872,9 @@ fillet04 = fillet({  radius = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstChamferDeclaration = 'chamfer({ length = 5, tags = [seg01] }, %)'
+    const firstChamferDeclaration = 'chamfer(length = 5, tags = [seg01])'
     const secondChamferDeclaration =
-      'chamfer({       length = 5,       tags = [getOppositeEdge(seg01)]     }, %)'
+      'chamfer(      length = 5,       tags = [getOppositeEdge(seg01)]    )'
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -1964,7 +1965,7 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(firstChamferDeclaration)
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|>chamfer({length=5,tags=[seg01]},%)'],
+        activeLines: ['|>chamfer(length=5,tags=[seg01])'],
         highlightedCode: '',
       })
     })
@@ -2096,18 +2097,17 @@ extrude001 = extrude(sketch001, length = -12)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
-  |> chamfer({ length = 5, tags = [seg01] }, %) // chamfer01
-  |> chamfer({ length = 5, tags = [seg02] }, %) // chamfer02
-chamfer03 = chamfer({  length = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)
-chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)
+  |> chamfer(length = 5, tags = [seg01]) // chamfer01
+  |> chamfer(length = 5, tags = [seg02]) // chamfer02
+chamfer03 = chamfer(  extrude001, length = 5,  tags = [getOppositeEdge(seg01)])
+chamfer04 = chamfer(  extrude001, length = 5,  tags = [getOppositeEdge(seg02)])
 `
-    const pipedChamferDeclaration = 'chamfer({ length = 5, tags = [seg01] }, %)'
-    const secondPipedChamferDeclaration =
-      'chamfer({ length = 5, tags = [seg02] }, %)'
+    const pipedChamferDeclaration = 'chamfer(length = 5, tags = [seg01])'
+    const secondPipedChamferDeclaration = 'chamfer(length = 5, tags = [seg02])'
     const standaloneChamferDeclaration =
-      'chamfer03 = chamfer({  length = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)'
+      'chamfer03 = chamfer(  extrude001, length = 5,  tags = [getOppositeEdge(seg01)])'
     const secondStandaloneChamferDeclaration =
-      'chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)'
+      'chamfer04 = chamfer(  extrude001, length = 5,  tags = [getOppositeEdge(seg02)])'
 
     // Locators
     const pipedChamferEdgeLocation = { x: 600, y: 193 }

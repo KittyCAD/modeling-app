@@ -19,6 +19,8 @@ import {
   createArrayExpression,
   createIdentifier,
   createPipeExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
 } from '../modifyAst'
 import {
   getNodeFromPath,
@@ -166,13 +168,14 @@ export function modifyAstWithEdgeTreatmentAndTag(
     const firstTag = tagCalls[0] // can be Identifier or CallExpression (for opposite and adjacent edges)
 
     // edge treatment call
-    const edgeTreatmentCall = createCallExpressionStdLib(parameters.type, [
-      createObjectExpression({
-        [parameterName]: parameterValue,
-        tags: createArrayExpression(tagCalls),
-      }),
-      createPipeSubstitution(),
-    ])
+    const edgeTreatmentCall = createCallExpressionStdLibKw(
+      parameters.type,
+      null,
+      [
+        createLabeledArg('tags', createArrayExpression(tagCalls)),
+        createLabeledArg(parameterName, parameterValue),
+      ]
+    )
 
     // Locate the extrude call
     const locatedExtrudeDeclarator = locateExtrudeDeclarator(

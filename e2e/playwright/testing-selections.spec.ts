@@ -764,15 +764,15 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
     |> close()
   extrude001 = extrude(sketch001, length = 100)
-    |> chamfer({
+    |> chamfer(
      length = 30,
      tags = [
        seg01,
        getNextAdjacentEdge(yo),
        getNextAdjacentEdge(seg02),
        getOppositeEdge(seg01)
-     ]
-   }, %)
+     ],
+   )
   `)
     await expect(
       page.getByTestId('model-state-indicator-execution-done')
@@ -810,14 +810,14 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await checkCodeAtHoverPosition(
       'oppositeChamfer',
       oppositeChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)])`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'baseChamfer',
       baseChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)])`,
       '}, %)'
     )
 
@@ -848,14 +848,14 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await checkCodeAtHoverPosition(
       'adjacentChamfer1',
       adjacentChamfer1,
-      `line(endAbsolute=[profileStartX(%),profileStartY(%)],tag=$seg02)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `line(endAbsolute=[profileStartX(%),profileStartY(%)],tag=$seg02)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)])`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'adjacentChamfer2',
       adjacentChamfer2,
-      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)])`,
       '}, %)'
     )
   })

@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing fillet-and-shell.kcl
+snapshot_kind: text
 ---
 {
   "E": {
@@ -163,13 +164,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            833,
-            881,
+            896,
+            944,
             0
           ],
           "tag": {
-            "end": 880,
-            "start": 874,
+            "end": 943,
+            "start": 937,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -179,13 +180,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            887,
-            944,
+            950,
+            1007,
             0
           ],
           "tag": {
-            "end": 943,
-            "start": 937,
+            "end": 1006,
+            "start": 1000,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -195,13 +196,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            950,
-            999,
+            1013,
+            1062,
             0
           ],
           "tag": {
-            "end": 998,
-            "start": 992,
+            "end": 1061,
+            "start": 1055,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -211,13 +212,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1005,
-            1024,
+            1068,
+            1087,
             0
           ],
           "tag": {
-            "end": 1023,
-            "start": 1017,
+            "end": 1086,
+            "start": 1080,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -232,8 +233,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                833,
-                881,
+                896,
+                944,
                 0
               ]
             },
@@ -242,8 +243,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "tag": {
-              "end": 880,
-              "start": 874,
+              "end": 943,
+              "start": 937,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -260,8 +261,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                887,
-                944,
+                950,
+                1007,
                 0
               ]
             },
@@ -270,8 +271,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "tag": {
-              "end": 943,
-              "start": 937,
+              "end": 1006,
+              "start": 1000,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -288,8 +289,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                950,
-                999,
+                1013,
+                1062,
                 0
               ]
             },
@@ -298,8 +299,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "tag": {
-              "end": 998,
-              "start": 992,
+              "end": 1061,
+              "start": 1055,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -316,8 +317,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1005,
-                1024,
+                1068,
+                1087,
                 0
               ]
             },
@@ -326,8 +327,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "tag": {
-              "end": 1023,
-              "start": 1017,
+              "end": 1086,
+              "start": 1080,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -387,8 +388,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              802,
-              827,
+              865,
+              890,
               0
             ]
           }
@@ -405,8 +406,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    833,
-                    881,
+                    896,
+                    944,
                     0
                   ]
                 },
@@ -415,8 +416,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 880,
-                  "start": 874,
+                  "end": 943,
+                  "start": 937,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -433,13 +434,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  833,
-                  881,
+                  896,
+                  944,
                   0
                 ],
                 "tag": {
-                  "end": 880,
-                  "start": 874,
+                  "end": 943,
+                  "start": 937,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -449,8 +450,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  874,
-                  880,
+                  937,
+                  943,
                   0
                 ]
               }
@@ -467,8 +468,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    887,
-                    944,
+                    950,
+                    1007,
                     0
                   ]
                 },
@@ -477,8 +478,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 943,
-                  "start": 937,
+                  "end": 1006,
+                  "start": 1000,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -495,13 +496,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  887,
-                  944,
+                  950,
+                  1007,
                   0
                 ],
                 "tag": {
-                  "end": 943,
-                  "start": 937,
+                  "end": 1006,
+                  "start": 1000,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -511,8 +512,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  937,
-                  943,
+                  1000,
+                  1006,
                   0
                 ]
               }
@@ -529,8 +530,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    950,
-                    999,
+                    1013,
+                    1062,
                     0
                   ]
                 },
@@ -539,8 +540,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   73.0
                 ],
                 "tag": {
-                  "end": 998,
-                  "start": 992,
+                  "end": 1061,
+                  "start": 1055,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -557,13 +558,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  950,
-                  999,
+                  1013,
+                  1062,
                   0
                 ],
                 "tag": {
-                  "end": 998,
-                  "start": 992,
+                  "end": 1061,
+                  "start": 1055,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -573,8 +574,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  992,
-                  998,
+                  1055,
+                  1061,
                   0
                 ]
               }
@@ -591,8 +592,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1005,
-                    1024,
+                    1068,
+                    1087,
                     0
                   ]
                 },
@@ -601,8 +602,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   73.0
                 ],
                 "tag": {
-                  "end": 1023,
-                  "start": 1017,
+                  "end": 1086,
+                  "start": 1080,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -619,13 +620,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1005,
-                  1024,
+                  1068,
+                  1087,
                   0
                 ],
                 "tag": {
-                  "end": 1023,
-                  "start": 1017,
+                  "end": 1086,
+                  "start": 1080,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -635,8 +636,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  1017,
-                  1023,
+                  1080,
+                  1086,
                   0
                 ]
               }
@@ -651,8 +652,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__meta": [
           {
             "sourceRange": [
-              802,
-              827,
+              865,
+              890,
               0
             ]
           }
@@ -697,8 +698,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "__meta": [
         {
           "sourceRange": [
-            802,
-            827,
+            865,
+            890,
             0
           ]
         }
@@ -880,8 +881,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            833,
-            881,
+            896,
+            944,
             0
           ]
         },
@@ -890,8 +891,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           0.0
         ],
         "tag": {
-          "end": 880,
-          "start": 874,
+          "end": 943,
+          "start": 937,
           "type": "TagDeclarator",
           "value": "edge1"
         },
@@ -908,13 +909,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          833,
-          881,
+          896,
+          944,
           0
         ],
         "tag": {
-          "end": 880,
-          "start": 874,
+          "end": 943,
+          "start": 937,
           "type": "TagDeclarator",
           "value": "edge1"
         },
@@ -924,8 +925,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          874,
-          880,
+          937,
+          943,
           0
         ]
       }
@@ -943,8 +944,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            887,
-            944,
+            950,
+            1007,
             0
           ]
         },
@@ -953,8 +954,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           0.0
         ],
         "tag": {
-          "end": 943,
-          "start": 937,
+          "end": 1006,
+          "start": 1000,
           "type": "TagDeclarator",
           "value": "edge2"
         },
@@ -971,13 +972,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          887,
-          944,
+          950,
+          1007,
           0
         ],
         "tag": {
-          "end": 943,
-          "start": 937,
+          "end": 1006,
+          "start": 1000,
           "type": "TagDeclarator",
           "value": "edge2"
         },
@@ -987,8 +988,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          937,
-          943,
+          1000,
+          1006,
           0
         ]
       }
@@ -1006,8 +1007,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            950,
-            999,
+            1013,
+            1062,
             0
           ]
         },
@@ -1016,8 +1017,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           73.0
         ],
         "tag": {
-          "end": 998,
-          "start": 992,
+          "end": 1061,
+          "start": 1055,
           "type": "TagDeclarator",
           "value": "edge3"
         },
@@ -1034,13 +1035,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          950,
-          999,
+          1013,
+          1062,
           0
         ],
         "tag": {
-          "end": 998,
-          "start": 992,
+          "end": 1061,
+          "start": 1055,
           "type": "TagDeclarator",
           "value": "edge3"
         },
@@ -1050,8 +1051,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          992,
-          998,
+          1055,
+          1061,
           0
         ]
       }
@@ -1069,8 +1070,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1005,
-            1024,
+            1068,
+            1087,
             0
           ]
         },
@@ -1079,8 +1080,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           73.0
         ],
         "tag": {
-          "end": 1023,
-          "start": 1017,
+          "end": 1086,
+          "start": 1080,
           "type": "TagDeclarator",
           "value": "edge4"
         },
@@ -1097,13 +1098,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          1005,
-          1024,
+          1068,
+          1087,
           0
         ],
         "tag": {
-          "end": 1023,
-          "start": 1017,
+          "end": 1086,
+          "start": 1080,
           "type": "TagDeclarator",
           "value": "edge4"
         },
@@ -1113,8 +1114,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          1017,
-          1023,
+          1080,
+          1086,
           0
         ]
       }
@@ -1150,11 +1151,11 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "body": [
           {
             "declaration": {
-              "end": 1512,
+              "end": 1571,
               "id": {
-                "end": 1311,
+                "end": 1370,
                 "name": "screw",
-                "start": 1306,
+                "start": 1365,
                 "type": "Identifier"
               },
               "init": {
@@ -1162,22 +1163,22 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   {
                     "arguments": [
                       {
-                        "end": 1332,
+                        "end": 1391,
                         "raw": "\"XY\"",
-                        "start": 1328,
+                        "start": 1387,
                         "type": "Literal",
                         "type": "Literal",
                         "value": "XY"
                       }
                     ],
                     "callee": {
-                      "end": 1327,
+                      "end": 1386,
                       "name": "startSketchOn",
-                      "start": 1314,
+                      "start": 1373,
                       "type": "Identifier"
                     },
-                    "end": 1333,
-                    "start": 1314,
+                    "end": 1392,
+                    "start": 1373,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -1186,9 +1187,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
                       {
                         "elements": [
                           {
-                            "end": 1358,
+                            "end": 1417,
                             "raw": "0",
-                            "start": 1357,
+                            "start": 1416,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1197,9 +1198,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
                             }
                           },
                           {
-                            "end": 1361,
+                            "end": 1420,
                             "raw": "0",
-                            "start": 1360,
+                            "start": 1419,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1208,81 +1209,81 @@ description: Variables in memory after executing fillet-and-shell.kcl
                             }
                           }
                         ],
-                        "end": 1362,
-                        "start": 1356,
+                        "end": 1421,
+                        "start": 1415,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       },
                       {
-                        "end": 1365,
-                        "start": 1364,
+                        "end": 1424,
+                        "start": 1423,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 1355,
+                      "end": 1414,
                       "name": "startProfileAt",
-                      "start": 1341,
+                      "start": 1400,
                       "type": "Identifier"
                     },
-                    "end": 1366,
-                    "start": 1341,
+                    "end": 1425,
+                    "start": 1400,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   {
                     "arguments": [
                       {
-                        "end": 1414,
+                        "end": 1473,
                         "properties": [
                           {
-                            "end": 1398,
+                            "end": 1457,
                             "key": {
-                              "end": 1389,
+                              "end": 1448,
                               "name": "center",
-                              "start": 1383,
+                              "start": 1442,
                               "type": "Identifier"
                             },
-                            "start": 1383,
+                            "start": 1442,
                             "type": "ObjectProperty",
                             "value": {
                               "elements": [
                                 {
-                                  "end": 1394,
+                                  "end": 1453,
                                   "name": "x",
-                                  "start": 1393,
+                                  "start": 1452,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 {
-                                  "end": 1397,
+                                  "end": 1456,
                                   "name": "y",
-                                  "start": 1396,
+                                  "start": 1455,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 }
                               ],
-                              "end": 1398,
-                              "start": 1392,
+                              "end": 1457,
+                              "start": 1451,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             }
                           },
                           {
-                            "end": 1412,
+                            "end": 1471,
                             "key": {
-                              "end": 1406,
+                              "end": 1465,
                               "name": "radius",
-                              "start": 1400,
+                              "start": 1459,
                               "type": "Identifier"
                             },
-                            "start": 1400,
+                            "start": 1459,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1412,
+                              "end": 1471,
                               "raw": "2.5",
-                              "start": 1409,
+                              "start": 1468,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1292,25 +1293,25 @@ description: Variables in memory after executing fillet-and-shell.kcl
                             }
                           }
                         ],
-                        "start": 1381,
+                        "start": 1440,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       },
                       {
-                        "end": 1417,
-                        "start": 1416,
+                        "end": 1476,
+                        "start": 1475,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 1380,
+                      "end": 1439,
                       "name": "circle",
-                      "start": 1374,
+                      "start": 1433,
                       "type": "Identifier"
                     },
-                    "end": 1418,
-                    "start": 1374,
+                    "end": 1477,
+                    "start": 1433,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -1319,55 +1320,55 @@ description: Variables in memory after executing fillet-and-shell.kcl
                       {
                         "arguments": [
                           {
-                            "end": 1472,
+                            "end": 1531,
                             "properties": [
                               {
-                                "end": 1455,
+                                "end": 1514,
                                 "key": {
-                                  "end": 1446,
+                                  "end": 1505,
                                   "name": "center",
-                                  "start": 1440,
+                                  "start": 1499,
                                   "type": "Identifier"
                                 },
-                                "start": 1440,
+                                "start": 1499,
                                 "type": "ObjectProperty",
                                 "value": {
                                   "elements": [
                                     {
-                                      "end": 1451,
+                                      "end": 1510,
                                       "name": "x",
-                                      "start": 1450,
+                                      "start": 1509,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 1454,
+                                      "end": 1513,
                                       "name": "y",
-                                      "start": 1453,
+                                      "start": 1512,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     }
                                   ],
-                                  "end": 1455,
-                                  "start": 1449,
+                                  "end": 1514,
+                                  "start": 1508,
                                   "type": "ArrayExpression",
                                   "type": "ArrayExpression"
                                 }
                               },
                               {
-                                "end": 1470,
+                                "end": 1529,
                                 "key": {
-                                  "end": 1463,
+                                  "end": 1522,
                                   "name": "radius",
-                                  "start": 1457,
+                                  "start": 1516,
                                   "type": "Identifier"
                                 },
-                                "start": 1457,
+                                "start": 1516,
                                 "type": "ObjectProperty",
                                 "value": {
-                                  "end": 1470,
+                                  "end": 1529,
                                   "raw": "1.25",
-                                  "start": 1466,
+                                  "start": 1525,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1377,43 +1378,43 @@ description: Variables in memory after executing fillet-and-shell.kcl
                                 }
                               }
                             ],
-                            "start": 1438,
+                            "start": 1497,
                             "type": "ObjectExpression",
                             "type": "ObjectExpression"
                           },
                           {
-                            "end": 1475,
-                            "start": 1474,
+                            "end": 1534,
+                            "start": 1533,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 1437,
+                          "end": 1496,
                           "name": "circle",
-                          "start": 1431,
+                          "start": 1490,
                           "type": "Identifier"
                         },
-                        "end": 1476,
-                        "start": 1431,
+                        "end": 1535,
+                        "start": 1490,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
-                        "end": 1479,
-                        "start": 1478,
+                        "end": 1538,
+                        "start": 1537,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 1430,
+                      "end": 1489,
                       "name": "hole",
-                      "start": 1426,
+                      "start": 1485,
                       "type": "Identifier"
                     },
-                    "end": 1480,
-                    "start": 1426,
+                    "end": 1539,
+                    "start": 1485,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -1426,89 +1427,89 @@ description: Variables in memory after executing fillet-and-shell.kcl
                           "name": "length"
                         },
                         "arg": {
-                          "end": 1511,
+                          "end": 1570,
                           "name": "height",
-                          "start": 1505,
+                          "start": 1564,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1495,
+                      "end": 1554,
                       "name": "extrude",
-                      "start": 1488,
+                      "start": 1547,
                       "type": "Identifier"
                     },
-                    "end": 1512,
-                    "start": 1488,
+                    "end": 1571,
+                    "start": 1547,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   }
                 ],
-                "end": 1512,
-                "start": 1314,
+                "end": 1571,
+                "start": 1373,
                 "type": "PipeExpression",
                 "type": "PipeExpression"
               },
-              "start": 1306,
+              "start": 1365,
               "type": "VariableDeclarator"
             },
-            "end": 1512,
+            "end": 1571,
             "kind": "const",
-            "start": 1306,
+            "start": 1365,
             "type": "VariableDeclaration",
             "type": "VariableDeclaration"
           },
           {
             "argument": {
-              "end": 1527,
+              "end": 1586,
               "name": "screw",
-              "start": 1522,
+              "start": 1581,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "end": 1527,
-            "start": 1515,
+            "end": 1586,
+            "start": 1574,
             "type": "ReturnStatement",
             "type": "ReturnStatement"
           }
         ],
-        "end": 1529,
-        "start": 1302
+        "end": 1588,
+        "start": 1361
       },
-      "end": 1529,
+      "end": 1588,
       "params": [
         {
           "type": "Parameter",
           "identifier": {
-            "end": 1289,
+            "end": 1348,
             "name": "x",
-            "start": 1288,
+            "start": 1347,
             "type": "Identifier"
           }
         },
         {
           "type": "Parameter",
           "identifier": {
-            "end": 1292,
+            "end": 1351,
             "name": "y",
-            "start": 1291,
+            "start": 1350,
             "type": "Identifier"
           }
         },
         {
           "type": "Parameter",
           "identifier": {
-            "end": 1300,
+            "end": 1359,
             "name": "height",
-            "start": 1294,
+            "start": 1353,
             "type": "Identifier"
           }
         }
       ],
-      "start": 1287,
+      "start": 1346,
       "type": "FunctionExpression"
     },
     "memory": [
@@ -1518,8 +1519,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          1287,
-          1529,
+          1346,
+          1588,
           0
         ]
       }
@@ -1624,7 +1625,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "id": "[uuid]",
             "sourceRange": [
               467,
-              558,
+              579,
               0
             ]
           },
@@ -1646,8 +1647,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              564,
-              655,
+              585,
+              697,
               0
             ]
           },
@@ -1669,8 +1670,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              661,
-              754,
+              703,
+              817,
               0
             ]
           },
@@ -1692,8 +1693,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              760,
-              768,
+              823,
+              831,
               0
             ]
           },

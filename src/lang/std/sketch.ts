@@ -2573,22 +2573,22 @@ export function replaceSketchLine({
  *
  * However things get complicated in situations like:
  * ```ts
- * |> chamfer({
- *     length: 1,
- *     tags: [tag1, tagOfInterest]
- *   }, %)
+ * |> chamfer(
+ *     length = 1,
+ *     tags = [tag1, tagOfInterest],
+ *   )
  * ```
  * Because tag declarator is not allowed on a chamfer with more than one tag,
  * They must be pulled apart into separate chamfer calls:
  * ```ts
- * |> chamfer({
- *     length: 1,
- *     tags: [tag1]
- *   }, %)
- * |> chamfer({
- *     length: 1,
- *     tags: [tagOfInterest]
- *   }, %, $newTagDeclarator)
+ * |> chamfer(
+ *     length = 1,
+ *     tags = [tag1],
+ *   )
+ * |> chamfer(
+ *     length = 1,
+ *     tags = [tagOfInterest],
+ *   , tag = $newTagDeclarator)
  * ```
  */
 function addTagToChamfer(
@@ -2643,7 +2643,7 @@ function addTagToChamfer(
   // There's more than one input tag, we need to break that chamfer call into a separate chamfer call
   // so that it can have a tag declarator added.
   const tagIndexToPullOut = inputTags.expr.elements.findIndex((tag) => {
-    // e.g. chamfer({ tags: [tagOfInterest, tag2] }, %)
+    // e.g. chamfer(tags: [tagOfInterest, tag2])
     //                       ^^^^^^^^^^^^^
     const elementMatchesBaseTagType =
       edgeCutMeta?.subType === 'base' &&
@@ -2651,7 +2651,7 @@ function addTagToChamfer(
       tag.name === edgeCutMeta.tagName
     if (elementMatchesBaseTagType) return true
 
-    // e.g. chamfer({ tags: [getOppositeEdge(tagOfInterest), tag2] }, %)
+    // e.g. chamfer(tags: [getOppositeEdge(tagOfInterest), tag2])
     //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     const tagMatchesOppositeTagType =
       edgeCutMeta?.subType === 'opposite' &&
@@ -2661,7 +2661,7 @@ function addTagToChamfer(
       tag.arguments[0].name === edgeCutMeta.tagName
     if (tagMatchesOppositeTagType) return true
 
-    // e.g. chamfer({ tags: [getNextAdjacentEdge(tagOfInterest), tag2] }, %)
+    // e.g. chamfer(tags: [getNextAdjacentEdge(tagOfInterest), tag2])
     //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     const tagMatchesAdjacentTagType =
       edgeCutMeta?.subType === 'adjacent' &&
