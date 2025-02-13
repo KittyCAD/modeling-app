@@ -33,6 +33,7 @@ import {
   traverse,
   ARG_INDEX_FIELD,
   LABELED_ARG_FIELD,
+  UNLABELED_ARG,
 } from './queryAst'
 import {
   addTagForSketchOnFace,
@@ -656,10 +657,11 @@ export function addOffsetPlane({
 
   const newPlane = createVariableDeclaration(
     newPlaneName,
-    createCallExpressionStdLib('offsetPlane', [
+    createCallExpressionStdLibKw(
+      'offsetPlane',
       createLiteral(defaultPlane.toUpperCase()),
-      offset,
-    ])
+      [createLabeledArg('offset', offset)]
+    )
   )
 
   const insertAt =
@@ -677,8 +679,7 @@ export function addOffsetPlane({
     [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['unlabeled', UNLABELED_ARG],
   ]
   return {
     modifiedAst,

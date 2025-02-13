@@ -456,13 +456,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_float<'a, T>(&'a self) -> Result<(T, f64), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,

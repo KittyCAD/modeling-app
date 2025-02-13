@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing artifact_graph_example_code_offset_planes.kcl
+snapshot_kind: text
 ---
 {
   "HALF_TURN": {
@@ -129,8 +130,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              197,
-              222,
+              224,
+              249,
               0
             ]
           },
@@ -189,8 +190,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            166,
-            191,
+            193,
+            218,
             0
           ]
         }
@@ -203,8 +204,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
       "__meta": [
         {
           "sourceRange": [
-            166,
-            191,
+            193,
+            218,
             0
           ]
         }
