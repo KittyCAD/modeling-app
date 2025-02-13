@@ -1318,7 +1318,7 @@ test.describe(`Sketching with offset planes`, () => {
       await test.step(`Hovering should highlight code`, async () => {
         await planeHover()
         await editor.expectState({
-          activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+          activeLines: [`offsetPlane001=offsetPlane("XY",offset=10)`],
           diagnostics: [],
           highlightedCode: 'offsetPlane("XY", offset = 10)',
         })
@@ -1331,7 +1331,7 @@ test.describe(`Sketching with offset planes`, () => {
         await expect(toolbar.lineBtn).toBeEnabled()
         await editor.expectEditor.toContain('startSketchOn(offsetPlane001)')
         await editor.expectState({
-          activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+          activeLines: [`offsetPlane001=offsetPlane("XY",offset=10)`],
           diagnostics: [],
           highlightedCode: '',
         })
