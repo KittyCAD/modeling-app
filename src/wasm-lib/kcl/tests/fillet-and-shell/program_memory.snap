@@ -6,26 +6,47 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "border": {
     "type": "Number",
     "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -565,6 +586,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "caseHeight": {
     "type": "Number",
     "value": 8.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -578,6 +608,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "caseLength": {
     "type": "Number",
     "value": 73.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -605,6 +638,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "caseThickness": {
     "type": "Number",
     "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -618,6 +660,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "caseWidth": {
     "type": "Number",
     "value": 38.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -645,6 +690,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "connectorPadding": {
     "type": "Number",
     "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -898,6 +952,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "lengthBetweenScrews": {
     "type": "Number",
     "value": 58.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1300,6 +1357,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "microUsb1Distance": {
     "type": "Number",
     "value": 41.4,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1313,6 +1379,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "microUsb2Distance": {
     "type": "Number",
     "value": 54.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1326,6 +1401,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "microUsbWidth": {
     "type": "Number",
     "value": 7.4,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1339,6 +1423,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "miniHdmiDistance": {
     "type": "Number",
     "value": 12.4,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1504,6 +1597,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "miniHdmiWidth": {
     "type": "Number",
     "value": 11.2,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1517,6 +1619,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "rpizLength": {
     "type": "Number",
     "value": 65.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1530,6 +1641,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "rpizWidth": {
     "type": "Number",
     "value": 30.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1543,6 +1663,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "screwHeight": {
     "type": "Number",
     "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1556,6 +1685,15 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "widthBetweenScrews": {
     "type": "Number",
     "value": 23.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [

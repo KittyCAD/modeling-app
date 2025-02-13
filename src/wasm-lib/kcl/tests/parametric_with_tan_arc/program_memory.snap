@@ -6,6 +6,15 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "FOS": {
     "type": "Number",
     "value": 2.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -19,21 +28,33 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "bracket": {
@@ -391,6 +412,15 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "distance": {
     "type": "Number",
     "value": 12.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -404,6 +434,9 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "filletR": {
     "type": "Number",
     "value": 0.7236272269866327,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -424,6 +457,15 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "p": {
     "type": "Number",
     "value": 150.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -437,6 +479,15 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "shelfMountL": {
     "type": "Number",
     "value": 9.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -450,6 +501,15 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "sigmaAllow": {
     "type": "Number",
     "value": 15000.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -463,6 +523,9 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "thickness": {
     "type": "Number",
     "value": 0.36181361349331637,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -476,6 +539,15 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "wallMountL": {
     "type": "Number",
     "value": 8.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -489,6 +561,15 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   "width": {
     "type": "Number",
     "value": 11.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [

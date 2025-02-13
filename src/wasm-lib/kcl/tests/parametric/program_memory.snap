@@ -6,6 +6,15 @@ description: Variables in memory after executing parametric.kcl
   "FOS": {
     "type": "Number",
     "value": 2.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -19,21 +28,33 @@ description: Variables in memory after executing parametric.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "bracket": {
@@ -319,6 +340,15 @@ description: Variables in memory after executing parametric.kcl
   "distance": {
     "type": "Number",
     "value": 6.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -332,6 +362,15 @@ description: Variables in memory after executing parametric.kcl
   "leg1": {
     "type": "Number",
     "value": 5.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -345,6 +384,15 @@ description: Variables in memory after executing parametric.kcl
   "leg2": {
     "type": "Number",
     "value": 8.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -358,6 +406,15 @@ description: Variables in memory after executing parametric.kcl
   "p": {
     "type": "Number",
     "value": 150.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -371,6 +428,15 @@ description: Variables in memory after executing parametric.kcl
   "sigmaAllow": {
     "type": "Number",
     "value": 35000.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -384,6 +450,9 @@ description: Variables in memory after executing parametric.kcl
   "thickness": {
     "type": "Number",
     "value": 0.1851640199545103,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -397,6 +466,15 @@ description: Variables in memory after executing parametric.kcl
   "width": {
     "type": "Number",
     "value": 9.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [

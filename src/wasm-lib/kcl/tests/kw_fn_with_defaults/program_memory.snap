@@ -6,21 +6,33 @@ description: Variables in memory after executing kw_fn_with_defaults.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "increment": {
@@ -80,13 +92,15 @@ description: Variables in memory after executing kw_fn_with_defaults.kcl
             "type": "Identifier"
           },
           "default_value": {
+            "end": 24,
+            "raw": "1",
+            "start": 23,
             "type": "Literal",
             "type": "Literal",
             "value": {
               "value": 1.0,
               "suffix": "None"
-            },
-            "raw": "1"
+            }
           }
         }
       ],
@@ -110,6 +124,9 @@ description: Variables in memory after executing kw_fn_with_defaults.kcl
   "twentyOne": {
     "type": "Number",
     "value": 21.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -130,11 +147,21 @@ description: Variables in memory after executing kw_fn_with_defaults.kcl
   "two": {
     "type": "Number",
     "value": 2.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
           63,
           64,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          23,
+          24,
           0
         ]
       }

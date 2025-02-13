@@ -6,21 +6,33 @@ description: Variables in memory after executing property_of_object.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "obj": {
@@ -29,6 +41,15 @@ description: Variables in memory after executing property_of_object.kcl
       "bar": {
         "type": "Number",
         "value": 0.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -42,6 +63,15 @@ description: Variables in memory after executing property_of_object.kcl
       "foo": {
         "type": "Number",
         "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -72,6 +102,15 @@ description: Variables in memory after executing property_of_object.kcl
           "bar": {
             "type": "Number",
             "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -85,6 +124,15 @@ description: Variables in memory after executing property_of_object.kcl
           "foo": {
             "type": "Number",
             "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -120,6 +168,15 @@ description: Variables in memory after executing property_of_object.kcl
   "one_a": {
     "type": "Number",
     "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -133,6 +190,15 @@ description: Variables in memory after executing property_of_object.kcl
   "one_b": {
     "type": "Number",
     "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -146,6 +212,15 @@ description: Variables in memory after executing property_of_object.kcl
   "one_c": {
     "type": "Number",
     "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -159,6 +234,15 @@ description: Variables in memory after executing property_of_object.kcl
   "one_d": {
     "type": "Number",
     "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
