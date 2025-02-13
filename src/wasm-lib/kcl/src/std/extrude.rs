@@ -267,7 +267,7 @@ pub(crate) async fn do_post_extrude(
                         Some(extrude_surface)
                     }
                 }
-            } else if args.ctx.is_mock() {
+            } else if args.ctx.no_engine_commands() {
                 // Only pre-populate the extrude surface if we are in mock mode.
 
                 let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
@@ -318,7 +318,7 @@ fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<Extrus
         sides: HashMap::with_capacity(face_infos.len()),
         ..Default::default()
     };
-    if args.ctx.is_mock() {
+    if args.ctx.no_engine_commands() {
         // Create fake IDs for start and end caps, to make extrudes mock-execute safe
         faces.start_cap_id = Some(exec_state.next_uuid());
         faces.end_cap_id = Some(exec_state.next_uuid());

@@ -60,7 +60,8 @@ export class KclManager {
       nonCodeNodes: {},
       startNodes: [],
     },
-    trivia: [],
+    innerAttrs: [],
+    outerAttrs: [],
   }
   private _execState: ExecState = emptyExecState()
   private _variables: VariableMap = {}
@@ -255,7 +256,8 @@ export class KclManager {
         nonCodeNodes: {},
         startNodes: [],
       },
-      trivia: [],
+      innerAttrs: [],
+      outerAttrs: [],
     }
   }
 
