@@ -980,6 +980,7 @@ sketch002 = startSketchOn({
           artifact,
         },
         execState.variables,
+        execState.artifactGraph,
         async () => {
           await new Promise((resolve) => setTimeout(resolve, 100))
           return {
