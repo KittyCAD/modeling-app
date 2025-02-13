@@ -84,7 +84,7 @@
     "simpleserver:stop": "kill-port 3000",
     "fmt": "prettier --write ./src *.ts *.json *.js ./e2e ./packages",
     "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e ./packages",
-    "install:tools:windows": "winget install Schniz.fnm jq yq",
+    "install:tools:windows": "winget install Schniz.fnm jqlang.jq MikeFarah.yq",
     "fetch:wasm": "./scripts/get-latest-wasm-bundle.sh",
     "fetch:wasm:windows": "./scripts/get-latest-wasm-bundle.ps1",
     "fetch:samples": "echo \"Fetching latest KCL samples...\" && curl -o public/kcl-samples-manifest-fallback.json https://raw.githubusercontent.com/KittyCAD/kcl-samples/achalmers/kw-appearance/manifest.json",
