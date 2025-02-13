@@ -63,10 +63,9 @@ import { KclExpressionWithVariable } from 'lib/commandTypes'
 import {
   Artifact,
   expandCap,
-  expandPath,
   expandPlane,
+  expandWall,
   getPathsFromArtifact,
-  getPlaneFromArtifact,
 } from './std/artifactGraph'
 import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
 import { findKwArg } from './util'
@@ -1395,14 +1394,16 @@ export async function deleteFromSelection(
   console.log('deleting', selection, variables)
   if (
     (selection.artifact?.type === 'plane' ||
-      selection.artifact?.type === 'cap') &&
+      selection.artifact?.type === 'cap' ||
+      selection.artifact?.type === 'wall') &&
     selection.artifact.pathIds.length
   ) {
     const plane =
       selection.artifact.type === 'plane'
         ? expandPlane(selection.artifact, engineCommandManager.artifactGraph)
+        : selection.artifact.type === 'wall'
+        ? expandWall(selection.artifact, engineCommandManager.artifactGraph)
         : expandCap(selection.artifact, engineCommandManager.artifactGraph)
-    console.log('plane expanded', plane)
     for (const path of plane.paths.sort(
       (a, b) => b.codeRef.range[0] - a.codeRef.range[0]
     )) {
@@ -1417,7 +1418,10 @@ export async function deleteFromSelection(
     }
     // If it's a cap, we're not going to continue and try to
     // delete the extrusion
-    if (selection.artifact.type === 'cap') {
+    if (
+      selection.artifact.type === 'cap' ||
+      selection.artifact.type === 'wall'
+    ) {
       return astClone
     }
   }
