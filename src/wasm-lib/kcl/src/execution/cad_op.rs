@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::{ArtifactId, KclValue};
+use super::{kcl_value::NumericType, ArtifactId, KclValue};
 use crate::{docs::StdLibFn, std::get_stdlib_fn, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
@@ -151,9 +151,7 @@ pub enum OpKclValue {
     },
     Number {
         value: f64,
-    },
-    Int {
-        value: i64,
+        ty: NumericType,
     },
     String {
         value: String,
@@ -230,7 +228,10 @@ impl From<&KclValue> for OpKclValue {
         match value {
             KclValue::Uuid { value, .. } => Self::Uuid { value: *value },
             KclValue::Bool { value, .. } => Self::Bool { value: *value },
-            KclValue::Number { value, .. } => Self::Number { value: *value },
+            KclValue::Number { value, ty, .. } => Self::Number {
+                value: *value,
+                ty: ty.clone(),
+            },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
             KclValue::Array { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
