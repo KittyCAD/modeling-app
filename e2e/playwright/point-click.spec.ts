@@ -1028,7 +1028,7 @@ openSketch = startSketchOn('XY')
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 700, y: 150 }
     const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const expectedOutput = `plane001 = offsetPlane('XZ', 5)`
+    const expectedOutput = `plane001 = offsetPlane('XZ', offset = 5)`
 
     await homePage.goToModelingScene()
     // FIXME: Since there is no KCL code loaded. We need to wait for the scene to load before we continue.
@@ -1164,7 +1164,7 @@ openSketch = startSketchOn('XY')
     }) => {
       const initialCode = `sketch001 = startSketchOn('XZ')
     |> circle({ center = [0, 0], radius = 30 }, %)
-    plane001 = offsetPlane('XZ', 50)
+    plane001 = offsetPlane('XZ', offset = 50)
     sketch002 = startSketchOn(plane001)
     |> circle({ center = [0, 0], radius = 20 }, %)
 `
@@ -1250,7 +1250,7 @@ openSketch = startSketchOn('XY')
   }) => {
     const initialCode = `sketch001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 30 }, %)
-  plane001 = offsetPlane('XZ', 50)
+  plane001 = offsetPlane('XZ', offset = 50)
   sketch002 = startSketchOn(plane001)
   |> circle({ center = [0, 0], radius = 20 }, %)
 loft001 = loft([sketch001, sketch002])
@@ -1297,7 +1297,7 @@ loft001 = loft([sketch001, sketch002])
       await page.waitForTimeout(1000)
       await clickOnSketch2()
       await expect(page.locator('.cm-activeLine')).toHaveText(`
-      plane001 = offsetPlane('XZ', 50)
+      plane001 = offsetPlane('XZ', offset = 50)
     `)
       await page.keyboard.press('Backspace')
       // Check for sketch 1

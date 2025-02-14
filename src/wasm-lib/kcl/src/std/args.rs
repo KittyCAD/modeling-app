@@ -8,8 +8,8 @@ use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
-        SketchSurface, Solid, SolidSet, TagIdentifier,
+        kcl_value::NumericType, ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata,
+        Sketch, SketchSet, SketchSurface, Solid, SolidSet, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -299,10 +299,12 @@ impl Args {
         let x = KclValue::Number {
             value: p[0],
             meta: vec![meta],
+            ty: NumericType::Unknown,
         };
         let y = KclValue::Number {
             value: p[1],
             meta: vec![meta],
+            ty: NumericType::Unknown,
         };
         Ok(KclValue::Array {
             value: vec![x, y],
@@ -319,6 +321,16 @@ impl Args {
         )
     }
 
+    pub(crate) fn make_user_val_from_f64_with_type(&self, f: f64, ty: NumericType) -> KclValue {
+        KclValue::from_number_with_type(
+            f,
+            ty,
+            vec![Metadata {
+                source_range: self.source_range,
+            }],
+        )
+    }
+
     pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
         let array = f
             .into_iter()
@@ -327,6 +339,7 @@ impl Args {
                 meta: vec![Metadata {
                     source_range: self.source_range,
                 }],
+                ty: NumericType::Unknown,
             })
             .collect::<Vec<_>>();
         Ok(KclValue::Array {
@@ -338,6 +351,10 @@ impl Args {
     }
 
     pub(crate) fn get_number(&self) -> Result<f64, KclError> {
+        FromArgs::from_args(self, 0)
+    }
+
+    pub(crate) fn get_number_with_type(&self) -> Result<(f64, NumericType), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -358,8 +375,25 @@ impl Args {
         Ok(numbers)
     }
 
-    pub(crate) fn get_hypotenuse_leg(&self) -> Result<(f64, f64), KclError> {
-        let numbers = self.get_number_array()?;
+    pub(crate) fn get_number_array_with_types(&self) -> Result<Vec<(f64, NumericType)>, KclError> {
+        let numbers = self
+            .args
+            .iter()
+            .map(|arg| {
+                let Some(num) = <(f64, NumericType)>::from_kcl_val(&arg.value) else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        source_ranges: arg.source_ranges(),
+                        message: format!("Expected a number but found {}", arg.value.human_friendly_type()),
+                    }));
+                };
+                Ok(num)
+            })
+            .collect::<Result<_, _>>()?;
+        Ok(numbers)
+    }
+
+    pub(crate) fn get_hypotenuse_leg(&self) -> Result<(f64, f64, NumericType), KclError> {
+        let numbers = self.get_number_array_with_types()?;
 
         if numbers.len() != 2 {
             return Err(KclError::Type(KclErrorDetails {
@@ -368,7 +402,11 @@ impl Args {
             }));
         }
 
-        Ok((numbers[0], numbers[1]))
+        let mut numbers = numbers.into_iter();
+        let (a, ta) = numbers.next().unwrap();
+        let (b, tb) = numbers.next().unwrap();
+        let ty = ta.combine(&tb);
+        Ok((a, b, ty))
     }
 
     pub(crate) fn get_circle_args(
@@ -453,13 +491,6 @@ impl Args {
     }
 
     pub(crate) fn get_tag_to_number_sketch(&self) -> Result<(TagIdentifier, f64, Sketch), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_data_and_float<'a, T>(&'a self) -> Result<(T, f64), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
         FromArgs::from_args(self, 0)
     }
 
@@ -1390,8 +1421,7 @@ impl<'a> FromKclValue<'a> for super::sketch::AngledLineData {
 impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, meta: _ } => crate::try_f64_to_i64(*value),
-            KclValue::Int { value, meta: _ } => Some(*value),
+            KclValue::Number { value, .. } => crate::try_f64_to_i64(*value),
             _ => None,
         }
     }
@@ -1427,8 +1457,7 @@ impl<'a> FromKclValue<'a> for uuid::Uuid {
 impl<'a> FromKclValue<'a> for u32 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, meta: _ } => crate::try_f64_to_u32(*value),
-            KclValue::Int { value, meta: _ } => Some(*value as u32),
+            KclValue::Number { value, .. } => crate::try_f64_to_u32(*value),
             _ => None,
         }
     }
@@ -1443,8 +1472,7 @@ impl<'a> FromKclValue<'a> for NonZeroU32 {
 impl<'a> FromKclValue<'a> for u64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, meta: _ } => crate::try_f64_to_u64(*value),
-            KclValue::Int { value, meta: _ } => Some(*value as u64),
+            KclValue::Number { value, .. } => crate::try_f64_to_u64(*value),
             _ => None,
         }
     }
@@ -1452,8 +1480,15 @@ impl<'a> FromKclValue<'a> for u64 {
 impl<'a> FromKclValue<'a> for f64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, meta: _ } => Some(*value),
-            KclValue::Int { value, meta: _ } => Some(*value as f64),
+            KclValue::Number { value, .. } => Some(*value),
+            _ => None,
+        }
+    }
+}
+impl<'a> FromKclValue<'a> for (f64, NumericType) {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Number { value, ty, .. } => Some((*value, ty.clone())),
             _ => None,
         }
     }

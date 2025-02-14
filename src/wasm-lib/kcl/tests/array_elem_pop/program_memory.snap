@@ -6,21 +6,33 @@ description: Variables in memory after executing array_elem_pop.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "arr": {
@@ -29,6 +41,15 @@ description: Variables in memory after executing array_elem_pop.kcl
       {
         "type": "Number",
         "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -42,6 +63,15 @@ description: Variables in memory after executing array_elem_pop.kcl
       {
         "type": "Number",
         "value": 2.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -55,6 +85,15 @@ description: Variables in memory after executing array_elem_pop.kcl
       {
         "type": "Number",
         "value": 3.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -82,6 +121,15 @@ description: Variables in memory after executing array_elem_pop.kcl
       {
         "type": "Number",
         "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -95,6 +143,15 @@ description: Variables in memory after executing array_elem_pop.kcl
       {
         "type": "Number",
         "value": 2.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -122,6 +179,15 @@ description: Variables in memory after executing array_elem_pop.kcl
       {
         "type": "Number",
         "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [

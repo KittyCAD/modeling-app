@@ -532,6 +532,32 @@ function getPlaneFromSolid2D(
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
 }
+function getPlaneFromCap(
+  cap: CapArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | CapArtifact | Error {
+  const sweep = getArtifactOfTypes(
+    { key: cap.sweepId, types: ['sweep'] },
+    graph
+  )
+  if (err(sweep)) return sweep
+  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromWall(
+  wall: WallArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | CapArtifact | Error {
+  const sweep = getArtifactOfTypes(
+    { key: wall.sweepId, types: ['sweep'] },
+    graph
+  )
+  if (err(sweep)) return sweep
+  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
 function getPlaneFromSweepEdge(edge: SweepEdge, graph: ArtifactGraph) {
   const sweep = getArtifactOfTypes(
     { key: edge.sweepId, types: ['sweep'] },
@@ -552,7 +578,15 @@ export function getPlaneFromArtifact(
   if (artifact.type === 'path') return getPlaneFromPath(artifact, graph)
   if (artifact.type === 'segment') return getPlaneFromSegment(artifact, graph)
   if (artifact.type === 'solid2d') return getPlaneFromSolid2D(artifact, graph)
-  if (artifact.type === 'wall' || artifact.type === 'cap') return artifact
+  if (
+    // if the user selects a face with sketch on it (pathIds.length), they probably wanted to edit that sketch,
+    // not the sketch for the underlying sweep sketch
+    (artifact.type === 'wall' || artifact.type === 'cap') &&
+    artifact?.pathIds?.length
+  )
+    return artifact
+  if (artifact.type === 'cap') return getPlaneFromCap(artifact, graph)
+  if (artifact.type === 'wall') return getPlaneFromWall(artifact, graph)
   if (artifact.type === 'sweepEdge')
     return getPlaneFromSweepEdge(artifact, graph)
   return new Error(`Artifact type ${artifact.type} does not have a plane`)

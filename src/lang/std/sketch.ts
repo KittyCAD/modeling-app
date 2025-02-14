@@ -30,6 +30,7 @@ import { toolTips, ToolTip } from 'lang/langHelpers'
 import {
   createPipeExpression,
   mutateKwArg,
+  nonCodeMetaEmpty,
   splitPathAtPipeExpression,
 } from '../modifyAst'
 
@@ -2829,6 +2830,7 @@ function addTagKw(): addTagFn {
             unlabeled: callExpr.node.arguments.length
               ? callExpr.node.arguments[0]
               : null,
+            nonCodeMeta: nonCodeMetaEmpty(),
             arguments: [],
           }
     const tagArg = findKwArg(ARG_TAG, primaryCallExp)

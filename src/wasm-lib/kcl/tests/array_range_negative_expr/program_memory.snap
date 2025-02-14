@@ -6,29 +6,44 @@ description: Variables in memory after executing array_range_negative_expr.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "xs": {
     "type": "Array",
     "value": [
       {
-        "type": "Int",
-        "value": -5,
+        "type": "Number",
+        "value": -5.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -40,8 +55,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": -4,
+        "type": "Number",
+        "value": -4.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -53,8 +71,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": -3,
+        "type": "Number",
+        "value": -3.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -66,8 +87,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": -2,
+        "type": "Number",
+        "value": -2.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -79,8 +103,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": -1,
+        "type": "Number",
+        "value": -1.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -92,8 +119,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 0,
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -105,8 +135,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 1,
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -118,8 +151,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 2,
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -131,8 +167,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 3,
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -144,8 +183,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 4,
+        "type": "Number",
+        "value": 4.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -157,8 +199,11 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 5,
+        "type": "Number",
+        "value": 5.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [

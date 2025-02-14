@@ -6,21 +6,33 @@ description: Variables in memory after executing double_map_fn.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "increment": {
@@ -96,8 +108,11 @@ description: Variables in memory after executing double_map_fn.kcl
     "type": "Array",
     "value": [
       {
-        "type": "Int",
-        "value": 0,
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -109,8 +124,11 @@ description: Variables in memory after executing double_map_fn.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 1,
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -122,8 +140,11 @@ description: Variables in memory after executing double_map_fn.kcl
         ]
       },
       {
-        "type": "Int",
-        "value": 2,
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -151,6 +172,9 @@ description: Variables in memory after executing double_map_fn.kcl
       {
         "type": "Number",
         "value": 2.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -178,6 +202,9 @@ description: Variables in memory after executing double_map_fn.kcl
       {
         "type": "Number",
         "value": 3.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -205,6 +232,9 @@ description: Variables in memory after executing double_map_fn.kcl
       {
         "type": "Number",
         "value": 4.0,
+        "ty": {
+          "type": "Unknown"
+        },
         "__meta": [
           {
             "sourceRange": [
