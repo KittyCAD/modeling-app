@@ -13,8 +13,7 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  # IS_RELEASE: ${{ github.ref_type == 'tag' }}
-  IS_RELEASE: true
+  IS_RELEASE: ${{ github.ref_type == 'tag' }}
   IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
 
 concurrency:
@@ -52,11 +51,11 @@ jobs:
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: yarn files:flip-to-nightly
 
-      # - name: Set release version
-      #   if: ${{ env.IS_RELEASE == 'true' }}
-      #   run: |
-      #     export VERSION=${GITHUB_REF_NAME#v}
-      #     yarn files:set-version
+      - name: Set release version
+        if: ${{ env.IS_RELEASE == 'true' }}
+        run: |
+          export VERSION=${GITHUB_REF_NAME#v}
+          yarn files:set-version
 
       - uses: actions/upload-artifact@v4
         with:
@@ -177,7 +176,6 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          CSC_FOR_PULL_REQUEST: true
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
@@ -239,7 +237,6 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          CSC_FOR_PULL_REQUEST: true
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
