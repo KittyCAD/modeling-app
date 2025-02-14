@@ -50,7 +50,16 @@ description: Operations executed sketch_in_object.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -10.0
+          "value": -10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           442,
@@ -127,7 +136,16 @@ description: Operations executed sketch_in_object.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           500,

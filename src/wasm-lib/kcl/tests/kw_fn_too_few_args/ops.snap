@@ -16,7 +16,16 @@ description: Operations executed kw_fn_too_few_args.kcl
       "x": {
         "value": {
           "type": "Number",
-          "value": 1.0
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           49,

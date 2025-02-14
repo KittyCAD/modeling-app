@@ -31,7 +31,16 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 6.0
+          "value": 6.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           242,
@@ -103,7 +112,16 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           491,
@@ -174,7 +192,16 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 4.0
+          "value": 4.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           753,
@@ -246,7 +273,16 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 3.0
+          "value": 3.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           1003,

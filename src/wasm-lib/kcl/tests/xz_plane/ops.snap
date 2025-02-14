@@ -31,7 +31,10 @@ description: Operations executed xz_plane.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 12.0
+          "value": 12.0,
+          "ty": {
+            "type": "Unknown"
+          }
         },
         "sourceRange": [
           167,

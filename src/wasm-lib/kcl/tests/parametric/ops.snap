@@ -31,7 +31,16 @@ description: Operations executed parametric.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 9.0
+          "value": 9.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           482,

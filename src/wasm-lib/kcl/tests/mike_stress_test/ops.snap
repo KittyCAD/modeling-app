@@ -31,7 +31,16 @@ description: Operations executed mike_stress_test.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           77119,

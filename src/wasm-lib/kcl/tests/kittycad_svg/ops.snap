@@ -31,7 +31,16 @@ description: Operations executed kittycad_svg.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 1.0
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           18364,

@@ -46,7 +46,16 @@ description: Operations executed i_shape.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 3.0
+          "value": 3.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           2383,

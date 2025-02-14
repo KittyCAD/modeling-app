@@ -24,7 +24,16 @@ description: Operations executed import_whole.kcl
       "thickness": {
         "value": {
           "type": "Number",
-          "value": 0.25
+          "value": 0.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           118,

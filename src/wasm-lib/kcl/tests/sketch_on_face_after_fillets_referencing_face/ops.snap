@@ -31,7 +31,16 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "length": {
         "value": {
           "type": "Number",
-          "value": 6.0
+          "value": 6.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           1322,
@@ -69,7 +78,16 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           "value": {
             "radius": {
               "type": "Number",
-              "value": 0.25
+              "value": 0.25,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             "tags": {
               "type": "Array",
@@ -119,7 +137,10 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           "value": {
             "radius": {
               "type": "Number",
-              "value": 0.5707134902949093
+              "value": 0.5707134902949093,
+              "ty": {
+                "type": "Unknown"
+              }
             },
             "tags": {
               "type": "Array",
@@ -203,7 +224,16 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           1806,

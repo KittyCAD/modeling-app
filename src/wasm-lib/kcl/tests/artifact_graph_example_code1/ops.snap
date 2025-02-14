@@ -31,7 +31,16 @@ description: Operations executed artifact_graph_example_code1.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -10.0
+          "value": -10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           288,
@@ -69,7 +78,16 @@ description: Operations executed artifact_graph_example_code1.kcl
           "value": {
             "radius": {
               "type": "Number",
-              "value": 5.0
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             "tags": {
               "type": "Array",
@@ -154,7 +172,16 @@ description: Operations executed artifact_graph_example_code1.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           583,

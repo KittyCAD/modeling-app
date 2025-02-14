@@ -31,7 +31,16 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           214,
@@ -69,7 +78,16 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
           "value": {
             "radius": {
               "type": "Number",
-              "value": 2.0
+              "value": 2.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             "tags": {
               "type": "Array",

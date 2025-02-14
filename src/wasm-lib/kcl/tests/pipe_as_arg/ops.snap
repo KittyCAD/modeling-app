@@ -43,7 +43,10 @@ description: Operations executed pipe_as_arg.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 400.0
+          "value": 400.0,
+          "ty": {
+            "type": "Unknown"
+          }
         },
         "sourceRange": [
           355,

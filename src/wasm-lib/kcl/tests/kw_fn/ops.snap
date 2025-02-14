@@ -33,7 +33,16 @@ description: Operations executed kw_fn.kcl
     "unlabeledArg": {
       "value": {
         "type": "Number",
-        "value": 1.0
+        "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
       },
       "sourceRange": [
         110,
@@ -45,7 +54,16 @@ description: Operations executed kw_fn.kcl
       "delta": {
         "value": {
           "type": "Number",
-          "value": 2.0
+          "value": 2.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           121,

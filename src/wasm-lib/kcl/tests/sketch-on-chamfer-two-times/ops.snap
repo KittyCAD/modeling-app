@@ -31,7 +31,16 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 100.0
+          "value": 100.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           482,
@@ -69,7 +78,16 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
           "value": {
             "radius": {
               "type": "Number",
-              "value": 20.0
+              "value": 20.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             "tags": {
               "type": "Array",
@@ -120,7 +138,16 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
           "value": {
             "length": {
               "type": "Number",
-              "value": 50.0
+              "value": 50.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             "tags": {
               "type": "Array",
@@ -182,7 +209,16 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
           "value": {
             "length": {
               "type": "Number",
-              "value": 50.0
+              "value": 50.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             "tags": {
               "type": "Array",
@@ -314,7 +350,16 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 50.0
+          "value": 50.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           1625,

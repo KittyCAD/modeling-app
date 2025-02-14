@@ -31,7 +31,16 @@ description: Operations executed sketch_on_face.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           217,
@@ -103,7 +112,16 @@ description: Operations executed sketch_on_face.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           403,

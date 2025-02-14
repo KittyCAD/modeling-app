@@ -19,11 +19,29 @@ description: Operations executed cube.kcl
           "value": [
             {
               "type": "Number",
-              "value": 0.0
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             {
               "type": "Number",
-              "value": 0.0
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             }
           ]
         },
@@ -36,7 +54,16 @@ description: Operations executed cube.kcl
       "sideLength": {
         "value": {
           "type": "Number",
-          "value": 40.0
+          "value": 40.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           404,
@@ -56,7 +83,16 @@ description: Operations executed cube.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 40.0
+          "value": 40.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           362,

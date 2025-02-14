@@ -31,7 +31,16 @@ description: Operations executed helix_ccw.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 10.0
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           101,
@@ -69,7 +78,16 @@ description: Operations executed helix_ccw.kcl
           "value": {
             "angleStart": {
               "type": "Number",
-              "value": 0.0
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             "ccw": {
               "type": "Bool",
@@ -77,7 +95,16 @@ description: Operations executed helix_ccw.kcl
             },
             "revolutions": {
               "type": "Number",
-              "value": 16.0
+              "value": 16.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             }
           }
         },

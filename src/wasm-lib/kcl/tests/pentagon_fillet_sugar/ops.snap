@@ -31,7 +31,16 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 200.0
+          "value": 200.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           396,
@@ -122,7 +131,16 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 100.0
+          "value": 100.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           629,
@@ -160,7 +178,16 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "value": {
             "radius": {
               "type": "Number",
-              "value": 5.0
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             "tags": {
               "type": "Array",
@@ -268,7 +295,16 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 100.0
+          "value": 100.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           833,
@@ -306,7 +342,16 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "value": {
             "radius": {
               "type": "Number",
-              "value": 5.0
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
             },
             "tags": {
               "type": "Array",

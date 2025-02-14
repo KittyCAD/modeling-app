@@ -31,7 +31,16 @@ description: Operations executed angled_line.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 4.0
+          "value": 4.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           287,

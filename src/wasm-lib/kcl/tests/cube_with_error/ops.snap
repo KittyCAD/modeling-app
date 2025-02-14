@@ -24,7 +24,16 @@ description: Operations executed cube_with_error.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 40.0
+          "value": 40.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           354,

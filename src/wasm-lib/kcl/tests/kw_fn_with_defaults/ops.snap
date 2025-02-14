@@ -33,7 +33,16 @@ description: Operations executed kw_fn_with_defaults.kcl
     "unlabeledArg": {
       "value": {
         "type": "Number",
-        "value": 1.0
+        "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
       },
       "sourceRange": [
         88,
@@ -45,7 +54,16 @@ description: Operations executed kw_fn_with_defaults.kcl
       "by": {
         "value": {
           "type": "Number",
-          "value": 20.0
+          "value": 20.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           96,

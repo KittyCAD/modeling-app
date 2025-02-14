@@ -50,7 +50,16 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 20.0
+          "value": 20.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           248,
@@ -121,7 +130,16 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 5.0
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": [
           374,
