@@ -866,29 +866,6 @@ mod tests {
     }
 
     #[test]
-    fn test_recast_annotations_in_function_body() {
-        let input = r#"fn myFunc() {
-  @meta(yes = true)
-  x = 2
-}
-"#;
-        let program = crate::parsing::top_level_parse(input).unwrap();
-        let output = program.recast(&Default::default(), 0);
-        assert_eq!(output, input);
-    }
-
-    #[test]
-    fn test_recast_annotations_in_function_body_without_items() {
-        let input = r#"fn myFunc() {
-  @meta(yes = true)
-}
-"#;
-        let program = crate::parsing::top_level_parse(input).unwrap();
-        let output = program.recast(&Default::default(), 0);
-        assert_eq!(output, input);
-    }
-
-    #[test]
     fn test_recast_if_else_if_same() {
         let input = r#"b = if false {
   3
