@@ -69,6 +69,7 @@ import {
   expandWall,
   getArtifactOfTypes,
   getArtifactsOfTypes,
+  getFaceCodeRef,
   getPathsFromArtifact,
 } from './std/artifactGraph'
 import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
@@ -1409,7 +1410,7 @@ export async function deleteFromSelection(
         ? expandWall(selection.artifact, artifactGraph)
         : expandCap(selection.artifact, artifactGraph)
     for (const path of plane.paths.sort(
-      (a, b) => b.codeRef.range[0] - a.codeRef.range[0]
+      (a, b) => b.codeRef.range?.[0] - a.codeRef.range?.[0]
     )) {
       const varDec = getNodeFromPath<VariableDeclarator>(
         ast,
@@ -1430,10 +1431,9 @@ export async function deleteFromSelection(
       // we continued down the traditional code path below.
       // faceCodeRef's pathToNode is empty for some reason
       // so using source range instead
-      const sketchVarDec = getNodePathFromSourceRange(
-        astClone,
-        selection.artifact.faceCodeRef.range
-      )
+      const codeRef = getFaceCodeRef(selection.artifact)
+      if (!codeRef) return new Error('Could not find face code ref')
+      const sketchVarDec = getNodePathFromSourceRange(astClone, codeRef.range)
       const sketchBodyIndex = Number(sketchVarDec[1][0])
       astClone.body.splice(sketchBodyIndex, 1)
       return astClone
