@@ -17,6 +17,7 @@ export async function deleteSelectionPromise(
     ast,
     selection,
     kclManager.variables,
+    engineCommandManager.artifactGraph,
     getFaceDetails
   )
   if (err(modifiedAst)) {
