@@ -2448,19 +2448,18 @@ extrude002 = extrude(sketch002, length = 50)
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
       await scene.waitForExecutionDone()
 
       // One dumb hardcoded screen pixel value
-      const testPoint = { x: 550, y: 295 }
+      const testPoint = { x: 580, y: 320 }
       const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       const shellTarget = hasExtrudesInPipe ? 'sketch002' : 'extrude002'
       const shellDeclaration = `shell001 = shell(${shellTarget}, faces = ['end'], thickness = 5)`
 
       await test.step(`Look for the grey of the shape`, async () => {
-        await toolbar.closePane('code')
-        await scene.expectPixelColor([128, 128, 128], testPoint, 15)
+        await scene.expectPixelColor([113, 113, 113], testPoint, 15)
       })
 
       await test.step(`Go through the command bar flow, selecting a cap and keeping default thickness`, async () => {
