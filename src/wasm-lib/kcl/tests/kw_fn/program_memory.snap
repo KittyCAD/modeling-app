@@ -1,255 +1,229 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing kw_fn.kcl
+description: Variables in memory after executing kw_fn.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "add": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 75,
-                    "left": {
-                      "end": 67,
-                      "name": "x",
-                      "start": 66,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    "operator": "+",
-                    "right": {
-                      "end": 75,
-                      "name": "delta",
-                      "start": 70,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    "start": 66,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "end": 75,
-                  "start": 59,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 77,
-              "start": 55
-            },
-            "end": 77,
-            "params": [
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 46,
-                  "name": "x",
-                  "start": 45,
-                  "type": "Identifier"
-                },
-                "labeled": false
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "add": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "argument": {
+              "end": 75,
+              "left": {
+                "end": 67,
+                "name": "x",
+                "start": 66,
+                "type": "Identifier",
+                "type": "Identifier"
               },
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 53,
-                  "name": "delta",
-                  "start": 48,
-                  "type": "Identifier"
-                }
-              }
-            ],
-            "start": 43,
-            "type": "FunctionExpression"
-          },
-          "memory": [
-            0,
-            2
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                43,
-                77,
-                0
-              ]
-            }
-          ]
-        },
-        "increment": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 33,
-                    "left": {
-                      "end": 29,
-                      "name": "x",
-                      "start": 28,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    "operator": "+",
-                    "right": {
-                      "end": 33,
-                      "raw": "1",
-                      "start": 32,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.0,
-                        "suffix": "None"
-                      }
-                    },
-                    "start": 28,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "end": 33,
-                  "start": 21,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 35,
-              "start": 17
+              "operator": "+",
+              "right": {
+                "end": 75,
+                "name": "delta",
+                "start": 70,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 66,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
             },
-            "end": 35,
-            "params": [
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 15,
-                  "name": "x",
-                  "start": 14,
-                  "type": "Identifier"
-                },
-                "labeled": false
-              }
-            ],
-            "start": 12,
-            "type": "FunctionExpression"
-          },
-          "memory": [
-            0,
-            1
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                12,
-                35,
-                0
-              ]
-            }
-          ]
-        },
-        "three": {
-          "type": "Number",
-          "value": 3.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                110,
-                111,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                121,
-                122,
-                0
-              ]
-            }
-          ]
-        },
-        "two": {
-          "type": "Number",
-          "value": 2.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                95,
-                96,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                32,
-                33,
-                0
-              ]
-            }
-          ]
-        }
-      },
-      "snapshots": [
-        {
-          "parent_snapshot": null,
-          "data": {
-            "increment": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            }
+            "end": 75,
+            "start": 59,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
           }
+        ],
+        "end": 77,
+        "start": 55
+      },
+      "end": 77,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 46,
+            "name": "x",
+            "start": 45,
+            "type": "Identifier"
+          },
+          "labeled": false
         },
         {
-          "parent_snapshot": null,
-          "data": {
-            "add": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            },
-            "three": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            },
-            "two": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            }
+          "type": "Parameter",
+          "identifier": {
+            "end": 53,
+            "name": "delta",
+            "start": 48,
+            "type": "Identifier"
           }
         }
       ],
-      "parent": null
-    }
-  ],
-  "currentEnv": [
-    0,
-    0
-  ],
-  "callStack": []
+      "start": 43,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      0,
+      2
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          43,
+          77,
+          0
+        ]
+      }
+    ]
+  },
+  "increment": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "argument": {
+              "end": 33,
+              "left": {
+                "end": 29,
+                "name": "x",
+                "start": 28,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "+",
+              "right": {
+                "end": 33,
+                "raw": "1",
+                "start": 32,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 28,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "end": 33,
+            "start": 21,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 35,
+        "start": 17
+      },
+      "end": 35,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 15,
+            "name": "x",
+            "start": 14,
+            "type": "Identifier"
+          },
+          "labeled": false
+        }
+      ],
+      "start": 12,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      0,
+      1
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          12,
+          35,
+          0
+        ]
+      }
+    ]
+  },
+  "three": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          110,
+          111,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          121,
+          122,
+          0
+        ]
+      }
+    ]
+  },
+  "two": {
+    "type": "Number",
+    "value": 2.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          95,
+          96,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          32,
+          33,
+          0
+        ]
+      }
+    ]
+  }
 }

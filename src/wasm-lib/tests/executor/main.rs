@@ -475,19 +475,21 @@ async fn kcl_test_patterns_circular_3d_tilted_axis() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_file_doesnt_exist() {
-    let code = r#"model = import("thing.obj")"#;
+    let code = r#"import 'thing.obj'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 27, 0])], message: "File `thing.obj` does not exist." }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([0, 18, 0])], message: "File `thing.obj` does not exist." }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_obj_with_mtl() {
-    let code = r#"model = import("tests/executor/inputs/cube.obj")"#;
+    let code = r#"import 'tests/executor/inputs/cube.obj'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_obj_with_mtl", &result);
@@ -495,7 +497,9 @@ async fn kcl_test_import_obj_with_mtl() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_obj_with_mtl_units() {
-    let code = r#"model = import("tests/executor/inputs/cube.obj", {format: "obj", units: "m"})"#;
+    let code = r#"@(format = obj, lengthUnit = m)
+import 'tests/executor/inputs/cube.obj'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_obj_with_mtl_units", &result);
@@ -503,7 +507,8 @@ async fn kcl_test_import_obj_with_mtl_units() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_stl() {
-    let code = r#"model = import("tests/executor/inputs/2-5-long-m8-chc-screw.stl")"#;
+    let code = r#"import 'tests/executor/inputs/2-5-long-m8-chc-screw.stl' as screw
+model = screw"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_stl", &result);
@@ -511,7 +516,8 @@ async fn kcl_test_import_stl() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_gltf_with_bin() {
-    let code = r#"model = import("tests/executor/inputs/cube.gltf")"#;
+    let code = r#"import 'tests/executor/inputs/cube.gltf'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_gltf_with_bin", &result);
@@ -519,7 +525,8 @@ async fn kcl_test_import_gltf_with_bin() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_gltf_embedded() {
-    let code = r#"model = import("tests/executor/inputs/cube-embedded.gltf")"#;
+    let code = r#"import 'tests/executor/inputs/cube-embedded.gltf' as cube
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_gltf_embedded", &result);
@@ -527,7 +534,8 @@ async fn kcl_test_import_gltf_embedded() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_glb() {
-    let code = r#"model = import("tests/executor/inputs/cube.glb")"#;
+    let code = r#"import 'tests/executor/inputs/cube.glb'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_glb", &result);
@@ -535,7 +543,8 @@ async fn kcl_test_import_glb() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_glb_no_assign() {
-    let code = r#"import("tests/executor/inputs/cube.glb")"#;
+    let code = r#"import 'tests/executor/inputs/cube.glb'
+cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_glb_no_assign", &result);
@@ -543,13 +552,15 @@ async fn kcl_test_import_glb_no_assign() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_ext_doesnt_match() {
-    let code = r#"model = import("tests/executor/inputs/cube.gltf", {format: "obj", units: "m"})"#;
+    let code = r#"@(format = obj, lengthUnit = m)
+import 'tests/executor/inputs/cube.gltf'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 78, 0])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([32, 72, 0])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
     );
 }
 

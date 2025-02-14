@@ -218,7 +218,7 @@ async fn straight_line(
         }
     };
 
-    let id = exec_state.global.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
@@ -1388,8 +1388,9 @@ pub(crate) async fn inner_start_profile_at(
 /// Returns the X component of the sketch profile start point.
 pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
+    let ty = sketch.units.into();
     let x = inner_profile_start_x(sketch)?;
-    Ok(args.make_user_val_from_f64(x))
+    Ok(args.make_user_val_from_f64_with_type(x, ty))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'x'
@@ -1412,8 +1413,9 @@ pub(crate) fn inner_profile_start_x(sketch: Sketch) -> Result<f64, KclError> {
 /// Returns the Y component of the sketch profile start point.
 pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
+    let ty = sketch.units.into();
     let x = inner_profile_start_y(sketch)?;
-    Ok(args.make_user_val_from_f64(x))
+    Ok(args.make_user_val_from_f64_with_type(x, ty))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'y'
@@ -1435,8 +1437,9 @@ pub(crate) fn inner_profile_start_y(sketch: Sketch) -> Result<f64, KclError> {
 /// Returns the sketch profile start point.
 pub async fn profile_start(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
+    let ty = sketch.units.into();
     let point = inner_profile_start(sketch)?;
-    Ok(KclValue::from_point2d(point, args.into()))
+    Ok(KclValue::from_point2d(point, ty, args.into()))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin

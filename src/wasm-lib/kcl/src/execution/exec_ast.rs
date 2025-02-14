@@ -9,17 +9,18 @@ use crate::{
     execution::{
         annotations,
         cad_op::{OpArg, Operation},
+        kcl_value::NumericType,
         memory,
         state::ModuleState,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory,
-        TagEngineInfo, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, TagEngineInfo,
+        TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
-        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector, ItemVisibility,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef, NonCodeValue, ObjectExpression,
-        PipeExpression, Program, TagDeclarator, UnaryExpression, UnaryOperator,
+        Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
+        CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
+        ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef,
+        ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{
@@ -36,37 +37,36 @@ enum StatementKind<'a> {
 impl ExecutorContext {
     async fn handle_annotations(
         &self,
-        annotations: impl Iterator<Item = (&NonCodeValue, SourceRange)>,
+        annotations: impl Iterator<Item = &Node<Annotation>>,
         scope: annotations::AnnotationScope,
         exec_state: &mut ExecState,
     ) -> Result<bool, KclError> {
         let mut no_prelude = false;
-        for (annotation, source_range) in annotations {
-            if annotation.annotation_name() == Some(annotations::SETTINGS) {
+        for annotation in annotations {
+            if annotation.name() == Some(annotations::SETTINGS) {
                 if scope == annotations::AnnotationScope::Module {
                     let old_units = exec_state.length_unit();
-                    exec_state
-                        .mod_local
-                        .settings
-                        .update_from_annotation(annotation, source_range)?;
+                    exec_state.mod_local.settings.update_from_annotation(annotation)?;
                     let new_units = exec_state.length_unit();
                     if !self.engine.execution_kind().is_isolated() && old_units != new_units {
-                        self.engine.set_units(new_units.into(), source_range).await?;
+                        self.engine
+                            .set_units(new_units.into(), annotation.as_source_range())
+                            .await?;
                     }
                 } else {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: "Settings can only be modified at the top level scope of a file".to_owned(),
-                        source_ranges: vec![source_range],
+                        source_ranges: vec![annotation.as_source_range()],
                     }));
                 }
             }
-            if annotation.annotation_name() == Some(annotations::NO_PRELUDE) {
+            if annotation.name() == Some(annotations::NO_PRELUDE) {
                 if scope == annotations::AnnotationScope::Module {
                     no_prelude = true;
                 } else {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: "Prelude can only be skipped at the top level scope of a file".to_owned(),
-                        source_ranges: vec![source_range],
+                        source_ranges: vec![annotation.as_source_range()],
                     }));
                 }
             }
@@ -86,11 +86,7 @@ impl ExecutorContext {
         if body_type == BodyType::Root {
             let _no_prelude = self
                 .handle_annotations(
-                    program
-                        .non_code_meta
-                        .start_nodes
-                        .iter()
-                        .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
+                    program.inner_attrs.iter(),
                     annotations::AnnotationScope::Module,
                     exec_state,
                 )
@@ -99,7 +95,7 @@ impl ExecutorContext {
 
         let mut last_expr = None;
         // Iterate over the body of the program.
-        for (i, statement) in program.body.iter().enumerate() {
+        for statement in &program.body {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
                     if body_type != BodyType::Root {
@@ -110,7 +106,10 @@ impl ExecutorContext {
                     }
 
                     let source_range = SourceRange::from(import_stmt);
-                    let module_id = self.open_module(&import_stmt.path, exec_state, source_range).await?;
+                    let attrs = &import_stmt.outer_attrs;
+                    let module_id = self
+                        .open_module(&import_stmt.path, attrs, exec_state, source_range)
+                        .await?;
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
@@ -205,13 +204,7 @@ impl ExecutorContext {
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
 
-                    let _meta_nodes = if i == 0 {
-                        &program.non_code_meta.start_nodes
-                    } else if let Some(meta) = program.non_code_meta.non_code_nodes.get(&(i - 1)) {
-                        meta
-                    } else {
-                        &Vec::new()
-                    };
+                    let _annotations = &variable_declaration.outer_attrs;
 
                     let memory_item = self
                         .execute_expr(
@@ -281,6 +274,7 @@ impl ExecutorContext {
     async fn open_module(
         &self,
         path: &ImportPath,
+        attrs: &[Node<Annotation>],
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
@@ -307,9 +301,9 @@ impl ExecutorContext {
                 }
 
                 let id = exec_state.next_module_id();
-                let geom =
-                    super::import::import_foreign(resolved_path.expect_path(), None, exec_state, self, source_range)
-                        .await?;
+                let path = resolved_path.expect_path();
+                let format = super::import::format_from_annotations(attrs, path, source_range)?;
+                let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
                 exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
                 Ok(id)
             }
@@ -443,7 +437,7 @@ impl ExecutorContext {
     ) -> Result<KclValue, KclError> {
         let item = match init {
             Expr::None(none) => KclValue::from(none),
-            Expr::Literal(literal) => KclValue::from(literal),
+            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), &exec_state.mod_local.settings),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Identifier(identifier) => {
                 let value = exec_state.memory().get(&identifier.name, identifier.into())?.clone();
@@ -524,7 +518,10 @@ impl BinaryPart {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         match self {
-            BinaryPart::Literal(literal) => Ok(literal.into()),
+            BinaryPart::Literal(literal) => Ok(KclValue::from_literal(
+                (**literal).clone(),
+                &exec_state.mod_local.settings,
+            )),
             BinaryPart::Identifier(identifier) => {
                 let value = exec_state.memory().get(&identifier.name, identifier.into())?;
                 Ok(value.clone())
@@ -710,26 +707,32 @@ impl Node<BinaryExpression> {
             BinaryOperator::Add => KclValue::Number {
                 value: left + right,
                 meta,
+                ty: NumericType::Unknown,
             },
             BinaryOperator::Sub => KclValue::Number {
                 value: left - right,
                 meta,
+                ty: NumericType::Unknown,
             },
             BinaryOperator::Mul => KclValue::Number {
                 value: left * right,
                 meta,
+                ty: NumericType::Unknown,
             },
             BinaryOperator::Div => KclValue::Number {
                 value: left / right,
                 meta,
+                ty: NumericType::Unknown,
             },
             BinaryOperator::Mod => KclValue::Number {
                 value: left % right,
                 meta,
+                ty: NumericType::Unknown,
             },
             BinaryOperator::Pow => KclValue::Number {
                 value: left.powf(right),
                 meta,
+                ty: NumericType::Unknown,
             },
             BinaryOperator::Neq => KclValue::Bool {
                 value: left != right,
@@ -792,19 +795,14 @@ impl Node<UnaryExpression> {
 
         let value = &self.argument.get_result(exec_state, ctx).await?;
         match value {
-            KclValue::Number { value, meta: _ } => {
-                let meta = vec![Metadata {
-                    source_range: self.into(),
-                }];
-                Ok(KclValue::Number { value: -value, meta })
-            }
-            KclValue::Int { value, meta: _ } => {
+            KclValue::Number { value, ty, .. } => {
                 let meta = vec![Metadata {
                     source_range: self.into(),
                 }];
                 Ok(KclValue::Number {
-                    value: (-value) as f64,
+                    value: -value,
                     meta,
+                    ty: ty.clone(),
                 })
             }
             _ => Err(KclError::Semantic(KclErrorDetails {
@@ -1305,8 +1303,9 @@ impl Node<ArrayRangeExpression> {
         Ok(KclValue::Array {
             value: range
                 .into_iter()
-                .map(|num| KclValue::Int {
-                    value: num,
+                .map(|num| KclValue::Number {
+                    value: num as f64,
+                    ty: NumericType::Unknown,
                     meta: meta.clone(),
                 })
                 .collect(),
@@ -1348,8 +1347,6 @@ fn article_for(s: &str) -> &'static str {
 pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<f64, KclError> {
     if let KclValue::Number { value: n, .. } = &v {
         Ok(*n)
-    } else if let KclValue::Int { value: n, .. } = &v {
-        Ok(*n as f64)
     } else {
         let actual_type = v.human_friendly_type();
         let article = if actual_type.starts_with(['a', 'e', 'i', 'o', 'u']) {
@@ -1466,16 +1463,7 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
         }))
     };
     match value {
-        KclValue::Int { value:num, meta: _ } => {
-            let maybe_int: Result<usize, _> = (*num).try_into();
-            if let Ok(uint) = maybe_int {
-                Ok(Property::UInt(uint))
-            }
-            else {
-                make_err(format!("'{num}' is negative, so you can't index an array with it"))
-            }
-        }
-        KclValue::Number{value: num, meta:_} => {
+        KclValue::Number{value: num, .. } => {
             let num = *num;
             if num < 0.0 {
                 return make_err(format!("'{num}' is negative, so you can't index an array with it"))
@@ -1516,7 +1504,7 @@ impl Node<PipeExpression> {
 fn assign_args_to_params(
     function_expression: NodeRef<'_, FunctionExpression>,
     args: Vec<Arg>,
-    fn_memory: &mut ProgramMemory,
+    exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
     let num_args = function_expression.number_of_args();
     let (min_params, max_params) = num_args.into_inner();
@@ -1536,12 +1524,15 @@ fn assign_args_to_params(
         return Err(err_wrong_number_args);
     }
 
+    let mem = &mut exec_state.global.memory;
+    let settings = &exec_state.mod_local.settings;
+
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
-            fn_memory.add(
+            mem.add(
                 param.identifier.name.clone(),
                 arg.value.clone(),
                 (&param.identifier).into(),
@@ -1551,9 +1542,9 @@ fn assign_args_to_params(
             if let Some(ref default_val) = param.default_value {
                 // If the corresponding parameter is optional,
                 // then it's fine, the user doesn't need to supply it.
-                fn_memory.add(
+                mem.add(
                     param.identifier.name.clone(),
-                    default_val.clone().into(),
+                    KclValue::from_default_param(default_val.clone(), settings),
                     (&param.identifier).into(),
                 )?;
             } else {
@@ -1569,18 +1560,21 @@ fn assign_args_to_params(
 fn assign_args_to_params_kw(
     function_expression: NodeRef<'_, FunctionExpression>,
     mut args: crate::std::args::KwArgs,
-    fn_memory: &mut ProgramMemory,
+    exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
     let source_ranges = vec![function_expression.into()];
+    let mem = &mut exec_state.global.memory;
+    let settings = &exec_state.mod_local.settings;
+
     for param in function_expression.params.iter() {
         if param.labeled {
             let arg = args.labeled.get(&param.identifier.name);
             let arg_val = match arg {
                 Some(arg) => arg.value.clone(),
                 None => match param.default_value {
-                    Some(ref default_val) => KclValue::from(default_val.clone()),
+                    Some(ref default_val) => KclValue::from_default_param(default_val.clone(), settings),
                     None => {
                         return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges,
@@ -1592,7 +1586,7 @@ fn assign_args_to_params_kw(
                     }
                 },
             };
-            fn_memory.add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
+            mem.add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
         } else {
             let Some(unlabeled) = args.unlabeled.take() else {
                 let param_name = &param.identifier.name;
@@ -1609,7 +1603,7 @@ fn assign_args_to_params_kw(
                     })
                 });
             };
-            fn_memory.add(
+            mem.add(
                 param.identifier.name.clone(),
                 unlabeled.value.clone(),
                 (&param.identifier).into(),
@@ -1630,7 +1624,7 @@ pub(crate) async fn call_user_defined_function(
     // variables shadow variables in the parent scope.  The new environment's
     // parent should be the environment of the closure.
     exec_state.mut_memory().push_new_env_for_call(memory);
-    if let Err(e) = assign_args_to_params(function_expression, args, exec_state.mut_memory()) {
+    if let Err(e) = assign_args_to_params(function_expression, args, exec_state) {
         exec_state.mut_memory().pop_env();
         return Err(e);
     }
@@ -1663,7 +1657,7 @@ pub(crate) async fn call_user_defined_function_kw(
     // variables shadow variables in the parent scope.  The new environment's
     // parent should be the environment of the closure.
     exec_state.mut_memory().push_new_env_for_call(memory);
-    if let Err(e) = assign_args_to_params_kw(function_expression, args, exec_state.mut_memory()) {
+    if let Err(e) = assign_args_to_params_kw(function_expression, args, exec_state) {
         exec_state.mut_memory().pop_env();
         return Err(e);
     }
@@ -1727,7 +1721,7 @@ impl JsonSchema for FunctionParam<'_> {
 #[cfg(test)]
 mod test {
     use crate::{
-        execution::parse_execute,
+        execution::{memory::ProgramMemory, parse_execute},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
 
@@ -1737,8 +1731,9 @@ mod test {
     fn test_assign_args_to_params() {
         // Set up a little framework for this test.
         fn mem(number: usize) -> KclValue {
-            KclValue::Int {
-                value: number as i64,
+            KclValue::Number {
+                value: number as f64,
+                ty: NumericType::count(),
                 meta: Default::default(),
             }
         }
@@ -1839,24 +1834,13 @@ mod test {
             // Run each test.
             let func_expr = &Node::no_src(FunctionExpression {
                 params,
-                body: Node {
-                    inner: crate::parsing::ast::types::Program {
-                        body: Vec::new(),
-                        non_code_meta: Default::default(),
-                        shebang: None,
-                        digest: None,
-                    },
-                    start: 0,
-                    end: 0,
-                    module_id: ModuleId::default(),
-                    trivia: Vec::new(),
-                },
+                body: crate::parsing::ast::types::Program::empty(),
                 return_type: None,
                 digest: None,
             });
             let args = args.into_iter().map(Arg::synthetic).collect();
-            let mut actual = ProgramMemory::new();
-            let actual = assign_args_to_params(func_expr, args, &mut actual).map(|_| actual);
+            let mut exec_state = ExecState::new(&Default::default());
+            let actual = assign_args_to_params(func_expr, args, &mut exec_state).map(|_| exec_state.global.memory);
             assert_eq!(
                 actual, expected,
                 "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"

@@ -102,21 +102,22 @@ async fn execute(test_name: &str, render_to_png: bool) {
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
-            assert_snapshot(test_name, "Program memory after executing", || {
-                insta::assert_json_snapshot!("program_memory", exec_state.memory(), {
-                    ".environments[].**[].from[]" => rounded_redaction(4),
-                    ".environments[].**[].to[]" => rounded_redaction(4),
-                    ".environments[].**[].x[]" => rounded_redaction(4),
-                    ".environments[].**[].y[]" => rounded_redaction(4),
-                    ".environments[].**[].z[]" => rounded_redaction(4),
-                });
-            });
+            let outcome = exec_state.to_wasm_outcome();
             assert_common_snapshots(
                 test_name,
-                exec_state.mod_local.operations,
-                exec_state.global.artifact_commands,
-                exec_state.global.artifact_graph,
+                outcome.operations,
+                outcome.artifact_commands,
+                outcome.artifact_graph,
             );
+            assert_snapshot(test_name, "Variables in memory after executing", || {
+                insta::assert_json_snapshot!("program_memory", outcome.variables, {
+                        ".**[].from[]" => rounded_redaction(4),
+                        ".**[].to[]" => rounded_redaction(4),
+                        ".**[].x[]" => rounded_redaction(4),
+                        ".**[].y[]" => rounded_redaction(4),
+                        ".**[].z[]" => rounded_redaction(4),
+                })
+            });
         }
         Err(e) => {
             let ok_path_str = format!("tests/{test_name}/program_memory.snap");
@@ -1580,6 +1581,27 @@ mod parametric_with_tan_arc {
 }
 mod parametric {
     const TEST_NAME: &str = "parametric";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod ssi_pattern {
+    const TEST_NAME: &str = "ssi_pattern";
 
     /// Test parsing KCL.
     #[test]

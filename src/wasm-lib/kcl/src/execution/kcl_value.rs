@@ -8,17 +8,20 @@ use crate::{
     errors::KclErrorDetails,
     exec::Sketch,
     execution::{
-        Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier,
+        ExecState, Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet,
+        TagIdentifier,
     },
     parsing::{
-        ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
+        ast::types::{
+            DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
+        },
         token::NumericSuffix,
     },
     std::{args::Arg, FnAsArg},
-    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
+    ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
-use super::memory::EnvironmentRef;
+use super::{memory::EnvironmentRef, MetaSettings};
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
@@ -39,11 +42,7 @@ pub enum KclValue {
     },
     Number {
         value: f64,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    Int {
-        value: i64,
+        ty: NumericType,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -167,7 +166,6 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
-            KclValue::Int { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
             KclValue::Array { meta, .. } => to_vec_sr(&meta),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
@@ -199,7 +197,6 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
-            KclValue::Int { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Array { meta, .. } => to_vec_sr(meta),
@@ -216,8 +213,7 @@ impl KclValue {
         match self {
             KclValue::Uuid { value: _, meta } => meta.clone(),
             KclValue::Bool { value: _, meta } => meta.clone(),
-            KclValue::Number { value: _, meta } => meta.clone(),
-            KclValue::Int { value: _, meta } => meta.clone(),
+            KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
             KclValue::Array { value: _, meta } => meta.clone(),
             KclValue::Object { value: _, meta } => meta.clone(),
@@ -296,7 +292,6 @@ impl KclValue {
             KclValue::Face { .. } => "Face",
             KclValue::Bool { .. } => "boolean (true/false value)",
             KclValue::Number { .. } => "number",
-            KclValue::Int { .. } => "integer",
             KclValue::String { .. } => "string (text)",
             KclValue::Array { .. } => "array (list)",
             KclValue::Object { .. } => "object",
@@ -306,11 +301,26 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn from_literal(literal: LiteralValue, meta: Vec<Metadata>) -> Self {
-        match literal {
-            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
+    pub(crate) fn from_literal(literal: Node<Literal>, settings: &MetaSettings) -> Self {
+        let meta = vec![literal.metadata()];
+        match literal.inner.value {
+            LiteralValue::Number { value, suffix } => KclValue::Number {
+                value,
+                meta,
+                ty: NumericType::from_parsed(suffix, settings),
+            },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
+        }
+    }
+
+    pub(crate) fn from_default_param(param: DefaultParamVal, settings: &MetaSettings) -> Self {
+        match param {
+            DefaultParamVal::Literal(lit) => Self::from_literal(lit, settings),
+            DefaultParamVal::KclNone(none) => KclValue::KclNone {
+                value: none,
+                meta: Default::default(),
+            },
         }
     }
 
@@ -326,20 +336,30 @@ impl KclValue {
 
     /// Put the number into a KCL value.
     pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
-        Self::Number { value: f, meta }
+        Self::Number {
+            value: f,
+            meta,
+            ty: NumericType::Unknown,
+        }
+    }
+
+    pub const fn from_number_with_type(f: f64, ty: NumericType, meta: Vec<Metadata>) -> Self {
+        Self::Number { value: f, meta, ty }
     }
 
     /// Put the point into a KCL value.
-    pub fn from_point2d(p: [f64; 2], meta: Vec<Metadata>) -> Self {
+    pub fn from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
         Self::Array {
             value: vec![
                 Self::Number {
                     value: p[0],
                     meta: meta.clone(),
+                    ty: ty.clone(),
                 },
                 Self::Number {
                     value: p[1],
                     meta: meta.clone(),
+                    ty,
                 },
             ],
             meta,
@@ -348,7 +368,6 @@ impl KclValue {
 
     pub(crate) fn as_usize(&self) -> Option<usize> {
         match self {
-            KclValue::Int { value, .. } if *value > 0 => Some(*value as usize),
             KclValue::Number { value, .. } => crate::try_f64_to_usize(*value),
             _ => None,
         }
@@ -356,7 +375,6 @@ impl KclValue {
 
     pub fn as_int(&self) -> Option<i64> {
         match self {
-            KclValue::Int { value, .. } => Some(*value),
             KclValue::Number { value, .. } => crate::try_f64_to_i64(*value),
             _ => None,
         }
@@ -437,10 +455,8 @@ impl KclValue {
     }
 
     pub fn as_f64(&self) -> Option<f64> {
-        if let KclValue::Number { value, meta: _ } = &self {
+        if let KclValue::Number { value, .. } = &self {
             Some(*value)
-        } else if let KclValue::Int { value, meta: _ } = &self {
-            Some(*value as f64)
         } else {
             None
         }
@@ -605,6 +621,73 @@ impl KclValue {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum NumericType {
+    // Specified by the user (directly or indirectly)
+    Known(UnitType),
+    // Unspecified, using defaults
+    Default { len: UnitLen, angle: UnitAngle },
+    // Exceeded the ability of the type system to track.
+    Unknown,
+    // Type info has been explicitly cast away.
+    Any,
+}
+
+impl NumericType {
+    pub fn count() -> Self {
+        NumericType::Known(UnitType::Count)
+    }
+
+    pub fn combine(self, other: &NumericType) -> NumericType {
+        if &self == other {
+            self
+        } else {
+            NumericType::Unknown
+        }
+    }
+
+    pub fn from_parsed(suffix: NumericSuffix, settings: &super::MetaSettings) -> Self {
+        match suffix {
+            NumericSuffix::None => NumericType::Default {
+                len: settings.default_length_units,
+                angle: settings.default_angle_units,
+            },
+            NumericSuffix::Count => NumericType::Known(UnitType::Count),
+            NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLen::Mm)),
+            NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLen::Cm)),
+            NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLen::M)),
+            NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLen::Inches)),
+            NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLen::Feet)),
+            NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLen::Yards)),
+            NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
+            NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
+        }
+    }
+}
+
+impl From<UnitLen> for NumericType {
+    fn from(value: UnitLen) -> Self {
+        NumericType::Known(UnitType::Length(value))
+    }
+}
+
+impl From<UnitAngle> for NumericType {
+    fn from(value: UnitAngle) -> Self {
+        NumericType::Known(UnitType::Angle(value))
+    }
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum UnitType {
+    Count,
+    Length(UnitLen),
+    Angle(UnitAngle),
+}
+
 // TODO called UnitLen so as not to clash with UnitLength in settings)
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
@@ -670,6 +753,19 @@ impl From<UnitLen> for crate::UnitLength {
             UnitLen::M => crate::UnitLength::M,
             UnitLen::Mm => crate::UnitLength::Mm,
             UnitLen::Yards => crate::UnitLength::Yd,
+        }
+    }
+}
+
+impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
+    fn from(unit: UnitLen) -> Self {
+        match unit {
+            UnitLen::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
+            UnitLen::Feet => kittycad_modeling_cmds::units::UnitLength::Feet,
+            UnitLen::Inches => kittycad_modeling_cmds::units::UnitLength::Inches,
+            UnitLen::M => kittycad_modeling_cmds::units::UnitLength::Meters,
+            UnitLen::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
+            UnitLen::Yards => kittycad_modeling_cmds::units::UnitLength::Yards,
         }
     }
 }

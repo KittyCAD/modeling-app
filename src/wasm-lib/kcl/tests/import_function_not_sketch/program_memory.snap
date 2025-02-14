@@ -1,592 +1,152 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing import_function_not_sketch.kcl
+description: Variables in memory after executing import_function_not_sketch.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "one": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 106,
-                    "left": {
-                      "arguments": [],
-                      "callee": {
-                        "end": 100,
-                        "name": "two",
-                        "start": 97,
-                        "type": "Identifier"
-                      },
-                      "end": 102,
-                      "start": 97,
-                      "type": "CallExpression",
-                      "type": "CallExpression"
-                    },
-                    "operator": "-",
-                    "right": {
-                      "end": 106,
-                      "raw": "1",
-                      "start": 105,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.0,
-                        "suffix": "None"
-                      }
-                    },
-                    "start": 97,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "end": 106,
-                  "start": 90,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 108,
-              "start": 86
-            },
-            "end": 108,
-            "params": [],
-            "start": 83,
-            "type": "FunctionExpression"
-          },
-          "memory": [
-            0,
-            1
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                83,
-                108,
-                0
-              ]
-            }
-          ]
-        },
-        "two": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 388,
-                    "moduleId": 1,
-                    "raw": "5",
-                    "start": 387,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 5.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "end": 388,
-                  "moduleId": 1,
-                  "start": 380,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 390,
-              "moduleId": 1,
-              "start": 378
-            },
-            "end": 390,
-            "moduleId": 1,
-            "params": [],
-            "start": 372,
-            "type": "FunctionExpression"
-          },
-          "memory": [
-            1,
-            1
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                372,
-                390,
-                1
-              ]
-            }
-          ]
-        }
-      },
-      "snapshots": [
-        {
-          "parent_snapshot": null,
-          "data": {
-            "one": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            }
-          }
-        }
-      ],
-      "parent": null
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
     },
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "part001": {
-          "type": "Solid",
-          "value": {
-            "type": "Solid",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": [
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  109,
-                  127,
-                  1
-                ],
-                "tag": null,
-                "type": "extrudePlane"
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "one": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "argument": {
+              "end": 106,
+              "left": {
+                "arguments": [],
+                "callee": {
+                  "end": 100,
+                  "name": "two",
+                  "start": 97,
+                  "type": "Identifier"
+                },
+                "end": 102,
+                "start": 97,
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  133,
-                  152,
-                  1
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  158,
-                  177,
-                  1
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  183,
-                  202,
-                  1
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  208,
-                  233,
-                  1
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  239,
-                  260,
-                  1
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  266,
-                  285,
-                  1
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  291,
-                  298,
-                  1
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              }
-            ],
-            "sketch": {
-              "type": "Sketch",
-              "id": "[uuid]",
-              "paths": [
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      109,
-                      127,
-                      1
-                    ]
-                  },
-                  "from": [
-                    4.0,
-                    12.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    6.0,
-                    12.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      133,
-                      152,
-                      1
-                    ]
-                  },
-                  "from": [
-                    6.0,
-                    12.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    6.0,
-                    6.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      158,
-                      177,
-                      1
-                    ]
-                  },
-                  "from": [
-                    6.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    10.0,
-                    0.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      183,
-                      202,
-                      1
-                    ]
-                  },
-                  "from": [
-                    10.0,
-                    0.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    10.0,
-                    -6.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      208,
-                      233,
-                      1
-                    ]
-                  },
-                  "from": [
-                    10.0,
-                    -6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    6.25,
-                    -10.5
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      239,
-                      260,
-                      1
-                    ]
-                  },
-                  "from": [
-                    6.25,
-                    -10.5
-                  ],
-                  "tag": null,
-                  "to": [
-                    6.25,
-                    -16.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      266,
-                      285,
-                      1
-                    ]
-                  },
-                  "from": [
-                    6.25,
-                    -16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    4.25,
-                    -16.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      291,
-                      298,
-                      1
-                    ]
-                  },
-                  "from": [
-                    4.25,
-                    -16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    4.0,
-                    12.0
-                  ],
-                  "type": "ToPoint"
-                }
-              ],
-              "on": {
-                "type": "plane",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": "XY",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
-                },
-                "__meta": []
-              },
-              "start": {
-                "from": [
-                  4.0,
-                  12.0
-                ],
-                "to": [
-                  4.0,
-                  12.0
-                ],
-                "tag": null,
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    77,
-                    103,
-                    1
-                  ]
+              "operator": "-",
+              "right": {
+                "end": 106,
+                "raw": "1",
+                "start": 105,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    77,
-                    103,
-                    1
-                  ]
-                }
-              ]
+              "start": 97,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
             },
-            "height": 0.0,
-            "startCapId": null,
-            "endCapId": null,
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  77,
-                  103,
-                  1
-                ]
-              }
-            ]
+            "end": 106,
+            "start": 90,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
           }
-        },
-        "two": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 388,
-                    "moduleId": 1,
-                    "raw": "5",
-                    "start": 387,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 5.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "end": 388,
-                  "moduleId": 1,
-                  "start": 380,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 390,
-              "moduleId": 1,
-              "start": 378
-            },
-            "end": 390,
-            "moduleId": 1,
-            "params": [],
-            "start": 372,
-            "type": "FunctionExpression"
-          },
-          "memory": [
-            1,
-            1
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                372,
-                390,
-                1
-              ]
-            }
-          ]
-        }
+        ],
+        "end": 108,
+        "start": 86
       },
-      "snapshots": [
-        {
-          "parent_snapshot": null,
-          "data": {
-            "two": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            }
+      "end": 108,
+      "params": [],
+      "start": 83,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      0,
+      1
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          83,
+          108,
+          0
+        ]
+      }
+    ]
+  },
+  "two": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "argument": {
+              "end": 388,
+              "moduleId": 1,
+              "raw": "5",
+              "start": 387,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 5.0,
+                "suffix": "None"
+              }
+            },
+            "end": 388,
+            "moduleId": 1,
+            "start": 380,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
           }
-        }
-      ],
-      "parent": null
-    }
-  ],
-  "currentEnv": [
-    0,
-    0
-  ],
-  "callStack": []
+        ],
+        "end": 390,
+        "moduleId": 1,
+        "start": 378
+      },
+      "end": 390,
+      "moduleId": 1,
+      "params": [],
+      "start": 372,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      1,
+      1
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          372,
+          390,
+          1
+        ]
+      }
+    ]
+  }
 }

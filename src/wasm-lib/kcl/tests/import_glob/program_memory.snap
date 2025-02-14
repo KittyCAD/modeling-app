@@ -1,200 +1,109 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing import_glob.kcl
+description: Variables in memory after executing import_glob.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "foo": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 47,
-                    "moduleId": 1,
-                    "raw": "42",
-                    "start": 45,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 42.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "end": 47,
-                  "moduleId": 1,
-                  "start": 38,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 49,
-              "moduleId": 1,
-              "start": 34
-            },
-            "end": 49,
-            "moduleId": 1,
-            "params": [],
-            "start": 31,
-            "type": "FunctionExpression"
-          },
-          "memory": [
-            1,
-            1
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                31,
-                49,
-                1
-              ]
-            }
-          ]
-        },
-        "three": {
-          "type": "Number",
-          "value": 3.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                15,
-                16,
-                1
-              ]
-            }
-          ]
-        }
-      },
-      "snapshots": [],
-      "parent": null
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
     },
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "foo": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 47,
-                    "moduleId": 1,
-                    "raw": "42",
-                    "start": 45,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 42.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "end": 47,
-                  "moduleId": 1,
-                  "start": 38,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 49,
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "foo": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "argument": {
+              "end": 47,
               "moduleId": 1,
-              "start": 34
+              "raw": "42",
+              "start": 45,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 42.0,
+                "suffix": "None"
+              }
             },
-            "end": 49,
+            "end": 47,
             "moduleId": 1,
-            "params": [],
-            "start": 31,
-            "type": "FunctionExpression"
-          },
-          "memory": [
-            1,
-            1
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                31,
-                49,
-                1
-              ]
-            }
-          ]
-        },
-        "three": {
-          "type": "Number",
-          "value": 3.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                15,
-                16,
-                1
-              ]
-            }
-          ]
-        }
-      },
-      "snapshots": [
-        {
-          "parent_snapshot": null,
-          "data": {
-            "foo": {
-              "type": "Tombstone",
-              "value": null,
-              "__meta": []
-            }
+            "start": 38,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
           }
-        }
-      ],
-      "parent": null
-    }
-  ],
-  "currentEnv": [
-    0,
-    0
-  ],
-  "callStack": []
+        ],
+        "end": 49,
+        "moduleId": 1,
+        "start": 34
+      },
+      "end": 49,
+      "moduleId": 1,
+      "params": [],
+      "start": 31,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      1,
+      1
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          31,
+          49,
+          1
+        ]
+      }
+    ]
+  },
+  "three": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          15,
+          16,
+          1
+        ]
+      }
+    ]
+  }
 }

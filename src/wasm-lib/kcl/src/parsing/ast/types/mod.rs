@@ -52,7 +52,7 @@ pub struct Node<T> {
     #[serde(default, skip_serializing_if = "ModuleId::is_top_level")]
     pub module_id: ModuleId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub trivia: NodeList<NonCodeNode>,
+    pub outer_attrs: NodeList<Annotation>,
 }
 
 impl<T> Node<T> {
@@ -96,7 +96,7 @@ impl<T> Node<T> {
             start,
             end,
             module_id,
-            trivia: Vec::new(),
+            outer_attrs: Vec::new(),
         }
     }
 
@@ -106,7 +106,7 @@ impl<T> Node<T> {
             start: 0,
             end: 0,
             module_id: ModuleId::default(),
-            trivia: Vec::new(),
+            outer_attrs: Vec::new(),
         }
     }
 
@@ -116,7 +116,7 @@ impl<T> Node<T> {
             start,
             end,
             module_id,
-            trivia: Vec::new(),
+            outer_attrs: Vec::new(),
         })
     }
 
@@ -181,6 +181,8 @@ pub struct Program {
     pub non_code_meta: NonCodeMeta,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shebang: Option<Node<Shebang>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub inner_attrs: NodeList<Annotation>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -261,28 +263,12 @@ impl Node<Program> {
         Ok(findings)
     }
 
-    pub fn annotations(&self) -> impl Iterator<Item = &Node<NonCodeNode>> {
-        self.non_code_meta
-            .start_nodes
-            .iter()
-            .filter(|n| n.value_is_annotation())
-    }
-
-    pub fn annotations_mut(&mut self) -> impl Iterator<Item = &mut Node<NonCodeNode>> {
-        self.non_code_meta
-            .start_nodes
-            .iter_mut()
-            .filter(|n| n.value_is_annotation())
-    }
-
     /// Get the annotations for the meta settings from the kcl file.
     pub fn meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
-        for annotation_node in self.annotations() {
-            let annotation = &annotation_node.value;
-            if annotation.annotation_name() == Some(annotations::SETTINGS) {
-                let source_range = annotation_node.as_source_range();
+        for annotation in &self.inner_attrs {
+            if annotation.name() == Some(annotations::SETTINGS) {
                 let mut meta_settings = crate::execution::MetaSettings::default();
-                meta_settings.update_from_annotation(annotation, source_range)?;
+                meta_settings.update_from_annotation(annotation)?;
                 return Ok(Some(meta_settings));
             }
         }
@@ -293,24 +279,18 @@ impl Node<Program> {
     pub fn change_meta_settings(&mut self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
-        for node in new_program.annotations_mut() {
-            if node.value.annotation_name() == Some(annotations::SETTINGS) {
-                let annotation = NonCodeValue::new_from_meta_settings(&settings);
-                *node = Node::no_src(NonCodeNode {
-                    value: annotation,
-                    digest: None,
-                });
+        for node in &mut new_program.inner_attrs {
+            if node.name() == Some(annotations::SETTINGS) {
+                *node = Node::no_src(Annotation::new_from_meta_settings(&settings));
                 found = true;
                 break;
             }
         }
 
         if !found {
-            let annotation = NonCodeValue::new_from_meta_settings(&settings);
-            new_program.non_code_meta.start_nodes.push(Node::no_src(NonCodeNode {
-                value: annotation,
-                digest: None,
-            }));
+            new_program
+                .inner_attrs
+                .push(Node::no_src(Annotation::new_from_meta_settings(&settings)));
         }
 
         Ok(new_program)
@@ -318,6 +298,10 @@ impl Node<Program> {
 }
 
 impl Program {
+    #[cfg(test)]
+    pub fn empty() -> Node<Self> {
+        Node::no_src(Program::default())
+    }
     /// Is the last body item an expression?
     pub fn ends_with_expr(&self) -> bool {
         let Some(ref last) = self.body.last() else {
@@ -627,6 +611,33 @@ impl BodyItem {
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.end,
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.end,
             BodyItem::ReturnStatement(return_statement) => return_statement.end,
+        }
+    }
+
+    pub(crate) fn set_attrs(&mut self, attr: NodeList<Annotation>) {
+        match self {
+            BodyItem::ImportStatement(node) => node.outer_attrs = attr,
+            BodyItem::ExpressionStatement(node) => node.outer_attrs = attr,
+            BodyItem::VariableDeclaration(node) => node.outer_attrs = attr,
+            BodyItem::ReturnStatement(node) => node.outer_attrs = attr,
+        }
+    }
+
+    pub(crate) fn get_attrs(&self) -> &[Node<Annotation>] {
+        match self {
+            BodyItem::ImportStatement(node) => &node.outer_attrs,
+            BodyItem::ExpressionStatement(node) => &node.outer_attrs,
+            BodyItem::VariableDeclaration(node) => &node.outer_attrs,
+            BodyItem::ReturnStatement(node) => &node.outer_attrs,
+        }
+    }
+
+    pub(crate) fn get_attrs_mut(&mut self) -> &mut [Node<Annotation>] {
+        match self {
+            BodyItem::ImportStatement(node) => &mut node.outer_attrs,
+            BodyItem::ExpressionStatement(node) => &mut node.outer_attrs,
+            BodyItem::VariableDeclaration(node) => &mut node.outer_attrs,
+            BodyItem::ReturnStatement(node) => &mut node.outer_attrs,
         }
     }
 }
@@ -1134,24 +1145,6 @@ impl NonCodeNode {
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
-            n @ NonCodeValue::Annotation { .. } => n.annotation_name().unwrap_or("").to_owned(),
-        }
-    }
-
-    pub fn annotation(&self) -> Option<&NonCodeValue> {
-        match &self.value {
-            a @ NonCodeValue::Annotation { .. } => Some(a),
-            _ => None,
-        }
-    }
-
-    pub fn value_is_annotation(&self) -> bool {
-        match self.value {
-            NonCodeValue::InlineComment { .. }
-            | NonCodeValue::BlockComment { .. }
-            | NonCodeValue::NewLineBlockComment { .. }
-            | NonCodeValue::NewLine => false,
-            NonCodeValue::Annotation { .. } => true,
         }
     }
 }
@@ -1202,37 +1195,6 @@ pub enum NonCodeValue {
     // A new line like `\n\n` NOT a new line like `\n`.
     // This is also not a comment.
     NewLine,
-    Annotation {
-        name: Option<Node<Identifier>>,
-        properties: Option<Vec<Node<ObjectProperty>>>,
-    },
-}
-
-impl NonCodeValue {
-    pub fn annotation_name(&self) -> Option<&str> {
-        match self {
-            NonCodeValue::Annotation { name, .. } => name.as_ref().map(|i| &*i.name),
-            _ => None,
-        }
-    }
-
-    pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> NonCodeValue {
-        let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
-            Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
-            Expr::Identifier(Box::new(Identifier::new(&settings.default_length_units.to_string()))),
-        )];
-
-        if settings.default_angle_units != Default::default() {
-            properties.push(ObjectProperty::new(
-                Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
-                Expr::Identifier(Box::new(Identifier::new(&settings.default_angle_units.to_string()))),
-            ));
-        }
-        NonCodeValue::Annotation {
-            name: Some(Identifier::new(annotations::SETTINGS)),
-            properties: Some(properties),
-        }
-    }
 }
 
 #[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1271,6 +1233,19 @@ impl NonCodeMeta {
             .iter()
             .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
     }
+
+    /// Get the non-code meta immediately before the ith node in the AST that self is attached to.
+    ///
+    /// Returns an empty slice if there is no non-code metadata associated with the node.
+    pub fn get(&self, i: usize) -> &[Node<NonCodeNode>] {
+        if i == 0 {
+            &self.start_nodes
+        } else if let Some(meta) = self.non_code_nodes.get(&(i - 1)) {
+            meta
+        } else {
+            &[]
+        }
+    }
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -1298,6 +1273,47 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
             start_nodes: helper.start_nodes,
             digest: None,
         })
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct Annotation {
+    pub name: Option<Node<Identifier>>,
+    pub properties: Option<Vec<Node<ObjectProperty>>>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl Annotation {
+    pub fn is_inner(&self) -> bool {
+        self.name.is_some()
+    }
+
+    pub fn name(&self) -> Option<&str> {
+        self.name.as_ref().map(|n| &*n.name)
+    }
+
+    pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> Annotation {
+        let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
+            Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
+            Expr::Identifier(Box::new(Identifier::new(&settings.default_length_units.to_string()))),
+        )];
+
+        if settings.default_angle_units != Default::default() {
+            properties.push(ObjectProperty::new(
+                Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
+                Expr::Identifier(Box::new(Identifier::new(&settings.default_angle_units.to_string()))),
+            ));
+        }
+        Annotation {
+            name: Some(Identifier::new(annotations::SETTINGS)),
+            properties: Some(properties),
+            digest: None,
+        }
     }
 }
 
@@ -1495,7 +1511,7 @@ impl ImportStatement {
             ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => s.split('.'),
             _ => return None,
         };
-        let name = parts.next()?;
+        let path = parts.next()?;
         let _ext = parts.next()?;
         let rest = parts.next();
 
@@ -1503,7 +1519,7 @@ impl ImportStatement {
             return None;
         }
 
-        Some(name.to_owned())
+        path.rsplit('/').next().map(str::to_owned)
     }
 }
 
@@ -1565,7 +1581,7 @@ pub struct CallExpression {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
     pub callee: Node<Identifier>,
     pub unlabeled: Option<Expr>,
@@ -1575,6 +1591,9 @@ pub struct CallExpressionKw {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
+
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1698,6 +1717,7 @@ impl CallExpressionKw {
             unlabeled,
             arguments,
             digest: None,
+            non_code_meta: Default::default(),
         }))
     }
 
@@ -2061,30 +2081,6 @@ impl Literal {
             value,
             digest: None,
         })
-    }
-}
-
-impl From<Node<Literal>> for KclValue {
-    fn from(literal: Node<Literal>) -> Self {
-        let meta = vec![literal.metadata()];
-        match literal.inner.value {
-            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
-            LiteralValue::String(value) => KclValue::String { value, meta },
-            LiteralValue::Bool(value) => KclValue::Bool { value, meta },
-        }
-    }
-}
-
-impl From<&Node<Literal>> for KclValue {
-    fn from(literal: &Node<Literal>) -> Self {
-        Self::from(literal.to_owned())
-    }
-}
-
-impl From<&BoxNode<Literal>> for KclValue {
-    fn from(literal: &BoxNode<Literal>) -> Self {
-        let b: &Node<Literal> = literal;
-        Self::from(b)
     }
 }
 
@@ -3072,20 +3068,7 @@ pub enum FnArgType {
 #[allow(clippy::large_enum_variant)]
 pub enum DefaultParamVal {
     KclNone(KclNone),
-    Literal(Literal),
-}
-
-// TODO: This should actually take metadata.
-impl From<DefaultParamVal> for KclValue {
-    fn from(v: DefaultParamVal) -> Self {
-        match v {
-            DefaultParamVal::KclNone(kcl_none) => Self::KclNone {
-                value: kcl_none,
-                meta: Default::default(),
-            },
-            DefaultParamVal::Literal(literal) => Self::from_literal(literal.value, Vec::new()),
-        }
-    }
+    Literal(Node<Literal>),
 }
 
 impl DefaultParamVal {
@@ -3810,12 +3793,7 @@ const cylinder = startSketchOn('-XZ')
                 (0..=0),
                 Node::no_src(FunctionExpression {
                     params: vec![],
-                    body: Node::no_src(Program {
-                        body: Vec::new(),
-                        non_code_meta: Default::default(),
-                        shebang: None,
-                        digest: None,
-                    }),
+                    body: Program::empty(),
                     return_type: None,
                     digest: None,
                 }),
@@ -3834,18 +3812,7 @@ const cylinder = startSketchOn('-XZ')
                         labeled: true,
                         digest: None,
                     }],
-                    body: Node {
-                        inner: Program {
-                            body: Vec::new(),
-                            non_code_meta: Default::default(),
-                            shebang: None,
-                            digest: None,
-                        },
-                        start: 0,
-                        end: 0,
-                        module_id: ModuleId::default(),
-                        trivia: Vec::new(),
-                    },
+                    body: Program::empty(),
                     return_type: None,
                     digest: None,
                 }),
@@ -3864,18 +3831,7 @@ const cylinder = startSketchOn('-XZ')
                         labeled: true,
                         digest: None,
                     }],
-                    body: Node {
-                        inner: Program {
-                            body: Vec::new(),
-                            non_code_meta: Default::default(),
-                            shebang: None,
-                            digest: None,
-                        },
-                        start: 0,
-                        end: 0,
-                        module_id: ModuleId::default(),
-                        trivia: Vec::new(),
-                    },
+                    body: Program::empty(),
                     return_type: None,
                     digest: None,
                 }),
@@ -3906,18 +3862,7 @@ const cylinder = startSketchOn('-XZ')
                             digest: None,
                         },
                     ],
-                    body: Node {
-                        inner: Program {
-                            body: Vec::new(),
-                            non_code_meta: Default::default(),
-                            shebang: None,
-                            digest: None,
-                        },
-                        start: 0,
-                        end: 0,
-                        module_id: ModuleId::default(),
-                        trivia: Vec::new(),
-                    },
+                    body: Program::empty(),
                     return_type: None,
                     digest: None,
                 }),

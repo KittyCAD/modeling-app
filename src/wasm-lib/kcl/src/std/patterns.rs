@@ -16,12 +16,12 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::args::Arg;
+use super::{args::Arg, FnAsArg};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, SketchSet,
-        Solid, SolidSet,
+        kcl_value::NumericType, ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d,
+        Point3d, Sketch, SketchSet, Solid, SolidSet,
     },
     std::Args,
     SourceRange,
@@ -47,10 +47,14 @@ pub struct LinearPattern3dData {
 
 /// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (num_repetitions, transform, extr, use_original) = args.get_pattern_transform_args()?;
+    let solid_set = args.get_unlabeled_kw_arg("solidSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let transform: FnAsArg<'_> = args.get_kw_arg("transform")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
     let solids = inner_pattern_transform(
-        num_repetitions,
+        solid_set,
+        instances,
         FunctionParam {
             inner: transform.func,
             fn_expr: transform.expr,
@@ -58,7 +62,6 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
             ctx: args.ctx.clone(),
             memory: transform.memory,
         },
-        extr,
         use_original,
         exec_state,
         &args,
@@ -69,11 +72,14 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 
 /// Repeat some 2D sketch, changing each repetition slightly.
 pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (num_repetitions, transform, sketch, use_original): (u32, super::FnAsArg<'_>, SketchSet, Option<bool>) =
-        super::args::FromArgs::from_args(&args, 0)?;
+    let sketch_set = args.get_unlabeled_kw_arg("sketchSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let transform: FnAsArg<'_> = args.get_kw_arg("transform")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
     let sketches = inner_pattern_transform_2d(
-        num_repetitions,
+        sketch_set,
+        instances,
         FunctionParam {
             inner: transform.func,
             fn_expr: transform.expr,
@@ -81,7 +87,6 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
             ctx: args.ctx.clone(),
             memory: transform.memory,
         },
-        sketch,
         use_original,
         exec_state,
         &args,
@@ -96,7 +101,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// Transformation function could alter rotation, scale, visibility, position, etc.
 ///
 /// The `patternTransform` call itself takes a number for how many total instances of
-/// the shape should be. For example, if you use a circle with `patternTransform(4, transform)`
+/// the shape should be. For example, if you use a circle with `patternTransform(instances = 4, transform = f)`
 /// then there will be 4 circles: the original, and 3 created by replicating the original and
 /// calling the transform function on each.
 ///
@@ -140,7 +145,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(length = 5)
-///   |> patternTransform(4, transform, %)
+///   |> patternTransform(instances = 4, transform = transform)
 /// ```
 /// ```no_run
 /// // Each instance will be shifted along the X axis,
@@ -153,7 +158,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(length = 5)
-///   |> patternTransform(4, transform, %)
+///   |> patternTransform(instances = 4, transform = transform)
 /// ```
 /// ```no_run
 /// fn cube(length, center) {
@@ -192,7 +197,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///
 /// myCubes =
 ///   cube(width, [100,0])
-///   |> patternTransform(25, transform, %)
+///   |> patternTransform(instances = 25, transform = transform)
 /// ```
 ///
 /// ```no_run
@@ -228,7 +233,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 /// myCubes =
 ///   cube(width, [100,100])
-///   |> patternTransform(4, transform, %)
+///   |> patternTransform(instances = 4, transform = transform)
 /// ```
 /// ```no_run
 /// // Parameters
@@ -252,7 +257,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 /// // The vase is 100 layers tall.
 /// // The 100 layers are replica of each other, with a slight transformation applied to each.
-/// vase = layer() |> patternTransform(100, transform, %)
+/// vase = layer() |> patternTransform(instances = 100, transform = transform)
 /// ```
 /// ```
 /// fn transform(i) {
@@ -271,33 +276,48 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///        inscribed: false
 ///      }, %)
 ///   |> extrude(length = 4)
-///   |> patternTransform(3, transform, %)
+///   |> patternTransform(instances = 3, transform = transform)
 /// ```
 #[stdlib {
     name = "patternTransform",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid_set = { docs = "The solid(s) to duplicate" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
+        transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
+    }
 }]
 async fn inner_pattern_transform<'a>(
-    total_instances: u32,
-    transform_function: FunctionParam<'a>,
     solid_set: SolidSet,
+    instances: u32,
+    transform: FunctionParam<'a>,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
-    if total_instances < 1 {
+    let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
+    if instances < 1 {
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: MUST_HAVE_ONE_INSTANCE.to_owned(),
         }));
     }
-    for i in 1..total_instances {
-        let t = make_transform::<Box<Solid>>(i, &transform_function, args.source_range, exec_state).await?;
-        transform.push(t);
+    for i in 1..instances {
+        let t = make_transform::<Box<Solid>>(i, &transform, args.source_range, exec_state).await?;
+        transform_vec.push(t);
     }
-    execute_pattern_transform(transform, solid_set, use_original.unwrap_or_default(), exec_state, args).await
+    execute_pattern_transform(
+        transform_vec,
+        solid_set,
+        use_original.unwrap_or_default(),
+        exec_state,
+        args,
+    )
+    .await
 }
 
 /// Just like patternTransform, but works on 2D sketches not 3D solids.
@@ -310,32 +330,47 @@ async fn inner_pattern_transform<'a>(
 /// // Sketch 4 circles.
 /// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center: [0, 0], radius: 2 }, %)
-///   |> patternTransform2d(4, transform, %)
+///   |> patternTransform2d(instances = 4, transform = transform)
 /// ```
 #[stdlib {
     name = "patternTransform2d",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_set = { docs = "The sketch(es) to duplicate" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
+        transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
+    }
 }]
 async fn inner_pattern_transform_2d<'a>(
-    total_instances: u32,
-    transform_function: FunctionParam<'a>,
-    solid_set: SketchSet,
+    sketch_set: SketchSet,
+    instances: u32,
+    transform: FunctionParam<'a>,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
-    if total_instances < 1 {
+    let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
+    if instances < 1 {
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: MUST_HAVE_ONE_INSTANCE.to_owned(),
         }));
     }
-    for i in 1..total_instances {
-        let t = make_transform::<Box<Sketch>>(i, &transform_function, args.source_range, exec_state).await?;
-        transform.push(t);
+    for i in 1..instances {
+        let t = make_transform::<Box<Sketch>>(i, &transform, args.source_range, exec_state).await?;
+        transform_vec.push(t);
     }
-    execute_pattern_transform(transform, solid_set, use_original.unwrap_or_default(), exec_state, args).await
+    execute_pattern_transform(
+        transform_vec,
+        sketch_set,
+        use_original.unwrap_or_default(),
+        exec_state,
+        args,
+    )
+    .await
 }
 
 async fn execute_pattern_transform<T: GeometryTrait>(
@@ -406,17 +441,18 @@ async fn send_pattern_transform<T: GeometryTrait>(
 
 async fn make_transform<T: GeometryTrait>(
     i: u32,
-    transform_function: &FunctionParam<'_>,
+    transform: &FunctionParam<'_>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
-    let repetition_num = KclValue::Int {
+    let repetition_num = KclValue::Number {
         value: i.into(),
+        ty: NumericType::count(),
         meta: vec![source_range.into()],
     };
     let transform_fn_args = vec![Arg::synthetic(repetition_num)];
-    let transform_fn_return = transform_function.call(exec_state, transform_fn_args).await?;
+    let transform_fn_return = transform.call(exec_state, transform_fn_args).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
@@ -495,7 +531,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         }
         if let Some(angle) = rot.get("angle") {
             match angle {
-                KclValue::Number { value: number, meta: _ } => {
+                KclValue::Number { value: number, .. } => {
                     rotation.angle = Angle::from_degrees(*number);
                 }
                 _ => {
@@ -644,6 +680,8 @@ impl GeometryTrait for Box<Solid> {
 
 #[cfg(test)]
 mod tests {
+    use crate::execution::kcl_value::NumericType;
+
     use super::*;
 
     #[test]
@@ -653,14 +691,17 @@ mod tests {
                 KclValue::Number {
                     value: 1.1,
                     meta: Default::default(),
+                    ty: NumericType::Unknown,
                 },
                 KclValue::Number {
                     value: 2.2,
                     meta: Default::default(),
+                    ty: NumericType::Unknown,
                 },
                 KclValue::Number {
                     value: 3.3,
                     meta: Default::default(),
+                    ty: NumericType::Unknown,
                 },
             ],
             meta: Default::default(),

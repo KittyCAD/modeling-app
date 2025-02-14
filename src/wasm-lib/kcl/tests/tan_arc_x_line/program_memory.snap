@@ -1,254 +1,298 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing tan_arc_x_line.kcl
+description: Variables in memory after executing tan_arc_x_line.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "angleOffset": {
-          "type": "Number",
-          "value": 135.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                36,
-                39,
-                0
-              ]
-            }
-          ]
-        },
-        "angleStart": {
-          "type": "Number",
-          "value": 110.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                59,
-                62,
-                0
-              ]
-            }
-          ]
-        },
-        "arc1": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "arc1",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  191,
-                  252,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -0.9396929628060517,
-                -0.34201920363304794
-              ],
-              "from": [
-                -0.0000003420201433256687,
-                0.0000009396926207859084
-              ],
-              "tag": {
-                "end": 251,
-                "start": 246,
-                "type": "TagDeclarator",
-                "value": "arc1"
-              },
-              "to": [
-                -1.8460007498427018,
-                0.08059905810765156
-              ],
-              "type": "TangentialArc"
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                246,
-                251,
-                0
-              ]
-            }
-          ]
-        },
-        "arc2": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "arc2",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  258,
-                  344,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -1.3928468563243768,
-                -0.13071007276269808
-              ],
-              "from": [
-                -1.8460007498427018,
-                0.08059905810765156
-              ],
-              "tag": {
-                "end": 343,
-                "start": 338,
-                "type": "TagDeclarator",
-                "value": "arc2"
-              },
-              "to": [
-                -1.2218367846615423,
-                -0.6005563831556522
-              ],
-              "type": "TangentialArc"
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                338,
-                343,
-                0
-              ]
-            }
-          ]
-        },
-        "arc3": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "arc3",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  350,
-                  437,
-                  0
-                ]
-              },
-              "ccw": false,
-              "center": [
-                -1.050826712998708,
-                -1.0704026935486064
-              ],
-              "from": [
-                -1.2218367846615423,
-                -0.6005563831556522
-              ],
-              "tag": {
-                "end": 436,
-                "start": 431,
-                "type": "TagDeclarator",
-                "value": "arc3"
-              },
-              "to": [
-                -0.5976728194803829,
-                -1.281711824418956
-              ],
-              "type": "TangentialArc"
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                431,
-                436,
-                0
-              ]
-            }
-          ]
-        },
-        "r": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                44,
-                45,
-                0
-              ]
-            }
-          ]
-        },
-        "startX": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                9,
-                10,
-                0
-              ]
-            }
-          ]
-        },
-        "startY": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                20,
-                21,
-                0
-              ]
-            }
-          ]
-        }
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "angleOffset": {
+    "type": "Number",
+    "value": 135.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
       },
-      "snapshots": [],
-      "parent": null
-    }
-  ],
-  "currentEnv": [
-    0,
-    0
-  ],
-  "callStack": []
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          36,
+          39,
+          0
+        ]
+      }
+    ]
+  },
+  "angleStart": {
+    "type": "Number",
+    "value": 110.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          59,
+          62,
+          0
+        ]
+      }
+    ]
+  },
+  "arc1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc1",
+    "info": {
+      "type": "TagEngineInfo",
+      "id": "[uuid]",
+      "sketch": "[uuid]",
+      "path": {
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            191,
+            252,
+            0
+          ]
+        },
+        "ccw": true,
+        "center": [
+          -0.9396929628060517,
+          -0.34201920363304794
+        ],
+        "from": [
+          -0.0000003420201433256687,
+          0.0000009396926207859084
+        ],
+        "tag": {
+          "end": 251,
+          "start": 246,
+          "type": "TagDeclarator",
+          "value": "arc1"
+        },
+        "to": [
+          -1.8460007498427018,
+          0.08059905810765156
+        ],
+        "type": "TangentialArc"
+      },
+      "surface": null
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          246,
+          251,
+          0
+        ]
+      }
+    ]
+  },
+  "arc2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc2",
+    "info": {
+      "type": "TagEngineInfo",
+      "id": "[uuid]",
+      "sketch": "[uuid]",
+      "path": {
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            258,
+            344,
+            0
+          ]
+        },
+        "ccw": true,
+        "center": [
+          -1.3928468563243768,
+          -0.13071007276269808
+        ],
+        "from": [
+          -1.8460007498427018,
+          0.08059905810765156
+        ],
+        "tag": {
+          "end": 343,
+          "start": 338,
+          "type": "TagDeclarator",
+          "value": "arc2"
+        },
+        "to": [
+          -1.2218367846615423,
+          -0.6005563831556522
+        ],
+        "type": "TangentialArc"
+      },
+      "surface": null
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          338,
+          343,
+          0
+        ]
+      }
+    ]
+  },
+  "arc3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "arc3",
+    "info": {
+      "type": "TagEngineInfo",
+      "id": "[uuid]",
+      "sketch": "[uuid]",
+      "path": {
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            350,
+            437,
+            0
+          ]
+        },
+        "ccw": false,
+        "center": [
+          -1.050826712998708,
+          -1.0704026935486064
+        ],
+        "from": [
+          -1.2218367846615423,
+          -0.6005563831556522
+        ],
+        "tag": {
+          "end": 436,
+          "start": 431,
+          "type": "TagDeclarator",
+          "value": "arc3"
+        },
+        "to": [
+          -0.5976728194803829,
+          -1.281711824418956
+        ],
+        "type": "TangentialArc"
+      },
+      "surface": null
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          431,
+          436,
+          0
+        ]
+      }
+    ]
+  },
+  "r": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          44,
+          45,
+          0
+        ]
+      }
+    ]
+  },
+  "startX": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          9,
+          10,
+          0
+        ]
+      }
+    ]
+  },
+  "startY": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          20,
+          21,
+          0
+        ]
+      }
+    ]
+  }
 }
