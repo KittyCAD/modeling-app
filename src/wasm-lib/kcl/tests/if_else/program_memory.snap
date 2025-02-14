@@ -6,26 +6,47 @@ description: Variables in memory after executing if_else.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "a": {
     "type": "Number",
     "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -39,6 +60,15 @@ description: Variables in memory after executing if_else.kcl
   "b": {
     "type": "Number",
     "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -52,6 +82,15 @@ description: Variables in memory after executing if_else.kcl
   "c": {
     "type": "Number",
     "value": 5.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [

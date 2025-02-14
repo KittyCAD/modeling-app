@@ -6,21 +6,33 @@ description: Variables in memory after executing index_of_array.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "arr": {
@@ -29,6 +41,15 @@ description: Variables in memory after executing index_of_array.kcl
       {
         "type": "Number",
         "value": 90.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -42,6 +63,15 @@ description: Variables in memory after executing index_of_array.kcl
       {
         "type": "Number",
         "value": 91.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -55,6 +85,15 @@ description: Variables in memory after executing index_of_array.kcl
       {
         "type": "Number",
         "value": 92.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -79,6 +118,9 @@ description: Variables in memory after executing index_of_array.kcl
   "i": {
     "type": "Number",
     "value": 1.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -92,6 +134,15 @@ description: Variables in memory after executing index_of_array.kcl
   "result0": {
     "type": "Number",
     "value": 91.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -105,6 +156,15 @@ description: Variables in memory after executing index_of_array.kcl
   "result1": {
     "type": "Number",
     "value": 91.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [

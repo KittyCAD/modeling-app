@@ -2084,30 +2084,6 @@ impl Literal {
     }
 }
 
-impl From<Node<Literal>> for KclValue {
-    fn from(literal: Node<Literal>) -> Self {
-        let meta = vec![literal.metadata()];
-        match literal.inner.value {
-            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
-            LiteralValue::String(value) => KclValue::String { value, meta },
-            LiteralValue::Bool(value) => KclValue::Bool { value, meta },
-        }
-    }
-}
-
-impl From<&Node<Literal>> for KclValue {
-    fn from(literal: &Node<Literal>) -> Self {
-        Self::from(literal.to_owned())
-    }
-}
-
-impl From<&BoxNode<Literal>> for KclValue {
-    fn from(literal: &BoxNode<Literal>) -> Self {
-        let b: &Node<Literal> = literal;
-        Self::from(b)
-    }
-}
-
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -3092,20 +3068,7 @@ pub enum FnArgType {
 #[allow(clippy::large_enum_variant)]
 pub enum DefaultParamVal {
     KclNone(KclNone),
-    Literal(Literal),
-}
-
-// TODO: This should actually take metadata.
-impl From<DefaultParamVal> for KclValue {
-    fn from(v: DefaultParamVal) -> Self {
-        match v {
-            DefaultParamVal::KclNone(kcl_none) => Self::KclNone {
-                value: kcl_none,
-                meta: Default::default(),
-            },
-            DefaultParamVal::Literal(literal) => Self::from_literal(literal.value, Vec::new()),
-        }
-    }
+    Literal(Node<Literal>),
 }
 
 impl DefaultParamVal {

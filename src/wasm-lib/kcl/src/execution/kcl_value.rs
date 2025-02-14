@@ -12,14 +12,16 @@ use crate::{
         TagIdentifier,
     },
     parsing::{
-        ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
+        ast::types::{
+            DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
+        },
         token::NumericSuffix,
     },
     std::{args::Arg, FnAsArg},
     ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
-use super::memory::EnvironmentRef;
+use super::{memory::EnvironmentRef, MetaSettings};
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
@@ -40,6 +42,7 @@ pub enum KclValue {
     },
     Number {
         value: f64,
+        ty: NumericType,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -210,7 +213,7 @@ impl KclValue {
         match self {
             KclValue::Uuid { value: _, meta } => meta.clone(),
             KclValue::Bool { value: _, meta } => meta.clone(),
-            KclValue::Number { value: _, meta } => meta.clone(),
+            KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
             KclValue::Array { value: _, meta } => meta.clone(),
             KclValue::Object { value: _, meta } => meta.clone(),
@@ -298,11 +301,26 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn from_literal(literal: LiteralValue, meta: Vec<Metadata>) -> Self {
-        match literal {
-            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
+    pub(crate) fn from_literal(literal: Node<Literal>, settings: &MetaSettings) -> Self {
+        let meta = vec![literal.metadata()];
+        match literal.inner.value {
+            LiteralValue::Number { value, suffix } => KclValue::Number {
+                value,
+                meta,
+                ty: NumericType::from_parsed(suffix, settings),
+            },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
+        }
+    }
+
+    pub(crate) fn from_default_param(param: DefaultParamVal, settings: &MetaSettings) -> Self {
+        match param {
+            DefaultParamVal::Literal(lit) => Self::from_literal(lit, settings),
+            DefaultParamVal::KclNone(none) => KclValue::KclNone {
+                value: none,
+                meta: Default::default(),
+            },
         }
     }
 
@@ -318,20 +336,30 @@ impl KclValue {
 
     /// Put the number into a KCL value.
     pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
-        Self::Number { value: f, meta }
+        Self::Number {
+            value: f,
+            meta,
+            ty: NumericType::Unknown,
+        }
+    }
+
+    pub const fn from_number_with_type(f: f64, ty: NumericType, meta: Vec<Metadata>) -> Self {
+        Self::Number { value: f, meta, ty }
     }
 
     /// Put the point into a KCL value.
-    pub fn from_point2d(p: [f64; 2], meta: Vec<Metadata>) -> Self {
+    pub fn from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
         Self::Array {
             value: vec![
                 Self::Number {
                     value: p[0],
                     meta: meta.clone(),
+                    ty: ty.clone(),
                 },
                 Self::Number {
                     value: p[1],
                     meta: meta.clone(),
+                    ty,
                 },
             ],
             meta,
@@ -427,7 +455,7 @@ impl KclValue {
     }
 
     pub fn as_f64(&self) -> Option<f64> {
-        if let KclValue::Number { value, meta: _ } = &self {
+        if let KclValue::Number { value, .. } = &self {
             Some(*value)
         } else {
             None
@@ -591,6 +619,73 @@ impl KclValue {
             .await
         }
     }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum NumericType {
+    // Specified by the user (directly or indirectly)
+    Known(UnitType),
+    // Unspecified, using defaults
+    Default { len: UnitLen, angle: UnitAngle },
+    // Exceeded the ability of the type system to track.
+    Unknown,
+    // Type info has been explicitly cast away.
+    Any,
+}
+
+impl NumericType {
+    pub fn count() -> Self {
+        NumericType::Known(UnitType::Count)
+    }
+
+    pub fn combine(self, other: &NumericType) -> NumericType {
+        if &self == other {
+            self
+        } else {
+            NumericType::Unknown
+        }
+    }
+
+    pub fn from_parsed(suffix: NumericSuffix, settings: &super::MetaSettings) -> Self {
+        match suffix {
+            NumericSuffix::None => NumericType::Default {
+                len: settings.default_length_units,
+                angle: settings.default_angle_units,
+            },
+            NumericSuffix::Count => NumericType::Known(UnitType::Count),
+            NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLen::Mm)),
+            NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLen::Cm)),
+            NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLen::M)),
+            NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLen::Inches)),
+            NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLen::Feet)),
+            NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLen::Yards)),
+            NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
+            NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
+        }
+    }
+}
+
+impl From<UnitLen> for NumericType {
+    fn from(value: UnitLen) -> Self {
+        NumericType::Known(UnitType::Length(value))
+    }
+}
+
+impl From<UnitAngle> for NumericType {
+    fn from(value: UnitAngle) -> Self {
+        NumericType::Known(UnitType::Angle(value))
+    }
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum UnitType {
+    Count,
+    Length(UnitLen),
+    Angle(UnitAngle),
 }
 
 // TODO called UnitLen so as not to clash with UnitLength in settings)
