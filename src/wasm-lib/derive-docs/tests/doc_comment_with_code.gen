@@ -17,7 +17,10 @@ mod test_examples_my_func {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(&program, &mut crate::ExecState::new(&ctx.settings))
+            .run(
+                &program,
+                &mut crate::execution::ExecState::new(&ctx.settings),
+            )
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -74,7 +77,10 @@ mod test_examples_my_func {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(&program, &mut crate::ExecState::new(&ctx.settings))
+            .run(
+                &program,
+                &mut crate::execution::ExecState::new(&ctx.settings),
+            )
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -126,7 +132,7 @@ pub(crate) struct MyFunc {}
 #[doc = "Std lib function: myFunc\nThis is some function.\nIt does shit."]
 pub(crate) const MyFunc: MyFunc = MyFunc {};
 fn boxed_my_func(
-    exec_state: &mut crate::ExecState,
+    exec_state: &mut crate::execution::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<

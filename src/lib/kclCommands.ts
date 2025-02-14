@@ -6,7 +6,6 @@ import { FILE_EXT } from './constants'
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { reportRejection } from './trap'
 import { IndexLoaderData } from './types'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 import { copyFileShareLink } from './links'
 
 interface OnSubmitProps {
@@ -137,7 +136,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     {
       name: 'share-file-link',
       displayName: 'Share current part (via Zoo link)',
-      hide: IS_NIGHTLY_OR_DEBUG ? undefined : 'desktop',
       description: 'Create a link that contains a copy of the current file.',
       groupId: 'code',
       needsReview: false,

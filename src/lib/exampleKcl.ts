@@ -51,16 +51,16 @@ sketch002 = startSketchOn(sketch001, seg03)
     center = [-1.25, 1],
     radius = mountingHoleDiameter / 2,
   }, %)
-  |> patternLinear2d({
+  |> patternLinear2d(
     instances = 2,
     distance = 2.5,
     axis = [-1, 0],
-  }, %)
-  |> patternLinear2d({
+  )
+  |> patternLinear2d(
     instances = 2,
     distance = 4,
     axis = [0, 1],
-  }, %)
+  )
   |> extrude(%, length = -thickness-.01)
 
 sketch003 = startSketchOn(sketch001, seg04)
@@ -68,11 +68,11 @@ sketch003 = startSketchOn(sketch001, seg04)
     center = [1, -1],
     radius = mountingHoleDiameter / 2,
   }, %)
-  |> patternLinear2d({
+  |> patternLinear2d(
     instances = 2,
     distance = 4,
     axis = [1, 0],
-  }, %)
+  )
   |> extrude(%, length = -thickness-0.1)
 `
 

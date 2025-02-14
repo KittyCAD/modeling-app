@@ -12,11 +12,11 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, Modu
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
     let mut exec_state = ExecState::new(&ctx.settings);
     ctx.run(&program, &mut exec_state).await?;
+    let outcome = exec_state.to_wasm_outcome();
 
     // We need to get the sketch ID.
-    // Get the sketch ID from memory.
-    let KclValue::Sketch { value: sketch } = exec_state.memory().get(name, SourceRange::default()).unwrap() else {
-        anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory());
+    let KclValue::Sketch { value: sketch } = outcome.variables.get(name).unwrap() else {
+        anyhow::bail!("part001 not found in: {:?}", outcome.variables);
     };
     let sketch_id = sketch.id;
 

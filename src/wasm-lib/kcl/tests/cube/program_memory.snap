@@ -1,984 +1,960 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing cube.kcl
+description: Variables in memory after executing cube.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "cube": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "declaration": {
-                    "end": 50,
-                    "id": {
-                      "end": 33,
-                      "name": "l",
-                      "start": 32,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "end": 50,
-                      "left": {
-                        "end": 46,
-                        "name": "sideLength",
-                        "start": 36,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      },
-                      "operator": "/",
-                      "right": {
-                        "end": 50,
-                        "raw": "2",
-                        "start": 49,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 36,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    "start": 32,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 50,
-                  "kind": "const",
-                  "start": 32,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "declaration": {
-                    "end": 66,
-                    "id": {
-                      "end": 54,
-                      "name": "x",
-                      "start": 53,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "computed": false,
-                      "end": 66,
-                      "object": {
-                        "end": 63,
-                        "name": "center",
-                        "start": 57,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      },
-                      "property": {
-                        "end": 65,
-                        "raw": "0",
-                        "start": 64,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 57,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    },
-                    "start": 53,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 66,
-                  "kind": "const",
-                  "start": 53,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "declaration": {
-                    "end": 82,
-                    "id": {
-                      "end": 70,
-                      "name": "y",
-                      "start": 69,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "computed": false,
-                      "end": 82,
-                      "object": {
-                        "end": 79,
-                        "name": "center",
-                        "start": 73,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      },
-                      "property": {
-                        "end": 81,
-                        "raw": "1",
-                        "start": 80,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 73,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    },
-                    "start": 69,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 82,
-                  "kind": "const",
-                  "start": 69,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "declaration": {
-                    "end": 106,
-                    "id": {
-                      "end": 87,
-                      "name": "p0",
-                      "start": 85,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "elements": [
-                        {
-                          "end": 97,
-                          "left": {
-                            "argument": {
-                              "end": 93,
-                              "name": "l",
-                              "start": 92,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "end": 93,
-                            "operator": "-",
-                            "start": 91,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 97,
-                            "name": "x",
-                            "start": 96,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 91,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        {
-                          "end": 105,
-                          "left": {
-                            "argument": {
-                              "end": 101,
-                              "name": "l",
-                              "start": 100,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "end": 101,
-                            "operator": "-",
-                            "start": 99,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 105,
-                            "name": "y",
-                            "start": 104,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 99,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      ],
-                      "end": 106,
-                      "start": 90,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    "start": 85,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 106,
-                  "kind": "const",
-                  "start": 85,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "declaration": {
-                    "end": 129,
-                    "id": {
-                      "end": 111,
-                      "name": "p1",
-                      "start": 109,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "elements": [
-                        {
-                          "end": 121,
-                          "left": {
-                            "argument": {
-                              "end": 117,
-                              "name": "l",
-                              "start": 116,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "end": 117,
-                            "operator": "-",
-                            "start": 115,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 121,
-                            "name": "x",
-                            "start": 120,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 115,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        {
-                          "end": 128,
-                          "left": {
-                            "end": 124,
-                            "name": "l",
-                            "start": 123,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 128,
-                            "name": "y",
-                            "start": 127,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 123,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      ],
-                      "end": 129,
-                      "start": 114,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    "start": 109,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 129,
-                  "kind": "const",
-                  "start": 109,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "declaration": {
-                    "end": 151,
-                    "id": {
-                      "end": 134,
-                      "name": "p2",
-                      "start": 132,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "elements": [
-                        {
-                          "end": 143,
-                          "left": {
-                            "end": 139,
-                            "name": "l",
-                            "start": 138,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 143,
-                            "name": "x",
-                            "start": 142,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 138,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        {
-                          "end": 150,
-                          "left": {
-                            "end": 146,
-                            "name": "l",
-                            "start": 145,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 150,
-                            "name": "y",
-                            "start": 149,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 145,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      ],
-                      "end": 151,
-                      "start": 137,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    "start": 132,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 151,
-                  "kind": "const",
-                  "start": 132,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "declaration": {
-                    "end": 174,
-                    "id": {
-                      "end": 156,
-                      "name": "p3",
-                      "start": 154,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "elements": [
-                        {
-                          "end": 165,
-                          "left": {
-                            "end": 161,
-                            "name": "l",
-                            "start": 160,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 165,
-                            "name": "x",
-                            "start": 164,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 160,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        {
-                          "end": 173,
-                          "left": {
-                            "argument": {
-                              "end": 169,
-                              "name": "l",
-                              "start": 168,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "end": 169,
-                            "operator": "-",
-                            "start": 167,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 173,
-                            "name": "y",
-                            "start": 172,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 167,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      ],
-                      "end": 174,
-                      "start": 159,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    "start": 154,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 174,
-                  "kind": "const",
-                  "start": 154,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "argument": {
-                    "body": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 201,
-                            "name": "p0",
-                            "start": 199,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          }
-                        ],
-                        "callee": {
-                          "end": 198,
-                          "name": "startSketchAt",
-                          "start": 185,
-                          "type": "Identifier"
-                        },
-                        "end": 202,
-                        "start": 185,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "type": "LabeledArg",
-                            "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
-                            },
-                            "arg": {
-                              "end": 231,
-                              "name": "p1",
-                              "start": 229,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          }
-                        ],
-                        "callee": {
-                          "end": 214,
-                          "name": "line",
-                          "start": 210,
-                          "type": "Identifier"
-                        },
-                        "end": 232,
-                        "start": 210,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": null
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "type": "LabeledArg",
-                            "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
-                            },
-                            "arg": {
-                              "end": 261,
-                              "name": "p2",
-                              "start": 259,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          }
-                        ],
-                        "callee": {
-                          "end": 244,
-                          "name": "line",
-                          "start": 240,
-                          "type": "Identifier"
-                        },
-                        "end": 262,
-                        "start": 240,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": null
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "type": "LabeledArg",
-                            "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
-                            },
-                            "arg": {
-                              "end": 291,
-                              "name": "p3",
-                              "start": 289,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          }
-                        ],
-                        "callee": {
-                          "end": 274,
-                          "name": "line",
-                          "start": 270,
-                          "type": "Identifier"
-                        },
-                        "end": 292,
-                        "start": 270,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": null
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "type": "LabeledArg",
-                            "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
-                            },
-                            "arg": {
-                              "end": 321,
-                              "name": "p0",
-                              "start": 319,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          }
-                        ],
-                        "callee": {
-                          "end": 304,
-                          "name": "line",
-                          "start": 300,
-                          "type": "Identifier"
-                        },
-                        "end": 322,
-                        "start": 300,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": null
-                      },
-                      {
-                        "arguments": [],
-                        "callee": {
-                          "end": 335,
-                          "name": "close",
-                          "start": 330,
-                          "type": "Identifier"
-                        },
-                        "end": 337,
-                        "start": 330,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "type": "LabeledArg",
-                            "label": {
-                              "type": "Identifier",
-                              "name": "length"
-                            },
-                            "arg": {
-                              "end": 372,
-                              "name": "sideLength",
-                              "start": 362,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          }
-                        ],
-                        "callee": {
-                          "end": 352,
-                          "name": "extrude",
-                          "start": 345,
-                          "type": "Identifier"
-                        },
-                        "end": 373,
-                        "start": 345,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": null
-                      }
-                    ],
-                    "end": 373,
-                    "start": 185,
-                    "type": "PipeExpression",
-                    "type": "PipeExpression"
-                  },
-                  "end": 373,
-                  "start": 178,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 375,
-              "nonCodeMeta": {
-                "nonCodeNodes": {
-                  "6": [
-                    {
-                      "end": 178,
-                      "start": 174,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLine"
-                      }
-                    }
-                  ]
-                },
-                "startNodes": []
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "cube": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "declaration": {
+              "end": 50,
+              "id": {
+                "end": 33,
+                "name": "l",
+                "start": 32,
+                "type": "Identifier"
               },
-              "start": 28
-            },
-            "end": 375,
-            "params": [
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 18,
+              "init": {
+                "end": 50,
+                "left": {
+                  "end": 46,
                   "name": "sideLength",
-                  "start": 8,
+                  "start": 36,
+                  "type": "Identifier",
                   "type": "Identifier"
-                }
-              },
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 26,
-                  "name": "center",
-                  "start": 20,
-                  "type": "Identifier"
-                }
-              }
-            ],
-            "start": 7,
-            "type": "FunctionExpression"
-          },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
+                },
+                "operator": "/",
+                "right": {
+                  "end": 50,
+                  "raw": "2",
+                  "start": 49,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
                   }
                 },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0,
-            "return": null
+                "start": 36,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 32,
+              "type": "VariableDeclarator"
+            },
+            "end": 50,
+            "kind": "const",
+            "start": 32,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
           },
-          "__meta": [
-            {
-              "sourceRange": [
-                7,
-                375,
-                0
-              ]
-            }
-          ]
-        },
-        "myCube": {
-          "type": "Solid",
-          "value": {
-            "type": "Solid",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": [
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  210,
-                  232,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
+          {
+            "declaration": {
+              "end": 66,
+              "id": {
+                "end": 54,
+                "name": "x",
+                "start": 53,
+                "type": "Identifier"
               },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  240,
-                  262,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
+              "init": {
+                "computed": false,
+                "end": 66,
+                "object": {
+                  "end": 63,
+                  "name": "center",
+                  "start": 57,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "property": {
+                  "end": 65,
+                  "raw": "0",
+                  "start": 64,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 57,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
               },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  270,
-                  292,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
+              "start": 53,
+              "type": "VariableDeclarator"
+            },
+            "end": 66,
+            "kind": "const",
+            "start": 53,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "declaration": {
+              "end": 82,
+              "id": {
+                "end": 70,
+                "name": "y",
+                "start": 69,
+                "type": "Identifier"
               },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  300,
-                  322,
-                  0
+              "init": {
+                "computed": false,
+                "end": 82,
+                "object": {
+                  "end": 79,
+                  "name": "center",
+                  "start": 73,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "property": {
+                  "end": 81,
+                  "raw": "1",
+                  "start": 80,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 73,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
+              },
+              "start": 69,
+              "type": "VariableDeclarator"
+            },
+            "end": 82,
+            "kind": "const",
+            "start": 69,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "declaration": {
+              "end": 106,
+              "id": {
+                "end": 87,
+                "name": "p0",
+                "start": 85,
+                "type": "Identifier"
+              },
+              "init": {
+                "elements": [
+                  {
+                    "end": 97,
+                    "left": {
+                      "argument": {
+                        "end": 93,
+                        "name": "l",
+                        "start": 92,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "end": 93,
+                      "operator": "-",
+                      "start": 91,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 97,
+                      "name": "x",
+                      "start": 96,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 91,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  {
+                    "end": 105,
+                    "left": {
+                      "argument": {
+                        "end": 101,
+                        "name": "l",
+                        "start": 100,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "end": 101,
+                      "operator": "-",
+                      "start": 99,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 105,
+                      "name": "y",
+                      "start": 104,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 99,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
                 ],
-                "tag": null,
-                "type": "extrudePlane"
-              }
-            ],
-            "sketch": {
-              "type": "Sketch",
-              "id": "[uuid]",
-              "paths": [
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      210,
-                      232,
-                      0
-                    ]
+                "end": 106,
+                "start": 90,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              },
+              "start": 85,
+              "type": "VariableDeclarator"
+            },
+            "end": 106,
+            "kind": "const",
+            "start": 85,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "declaration": {
+              "end": 129,
+              "id": {
+                "end": 111,
+                "name": "p1",
+                "start": 109,
+                "type": "Identifier"
+              },
+              "init": {
+                "elements": [
+                  {
+                    "end": 121,
+                    "left": {
+                      "argument": {
+                        "end": 117,
+                        "name": "l",
+                        "start": 116,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "end": 117,
+                      "operator": "-",
+                      "start": 115,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 121,
+                      "name": "x",
+                      "start": 120,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 115,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
                   },
-                  "from": [
-                    -20.0,
-                    -20.0
+                  {
+                    "end": 128,
+                    "left": {
+                      "end": 124,
+                      "name": "l",
+                      "start": 123,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 128,
+                      "name": "y",
+                      "start": 127,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 123,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                ],
+                "end": 129,
+                "start": 114,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              },
+              "start": 109,
+              "type": "VariableDeclarator"
+            },
+            "end": 129,
+            "kind": "const",
+            "start": 109,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "declaration": {
+              "end": 151,
+              "id": {
+                "end": 134,
+                "name": "p2",
+                "start": 132,
+                "type": "Identifier"
+              },
+              "init": {
+                "elements": [
+                  {
+                    "end": 143,
+                    "left": {
+                      "end": 139,
+                      "name": "l",
+                      "start": 138,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 143,
+                      "name": "x",
+                      "start": 142,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 138,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  {
+                    "end": 150,
+                    "left": {
+                      "end": 146,
+                      "name": "l",
+                      "start": 145,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 150,
+                      "name": "y",
+                      "start": 149,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 145,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                ],
+                "end": 151,
+                "start": 137,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              },
+              "start": 132,
+              "type": "VariableDeclarator"
+            },
+            "end": 151,
+            "kind": "const",
+            "start": 132,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "declaration": {
+              "end": 174,
+              "id": {
+                "end": 156,
+                "name": "p3",
+                "start": 154,
+                "type": "Identifier"
+              },
+              "init": {
+                "elements": [
+                  {
+                    "end": 165,
+                    "left": {
+                      "end": 161,
+                      "name": "l",
+                      "start": 160,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 165,
+                      "name": "x",
+                      "start": 164,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 160,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  {
+                    "end": 173,
+                    "left": {
+                      "argument": {
+                        "end": 169,
+                        "name": "l",
+                        "start": 168,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "end": 169,
+                      "operator": "-",
+                      "start": 167,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 173,
+                      "name": "y",
+                      "start": 172,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 167,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                ],
+                "end": 174,
+                "start": 159,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              },
+              "start": 154,
+              "type": "VariableDeclarator"
+            },
+            "end": 174,
+            "kind": "const",
+            "start": 154,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "argument": {
+              "body": [
+                {
+                  "arguments": [
+                    {
+                      "end": 201,
+                      "name": "p0",
+                      "start": 199,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
                   ],
-                  "tag": null,
-                  "to": [
-                    -20.0,
-                    20.0
-                  ],
-                  "type": "ToPoint"
+                  "callee": {
+                    "end": 198,
+                    "name": "startSketchAt",
+                    "start": 185,
+                    "type": "Identifier"
+                  },
+                  "end": 202,
+                  "start": 185,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
                 },
                 {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      240,
-                      262,
-                      0
-                    ]
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "type": "Identifier",
+                        "name": "endAbsolute"
+                      },
+                      "arg": {
+                        "end": 231,
+                        "name": "p1",
+                        "start": 229,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "end": 214,
+                    "name": "line",
+                    "start": 210,
+                    "type": "Identifier"
                   },
-                  "from": [
-                    -20.0,
-                    20.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    20.0,
-                    20.0
-                  ],
-                  "type": "ToPoint"
+                  "end": 232,
+                  "start": 210,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
                 },
                 {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      270,
-                      292,
-                      0
-                    ]
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "type": "Identifier",
+                        "name": "endAbsolute"
+                      },
+                      "arg": {
+                        "end": 261,
+                        "name": "p2",
+                        "start": 259,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "end": 244,
+                    "name": "line",
+                    "start": 240,
+                    "type": "Identifier"
                   },
-                  "from": [
-                    20.0,
-                    20.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    20.0,
-                    -20.0
-                  ],
-                  "type": "ToPoint"
+                  "end": 262,
+                  "start": 240,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
                 },
                 {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      300,
-                      322,
-                      0
-                    ]
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "type": "Identifier",
+                        "name": "endAbsolute"
+                      },
+                      "arg": {
+                        "end": 291,
+                        "name": "p3",
+                        "start": 289,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "end": 274,
+                    "name": "line",
+                    "start": 270,
+                    "type": "Identifier"
                   },
-                  "from": [
-                    20.0,
-                    -20.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -20.0,
-                    -20.0
-                  ],
-                  "type": "ToPoint"
+                  "end": 292,
+                  "start": 270,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
                 },
                 {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      330,
-                      337,
-                      0
-                    ]
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "type": "Identifier",
+                        "name": "endAbsolute"
+                      },
+                      "arg": {
+                        "end": 321,
+                        "name": "p0",
+                        "start": 319,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "end": 304,
+                    "name": "line",
+                    "start": 300,
+                    "type": "Identifier"
                   },
-                  "from": [
-                    -20.0,
-                    -20.0
+                  "end": 322,
+                  "start": 300,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
+                },
+                {
+                  "arguments": [],
+                  "callee": {
+                    "end": 335,
+                    "name": "close",
+                    "start": 330,
+                    "type": "Identifier"
+                  },
+                  "end": 337,
+                  "start": 330,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                {
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "type": "Identifier",
+                        "name": "length"
+                      },
+                      "arg": {
+                        "end": 372,
+                        "name": "sideLength",
+                        "start": 362,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
                   ],
-                  "tag": null,
-                  "to": [
-                    -20.0,
-                    -20.0
-                  ],
-                  "type": "ToPoint"
+                  "callee": {
+                    "end": 352,
+                    "name": "extrude",
+                    "start": 345,
+                    "type": "Identifier"
+                  },
+                  "end": 373,
+                  "start": 345,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
                 }
               ],
-              "on": {
-                "type": "plane",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": "XY",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
-                },
-                "__meta": []
-              },
-              "start": {
-                "from": [
-                  -20.0,
-                  -20.0
-                ],
-                "to": [
-                  -20.0,
-                  -20.0
-                ],
-                "tag": null,
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    185,
-                    202,
-                    0
-                  ]
-                }
-              },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    185,
-                    202,
-                    0
-                  ]
-                }
-              ]
+              "end": 373,
+              "start": 185,
+              "type": "PipeExpression",
+              "type": "PipeExpression"
             },
-            "height": 40.0,
-            "startCapId": "[uuid]",
-            "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": [
+            "end": 373,
+            "start": 178,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 375,
+        "nonCodeMeta": {
+          "nonCodeNodes": {
+            "6": [
               {
-                "sourceRange": [
-                  185,
-                  202,
-                  0
-                ]
+                "end": 178,
+                "start": 174,
+                "type": "NonCodeNode",
+                "value": {
+                  "type": "newLine"
+                }
               }
             ]
+          },
+          "startNodes": []
+        },
+        "start": 28
+      },
+      "end": 375,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 18,
+            "name": "sideLength",
+            "start": 8,
+            "type": "Identifier"
+          }
+        },
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 26,
+            "name": "center",
+            "start": 20,
+            "type": "Identifier"
           }
         }
+      ],
+      "start": 7,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      0,
+      1
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          7,
+          375,
+          0
+        ]
+      }
+    ]
+  },
+  "myCube": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            210,
+            232,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            240,
+            262,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            270,
+            292,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            300,
+            322,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                210,
+                232,
+                0
+              ]
+            },
+            "from": [
+              -20.0,
+              -20.0
+            ],
+            "tag": null,
+            "to": [
+              -20.0,
+              20.0
+            ],
+            "type": "ToPoint"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                240,
+                262,
+                0
+              ]
+            },
+            "from": [
+              -20.0,
+              20.0
+            ],
+            "tag": null,
+            "to": [
+              20.0,
+              20.0
+            ],
+            "type": "ToPoint"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                270,
+                292,
+                0
+              ]
+            },
+            "from": [
+              20.0,
+              20.0
+            ],
+            "tag": null,
+            "to": [
+              20.0,
+              -20.0
+            ],
+            "type": "ToPoint"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                300,
+                322,
+                0
+              ]
+            },
+            "from": [
+              20.0,
+              -20.0
+            ],
+            "tag": null,
+            "to": [
+              -20.0,
+              -20.0
+            ],
+            "type": "ToPoint"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                330,
+                337,
+                0
+              ]
+            },
+            "from": [
+              -20.0,
+              -20.0
+            ],
+            "tag": null,
+            "to": [
+              -20.0,
+              -20.0
+            ],
+            "type": "ToPoint"
+          }
+        ],
+        "on": {
+          "type": "plane",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": "XY",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+          },
+          "units": {
+            "type": "Mm"
+          },
+          "__meta": []
+        },
+        "start": {
+          "from": [
+            -20.0,
+            -20.0
+          ],
+          "to": [
+            -20.0,
+            -20.0
+          ],
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              185,
+              202,
+              0
+            ]
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              185,
+              202,
+              0
+            ]
+          }
+        ]
       },
-      "parent": null
+      "height": 40.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            185,
+            202,
+            0
+          ]
+        }
+      ]
     }
-  ],
-  "currentEnv": 0,
-  "return": null
+  }
 }

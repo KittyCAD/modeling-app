@@ -1,4 +1,0 @@
-```mermaid
-mindmap
-  root
-```

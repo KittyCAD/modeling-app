@@ -7,7 +7,7 @@ import { KCLError } from './errors'
 
 const KclContext = createContext({
   code: codeManager?.code || '',
-  programMemory: kclManager?.programMemory,
+  variables: kclManager?.variables,
   ast: kclManager?.ast,
   isExecuting: kclManager?.isExecuting,
   diagnostics: kclManager?.diagnostics,
@@ -31,7 +31,7 @@ export function KclContextProvider({
   // Both the code state and the editor state start off with the same code.
   const [code, setCode] = useState(loadedCode || codeManager.code)
 
-  const [programMemory, setProgramMemory] = useState(kclManager.programMemory)
+  const [variables, setVariables] = useState(kclManager.variables)
   const [ast, setAst] = useState(kclManager.ast)
   const [isExecuting, setIsExecuting] = useState(false)
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([])
@@ -44,7 +44,7 @@ export function KclContextProvider({
       setCode,
     })
     kclManager.registerCallBacks({
-      setProgramMemory,
+      setVariables,
       setAst,
       setLogs,
       setErrors,
@@ -58,7 +58,7 @@ export function KclContextProvider({
     <KclContext.Provider
       value={{
         code,
-        programMemory,
+        variables,
         ast,
         isExecuting,
         diagnostics,

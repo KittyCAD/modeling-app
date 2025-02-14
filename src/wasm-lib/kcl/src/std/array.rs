@@ -19,7 +19,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         fn_expr: f.expr,
         meta: meta.clone(),
         ctx: args.ctx.clone(),
-        memory: *f.memory,
+        memory: f.memory,
     };
     let new_array = inner_map(array, map_fn, exec_state, &args).await?;
     Ok(KclValue::Array { value: new_array, meta })
@@ -97,7 +97,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         fn_expr: f.expr,
         meta: vec![args.source_range.into()],
         ctx: args.ctx.clone(),
-        memory: *f.memory,
+        memory: f.memory,
     };
     inner_reduce(array, start, reduce_fn, exec_state, &args).await
 }

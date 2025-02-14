@@ -18,8 +18,8 @@ describe('testing angledLineThatIntersects', () => {
 }, %, $yo2)
 intersect = segEndX(yo2)`
     const execState = await enginelessExecutor(assertParse(code('-1')))
-    expect(execState.memory.get('intersect')?.value).toBe(1 + Math.sqrt(2))
+    expect(execState.variables['intersect']?.value).toBe(1 + Math.sqrt(2))
     const noOffset = await enginelessExecutor(assertParse(code('0')))
-    expect(noOffset.memory.get('intersect')?.value).toBeCloseTo(1)
+    expect(noOffset.variables['intersect']?.value).toBeCloseTo(1)
   })
 })

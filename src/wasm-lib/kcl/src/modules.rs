@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::PreImportedGeometry,
+    execution::{EnvironmentRef, PreImportedGeometry},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{ImportPath, Node, Program},
     source_range::SourceRange,
@@ -33,9 +33,8 @@ impl ModuleId {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct ModuleLoader {
+#[derive(Debug, Clone, Default)]
+pub(crate) struct ModuleLoader {
     /// The stack of import statements for detecting circular module imports.
     /// If this is empty, we're not currently executing an import statement.
     pub import_stack: Vec<PathBuf>,
@@ -78,8 +77,7 @@ pub(crate) fn read_std(_mod_name: &str) -> Option<&'static str> {
     None
 }
 
-/// Info about a module.  Right now, this is pretty minimal.  We hope to cache
-/// modules here in the future.
+/// Info about a module.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct ModuleInfo {
     /// The ID of the module.
@@ -89,12 +87,27 @@ pub struct ModuleInfo {
     pub(crate) repr: ModuleRepr,
 }
 
+impl ModuleInfo {
+    pub(crate) fn take_repr(&mut self) -> ModuleRepr {
+        let mut result = ModuleRepr::Dummy;
+        std::mem::swap(&mut self.repr, &mut result);
+        result
+    }
+
+    pub(crate) fn restore_repr(&mut self, repr: ModuleRepr) {
+        assert!(matches!(&self.repr, ModuleRepr::Dummy));
+        self.repr = repr;
+    }
+}
+
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub enum ModuleRepr {
     Root,
-    Kcl(Node<Program>),
+    // AST, memory, exported names
+    Kcl(Node<Program>, Option<(EnvironmentRef, Vec<String>)>),
     Foreign(PreImportedGeometry),
+    Dummy,
 }
 
 #[allow(clippy::large_enum_variant)]

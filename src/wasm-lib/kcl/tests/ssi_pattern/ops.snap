@@ -1,0 +1,95 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed ssi_pattern.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          26,
+          30,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      12,
+      31,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          315,
+          317,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      287,
+      318,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "sourceRange": [
+        295,
+        304,
+        0
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          346,
+          356,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          358,
+          363,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      332,
+      364,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          628,
+          631,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      611,
+      632,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

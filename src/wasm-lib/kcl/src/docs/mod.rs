@@ -944,13 +944,7 @@ mod tests {
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"patternCircular3d({
-	instances = ${0:10},
-	axis = [${1:3.14}, ${2:3.14}, ${3:3.14}],
-	center = [${4:3.14}, ${5:3.14}, ${6:3.14}],
-	arcDegrees = ${7:3.14},
-	rotateDuplicates = ${8:false},
-}, ${9:%})${}"#
+            r#"patternCircular3d(${0:%}, instances = ${1:10}, axis = [${2:3.14}, ${3:3.14}, ${4:3.14}], center = [${5:3.14}, ${6:3.14}, ${7:3.14}], arc_degrees = ${8:3.14}, rotate_duplicates = ${9:false})${}"#
         );
     }
 
@@ -1006,11 +1000,7 @@ mod tests {
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"patternLinear2d({
-	instances = ${0:10},
-	distance = ${1:3.14},
-	axis = [${2:3.14}, ${3:3.14}],
-}, ${4:%})${}"#
+            r#"patternLinear2d(${0:%}, instances = ${1:10}, distance = ${2:3.14}, axis = [${3:3.14}, ${4:3.14}])${}"#
         );
     }
 

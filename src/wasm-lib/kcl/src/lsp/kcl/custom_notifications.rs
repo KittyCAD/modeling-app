@@ -14,15 +14,6 @@ impl Notification for AstUpdated {
     const METHOD: &'static str = "kcl/astUpdated";
 }
 
-/// A notification that the Memory has changed.
-#[derive(Debug)]
-pub enum MemoryUpdated {}
-
-impl Notification for MemoryUpdated {
-    type Params = crate::execution::ProgramMemory;
-    const METHOD: &'static str = "kcl/memoryUpdated";
-}
-
 /// Text documents are identified using a URI. On the protocol level, URIs are passed as strings.
 #[derive(Debug, Eq, PartialEq, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[serde(rename_all = "camelCase")]

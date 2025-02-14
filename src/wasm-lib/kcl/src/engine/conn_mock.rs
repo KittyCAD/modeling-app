@@ -128,7 +128,7 @@ impl crate::engine::EngineManager for EngineConnection {
                 responses: _,
             }) => {
                 // Create the empty responses.
-                let mut responses = HashMap::new();
+                let mut responses = HashMap::with_capacity(requests.len());
                 for request in requests {
                     self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
                     responses.insert(

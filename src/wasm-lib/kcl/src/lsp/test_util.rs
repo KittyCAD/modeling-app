@@ -28,7 +28,6 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         stdlib_signatures,
         token_map: Default::default(),
         ast_map: Default::default(),
-        memory_map: Default::default(),
         code_map: Default::default(),
         diagnostics_map: Default::default(),
         symbols_map: Default::default(),

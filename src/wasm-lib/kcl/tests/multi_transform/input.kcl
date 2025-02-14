@@ -12,5 +12,5 @@ startSketchAt([0, 0])
        inscribed: false
      }, %)
   |> extrude(length = 4)
-  |> patternTransform(3, transform, %)
+  |> patternTransform(instances = 3, transform = transform)
 

@@ -19,8 +19,8 @@ A face.
 | `id` |`string`| The id of the face. | No |
 | `artifactId` |[`ArtifactId`](/docs/kcl/types/ArtifactId)| The artifact ID. | No |
 | `value` |`string`| The tag of the face. | No |
-| `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face’s X axis be? | No |
-| `yAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face’s Y axis be? | No |
+| `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face's X axis be? | No |
+| `yAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face's Y axis be? | No |
 | `zAxis` |[`Point3d`](/docs/kcl/types/Point3d)| The z-axis (normal). | No |
 | `solid` |[`Solid`](/docs/kcl/types/Solid)| The solid the face is on. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A face. | No |

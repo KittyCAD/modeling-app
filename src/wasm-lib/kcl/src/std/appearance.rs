@@ -180,12 +180,12 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///         color = '#ff0000',
 ///         metalness = 90,
 ///         roughness = 90
-///     )
-///   |> patternLinear3d({
-///       axis = [1, 0, 1],
-///       instances = 7,
-///       distance = 6
-///     }, %)
+///        )
+///     |> patternLinear3d(
+///         axis = [1, 0, 1],
+///         instances = 7,
+///         distance = 6
+///        )
 /// ```
 ///
 /// ```no_run
@@ -199,16 +199,16 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 1)
-///   |> patternLinear3d({
+///   |> patternLinear3d(
 ///       axis = [1, 0, 1],
 ///       instances = 7,
 ///       distance = 6
-///     }, %)
-///     |> appearance(
-///         color = '#ff0000',
-///         metalness = 90,
-///         roughness = 90
-///     )
+///      )
+///   |> appearance(
+///       color = '#ff0000',
+///       metalness = 90,
+///       roughness = 90
+///      )
 /// ```
 ///
 /// ```no_run
@@ -219,12 +219,12 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> line(end = [-1, 0])
 ///   |> line(end = [0, -5])
 ///   |> close()
-///   |> patternCircular2d({
+///   |> patternCircular2d(
 ///        center = [0, 0],
 ///        instances = 13,
 ///        arcDegrees = 360,
 ///        rotateDuplicates = true
-///      }, %)
+///      )
 ///
 /// example = extrude(exampleSketch, length = 1)
 ///     |> appearance(

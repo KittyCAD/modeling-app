@@ -5,7 +5,7 @@ import { findAllPreviousVariables } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 
 export function usePreviousVariables() {
-  const { programMemory, code } = useKclContext()
+  const { variables, code } = useKclContext()
   const { context } = useModelingContext()
   const selectionRange = context.selectionRanges.graphSelections[0]?.codeRef
     ?.range || [code.length, code.length]
@@ -18,14 +18,14 @@ export function usePreviousVariables() {
   })
 
   useEffect(() => {
-    if (!programMemory || !selectionRange) return
+    if (!variables || !selectionRange) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
-      kclManager.programMemory,
+      kclManager.variables,
       selectionRange
     )
     setPreviousVariablesInfo(varInfo)
-  }, [kclManager.ast, kclManager.programMemory, selectionRange])
+  }, [kclManager.ast, kclManager.variables, selectionRange])
 
   return previousVariablesInfo
 }

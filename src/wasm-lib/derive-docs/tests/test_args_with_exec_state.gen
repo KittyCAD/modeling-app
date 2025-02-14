@@ -15,7 +15,10 @@ mod test_examples_some_function {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(&program, &mut crate::ExecState::new(&ctx.settings))
+            .run(
+                &program,
+                &mut crate::execution::ExecState::new(&ctx.settings),
+            )
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -67,7 +70,7 @@ pub(crate) struct SomeFunction {}
 #[doc = "Std lib function: someFunction\nDocs"]
 pub(crate) const SomeFunction: SomeFunction = SomeFunction {};
 fn boxed_some_function(
-    exec_state: &mut crate::ExecState,
+    exec_state: &mut crate::execution::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<

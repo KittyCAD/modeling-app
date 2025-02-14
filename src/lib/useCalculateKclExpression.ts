@@ -5,10 +5,7 @@ import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
 import { Expr } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
-import {
-  getCalculatedKclExpressionValue,
-  programMemoryFromVariables,
-} from './kclHelpers'
+import { getCalculatedKclExpressionValue } from './kclHelpers'
 import { parse, resultIsOk } from 'lang/wasm'
 import { err } from 'lib/trap'
 
@@ -36,7 +33,7 @@ export function useCalculateKclExpression({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { programMemory, code } = useKclContext()
+  const { variables, code } = useKclContext()
   const { context } = useModelingContext()
   // If there is no selection, use the end of the code
   // so all variables are available
@@ -80,7 +77,7 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     if (
-      programMemory.has(newVariableName) ||
+      variables[newVariableName] ||
       newVariableName === '' ||
       !isValidVariableName(newVariableName)
     ) {
@@ -88,33 +85,22 @@ export function useCalculateKclExpression({
     } else {
       setIsNewVariableNameUnique(true)
     }
-  }, [programMemory, newVariableName])
+  }, [variables, newVariableName])
 
   useEffect(() => {
-    if (!programMemory) return
+    if (!variables) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
-      kclManager.programMemory,
+      kclManager.variables,
       // If there is no selection, use the end of the code
       selectionRange || [code.length, code.length]
     )
     setAvailableVarInfo(varInfo)
-  }, [kclManager.ast, kclManager.programMemory, selectionRange])
+  }, [kclManager.ast, kclManager.variables, selectionRange])
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const programMemory = programMemoryFromVariables(
-        availableVarInfo.variables
-      )
-      if (programMemory instanceof Error) {
-        setCalcResult('NAN')
-        setValueNode(null)
-        return
-      }
-      const result = await getCalculatedKclExpressionValue({
-        value,
-        programMemory,
-      })
+      const result = await getCalculatedKclExpressionValue(value, {})
       if (result instanceof Error || 'errors' in result) {
         setCalcResult('NAN')
         setValueNode(null)
@@ -128,7 +114,7 @@ export function useCalculateKclExpression({
       setCalcResult('NAN')
       setValueNode(null)
     })
-  }, [value, availableVarInfo, code, kclManager.programMemory])
+  }, [value, availableVarInfo, code, kclManager.variables])
 
   return {
     valueNode,

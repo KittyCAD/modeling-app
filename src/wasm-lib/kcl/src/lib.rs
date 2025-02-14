@@ -83,7 +83,9 @@ mod wasm;
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
-pub use execution::{bust_cache, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d};
+pub use execution::{
+    bust_cache, clear_mem_cache, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
+};
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
@@ -96,9 +98,7 @@ pub use source_range::SourceRange;
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    pub use crate::execution::{
-        ArtifactCommand, DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch,
-    };
+    pub use crate::execution::{ArtifactCommand, DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch};
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -234,6 +234,11 @@ fn try_f64_to_i64(f: f64) -> Option<i64> {
     } else {
         None
     }
+}
+
+/// Get the version of the KCL library.
+pub fn version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
 }
 
 #[cfg(test)]

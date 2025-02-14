@@ -44,17 +44,24 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "sourceRange": [
-          205,
-          260,
+          232,
+          241,
           0
         ]
       },
-      "solid_set": {
+      "distance": {
         "sourceRange": [
-          262,
-          275,
+          273,
+          274,
+          0
+        ]
+      },
+      "instances": {
+        "sourceRange": [
+          257,
+          258,
           0
         ]
       }
@@ -62,24 +69,37 @@ snapshot_kind: text
     "name": "patternLinear3d",
     "sourceRange": [
       189,
-      276,
+      277,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        208,
+        221,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "sourceRange": [
-          303,
-          358,
+          324,
+          333,
           0
         ]
       },
-      "solid_set": {
+      "distance": {
         "sourceRange": [
-          360,
+          348,
+          349,
+          0
+        ]
+      },
+      "instances": {
+        "sourceRange": [
+          365,
           366,
           0
         ]
@@ -87,11 +107,17 @@ snapshot_kind: text
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      287,
-      367,
+      288,
+      369,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "sourceRange": [
+        307,
+        313,
+        0
+      ]
+    }
   }
 ]

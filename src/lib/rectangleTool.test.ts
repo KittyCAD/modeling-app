@@ -75,9 +75,9 @@ segAng(rectangleSegmentA001),
 
       // ast is edited in place from the updateCenterRectangleSketch
       const expectedSourceCode = `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([80, 120], %)
-  |> angledLine([0, 80], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) + 90, 120], %, $rectangleSegmentB001)
+  |> startProfileAt([120.37, 80], %)
+  |> angledLine([0, 0], %, $rectangleSegmentA001)
+  |> angledLine([segAng(rectangleSegmentA001) + 90, 0], %, $rectangleSegmentB001)
   |> angledLine([
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)

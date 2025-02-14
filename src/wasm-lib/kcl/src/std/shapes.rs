@@ -181,6 +181,9 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
         tag = {docs = "Identifier for the circle to reference elsewhere."},
     }
 }]
+
+// Similar to inner_circle, but needs to retain 3-point information in the
+// path so it can be used for other features, otherwise it's lost.
 async fn inner_circle_three_point(
     p1: [f64; 2],
     p2: [f64; 2],
@@ -191,18 +194,69 @@ async fn inner_circle_three_point(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let center = calculate_circle_center(p1, p2, p3);
-    inner_circle(
-        CircleData {
-            center,
-            // It can be the distance to any of the 3 points - they all lay on the circumference.
-            radius: distance(center.into(), p2.into()),
-        },
-        sketch_surface_or_group,
-        tag,
+    // It can be the distance to any of the 3 points - they all lay on the circumference.
+    let radius = distance(center.into(), p2.into());
+
+    let sketch_surface = match sketch_surface_or_group {
+        SketchOrSurface::SketchSurface(surface) => surface,
+        SketchOrSurface::Sketch(group) => group.on,
+    };
+    let sketch = crate::std::sketch::inner_start_profile_at(
+        [center[0] + radius, center[1]],
+        sketch_surface,
+        None,
         exec_state,
-        args,
+        args.clone(),
     )
-    .await
+    .await?;
+
+    let from = [center[0] + radius, center[1]];
+    let angle_start = Angle::zero();
+    let angle_end = Angle::turn();
+
+    let id = exec_state.next_uuid();
+
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::Arc {
+                start: angle_start,
+                end: angle_end,
+                center: KPoint2d::from(center).map(LengthUnit),
+                radius: radius.into(),
+                relative: false,
+            },
+        }),
+    )
+    .await?;
+
+    let current_path = Path::CircleThreePoint {
+        base: BasePath {
+            from,
+            to: from,
+            tag: tag.clone(),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+        p1,
+        p2,
+        p3,
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+        .await?;
+
+    Ok(new_sketch)
 }
 
 /// Type of the polygon

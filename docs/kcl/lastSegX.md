@@ -17,7 +17,7 @@ lastSegX(sketch: Sketch) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | The sketch whose line segment is being queried | Yes |
 
 ### Returns
 

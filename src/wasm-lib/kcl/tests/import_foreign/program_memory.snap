@@ -1,64 +1,67 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing import_foreign.kcl
+description: Variables in memory after executing import_foreign.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "cube": {
-          "type": "Module",
-          "value": 1,
-          "__meta": [
-            {
-              "sourceRange": [
-                0,
-                36,
-                0
-              ]
-            }
-          ]
-        },
-        "model": {
-          "type": "ImportedGeometry",
-          "id": "[uuid]",
-          "value": [
-            "cube.gltf"
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                0,
-                36,
-                0
-              ]
-            }
-          ]
-        }
-      },
-      "parent": null
-    }
-  ],
-  "currentEnv": 0,
-  "return": null
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "cube": {
+    "type": "Module",
+    "value": 1,
+    "__meta": [
+      {
+        "sourceRange": [
+          0,
+          36,
+          0
+        ]
+      }
+    ]
+  },
+  "model": {
+    "type": "ImportedGeometry",
+    "id": "[uuid]",
+    "value": [
+      "cube.gltf"
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          0,
+          36,
+          0
+        ]
+      }
+    ]
+  }
 }

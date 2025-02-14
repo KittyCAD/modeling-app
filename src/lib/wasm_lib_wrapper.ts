@@ -11,12 +11,12 @@ import {
   parse_wasm as ParseWasm,
   recast_wasm as RecastWasm,
   format_number as FormatNumber,
-  execute as Execute,
+  execute_with_engine as ExecuteWithEngine,
+  execute_mock as ExecuteMock,
   kcl_lint as KclLint,
   modify_ast_for_sketch_wasm as ModifyAstForSketch,
   is_points_ccw as IsPointsCcw,
   get_tangential_arc_to_info as GetTangentialArcToInfo,
-  program_memory_init as ProgramMemoryInit,
   make_default_planes as MakeDefaultPlanes,
   coredump as CoreDump,
   toml_stringify as TomlStringify,
@@ -28,6 +28,7 @@ import {
   clear_scene_and_bust_cache as ClearSceneAndBustCache,
   kcl_settings as KclSettings,
   change_kcl_settings as ChangeKclSettings,
+  get_kcl_version as GetKclVersion,
 } from '../wasm-lib/pkg/wasm_lib'
 
 type ModuleType = typeof import('../wasm-lib/pkg/wasm_lib')
@@ -57,8 +58,11 @@ export const recast_wasm: typeof RecastWasm = (...args) => {
 export const format_number: typeof FormatNumber = (...args) => {
   return getModule().format_number(...args)
 }
-export const execute: typeof Execute = (...args) => {
-  return getModule().execute(...args)
+export const execute_with_engine: typeof ExecuteWithEngine = (...args) => {
+  return getModule().execute_with_engine(...args)
+}
+export const execute_mock: typeof ExecuteMock = (...args) => {
+  return getModule().execute_mock(...args)
 }
 export const kcl_lint: typeof KclLint = (...args) => {
   return getModule().kcl_lint(...args)
@@ -75,9 +79,6 @@ export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
   ...args
 ) => {
   return getModule().get_tangential_arc_to_info(...args)
-}
-export const program_memory_init: typeof ProgramMemoryInit = (...args) => {
-  return getModule().program_memory_init(...args)
 }
 export const make_default_planes: typeof MakeDefaultPlanes = (...args) => {
   return getModule().make_default_planes(...args)
@@ -117,4 +118,7 @@ export const kcl_settings: typeof KclSettings = (...args) => {
 }
 export const change_kcl_settings: typeof ChangeKclSettings = (...args) => {
   return getModule().change_kcl_settings(...args)
+}
+export const get_kcl_version: typeof GetKclVersion = () => {
+  return getModule().get_kcl_version()
 }

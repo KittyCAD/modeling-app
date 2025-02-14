@@ -1,5 +1,4 @@
 import {
-  ProgramMemory,
   Path,
   Sketch,
   SourceRange,
@@ -14,6 +13,7 @@ import {
   Identifier,
   sketchFromKclValue,
   topLevelRange,
+  VariableMap,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
@@ -30,6 +30,7 @@ import { toolTips, ToolTip } from 'lang/langHelpers'
 import {
   createPipeExpression,
   mutateKwArg,
+  nonCodeMetaEmpty,
   splitPathAtPipeExpression,
 } from '../modifyAst'
 
@@ -66,7 +67,12 @@ import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { EdgeCutInfo } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { findKwArg, findKwArgAny, findKwArgAnyIndex } from 'lang/util'
+import {
+  findKwArg,
+  findKwArgWithIndex,
+  findKwArgAny,
+  findKwArgAnyIndex,
+} from 'lang/util'
 
 export const ARG_TAG = 'tag'
 export const ARG_END = 'end'
@@ -76,6 +82,9 @@ const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
 )
 const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
+const CIRCLE_THREE_POINT_SEGMENT_ERR = new Error(
+  'Invalid input, expected "circle-three-point-segment"'
+)
 
 export type Coords2d = [number, number]
 
@@ -171,7 +180,8 @@ const commonConstraintInfoHelper = (
     }
   ],
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  filterValue?: string
 ) => {
   if (callExp.type !== 'CallExpression' && callExp.type !== 'CallExpressionKw')
     return []
@@ -295,7 +305,8 @@ const horzVertConstraintInfoHelper = (
   stdLibFnName: ConstrainInfo['stdLibFnName'],
   abbreviatedInput: AbbreviatedInput,
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  filterValue?: string
 ) => {
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]
@@ -355,7 +366,7 @@ function getTagKwArg(): SketchLineHelperKw['getTag'] {
 export const line: SketchLineHelperKw = {
   add: ({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     replaceExistingCallback,
@@ -494,7 +505,7 @@ export const line: SketchLineHelperKw = {
 export const lineTo: SketchLineHelperKw = {
   add: ({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     replaceExistingCallback,
@@ -502,13 +513,14 @@ export const lineTo: SketchLineHelperKw = {
   }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const to = segmentInput.to
-    const _node = { ...node }
+    const _node = structuredClone(node)
     const nodeMeta = getNodeFromPath<PipeExpression | CallExpressionKw>(
       _node,
       pathToNode,
       'PipeExpression'
     )
     if (err(nodeMeta)) return nodeMeta
+
     const { node: pipe } = nodeMeta
     const nodeMeta2 = getNodeFromPath<VariableDeclarator>(
       _node,
@@ -783,11 +795,11 @@ export const xLine: SketchLineHelper = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
-    const _node = { ...node }
+    const _node = structuredClone(node)
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression>('PipeExpression')
-    if (err(_node1)) return _node1
-    const { node: pipe } = _node1
+    const varDec = getNode<VariableDeclaration>('VariableDeclaration')
+    if (err(varDec)) return varDec
+    const dec = varDec.node.declaration
 
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
 
@@ -802,7 +814,11 @@ export const xLine: SketchLineHelper = {
       ])
       if (err(result)) return result
       const { callExp, valueUsedInTransform } = result
-      pipe.body[callIndex] = callExp
+      if (dec.init.type === 'PipeExpression') {
+        dec.init.body[callIndex] = callExp
+      } else {
+        dec.init = callExp
+      }
       return {
         modifiedAst: _node,
         pathToNode,
@@ -814,7 +830,11 @@ export const xLine: SketchLineHelper = {
       newVal,
       createPipeSubstitution(),
     ])
-    pipe.body = [...pipe.body, newLine]
+    if (dec.init.type === 'PipeExpression') {
+      dec.init.body = [...dec.init.body, newLine]
+    } else {
+      dec.init = createPipeExpression([dec.init, newLine])
+    }
     return { modifiedAst: _node, pathToNode }
   },
   updateArgs: ({ node, pathToNode, input }) => {
@@ -851,11 +871,11 @@ export const yLine: SketchLineHelper = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
-    const _node = { ...node }
+    const _node = structuredClone(node)
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression>('PipeExpression')
-    if (err(_node1)) return _node1
-    const { node: pipe } = _node1
+    const varDec = getNode<VariableDeclaration>('VariableDeclaration')
+    if (err(varDec)) return varDec
+    const dec = varDec.node.declaration
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
     if (replaceExistingCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -868,7 +888,11 @@ export const yLine: SketchLineHelper = {
       ])
       if (err(result)) return result
       const { callExp, valueUsedInTransform } = result
-      pipe.body[callIndex] = callExp
+      if (dec.init.type === 'PipeExpression') {
+        dec.init.body[callIndex] = callExp
+      } else {
+        dec.init = callExp
+      }
       return {
         modifiedAst: _node,
         pathToNode,
@@ -880,7 +904,11 @@ export const yLine: SketchLineHelper = {
       newVal,
       createPipeSubstitution(),
     ])
-    pipe.body = [...pipe.body, newLine]
+    if (dec.init.type === 'PipeExpression') {
+      dec.init.body = [...dec.init.body, newLine]
+    } else {
+      dec.init = createPipeExpression([dec.init, newLine])
+    }
     return { modifiedAst: _node, pathToNode }
   },
   updateArgs: ({ node, pathToNode, input }) => {
@@ -1220,6 +1248,295 @@ export const circle: SketchLineHelper = {
     ]
   },
 }
+export const circleThreePoint: SketchLineHelperKw = {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+    if (segmentInput.type !== 'circle-three-point-segment') {
+      return CIRCLE_THREE_POINT_SEGMENT_ERR
+    }
+
+    const { p1, p2, p3 } = segmentInput
+    const _node = structuredClone(node)
+    const nodeMeta = getNodeFromPath<VariableDeclaration>(
+      _node,
+      pathToNode,
+      'VariableDeclaration'
+    )
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: varDec } = nodeMeta
+
+    const createRoundedLiteral = (val: number) =>
+      createLiteral(roundOff(val, 2))
+    if (replaceExistingCallback) {
+      const result = replaceExistingCallback([
+        {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p1',
+          argType: 'xAbsolute',
+          expr: createRoundedLiteral(p1[0]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p1',
+          argType: 'yAbsolute',
+          expr: createRoundedLiteral(p1[1]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p2',
+          argType: 'xAbsolute',
+          expr: createRoundedLiteral(p2[0]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p2',
+          argType: 'yAbsolute',
+          expr: createRoundedLiteral(p2[1]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p3',
+          argType: 'xAbsolute',
+          expr: createRoundedLiteral(p3[0]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p3',
+          argType: 'yAbsolute',
+          expr: createRoundedLiteral(p3[1]),
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+
+      varDec.declaration.init = callExp
+
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
+    }
+    return new Error('replaceExistingCallback is missing')
+  },
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'circle-three-point-segment') {
+      return CIRCLE_THREE_POINT_SEGMENT_ERR
+    }
+    const { p1, p2, p3 } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: callExpression, shallowPath } = nodeMeta
+    const createRounded2DPointArr = (point: [number, number]) =>
+      createArrayExpression([
+        createLiteral(roundOff(point[0], 2)),
+        createLiteral(roundOff(point[1], 2)),
+      ])
+
+    const newP1 = createRounded2DPointArr(p1)
+    const newP2 = createRounded2DPointArr(p2)
+    const newP3 = createRounded2DPointArr(p3)
+    mutateKwArg('p1', callExpression, newP1)
+    mutateKwArg('p2', callExpression, newP2)
+    mutateKwArg('p3', callExpression, newP3)
+
+    return {
+      modifiedAst: _node,
+      pathToNode: shallowPath,
+    }
+  },
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp, code, pathToNode, filterValue) => {
+    if (callExp.type !== 'CallExpressionKw') return []
+    const p1Details = findKwArgWithIndex('p1', callExp)
+    const p2Details = findKwArgWithIndex('p2', callExp)
+    const p3Details = findKwArgWithIndex('p3', callExp)
+    if (!p1Details || !p2Details || !p3Details) return []
+    if (
+      p1Details.expr.type !== 'ArrayExpression' ||
+      p2Details.expr.type !== 'ArrayExpression' ||
+      p3Details.expr.type !== 'ArrayExpression'
+    )
+      return []
+
+    const pathToP1ArrayExpression: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpressionKw'],
+      [p1Details.argIndex, 'arg index'],
+      ['arg', 'labeledArg -> Arg'],
+      ['elements', 'ArrayExpression'],
+    ]
+    const pathToP2ArrayExpression: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpressionKw'],
+      [p2Details.argIndex, 'arg index'],
+      ['arg', 'labeledArg -> Arg'],
+      ['elements', 'ArrayExpression'],
+    ]
+    const pathToP3ArrayExpression: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpressionKw'],
+      [p3Details.argIndex, 'arg index'],
+      ['arg', 'labeledArg -> Arg'],
+      ['elements', 'ArrayExpression'],
+    ]
+
+    const pathToP1XArg: PathToNode = [...pathToP1ArrayExpression, [0, 'index']]
+    const pathToP1YArg: PathToNode = [...pathToP1ArrayExpression, [1, 'index']]
+    const pathToP2XArg: PathToNode = [...pathToP2ArrayExpression, [0, 'index']]
+    const pathToP2YArg: PathToNode = [...pathToP2ArrayExpression, [1, 'index']]
+    const pathToP3XArg: PathToNode = [...pathToP3ArrayExpression, [0, 'index']]
+    const pathToP3YArg: PathToNode = [...pathToP3ArrayExpression, [1, 'index']]
+
+    const constraints: (ConstrainInfo & { filterValue: string })[] = [
+      {
+        stdLibFnName: 'circleThreePoint',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p1Details.expr.elements[0]),
+        sourceRange: [
+          p1Details.expr.elements[0].start,
+          p1Details.expr.elements[0].end,
+          0,
+        ],
+        pathToNode: pathToP1XArg,
+        value: code.slice(
+          p1Details.expr.elements[0].start,
+          p1Details.expr.elements[0].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p1',
+        },
+        filterValue: 'p1',
+      },
+      {
+        stdLibFnName: 'circleThreePoint',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p1Details.expr.elements[1]),
+        sourceRange: [
+          p1Details.expr.elements[1].start,
+          p1Details.expr.elements[1].end,
+          0,
+        ],
+        pathToNode: pathToP1YArg,
+        value: code.slice(
+          p1Details.expr.elements[1].start,
+          p1Details.expr.elements[1].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p1',
+        },
+        filterValue: 'p1',
+      },
+      {
+        stdLibFnName: 'circleThreePoint',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p2Details.expr.elements[0]),
+        sourceRange: [
+          p2Details.expr.elements[0].start,
+          p2Details.expr.elements[0].end,
+          0,
+        ],
+        pathToNode: pathToP2XArg,
+        value: code.slice(
+          p2Details.expr.elements[0].start,
+          p2Details.expr.elements[0].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p2',
+        },
+        filterValue: 'p2',
+      },
+      {
+        stdLibFnName: 'circleThreePoint',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p2Details.expr.elements[1]),
+        sourceRange: [
+          p2Details.expr.elements[1].start,
+          p2Details.expr.elements[1].end,
+          0,
+        ],
+        pathToNode: pathToP2YArg,
+        value: code.slice(
+          p2Details.expr.elements[1].start,
+          p2Details.expr.elements[1].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p2',
+        },
+        filterValue: 'p2',
+      },
+      {
+        stdLibFnName: 'circleThreePoint',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p3Details.expr.elements[0]),
+        sourceRange: [
+          p3Details.expr.elements[0].start,
+          p3Details.expr.elements[0].end,
+          0,
+        ],
+        pathToNode: pathToP3XArg,
+        value: code.slice(
+          p3Details.expr.elements[0].start,
+          p3Details.expr.elements[0].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p3',
+        },
+        filterValue: 'p3',
+      },
+      {
+        stdLibFnName: 'circleThreePoint',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p3Details.expr.elements[1]),
+        sourceRange: [
+          p3Details.expr.elements[1].start,
+          p3Details.expr.elements[1].end,
+          0,
+        ],
+        pathToNode: pathToP3YArg,
+        value: code.slice(
+          p3Details.expr.elements[1].start,
+          p3Details.expr.elements[1].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p3',
+        },
+        filterValue: 'p3',
+      },
+    ]
+    const finalConstraints: ConstrainInfo[] = []
+    constraints.forEach((constraint) => {
+      if (!filterValue) {
+        finalConstraints.push(constraint)
+      }
+      if (filterValue && constraint.filterValue === filterValue) {
+        finalConstraints.push(constraint)
+      }
+    })
+    return finalConstraints
+  },
+}
 export const angledLine: SketchLineHelper = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
@@ -1313,7 +1630,7 @@ export const angledLine: SketchLineHelper = {
 export const angledLineOfXLength: SketchLineHelper = {
   add: ({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     replaceExistingCallback,
@@ -1337,10 +1654,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     const { node: varDec } = nodeMeta2
 
     const variableName = varDec.id.name
-    const sketch = sketchFromKclValue(
-      previousProgramMemory?.get(variableName),
-      variableName
-    )
+    const sketch = sketchFromKclValue(variables[variableName], variableName)
     if (err(sketch)) {
       return sketch
     }
@@ -1429,7 +1743,7 @@ export const angledLineOfXLength: SketchLineHelper = {
 export const angledLineOfYLength: SketchLineHelper = {
   add: ({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     replaceExistingCallback,
@@ -1452,10 +1766,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     if (err(nodeMeta2)) return nodeMeta2
     const { node: varDec } = nodeMeta2
     const variableName = varDec.id.name
-    const sketch = sketchFromKclValue(
-      previousProgramMemory?.get(variableName),
-      variableName
-    )
+    const sketch = sketchFromKclValue(variables[variableName], variableName)
     if (err(sketch)) return sketch
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
@@ -1793,7 +2104,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     }
     return new Error('not implemented')
   },
-  updateArgs: ({ node, pathToNode, input, previousProgramMemory }) => {
+  updateArgs: ({ node, pathToNode, input, variables }) => {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
@@ -1820,10 +2131,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
 
     const { node: varDec } = nodeMeta2
     const varName = varDec.declaration.id.name
-    const sketch = sketchFromKclValue(
-      previousProgramMemory.get(varName),
-      varName
-    )
+    const sketch = sketchFromKclValue(variables[varName], varName)
     if (err(sketch)) return sketch
     const intersectPath = sketch.paths.find(
       ({ tag }: Path) => tag && tag.value === intersectTagName
@@ -1954,7 +2262,8 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
           startNodes: [],
           nonCodeNodes: [],
         },
-        trivia: [],
+        innerAttrs: [],
+        outerAttrs: [],
       },
       pathToNode,
     }
@@ -1992,11 +2301,12 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
 export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   line,
   lineTo,
+  circleThreePoint,
 } as const
 
 export function changeSketchArguments(
   node: Node<Program>,
-  programMemory: ProgramMemory,
+  variables: VariableMap,
   sourceRangeOrPath:
     | {
         type: 'sourceRange'
@@ -2030,7 +2340,7 @@ export function changeSketchArguments(
 
     return updateArgs({
       node: _node,
-      previousProgramMemory: programMemory,
+      variables,
       pathToNode: shallowPath,
       input,
     })
@@ -2047,7 +2357,7 @@ export function changeSketchArguments(
 
     return updateArgs({
       node: _node,
-      previousProgramMemory: programMemory,
+      variables,
       pathToNode: shallowPath,
       input,
     })
@@ -2059,30 +2369,36 @@ export function changeSketchArguments(
 export function getConstraintInfo(
   callExpression: Node<CallExpression>,
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  filterValue?: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
   if (!(fnName in sketchLineHelperMap)) return []
   return sketchLineHelperMap[fnName].getConstraintInfo(
     callExpression,
     code,
-    pathToNode
+    pathToNode,
+    filterValue
   )
 }
 
 export function getConstraintInfoKw(
   callExpression: Node<CallExpressionKw>,
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  filterValue?: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
-  const isAbsolute = findKwArg('endAbsolute', callExpression) !== undefined
+  const isAbsolute =
+    fnName === 'circleThreePoint' ||
+    findKwArg('endAbsolute', callExpression) !== undefined
   if (!(fnName in sketchLineHelperMapKw)) return []
   const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
   return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
     callExpression,
     code,
-    pathToNode
+    pathToNode,
+    filterValue
   )
 }
 
@@ -2112,7 +2428,7 @@ export function compareVec2Epsilon2(
 
 interface CreateLineFnCallArgs {
   node: Node<Program>
-  programMemory: ProgramMemory
+  variables: VariableMap
   input: SegmentInputs
   fnName: ToolTip
   pathToNode: PathToNode
@@ -2121,7 +2437,7 @@ interface CreateLineFnCallArgs {
 
 export function addNewSketchLn({
   node: _node,
-  programMemory: previousProgramMemory,
+  variables,
   fnName,
   pathToNode,
   input: segmentInput,
@@ -2151,7 +2467,7 @@ export function addNewSketchLn({
   )
   return add({
     node,
-    previousProgramMemory,
+    variables,
     pathToNode,
     segmentInput,
     spliceBetween,
@@ -2164,7 +2480,7 @@ export function addCallExpressionsToPipe({
   expressions,
 }: {
   node: Node<Program>
-  programMemory: ProgramMemory
+  variables: VariableMap
   pathToNode: PathToNode
   expressions: Node<CallExpression | CallExpressionKw>[]
 }) {
@@ -2188,7 +2504,7 @@ export function addCloseToPipe({
   pathToNode,
 }: {
   node: Program
-  programMemory: ProgramMemory
+  variables: VariableMap
   pathToNode: PathToNode
 }) {
   const _node = { ...node }
@@ -2209,7 +2525,7 @@ export function addCloseToPipe({
 
 export function replaceSketchLine({
   node,
-  programMemory,
+  variables,
   pathToNode: _pathToNode,
   fnName,
   segmentInput,
@@ -2217,7 +2533,7 @@ export function replaceSketchLine({
   referencedSegment,
 }: {
   node: Node<Program>
-  programMemory: ProgramMemory
+  variables: VariableMap
   pathToNode: PathToNode
   fnName: ToolTip
   segmentInput: SegmentInputs
@@ -2241,7 +2557,7 @@ export function replaceSketchLine({
       : sketchLineHelperMap[fnName]
   const addRetVal = add({
     node: _node,
-    previousProgramMemory: programMemory,
+    variables,
     pathToNode: _pathToNode,
     referencedSegment,
     segmentInput,
@@ -2306,8 +2622,6 @@ function addTagToChamfer(
   if (err(variableDec)) return variableDec
   const isPipeExpression = pipeExpr.node.type === 'PipeExpression'
 
-  console.log('pipeExpr', pipeExpr, variableDec)
-  // const callExpr = isPipeExpression ? pipeExpr.node.body[pipeIndex] : variableDec.node.init
   const callExpr = isPipeExpression
     ? pipeExpr.node.body[pipeIndex]
     : variableDec.node.init
@@ -2388,7 +2702,6 @@ function addTagToChamfer(
   if (isPipeExpression) {
     pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
   } else {
-    console.log('yo', createPipeExpression([newExpressionToInsert, callExpr]))
     callExpr.arguments[1] = createPipeSubstitution()
     variableDec.node.init = createPipeExpression([
       newExpressionToInsert,
@@ -2517,6 +2830,7 @@ function addTagKw(): addTagFn {
             unlabeled: callExpr.node.arguments.length
               ? callExpr.node.arguments[0]
               : null,
+            nonCodeMeta: nonCodeMetaEmpty(),
             arguments: [],
           }
     const tagArg = findKwArg(ARG_TAG, primaryCallExp)
@@ -2536,7 +2850,7 @@ function addTagKw(): addTagFn {
         start: callExpr.node.start,
         end: callExpr.node.end,
         moduleId: callExpr.node.moduleId,
-        trivia: callExpr.node.trivia,
+        outerAttrs: callExpr.node.outerAttrs,
       })
     }
 
@@ -2727,6 +3041,8 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
       return new Error(
         `line call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'circleThreePoint':
+      return false
   }
   return new Error(`Unknown sketch function ${name}`)
 }

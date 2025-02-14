@@ -103,6 +103,39 @@ description: Result of parsing import_function_not_sketch.kcl
       }
     ],
     "end": 109,
+    "innerAttrs": [
+      {
+        "end": 33,
+        "name": {
+          "end": 9,
+          "name": "settings",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 32,
+            "key": {
+              "end": 27,
+              "name": "defaultLengthUnit",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "start": 10,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 32,
+              "name": "in",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
@@ -116,42 +149,7 @@ description: Result of parsing import_function_not_sketch.kcl
           }
         ]
       },
-      "startNodes": [
-        {
-          "end": 33,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "annotation",
-            "name": {
-              "end": 9,
-              "name": "settings",
-              "start": 1,
-              "type": "Identifier"
-            },
-            "properties": [
-              {
-                "end": 32,
-                "key": {
-                  "end": 27,
-                  "name": "defaultLengthUnit",
-                  "start": 10,
-                  "type": "Identifier"
-                },
-                "start": 10,
-                "type": "ObjectProperty",
-                "value": {
-                  "end": 32,
-                  "name": "in",
-                  "start": 30,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                }
-              }
-            ]
-          }
-        }
-      ]
+      "startNodes": []
     },
     "start": 0
   }

@@ -5,9 +5,9 @@ use std::path::PathBuf;
 use crate::{
     engine::new_zoo_client,
     errors::ExecErrorWithState,
-    execution::{ExecutorContext, ExecutorSettings},
+    execution::{ExecState, ExecutorContext, ExecutorSettings},
     settings::types::UnitLength,
-    ConnectionError, ExecError, ExecState, KclErrorWithOutputs, Program,
+    ConnectionError, ExecError, KclErrorWithOutputs, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]

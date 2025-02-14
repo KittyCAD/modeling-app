@@ -157,8 +157,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 plugin.requestSemanticTokens()
                 break
-              case 'kcl/memoryUpdated':
-                break
             }
           } catch (error) {
             console.error(error)

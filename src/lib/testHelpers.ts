@@ -1,9 +1,9 @@
 import {
   Program,
-  ProgramMemory,
-  executor,
+  executeMock,
   SourceRange,
   ExecState,
+  VariableMap,
 } from '../lang/wasm'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
@@ -80,18 +80,9 @@ class MockEngineCommandManager {
 
 export async function enginelessExecutor(
   ast: Node<Program>,
-  pmo: ProgramMemory | Error = ProgramMemory.empty(),
-  path?: string
+  usePrevMemory?: boolean,
+  path?: string,
+  variables?: VariableMap
 ): Promise<ExecState> {
-  if (pmo !== null && err(pmo)) return Promise.reject(pmo)
-
-  const mockEngineCommandManager = new MockEngineCommandManager({
-    setIsStreamReady: () => {},
-    setMediaStream: () => {},
-  }) as any as EngineCommandManager
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  mockEngineCommandManager.startNewSession()
-  const execState = await executor(ast, mockEngineCommandManager, path, pmo)
-  await mockEngineCommandManager.waitForAllCommands()
-  return execState
+  return await executeMock(ast, usePrevMemory, path, variables)
 }

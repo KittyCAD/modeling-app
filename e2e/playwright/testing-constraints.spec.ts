@@ -19,7 +19,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> xLine(-20, %)
-    `
+`
       )
     })
 
@@ -673,7 +673,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${testName}`, async ({ context, homePage, page }) => {
+      test(`${testName}`, async ({ context, homePage, page, editor }) => {
         // constants and locators
         const cmdBarKclInput = page
           .getByTestId('cmd-bar-arg-value')
@@ -706,7 +706,9 @@ part002 = startSketchOn('XZ')
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
+        await u.waitForPageLoad()
 
+        await editor.scrollToText('line(end = [74.36, 130.4])', true)
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 

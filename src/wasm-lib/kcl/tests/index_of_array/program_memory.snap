@@ -1,129 +1,178 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
-description: Program memory after executing index_of_array.kcl
-snapshot_kind: text
+description: Variables in memory after executing index_of_array.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "arr": {
+    "type": "Array",
+    "value": [
+      {
+        "type": "Number",
+        "value": 90.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "arr": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 90.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    42,
-                    44,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 91.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    46,
-                    48,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 92.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    50,
-                    52,
-                    0
-                  ]
-                }
-              ]
-            }
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                53,
-                0
-              ]
-            }
-          ]
-        },
-        "i": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                252,
-                262,
-                0
-              ]
-            }
-          ]
-        },
-        "result0": {
-          "type": "Number",
-          "value": 91.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                46,
-                48,
-                0
-              ]
-            }
-          ]
-        },
-        "result1": {
-          "type": "Number",
-          "value": 91.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                46,
-                48,
-                0
-              ]
-            }
-          ]
-        }
+        "__meta": [
+          {
+            "sourceRange": [
+              42,
+              44,
+              0
+            ]
+          }
+        ]
       },
-      "parent": null
-    }
-  ],
-  "currentEnv": 0,
-  "return": null
+      {
+        "type": "Number",
+        "value": 91.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              46,
+              48,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 92.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              50,
+              52,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          41,
+          53,
+          0
+        ]
+      }
+    ]
+  },
+  "i": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          252,
+          262,
+          0
+        ]
+      }
+    ]
+  },
+  "result0": {
+    "type": "Number",
+    "value": 91.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          46,
+          48,
+          0
+        ]
+      }
+    ]
+  },
+  "result1": {
+    "type": "Number",
+    "value": 91.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          46,
+          48,
+          0
+        ]
+      }
+    ]
+  }
 }

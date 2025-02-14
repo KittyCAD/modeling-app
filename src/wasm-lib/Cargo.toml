@@ -33,6 +33,9 @@ tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8"
 uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
 
+[features]
+dhat-heap = ["kcl-lib/dhat-heap"]
+
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
