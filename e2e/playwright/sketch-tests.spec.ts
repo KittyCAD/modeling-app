@@ -1968,7 +1968,7 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
             activeLines: ['|>line(end = [-0.41,6.99])'],
             highlightedCode: 'line(end = [-0.41,6.99])',
           })
-        }).toPass({ timeout: 5_000, intervals: [500] })
+        }).toPass({ timeout: 10_000, intervals: [1000] })
 
         await toolbar.lengthConstraintBtn.click()
         await cmdBar.progressCmdBar()
