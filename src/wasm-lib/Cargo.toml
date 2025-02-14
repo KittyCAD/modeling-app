@@ -15,7 +15,7 @@ gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
 kittycad.workspace = true
 lazy_static = "1.5.0"
-serde_json = "1.0.135"
+serde_json = "1.0.138"
 tokio = { version = "1.41.1", features = ["sync"] }
 toml = "0.8.19"
 uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
@@ -32,6 +32,9 @@ reqwest = { version = "0.12", default-features = false }
 tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8"
 uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
+
+[features]
+dhat-heap = ["kcl-lib/dhat-heap"]
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.7"

@@ -2,11 +2,12 @@ use std::fmt::Write;
 
 use crate::parsing::{
     ast::types::{
-        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FnArgType, FormatOptions, FunctionExpression,
-        IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-        PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
+        Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
+        CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FnArgType, FormatOptions,
+        FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue,
+        ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
+        VariableKind,
     },
     token::NumericSuffix,
     PIPE_OPERATOR,
@@ -22,6 +23,9 @@ impl Program {
             .map(|sh| format!("{}\n\n", sh.inner.content))
             .unwrap_or_default();
 
+        for attr in &self.inner_attrs {
+            result.push_str(&attr.recast(options, indentation_level));
+        }
         for start in &self.non_code_meta.start_nodes {
             result.push_str(&start.recast(options, indentation_level));
         }
@@ -30,36 +34,44 @@ impl Program {
         let result = self
             .body
             .iter()
-            .map(|body_item| match body_item.clone() {
-                BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
-                BodyItem::ExpressionStatement(expression_statement) => {
-                    expression_statement
-                        .expression
-                        .recast(options, indentation_level, ExprContext::Other)
+            .map(|body_item| {
+                let mut result = String::new();
+                for attr in body_item.get_attrs() {
+                    result.push_str(&attr.recast(options, indentation_level));
                 }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.recast(options, indentation_level)
-                }
-                BodyItem::ReturnStatement(return_statement) => {
-                    format!(
-                        "{}return {}",
-                        indentation,
-                        return_statement
-                            .argument
+                result.push_str(&match body_item.clone() {
+                    BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
+                    BodyItem::ExpressionStatement(expression_statement) => {
+                        expression_statement
+                            .expression
                             .recast(options, indentation_level, ExprContext::Other)
-                            .trim_start()
-                    )
-                }
+                    }
+                    BodyItem::VariableDeclaration(variable_declaration) => {
+                        variable_declaration.recast(options, indentation_level)
+                    }
+                    BodyItem::ReturnStatement(return_statement) => {
+                        format!(
+                            "{}return {}",
+                            indentation,
+                            return_statement
+                                .argument
+                                .recast(options, indentation_level, ExprContext::Other)
+                                .trim_start()
+                        )
+                    }
+                });
+                result
             })
             .enumerate()
             .fold(result, |mut output, (index, recast_str)| {
-                let start_string = if index == 0 && self.non_code_meta.start_nodes.is_empty() {
-                    // We need to indent.
-                    indentation.to_string()
-                } else {
-                    // Do nothing, we already applied the indentation elsewhere.
-                    String::new()
-                };
+                let start_string =
+                    if index == 0 && self.non_code_meta.start_nodes.is_empty() && self.inner_attrs.is_empty() {
+                        // We need to indent.
+                        indentation.to_string()
+                    } else {
+                        // Do nothing, we already applied the indentation elsewhere.
+                        String::new()
+                    };
 
                 // determine the value of the end string
                 // basically if we are inside a nested function we want to end with a new line
@@ -113,9 +125,7 @@ impl NonCodeValue {
     fn should_cause_array_newline(&self) -> bool {
         match self {
             Self::InlineComment { .. } => false,
-            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine | Self::Annotation { .. } => {
-                true
-            }
+            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
         }
     }
 }
@@ -156,33 +166,38 @@ impl Node<NonCodeNode> {
                 }
             }
             NonCodeValue::NewLine => "\n\n".to_string(),
-            NonCodeValue::Annotation { name, properties } => {
-                let mut result = "@".to_owned();
-                result.push_str(&name.name);
-                if let Some(properties) = properties {
-                    result.push('(');
-                    result.push_str(
-                        &properties
-                            .iter()
-                            .map(|prop| {
-                                format!(
-                                    "{} = {}",
-                                    prop.key.name,
-                                    prop.value
-                                        .recast(options, indentation_level + 1, ExprContext::Other)
-                                        .trim()
-                                )
-                            })
-                            .collect::<Vec<String>>()
-                            .join(", "),
-                    );
-                    result.push(')');
-                    result.push('\n');
-                }
-
-                result
-            }
         }
+    }
+}
+
+impl Node<Annotation> {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let mut result = "@".to_owned();
+        if let Some(name) = &self.name {
+            result.push_str(&name.name);
+        }
+        if let Some(properties) = &self.properties {
+            result.push('(');
+            result.push_str(
+                &properties
+                    .iter()
+                    .map(|prop| {
+                        format!(
+                            "{} = {}",
+                            prop.key.name,
+                            prop.value
+                                .recast(options, indentation_level + 1, ExprContext::Other)
+                                .trim()
+                        )
+                    })
+                    .collect::<Vec<String>>()
+                    .join(", "),
+            );
+            result.push(')');
+            result.push('\n');
+        }
+
+        result
     }
 }
 
@@ -329,8 +344,25 @@ impl CallExpressionKw {
                 .iter()
                 .map(|arg| arg.recast(options, indentation_level, ctxt)),
         );
-        let args = arg_list.join(", ");
-        format!("{indent}{name}({args})")
+        let args = arg_list.clone().join(", ");
+        if arg_list.len() >= 4 {
+            let inner_indentation = if ctxt == ExprContext::Pipe {
+                options.get_indentation_offset_pipe(indentation_level + 1)
+            } else {
+                options.get_indentation(indentation_level + 1)
+            };
+            let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
+            args.push(',');
+            let args = args;
+            let end_indent = if ctxt == ExprContext::Pipe {
+                options.get_indentation_offset_pipe(indentation_level)
+            } else {
+                options.get_indentation(indentation_level)
+            };
+            format!("{indent}{name}(\n{inner_indentation}{args}\n{end_indent})")
+        } else {
+            format!("{indent}{name}({args})")
+        }
     }
 }
 
@@ -790,7 +822,39 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{parsing::ast::types::FormatOptions, source_range::ModuleId};
+    use crate::{parsing::ast::types::FormatOptions, ModuleId};
+
+    #[test]
+    fn test_recast_annotations_without_body_items() {
+        let input = r#"@settings(defaultLengthUnit = in)
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_annotations_in_function_body() {
+        let input = r#"fn myFunc() {
+  @meta(yes = true)
+  x = 2
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_annotations_in_function_body_without_items() {
+        let input = r#"fn myFunc() {
+  @meta(yes = true)
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
 
     #[test]
     fn test_recast_annotations_without_body_items() {
@@ -1058,13 +1122,13 @@ sphere = startSketchOn('XZ')
      }, %)
   |> close()
   |> revolve({ axis: 'x' }, %)
-  |> patternCircular3d({
+  |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
        repetitions = 10,
        arcDegrees = 360,
        rotateDuplicates = true
-     }, %)
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')
@@ -1125,13 +1189,13 @@ sphere = startSketchOn('XZ')
      }, %)
   |> close()
   |> revolve({ axis = 'x' }, %)
-  |> patternCircular3d({
+  |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
        repetitions = 10,
        arcDegrees = 360,
-       rotateDuplicates = true
-     }, %)
+       rotateDuplicates = true,
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')
@@ -1456,11 +1520,11 @@ tabs_r = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
+  |> patternLinear3d(
        axis = [0, -1, 0],
        repetitions = 1,
        distance = length - 10
-     }, %)
+     )
   // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
        plane: {
@@ -1483,11 +1547,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
-       axis = [0, -1, 0],
-       repetitions = 1,
-       distance = length - 10
-     }, %)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1581,11 +1641,7 @@ tabs_r = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
-       axis = [0, -1, 0],
-       repetitions = 1,
-       distance = length - 10
-     }, %)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
        plane = {
@@ -1608,11 +1664,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
-       axis = [0, -1, 0],
-       repetitions = 1,
-       distance = length - 10
-     }, %)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 "#
         );
     }

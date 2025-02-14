@@ -99,6 +99,29 @@ a complete arc
 
 
 ----
+A base path.
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `CircleThreePoint`|  | No |
+| `p1` |`[number, number]`| Point 1 of the circle | No |
+| `p2` |`[number, number]`| Point 2 of the circle | No |
+| `p3` |`[number, number]`| Point 3 of the circle | No |
+| `from` |`[number, number]`| The from point. | No |
+| `to` |`[number, number]`| The to point. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
+
+
+----
 A path that is horizontal.
 
 **Type:** `object`

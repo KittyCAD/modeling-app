@@ -8,7 +8,7 @@ import { editorManager } from 'lib/singletons'
 import { Annotation, Transaction } from '@codemirror/state'
 import { EditorView, KeyBinding } from '@codemirror/view'
 import { recast, Program } from 'lang/wasm'
-import { err } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
 import { Compartment } from '@codemirror/state'
 import { history } from '@codemirror/commands'
 
@@ -168,7 +168,7 @@ export default class CodeManager {
     const newCode = recast(ast)
     if (err(newCode)) return
     this.updateCodeStateEditor(newCode)
-    await this.writeToFile()
+    this.writeToFile().catch(reportRejection)
   }
 }
 

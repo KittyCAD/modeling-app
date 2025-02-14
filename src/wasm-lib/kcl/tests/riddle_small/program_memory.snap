@@ -1,530 +1,525 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing riddle_small.kcl
-snapshot_kind: text
+description: Variables in memory after executing riddle_small.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "ANSWER": {
-          "type": "Number",
-          "value": 41803.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                9,
-                14,
-                0
-              ]
-            }
-          ]
+  "ANSWER": {
+    "type": "Number",
+    "value": 41803.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          9,
+          14,
+          0
+        ]
+      }
+    ]
+  },
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ox": {
+    "type": "Number",
+    "value": -26.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          96,
+          98,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          9,
+          14,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          73,
+          79,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          49,
+          54,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          58,
+          64,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          110,
+          112,
+          0
+        ]
+      }
+    ]
+  },
+  "oy": {
+    "type": "Number",
+    "value": 34.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          119,
+          121,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          9,
+          14,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          85,
+          90,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          49,
+          54,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          58,
+          64,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          133,
+          135,
+          0
+        ]
+      }
+    ]
+  },
+  "r": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            199,
+            217,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
         },
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            223,
+            242,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
         },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            248,
+            267,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
         },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "ox": {
-          "type": "Number",
-          "value": -26.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                96,
-                98,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                9,
-                14,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                73,
-                79,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                49,
-                54,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                58,
-                64,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                110,
-                112,
-                0
-              ]
-            }
-          ]
-        },
-        "oy": {
-          "type": "Number",
-          "value": 34.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                119,
-                121,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                9,
-                14,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                85,
-                90,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                49,
-                54,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                58,
-                64,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                133,
-                135,
-                0
-              ]
-            }
-          ]
-        },
-        "r": {
-          "type": "Solid",
-          "value": {
-            "type": "Solid",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": [
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  199,
-                  217,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  223,
-                  242,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  248,
-                  267,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              },
-              {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  273,
-                  281,
-                  0
-                ],
-                "tag": null,
-                "type": "extrudePlane"
-              }
-            ],
-            "sketch": {
-              "type": "Sketch",
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            273,
+            281,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
               "id": "[uuid]",
-              "paths": [
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      199,
-                      217,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -26.0,
-                    34.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -25.0,
-                    34.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      223,
-                      242,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -25.0,
-                    34.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -25.0,
-                    33.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      248,
-                      267,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -25.0,
-                    33.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -26.0,
-                    33.0
-                  ],
-                  "type": "ToPoint"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      273,
-                      281,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -26.0,
-                    33.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -26.0,
-                    34.0
-                  ],
-                  "type": "ToPoint"
-                }
-              ],
-              "on": {
-                "type": "plane",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": "XZ",
-                "origin": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0
-                },
-                "units": {
-                  "type": "Mm"
-                },
-                "__meta": []
-              },
-              "start": {
-                "from": [
-                  -26.0,
-                  34.0
-                ],
-                "to": [
-                  -26.0,
-                  34.0
-                ],
-                "tag": null,
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    166,
-                    193,
-                    0
-                  ]
-                }
-              },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    166,
-                    193,
-                    0
-                  ]
-                }
+              "sourceRange": [
+                199,
+                217,
+                0
               ]
             },
-            "height": 1.0,
-            "startCapId": "[uuid]",
-            "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
+            "from": [
+              -26.0,
+              34.0
+            ],
+            "tag": null,
+            "to": [
+              -25.0,
+              34.0
+            ],
+            "type": "ToPoint"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                223,
+                242,
+                0
+              ]
             },
-            "__meta": [
-              {
-                "sourceRange": [
-                  166,
-                  193,
-                  0
-                ]
-              }
+            "from": [
+              -25.0,
+              34.0
+            ],
+            "tag": null,
+            "to": [
+              -25.0,
+              33.0
+            ],
+            "type": "ToPoint"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                248,
+                267,
+                0
+              ]
+            },
+            "from": [
+              -25.0,
+              33.0
+            ],
+            "tag": null,
+            "to": [
+              -26.0,
+              33.0
+            ],
+            "type": "ToPoint"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                273,
+                281,
+                0
+              ]
+            },
+            "from": [
+              -26.0,
+              33.0
+            ],
+            "tag": null,
+            "to": [
+              -26.0,
+              34.0
+            ],
+            "type": "ToPoint"
+          }
+        ],
+        "on": {
+          "type": "plane",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": "XZ",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0
+          },
+          "units": {
+            "type": "Mm"
+          },
+          "__meta": []
+        },
+        "start": {
+          "from": [
+            -26.0,
+            34.0
+          ],
+          "to": [
+            -26.0,
+            34.0
+          ],
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              166,
+              193,
+              0
             ]
           }
         },
-        "t": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 64,
-                    "left": {
-                      "end": 54,
-                      "left": {
-                        "end": 46,
-                        "left": {
-                          "end": 42,
-                          "name": "ANSWER",
-                          "start": 36,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "operator": "*",
-                        "right": {
-                          "end": 46,
-                          "name": "s",
-                          "start": 45,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "start": 36,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      "operator": "+",
-                      "right": {
-                        "end": 54,
-                        "raw": "12345",
-                        "start": 49,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 12345.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 36,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    "operator": "%",
-                    "right": {
-                      "end": 64,
-                      "raw": "214748",
-                      "start": 58,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 214748.0,
-                        "suffix": "None"
-                      }
-                    },
-                    "start": 36,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "end": 64,
-                  "start": 28,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 66,
-              "start": 24
-            },
-            "end": 66,
-            "params": [
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 22,
-                  "name": "s",
-                  "start": 21,
-                  "type": "Identifier"
-                }
-              }
-            ],
-            "start": 20,
-            "type": "FunctionExpression"
-          },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "ANSWER": {
-                    "type": "Number",
-                    "value": 41803.0,
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          9,
-                          14,
-                          0
-                        ]
-                      }
-                    ]
-                  },
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  }
-                },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0,
-            "return": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                20,
-                66,
-                0
-              ]
-            }
-          ]
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
         },
-        "xs": {
-          "type": "Number",
-          "value": 205804.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                73,
-                79,
-                0
-              ]
-            }
-          ]
-        },
-        "ys": {
-          "type": "Number",
-          "value": 71816.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                85,
-                90,
-                0
-              ]
-            }
+        "__meta": [
+          {
+            "sourceRange": [
+              166,
+              193,
+              0
+            ]
+          }
+        ]
+      },
+      "height": 1.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            166,
+            193,
+            0
           ]
         }
-      },
-      "parent": null
+      ]
     }
-  ],
-  "currentEnv": 0,
-  "return": null
+  },
+  "t": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "argument": {
+              "end": 64,
+              "left": {
+                "end": 54,
+                "left": {
+                  "end": 46,
+                  "left": {
+                    "end": 42,
+                    "name": "ANSWER",
+                    "start": 36,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "*",
+                  "right": {
+                    "end": 46,
+                    "name": "s",
+                    "start": 45,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 36,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 54,
+                  "raw": "12345",
+                  "start": 49,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 12345.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 36,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "%",
+              "right": {
+                "end": 64,
+                "raw": "214748",
+                "start": 58,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 214748.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 36,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "end": 64,
+            "start": 28,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 66,
+        "start": 24
+      },
+      "end": 66,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 22,
+            "name": "s",
+            "start": 21,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 20,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      0,
+      1
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          20,
+          66,
+          0
+        ]
+      }
+    ]
+  },
+  "xs": {
+    "type": "Number",
+    "value": 205804.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          73,
+          79,
+          0
+        ]
+      }
+    ]
+  },
+  "ys": {
+    "type": "Number",
+    "value": 71816.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          85,
+          90,
+          0
+        ]
+      }
+    ]
+  }
 }
