@@ -486,9 +486,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       counterClockWise: {
         inputType: 'options',
         required: true,
+        defaultValue: false,
         options: [
-          { name: 'True', isCurrent: false, value: true },
-          { name: 'False', isCurrent: true, value: false },
+          { name: 'True', value: true },
+          { name: 'False', value: false },
         ],
       },
       radius: {
@@ -499,10 +500,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       axis: {
         inputType: 'options',
         required: true,
+        defaultValue: 'X',
         options: [
-          { name: 'X Axis', isCurrent: true, value: 'X' },
-          { name: 'Y Axis', isCurrent: false, value: 'Y' },
-          { name: 'Z Axis', isCurrent: false, value: 'Z' },
+          { name: 'X Axis', value: 'X' },
+          { name: 'Y Axis', value: 'Y' },
+          { name: 'Z Axis', value: 'Z' },
         ],
       },
       length: {
