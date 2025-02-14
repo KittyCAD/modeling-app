@@ -329,11 +329,83 @@ export const ModelingMachineProvider = ({
                   otherSelections: [],
                 }
               } else if (setSelections.selection && editorManager.isShiftDown) {
+                // selecting and deselecting multiple objects
+
+                /**
+                 * There are two scenarios:
+                 * 1. General case:
+                 *    When selecting and deselecting edges,
+                 *    faces or segment (during sketch edit)
+                 *    we use its artifact ID to identify the selection
+                 * 2. Initial sketch setup:
+                 *    The artifact is not yet created
+                 *    so we use the codeRef.range
+                 */
+
+                let updatedSelections: typeof selectionRanges.graphSelections
+
+                // 1. General case: Artifact exists, use its ID
+                if (setSelections.selection.artifact?.id) {
+                  // check if already selected
+                  const alreadySelected = selectionRanges.graphSelections.some(
+                    (selection) =>
+                      selection.artifact?.id ===
+                      setSelections.selection?.artifact?.id
+                  )
+                  if (
+                    alreadySelected &&
+                    setSelections.selection?.artifact?.id
+                  ) {
+                    // remove it
+                    updatedSelections = selectionRanges.graphSelections.filter(
+                      (selection) =>
+                        selection.artifact?.id !==
+                        setSelections.selection?.artifact?.id
+                    )
+                  } else {
+                    // add it
+                    updatedSelections = [
+                      ...selectionRanges.graphSelections,
+                      setSelections.selection,
+                    ]
+                  }
+                } else {
+                  // 2. Initial sketch setup: Artifact not yet created – use codeRef.range
+                  const selectionRange = JSON.stringify(
+                    setSelections.selection?.codeRef?.range
+                  )
+
+                  // check if already selected
+                  const alreadySelected = selectionRanges.graphSelections.some(
+                    (selection) => {
+                      const existingRange = JSON.stringify(
+                        selection.codeRef?.range
+                      )
+                      return existingRange === selectionRange
+                    }
+                  )
+
+                  if (
+                    alreadySelected &&
+                    setSelections.selection?.codeRef?.range
+                  ) {
+                    // remove it
+                    updatedSelections = selectionRanges.graphSelections.filter(
+                      (selection) =>
+                        JSON.stringify(selection.codeRef?.range) !==
+                        selectionRange
+                    )
+                  } else {
+                    // add it
+                    updatedSelections = [
+                      ...selectionRanges.graphSelections,
+                      setSelections.selection,
+                    ]
+                  }
+                }
+
                 selections = {
-                  graphSelections: [
-                    ...selectionRanges.graphSelections,
-                    setSelections.selection,
-                  ],
+                  graphSelections: updatedSelections,
                   otherSelections: selectionRanges.otherSelections,
                 }
               }
@@ -1127,6 +1199,7 @@ export const ModelingMachineProvider = ({
             selections: input.selection,
             token,
             artifactGraph: engineCommandManager.artifactGraph,
+            projectName: context.project.name,
           })
         }),
       },

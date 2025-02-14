@@ -9,6 +9,7 @@ import {
   PERSIST_MODELING_CONTEXT,
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
+import { SceneFixture } from './fixtures/sceneFixture'
 
 test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -184,7 +185,8 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     const doEditSegmentsByDraggingHandle = async (
       page: Page,
       homePage: HomePageFixture,
-      openPanes: string[]
+      openPanes: string[],
+      scene: SceneFixture
     ) => {
       // Load the app with the code panes
       await page.addInitScript(async () => {
@@ -200,6 +202,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
 
       const u = await getUtils(page)
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
@@ -317,7 +320,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     test(
       'code pane open at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage }) => {
+      async ({ page, homePage, scene }) => {
         // Load the app with the code panes
         await page.addInitScript(async () => {
           localStorage.setItem(
@@ -330,14 +333,14 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
             })
           )
         })
-        await doEditSegmentsByDraggingHandle(page, homePage, ['code'])
+        await doEditSegmentsByDraggingHandle(page, homePage, ['code'], scene)
       }
     )
 
     test(
       'code pane closed at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage }) => {
+      async ({ page, homePage, scene }) => {
         // Load the app with the code panes
         await page.addInitScript(async (persistModelingContext) => {
           localStorage.setItem(
@@ -345,7 +348,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
             JSON.stringify({ openPanes: [] })
           )
         }, PERSIST_MODELING_CONTEXT)
-        await doEditSegmentsByDraggingHandle(page, homePage, [])
+        await doEditSegmentsByDraggingHandle(page, homePage, [], scene)
       }
     )
   })
@@ -547,6 +550,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('Can edit a sketch that has been revolved in the same pipe', async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -562,6 +566,7 @@ test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
     })
 
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -1299,7 +1304,7 @@ test.describe(`Sketching with offset planes`, () => {
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `offsetPlane001 = offsetPlane("XY", 10)`
+        `offsetPlane001 = offsetPlane("XY", offset = 10)`
       )
     })
 
@@ -1313,9 +1318,9 @@ test.describe(`Sketching with offset planes`, () => {
       await test.step(`Hovering should highlight code`, async () => {
         await planeHover()
         await editor.expectState({
-          activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+          activeLines: [`offsetPlane001=offsetPlane("XY",offset=10)`],
           diagnostics: [],
-          highlightedCode: 'offsetPlane("XY", 10)',
+          highlightedCode: 'offsetPlane("XY", offset = 10)',
         })
       })
 
@@ -1326,7 +1331,7 @@ test.describe(`Sketching with offset planes`, () => {
         await expect(toolbar.lineBtn).toBeEnabled()
         await editor.expectEditor.toContain('startSketchOn(offsetPlane001)')
         await editor.expectState({
-          activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+          activeLines: [`offsetPlane001=offsetPlane("XY",offset=10)`],
           diagnostics: [],
           highlightedCode: '',
         })

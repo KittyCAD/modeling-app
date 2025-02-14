@@ -128,15 +128,78 @@ describe('Testing findUniqueName', () => {
   it('should find a unique name', () => {
     const result = findUniqueName(
       JSON.stringify([
-        { type: 'Identifier', name: 'yo01', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo02', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo03', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo04', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo05', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo06', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo07', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo08', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo09', start: 0, end: 0, moduleId: 0 },
+        {
+          type: 'Identifier',
+          name: 'yo01',
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          outerAttrs: [],
+        },
+        {
+          type: 'Identifier',
+          name: 'yo02',
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          outerAttrs: [],
+        },
+        {
+          type: 'Identifier',
+          name: 'yo03',
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          outerAttrs: [],
+        },
+        {
+          type: 'Identifier',
+          name: 'yo04',
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          outerAttrs: [],
+        },
+        {
+          type: 'Identifier',
+          name: 'yo05',
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          outerAttrs: [],
+        },
+        {
+          type: 'Identifier',
+          name: 'yo06',
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          outerAttrs: [],
+        },
+        {
+          type: 'Identifier',
+          name: 'yo07',
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          outerAttrs: [],
+        },
+        {
+          type: 'Identifier',
+          name: 'yo08',
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          outerAttrs: [],
+        },
+        {
+          type: 'Identifier',
+          name: 'yo09',
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          outerAttrs: [],
+        },
       ] satisfies Node<Identifier>[]),
       'yo',
       2
@@ -154,6 +217,8 @@ describe('Testing addSketchTo', () => {
         end: 0,
         moduleId: 0,
         nonCodeMeta: { nonCodeNodes: {}, startNodes: [] },
+        innerAttrs: [],
+        outerAttrs: [],
       },
       'yz'
     )
@@ -251,7 +316,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('100 + 100') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -265,7 +330,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -279,7 +344,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -293,7 +358,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -307,7 +372,7 @@ yo2 = hmm([identifierGuy + 5])`
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      execState.memory,
+      execState.variables,
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
@@ -493,7 +558,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     const modifiedAst = deleteSegmentFromPipeExpression(
       [],
       ast,
-      execState.memory,
+      execState.variables,
       code,
       pathToNode
     )
@@ -575,7 +640,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       const modifiedAst = deleteSegmentFromPipeExpression(
         dependentSegments,
         ast,
-        execState.memory,
+        execState.variables,
         code,
         pathToNode
       )
@@ -681,7 +746,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         pathToNode,
         argPosition,
         ast,
-        execState.memory
+        execState.variables
       )
       if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
@@ -730,7 +795,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         pathToNode,
         argPosition,
         ast,
-        execState.memory
+        execState.variables
       )
       if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
@@ -914,7 +979,7 @@ sketch002 = startSketchOn({
           codeRef: codeRefFromRange(range, ast),
           artifact,
         },
-        execState.memory,
+        execState.variables,
         async () => {
           await new Promise((resolve) => setTimeout(resolve, 100))
           return {

@@ -6,7 +6,7 @@ use derive_docs::stdlib;
 use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue},
+    execution::{kcl_value::NumericType, ExecState, KclValue},
     std::Args,
 };
 
@@ -50,7 +50,7 @@ pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let num = args.get_number()?;
     let result = inner_cos(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result, NumericType::count()))
 }
 
 /// Compute the cosine of a number (in radians).
@@ -80,7 +80,7 @@ pub async fn sin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let num = args.get_number()?;
     let result = inner_sin(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result, NumericType::count()))
 }
 
 /// Compute the sine of a number (in radians).
@@ -110,7 +110,7 @@ pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let num = args.get_number()?;
     let result = inner_tan(num)?;
 
-    Ok(args.make_user_val_from_f64(result))
+    Ok(args.make_user_val_from_f64_with_type(result, NumericType::count()))
 }
 
 /// Compute the tangent of a number (in radians).

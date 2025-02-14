@@ -1187,14 +1187,12 @@ sweepSketch = startSketchOn('XY')
        angleStart = 0,
        radius = 2
      }, %)
-  |> sweep({
-    path = sweepPath,
-  }, %)
-  |> appearance({
+  |> sweep(path = sweepPath)
+  |> appearance(
        color = "#bb00ff",
        metalness = 90,
        roughness = 90
-     }, %)
+     )
 `
       )
     })
@@ -1235,14 +1233,12 @@ sweepSketch = startSketchOn('XY')
        angleStart = 0,
        radius = 2
      }, %)
-  |> sweep({
-    path = sweepPath,
-  }, %)
-  |> appearance({
+  |> sweep(path = sweepPath)
+  |> appearance(
        color = "#bb00ff",
        metalness = 90,
        roughness = 90
-     }, %)
+     )
 `
       )
     })

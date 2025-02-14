@@ -298,7 +298,7 @@ export function getPathToExtrudeForSegmentSelection(
   const sketchVar = varDecNode.node.declaration.id.name
 
   const sketch = sketchFromKclValue(
-    dependencies.kclManager.programMemory.get(sketchVar),
+    dependencies.kclManager.variables[sketchVar],
     sketchVar
   )
   if (trap(sketch)) return sketch

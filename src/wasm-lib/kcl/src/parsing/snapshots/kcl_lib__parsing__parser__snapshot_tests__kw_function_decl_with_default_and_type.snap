@@ -47,18 +47,16 @@ expression: actual
                 "start": 7,
                 "type": "Identifier"
               },
-              "type_": {
-                "type": "Primitive",
-                "type": "Number"
-              },
               "default_value": {
+                "end": 21,
+                "raw": "2",
+                "start": 20,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 2.0,
                   "suffix": "None"
-                },
-                "raw": "2"
+                }
               }
             }
           ],

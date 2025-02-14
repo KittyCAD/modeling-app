@@ -18,11 +18,11 @@ import {
   UnaryExpression,
   BinaryExpression,
   PathToNode,
-  ProgramMemory,
   SourceRange,
   sketchFromKclValue,
   isPathToNodeNumber,
   formatNumber,
+  VariableMap,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -33,6 +33,7 @@ import {
   traverse,
   ARG_INDEX_FIELD,
   LABELED_ARG_FIELD,
+  UNLABELED_ARG,
 } from './queryAst'
 import {
   addTagForSketchOnFace,
@@ -278,6 +279,7 @@ export function mutateObjExpProp(
         start: 0,
         end: 0,
         moduleId: 0,
+        outerAttrs: [],
       })
     }
   }
@@ -431,10 +433,11 @@ export function addSweep(
 } {
   const modifiedAst = structuredClone(node)
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const sweep = createCallExpressionStdLib('sweep', [
-    createObjectExpression({ path: createIdentifier(pathDeclarator.id.name) }),
+  const sweep = createCallExpressionStdLibKw(
+    'sweep',
     createIdentifier(profileDeclarator.id.name),
-  ])
+    [createLabeledArg('path', createIdentifier(pathDeclarator.id.name))]
+  )
   const declaration = createVariableDeclaration(name, sweep)
   modifiedAst.body.push(declaration)
   const pathToNode: PathToNode = [
@@ -442,8 +445,9 @@ export function addSweep(
     [modifiedAst.body.length - 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['arguments', 'CallExpressionKw'],
+    [0, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
 
   return {
@@ -653,10 +657,11 @@ export function addOffsetPlane({
 
   const newPlane = createVariableDeclaration(
     newPlaneName,
-    createCallExpressionStdLib('offsetPlane', [
+    createCallExpressionStdLibKw(
+      'offsetPlane',
       createLiteral(defaultPlane.toUpperCase()),
-      offset,
-    ])
+      [createLabeledArg('offset', offset)]
+    )
   )
 
   const insertAt =
@@ -674,8 +679,7 @@ export function addOffsetPlane({
     [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['unlabeled', UNLABELED_ARG],
   ]
   return {
     modifiedAst,
@@ -888,6 +892,7 @@ export function createLiteral(value: LiteralValue | number): Node<Literal> {
     moduleId: 0,
     value,
     raw,
+    outerAttrs: [],
   }
 }
 
@@ -897,6 +902,7 @@ export function createTagDeclarator(value: string): Node<TagDeclarator> {
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
 
     value,
   }
@@ -908,6 +914,7 @@ export function createIdentifier(name: string): Node<Identifier> {
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
 
     name,
   }
@@ -919,6 +926,7 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
   }
 }
 
@@ -931,11 +939,13 @@ export function createCallExpressionStdLib(
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
+      outerAttrs: [],
 
       name,
     },
@@ -953,11 +963,14 @@ export function createCallExpressionStdLibKw(
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
+    nonCodeMeta: nonCodeMetaEmpty(),
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
+      outerAttrs: [],
 
       name,
     },
@@ -975,11 +988,13 @@ export function createCallExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
+      outerAttrs: [],
 
       name,
     },
@@ -995,6 +1010,7 @@ export function createArrayExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
 
     nonCodeMeta: nonCodeMetaEmpty(),
     elements,
@@ -1009,6 +1025,7 @@ export function createPipeExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
 
     body,
     nonCodeMeta: nonCodeMetaEmpty(),
@@ -1026,12 +1043,14 @@ export function createVariableDeclaration(
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
 
     declaration: {
       type: 'VariableDeclarator',
       start: 0,
       end: 0,
       moduleId: 0,
+      outerAttrs: [],
 
       id: createIdentifier(varName),
       init,
@@ -1049,6 +1068,7 @@ export function createObjectExpression(properties: {
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
 
     nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
@@ -1056,6 +1076,7 @@ export function createObjectExpression(properties: {
       start: 0,
       end: 0,
       moduleId: 0,
+      outerAttrs: [],
       key: createIdentifier(key),
 
       value,
@@ -1072,6 +1093,7 @@ export function createUnaryExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
 
     operator,
     argument,
@@ -1088,6 +1110,7 @@ export function createBinaryExpression([left, operator, right]: [
     start: 0,
     end: 0,
     moduleId: 0,
+    outerAttrs: [],
 
     operator,
     left,
@@ -1197,7 +1220,7 @@ export function replaceValueAtNodePath({
 
 export function moveValueIntoNewVariablePath(
   ast: Node<Program>,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   pathToNode: PathToNode,
   variableName: string
 ): {
@@ -1210,11 +1233,7 @@ export function moveValueIntoNewVariablePath(
 
   if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
 
-  const { insertIndex } = findAllPreviousVariablesPath(
-    ast,
-    programMemory,
-    pathToNode
-  )
+  const { insertIndex } = findAllPreviousVariablesPath(ast, memVars, pathToNode)
   let _node = structuredClone(ast)
   const boop = replacer(_node, variableName)
   if (trap(boop)) return { modifiedAst: ast }
@@ -1230,7 +1249,7 @@ export function moveValueIntoNewVariablePath(
 
 export function moveValueIntoNewVariable(
   ast: Node<Program>,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   sourceRange: SourceRange,
   variableName: string
 ): {
@@ -1242,11 +1261,7 @@ export function moveValueIntoNewVariable(
   const { isSafe, value, replacer } = meta
   if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
 
-  const { insertIndex } = findAllPreviousVariables(
-    ast,
-    programMemory,
-    sourceRange
-  )
+  const { insertIndex } = findAllPreviousVariables(ast, memVars, sourceRange)
   let _node = structuredClone(ast)
   const replaced = replacer(_node, variableName)
   if (trap(replaced)) return { modifiedAst: ast }
@@ -1268,7 +1283,7 @@ export function moveValueIntoNewVariable(
 export function deleteSegmentFromPipeExpression(
   dependentRanges: SourceRange[],
   modifiedAst: Node<Program>,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   code: string,
   pathToNode: PathToNode
 ): Node<Program> | Error {
@@ -1300,7 +1315,7 @@ export function deleteSegmentFromPipeExpression(
       callExp.shallowPath,
       constraintInfo.argPosition,
       _modifiedAst,
-      programMemory
+      memVars
     )
     if (!transform) return
     _modifiedAst = transform.modifiedAst
@@ -1329,7 +1344,7 @@ export function removeSingleConstraintInfo(
   pathToCallExp: PathToNode,
   argDetails: SimplifiedArgDetails,
   ast: Node<Program>,
-  programMemory: ProgramMemory
+  memVars: VariableMap
 ):
   | {
       modifiedAst: Node<Program>
@@ -1346,7 +1361,7 @@ export function removeSingleConstraintInfo(
     ast,
     selectionRanges: [pathToCallExp],
     transformInfos: [transform],
-    programMemory,
+    memVars,
     referenceSegName: '',
   })
   if (err(retval)) return false
@@ -1356,7 +1371,7 @@ export function removeSingleConstraintInfo(
 export async function deleteFromSelection(
   ast: Node<Program>,
   selection: Selection,
-  programMemory: ProgramMemory,
+  variables: VariableMap,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)
 ): Promise<Node<Program> | Error> {
@@ -1373,6 +1388,7 @@ export async function deleteFromSelection(
       varDec.node.init.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
+    selection.artifact?.type === 'helix' ||
     !selection.artifact // aka expected to be a shell at this point
   ) {
     let extrudeNameToDelete = ''
@@ -1380,7 +1396,8 @@ export async function deleteFromSelection(
     if (
       selection.artifact &&
       selection.artifact.type !== 'sweep' &&
-      selection.artifact.type !== 'plane'
+      selection.artifact.type !== 'plane' &&
+      selection.artifact.type !== 'helix'
     ) {
       const varDecName = varDec.node.id.name
       traverse(astClone, {
@@ -1419,13 +1436,17 @@ export async function deleteFromSelection(
       if (!pathToNode) return new Error('Could not find extrude variable')
     } else {
       pathToNode = selection.codeRef.pathToNode
-      const extrudeVarDec = getNodeFromPath<VariableDeclarator>(
-        astClone,
-        pathToNode,
-        'VariableDeclarator'
-      )
-      if (err(extrudeVarDec)) return extrudeVarDec
-      extrudeNameToDelete = extrudeVarDec.node.id.name
+      if (varDec.node.type !== 'VariableDeclarator') {
+        const callExp = getNodeFromPath<CallExpression>(
+          astClone,
+          pathToNode,
+          'CallExpression'
+        )
+        if (err(callExp)) return callExp
+        extrudeNameToDelete = callExp.node.callee.name
+      } else {
+        extrudeNameToDelete = varDec.node.id.name
+      }
     }
 
     const expressionIndex = pathToNode[1][0] as number
@@ -1479,7 +1500,7 @@ export async function deleteFromSelection(
               return
             }
             const sketchToPreserve = sketchFromKclValue(
-              programMemory.get(sketchName),
+              variables[sketchName],
               sketchName
             )
             if (err(sketchToPreserve)) return sketchToPreserve
@@ -1565,7 +1586,7 @@ export async function deleteFromSelection(
   return new Error('Selection not recognised, could not delete')
 }
 
-const nonCodeMetaEmpty = () => {
+export const nonCodeMetaEmpty = () => {
   return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
 }
 

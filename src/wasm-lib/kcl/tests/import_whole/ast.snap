@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing import_whole.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -116,6 +115,39 @@ snapshot_kind: text
       }
     ],
     "end": 124,
+    "innerAttrs": [
+      {
+        "end": 33,
+        "name": {
+          "end": 9,
+          "name": "settings",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 32,
+            "key": {
+              "end": 27,
+              "name": "defaultLengthUnit",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "start": 10,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 32,
+              "name": "mm",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
@@ -129,42 +161,7 @@ snapshot_kind: text
           }
         ]
       },
-      "startNodes": [
-        {
-          "end": 33,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "annotation",
-            "name": {
-              "end": 9,
-              "name": "settings",
-              "start": 1,
-              "type": "Identifier"
-            },
-            "properties": [
-              {
-                "end": 32,
-                "key": {
-                  "end": 27,
-                  "name": "defaultLengthUnit",
-                  "start": 10,
-                  "type": "Identifier"
-                },
-                "start": 10,
-                "type": "ObjectProperty",
-                "value": {
-                  "end": 32,
-                  "name": "mm",
-                  "start": 30,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                }
-              }
-            ]
-          }
-        }
-      ]
+      "startNodes": []
     },
     "start": 0
   }
