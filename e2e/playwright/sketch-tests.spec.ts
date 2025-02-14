@@ -1914,6 +1914,7 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
