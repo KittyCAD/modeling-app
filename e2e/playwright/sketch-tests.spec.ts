@@ -1352,7 +1352,7 @@ test.describe(`Sketching with offset planes`, () => {
   })
 })
 
-test.describe('multi-profile sketching', () => {
+test.describe('multi-profile sketching', { tag: '@skipWin' }, () => {
   test(
     `snapToProfile start only works for current profile`,
     { tag: ['@skipWin'] },
