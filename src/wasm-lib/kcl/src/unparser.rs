@@ -349,7 +349,9 @@ impl CallExpressionKw {
         let name = &self.callee.name;
         let arg_list = self.recast_args(options, indentation_level, ctxt);
         let args = arg_list.clone().join(", ");
-        let multiline = arg_list.len() >= 4 || arg_list.iter().any(|arg| arg.contains('\n'));
+        let has_lots_of_args = arg_list.len() >= 4;
+        let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
+        let multiline = has_lots_of_args || some_arg_is_already_multiline;
         if multiline {
             let next_indent = indentation_level + 1;
             let inner_indentation = if ctxt == ExprContext::Pipe {

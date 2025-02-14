@@ -26,24 +26,18 @@ miniHdmiHole = startSketchAt([
        0,
        border + miniHdmiDistance - (miniHdmiWidth / 2)
      ])
-  |> line(
-       endAbsolute = [
-         0,
-         border + miniHdmiDistance + miniHdmiWidth / 2
-       ],
-     )
-  |> line(
-       endAbsolute = [
-         1,
-         border + miniHdmiDistance + miniHdmiWidth / 2
-       ],
-     )
-  |> line(
-       endAbsolute = [
-         1,
-         border + miniHdmiDistance - (miniHdmiWidth / 2)
-       ],
-     )
+  |> line(endAbsolute = [
+       0,
+       border + miniHdmiDistance + miniHdmiWidth / 2
+     ])
+  |> line(endAbsolute = [
+       1,
+       border + miniHdmiDistance + miniHdmiWidth / 2
+     ])
+  |> line(endAbsolute = [
+       1,
+       border + miniHdmiDistance - (miniHdmiWidth / 2)
+     ])
   |> close(%)
 
 case = startSketchOn('XY')
