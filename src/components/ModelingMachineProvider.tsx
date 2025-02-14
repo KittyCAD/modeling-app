@@ -69,6 +69,7 @@ import {
   startSketchOnDefault,
 } from 'lang/modifyAst'
 import {
+  KclValue,
   PathToNode,
   Program,
   VariableDeclaration,
@@ -804,12 +805,33 @@ export const ModelingMachineProvider = ({
               engineCommandManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
-
-            const sketch = Object.values(kclManager.execState.variables).find(
-              (variable) =>
+            let sketch: KclValue | null = null
+            for (const variable of Object.values(
+              kclManager.execState.variables
+            )) {
+              // find programMemory that matches path artifact
+              if (
                 variable?.type === 'Sketch' &&
                 variable.value.artifactId === plane.pathIds[0]
-            )
+              ) {
+                sketch = variable
+                break
+              }
+              if (
+                // if the variable is an sweep, check if the underlying sketch matches the artifact
+                variable?.type === 'Solid' &&
+                variable.value.sketch.on.type === 'plane' &&
+                variable.value.sketch.artifactId === plane.pathIds[0]
+              ) {
+                sketch = {
+                  type: 'Sketch',
+                  value: variable.value.sketch,
+                }
+                break
+              }
+            }
+            if (!sketch || sketch.type !== 'Sketch')
+              return Promise.reject(new Error('No sketch'))
             if (!sketch || sketch.type !== 'Sketch')
               return Promise.reject(new Error('No sketch'))
             const info = await getSketchOrientationDetails(sketch.value)
