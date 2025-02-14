@@ -3,15 +3,8 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
-pub use cache::bust_cache;
 use cache::OldAstState;
-pub use cad_op::Operation;
-pub use exec_ast::FunctionParam;
-pub use geometry::*;
-pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine, ZOO_COORD_SYSTEM};
 use indexmap::IndexMap;
-pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -19,10 +12,8 @@ use kcmc::{
     ImageFormat, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-pub use memory::ProgramMemory;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-pub use state::{ExecState, IdGenerator, MetaSettings};
 
 use crate::{
     engine::EngineManager,
@@ -34,10 +25,22 @@ use crate::{
     fs::FileManager,
     parsing::ast::types::{Expr, FunctionExpression, Node, NodeRef, Program},
     settings::types::UnitLength,
-    source_range::{ModuleId, SourceRange},
+    source_range::SourceRange,
     std::{args::Arg, StdLib},
     ExecError, KclErrorWithOutputs,
 };
+
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+pub use cache::{bust_cache, clear_mem_cache};
+pub use cad_op::Operation;
+pub use exec_ast::FunctionParam;
+pub use geometry::*;
+pub(crate) use import::{
+    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
+};
+pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
+pub use memory::EnvironmentRef;
+pub use state::{ExecState, IdGenerator, MetaSettings};
 
 pub(crate) mod annotations;
 mod artifact;
@@ -51,12 +54,12 @@ mod memory;
 mod state;
 
 /// Outcome of executing a program.  This is used in TS.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
-    /// Program variable bindings of the top-level module.
-    pub memory: ProgramMemory,
+    /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
+    pub variables: IndexMap<String, KclValue>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -131,7 +134,7 @@ impl std::hash::Hash for TagIdentifier {
 pub type MemoryFunction =
     fn(
         s: Vec<Arg>,
-        memory: ProgramMemory,
+        memory: EnvironmentRef,
         expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
         exec_state: &ExecState,
@@ -158,27 +161,7 @@ pub struct TagEngineInfo {
 #[serde(rename_all = "camelCase")]
 pub enum BodyType {
     Root,
-    Sketch,
     Block,
-}
-
-/// Info about a module.  Right now, this is pretty minimal.  We hope to cache
-/// modules here in the future.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub struct ModuleInfo {
-    /// The ID of the module.
-    id: ModuleId,
-    /// Absolute path of the module's source file.
-    path: std::path::PathBuf,
-    repr: ModuleRepr,
-}
-
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub enum ModuleRepr {
-    Root,
-    Kcl(Node<Program>),
-    Foreign(import::PreImportedGeometry),
 }
 
 /// Metadata.
@@ -500,6 +483,11 @@ impl ExecutorContext {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
 
+    /// Returns true if we should not send engine commands for any reason.
+    pub fn no_engine_commands(&self) -> bool {
+        self.is_mock() || self.engine.execution_kind().is_isolated()
+    }
+
     pub async fn send_clear_scene(
         &self,
         exec_state: &mut ExecState,
@@ -513,17 +501,56 @@ impl ExecutorContext {
     pub async fn run_mock(
         &self,
         program: crate::Program,
-        program_memory_override: Option<ProgramMemory>,
+        use_prev_memory: bool,
+        variables: IndexMap<String, KclValue>,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(self.is_mock());
 
         let mut exec_state = ExecState::new(&self.settings);
-        if let Some(program_memory_override) = program_memory_override {
-            exec_state.mod_local.memory = program_memory_override;
+        let mut mem = if use_prev_memory {
+            cache::read_old_memory()
+                .await
+                .unwrap_or_else(|| exec_state.memory().clone())
+        } else {
+            exec_state.memory().clone()
+        };
+
+        // Add any extra variables to memory
+        let mut to_restore = Vec::new();
+        for (k, v) in variables {
+            crate::log::log(format!("add var: {k}"));
+            to_restore.push((k.clone(), mem.get(&k, SourceRange::default()).ok().cloned()));
+            mem.add(k, v, SourceRange::synthetic())
+                .map_err(KclErrorWithOutputs::no_outputs)?;
         }
 
+        // Push a scope so that old variables can be overwritten (since we might be re-executing some
+        // part of the scene).
+        mem.push_new_env_for_scope();
+
+        *exec_state.mut_memory() = mem;
+
         self.inner_run(&program.ast, &mut exec_state).await?;
-        Ok(exec_state.to_wasm_outcome())
+
+        // Restore any temporary variables, then save any newly created variables back to
+        // memory in case another run wants to use them. Note this is just saved to the preserved
+        // memory, not to the exec_state which is not cached for mock execution.
+        let mut mem = exec_state.memory().clone();
+
+        let top = mem.pop_and_preserve_env();
+        for (k, v) in to_restore {
+            match v {
+                Some(v) => mem.insert_or_update(k, v),
+                None => mem.clear(k),
+            }
+        }
+        mem.squash_env(top);
+
+        cache::write_old_memory(mem).await;
+
+        let outcome = exec_state.to_mock_wasm_outcome();
+        crate::log::log(format!("return mock {:#?}", outcome.variables));
+        Ok(outcome)
     }
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
@@ -533,7 +560,7 @@ impl ExecutorContext {
             ast: old_ast,
             exec_state: old_state,
             settings: old_settings,
-        }) = cache::read_old_ast_memory().await
+        }) = cache::read_old_ast().await
         {
             let old = CacheInformation {
                 ast: &old_ast,
@@ -612,7 +639,7 @@ impl ExecutorContext {
         result?;
 
         // Save this as the last successful execution to the cache.
-        cache::write_old_ast_memory(OldAstState {
+        cache::write_old_ast(OldAstState {
             ast: program,
             exec_state: exec_state.clone(),
             settings: self.settings.clone(),
@@ -678,6 +705,14 @@ impl ExecutorContext {
             )
         })?;
 
+        if !self.is_mock() {
+            cache::write_old_memory(exec_state.memory().clone()).await;
+        }
+
+        crate::log::log(format!(
+            "Post interpretation KCL memory stats: {:#?}",
+            exec_state.memory().stats
+        ));
         let session_data = self.engine.get_session_data();
         Ok(session_data)
     }
@@ -791,7 +826,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::errors::KclErrorDetails;
+    use crate::{errors::KclErrorDetails, execution::memory::ProgramMemory, ModuleId};
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1205,7 +1240,7 @@ fn layer = () => {
 const x = 5
 
 // The 10 layers are replicas of each other, with a transform applied to each.
-let shape = layer() |> patternTransform(10, transform, %)
+let shape = layer() |> patternTransform(instances = 10, transform = transform)
 "#;
 
         let result = parse_execute(ast).await;
@@ -1590,10 +1625,10 @@ let w = f() + f()
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
-|> shell({
-    faces: [seg01],
-    thickness: 3.14,
-}, %)
+|> shell(
+    thickness = 3.14,
+    faces = [seg01]
+)
 "#;
 
         let ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
@@ -1605,12 +1640,7 @@ let w = f() + f()
         ctx.run_with_caching(old_program).await.unwrap();
 
         // Get the id_generator from the first execution.
-        let id_generator = cache::read_old_ast_memory()
-            .await
-            .unwrap()
-            .exec_state
-            .global
-            .id_generator;
+        let id_generator = cache::read_old_ast().await.unwrap().exec_state.global.id_generator;
 
         let code = r#"sketch001 = startSketchOn('XZ')
 |> startProfileAt([62.74, 206.13], %)
@@ -1620,10 +1650,10 @@ let w = f() + f()
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
-|> shell({
-    faces: [seg01],
-    thickness: 3.14,
-}, %)
+|> shell(
+    faces = [seg01],
+    thickness = 3.14,
+)
 "#;
 
         // Execute a slightly different program again.
@@ -1631,12 +1661,7 @@ let w = f() + f()
         // Execute the program.
         ctx.run_with_caching(program).await.unwrap();
 
-        let new_id_generator = cache::read_old_ast_memory()
-            .await
-            .unwrap()
-            .exec_state
-            .global
-            .id_generator;
+        let new_id_generator = cache::read_old_ast().await.unwrap().exec_state.global.id_generator;
 
         assert_eq!(id_generator, new_id_generator);
     }

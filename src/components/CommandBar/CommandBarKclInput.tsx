@@ -20,6 +20,7 @@ import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEdit
 import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useSettings } from 'machines/appMachine'
+import toast from 'react-hot-toast'
 
 const machineContextSelector = (snapshot?: {
   context: Record<string, unknown>
@@ -97,6 +98,7 @@ function CommandBarKclInput({
     value,
     initialVariableName,
   })
+
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
     detail: String(roundOff(v.value as number)),
@@ -170,7 +172,15 @@ function CommandBarKclInput({
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
-    if (!canSubmit || valueNode === null) return
+    if (!canSubmit || valueNode === null) {
+      // Gotcha: Our application can attempt to submit a command value before the command bar kcl input is ready. Notify the scene and user.
+      if (!canSubmit) {
+        toast.error('Unable to submit command')
+      } else if (valueNode === null) {
+        toast.error('Unable to submit undefined command value')
+      }
+      return
+    }
 
     onSubmit(
       createNewVariable

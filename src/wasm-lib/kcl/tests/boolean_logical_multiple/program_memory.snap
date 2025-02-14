@@ -1,129 +1,150 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing boolean_logical_multiple.kcl
+description: Variables in memory after executing boolean_logical_multiple.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "i": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                40,
-                41,
-                0
-              ]
-            }
-          ]
-        },
-        "ii": {
-          "type": "Bool",
-          "value": true,
-          "__meta": [
-            {
-              "sourceRange": [
-                5,
-                9,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                12,
-                17,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                20,
-                25,
-                0
-              ]
-            }
-          ]
-        },
-        "j": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                166,
-                167,
-                0
-              ]
-            }
-          ]
-        },
-        "jj": {
-          "type": "Bool",
-          "value": true,
-          "__meta": [
-            {
-              "sourceRange": [
-                115,
-                120,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                123,
-                127,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                130,
-                136,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                139,
-                144,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                147,
-                151,
-                0
-              ]
-            }
-          ]
-        }
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "i": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
       },
-      "parent": null
-    }
-  ],
-  "currentEnv": 0,
-  "return": null
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          40,
+          41,
+          0
+        ]
+      }
+    ]
+  },
+  "ii": {
+    "type": "Bool",
+    "value": true,
+    "__meta": [
+      {
+        "sourceRange": [
+          5,
+          9,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          12,
+          17,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          20,
+          25,
+          0
+        ]
+      }
+    ]
+  },
+  "j": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          166,
+          167,
+          0
+        ]
+      }
+    ]
+  },
+  "jj": {
+    "type": "Bool",
+    "value": true,
+    "__meta": [
+      {
+        "sourceRange": [
+          115,
+          120,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          123,
+          127,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          130,
+          136,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          139,
+          144,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          147,
+          151,
+          0
+        ]
+      }
+    ]
+  }
 }

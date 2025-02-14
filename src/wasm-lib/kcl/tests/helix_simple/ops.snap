@@ -1,0 +1,80 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed helix_simple.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          60,
+          64,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      46,
+      65,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "angleStart": {
+        "sourceRange": [
+          173,
+          174,
+          0
+        ]
+      },
+      "axis": {
+        "sourceRange": [
+          247,
+          254,
+          0
+        ]
+      },
+      "ccw": {
+        "sourceRange": [
+          184,
+          188,
+          0
+        ]
+      },
+      "length": {
+        "sourceRange": [
+          220,
+          222,
+          0
+        ]
+      },
+      "radius": {
+        "sourceRange": [
+          235,
+          236,
+          0
+        ]
+      },
+      "revolutions": {
+        "sourceRange": [
+          206,
+          207,
+          0
+        ]
+      }
+    },
+    "name": "helix",
+    "sourceRange": [
+      151,
+      257,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

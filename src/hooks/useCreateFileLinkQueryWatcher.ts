@@ -5,7 +5,6 @@ import { useSearchParams } from 'react-router-dom'
 import { isDesktop } from 'lib/isDesktop'
 import { FileLinkParams } from 'lib/links'
 import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
-import { baseUnitsUnion } from 'lib/settings/settingsTypes'
 import { useSettings } from 'machines/appMachine'
 
 // For initializing the command arguments, we actually want `method` to be undefined
@@ -37,13 +36,7 @@ export function useCreateFileLinkQuery(
         code: base64ToString(
           decodeURIComponent(searchParams.get('code') ?? '')
         ),
-
         name: searchParams.get('name') ?? DEFAULT_FILE_NAME,
-
-        units:
-          (baseUnitsUnion.find((unit) => searchParams.get('units') === unit) ||
-            settings.modeling.defaultUnit.default) ??
-          settings.modeling.defaultUnit.current,
       }
 
       const argDefaultValues: CreateFileSchemaMethodOptional = {
@@ -55,7 +48,6 @@ export function useCreateFileLinkQuery(
           ? settings.projects.defaultProjectName.current
           : DEFAULT_FILE_NAME,
         code: params.code || '',
-        units: params.units,
         method: isDesktop() ? undefined : 'existingProject',
       }
 

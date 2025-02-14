@@ -16,34 +16,18 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::args::Arg;
+use super::{args::Arg, FnAsArg};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, SketchSet,
-        Solid, SolidSet,
+        kcl_value::NumericType, ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d,
+        Point3d, Sketch, SketchSet, Solid, SolidSet,
     },
     std::Args,
     SourceRange,
 };
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
-
-/// Data for a linear pattern on a 2D sketch.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct LinearPattern2dData {
-    /// The number of total instances. Must be greater than or equal to 1.
-    /// This includes the original entity. For example, if instances is 2,
-    /// there will be two copies -- the original, and one new copy.
-    /// If instances is 1, this has no effect.
-    pub instances: u32,
-    /// The distance between each repetition. This can also be referred to as spacing.
-    pub distance: f64,
-    /// The axis of the pattern. This is a 2D vector.
-    pub axis: [f64; 2],
-}
 
 /// Data for a linear pattern on a 3D model.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -63,18 +47,22 @@ pub struct LinearPattern3dData {
 
 /// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (num_repetitions, transform, extr) = args.get_pattern_transform_args()?;
+    let solid_set = args.get_unlabeled_kw_arg("solidSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let transform: FnAsArg<'_> = args.get_kw_arg("transform")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
     let solids = inner_pattern_transform(
-        num_repetitions,
+        solid_set,
+        instances,
         FunctionParam {
             inner: transform.func,
             fn_expr: transform.expr,
             meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
-            memory: *transform.memory,
+            memory: transform.memory,
         },
-        extr,
+        use_original,
         exec_state,
         &args,
     )
@@ -84,19 +72,22 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 
 /// Repeat some 2D sketch, changing each repetition slightly.
 pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (num_repetitions, transform, sketch): (u32, super::FnAsArg<'_>, SketchSet) =
-        super::args::FromArgs::from_args(&args, 0)?;
+    let sketch_set = args.get_unlabeled_kw_arg("sketchSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let transform: FnAsArg<'_> = args.get_kw_arg("transform")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
     let sketches = inner_pattern_transform_2d(
-        num_repetitions,
+        sketch_set,
+        instances,
         FunctionParam {
             inner: transform.func,
             fn_expr: transform.expr,
             meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
-            memory: *transform.memory,
+            memory: transform.memory,
         },
-        sketch,
+        use_original,
         exec_state,
         &args,
     )
@@ -110,7 +101,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// Transformation function could alter rotation, scale, visibility, position, etc.
 ///
 /// The `patternTransform` call itself takes a number for how many total instances of
-/// the shape should be. For example, if you use a circle with `patternTransform(4, transform)`
+/// the shape should be. For example, if you use a circle with `patternTransform(instances = 4, transform = f)`
 /// then there will be 4 circles: the original, and 3 created by replicating the original and
 /// calling the transform function on each.
 ///
@@ -154,7 +145,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(length = 5)
-///   |> patternTransform(4, transform, %)
+///   |> patternTransform(instances = 4, transform = transform)
 /// ```
 /// ```no_run
 /// // Each instance will be shifted along the X axis,
@@ -167,7 +158,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(length = 5)
-///   |> patternTransform(4, transform, %)
+///   |> patternTransform(instances = 4, transform = transform)
 /// ```
 /// ```no_run
 /// fn cube(length, center) {
@@ -206,7 +197,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///
 /// myCubes =
 ///   cube(width, [100,0])
-///   |> patternTransform(25, transform, %)
+///   |> patternTransform(instances = 25, transform = transform)
 /// ```
 ///
 /// ```no_run
@@ -242,7 +233,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 /// myCubes =
 ///   cube(width, [100,100])
-///   |> patternTransform(4, transform, %)
+///   |> patternTransform(instances = 4, transform = transform)
 /// ```
 /// ```no_run
 /// // Parameters
@@ -266,7 +257,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 /// // The vase is 100 layers tall.
 /// // The 100 layers are replica of each other, with a slight transformation applied to each.
-/// vase = layer() |> patternTransform(100, transform, %)
+/// vase = layer() |> patternTransform(instances = 100, transform = transform)
 /// ```
 /// ```
 /// fn transform(i) {
@@ -285,32 +276,48 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///        inscribed: false
 ///      }, %)
 ///   |> extrude(length = 4)
-///   |> patternTransform(3, transform, %)
+///   |> patternTransform(instances = 3, transform = transform)
 /// ```
 #[stdlib {
     name = "patternTransform",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid_set = { docs = "The solid(s) to duplicate" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
+        transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
+    }
 }]
 async fn inner_pattern_transform<'a>(
-    total_instances: u32,
-    transform_function: FunctionParam<'a>,
     solid_set: SolidSet,
+    instances: u32,
+    transform: FunctionParam<'a>,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
-    if total_instances < 1 {
+    let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
+    if instances < 1 {
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: MUST_HAVE_ONE_INSTANCE.to_owned(),
         }));
     }
-    for i in 1..total_instances {
-        let t = make_transform::<Box<Solid>>(i, &transform_function, args.source_range, exec_state).await?;
-        transform.push(t);
+    for i in 1..instances {
+        let t = make_transform::<Box<Solid>>(i, &transform, args.source_range, exec_state).await?;
+        transform_vec.push(t);
     }
-    execute_pattern_transform(transform, solid_set, exec_state, args).await
+    execute_pattern_transform(
+        transform_vec,
+        solid_set,
+        use_original.unwrap_or_default(),
+        exec_state,
+        args,
+    )
+    .await
 }
 
 /// Just like patternTransform, but works on 2D sketches not 3D solids.
@@ -323,36 +330,53 @@ async fn inner_pattern_transform<'a>(
 /// // Sketch 4 circles.
 /// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center: [0, 0], radius: 2 }, %)
-///   |> patternTransform2d(4, transform, %)
+///   |> patternTransform2d(instances = 4, transform = transform)
 /// ```
 #[stdlib {
     name = "patternTransform2d",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_set = { docs = "The sketch(es) to duplicate" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
+        transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
+    }
 }]
 async fn inner_pattern_transform_2d<'a>(
-    total_instances: u32,
-    transform_function: FunctionParam<'a>,
-    solid_set: SketchSet,
+    sketch_set: SketchSet,
+    instances: u32,
+    transform: FunctionParam<'a>,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
-    if total_instances < 1 {
+    let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
+    if instances < 1 {
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: MUST_HAVE_ONE_INSTANCE.to_owned(),
         }));
     }
-    for i in 1..total_instances {
-        let t = make_transform::<Box<Sketch>>(i, &transform_function, args.source_range, exec_state).await?;
-        transform.push(t);
+    for i in 1..instances {
+        let t = make_transform::<Box<Sketch>>(i, &transform, args.source_range, exec_state).await?;
+        transform_vec.push(t);
     }
-    execute_pattern_transform(transform, solid_set, exec_state, args).await
+    execute_pattern_transform(
+        transform_vec,
+        sketch_set,
+        use_original.unwrap_or_default(),
+        exec_state,
+        args,
+    )
+    .await
 }
 
 async fn execute_pattern_transform<T: GeometryTrait>(
     transforms: Vec<Vec<Transform>>,
     geo_set: T::Set,
+    use_original: bool,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
@@ -368,7 +392,7 @@ async fn execute_pattern_transform<T: GeometryTrait>(
 
     let mut output = Vec::new();
     for geo in starting {
-        let new = send_pattern_transform(transforms.clone(), &geo, exec_state, args).await?;
+        let new = send_pattern_transform(transforms.clone(), &geo, use_original, exec_state, args).await?;
         output.extend(new)
     }
     Ok(output)
@@ -379,6 +403,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     // https://github.com/KittyCAD/modeling-app/issues/2821
     transforms: Vec<Vec<Transform>>,
     solid: &T,
+    use_original: bool,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
@@ -388,7 +413,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: solid.id(),
+                entity_id: if use_original { solid.original_id() } else { solid.id() },
                 transform: Default::default(),
                 transforms,
             }),
@@ -416,17 +441,18 @@ async fn send_pattern_transform<T: GeometryTrait>(
 
 async fn make_transform<T: GeometryTrait>(
     i: u32,
-    transform_function: &FunctionParam<'_>,
+    transform: &FunctionParam<'_>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
-    let repetition_num = KclValue::Int {
+    let repetition_num = KclValue::Number {
         value: i.into(),
+        ty: NumericType::count(),
         meta: vec![source_range.into()],
     };
     let transform_fn_args = vec![Arg::synthetic(repetition_num)];
-    let transform_fn_return = transform_function.call(exec_state, transform_fn_args).await?;
+    let transform_fn_return = transform.call(exec_state, transform_fn_args).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
@@ -505,7 +531,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         }
         if let Some(angle) = rot.get("angle") {
             match angle {
-                KclValue::Number { value: number, meta: _ } => {
+                KclValue::Number { value: number, .. } => {
                     rotation.angle = Angle::from_degrees(*number);
                 }
                 _ => {
@@ -602,6 +628,7 @@ fn array_to_point2d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<P
 trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
     fn id(&self) -> Uuid;
+    fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: Self::Set) -> Result<(), KclError>;
@@ -614,6 +641,9 @@ impl GeometryTrait for Box<Sketch> {
     }
     fn id(&self) -> Uuid {
         self.id
+    }
+    fn original_id(&self) -> Uuid {
+        self.original_id
     }
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
         let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
@@ -634,6 +664,11 @@ impl GeometryTrait for Box<Solid> {
     fn id(&self) -> Uuid {
         self.id
     }
+
+    fn original_id(&self) -> Uuid {
+        self.sketch.original_id
+    }
+
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
         array_to_point3d(val, source_ranges)
     }
@@ -645,6 +680,8 @@ impl GeometryTrait for Box<Solid> {
 
 #[cfg(test)]
 mod tests {
+    use crate::execution::kcl_value::NumericType;
+
     use super::*;
 
     #[test]
@@ -654,14 +691,17 @@ mod tests {
                 KclValue::Number {
                     value: 1.1,
                     meta: Default::default(),
+                    ty: NumericType::Unknown,
                 },
                 KclValue::Number {
                     value: 2.2,
                     meta: Default::default(),
+                    ty: NumericType::Unknown,
                 },
                 KclValue::Number {
                     value: 3.3,
                     meta: Default::default(),
+                    ty: NumericType::Unknown,
                 },
             ],
             meta: Default::default(),
@@ -674,9 +714,13 @@ mod tests {
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_set): (LinearPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
+    let sketch_set: SketchSet = args.get_unlabeled_kw_arg("sketchSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let distance: f64 = args.get_kw_arg("distance")?;
+    let axis: [f64; 2] = args.get_kw_arg("axis")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    if data.axis == [0.0, 0.0] {
+    if axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
                 "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
@@ -685,7 +729,8 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let sketches = inner_pattern_linear_2d(data, sketch_set, exec_state, args).await?;
+    let sketches =
+        inner_pattern_linear_2d(sketch_set, instances, distance, axis, use_original, exec_state, args).await?;
     Ok(sketches.into())
 }
 
@@ -695,30 +740,41 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 1 }, %)
-///   |> patternLinear2d({
+///   |> patternLinear2d(
 ///        axis = [1, 0],
 ///        instances = 7,
 ///        distance = 4
-///      }, %)
+///      )
 ///
 /// example = extrude(exampleSketch, length = 1)
 /// ```
 #[stdlib {
     name = "patternLinear2d",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_set = { docs = "The sketch(es) to duplicate" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
+        distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
+        axis = { docs = "The axis of the pattern. A 2D vector." },
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
+    }
 }]
 async fn inner_pattern_linear_2d(
-    data: LinearPattern2dData,
     sketch_set: SketchSet,
+    instances: u32,
+    distance: f64,
+    axis: [f64; 2],
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
-    let axis = data.axis;
     let [x, y] = axis;
     let axis_len = f64::sqrt(x * x + y * y);
     let normalized_axis = kcmc::shared::Point2d::from([x / axis_len, y / axis_len]);
-    let transforms: Vec<_> = (1..data.instances)
+    let transforms: Vec<_> = (1..instances)
         .map(|i| {
-            let d = data.distance * (i as f64);
+            let d = distance * (i as f64);
             let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
             vec![Transform {
                 translate,
@@ -726,14 +782,25 @@ async fn inner_pattern_linear_2d(
             }]
         })
         .collect();
-    execute_pattern_transform(transforms, sketch_set, exec_state, &args).await
+    execute_pattern_transform(
+        transforms,
+        sketch_set,
+        use_original.unwrap_or_default(),
+        exec_state,
+        &args,
+    )
+    .await
 }
 
 /// A linear pattern on a 3D model.
 pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid_set): (LinearPattern3dData, SolidSet) = args.get_data_and_solid_set()?;
+    let solid_set: SolidSet = args.get_unlabeled_kw_arg("solidSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let distance: f64 = args.get_kw_arg("distance")?;
+    let axis: [f64; 3] = args.get_kw_arg("axis")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    if data.axis == [0.0, 0.0, 0.0] {
+    if axis == [0.0, 0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
                 "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
@@ -742,7 +809,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let solids = inner_pattern_linear_3d(data, solid_set, exec_state, args).await?;
+    let solids = inner_pattern_linear_3d(solid_set, instances, distance, axis, use_original, exec_state, args).await?;
     Ok(solids.into())
 }
 
@@ -758,29 +825,40 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 1)
-///   |> patternLinear3d({
+///   |> patternLinear3d(
 ///       axis = [1, 0, 1],
 ///       instances = 7,
 ///       distance = 6
-///     }, %)
+///     )
 /// ```
 #[stdlib {
     name = "patternLinear3d",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid_set = { docs = "The solid(s) to duplicate" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
+        distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
+        axis = { docs = "The axis of the pattern. A 2D vector." },
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
+    }
 }]
 async fn inner_pattern_linear_3d(
-    data: LinearPattern3dData,
     solid_set: SolidSet,
+    instances: u32,
+    distance: f64,
+    axis: [f64; 3],
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
-    let axis = data.axis;
     let [x, y, z] = axis;
     let axis_len = f64::sqrt(x * x + y * y + z * z);
     let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
-    let transforms: Vec<_> = (1..data.instances)
+    let transforms: Vec<_> = (1..instances)
         .map(|i| {
-            let d = data.distance * (i as f64);
+            let d = distance * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
             vec![Transform {
                 translate,
@@ -788,14 +866,21 @@ async fn inner_pattern_linear_3d(
             }]
         })
         .collect();
-    execute_pattern_transform(transforms, solid_set, exec_state, &args).await
+    execute_pattern_transform(
+        transforms,
+        solid_set,
+        use_original.unwrap_or_default(),
+        exec_state,
+        &args,
+    )
+    .await
 }
 
 /// Data for a circular pattern on a 2D sketch.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub struct CircularPattern2dData {
+struct CircularPattern2dData {
     /// The number of total instances. Must be greater than or equal to 1.
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
@@ -807,6 +892,10 @@ pub struct CircularPattern2dData {
     pub arc_degrees: f64,
     /// Whether or not to rotate the duplicates as they are copied.
     pub rotate_duplicates: bool,
+    /// If the target being patterned is itself a pattern, then, should you use the original solid,
+    /// or the pattern?
+    #[serde(default)]
+    pub use_original: Option<bool>,
 }
 
 /// Data for a circular pattern on a 3D model.
@@ -827,9 +916,13 @@ pub struct CircularPattern3dData {
     pub arc_degrees: f64,
     /// Whether or not to rotate the duplicates as they are copied.
     pub rotate_duplicates: bool,
+    /// If the target being patterned is itself a pattern, then, should you use the original solid,
+    /// or the pattern?
+    #[serde(default)]
+    pub use_original: Option<bool>,
 }
 
-pub enum CircularPattern {
+enum CircularPattern {
     ThreeD(CircularPattern3dData),
     TwoD(CircularPattern2dData),
 }
@@ -889,13 +982,35 @@ impl CircularPattern {
             CircularPattern::ThreeD(lp) => lp.rotate_duplicates,
         }
     }
+
+    pub fn use_original(&self) -> bool {
+        match self {
+            CircularPattern::TwoD(lp) => lp.use_original.unwrap_or_default(),
+            CircularPattern::ThreeD(lp) => lp.use_original.unwrap_or_default(),
+        }
+    }
 }
 
 /// A circular pattern on a 2D sketch.
 pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_set): (CircularPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
+    let sketch_set: SketchSet = args.get_unlabeled_kw_arg("sketchSet")?;
+    let instances: u32 = args.get_kw_arg("instances")?;
+    let center: [f64; 2] = args.get_kw_arg("center")?;
+    let arc_degrees: f64 = args.get_kw_arg("arcDegrees")?;
+    let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    let sketches = inner_pattern_circular_2d(data, sketch_set, exec_state, args).await?;
+    let sketches = inner_pattern_circular_2d(
+        sketch_set,
+        instances,
+        center,
+        arc_degrees,
+        rotate_duplicates,
+        use_original,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(sketches.into())
 }
 
@@ -911,21 +1026,36 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 ///   |> line(end = [-1, 0])
 ///   |> line(end = [0, -5])
 ///   |> close()
-///   |> patternCircular2d({
+///   |> patternCircular2d(
 ///        center = [0, 0],
 ///        instances = 13,
 ///        arcDegrees = 360,
 ///        rotateDuplicates = true
-///      }, %)
+///      )
 ///
 /// example = extrude(exampleSketch, length = 1)
 /// ```
 #[stdlib {
     name = "patternCircular2d",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_set = { docs = "Which sketch(es) to pattern" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
+        center = { docs = "The center about which to make the pattern. This is a 2D vector."},
+        arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
+        rotate_duplicates= { docs = "Whether or not to rotate the duplicates as they are copied."},
+        use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
+    }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_2d(
-    data: CircularPattern2dData,
     sketch_set: SketchSet,
+    instances: u32,
+    center: [f64; 2],
+    arc_degrees: f64,
+    rotate_duplicates: bool,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
@@ -934,6 +1064,13 @@ async fn inner_pattern_circular_2d(
     if args.ctx.context_type == crate::execution::ContextType::Mock {
         return Ok(starting_sketches);
     }
+    let data = CircularPattern2dData {
+        instances,
+        center,
+        arc_degrees,
+        rotate_duplicates,
+        use_original,
+    };
 
     let mut sketches = Vec::new();
     for sketch in starting_sketches.iter() {
@@ -960,9 +1097,36 @@ async fn inner_pattern_circular_2d(
 
 /// A circular pattern on a 3D model.
 pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid_set): (CircularPattern3dData, SolidSet) = args.get_data_and_solid_set()?;
+    let solid_set: SolidSet = args.get_unlabeled_kw_arg("solidSet")?;
+    // The number of total instances. Must be greater than or equal to 1.
+    // This includes the original entity. For example, if instances is 2,
+    // there will be two copies -- the original, and one new copy.
+    // If instances is 1, this has no effect.
+    let instances: u32 = args.get_kw_arg("instances")?;
+    // The axis around which to make the pattern. This is a 3D vector.
+    let axis: [f64; 3] = args.get_kw_arg("axis")?;
+    // The center about which to make the pattern. This is a 3D vector.
+    let center: [f64; 3] = args.get_kw_arg("center")?;
+    // The arc angle (in degrees) to place the repetitions. Must be greater than 0.
+    let arc_degrees: f64 = args.get_kw_arg("arcDegrees")?;
+    // Whether or not to rotate the duplicates as they are copied.
+    let rotate_duplicates: bool = args.get_kw_arg("rotateDuplicates")?;
+    // If the target being patterned is itself a pattern, then, should you use the original solid,
+    // or the pattern?
+    let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    let solids = inner_pattern_circular_3d(data, solid_set, exec_state, args).await?;
+    let solids = inner_pattern_circular_3d(
+        solid_set,
+        instances,
+        axis,
+        center,
+        arc_degrees,
+        rotate_duplicates,
+        use_original,
+        exec_state,
+        args,
+    )
+    .await?;
     Ok(solids.into())
 }
 
@@ -976,21 +1140,38 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///   |> circle({ center = [0, 0], radius = 1 }, %)
 ///
 /// example = extrude(exampleSketch, length = -5)
-///   |> patternCircular3d({
+///   |> patternCircular3d(
 ///        axis = [1, -1, 0],
 ///        center = [10, -20, 0],
 ///        instances = 11,
 ///        arcDegrees = 360,
 ///        rotateDuplicates = true
-///      }, %)
+///      )
 /// ```
 #[stdlib {
     name = "patternCircular3d",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid_set = { docs = "Which solid(s) to pattern" },
+        instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect."},
+        axis = { docs = "The axis around which to make the pattern. This is a 3D vector"},
+        center = { docs = "The center about which to make the pattern. This is a 3D vector."},
+        arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
+        rotate_duplicates = { docs = "Whether or not to rotate the duplicates as they are copied."},
+        use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
+    }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_3d(
-    data: CircularPattern3dData,
     solid_set: SolidSet,
+    instances: u32,
+    axis: [f64; 3],
+    center: [f64; 3],
+    arc_degrees: f64,
+    rotate_duplicates: bool,
+    use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
@@ -1007,6 +1188,14 @@ async fn inner_pattern_circular_3d(
     }
 
     let mut solids = Vec::new();
+    let data = CircularPattern3dData {
+        instances,
+        axis,
+        center,
+        arc_degrees,
+        rotate_duplicates,
+        use_original,
+    };
     for solid in starting_solids.iter() {
         let geometries = pattern_circular(
             CircularPattern::ThreeD(data.clone()),
@@ -1055,7 +1244,11 @@ async fn pattern_circular(
             id,
             ModelingCmd::from(mcmd::EntityCircularPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: geometry.id(),
+                entity_id: if data.use_original() {
+                    geometry.original_id()
+                } else {
+                    geometry.id()
+                },
                 center: kcmc::shared::Point3d {
                     x: LengthUnit(center[0]),
                     y: LengthUnit(center[1]),

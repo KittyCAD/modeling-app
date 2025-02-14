@@ -6,31 +6,47 @@ use itertools::{EitherOrBoth, Itertools};
 use tokio::sync::RwLock;
 
 use crate::{
-    execution::{ExecState, ExecutorSettings},
-    parsing::ast::types::{Node, NonCodeValue, Program},
+    execution::{annotations, memory::ProgramMemory, ExecState, ExecutorSettings},
+    parsing::ast::types::{Annotation, Node, Program},
     walk::Node as WalkNode,
 };
 
 lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
-    static ref OLD_AST_MEMORY: Arc<RwLock<Option<OldAstState>>> = Default::default();
+    static ref OLD_AST: Arc<RwLock<Option<OldAstState>>> = Default::default();
+    // The last successful run's memory. Not cleared after an unssuccessful run.
+    static ref PREV_MEMORY: Arc<RwLock<Option<ProgramMemory>>> = Default::default();
 }
 
 /// Read the old ast memory from the lock.
-pub(super) async fn read_old_ast_memory() -> Option<OldAstState> {
-    let old_ast = OLD_AST_MEMORY.read().await;
+pub(super) async fn read_old_ast() -> Option<OldAstState> {
+    let old_ast = OLD_AST.read().await;
     old_ast.clone()
 }
 
-pub(super) async fn write_old_ast_memory(old_state: OldAstState) {
-    let mut old_ast = OLD_AST_MEMORY.write().await;
+pub(super) async fn write_old_ast(old_state: OldAstState) {
+    let mut old_ast = OLD_AST.write().await;
     *old_ast = Some(old_state);
 }
 
+pub(super) async fn read_old_memory() -> Option<ProgramMemory> {
+    let old_mem = PREV_MEMORY.read().await;
+    old_mem.clone()
+}
+
+pub(super) async fn write_old_memory(mem: ProgramMemory) {
+    let mut old_mem = PREV_MEMORY.write().await;
+    *old_mem = Some(mem);
+}
+
 pub async fn bust_cache() {
-    let mut old_ast = OLD_AST_MEMORY.write().await;
-    // Set the cache to None.
+    let mut old_ast = OLD_AST.write().await;
     *old_ast = None;
+}
+
+pub async fn clear_mem_cache() {
+    let mut old_mem = PREV_MEMORY.write().await;
+    *old_mem = None;
 }
 
 /// Information for the caching an AST and smartly re-executing it if we can.
@@ -75,7 +91,7 @@ pub(super) enum CacheResult {
 /// Returns `None` when there are no changes to the program, i.e. it is
 /// fully cached.
 pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInformation<'_>) -> CacheResult {
-    let mut try_reapply_settings = false;
+    let mut reapply_settings = false;
 
     // If the settings are different we might need to bust the cache.
     // We specifically do this before checking if they are the exact same.
@@ -91,13 +107,13 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 
         // If anything else is different we may not need to re-execute, but rather just
         // run the settings again.
-        try_reapply_settings = true;
+        reapply_settings = true;
     }
 
     // If the ASTs are the EXACT same we return None.
     // We don't even need to waste time computing the digests.
     if old.ast == new.ast {
-        return CacheResult::NoAction(try_reapply_settings);
+        return CacheResult::NoAction(reapply_settings);
     }
 
     // We have to clone just because the digests are stored inline :-(
@@ -111,37 +127,39 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 
     // Check if the digest is the same.
     if old_ast.digest == new_ast.digest {
-        return CacheResult::NoAction(try_reapply_settings);
+        return CacheResult::NoAction(reapply_settings);
     }
 
     // Check if the annotations are different.
-    if !old_ast.annotations().zip_longest(new_ast.annotations()).all(|pair| {
-        match pair {
-            EitherOrBoth::Both(old, new) => {
-                // Compare annotations, ignoring source ranges.  Digests must
-                // have been computed before this.
-                match (&old.value, &new.value) {
-                    (
-                        NonCodeValue::Annotation { name, properties },
-                        NonCodeValue::Annotation {
-                            name: new_name,
-                            properties: new_properties,
-                        },
-                    ) => {
-                        name.digest == new_name.digest
-                            && properties
+    if !old_ast
+        .inner_attrs
+        .iter()
+        .filter(annotations::is_significant)
+        .zip_longest(new_ast.inner_attrs.iter().filter(annotations::is_significant))
+        .all(|pair| {
+            match pair {
+                EitherOrBoth::Both(old, new) => {
+                    // Compare annotations, ignoring source ranges.  Digests must
+                    // have been computed before this.
+                    let Annotation { name, properties, .. } = &old.inner;
+                    let Annotation {
+                        name: new_name,
+                        properties: new_properties,
+                        ..
+                    } = &new.inner;
+
+                    name.as_ref().map(|n| n.digest) == new_name.as_ref().map(|n| n.digest)
+                        && properties
+                            .as_ref()
+                            .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
+                            == new_properties
                                 .as_ref()
                                 .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
-                                == new_properties
-                                    .as_ref()
-                                    .map(|props| props.iter().map(|p| p.digest).collect::<Vec<_>>())
-                    }
-                    _ => false,
                 }
+                _ => false,
             }
-            _ => false,
-        }
-    }) {
+        })
+    {
         // If any of the annotations are different at the beginning of the
         // program, it's likely the settings, and we have to bust the cache and
         // re-execute the whole thing.
@@ -153,12 +171,7 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
     }
 
     // Check if the changes were only to Non-code areas, like comments or whitespace.
-    let (clear_scene, program) = generate_changed_program(old_ast, new_ast);
-    CacheResult::ReExecute {
-        clear_scene,
-        reapply_settings: try_reapply_settings,
-        program,
-    }
+    generate_changed_program(old_ast, new_ast, reapply_settings)
 }
 
 /// Force-generate a new CacheResult, even if one shouldn't be made. The
@@ -167,7 +180,7 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 /// how we construct a new [CacheResult].
 ///
 /// Digests *must* be computed before calling this.
-fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>) -> (bool, Node<Program>) {
+fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, reapply_settings: bool) -> CacheResult {
     if !old_ast.body.iter().zip(new_ast.body.iter()).all(|(old, new)| {
         let old_node: WalkNode = old.into();
         let new_node: WalkNode = new.into();
@@ -178,7 +191,11 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>) 
         // means a single insertion or deletion will result in a cache
         // bust.
 
-        return (true, new_ast);
+        return CacheResult::ReExecute {
+            clear_scene: true,
+            reapply_settings,
+            program: new_ast,
+        };
     }
 
     // otherwise the overlapping section of the ast bodies matches.
@@ -194,7 +211,11 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>) 
             // supporting that.
 
             // Cache bust time.
-            (true, new_ast)
+            CacheResult::ReExecute {
+                clear_scene: true,
+                reapply_settings,
+                program: new_ast,
+            }
         }
         std::cmp::Ordering::Greater => {
             // the new AST is longer than the old AST, which means
@@ -206,7 +227,11 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>) 
 
             new_ast.body = new_ast.body[old_ast.body.len()..].to_owned();
 
-            (false, new_ast)
+            CacheResult::ReExecute {
+                clear_scene: false,
+                reapply_settings,
+                program: new_ast,
+            }
         }
         std::cmp::Ordering::Equal => {
             // currently unreachable, but let's pretend like the code
@@ -218,9 +243,7 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>) 
             // so but i think many things. This def needs to change
             // when the code above changes.
 
-            new_ast.body = vec![];
-
-            (false, new_ast)
+            CacheResult::NoAction(reapply_settings)
         }
     }
 }
@@ -242,7 +265,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, ctx, _) = parse_execute(new).await.unwrap();
 
@@ -273,7 +296,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
@@ -285,7 +308,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program_old, ctx, _) = parse_execute(old).await.unwrap();
 
@@ -318,7 +341,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
@@ -330,7 +353,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, ctx, _) = parse_execute(old).await.unwrap();
 
@@ -352,8 +375,10 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_changed_code_comments() {
-        let old = r#" // Removed the end face for the extrusion.
+    async fn test_get_changed_program_same_code_changed_code_comments_attrs() {
+        let old = r#"@foo(whatever = whatever)
+@bar
+// Removed the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
   |> line(end = [24, 0])
@@ -363,9 +388,11 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
 
-        let new = r#"// Remove the end face for the extrusion.
+        let new = r#"@foo(whatever = 42)
+@baz
+// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
   |> line(end = [24, 0])
@@ -375,7 +402,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, ctx, _) = parse_execute(old).await.unwrap();
 
@@ -409,7 +436,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, mut ctx, _) = parse_execute(new).await.unwrap();
 
@@ -451,7 +478,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, mut ctx, _) = parse_execute(new).await.unwrap();
 
@@ -486,7 +513,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
         let (program, mut ctx, _) = parse_execute(new).await.unwrap();
 

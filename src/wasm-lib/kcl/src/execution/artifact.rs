@@ -188,6 +188,9 @@ pub struct Wall {
     pub sweep_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
+    /// This is for the sketch-on-face plane, not for the wall itself.  Traverse
+    /// to the extrude and/or segment to get the wall's code_ref.
+    pub face_code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -201,6 +204,9 @@ pub struct Cap {
     pub sweep_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
+    /// This is for the sketch-on-face plane, not for the cap itself.  Traverse
+    /// to the extrude and/or segment to get the cap's code_ref.
+    pub face_code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -271,6 +277,17 @@ pub struct EdgeCutEdge {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct Helix {
+    pub id: ArtifactId,
+    /// The axis of the helix.  Currently this is always an edge ID, but we may
+    /// add axes to the graph.
+    pub axis_id: Option<ArtifactId>,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
     Plane(Plane),
@@ -295,6 +312,7 @@ pub enum Artifact {
     SweepEdge(SweepEdge),
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
+    Helix(Helix),
 }
 
 impl Artifact {
@@ -312,6 +330,7 @@ impl Artifact {
             Artifact::SweepEdge(a) => a.id,
             Artifact::EdgeCut(a) => a.id,
             Artifact::EdgeCutEdge(a) => a.id,
+            Artifact::Helix(a) => a.id,
         }
     }
 
@@ -331,6 +350,7 @@ impl Artifact {
             Artifact::SweepEdge(_) => None,
             Artifact::EdgeCut(a) => Some(&a.code_ref),
             Artifact::EdgeCutEdge(_) => None,
+            Artifact::Helix(a) => Some(&a.code_ref),
         }
     }
 
@@ -350,6 +370,7 @@ impl Artifact {
             Artifact::SweepEdge(_) => Some(new),
             Artifact::EdgeCut(a) => a.merge(new),
             Artifact::EdgeCutEdge(_) => Some(new),
+            Artifact::Helix(_) => Some(new),
         }
     }
 }
@@ -569,7 +590,7 @@ fn artifacts_to_update(
     responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
     current_plane_id: Option<Uuid>,
     _ast: &Node<Program>,
-    _exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
     // TODO: Build path-to-node from artifact_command source range.  Right now,
     // we're serializing an empty array, and the TS wrapper fills it in with the
@@ -619,6 +640,17 @@ fn artifacts_to_update(
                         edge_cut_edge_ids: wall.edge_cut_edge_ids.clone(),
                         sweep_id: wall.sweep_id,
                         path_ids: wall.path_ids.clone(),
+                        face_code_ref: wall.face_code_ref.clone(),
+                    })]);
+                }
+                Some(Artifact::Cap(cap)) => {
+                    return Ok(vec![Artifact::Cap(Cap {
+                        id: current_plane_id.into(),
+                        sub_type: cap.sub_type,
+                        edge_cut_edge_ids: cap.edge_cut_edge_ids.clone(),
+                        sweep_id: cap.sweep_id,
+                        path_ids: cap.path_ids.clone(),
+                        face_code_ref: cap.face_code_ref.clone(),
                     })]);
                 }
                 Some(_) | None => {
@@ -668,6 +700,17 @@ fn artifacts_to_update(
                     edge_cut_edge_ids: wall.edge_cut_edge_ids.clone(),
                     sweep_id: wall.sweep_id,
                     path_ids: vec![id],
+                    face_code_ref: wall.face_code_ref.clone(),
+                }));
+            }
+            if let Some(Artifact::Cap(cap)) = plane {
+                return_arr.push(Artifact::Cap(Cap {
+                    id: current_plane_id.into(),
+                    sub_type: cap.sub_type,
+                    edge_cut_edge_ids: cap.edge_cut_edge_ids.clone(),
+                    sweep_id: cap.sweep_id,
+                    path_ids: vec![id],
+                    face_code_ref: cap.face_code_ref.clone(),
                 }));
             }
             return Ok(return_arr);
@@ -794,12 +837,31 @@ fn artifacts_to_update(
                         source_ranges: vec![range],
                     })
                 })?;
+                let extra_artifact = exec_artifacts.values().find(|a| {
+                    if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
+                        *id == face_id.0
+                    } else {
+                        false
+                    }
+                });
+                let sketch_on_face_source_range = extra_artifact
+                    .and_then(|a| match a {
+                        Artifact::StartSketchOnFace { source_range, .. } => Some(*source_range),
+                        // TODO: If we didn't find it, it's probably a bug.
+                        _ => None,
+                    })
+                    .unwrap_or_default();
+
                 return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
                     seg_id: curve_id,
                     edge_cut_edge_ids: Vec::new(),
                     sweep_id: path_sweep_id,
-                    path_ids: vec![],
+                    path_ids: Vec::new(),
+                    face_code_ref: CodeRef {
+                        range: sketch_on_face_source_range,
+                        path_to_node: Vec::new(),
+                    },
                 }));
                 let mut new_seg = seg.clone();
                 new_seg.surface_id = Some(face_id);
@@ -828,12 +890,29 @@ fn artifacts_to_update(
                             source_ranges: vec![range],
                         })
                     })?;
+                    let extra_artifact = exec_artifacts.values().find(|a| {
+                        if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
+                            *id == face_id.0
+                        } else {
+                            false
+                        }
+                    });
+                    let sketch_on_face_source_range = extra_artifact
+                        .and_then(|a| match a {
+                            Artifact::StartSketchOnFace { source_range, .. } => Some(*source_range),
+                            _ => None,
+                        })
+                        .unwrap_or_default();
                     return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
                         sub_type,
                         edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
                         path_ids: Vec::new(),
+                        face_code_ref: CodeRef {
+                            range: sketch_on_face_source_range,
+                            path_to_node: Vec::new(),
+                        },
                     }));
                     let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {
                         continue;
@@ -922,6 +1001,25 @@ fn artifacts_to_update(
             } else {
                 // TODO: Handle other types like SweepEdge.
             }
+            return Ok(return_arr);
+        }
+        ModelingCmd::EntityMakeHelixFromParams(_) => {
+            let return_arr = vec![Artifact::Helix(Helix {
+                id,
+                axis_id: None,
+                code_ref: CodeRef { range, path_to_node },
+            })];
+            return Ok(return_arr);
+        }
+        ModelingCmd::EntityMakeHelixFromEdge(helix) => {
+            let edge_id = ArtifactId::new(helix.edge_id);
+            let return_arr = vec![Artifact::Helix(Helix {
+                id,
+                axis_id: Some(edge_id),
+                code_ref: CodeRef { range, path_to_node },
+            })];
+            // We could add the reverse graph edge connecting from the edge to
+            // the helix here, but it's not useful right now.
             return Ok(return_arr);
         }
         _ => {}

@@ -32,6 +32,16 @@ impl Geometry {
             Geometry::Solid(e) => e.id,
         }
     }
+
+    /// If this geometry is the result of a pattern, then return the ID of
+    /// the original sketch which was patterned.
+    /// Equivalent to the `id()` method if this isn't a pattern.
+    pub fn original_id(&self) -> uuid::Uuid {
+        match self {
+            Geometry::Sketch(s) => s.original_id,
+            Geometry::Solid(e) => e.sketch.original_id,
+        }
+    }
 }
 
 /// A set of geometry.
@@ -243,9 +253,9 @@ pub struct Plane {
     pub value: PlaneType,
     /// Origin of the plane.
     pub origin: Point3d,
-    /// What should the plane’s X axis be?
+    /// What should the plane's X axis be?
     pub x_axis: Point3d,
-    /// What should the plane’s Y axis be?
+    /// What should the plane's Y axis be?
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
@@ -366,9 +376,9 @@ pub struct Face {
     pub artifact_id: ArtifactId,
     /// The tag of the face.
     pub value: String,
-    /// What should the face’s X axis be?
+    /// What should the face's X axis be?
     pub x_axis: Point3d,
-    /// What should the face’s Y axis be?
+    /// What should the face's Y axis be?
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
@@ -419,6 +429,8 @@ pub struct Sketch {
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
     pub artifact_id: ArtifactId,
+    #[ts(skip)]
+    pub original_id: uuid::Uuid,
     pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
@@ -552,29 +564,8 @@ pub struct Solid {
 }
 
 impl Solid {
-    pub(crate) fn get_all_edge_cut_ids(&self) -> Vec<uuid::Uuid> {
-        self.edge_cuts.iter().map(|foc| foc.id()).collect()
-    }
-}
-
-/// An solid ID and its fillet and chamfer IDs.  This is needed for lazy
-/// fillet evaluation.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
-pub struct SolidLazyIds {
-    pub solid_id: uuid::Uuid,
-    pub sketch_id: uuid::Uuid,
-    /// Chamfers or fillets on this solid.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub edge_cuts: Vec<uuid::Uuid>,
-}
-
-impl From<&Solid> for SolidLazyIds {
-    fn from(eg: &Solid) -> Self {
-        Self {
-            solid_id: eg.id,
-            sketch_id: eg.sketch.id,
-            edge_cuts: eg.edge_cuts.iter().map(|foc| foc.id()).collect(),
-        }
+    pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
+        self.edge_cuts.iter().map(|foc| foc.id())
     }
 }
 
@@ -773,6 +764,19 @@ pub enum Path {
         /// This is used to compute the tangential angle.
         ccw: bool,
     },
+    CircleThreePoint {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Point 1 of the circle
+        #[ts(type = "[number, number]")]
+        p1: [f64; 2],
+        /// Point 2 of the circle
+        #[ts(type = "[number, number]")]
+        p2: [f64; 2],
+        /// Point 3 of the circle
+        #[ts(type = "[number, number]")]
+        p3: [f64; 2],
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -815,6 +819,7 @@ enum PathType {
     TangentialArc,
     TangentialArcTo,
     Circle,
+    CircleThreePoint,
     Horizontal,
     AngledLineTo,
     Arc,
@@ -827,6 +832,7 @@ impl From<&Path> for PathType {
             Path::TangentialArcTo { .. } => Self::TangentialArcTo,
             Path::TangentialArc { .. } => Self::TangentialArc,
             Path::Circle { .. } => Self::Circle,
+            Path::CircleThreePoint { .. } => Self::CircleThreePoint,
             Path::Horizontal { .. } => Self::Horizontal,
             Path::AngledLineTo { .. } => Self::AngledLineTo,
             Path::Base { .. } => Self::Base,
@@ -845,6 +851,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
             Path::Circle { base, .. } => base.geo_meta.id,
+            Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
         }
     }
@@ -858,6 +865,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
             Path::Circle { base, .. } => base.tag.clone(),
+            Path::CircleThreePoint { base, .. } => base.tag.clone(),
             Path::Arc { base, .. } => base.tag.clone(),
         }
     }
@@ -871,6 +879,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
+            Path::CircleThreePoint { base, .. } => base,
             Path::Arc { base, .. } => base,
         }
     }
@@ -908,6 +917,15 @@ impl Path {
                 linear_distance(self.get_from(), self.get_to())
             }
             Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::CircleThreePoint { .. } => {
+                let circle_center = crate::std::utils::calculate_circle_from_3_points([
+                    self.get_base().from.into(),
+                    self.get_base().to.into(),
+                    self.get_base().to.into(),
+                ]);
+                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], &self.get_base().from);
+                2.0 * std::f64::consts::PI * radius
+            }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
                 linear_distance(self.get_from(), self.get_to())
@@ -924,6 +942,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
+            Path::CircleThreePoint { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
         }
     }
@@ -943,6 +962,17 @@ impl Path {
                 ccw: *ccw,
                 radius: *radius,
             },
+            Path::CircleThreePoint { p1, p2, p3, .. } => {
+                let circle_center =
+                    crate::std::utils::calculate_circle_from_3_points([(*p1).into(), (*p2).into(), (*p3).into()]);
+                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], p1);
+                let center_point = [circle_center.center.x, circle_center.center.y];
+                GetTangentialInfoFromPathsResult::Circle {
+                    center: center_point,
+                    ccw: true,
+                    radius,
+                }
+            }
             Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)

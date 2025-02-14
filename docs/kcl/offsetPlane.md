@@ -17,8 +17,8 @@ offsetPlane(std_plane: StandardPlane, offset: number) -> Plane
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `std_plane` | [`StandardPlane`](/docs/kcl/types/StandardPlane) | One of the standard planes. | Yes |
-| `offset` | `number` |  | Yes |
+| `std_plane` | [`StandardPlane`](/docs/kcl/types/StandardPlane) | Which standard plane (e.g. XY) should this new plane be created from? | Yes |
+| `offset` | `number` | Distance from the standard plane this new plane will be created at. | Yes |
 
 ### Returns
 
@@ -37,7 +37,7 @@ squareSketch = startSketchOn('XY')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch = startSketchOn(offsetPlane('XY', 150))
+circleSketch = startSketchOn(offsetPlane('XY', offset = 150))
   |> circle({ center = [0, 100], radius = 50 }, %)
 
 loft([squareSketch, circleSketch])
@@ -55,7 +55,7 @@ squareSketch = startSketchOn('XZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch = startSketchOn(offsetPlane('XZ', 150))
+circleSketch = startSketchOn(offsetPlane('XZ', offset = 150))
   |> circle({ center = [0, 100], radius = 50 }, %)
 
 loft([squareSketch, circleSketch])
@@ -73,7 +73,7 @@ squareSketch = startSketchOn('YZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch = startSketchOn(offsetPlane('YZ', 150))
+circleSketch = startSketchOn(offsetPlane('YZ', offset = 150))
   |> circle({ center = [0, 100], radius = 50 }, %)
 
 loft([squareSketch, circleSketch])
@@ -91,7 +91,7 @@ squareSketch = startSketchOn('-XZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-circleSketch = startSketchOn(offsetPlane('-XZ', -150))
+circleSketch = startSketchOn(offsetPlane('-XZ', offset = -150))
   |> circle({ center = [0, 100], radius = 50 }, %)
 
 loft([squareSketch, circleSketch])
@@ -106,7 +106,7 @@ startSketchOn("XY")
   |> circle({ radius = 10, center = [0, 0] }, %)
 
 // Triangle on the plane 4 units above
-startSketchOn(offsetPlane("XY", 4))
+startSketchOn(offsetPlane("XY", offset = 4))
   |> startProfileAt([0, 0], %)
   |> line(end = [10, 0])
   |> line(end = [0, 10])

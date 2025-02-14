@@ -1,4 +1,4 @@
-import { OnboardingButtons, useDemoCode, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, useDemoCode } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
@@ -17,14 +17,12 @@ export default function OnboardingParametricModeling() {
     (theme === Themes.System && getSystemTheme() === Themes.Light)
       ? '-dark'
       : ''
-  const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.INTERACTIVE_NUMBERS)
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
       <div
         className={
-          'pointer-events-auto z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
+          'relative pointer-events-auto z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <section className="flex-1 overflow-y-auto mb-6">
@@ -73,12 +71,7 @@ export default function OnboardingParametricModeling() {
             </figcaption>
           </figure>
         </section>
-        <OnboardingButtons
-          currentSlug={onboardingPaths.PARAMETRIC_MODELING}
-          dismiss={dismiss}
-          next={next}
-          nextText="Next: Interactive Numbers"
-        />
+        <OnboardingButtons currentSlug={onboardingPaths.PARAMETRIC_MODELING} />
       </div>
     </div>
   )

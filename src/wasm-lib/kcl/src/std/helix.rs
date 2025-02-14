@@ -43,7 +43,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('YZ')
 ///     |> circle({ center = [0, 0], radius = 0.5 }, %)
-///     |> sweep({ path = helixPath }, %)
+///     |> sweep(path = helixPath)
 /// ```
 ///
 /// ```no_run
@@ -64,7 +64,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
 ///     |> circle({ center = [0, 0], radius = 0.5 }, %)
-///     |> sweep({ path = helixPath }, %)
+///     |> sweep(path = helixPath)
 /// ```
 ///
 /// ```no_run
@@ -86,7 +86,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
 ///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     |> sweep({ path = helixPath }, %)
+///     |> sweep(path = helixPath)
 /// ```
 #[stdlib {
     name = "helix",
@@ -125,7 +125,7 @@ async fn inner_helix(
         meta: vec![args.source_range.into()],
     });
 
-    if args.ctx.is_mock() {
+    if args.ctx.no_engine_commands() {
         return Ok(helix_result);
     }
 

@@ -109,7 +109,8 @@ test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
       await page.keyboard.down('Shift')
       await page.mouse.move(600, 200)
       await page.mouse.down({ button: 'right' })
-      await page.mouse.move(700, 200, { steps: 2 })
+      // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
+      await page.mouse.move(700, 200)
       await page.mouse.up({ button: 'right' })
       await page.keyboard.up('Shift')
     }, [-19, -85, -85])

@@ -2,7 +2,6 @@ import { ToolTip } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
 import {
   ArrayExpression,
-  ArtifactGraph,
   BinaryExpression,
   CallExpression,
   CallExpressionKw,
@@ -13,7 +12,6 @@ import {
   PathToNode,
   PipeExpression,
   Program,
-  ProgramMemory,
   ReturnStatement,
   sketchFromKclValue,
   sketchFromKclValueOptional,
@@ -23,9 +21,11 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   recast,
+  ArtifactGraph,
   kclSettings,
   unitLenToUnitLength,
   unitAngToUnitAngle,
+  VariableMap,
 } from './wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
@@ -37,13 +37,15 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err, Reason } from 'lib/trap'
-import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { findKwArg } from './util'
 import { codeRefFromRange } from './std/artifactGraph'
+import { FunctionExpression } from 'wasm-lib/kcl/bindings/FunctionExpression'
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
+export const UNLABELED_ARG = 'unlabeled first arg'
 export const ARG_INDEX_FIELD = 'arg index'
 
 /**
@@ -287,7 +289,7 @@ export interface PrevVariable<T> {
 
 export function findAllPreviousVariablesPath(
   ast: Program,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   path: PathToNode,
   type: 'number' | 'string' = 'number'
 ): {
@@ -325,7 +327,7 @@ export function findAllPreviousVariablesPath(
   bodyItems?.forEach?.((item) => {
     if (item.type !== 'VariableDeclaration' || item.end > startRange) return
     const varName = item.declaration.id.name
-    const varValue = programMemory?.get(varName)
+    const varValue = memVars[varName]
     if (!varValue || typeof varValue?.value !== type) return
     variables.push({
       key: varName,
@@ -342,7 +344,7 @@ export function findAllPreviousVariablesPath(
 
 export function findAllPreviousVariables(
   ast: Program,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   sourceRange: SourceRange,
   type: 'number' | 'string' = 'number'
 ): {
@@ -351,13 +353,19 @@ export function findAllPreviousVariables(
   insertIndex: number
 } {
   const path = getNodePathFromSourceRange(ast, sourceRange)
-  return findAllPreviousVariablesPath(ast, programMemory, path, type)
+  return findAllPreviousVariablesPath(ast, memVars, path, type)
 }
 
 type ReplacerFn = (
   _ast: Node<Program>,
   varName: string
-) => { modifiedAst: Node<Program>; pathToReplaced: PathToNode } | Error
+) =>
+  | {
+      modifiedAst: Node<Program>
+      pathToReplaced: PathToNode
+      exprInsertIndex: number
+    }
+  | Error
 
 export function isNodeSafeToReplacePath(
   ast: Program,
@@ -409,7 +417,7 @@ export function isNodeSafeToReplacePath(
     if (err(_nodeToReplace)) return _nodeToReplace
     const nodeToReplace = _nodeToReplace.node as any
     nodeToReplace[last[0]] = identifier
-    return { modifiedAst: _ast, pathToReplaced }
+    return { modifiedAst: _ast, pathToReplaced, exprInsertIndex: index }
   }
 
   const hasPipeSub = isTypeInValue(finVal as Expr, 'PipeSubstitution')
@@ -479,7 +487,7 @@ function isTypeInArrayExp(
 export function isLinesParallelAndConstrained(
   ast: Program,
   artifactGraph: ArtifactGraph,
-  programMemory: ProgramMemory,
+  memVars: VariableMap,
   primaryLine: Selection,
   secondaryLine: Selection
 ):
@@ -509,7 +517,7 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declaration.id?.name
-    const sg = sketchFromKclValue(programMemory?.get(varName), varName)
+    const sg = sketchFromKclValue(memVars[varName], varName)
     if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
       sg,
@@ -518,8 +526,15 @@ export function isLinesParallelAndConstrained(
     if (err(_primarySegment)) return _primarySegment
     const primarySegment = _primarySegment.segment
 
+    const _varDec2 = getNodeFromPath(ast, secondaryPath, 'VariableDeclaration')
+    if (err(_varDec2)) return _varDec2
+    const varDec2 = _varDec2.node
+    const varName2 = (varDec2 as VariableDeclaration)?.declaration.id?.name
+    const sg2 = sketchFromKclValue(memVars[varName2], varName2)
+    if (err(sg2)) return sg2
+
     const _segment = getSketchSegmentFromSourceRange(
-      sg,
+      sg2,
       secondaryLine?.codeRef?.range
     )
     if (err(_segment)) return _segment
@@ -589,11 +604,11 @@ export function isLinesParallelAndConstrained(
 export function hasExtrudeSketch({
   ast,
   selection,
-  programMemory,
+  memVars,
 }: {
   ast: Program
   selection: Selection
-  programMemory: ProgramMemory
+  memVars: VariableMap
 }): boolean {
   const varDecMeta = getNodeFromPath<VariableDeclaration>(
     ast,
@@ -607,7 +622,7 @@ export function hasExtrudeSketch({
   const varDec = varDecMeta.node
   if (varDec.type !== 'VariableDeclaration') return false
   const varName = varDec.declaration.id.name
-  const varValue = programMemory?.get(varName)
+  const varValue = memVars[varName]
   return (
     varValue?.type === 'Solid' ||
     !(sketchFromKclValueOptional(varValue, varName) instanceof Reason)
@@ -871,6 +886,59 @@ export function getObjExprProperty(
   return { expr: node.properties[index].value, index }
 }
 
+export function isCursorInFunctionDefinition(
+  ast: Node<Program>,
+  selectionRanges: Selection
+): boolean {
+  if (!selectionRanges?.codeRef?.pathToNode) return false
+  const node = getNodeFromPath<FunctionExpression>(
+    ast,
+    selectionRanges.codeRef.pathToNode,
+    'FunctionExpression'
+  )
+  if (err(node)) return false
+  if (node.node.type === 'FunctionExpression') return true
+  return false
+}
+
+export function getBodyIndex(pathToNode: PathToNode): number | Error {
+  const index = Number(pathToNode[1][0])
+  if (Number.isInteger(index)) return index
+  return new Error('Expected number index')
+}
+
+export function isCallExprWithName(
+  expr: Expr | CallExpression,
+  name: string
+): expr is CallExpression {
+  if (expr.type === 'CallExpression' && expr.callee.type === 'Identifier') {
+    return expr.callee.name === name
+  }
+  return false
+}
+
+export function doesSketchPipeNeedSplitting(
+  ast: Node<Program>,
+  pathToPipe: PathToNode
+): boolean | Error {
+  const varDec = getNodeFromPath<VariableDeclarator>(
+    ast,
+    pathToPipe,
+    'VariableDeclarator'
+  )
+  if (err(varDec)) return varDec
+  if (varDec.node.type !== 'VariableDeclarator') return new Error('Not a var')
+  const pipeExpression = varDec.node.init
+  if (pipeExpression.type !== 'PipeExpression') return false
+  const [firstPipe, secondPipe] = pipeExpression.body
+  if (!firstPipe || !secondPipe) return false
+  if (
+    isCallExprWithName(firstPipe, 'startSketchOn') &&
+    isCallExprWithName(secondPipe, 'startProfileAt')
+  )
+    return true
+  return false
+}
 /**
  * Given KCL, returns the settings annotation object if it exists.
  */

@@ -5,7 +5,8 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 use crate::{
     execution::{ArtifactCommand, ArtifactGraph, Operation},
     lsp::IntoDiagnostic,
-    source_range::{ModuleId, SourceRange},
+    source_range::SourceRange,
+    ModuleId,
 };
 
 /// How did the KCL execution fail
@@ -30,12 +31,12 @@ impl From<KclErrorWithOutputs> for ExecError {
 #[derive(Debug)]
 pub struct ExecErrorWithState {
     pub error: ExecError,
-    pub exec_state: Option<crate::ExecState>,
+    pub exec_state: Option<crate::execution::ExecState>,
 }
 
 impl ExecErrorWithState {
     #[cfg_attr(target_arch = "wasm32", expect(dead_code))]
-    pub fn new(error: ExecError, exec_state: crate::ExecState) -> Self {
+    pub fn new(error: ExecError, exec_state: crate::execution::ExecState) -> Self {
         Self {
             error,
             exec_state: Some(exec_state),

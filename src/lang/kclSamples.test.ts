@@ -1,4 +1,4 @@
-import { assertParse, initPromise, programMemoryInit } from './wasm'
+import { assertParse, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 
 import path from 'node:path'
@@ -28,7 +28,14 @@ try {
   console.log(e)
 }
 
-child_process.spawnSync('git', ['clone', URL_GIT_KCL_SAMPLES, DIR_KCL_SAMPLES])
+child_process.spawnSync('git', [
+  'clone',
+  '--single-branch',
+  '--branch',
+  'achalmers/offset-plane-kwargs',
+  URL_GIT_KCL_SAMPLES,
+  DIR_KCL_SAMPLES,
+])
 
 // @ts-expect-error
 let files = await fs.readdir(DIR_KCL_SAMPLES)
@@ -65,7 +72,7 @@ describe('Test KCL Samples from public Github repository', () => {
           const ast = assertParse(code)
           await enginelessExecutor(
             ast,
-            programMemoryInit(),
+            false,
             file.pathFromProjectDirectoryToFirstFile
           )
         },

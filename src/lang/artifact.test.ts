@@ -15,8 +15,7 @@ const mySketch001 = startSketchOn('XY')
   |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45, %)`
     const execState = await enginelessExecutor(assertParse(code))
-    // @ts-ignore
-    const sketch001 = execState.memory.get('mySketch001')
+    const sketch001 = execState.variables['mySketch001']
     expect(sketch001).toEqual({
       type: 'Sketch',
       value: {
@@ -55,6 +54,7 @@ const mySketch001 = startSketchOn('XY')
         ],
         id: expect.any(String),
         artifactId: expect.any(String),
+        originalId: expect.any(String),
         units: {
           type: 'Mm',
         },
@@ -72,8 +72,7 @@ const mySketch001 = startSketchOn('XY')
   // |> rx(45, %)
   |> extrude(length = 2)`
     const execState = await enginelessExecutor(assertParse(code))
-    // @ts-ignore
-    const sketch001 = execState.memory.get('mySketch001')
+    const sketch001 = execState.variables['mySketch001']
     expect(sketch001).toEqual({
       type: 'Solid',
       value: {
@@ -98,6 +97,7 @@ const mySketch001 = startSketchOn('XY')
         ],
         sketch: {
           id: expect.any(String),
+          originalId: expect.any(String),
           artifactId: expect.any(String),
           units: {
             type: 'Mm',
@@ -163,9 +163,9 @@ const sk2 = startSketchOn('XY')
 
 `
     const execState = await enginelessExecutor(assertParse(code))
-    const programMemory = execState.memory
+    const variables = execState.variables
     // @ts-ignore
-    const geos = [programMemory.get('theExtrude'), programMemory.get('sk2')]
+    const geos = [variables['theExtrude'], variables['sk2']]
     expect(geos).toEqual([
       {
         type: 'Solid',
@@ -203,6 +203,7 @@ const sk2 = startSketchOn('XY')
           ],
           sketch: {
             id: expect.any(String),
+            originalId: expect.any(String),
             artifactId: expect.any(String),
             __meta: expect.any(Array),
             on: expect.any(Object),
@@ -308,6 +309,7 @@ const sk2 = startSketchOn('XY')
           ],
           sketch: {
             id: expect.any(String),
+            originalId: expect.any(String),
             artifactId: expect.any(String),
             units: {
               type: 'Mm',

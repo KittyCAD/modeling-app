@@ -5,9 +5,9 @@ import {
   PathToNode,
   Expr,
   CallExpression,
-  PipeExpression,
   VariableDeclarator,
   CallExpressionKw,
+  ArtifactGraph,
 } from 'lang/wasm'
 import { Selections } from 'lib/selections'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
@@ -16,7 +16,6 @@ import {
   createCallExpressionStdLib,
   createObjectExpression,
   createIdentifier,
-  createPipeExpression,
   findUniqueName,
   createVariableDeclaration,
 } from 'lang/modifyAst'
@@ -26,14 +25,18 @@ import {
   mutateAstWithTagForSketchSegment,
   getEdgeTagCall,
 } from 'lang/modifyAst/addEdgeTreatment'
+import { Artifact, getPathsFromArtifact } from 'lang/std/artifactGraph'
+import { kclManager } from 'lib/singletons'
+
 export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,
-  shouldPipe = false,
   angle: Expr = createLiteral(4),
   axisOrEdge: string,
   axis: string,
-  edge: Selections
+  edge: Selections,
+  artifactGraph: ArtifactGraph,
+  artifact?: Artifact
 ):
   | {
       modifiedAst: Node<Program>
@@ -41,11 +44,19 @@ export function revolveSketch(
       pathToRevolveArg: PathToNode
     }
   | Error {
+  const orderedSketchNodePaths = getPathsFromArtifact({
+    artifact: artifact,
+    sketchPathToNode: pathToSketchNode,
+    artifactGraph,
+    ast: kclManager.ast,
+  })
+  if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
   const clonedAst = structuredClone(ast)
   const sketchNode = getNodeFromPath(clonedAst, pathToSketchNode)
   if (err(sketchNode)) return sketchNode
 
   let generatedAxis
+  let axisDeclaration: PathToNode | null = null
 
   if (axisOrEdge === 'Edge') {
     const pathToAxisSelection = getNodePathFromSourceRange(
@@ -70,22 +81,16 @@ export function revolveSketch(
     const axisSelection = edge?.graphSelections[0]?.artifact
     if (!axisSelection) return new Error('Generated axis selection is missing.')
     generatedAxis = getEdgeTagCall(tag, axisSelection)
+    if (
+      axisSelection.type === 'segment' ||
+      axisSelection.type === 'path' ||
+      axisSelection.type === 'edgeCut'
+    ) {
+      axisDeclaration = axisSelection.codeRef.pathToNode
+    }
   } else {
     generatedAxis = createLiteral(axis)
   }
-
-  /* Original Code */
-  const { node: sketchExpression } = sketchNode
-
-  // determine if sketchExpression is in a pipeExpression or not
-  const sketchPipeExpressionNode = getNodeFromPath<PipeExpression>(
-    clonedAst,
-    pathToSketchNode,
-    'PipeExpression'
-  )
-  if (err(sketchPipeExpressionNode)) return sketchPipeExpressionNode
-  const { node: sketchPipeExpression } = sketchPipeExpressionNode
-  const isInPipeExpression = sketchPipeExpression.type === 'PipeExpression'
 
   const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
     clonedAst,
@@ -93,10 +98,7 @@ export function revolveSketch(
     'VariableDeclarator'
   )
   if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
-  const {
-    node: sketchVariableDeclarator,
-    shallowPath: sketchPathToDecleration,
-  } = sketchVariableDeclaratorNode
+  const { node: sketchVariableDeclarator } = sketchVariableDeclaratorNode
 
   if (!generatedAxis) return new Error('Generated axis selection is missing.')
 
@@ -108,39 +110,29 @@ export function revolveSketch(
     createIdentifier(sketchVariableDeclarator.id.name),
   ])
 
-  if (shouldPipe) {
-    const pipeChain = createPipeExpression(
-      isInPipeExpression
-        ? [...sketchPipeExpression.body, revolveCall]
-        : [sketchExpression as any, revolveCall]
-    )
-
-    sketchVariableDeclarator.init = pipeChain
-    const pathToRevolveArg: PathToNode = [
-      ...sketchPathToDecleration,
-      ['init', 'VariableDeclarator'],
-      ['body', ''],
-      [pipeChain.body.length - 1, 'index'],
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-    ]
-
-    return {
-      modifiedAst: clonedAst,
-      pathToSketchNode,
-      pathToRevolveArg,
-    }
-  }
-
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
   const name = findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
   const VariableDeclaration = createVariableDeclaration(name, revolveCall)
-  const sketchIndexInPathToNode =
-    sketchPathToDecleration.findIndex((a) => a[0] === 'body') + 1
-  const sketchIndexInBody = sketchPathToDecleration[sketchIndexInPathToNode][0]
-  if (typeof sketchIndexInBody !== 'number')
+  const lastSketchNodePath =
+    orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
+  let sketchIndexInBody = Number(lastSketchNodePath[1][0])
+  if (typeof sketchIndexInBody !== 'number') {
     return new Error('expected sketchIndexInBody to be a number')
+  }
+
+  // If an axis was selected in KCL, find the max index to insert the revolve command
+  if (axisDeclaration) {
+    const axisIndexInPathToNode =
+      axisDeclaration.findIndex((a) => a[0] === 'body') + 1
+    const axisIndex = axisDeclaration[axisIndexInPathToNode][0]
+
+    if (typeof axisIndex !== 'number')
+      return new Error('expected axisIndex to be a number')
+
+    sketchIndexInBody = Math.max(sketchIndexInBody, axisIndex)
+  }
+
   clonedAst.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
 
   const pathToRevolveArg: PathToNode = [
@@ -151,6 +143,7 @@ export function revolveSketch(
     ['arguments', 'CallExpression'],
     [0, 'index'],
   ]
+
   return {
     modifiedAst: clonedAst,
     pathToSketchNode: [...pathToSketchNode.slice(0, -1), [-1, 'index']],

@@ -24,21 +24,13 @@ import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from 'lib/isDesktop'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { settingsActor, useSettings } from 'machines/appMachine'
+import { useSettings } from 'machines/appMachine'
 import {
   CREATE_FILE_URL_PARAM,
   FILE_EXT,
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
-import { DeepPartial } from 'lib/types'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { codeManager } from 'lib/singletons'
-import {
-  loadAndValidateSettings,
-  projectConfigurationToSettingsPayload,
-  saveSettings,
-  setSettingsAtLevel,
-} from 'lib/settings/settingsUtils'
+import { codeManager, kclManager } from 'lib/singletons'
 import { Project } from 'lib/project'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -130,17 +122,10 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
           clearImportSearchParams()
           codeManager.updateCodeStateEditor(input.code || '')
           await codeManager.writeToFile()
-
-          settingsActor.send({
-            type: 'set.modeling.defaultUnit',
-            data: {
-              level: 'project',
-              value: input.units,
-            },
-          })
+          await kclManager.executeCode(true)
 
           return {
-            message: 'File and units overwritten successfully',
+            message: 'File overwritten successfully',
             fileName: input.name,
             projectName: '',
           }
@@ -388,16 +373,6 @@ const ProjectsContextDesktop = ({
               ? input.name
               : input.name + FILE_EXT
           let message = 'File created successfully'
-          const unitsConfiguration: DeepPartial<Configuration> = {
-            settings: {
-              project: {
-                directory: settings.app.projectDirectory.current,
-              },
-              modeling: {
-                base_unit: input.units,
-              },
-            },
-          }
 
           const needsInterpolated = doesProjectNameNeedInterpolated(projectName)
           if (needsInterpolated) {
@@ -410,28 +385,10 @@ const ProjectsContextDesktop = ({
 
           // Create the project around the file if newProject
           if (input.method === 'newProject') {
-            await createNewProjectDirectory(
-              projectName,
-              input.code,
-              unitsConfiguration
-            )
+            await createNewProjectDirectory(projectName, input.code)
             message = `Project "${projectName}" created successfully with link contents`
           } else {
-            let projectPath = window.electron.join(
-              settings.app.projectDirectory.current,
-              projectName
-            )
-
             message = `File "${fileName}" created successfully`
-            const existingConfiguration = await loadAndValidateSettings(
-              projectPath
-            )
-            const settingsToSave = setSettingsAtLevel(
-              existingConfiguration.settings,
-              'project',
-              projectConfigurationToSettingsPayload(unitsConfiguration)
-            )
-            await saveSettings(settingsToSave, projectPath)
           }
 
           // Create the file

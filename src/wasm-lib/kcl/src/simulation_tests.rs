@@ -7,7 +7,7 @@ use crate::{
     exec::ArtifactCommand,
     execution::{ArtifactGraph, Operation},
     parsing::ast::types::{Node, Program},
-    source_range::ModuleId,
+    ModuleId,
 };
 
 /// Deserialize the data from a snapshot.
@@ -102,21 +102,22 @@ async fn execute(test_name: &str, render_to_png: bool) {
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
-            assert_snapshot(test_name, "Program memory after executing", || {
-                insta::assert_json_snapshot!("program_memory", exec_state.mod_local.memory, {
-                    ".environments[].**[].from[]" => rounded_redaction(4),
-                    ".environments[].**[].to[]" => rounded_redaction(4),
-                    ".environments[].**[].x[]" => rounded_redaction(4),
-                    ".environments[].**[].y[]" => rounded_redaction(4),
-                    ".environments[].**[].z[]" => rounded_redaction(4),
-                });
-            });
+            let outcome = exec_state.to_wasm_outcome();
             assert_common_snapshots(
                 test_name,
-                exec_state.mod_local.operations,
-                exec_state.global.artifact_commands,
-                exec_state.global.artifact_graph,
+                outcome.operations,
+                outcome.artifact_commands,
+                outcome.artifact_graph,
             );
+            assert_snapshot(test_name, "Variables in memory after executing", || {
+                insta::assert_json_snapshot!("program_memory", outcome.variables, {
+                        ".**[].from[]" => rounded_redaction(4),
+                        ".**[].to[]" => rounded_redaction(4),
+                        ".**[].x[]" => rounded_redaction(4),
+                        ".**[].y[]" => rounded_redaction(4),
+                        ".**[].z[]" => rounded_redaction(4),
+                })
+            });
         }
         Err(e) => {
             let ok_path_str = format!("tests/{test_name}/program_memory.snap");
@@ -186,14 +187,6 @@ fn assert_common_snapshots(
         // Change the snapshot suffix so that it is rendered as a Markdown file
         // in GitHub.
         insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
-    });
-    assert_snapshot(test_name, "Artifact graph mind map", || {
-        let mind_map = artifact_graph
-            .to_mermaid_mind_map()
-            .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
-        // Change the snapshot suffix so that it is rendered as a Markdown file
-        // in GitHub.
-        insta::assert_binary_snapshot!("artifact_graph_mind_map.md", mind_map.as_bytes().to_owned());
     });
 }
 
@@ -1607,6 +1600,27 @@ mod parametric {
         super::execute(TEST_NAME, true).await
     }
 }
+mod ssi_pattern {
+    const TEST_NAME: &str = "ssi_pattern";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod angled_line {
     const TEST_NAME: &str = "angled_line";
 
@@ -1941,5 +1955,26 @@ mod array_elem_pop_fail {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, false).await
+    }
+}
+mod helix_simple {
+    const TEST_NAME: &str = "helix_simple";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
     }
 }

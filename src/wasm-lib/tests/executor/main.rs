@@ -348,7 +348,7 @@ async fn kcl_test_patterns_linear_basic_with_math() {
 distance = 5
 part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], instances: num, distance: distance - 1}, %)
+    |> patternLinear2d(axis = [0,1], instances = num, distance = distance - 1)
     |> extrude(length = 1)
 "#;
 
@@ -360,7 +360,7 @@ part =  startSketchOn('XY')
 async fn kcl_test_patterns_linear_basic() {
     let code = r#"part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], instances: 13, distance: 4}, %)
+    |> patternLinear2d(axis = [0,1], instances = 13, distance = 4)
     |> extrude(length = 1)
 "#;
 
@@ -377,7 +377,7 @@ async fn kcl_test_patterns_linear_basic_3d() {
     |> line(end = [0, -1])
     |> close()
     |> extrude(length = 1)
-    |> patternLinear3d({axis: [1, 0, 1], instances: 4, distance: 6}, %)
+    |> patternLinear3d(axis = [1, 0, 1], instances = 4, distance = 6)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -388,7 +388,7 @@ async fn kcl_test_patterns_linear_basic_3d() {
 async fn kcl_test_patterns_linear_basic_negative_distance() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], instances: 13, distance: -2}, %)
+    |> patternLinear2d(axis = [0,1], instances = 13, distance = -2)
     |> extrude(length = 1)
 "#;
 
@@ -400,7 +400,7 @@ async fn kcl_test_patterns_linear_basic_negative_distance() {
 async fn kcl_test_patterns_linear_basic_negative_axis() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,-1], instances: 13, distance: 2}, %)
+    |> patternLinear2d(axis = [0,-1], instances = 13, distance = 2)
     |> extrude(length = 1)
 "#;
 
@@ -412,7 +412,7 @@ async fn kcl_test_patterns_linear_basic_negative_axis() {
 async fn kcl_test_patterns_linear_basic_holes() {
     let code = r#"circles = startSketchOn('XY')
     |> circle({ center: [5, 5], radius: 1 }, %)
-    |> patternLinear2d({axis: [1,1], instances: 13, distance: 3}, %)
+    |> patternLinear2d(axis = [1,1], instances = 13, distance = 3)
 
 rectangle = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -433,7 +433,7 @@ rectangle = startSketchOn('XY')
 async fn kcl_test_patterns_circular_basic_2d() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternCircular2d({center: [20, 20], instances: 13, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> patternCircular2d(center = [20, 20], instances = 13, arcDegrees = 210, rotateDuplicates = true)
     |> extrude(length = 1)
 "#;
 
@@ -450,7 +450,7 @@ async fn kcl_test_patterns_circular_basic_3d() {
     |> line(end = [0, -1])
     |> close()
     |> extrude(length = 1)
-    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 41, arcDegrees: 360, rotateDuplicates: false}, %)
+    |> patternCircular3d(axis = [0,0, 1], center = [-20, -20, -20], instances = 41, arcDegrees = 360, rotateDuplicates = false)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -466,7 +466,7 @@ async fn kcl_test_patterns_circular_3d_tilted_axis() {
     |> line(end = [0, -1])
     |> close()
     |> extrude(length = 1)
-    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], instances: 11, arcDegrees: 360, rotateDuplicates: true}, %)
+    |> patternCircular3d(axis = [1,1,0], center = [10, 0, 10], instances = 11, arcDegrees = 360, rotateDuplicates = true)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -475,19 +475,21 @@ async fn kcl_test_patterns_circular_3d_tilted_axis() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_file_doesnt_exist() {
-    let code = r#"model = import("thing.obj")"#;
+    let code = r#"import 'thing.obj'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 27, 0])], message: "File `thing.obj` does not exist." }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([0, 18, 0])], message: "File `thing.obj` does not exist." }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_obj_with_mtl() {
-    let code = r#"model = import("tests/executor/inputs/cube.obj")"#;
+    let code = r#"import 'tests/executor/inputs/cube.obj'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_obj_with_mtl", &result);
@@ -495,7 +497,9 @@ async fn kcl_test_import_obj_with_mtl() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_obj_with_mtl_units() {
-    let code = r#"model = import("tests/executor/inputs/cube.obj", {format: "obj", units: "m"})"#;
+    let code = r#"@(format = obj, lengthUnit = m)
+import 'tests/executor/inputs/cube.obj'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_obj_with_mtl_units", &result);
@@ -503,7 +507,8 @@ async fn kcl_test_import_obj_with_mtl_units() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_stl() {
-    let code = r#"model = import("tests/executor/inputs/2-5-long-m8-chc-screw.stl")"#;
+    let code = r#"import 'tests/executor/inputs/2-5-long-m8-chc-screw.stl' as screw
+model = screw"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_stl", &result);
@@ -511,7 +516,8 @@ async fn kcl_test_import_stl() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_gltf_with_bin() {
-    let code = r#"model = import("tests/executor/inputs/cube.gltf")"#;
+    let code = r#"import 'tests/executor/inputs/cube.gltf'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_gltf_with_bin", &result);
@@ -519,7 +525,8 @@ async fn kcl_test_import_gltf_with_bin() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_gltf_embedded() {
-    let code = r#"model = import("tests/executor/inputs/cube-embedded.gltf")"#;
+    let code = r#"import 'tests/executor/inputs/cube-embedded.gltf' as cube
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_gltf_embedded", &result);
@@ -527,7 +534,8 @@ async fn kcl_test_import_gltf_embedded() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_glb() {
-    let code = r#"model = import("tests/executor/inputs/cube.glb")"#;
+    let code = r#"import 'tests/executor/inputs/cube.glb'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_glb", &result);
@@ -535,7 +543,8 @@ async fn kcl_test_import_glb() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_glb_no_assign() {
-    let code = r#"import("tests/executor/inputs/cube.glb")"#;
+    let code = r#"import 'tests/executor/inputs/cube.glb'
+cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
     assert_out("import_glb_no_assign", &result);
@@ -543,13 +552,15 @@ async fn kcl_test_import_glb_no_assign() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_ext_doesnt_match() {
-    let code = r#"model = import("tests/executor/inputs/cube.gltf", {format: "obj", units: "m"})"#;
+    let code = r#"@(format = obj, lengthUnit = m)
+import 'tests/executor/inputs/cube.gltf'
+model = cube"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 78, 0])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([32, 72, 0])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
     );
 }
 
@@ -1417,11 +1428,12 @@ sketch002 = plane001
 
 let extrudes = [sketch001, sketch002] 
 
-pattn1 = patternLinear3d({
-       axis: [0, 1, 0],
-       instances: 3,
-       distance: 20
-     }, extrudes)
+pattn1 = patternLinear3d(
+       extrudes,
+       axis = [0, 1, 0],
+       instances = 3,
+       distance = 20
+     )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1534,10 +1546,10 @@ async fn kcl_test_shell_with_tag() {
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 40.14)
-  |> shell({
-    faces: [seg01],
-    thickness: 3.14,
-  }, %)
+  |> shell(
+    faces = [seg01],
+    thickness = 3.14,
+  )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1558,17 +1570,17 @@ async fn kcl_test_linear_pattern3d_filleted_sketch() {
 part001 = cube([0,0], 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
-  |> fillet({
-    radius: 10,
-    tags: [getOppositeEdge(line1)]
-  }, %)
+    |> fillet({
+      radius: 10,
+      tags: [getOppositeEdge(line1)]
+    }, %)
 
-pattn1 = patternLinear3d({
-       axis: [1, 0, 0],
-       instances: 4,
-       distance: 40
-     }, part001)
-
+pattn1 = patternLinear3d(
+     part001,
+     axis = [1, 0, 0],
+     instances = 4,
+     distance = 40
+)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1594,7 +1606,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
+pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false) 
 
 "#;
 
@@ -1621,8 +1633,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
-
+pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1748,12 +1759,12 @@ async fn kcl_test_arc_error_same_start_end() {
        radius: 1.5
      }, %)
   |> close()
-  |> patternCircular2d({
-       arcDegrees: 360,
-       center: [0, 0],
-       instances: 6,
-       rotateDuplicates: true
-     }, %)
+  |> patternCircular2d(
+       arcDegrees = 360,
+       center = [0, 0],
+       instances = 6,
+       rotateDuplicates = true
+     )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
@@ -1998,10 +2009,10 @@ async fn kcl_test_error_no_auth_websocket() {
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 40.14)
-  |> shell({
-    faces: [seg01],
-    thickness: 3.14,
-  }, %)
+  |> shell(
+    faces = [seg01],
+    thickness = 3.14,
+  )
 "#;
 
     let result = execute_and_snapshot_no_auth(code, UnitLength::Mm, None).await;

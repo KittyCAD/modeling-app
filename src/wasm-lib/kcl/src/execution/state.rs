@@ -8,28 +8,29 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        annotations, kcl_value, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ExecOutcome, ExecutorSettings,
-        KclValue, ModuleInfo, ModuleRepr, Operation, ProgramMemory, SolidLazyIds, UnitAngle, UnitLen,
+        annotations, kcl_value, memory::ProgramMemory, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId,
+        ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
     },
-    parsing::ast::types::NonCodeValue,
-    source_range::{ModuleId, SourceRange},
+    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
+    parsing::ast::types::Annotation,
+    source_range::SourceRange,
 };
 
 /// State for executing a program.
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone)]
 pub struct ExecState {
-    pub global: GlobalState,
-    pub mod_local: ModuleState,
+    pub(super) global: GlobalState,
+    pub(super) mod_local: ModuleState,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct GlobalState {
+#[derive(Debug, Clone)]
+pub(super) struct GlobalState {
+    /// Program variable bindings.
+    pub memory: ProgramMemory,
     /// The stable artifact ID generator.
     pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
-    pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
+    pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// Output map of UUIDs to artifacts.
@@ -45,23 +46,17 @@ pub struct GlobalState {
     pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Module loader.
+    pub mod_loader: ModuleLoader,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct ModuleState {
-    /// Program variable bindings.
-    pub memory: ProgramMemory,
-    /// Dynamic state that follows dynamic flow of the program.
-    pub dynamic_state: DynamicState,
+#[derive(Debug, Clone)]
+pub(super) struct ModuleState {
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
-    /// The stack of import statements for detecting circular module imports.
-    /// If this is empty, we're not currently executing an import statement.
-    pub import_stack: Vec<std::path::PathBuf>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -99,7 +94,11 @@ impl ExecState {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
-            memory: self.mod_local.memory,
+            variables: self
+                .memory()
+                .find_all_in_current_env(|_| true)
+                .map(|(k, v)| (k.clone(), v.clone()))
+                .collect(),
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
@@ -107,32 +106,54 @@ impl ExecState {
         }
     }
 
-    pub fn memory(&self) -> &ProgramMemory {
-        &self.mod_local.memory
+    pub fn to_mock_wasm_outcome(self) -> ExecOutcome {
+        // Fields are opt-in so that we don't accidentally leak private internal
+        // state when we add more to ExecState.
+        ExecOutcome {
+            variables: self
+                .memory()
+                .find_all_in_current_env(|_| true)
+                .map(|(k, v)| (k.clone(), v.clone()))
+                .collect(),
+            operations: Default::default(),
+            artifacts: Default::default(),
+            artifact_commands: Default::default(),
+            artifact_graph: Default::default(),
+        }
     }
 
-    pub fn mut_memory(&mut self) -> &mut ProgramMemory {
-        &mut self.mod_local.memory
+    pub(crate) fn memory(&self) -> &ProgramMemory {
+        &self.global.memory
     }
 
-    pub fn next_uuid(&mut self) -> Uuid {
+    pub(crate) fn mut_memory(&mut self) -> &mut ProgramMemory {
+        &mut self.global.memory
+    }
+
+    pub(crate) fn next_uuid(&mut self) -> Uuid {
         self.global.id_generator.next_uuid()
     }
 
-    pub fn add_artifact(&mut self, artifact: Artifact) {
+    pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
     }
 
-    pub(super) fn add_module(&mut self, id: ModuleId, path: std::path::PathBuf, repr: ModuleRepr) -> ModuleId {
+    pub(super) fn next_module_id(&self) -> ModuleId {
+        ModuleId::from_usize(self.global.path_to_source_id.len())
+    }
+
+    pub(super) fn id_for_module(&self, path: &ModulePath) -> Option<ModuleId> {
+        self.global.path_to_source_id.get(path).cloned()
+    }
+
+    pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
 
         self.global.path_to_source_id.insert(path.clone(), id);
 
         let module_info = ModuleInfo { id, repr, path };
         self.global.module_infos.insert(id, module_info);
-
-        id
     }
 
     pub fn length_unit(&self) -> UnitLen {
@@ -142,11 +163,29 @@ impl ExecState {
     pub fn angle_unit(&self) -> UnitAngle {
         self.mod_local.settings.default_angle_units
     }
+
+    pub(super) fn circular_import_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
+        KclError::ImportCycle(KclErrorDetails {
+            message: format!(
+                "circular import of modules is not allowed: {} -> {}",
+                self.global
+                    .mod_loader
+                    .import_stack
+                    .iter()
+                    .map(|p| p.as_path().to_string_lossy())
+                    .collect::<Vec<_>>()
+                    .join(" -> "),
+                path,
+            ),
+            source_ranges: vec![source_range],
+        })
+    }
 }
 
 impl GlobalState {
     fn new(settings: &ExecutorSettings) -> Self {
         let mut global = GlobalState {
+            memory: ProgramMemory::new(),
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
@@ -154,6 +193,7 @@ impl GlobalState {
             artifact_commands: Default::default(),
             artifact_responses: Default::default(),
             artifact_graph: Default::default(),
+            mod_loader: Default::default(),
         };
 
         let root_id = ModuleId::default();
@@ -162,11 +202,11 @@ impl GlobalState {
             root_id,
             ModuleInfo {
                 id: root_id,
-                path: root_path.clone(),
+                path: ModulePath::Local(root_path.clone()),
                 repr: ModuleRepr::Root,
             },
         );
-        global.path_to_source_id.insert(root_path, root_id);
+        global.path_to_source_id.insert(ModulePath::Local(root_path), root_id);
         global
     }
 }
@@ -174,11 +214,8 @@ impl GlobalState {
 impl ModuleState {
     pub(super) fn new(exec_settings: &ExecutorSettings) -> Self {
         ModuleState {
-            memory: Default::default(),
-            dynamic_state: Default::default(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
-            import_stack: Default::default(),
             operations: Default::default(),
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),
@@ -199,21 +236,20 @@ pub struct MetaSettings {
 impl MetaSettings {
     pub(crate) fn update_from_annotation(
         &mut self,
-        annotation: &NonCodeValue,
-        source_range: SourceRange,
+        annotation: &crate::parsing::ast::types::Node<Annotation>,
     ) -> Result<(), KclError> {
-        let properties = annotations::expect_properties(annotations::SETTINGS, annotation, source_range)?;
+        let properties = annotations::expect_properties(annotations::SETTINGS, annotation)?;
 
         for p in properties {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = kcl_value::UnitLen::from_str(value, source_range)?;
+                    let value = kcl_value::UnitLen::from_str(value, annotation.as_source_range())?;
                     self.default_length_units = value;
                 }
                 annotations::SETTINGS_UNIT_ANGLE => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = kcl_value::UnitAngle::from_str(value, source_range)?;
+                    let value = kcl_value::UnitAngle::from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
                 }
                 name => {
@@ -223,53 +259,13 @@ impl MetaSettings {
                             annotations::SETTINGS_UNIT_LENGTH,
                             annotations::SETTINGS_UNIT_ANGLE
                         ),
-                        source_ranges: vec![source_range],
+                        source_ranges: vec![annotation.as_source_range()],
                     }))
                 }
             }
         }
 
         Ok(())
-    }
-}
-
-/// Dynamic state that depends on the dynamic flow of the program, like the call
-/// stack.  If the language had exceptions, for example, you could store the
-/// stack of exception handlers here.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
-pub struct DynamicState {
-    pub solid_ids: Vec<SolidLazyIds>,
-}
-
-impl DynamicState {
-    #[must_use]
-    pub(super) fn merge(&self, memory: &ProgramMemory) -> Self {
-        let mut merged = self.clone();
-        merged.append(memory);
-        merged
-    }
-
-    fn append(&mut self, memory: &ProgramMemory) {
-        for env in &memory.environments {
-            for item in env.bindings.values() {
-                if let KclValue::Solid { value } = item {
-                    self.solid_ids.push(SolidLazyIds::from(value.as_ref()));
-                }
-            }
-        }
-    }
-
-    pub(crate) fn edge_cut_ids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<uuid::Uuid> {
-        self.solid_ids
-            .iter()
-            .flat_map(|eg| {
-                if eg.sketch_id == sketch_id {
-                    eg.edge_cuts.clone()
-                } else {
-                    Vec::new()
-                }
-            })
-            .collect::<Vec<_>>()
     }
 }
 

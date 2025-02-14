@@ -19,7 +19,7 @@ export default function Units() {
     <div className="fixed inset-0 z-50 grid items-end justify-start px-4 pointer-events-none">
       <div
         className={
-          'pointer-events-auto max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
+          'relative pointer-events-auto max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <SettingsSection
@@ -65,9 +65,7 @@ export default function Units() {
         </SettingsSection>
         <OnboardingButtons
           currentSlug={onboardingPaths.CAMERA}
-          dismiss={dismiss}
-          next={next}
-          nextText="Next: Streaming"
+          dismissClassName="right-auto left-full"
         />
       </div>
     </div>
