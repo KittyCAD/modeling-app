@@ -983,6 +983,7 @@ export function createCallExpressionStdLibKw(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    nonCodeMeta: nonCodeMetaEmpty(),
     callee: {
       type: 'Identifier',
       start: 0,
@@ -1725,7 +1726,7 @@ export async function deleteFromSelection(
   return new Error('Selection not recognised, could not delete')
 }
 
-const nonCodeMetaEmpty = () => {
+export const nonCodeMetaEmpty = () => {
   return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
 }
 
