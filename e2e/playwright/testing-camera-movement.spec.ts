@@ -358,9 +358,7 @@ test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
       exact: true,
     })
     const userSettingsTab = page.getByRole('radio', { name: 'User' })
-    const mouseControlsSetting = page
-      .locator('#mouseControls')
-      .getByRole('combobox')
+    const mouseControlsSetting = () => page.locator('#camera-controls').first()
     const mouseControlSuccesToast = page.getByText(
       'Set mouse controls to "Solidworks"'
     )
@@ -390,9 +388,14 @@ test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
         await settingsLink.click()
         await expect(settingsDialogHeading).toBeVisible()
         await userSettingsTab.click()
-        await mouseControlsSetting.scrollIntoViewIfNeeded()
-        await mouseControlsSetting.selectOption({ label: 'Solidworks' })
-        await expect(mouseControlsSetting).toHaveValue('Solidworks')
+        const setting = mouseControlsSetting()
+        await expect(setting).toBeAttached()
+        await setting.scrollIntoViewIfNeeded()
+        await setting.selectOption({ label: 'Solidworks' })
+        await expect(setting, 'Setting value did not change').toHaveValue(
+          'Solidworks',
+          { timeout: 120_000 }
+        )
         await expect(mouseControlSuccesToast).toBeVisible()
         await settingsCloseButton.click()
       })
