@@ -78,7 +78,7 @@ If you're not an KittyCAD employee you won't be able to access the dev environme
  1. Copy everything from `.env.production` to `.env.development.local` to make it point to production.
  2. Navigate to `localhost:3000`.
  3. Paste `localStorage.setItem('TOKEN_PERSIST_KEY', 'YOUR-TOKEN')` into the DevTools console, replacing YOUR-TOKEN with a real token from https://zoo.dev/account/api-tokens.
- 4. Navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
+ 4. Navigate to localhost:3000 again.
 
 ### Development environment variables
 
