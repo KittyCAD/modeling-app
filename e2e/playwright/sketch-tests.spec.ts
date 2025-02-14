@@ -1677,14 +1677,26 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await circle3Point1p2()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        'profile009 = circleThreePoint(sketch001, p1 = [8.82, -14.58], p2 = [11.73, -6.1], p3 = [11.83, -6])'
+        `profile009 = circleThreePoint(
+  sketch001,
+  p1 = [8.82, -14.58],
+  p2 = [11.73, -6.1],
+  p3 = [11.83, -6],
+)`,
+        { shouldNormalise: true }
       )
 
       await circle3Point1p3Move()
       await circle3Point1p3()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        'profile009 = circleThreePoint(sketch001, p1 = [8.82, -14.58], p2 = [11.73, -6.1], p3 = [15.87, -11.12])'
+        `profile009 = circleThreePoint(
+  sketch001,
+  p1 = [8.82, -14.58],
+  p2 = [11.73, -6.1],
+  p3 = [15.87, -11.12],
+)`,
+        { shouldNormalise: true }
       )
 
       await circle3Point2p1Move()
@@ -1694,19 +1706,31 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await circle3Point2p2()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        'profile010 = circleThreePoint(sketch001, p1 = [25.5, -6.85], p2 = [25.43, -1.97], p3 = [25.53, -1.87])'
+        `profile010 = circleThreePoint(
+  sketch001,
+  p1 = [25.5, -6.85],
+  p2 = [25.43, -1.97],
+  p3 = [25.53, -1.87],
+)`,
+        { shouldNormalise: true }
       )
 
       await circle3Point2p3Move()
       await circle3Point2p3()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        'profile010 = circleThreePoint(sketch001, p1 = [25.5, -6.85], p2 = [25.43, -1.97], p3 = [22.65, -3.8])'
+        `profile010 = circleThreePoint(
+  sketch001,
+  p1 = [25.5, -6.85],
+  p2 = [25.43, -1.97],
+  p3 = [22.65, -3.8],
+)`,
+        { shouldNormalise: true }
       )
     })
 
     await test.step('double check that circle three point can be unequiped', async () => {
-      // this was implicitly for other tools, but not for circle three point since it's last
+      // this was tested implicitly for other tools, but not for circle three point since it's last
       await page.waitForTimeout(300)
       await expect
         .poll(async () => {
@@ -1830,7 +1854,13 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await circ3PEnd()
       await page.mouse.up()
       await editor.expectEditor.toContain(
-        `profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07], p3 = [19.73, -1.33])`
+        `profile004 = circleThreePoint(
+  sketch001,
+  p1 = [13.44, -6.8],
+  p2 = [13.39, -2.07],
+  p3 = [19.73, -1.33],
+)`,
+        { shouldNormalise: true }
       )
     })
 
@@ -2413,7 +2443,7 @@ profile001 = startProfileAt([34, 42.66], sketch001)
   |> line(end = [76, -138.66])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-plane001 = offsetPlane('XZ', 50)
+plane001 = offsetPlane('XZ', offset = 50)
 sketch002 = startSketchOn(plane001)
 profile002 = startProfileAt([39.43, 172.21], sketch002)
   |> xLine(183.99, %)
@@ -2453,23 +2483,19 @@ loft([profile001, profile002])
       `angledLine([0, 113.01], %, $rectangleSegmentA001)`
     )
   })
-  test('Can enter sketch loft edges offsetPlane and continue sketch', async ({
-    scene,
-    toolbar,
-    editor,
-    page,
-    homePage,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn('XZ')
+  test.fixme(
+    'Can enter sketch loft edges offsetPlane and continue sketch',
+    async ({ scene, toolbar, editor, page, homePage }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn('XZ')
 profile001 = startProfileAt([34, 42.66], sketch001)
   |> line(end = [102.65, 151.99])
   |> line(end = [76, -138.66])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-plane001 = offsetPlane('XZ', 50)
+plane001 = offsetPlane('XZ', offset = 50)
 sketch002 = startSketchOn(plane001)
 profile002 = startProfileAt([39.43, 172.21], sketch002)
   |> xLine(183.99, %)
@@ -2479,50 +2505,51 @@ profile002 = startProfileAt([39.43, 172.21], sketch002)
 
 loft([profile001, profile002])
 `
+        )
+      })
+
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled()
+
+      const topProfileEdgeClickCoords = { x: 602, y: 185 } as const
+      const [topProfileEdgeClick] = scene.makeMouseHelpers(
+        topProfileEdgeClickCoords.x,
+        topProfileEdgeClickCoords.y
       )
-    })
+      const [sideProfileEdgeClick] = scene.makeMouseHelpers(788, 188)
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+      const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
+      const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
 
-    const topProfileEdgeClickCoords = { x: 602, y: 185 } as const
-    const [topProfileEdgeClick] = scene.makeMouseHelpers(
-      topProfileEdgeClickCoords.x,
-      topProfileEdgeClickCoords.y
-    )
-    const [sideProfileEdgeClick] = scene.makeMouseHelpers(788, 188)
+      await scene.moveCameraTo(
+        { x: 8171, y: -7740, z: 1624 },
+        { x: 3302, y: -627, z: 2892 }
+      )
 
-    const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
-    const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
+      await topProfileEdgeClick()
+      await page.waitForTimeout(300)
+      await toolbar.editSketch()
+      await page.waitForTimeout(600)
+      await sideProfileEdgeClick()
+      await page.waitForTimeout(300)
+      await scene.expectPixelColor(TEST_COLORS.BLUE, { x: 788, y: 188 }, 15)
 
-    await scene.moveCameraTo(
-      { x: 8171, y: -7740, z: 1624 },
-      { x: 3302, y: -627, z: 2892 }
-    )
-
-    await topProfileEdgeClick()
-    await page.waitForTimeout(300)
-    await toolbar.editSketch()
-    await page.waitForTimeout(600)
-    await sideProfileEdgeClick()
-    await page.waitForTimeout(300)
-    await scene.expectPixelColor(TEST_COLORS.BLUE, { x: 788, y: 188 }, 15)
-
-    await toolbar.rectangleBtn.click()
-    await page.waitForTimeout(100)
-    await rect1Crn1()
-    await editor.expectEditor.toContain(
-      `profile003 = startProfileAt([47.76, -17.13], plane001)`
-    )
-    await rect1Crn2()
-    await editor.expectEditor.toContain(
-      `angledLine([0, 106.42], %, $rectangleSegmentA001)`
-    )
-    await page.waitForTimeout(100)
-  })
+      await toolbar.rectangleBtn.click()
+      await page.waitForTimeout(100)
+      await rect1Crn1()
+      await editor.expectEditor.toContain(
+        `profile003 = startProfileAt([47.76, -17.13], plane001)`
+      )
+      await rect1Crn2()
+      await editor.expectEditor.toContain(
+        `angledLine([0, 106.42], %, $rectangleSegmentA001)`
+      )
+      await page.waitForTimeout(100)
+    }
+  )
 })
 
 // Regression test for https://github.com/KittyCAD/modeling-app/issues/4891

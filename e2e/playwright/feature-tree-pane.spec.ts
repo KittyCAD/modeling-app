@@ -35,7 +35,7 @@ sketch002 = startSketchOn(plane001)
 extrude001 = extrude(sketch002, length = 10)
 `
 
-const FEAUTRE_TREE_SKETCH_CODE = `sketch001 = startSketchOn('XZ')
+const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLine([0, 4], %, $rectangleSegmentA001)
   |> angledLine([
@@ -153,33 +153,16 @@ test.describe('Feature Tree pane', () => {
     `User can edit sketch (but not on offset plane yet) from the feature tree`,
     { tag: '@electron' },
     async ({ context, homePage, scene, editor, toolbar, page }) => {
-      const unavailableToastMessage = page.getByText(
-        'Editing sketches on faces or offset planes through the feature tree is not yet supported'
-      )
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, FEATURE_TREE_SKETCH_CODE)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
 
-      await context.folderSetupFn(async (dir) => {
-        const bracketDir = join(dir, 'test-sample')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.writeFile(
-          join(bracketDir, 'main.kcl'),
-          FEAUTRE_TREE_SKETCH_CODE,
-          'utf-8'
-        )
-      })
-
-      await test.step('setup test', async () => {
-        await homePage.expectState({
-          projectCards: [
-            {
-              title: 'test-sample',
-              fileCount: 1,
-            },
-          ],
-          sortBy: 'last-modified-desc',
-        })
-        await homePage.openProject('test-sample')
-        await scene.waitForExecutionDone()
-        await toolbar.openFeatureTreePane()
+      await test.step('force re-exe', async () => {
+        await page.waitForTimeout(1000)
+        await editor.replaceCode('90', '91')
+        await page.waitForTimeout(1500)
       })
 
       await test.step('On a default plane should work', async () => {
@@ -199,24 +182,23 @@ test.describe('Feature Tree pane', () => {
       await test.step('On an extrude face should *not* work', async () => {
         // Tooltip is getting in the way of clicking, so I'm first closing the pane
         await toolbar.closeFeatureTreePane()
+        await page.waitForTimeout(1000)
+        await editor.replaceCode('91', '90')
+        await page.waitForTimeout(2000)
         await (await toolbar.getFeatureTreeOperation('Sketch', 1)).dblclick()
+
         await expect(
-          unavailableToastMessage,
-          'We should see a toast message about this'
+          toolbar.exitSketchBtn,
+          'We should be in sketch mode now'
         ).toBeVisible()
-        await unavailableToastMessage.waitFor({ state: 'detached' })
-        // TODO - turn on once we update the artifactGraph in Rust
-        // to include the proper source location for the extrude face
-        // await expect(
-        //   toolbar.exitSketchBtn,
-        //   'We should be in sketch mode now'
-        // ).toBeVisible()
-        // await editor.expectState({
-        //   highlightedCode: '',
-        //   diagnostics: [],
-        //   activeLines: ['|>circle({center=[-1,2],radius=.5},%)'],
-        // })
-        // await toolbar.exitSketchBtn.click()
+        await editor.expectState({
+          highlightedCode: '',
+          diagnostics: [],
+          activeLines: [
+            'sketch002=startSketchOn(extrude001,rectangleSegmentB001)',
+          ],
+        })
+        await toolbar.exitSketchBtn.click()
       })
 
       await test.step('On an offset plane should *not* work', async () => {
@@ -226,7 +208,7 @@ test.describe('Feature Tree pane', () => {
         await editor.expectState({
           highlightedCode: '',
           diagnostics: [],
-          activeLines: ['|>circle({center=[0,0],radius=5},%)'],
+          activeLines: ['sketch003=startSketchOn(plane001)'],
         })
         await expect(
           toolbar.exitSketchBtn,
