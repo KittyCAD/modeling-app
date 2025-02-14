@@ -59,6 +59,7 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: `Number`|  | No |
 | `value` |`number`|  | No |
+| `ty` |[`NumericType`](/docs/kcl/types/NumericType)| Any KCL value. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 

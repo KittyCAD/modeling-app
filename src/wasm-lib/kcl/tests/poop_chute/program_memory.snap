@@ -6,6 +6,15 @@ description: Variables in memory after executing poop_chute.kcl
   "Fx": {
     "type": "Number",
     "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -19,6 +28,15 @@ description: Variables in memory after executing poop_chute.kcl
   "Fy": {
     "type": "Number",
     "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -32,26 +50,47 @@ description: Variables in memory after executing poop_chute.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "back_length": {
     "type": "Number",
     "value": 7.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -65,6 +104,15 @@ description: Variables in memory after executing poop_chute.kcl
   "back_walls_width": {
     "type": "Number",
     "value": 2.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -78,6 +126,15 @@ description: Variables in memory after executing poop_chute.kcl
   "exit_height": {
     "type": "Number",
     "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -91,6 +148,15 @@ description: Variables in memory after executing poop_chute.kcl
   "filletRadius": {
     "type": "Number",
     "value": 0.05,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -104,6 +170,15 @@ description: Variables in memory after executing poop_chute.kcl
   "front_length": {
     "type": "Number",
     "value": 6.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -117,6 +192,15 @@ description: Variables in memory after executing poop_chute.kcl
   "front_walls_width": {
     "type": "Number",
     "value": 2.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -130,6 +214,15 @@ description: Variables in memory after executing poop_chute.kcl
   "height": {
     "type": "Number",
     "value": 5.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1797,6 +1890,15 @@ description: Variables in memory after executing poop_chute.kcl
   "wall_thickness": {
     "type": "Number",
     "value": 0.125,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [

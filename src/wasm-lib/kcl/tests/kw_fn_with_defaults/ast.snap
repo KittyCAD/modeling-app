@@ -69,13 +69,15 @@ description: Result of parsing kw_fn_with_defaults.kcl
                   "type": "Identifier"
                 },
                 "default_value": {
+                  "end": 24,
+                  "raw": "1",
+                  "start": 23,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
                     "value": 1.0,
                     "suffix": "None"
-                  },
-                  "raw": "1"
+                  }
                 }
               }
             ],

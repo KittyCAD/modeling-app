@@ -2582,7 +2582,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
         arg_name,
         type_,
         default_value: match (question_mark.is_some(), default_literal) {
-            (true, Some(lit)) => Some(DefaultParamVal::Literal(lit.inner)),
+            (true, Some(lit)) => Some(DefaultParamVal::Literal(*lit)),
             (true, None) => Some(DefaultParamVal::none()),
             (false, None) => None,
             (false, Some(lit)) => {

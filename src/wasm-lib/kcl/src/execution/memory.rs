@@ -845,6 +845,8 @@ mod env {
 
 #[cfg(test)]
 mod test {
+    use crate::execution::kcl_value::NumericType;
+
     use super::*;
 
     fn sr() -> SourceRange {
@@ -854,6 +856,7 @@ mod test {
     fn val(value: i64) -> KclValue {
         KclValue::Number {
             value: value as f64,
+            ty: NumericType::count(),
             meta: Vec::new(),
         }
     }

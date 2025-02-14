@@ -6,21 +6,33 @@ description: Variables in memory after executing i_shape.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "brace_base": {
@@ -658,6 +670,15 @@ description: Variables in memory after executing i_shape.kcl
   "corner_radius": {
     "type": "Number",
     "value": 5.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -674,6 +695,15 @@ description: Variables in memory after executing i_shape.kcl
       {
         "type": "Number",
         "value": 22.8,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -687,6 +717,15 @@ description: Variables in memory after executing i_shape.kcl
       {
         "type": "Number",
         "value": 10.7,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -700,6 +739,15 @@ description: Variables in memory after executing i_shape.kcl
       {
         "type": "Number",
         "value": 16.4,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -713,6 +761,15 @@ description: Variables in memory after executing i_shape.kcl
       {
         "type": "Number",
         "value": 18.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -1655,6 +1712,15 @@ description: Variables in memory after executing i_shape.kcl
   "hand_thickness": {
     "type": "Number",
     "value": 24.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1940,6 +2006,15 @@ description: Variables in memory after executing i_shape.kcl
   "length": {
     "type": "Number",
     "value": 120.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -1953,6 +2028,9 @@ description: Variables in memory after executing i_shape.kcl
   "width": {
     "type": "Number",
     "value": 68.4,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": [
       {
         "sourceRange": [
