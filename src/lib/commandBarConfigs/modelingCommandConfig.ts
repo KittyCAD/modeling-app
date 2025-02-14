@@ -488,8 +488,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         defaultValue: false,
         options: [
-          { name: 'True', value: true },
           { name: 'False', value: false },
+          { name: 'True', value: true },
         ],
       },
       radius: {
