@@ -172,8 +172,8 @@ export function modifyAstWithEdgeTreatmentAndTag(
       parameters.type,
       null,
       [
-        createLabeledArg('tags', createArrayExpression(tagCalls)),
         createLabeledArg(parameterName, parameterValue),
+        createLabeledArg('tags', createArrayExpression(tagCalls)),
       ]
     )
 
@@ -754,6 +754,16 @@ export const isTagUsedInEdgeTreatment = ({
       ) {
         inEdgeTreatment = true
       }
+      if (inEdgeTreatment && node.type === 'CallExpressionKw') {
+        node.arguments.forEach((prop) => {
+          if (
+            prop.label.name === 'tags' &&
+            prop.arg.type === 'ArrayExpression'
+          ) {
+            inObj = true
+          }
+        })
+      }
       if (inEdgeTreatment && node.type === 'ObjectExpression') {
         node.properties.forEach((prop) => {
           if (
@@ -797,6 +807,16 @@ export const isTagUsedInEdgeTreatment = ({
         isEdgeTreatmentType(node.callee.name)
       ) {
         inEdgeTreatment = false
+      }
+      if (inEdgeTreatment && node.type === 'CallExpressionKw') {
+        node.arguments.forEach((prop) => {
+          if (
+            prop.label.name === 'tags' &&
+            prop.arg.type === 'ArrayExpression'
+          ) {
+            inObj = true
+          }
+        })
       }
       if (inEdgeTreatment && node.type === 'ObjectExpression') {
         node.properties.forEach((prop) => {

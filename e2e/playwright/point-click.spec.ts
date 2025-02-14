@@ -216,7 +216,8 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
       getNextAdjacentEdge(yo),
       getNextAdjacentEdge(seg02),
       getOppositeEdge(seg01)
-    ])`,
+    ],
+    )`,
 
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, seg03)',
@@ -282,10 +283,9 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         clickCoords: { x: 620, y: 300 },
         cameraPos: { x: -1100, y: -7700, z: 1600 },
         cameraTarget: { x: 1450, y: 670, z: 4000 },
-        beforeChamferSnippet: `chamfer(
-         length = 30,
-         tags = [getNextAdjacentEdge(yo)]
-       )`,
+        beforeChamferSnippet: `chamfer(length = 30, tags = [getNextAdjacentEdge(yo)])`,
+        beforeChamferSnippetEnd:
+          '|> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)])',
         afterChamferSelectSnippet:
           'sketch005 = startSketchOn(extrude001, seg06)',
         afterRectangle1stClickSnippet:
@@ -313,34 +313,16 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
-  |> chamfer(
-       length = 30,
-       tags = [getOppositeEdge(seg01)],
-       tag = $seg03,
-     )
-  |> chamfer( length = 30, tags = [seg01], tag = $seg04)
-  |> chamfer(
-       length = 30,
-       tags = [getNextAdjacentEdge(seg02)],
-       tag = $seg05,
-     )
-  |> chamfer(
-       length = 30,
-       tags = [getNextAdjacentEdge(yo)],
-       tag = $seg06,
-     )
+  |> chamfer(length = 30, tags = [getOppositeEdge(seg01)], tag = $seg03)
+  |> chamfer(length = 30, tags = [seg01], tag = $seg04)
+  |> chamfer(length = 30, tags = [getNextAdjacentEdge(seg02)], tag = $seg05)
+  |> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)], tag = $seg06)
 sketch005 = startSketchOn(extrude001, seg06)
-profile004 = startProfileAt([-23.43, 19.69], sketch005)
+profile004=startProfileAt([-23.43,19.69], sketch005)
   |> angledLine([0, 9.1], %, $rectangleSegmentA005)
-  |> angledLine([
-       segAng(rectangleSegmentA005) - 90,
-       84.07
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA005),
-       -segLen(rectangleSegmentA005)
-     ], %)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> angledLine([segAng(rectangleSegmentA005) - 90, 84.07], %)
+  |> angledLine([segAng(rectangleSegmentA005), -segLen(rectangleSegmentA005)], %)
+  |> line(endAbsolute=[profileStartX(%), profileStartY(%)])
   |> close()
 sketch004 = startSketchOn(extrude001, seg05)
 profile003 = startProfileAt([82.57, 322.96], sketch004)
@@ -381,7 +363,6 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
      ], %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-
 `,
           { shouldNormalise: true }
         )
@@ -422,9 +403,9 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       seg01,
       getNextAdjacentEdge(yo),
       getNextAdjacentEdge(seg02),
-      getOppositeEdge(seg01)
+      getOppositeEdge(seg01),
     ])`,
-        beforeChamferSnippetEnd: '}, extrude001)',
+        beforeChamferSnippetEnd: ')',
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, seg03)',
         afterRectangle1stClickSnippet:
@@ -454,15 +435,15 @@ chamf = chamfer(
        extrude001,
        length = 30,
        tags = [getOppositeEdge(seg01)],
-       tag = $seg03
-      )
+       tag = $seg03,
+     )
   |> chamfer(
        length = 30,
        tags = [
          seg01,
          getNextAdjacentEdge(yo),
          getNextAdjacentEdge(seg02)
-       ]
+       ],
      )
 sketch002 = startSketchOn(extrude001, seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
@@ -475,7 +456,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
        segAng(rectangleSegmentA002),
        -segLen(rectangleSegmentA002)
      ], %)
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `,
         { shouldNormalise: true }
