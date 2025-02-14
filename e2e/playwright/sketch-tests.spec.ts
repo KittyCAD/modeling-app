@@ -2045,47 +2045,50 @@ extrude001 = extrude(profile003, length = 5)
       })
     }
   )
-  test(
-    'exit new sketch without drawing anything should not be a problem',
-    { tag: '@skipWin' },
-    async ({ homePage, scene, toolbar, editor, cmdBar, page }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem('persistCode', `myVar = 5`)
-      })
+  test('exit new sketch without drawing anything should not be a problem', async ({
+    homePage,
+    scene,
+    toolbar,
+    editor,
+    cmdBar,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem('persistCode', `myVar = 5`)
+    })
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled()
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
 
-      const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
 
-      await toolbar.startSketchPlaneSelection()
-      await selectXZPlane()
-      // timeout wait for engine animation is unavoidable
-      await page.waitForTimeout(600)
+    await toolbar.startSketchPlaneSelection()
+    await selectXZPlane()
+    // timeout wait for engine animation is unavoidable
+    await page.waitForTimeout(600)
 
-      await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')`)
-      await toolbar.exitSketchBtn.click()
+    await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')`)
+    await toolbar.exitSketchBtn.click()
 
-      await editor.expectEditor.not.toContain(`sketch001 = startSketchOn('XZ')`)
+    await editor.expectEditor.not.toContain(`sketch001 = startSketchOn('XZ')`)
 
-      await test.step("still renders code, hasn't got into a weird state", async () => {
-        await editor.replaceCode(
-          'myVar = 5',
-          `myVar = 5
+    await test.step("still renders code, hasn't got into a weird state", async () => {
+      await editor.replaceCode(
+        'myVar = 5',
+        `myVar = 5
   sketch001 = startSketchOn('XZ')
   profile001 = circle({
     center = [12.41, 3.87],
     radius = myVar
   }, sketch001)`
-        )
+      )
 
-        await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
-      })
-    }
-  )
+      await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
+    })
+  })
   test(
     'A sketch with only "startProfileAt" and no segments should still be able to be continued',
     { tag: ['@skipWin'] },
