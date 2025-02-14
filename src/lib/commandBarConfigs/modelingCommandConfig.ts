@@ -77,6 +77,9 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
   }
   Helix: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     revolutions: KclCommandValue
     angleStart: KclCommandValue
     counterClockWise: boolean
@@ -461,6 +464,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     status: 'development',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       revolutions: {
         inputType: 'kcl',
         defaultValue: '1',
