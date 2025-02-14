@@ -67,22 +67,28 @@ description: Variables in memory after executing circle_three_point.kcl
                 0
               ]
             },
-            "ccw": true,
-            "center": [
-              24.749999999999996,
-              19.749999999999996
-            ],
             "from": [
               30.0059,
               19.75
             ],
-            "radius": 5.255949010407163,
+            "p1": [
+              25.0,
+              25.0
+            ],
+            "p2": [
+              30.0,
+              20.0
+            ],
+            "p3": [
+              27.0,
+              15.0
+            ],
             "tag": null,
             "to": [
               30.0059,
               19.75
             ],
-            "type": "Circle"
+            "type": "CircleThreePoint"
           }
         ],
         "on": {

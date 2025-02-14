@@ -243,7 +243,8 @@ pub(crate) async fn do_post_extrude(
                     Path::Arc { .. }
                     | Path::TangentialArc { .. }
                     | Path::TangentialArcTo { .. }
-                    | Path::Circle { .. } => {
+                    | Path::Circle { .. }
+                    | Path::CircleThreePoint { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
