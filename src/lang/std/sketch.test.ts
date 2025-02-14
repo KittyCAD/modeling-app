@@ -251,15 +251,8 @@ describe('testing addTagForSketchOnFace', () => {
   const chamferTestCases = [
     {
       desc: 'chamfer in pipeExpr',
-      originalChamfer: `  |> chamfer(
-       length = 30,
-       tags = [seg01, getOppositeEdge(seg01)]
-     )`,
-      expectedChamfer: `  |> chamfer(
-       length = 30,
-       tags = [getOppositeEdge(seg01)],
-       tag = $seg03,
-     )
+      originalChamfer: `  |> chamfer(length = 30, tags = [seg01, getOppositeEdge(seg01)])`,
+      expectedChamfer: `  |> chamfer(length = 30, tags = [getOppositeEdge(seg01)], tag = $seg03)
   |> chamfer(length = 30, tags = [seg01])`,
     },
     {
@@ -274,7 +267,7 @@ describe('testing addTagForSketchOnFace', () => {
        length = 30,
        tags = [getOppositeEdge(seg01)],
        tag = $seg03,
-       )
+     )
   |> chamfer(length = 30, tags = [seg01])`,
     },
     // Add more test cases here if needed

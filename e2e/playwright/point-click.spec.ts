@@ -313,19 +313,22 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = 100)
-  |> chamfer({
+  |> chamfer(
        length = 30,
-       tags = [getOppositeEdge(seg01)]
-     }, %, $seg03)
-  |> chamfer({ length = 30, tags = [seg01] }, %, $seg04)
-  |> chamfer({
+       tags = [getOppositeEdge(seg01)],
+       tag = $seg03,
+     )
+  |> chamfer( length = 30, tags = [seg01], tag = $seg04)
+  |> chamfer(
        length = 30,
-       tags = [getNextAdjacentEdge(seg02)]
-     }, %, $seg05)
-  |> chamfer({
+       tags = [getNextAdjacentEdge(seg02)],
+       tag = $seg05,
+     )
+  |> chamfer(
        length = 30,
-       tags = [getNextAdjacentEdge(yo)]
-     }, %, $seg06)
+       tags = [getNextAdjacentEdge(yo)],
+       tag = $seg06,
+     )
 sketch005 = startSketchOn(extrude001, seg06)
 profile004 = startProfileAt([-23.43, 19.69], sketch005)
   |> angledLine([0, 9.1], %, $rectangleSegmentA005)
