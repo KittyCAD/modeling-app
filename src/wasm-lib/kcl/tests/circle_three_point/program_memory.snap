@@ -6,21 +6,33 @@ description: Variables in memory after executing circle_three_point.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "sketch001": {
@@ -55,22 +67,28 @@ description: Variables in memory after executing circle_three_point.kcl
                 0
               ]
             },
-            "ccw": true,
-            "center": [
-              24.749999999999996,
-              19.749999999999996
-            ],
             "from": [
               30.0059,
               19.75
             ],
-            "radius": 5.255949010407163,
+            "p1": [
+              25.0,
+              25.0
+            ],
+            "p2": [
+              30.0,
+              20.0
+            ],
+            "p3": [
+              27.0,
+              15.0
+            ],
             "tag": null,
             "to": [
               30.0059,
               19.75
             ],
-            "type": "Circle"
+            "type": "CircleThreePoint"
           }
         ],
         "on": {

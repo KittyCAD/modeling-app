@@ -14,6 +14,7 @@ describe('KCL expression calculations', () => {
     variables['x'] = {
       type: 'Number',
       value: 2,
+      ty: { type: 'Any' },
       __meta: [],
     }
     const actual = await getCalculatedKclExpressionValue('1 + x', variables)
@@ -32,6 +33,7 @@ describe('KCL expression calculations', () => {
     variables['y'] = {
       type: 'Number',
       value: 2,
+      ty: { type: 'Any' },
       __meta: [],
     }
     const actual = await getCalculatedKclExpressionValue('1 + x', variables)
@@ -44,6 +46,7 @@ describe('KCL expression calculations', () => {
     variables['x'] = {
       type: 'Number',
       value: 2,
+      ty: { type: 'Any' },
       __meta: [],
     }
     const actual = await getCalculatedKclExpressionValue(

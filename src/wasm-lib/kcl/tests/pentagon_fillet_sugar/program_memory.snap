@@ -6,21 +6,33 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
     "__meta": []
   },
   "a": {
@@ -1447,6 +1459,15 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       "angleEnd": {
         "type": "Number",
         "value": 360.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -1460,6 +1481,15 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       "angleStart": {
         "type": "Number",
         "value": 0.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -1473,6 +1503,15 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       "radius": {
         "type": "Number",
         "value": 80.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
         "__meta": [
           {
             "sourceRange": [
@@ -3390,6 +3429,15 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
   "plumbusLen": {
     "type": "Number",
     "value": 100.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -3403,6 +3451,15 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
   "radius": {
     "type": "Number",
     "value": 80.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -3416,6 +3473,15 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
   "triangleHeight": {
     "type": "Number",
     "value": 200.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -3429,6 +3495,15 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
   "triangleLen": {
     "type": "Number",
     "value": 500.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [

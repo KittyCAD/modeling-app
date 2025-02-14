@@ -10,10 +10,10 @@ use crate::{
 
 /// Converts a number to integer.
 pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number()?;
+    let (num, ty) = args.get_number_with_type()?;
     let converted = inner_int(num)?;
 
-    Ok(args.make_user_val_from_f64(converted))
+    Ok(args.make_user_val_from_f64_with_type(converted, ty))
 }
 
 /// Convert a number to an integer.

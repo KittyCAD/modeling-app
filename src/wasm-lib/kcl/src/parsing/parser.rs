@@ -882,6 +882,17 @@ fn property_separator(i: &mut TokenSlice) -> PResult<()> {
     .parse_next(i)
 }
 
+/// Match something that separates the labeled arguments of a fn call.
+fn labeled_arg_separator(i: &mut TokenSlice) -> PResult<()> {
+    alt((
+        // Normally you need a comma.
+        comma_sep,
+        // But, if the argument list is ending, no need for a comma.
+        peek(preceded(opt(whitespace), close_paren)).void(),
+    ))
+    .parse_next(i)
+}
+
 /// Parse a KCL object value.
 pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
     let open = open_brace(i)?;
@@ -2496,14 +2507,6 @@ fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
     .parse_next(i)
 }
 
-/// Arguments are passed into a function,
-/// preceded by the name of the parameter (the label).
-fn labeled_arguments(i: &mut TokenSlice) -> PResult<Vec<LabeledArg>> {
-    separated(0.., labeled_argument, comma_sep)
-        .context(expected("function arguments"))
-        .parse_next(i)
-}
-
 /// A type of a function argument.
 /// This can be:
 /// - a primitive type, e.g. 'number' or 'string' or 'bool'
@@ -2579,7 +2582,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
         arg_name,
         type_,
         default_value: match (question_mark.is_some(), default_literal) {
-            (true, Some(lit)) => Some(DefaultParamVal::Literal(lit.inner)),
+            (true, Some(lit)) => Some(DefaultParamVal::Literal(*lit)),
             (true, None) => Some(DefaultParamVal::none()),
             (false, None) => None,
             (false, Some(lit)) => {
@@ -2783,7 +2786,28 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     ignore_whitespace(i);
 
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
-    let args = labeled_arguments(i)?;
+    let args: Vec<_> = repeat(
+        0..,
+        alt((
+            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(labeled_argument, labeled_arg_separator).map(NonCodeOr::Code),
+        )),
+    )
+    .parse_next(i)?;
+    let (args, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = args.into_iter().enumerate().fold(
+        (Vec::new(), BTreeMap::new()),
+        |(mut args, mut non_code_nodes), (i, e)| {
+            match e {
+                NonCodeOr::NonCode(x) => {
+                    non_code_nodes.insert(i, vec![x]);
+                }
+                NonCodeOr::Code(x) => {
+                    args.push(x);
+                }
+            }
+            (args, non_code_nodes)
+        },
+    );
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         let just_args: Vec<_> = args.iter().collect();
         typecheck_all_kw(std_fn, &just_args)?;
@@ -2792,6 +2816,10 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
 
+    let non_code_meta = NonCodeMeta {
+        non_code_nodes,
+        ..Default::default()
+    };
     Ok(Node {
         start: fn_name.start,
         end,
@@ -2801,6 +2829,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
             unlabeled: initial_unlabeled_arg,
             arguments: args,
             digest: None,
+            non_code_meta,
         },
         outer_attrs: Vec::new(),
     })
@@ -4391,14 +4420,6 @@ let myBox = box([0,0], -3, -16, -10)
     }
 
     #[test]
-    fn arg_labels() {
-        let input = r#"length: 3"#;
-        let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lex(input, module_id).unwrap();
-        super::labeled_arguments(&mut tokens.as_slice()).unwrap();
-    }
-
-    #[test]
     fn kw_fn() {
         for input in ["val = foo(x, y = z)", "val = foo(y = z)"] {
             let module_id = ModuleId::default();
@@ -4879,6 +4900,22 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         r#"fn foo(x?: number = 2) { return 1 }"#
     );
     snapshot_test!(kw_function_call_in_pipe, r#"val = 1 |> f(arg = x)"#);
+    snapshot_test!(
+        kw_function_call_multiline,
+        r#"val = f(
+             arg = x,
+             foo = x,
+             bar = x,
+           )"#
+    );
+    snapshot_test!(
+        kw_function_call_multiline_with_comments,
+        r#"val = f(
+             arg = x,
+             // foo = x,
+             bar = x,
+           )"#
+    );
 }
 
 #[allow(unused)]

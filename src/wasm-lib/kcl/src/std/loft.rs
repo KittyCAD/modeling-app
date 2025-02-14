@@ -57,7 +57,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// triangleSketch = startSketchOn(offsetPlane('XY', 75))
+/// triangleSketch = startSketchOn(offsetPlane('XY', offset = 75))
 ///     |> startProfileAt([0, 125], %)
 ///     |> line(end = [-15, -30])
 ///     |> line(end = [30, 0])
@@ -77,10 +77,10 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch0 = startSketchOn(offsetPlane('XY', 75))
+/// circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
-/// circleSketch1 = startSketchOn(offsetPlane('XY', 150))
+/// circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1])
@@ -96,10 +96,10 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch0 = startSketchOn(offsetPlane('XY', 75))
+/// circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
-/// circleSketch1 = startSketchOn(offsetPlane('XY', 150))
+/// circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1],

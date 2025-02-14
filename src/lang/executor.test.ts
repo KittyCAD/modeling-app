@@ -239,6 +239,7 @@ const newVar = myVar + 1`
     expect(mem['three']).toEqual({
       type: 'Number',
       value: 3,
+      ty: expect.any(Object),
       __meta: [
         {
           sourceRange: [14, 15, 0],
@@ -248,12 +249,23 @@ const newVar = myVar + 1`
     expect(mem['yo']).toEqual({
       type: 'Array',
       value: [
-        { type: 'Number', value: 1, __meta: [{ sourceRange: [28, 29, 0] }] },
+        {
+          type: 'Number',
+          value: 1,
+          ty: expect.any(Object),
+          __meta: [{ sourceRange: [28, 29, 0] }],
+        },
         { type: 'String', value: '2', __meta: [{ sourceRange: [31, 34, 0] }] },
-        { type: 'Number', value: 3, __meta: [{ sourceRange: [14, 15, 0] }] },
+        {
+          type: 'Number',
+          value: 3,
+          ty: expect.any(Object),
+          __meta: [{ sourceRange: [14, 15, 0] }],
+        },
         {
           type: 'Number',
           value: 9,
+          ty: expect.any(Object),
           __meta: [{ sourceRange: [43, 44, 0] }, { sourceRange: [47, 48, 0] }],
         },
       ],
@@ -281,16 +293,19 @@ const newVar = myVar + 1`
         anum: {
           type: 'Number',
           value: 2,
+          ty: expect.any(Object),
           __meta: [{ sourceRange: [47, 48, 0] }],
         },
         identifier: {
           type: 'Number',
           value: 3,
+          ty: expect.any(Object),
           __meta: [{ sourceRange: [14, 15, 0] }],
         },
         binExp: {
           type: 'Number',
           value: 9,
+          ty: expect.any(Object),
           __meta: [{ sourceRange: [77, 78, 0] }, { sourceRange: [81, 82, 0] }],
         },
       },
@@ -404,6 +419,7 @@ describe('testing math operators', () => {
         ],
         type: 'Number',
         value: 1,
+        ty: expect.any(Object),
       },
       {
         __meta: [
@@ -413,6 +429,7 @@ describe('testing math operators', () => {
         ],
         type: 'Number',
         value: -3,
+        ty: expect.any(Object),
       },
     ])
   })

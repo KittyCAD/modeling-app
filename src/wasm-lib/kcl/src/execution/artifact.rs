@@ -188,6 +188,9 @@ pub struct Wall {
     pub sweep_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
+    /// This is for the sketch-on-face plane, not for the wall itself.  Traverse
+    /// to the extrude and/or segment to get the wall's code_ref.
+    pub face_code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -201,6 +204,9 @@ pub struct Cap {
     pub sweep_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
+    /// This is for the sketch-on-face plane, not for the cap itself.  Traverse
+    /// to the extrude and/or segment to get the cap's code_ref.
+    pub face_code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -584,7 +590,7 @@ fn artifacts_to_update(
     responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
     current_plane_id: Option<Uuid>,
     _ast: &Node<Program>,
-    _exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
     // TODO: Build path-to-node from artifact_command source range.  Right now,
     // we're serializing an empty array, and the TS wrapper fills it in with the
@@ -634,6 +640,17 @@ fn artifacts_to_update(
                         edge_cut_edge_ids: wall.edge_cut_edge_ids.clone(),
                         sweep_id: wall.sweep_id,
                         path_ids: wall.path_ids.clone(),
+                        face_code_ref: wall.face_code_ref.clone(),
+                    })]);
+                }
+                Some(Artifact::Cap(cap)) => {
+                    return Ok(vec![Artifact::Cap(Cap {
+                        id: current_plane_id.into(),
+                        sub_type: cap.sub_type,
+                        edge_cut_edge_ids: cap.edge_cut_edge_ids.clone(),
+                        sweep_id: cap.sweep_id,
+                        path_ids: cap.path_ids.clone(),
+                        face_code_ref: cap.face_code_ref.clone(),
                     })]);
                 }
                 Some(_) | None => {
@@ -683,6 +700,17 @@ fn artifacts_to_update(
                     edge_cut_edge_ids: wall.edge_cut_edge_ids.clone(),
                     sweep_id: wall.sweep_id,
                     path_ids: vec![id],
+                    face_code_ref: wall.face_code_ref.clone(),
+                }));
+            }
+            if let Some(Artifact::Cap(cap)) = plane {
+                return_arr.push(Artifact::Cap(Cap {
+                    id: current_plane_id.into(),
+                    sub_type: cap.sub_type,
+                    edge_cut_edge_ids: cap.edge_cut_edge_ids.clone(),
+                    sweep_id: cap.sweep_id,
+                    path_ids: vec![id],
+                    face_code_ref: cap.face_code_ref.clone(),
                 }));
             }
             return Ok(return_arr);
@@ -809,12 +837,31 @@ fn artifacts_to_update(
                         source_ranges: vec![range],
                     })
                 })?;
+                let extra_artifact = exec_artifacts.values().find(|a| {
+                    if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
+                        *id == face_id.0
+                    } else {
+                        false
+                    }
+                });
+                let sketch_on_face_source_range = extra_artifact
+                    .and_then(|a| match a {
+                        Artifact::StartSketchOnFace { source_range, .. } => Some(*source_range),
+                        // TODO: If we didn't find it, it's probably a bug.
+                        _ => None,
+                    })
+                    .unwrap_or_default();
+
                 return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
                     seg_id: curve_id,
                     edge_cut_edge_ids: Vec::new(),
                     sweep_id: path_sweep_id,
-                    path_ids: vec![],
+                    path_ids: Vec::new(),
+                    face_code_ref: CodeRef {
+                        range: sketch_on_face_source_range,
+                        path_to_node: Vec::new(),
+                    },
                 }));
                 let mut new_seg = seg.clone();
                 new_seg.surface_id = Some(face_id);
@@ -843,12 +890,29 @@ fn artifacts_to_update(
                             source_ranges: vec![range],
                         })
                     })?;
+                    let extra_artifact = exec_artifacts.values().find(|a| {
+                        if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
+                            *id == face_id.0
+                        } else {
+                            false
+                        }
+                    });
+                    let sketch_on_face_source_range = extra_artifact
+                        .and_then(|a| match a {
+                            Artifact::StartSketchOnFace { source_range, .. } => Some(*source_range),
+                            _ => None,
+                        })
+                        .unwrap_or_default();
                     return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
                         sub_type,
                         edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
                         path_ids: Vec::new(),
+                        face_code_ref: CodeRef {
+                            range: sketch_on_face_source_range,
+                            path_to_node: Vec::new(),
+                        },
                     }));
                     let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {
                         continue;

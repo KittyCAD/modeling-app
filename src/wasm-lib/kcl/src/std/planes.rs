@@ -52,7 +52,9 @@ impl From<StandardPlane> for PlaneData {
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
+    // let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
+    let std_plane = args.get_unlabeled_kw_arg("stdPlane")?;
+    let offset = args.get_kw_arg("offset")?;
     let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
     make_offset_plane_in_engine(&plane, exec_state, &args).await?;
     Ok(KclValue::Plane { value: Box::new(plane) })
@@ -73,7 +75,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('XY', 150))
+/// circleSketch = startSketchOn(offsetPlane('XY', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -89,7 +91,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('XZ', 150))
+/// circleSketch = startSketchOn(offsetPlane('XZ', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -105,7 +107,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('YZ', 150))
+/// circleSketch = startSketchOn(offsetPlane('YZ', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -121,7 +123,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('-XZ', -150))
+/// circleSketch = startSketchOn(offsetPlane('-XZ', offset = -150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -133,7 +135,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///   |> circle({ radius = 10, center = [0, 0] }, %)
 ///   
 /// // Triangle on the plane 4 units above
-/// startSketchOn(offsetPlane("XY", 4))
+/// startSketchOn(offsetPlane("XY", offset = 4))
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
@@ -143,6 +145,12 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 #[stdlib {
     name = "offsetPlane",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        std_plane = { docs = "Which standard plane (e.g. XY) should this new plane be created from?" },
+        offset = { docs = "Distance from the standard plane this new plane will be created at." },
+    }
 }]
 async fn inner_offset_plane(
     std_plane: StandardPlane,

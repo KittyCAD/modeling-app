@@ -1600,6 +1600,27 @@ mod parametric {
         super::execute(TEST_NAME, true).await
     }
 }
+mod ssi_pattern {
+    const TEST_NAME: &str = "ssi_pattern";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod angled_line {
     const TEST_NAME: &str = "angled_line";
 
