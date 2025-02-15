@@ -53,6 +53,7 @@ process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
 console.log('process.env', process.env)
 
 /// Register our application to handle all "zoo-studio:" protocols.
+const singleInstanceLock = app.requestSingleInstanceLock()
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [
@@ -65,7 +66,13 @@ if (process.defaultApp) {
 
 // Global app listeners
 // Must be done before ready event.
-registerStartupListeners()
+// Checking against this lock is needed for Windows and Linux, see
+// https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
+if (!singleInstanceLock && !process.env.IS_PLAYWRIGHT) {
+  app.quit()
+} else {
+  registerStartupListeners()
+}
 
 const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   let newWindow
