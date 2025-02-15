@@ -456,7 +456,7 @@ export async function enterAppearanceFlow({
         kclManager.ast,
         sourceRangeFromRust(operation.sourceRange)
       ),
-    } 
+    }
     console.log('argDefaultValues', argDefaultValues)
     return {
       type: 'Find and select command',
@@ -464,7 +464,7 @@ export async function enterAppearanceFlow({
         name: 'Appearance',
         groupId: 'modeling',
         argDefaultValues,
-      }
+      },
     }
   }
 

@@ -1,6 +1,10 @@
 import { Artifact, getArtifactFromRange } from 'lang/std/artifactGraph'
 import { SourceRange } from 'lang/wasm'
-import { enterAppearanceFlow, enterEditFlow, EnterEditFlowProps } from 'lib/operations'
+import {
+  enterAppearanceFlow,
+  enterEditFlow,
+  EnterEditFlowProps,
+} from 'lib/operations'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import toast from 'react-hot-toast'

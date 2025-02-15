@@ -46,7 +46,6 @@ import {
   addSweep,
   extrudeSketch,
   loftSketches,
-  setAppearance,
 } from 'lang/modifyAst'
 import {
   applyEdgeTreatmentToSelection,
@@ -89,6 +88,7 @@ import {
 import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
 import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
+import { setAppearance } from 'lang/modifyAst/setAppearance'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -2184,31 +2184,16 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { color, nodeToEdit } = input
-
-        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) return new Error('Appearance is only an edit flow')
-
-        let insertIndex: number | undefined = undefined
-        let name: string | undefined = undefined
-
-        // Extract the name from the node to edit
-        const node = getNodeFromPath<VariableDeclaration>(
-          ast,
-          nodeToEdit,
-          'VariableDeclaration'
-        )
-        if (err(node)) {
-          console.error('Error extracting plane name')
-        } else {
-          name = node.node.declaration.id.name
+        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
+          return new Error('Appearance is only an edit flow')
         }
-
-        insertIndex = nodeToEdit[1][0]
 
         const result = setAppearance({
           ast,
           nodeToEdit,
-          artifactGraph: engineCommandManager.artifactGraph,
+          color,
         })
+
         if (err(result)) {
           return err(result)
         }
@@ -3465,7 +3450,6 @@ export const modelingMachine = setup({
         onError: ['idle'],
       },
     },
-
   },
 
   initial: 'idle',

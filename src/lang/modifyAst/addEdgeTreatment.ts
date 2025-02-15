@@ -394,7 +394,7 @@ export function getEdgeTagCall(
   return tagCall
 }
 
-function locateExtrudeDeclarator(
+export function locateExtrudeDeclarator(
   node: Program,
   pathToExtrudeNode: PathToNode
 ): { extrudeDeclarator: VariableDeclarator } | Error {

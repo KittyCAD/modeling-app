@@ -3,7 +3,11 @@ import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE, KCL_DEFAULT_COLOR } from 'lib/constants'
+import {
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_COLOR,
+} from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
@@ -681,17 +685,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'text',
         required: false,
       },
-      // selection: {
-      //   inputType: 'selection',
-      //   selectionTypes: [''],
-      //   multiple: false, // TODO: multiple selection
-      //   required: true,
-      //   skip: true,
-      // },
       color: {
-        inputType: 'string',
+        inputType: 'options',
         defaultValue: KCL_DEFAULT_COLOR,
         required: true,
+        options: [
+          { name: 'Red', isCurrent: true, value: '#FF0000' },
+          { name: 'Blue', isCurrent: false, value: '#0000FF' },
+          { name: 'Green', isCurrent: false, value: '#00FF00' },
+          { name: 'Black', isCurrent: false, value: '#000000' },
+          { name: 'White', isCurrent: false, value: '#FFFFFF' },
+        ],
       },
       // Add more fields
     },
