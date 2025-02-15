@@ -389,7 +389,11 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      <ContextMenuItem onClick={deleteOperation} hotkey="Delete">
+      <ContextMenuItem
+        onClick={deleteOperation}
+        hotkey="Delete"
+        data-testid="context-menu-delete"
+      >
         Delete
       </ContextMenuItem>,
     ],
