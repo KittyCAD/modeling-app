@@ -2246,7 +2246,7 @@ export const modelingMachine = setup({
 
         'Delete selection': {
           target: 'Applying Delete selection',
-          // guard: 'has valid selection for deletion',
+          guard: 'has valid selection for deletion',
           reenter: true,
         },
 

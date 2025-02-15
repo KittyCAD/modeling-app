@@ -75,7 +75,6 @@ import {
 import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
-import { engineCommandManager } from 'lib/singletons'
 
 export function startSketchOnDefault(
   node: Node<Program>,
