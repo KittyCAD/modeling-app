@@ -46,6 +46,7 @@ import {
   addSweep,
   extrudeSketch,
   loftSketches,
+  setAppearance,
 } from 'lang/modifyAst'
 import {
   applyEdgeTreatmentToSelection,
@@ -314,6 +315,7 @@ export type ModelingMachineEvent =
       type: 'Delete selection'
       data: ModelingCommandSchema['Delete selection']
     }
+  | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | {
       type: 'Add rectangle origin'
       data: [x: number, y: number]
@@ -2172,6 +2174,62 @@ export const modelingMachine = setup({
         })
       }
     ),
+    appearanceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Appearance'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { color, nodeToEdit } = input
+
+        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) return new Error('Appearance is only an edit flow')
+
+        let insertIndex: number | undefined = undefined
+        let name: string | undefined = undefined
+
+        // Extract the name from the node to edit
+        const node = getNodeFromPath<VariableDeclaration>(
+          ast,
+          nodeToEdit,
+          'VariableDeclaration'
+        )
+        if (err(node)) {
+          console.error('Error extracting plane name')
+        } else {
+          name = node.node.declaration.id.name
+        }
+
+        insertIndex = nodeToEdit[1][0]
+
+        const result = setAppearance({
+          ast,
+          nodeToEdit,
+          artifactGraph: engineCommandManager.artifactGraph,
+        })
+        if (err(result)) {
+          return err(result)
+        }
+
+        const updateAstResult = await kclManager.updateAst(
+          result.modifiedAst,
+          true,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
   },
   // end actors
 }).createMachine({
@@ -2267,6 +2325,11 @@ export const modelingMachine = setup({
         },
 
         'Prompt-to-edit': 'Applying Prompt-to-edit',
+
+        Appearance: {
+          target: 'Applying appearance',
+          reenter: true,
+        },
       },
 
       entry: 'reset client scene mouse handlers',
@@ -3389,6 +3452,20 @@ export const modelingMachine = setup({
         },
       },
     },
+
+    'Applying appearance': {
+      invoke: {
+        src: 'appearanceAstMod',
+        id: 'appearanceAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Appearance') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
   },
 
   initial: 'idle',

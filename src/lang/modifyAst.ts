@@ -1894,3 +1894,32 @@ export function createNodeFromExprSnippet(
 export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
   return { label: createIdentifier(label), arg, type: 'LabeledArg' }
 }
+
+
+/**
+ * Set appearance to an AST node
+ */
+export function setAppearance({
+  ast,
+  nodeToEdit,
+  artifactGraph,
+}: {
+  ast: Node<Program>
+  nodeToEdit: any
+  artifactGraph: ArtifactGraph
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(ast)
+  // TODO: modify the ast
+  const insertAt = 0
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [insertAt, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['unlabeled', UNLABELED_ARG],
+  ]
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}

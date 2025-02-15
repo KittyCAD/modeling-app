@@ -1,6 +1,6 @@
 import { Artifact, getArtifactFromRange } from 'lang/std/artifactGraph'
 import { SourceRange } from 'lang/wasm'
-import { enterEditFlow, EnterEditFlowProps } from 'lib/operations'
+import { enterAppearanceFlow, enterEditFlow, EnterEditFlowProps } from 'lib/operations'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import toast from 'react-hot-toast'
@@ -28,6 +28,10 @@ type FeatureTreeEvent =
     }
   | {
       type: 'enterEditFlow'
+      data: { targetSourceRange: SourceRange; currentOperation: Operation }
+    }
+  | {
+      type: 'enterAppearanceFlow'
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | { type: 'goToError' }
@@ -63,6 +67,29 @@ export const featureTreeMachine = setup({
         return new Promise((resolve, reject) => {
           const { commandBarSend, ...editFlowProps } = input
           enterEditFlow(editFlowProps)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              input.commandBarSend(result)
+              resolve(result)
+            })
+            .catch(reject)
+        })
+      }
+    ),
+    prepareAppearanceCommand: fromPromise(
+      ({
+        input,
+      }: {
+        input: EnterEditFlowProps & {
+          commandBarSend: (typeof commandBarActor)['send']
+        }
+      }) => {
+        return new Promise((resolve, reject) => {
+          const { commandBarSend, ...editFlowProps } = input
+          enterAppearanceFlow(editFlowProps)
             .then((result) => {
               if (err(result)) {
                 reject(result)
@@ -160,6 +187,11 @@ export const featureTreeMachine = setup({
           actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
+        enterAppearanceFlow: {
+          target: 'enteringAppearanceFlow',
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+        },
+
         deleteOperation: {
           target: 'deletingOperation',
           actions: ['saveTargetSourceRange'],
@@ -235,6 +267,60 @@ export const featureTreeMachine = setup({
         prepareEditCommand: {
           invoke: {
             src: 'prepareEditCommand',
+            input: ({ context }) => {
+              const artifact = context.targetSourceRange
+                ? getArtifactFromRange(
+                    context.targetSourceRange,
+                    engineCommandManager.artifactGraph
+                  ) ?? undefined
+                : undefined
+              return {
+                // currentOperation is guaranteed to be defined here
+                operation: context.currentOperation!,
+                artifact,
+                commandBarSend: commandBarActor.send,
+              }
+            },
+            onDone: {
+              target: 'done',
+              reenter: true,
+            },
+            onError: {
+              target: 'done',
+              reenter: true,
+              actions: ({ event }) => {
+                if ('error' in event && err(event.error)) {
+                  toast.error(event.error.message)
+                }
+              },
+            },
+          },
+        },
+      },
+
+      initial: 'selecting',
+      entry: 'sendSelectionEvent',
+      exit: ['clearContext'],
+    },
+
+    enteringAppearanceFlow: {
+      states: {
+        selecting: {
+          on: {
+            selected: {
+              target: 'prepareAppearanceCommand',
+              reenter: true,
+            },
+          },
+        },
+
+        done: {
+          always: '#featureTree.idle',
+        },
+
+        prepareAppearanceCommand: {
+          invoke: {
+            src: 'prepareAppearanceCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
                 ? getArtifactFromRange(

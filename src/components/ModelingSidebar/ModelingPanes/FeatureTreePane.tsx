@@ -324,6 +324,18 @@ const OperationItem = (props: {
     }
   }
 
+  function enterAppearanceFlow() {
+    if (props.item.type === 'StdLibCall') {
+      props.send({
+        type: 'enterAppearanceFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
+        },
+      })
+    }
+  }
+
   function deleteOperation() {
     if (
       props.item.type === 'StdLibCall' ||
@@ -386,6 +398,12 @@ const OperationItem = (props: {
               hotkey="Double click"
             >
               Edit
+            </ContextMenuItem>,
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
+              onClick={enterAppearanceFlow}
+            >
+              Set appearance
             </ContextMenuItem>,
           ]
         : []),
