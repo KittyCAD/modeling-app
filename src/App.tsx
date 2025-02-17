@@ -148,7 +148,7 @@ export function App() {
             videoRef,
             canvasRef,
             mediaStream: null,
-            authToken: token ?? null,
+            authToken: token,
             pool,
             zoomToFit: true,
           },
