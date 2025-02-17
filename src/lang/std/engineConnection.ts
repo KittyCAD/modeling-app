@@ -1,5 +1,6 @@
 import {
   ArtifactGraph,
+  clearSceneAndBustCache,
   defaultSourceRange,
   ExecState,
   SourceRange,
@@ -867,6 +868,11 @@ class EngineConnection extends EventTarget {
             }
 
             this.engineCommandManager.inSequence = 1
+
+            // Bust the cache before anything
+            ;(async () => {
+              await clearSceneAndBustCache(kclManager.engineCommandManager)
+            })().catch(reportRejection)
 
             this.dispatchEvent(
               new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
@@ -1839,7 +1845,6 @@ export class EngineCommandManager extends EventTarget {
       )
 
       this.engineConnection?.tearDown(opts)
-      this.engineConnection = undefined
 
       // Our window.engineCommandManager.tearDown assignment causes this case to happen which is
       // only really for tests.
@@ -1850,6 +1855,7 @@ export class EngineCommandManager extends EventTarget {
       // @ts-ignore
       this.engineCommandManager.engineConnection = null
     }
+    this.engineConnection = undefined
   }
   async startNewSession() {
     this.responseMap = {}

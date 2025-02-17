@@ -12,6 +12,7 @@ import {
   getSortFunction,
   getSortIcon,
 } from '../lib/sorting'
+import { clearSceneAndBustCache } from 'lang/wasm'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isDesktop } from 'lib/isDesktop'
 import { kclManager } from 'lib/singletons'

@@ -271,6 +271,11 @@ export class CameraControls {
     >[0]
 
     const cb = ({ data, type }: CallBackParam) => {
+      // We're reconnecting, so ignore this init proces.
+      if (this.old) {
+        return
+      }
+
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -282,6 +287,7 @@ export class CameraControls {
         camSettings.center.y,
         camSettings.center.z
       )
+
       const orientation = new Quaternion(
         camSettings.orientation.x,
         camSettings.orientation.y,
