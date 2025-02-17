@@ -12,6 +12,7 @@ import {
   getSortFunction,
   getSortIcon,
 } from '../lib/sorting'
+import { clearSceneAndBustCache } from 'lang/wasm'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isDesktop } from 'lib/isDesktop'
@@ -26,6 +27,9 @@ import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { useProjectsContext } from 'hooks/useProjectsContext'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
+import useEngineStreamContext, {
+  EngineStreamTransition,
+} from 'hooks/useEngineStreamContext'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
