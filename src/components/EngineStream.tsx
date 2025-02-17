@@ -14,6 +14,7 @@ import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
 import { err, reportRejection, trap } from 'lib/trap'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
+import { clearSceneAndBustCache } from 'lang/wasm'
 import { ViewControlContextMenu } from './ViewControlMenu'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useSelector } from '@xstate/react'
@@ -67,18 +68,20 @@ export const EngineStream = () => {
     })
   }
 
+  const play = () => {
+    engineStreamActor.send({
+      type: EngineStreamTransition.Play,
+    })
+  }
+
   useEffect(() => {
-    const play = () => {
-      engineStreamActor.send({
-        type: EngineStreamTransition.Play,
-      })
-    }
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
       play
     )
 
     return () => {
+      engineCommandManager.tearDown()
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.SceneReady,
         play
@@ -87,6 +90,7 @@ export const EngineStream = () => {
   }, [])
 
   useEffect(() => {
+    if (engineStreamState.value === EngineStreamState.Reconfiguring) return
     const video = engineStreamState.context.videoRef?.current
     if (!video) return
     const canvas = engineStreamState.context.canvasRef?.current
@@ -123,10 +127,8 @@ export const EngineStream = () => {
   // On settings change, reconfigure the engine. When paused this gets really tricky,
   // and also requires onMediaStream to be set!
   useEffect(() => {
-    if (engineStreamState.value === EngineStreamState.Playing) {
-      startOrReconfigureEngine()
-    }
-  }, [settings.context, engineStreamState.value])
+    startOrReconfigureEngine()
+  }, Object.values(settingsEngine))
 
   /**
    * Subscribe to execute code when the file changes
@@ -135,8 +137,8 @@ export const EngineStream = () => {
    */
   useEffect(() => {
     if (engineCommandManager.engineConnection?.isReady() && file?.path) {
-      console.log('execute on file change')
-      void kclManager.executeCode(true).catch(trap)
+      console.log('file changed, executing code')
+      kclManager.executeCode(true).catch(trap)
     }
   }, [file?.path, engineCommandManager.engineConnection])
 
