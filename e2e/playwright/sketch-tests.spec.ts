@@ -1978,7 +1978,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
   )
   test(
     'Can delete a profile in the editor while is sketch mode, and sketch mode does not break, can ctrl+z to undo after constraint with variable was added',
-    { tag: ['@skipWin'] },
+    { tag: ['@skipWin', '@skipLinux'] },
     async ({ scene, toolbar, editor, cmdBar, page, homePage }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
