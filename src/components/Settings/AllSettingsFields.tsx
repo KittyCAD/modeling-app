@@ -20,7 +20,7 @@ import {
   getSettingsFolderPaths,
 } from 'lib/desktopFS'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { ForwardedRef, forwardRef, useEffect } from 'react'
+import { ForwardedRef, forwardRef, useEffect, useMemo } from 'react'
 import { useLspContext } from 'components/LspProvider'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
@@ -44,20 +44,22 @@ export const AllSettingsFields = forwardRef(
       settings: { send, context, state },
     } = useSettingsAuthContext()
 
-    const projectPath =
-      isFileSettings && isDesktop()
-        ? decodeURI(
-            location.pathname
-              .replace(PATHS.FILE + window.electron.sep, '')
-              .replace(PATHS.SETTINGS, '')
-              .slice(
-                0,
-                decodeURI(location.pathname).lastIndexOf(
-                  window.electron.path.sep
-                )
-              )
-          )
-        : undefined
+    const projectPath = useMemo(() => {
+      const filteredPathname = location.pathname
+        .replace(PATHS.FILE, '')
+        .replace(PATHS.SETTINGS, '')
+      const lastSlashIndex = filteredPathname.lastIndexOf(
+        // This is slicing off any remaining browser path segments,
+        // so we don't use window.electron.sep here
+        '/'
+      )
+      const projectPath =
+        isFileSettings && isDesktop()
+          ? decodeURIComponent(filteredPathname.slice(lastSlashIndex + 1))
+          : undefined
+
+      return projectPath
+    }, [location.pathname])
 
     function restartOnboarding() {
       send({
@@ -136,7 +138,7 @@ export const AllSettingsFields = forwardRef(
                         settingHasChanged={
                           setting[searchParamTab] !== undefined &&
                           setting[searchParamTab] !==
-                            setting.getFallback(searchParamTab)
+                          setting.getFallback(searchParamTab)
                         }
                         parentLevel={setting.getParentLevel(searchParamTab)}
                         onFallback={() =>
@@ -185,11 +187,10 @@ export const AllSettingsFields = forwardRef(
           <SettingsSection
             title="Reset settings"
             description={`Restore settings to their default values. Your settings are saved in
-                    ${
-                      isDesktop()
-                        ? ' a file in the app data folder for your OS.'
-                        : " your browser's local storage."
-                    }
+                    ${isDesktop()
+                ? ' a file in the app data folder for your OS.'
+                : " your browser's local storage."
+              }
                   `}
           >
             <div className="flex flex-col items-start gap-4">
@@ -197,9 +198,7 @@ export const AllSettingsFields = forwardRef(
                 <ActionButton
                   Element="button"
                   onClick={toSync(async () => {
-                    const paths = await getSettingsFolderPaths(
-                      projectPath ? decodeURIComponent(projectPath) : undefined
-                    )
+                    const paths = await getSettingsFolderPaths(projectPath)
                     const finalPath = paths[searchParamTab]
                     if (!finalPath) {
                       return new Error('finalPath undefined')
