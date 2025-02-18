@@ -5,13 +5,11 @@ use std::{collections::HashMap, sync::Arc};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcmc::{
-    id::ModelingCmdId,
     ok_response::OkModelingCmdResponse,
     websocket::{
         BatchResponse, ModelingBatch, OkWebSocketResponseData, SuccessWebSocketResponse, WebSocketRequest,
         WebSocketResponse,
     },
-    ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
@@ -87,9 +85,8 @@ impl crate::engine::EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
-    fn responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
-        let responses = self.responses.lock().unwrap();
-        responses.clone()
+    fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
+        self.responses.clone()
     }
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {

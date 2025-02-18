@@ -735,7 +735,10 @@ impl ExecutorContext {
             .global
             .artifact_commands
             .extend(self.engine.take_artifact_commands().await);
-        exec_state.global.artifact_responses.extend(self.engine.responses());
+        exec_state
+            .global
+            .artifact_responses
+            .extend(self.engine.responses().read().await.clone());
         // Build the artifact graph.
         match build_artifact_graph(
             &exec_state.global.artifact_commands,

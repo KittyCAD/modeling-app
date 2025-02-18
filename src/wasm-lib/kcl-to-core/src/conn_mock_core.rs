@@ -365,8 +365,8 @@ impl kcl_lib::EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
-    fn responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
-        IndexMap::new()
+    fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
+        Arc::new(RwLock::new(IndexMap::new()))
     }
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {

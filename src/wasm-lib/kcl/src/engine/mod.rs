@@ -67,7 +67,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
 
     /// Get the command responses from the engine.
-    fn responses(&self) -> IndexMap<Uuid, WebSocketResponse>;
+    fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
     /// Get the artifact commands that have accumulated so far.
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;

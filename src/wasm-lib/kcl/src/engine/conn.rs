@@ -4,7 +4,6 @@
 use std::{collections::HashMap, sync::Arc};
 
 use anyhow::{anyhow, Result};
-use dashmap::DashMap;
 use futures::{SinkExt, StreamExt};
 use indexmap::IndexMap;
 use kcmc::{
@@ -38,7 +37,7 @@ type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocket
 pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     shutdown_tx: mpsc::Sender<()>,
-    responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
+    responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>,
     pending_errors: Arc<RwLock<Vec<String>>>,
     #[allow(dead_code)]
     tcp_read_handle: Arc<TcpReadHandle>,
@@ -227,7 +226,7 @@ impl EngineConnection {
 
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
         let session_data2 = session_data.clone();
-        let responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>> = Arc::new(DashMap::new());
+        let responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>> = Arc::new(RwLock::new(IndexMap::new()));
         let responses_clone = responses.clone();
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
@@ -255,7 +254,7 @@ impl EngineConnection {
                                     let id: uuid::Uuid = (*resp_id).into();
                                     match batch_response {
                                         BatchResponse::Success { response } => {
-                                            responses_clone.insert(
+                                            responses_clone.write().await.insert(
                                                 id,
                                                 WebSocketResponse::Success(SuccessWebSocketResponse {
                                                     success: true,
@@ -267,7 +266,7 @@ impl EngineConnection {
                                             );
                                         }
                                         BatchResponse::Failure { errors } => {
-                                            responses_clone.insert(
+                                            responses_clone.write().await.insert(
                                                 id,
                                                 WebSocketResponse::Failure(FailureWebSocketResponse {
                                                     success: false,
@@ -292,7 +291,7 @@ impl EngineConnection {
                                 errors,
                             }) => {
                                 if let Some(id) = request_id {
-                                    responses_clone.insert(
+                                    responses_clone.write().await.insert(
                                         *id,
                                         WebSocketResponse::Failure(FailureWebSocketResponse {
                                             success: false,
@@ -315,7 +314,7 @@ impl EngineConnection {
                         }
 
                         if let Some(id) = id {
-                            responses_clone.insert(id, ws_resp.clone());
+                            responses_clone.write().await.insert(id, ws_resp.clone());
                         }
                     }
                     Err(e) => {
@@ -359,14 +358,8 @@ impl EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
-    fn responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
-        self.responses
-            .iter()
-            .map(|entry| {
-                let (k, v) = entry.pair();
-                (*k, v.clone())
-            })
-            .collect()
+    fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
+        self.responses.clone()
     }
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
@@ -502,7 +495,7 @@ impl EngineManager for EngineConnection {
                 }
             }
             // We pop off the responses to cleanup our mappings.
-            if let Some((_, resp)) = self.responses.remove(&id) {
+            if let Some(resp) = self.responses.write().await.shift_remove(&id) {
                 return Ok(resp);
             }
         }
