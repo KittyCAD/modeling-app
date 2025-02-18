@@ -33,6 +33,7 @@ pub enum Node<'a> {
     IfExpression(NodeRef<'a, types::IfExpression>),
     ElseIf(&'a types::ElseIf),
     LabelledExpression(NodeRef<'a, types::LabelledExpression>),
+    Ascription(NodeRef<'a, types::Ascription>),
 
     Parameter(&'a types::Parameter),
 
@@ -74,6 +75,7 @@ impl Node<'_> {
             Node::ElseIf(n) => n.digest,
             Node::KclNone(n) => n.digest,
             Node::LabelledExpression(n) => n.digest,
+            Node::Ascription(n) => n.digest,
         }
     }
 
@@ -116,6 +118,7 @@ impl Node<'_> {
             Node::ElseIf(n) => *n as *const _ as *const (),
             Node::KclNone(n) => *n as *const _ as *const (),
             Node::LabelledExpression(n) => *n as *const _ as *const (),
+            Node::Ascription(n) => *n as *const _ as *const (),
         }
     }
 }
@@ -156,6 +159,7 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::ObjectProperty(n) => SourceRange::from(*n),
             Node::IfExpression(n) => SourceRange::from(*n),
             Node::LabelledExpression(n) => SourceRange::from(*n),
+            Node::Ascription(n) => SourceRange::from(*n),
 
             // This is broken too
             Node::ElseIf(n) => SourceRange::new(n.cond.start(), n.cond.end(), n.cond.module_id()),
@@ -197,6 +201,7 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
             types::Expr::UnaryExpression(ue) => ue.as_ref().into(),
             types::Expr::IfExpression(e) => e.as_ref().into(),
             types::Expr::LabelledExpression(e) => e.as_ref().into(),
+            types::Expr::AscribedExpression(e) => e.as_ref().into(),
             types::Expr::None(n) => n.into(),
         }
     }
@@ -280,6 +285,7 @@ impl_from_ref!(Node, Parameter);
 impl_from!(Node, IfExpression);
 impl_from!(Node, ElseIf);
 impl_from!(Node, LabelledExpression);
+impl_from!(Node, Ascription);
 impl_from!(Node, KclNone);
 
 #[cfg(test)]
