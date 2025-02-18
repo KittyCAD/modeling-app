@@ -138,7 +138,7 @@ export const AllSettingsFields = forwardRef(
                         settingHasChanged={
                           setting[searchParamTab] !== undefined &&
                           setting[searchParamTab] !==
-                          setting.getFallback(searchParamTab)
+                            setting.getFallback(searchParamTab)
                         }
                         parentLevel={setting.getParentLevel(searchParamTab)}
                         onFallback={() =>
@@ -187,10 +187,11 @@ export const AllSettingsFields = forwardRef(
           <SettingsSection
             title="Reset settings"
             description={`Restore settings to their default values. Your settings are saved in
-                    ${isDesktop()
-                ? ' a file in the app data folder for your OS.'
-                : " your browser's local storage."
-              }
+                    ${
+                      isDesktop()
+                        ? ' a file in the app data folder for your OS.'
+                        : " your browser's local storage."
+                    }
                   `}
           >
             <div className="flex flex-col items-start gap-4">
