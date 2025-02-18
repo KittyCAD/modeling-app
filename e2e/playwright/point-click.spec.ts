@@ -2545,7 +2545,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 590, y: 400 }
       const extrudeColor: [number, number, number] = [100, 100, 100]
-      const sketchColor: [number, number, number] = [125, 125, 125]
+      const sketchColor: [number, number, number] = [140, 140, 140]
       const defaultPlaneColor: [number, number, number] = [50, 50, 100]
 
       const deleteOperation = async (operationButton: Locator) => {
