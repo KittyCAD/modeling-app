@@ -4375,6 +4375,7 @@ dependencies = [
  "console_error_panic_hook",
  "data-encoding",
  "futures",
+ "getrandom 0.2.15",
  "gloo-utils",
  "image",
  "js-sys",

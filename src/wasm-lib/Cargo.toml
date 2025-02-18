@@ -39,6 +39,8 @@ dhat-heap = ["kcl-lib/dhat-heap"]
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
+# Enable the feature in a transitive dependency.
+getrandom = { version = "0.2", features = ["js"] }
 js-sys = "0.3.72"
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen-futures = { version = "0.4.44", features = ["futures-core-03-stream"] }
