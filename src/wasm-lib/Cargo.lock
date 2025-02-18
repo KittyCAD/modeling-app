@@ -715,9 +715,9 @@ dependencies = [
 
 [[package]]
 name = "data-encoding"
-version = "2.7.0"
+version = "2.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e60eed09d8c01d3cee5b7d30acb059b76614c918fa0f992e0dd6eeb10daad6f"
+checksum = "575f75dfd25738df5b91b8e43e14d44bda14637a58fae779fd2b064f8bf3e010"
 
 [[package]]
 name = "deranged"
@@ -1858,9 +1858,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.96"
+version = "0.2.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7a0b88ea600efe9df5b9745b21003b9d1dc7e3964d3c655d388b7a9e17b3155"
+checksum = "6c37ad10b8a2afdcd1852d027f123cf4e38864ea93e0fda5c7ee1e8a49af49fb"
 dependencies = [
  "anyhow",
  "chrono",
