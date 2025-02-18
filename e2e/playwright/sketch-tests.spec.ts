@@ -1354,7 +1354,7 @@ test.describe(`Sketching with offset planes`, () => {
 
 test.describe('multi-profile sketching', () => {
   test(
-    `test it removes have finished expressions when changing tools in sketch mode`,
+    `test it removes half-finished expressions when changing tools in sketch mode`,
     { tag: ['@skipWin'] },
     async ({ context, page, scene, toolbar, editor, homePage }) => {
       // We seed the scene with a single offset plane
