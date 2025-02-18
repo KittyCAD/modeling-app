@@ -8,14 +8,12 @@ pub mod conn_mock;
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
 
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, sync::Arc};
 
 use indexmap::IndexMap;
 use kcmc::{
     each_cmd as mcmd,
+    id::ModelingCmdId,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     shared::Color,
@@ -28,6 +26,7 @@ use kcmc::{
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use tokio::sync::RwLock;
 use uuid::Uuid;
 
 use crate::{
@@ -62,28 +61,33 @@ impl ExecutionKind {
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>;
+    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>;
 
     /// Get the batch of end commands to be sent to the engine.
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
+    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
 
     /// Get the command responses from the engine.
     fn responses(&self) -> IndexMap<Uuid, WebSocketResponse>;
 
-    /// Take the artifact commands generated up to this point and clear them.
-    fn take_artifact_commands(&self) -> Vec<ArtifactCommand>;
+    /// Get the artifact commands that have accumulated so far.
+    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
 
     /// Clear all artifact commands that have accumulated so far.
-    fn clear_artifact_commands(&self) {
-        self.take_artifact_commands();
+    async fn clear_artifact_commands(&self) {
+        self.artifact_commands().write().await.clear();
+    }
+
+    /// Take the artifact commands that have accumulated so far and clear them.
+    async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
+        std::mem::take(&mut *self.artifact_commands().write().await)
     }
 
     /// Get the current execution kind.
-    fn execution_kind(&self) -> ExecutionKind;
+    async fn execution_kind(&self) -> ExecutionKind;
 
     /// Replace the current execution kind with a new value and return the
     /// existing value.
-    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
+    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
 
     /// Get the default planes.
     async fn default_planes(
@@ -151,6 +155,27 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
+    async fn handle_artifact_command(
+        &self,
+        cmd: &ModelingCmd,
+        cmd_id: ModelingCmdId,
+        id_to_source_range: &HashMap<Uuid, SourceRange>,
+    ) -> Result<(), KclError> {
+        let cmd_id = *cmd_id.as_ref();
+        let range = id_to_source_range
+            .get(&cmd_id)
+            .copied()
+            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
+
+        // Add artifact command.
+        self.artifact_commands().write().await.push(ArtifactCommand {
+            cmd_id,
+            range,
+            command: cmd.clone(),
+        });
+        Ok(())
+    }
+
     async fn set_units(
         &self,
         units: crate::UnitLength,
@@ -203,7 +228,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         });
 
         // Add cmd to the batch.
-        self.batch().lock().unwrap().push((req, source_range));
+        self.batch().write().await.push((req, source_range));
 
         Ok(())
     }
@@ -223,7 +248,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         });
 
         // Add cmd to the batch end.
-        self.batch_end().lock().unwrap().insert(id, (req, source_range));
+        self.batch_end().write().await.insert(id, (req, source_range));
         Ok(())
     }
 
@@ -249,11 +274,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
-            let mut requests = self.batch().lock().unwrap().clone();
-            requests.extend(self.batch_end().lock().unwrap().values().cloned());
+            let mut requests = self.batch().read().await.clone();
+            requests.extend(self.batch_end().read().await.values().cloned());
             requests
         } else {
-            self.batch().lock().unwrap().clone()
+            self.batch().read().await.clone()
         };
 
         // Return early if we have no commands to send.
@@ -304,10 +329,27 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }
         }
 
+        // Do the artifact commands.
+        for (req, _) in all_requests.iter() {
+            match &req {
+                WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
+                    for request in requests {
+                        self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
+                            .await?;
+                    }
+                }
+                WebSocketRequest::ModelingCmdReq(request) => {
+                    self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
+                        .await?;
+                }
+                _ => {}
+            }
+        }
+
         // Throw away the old batch queue.
-        self.batch().lock().unwrap().clear();
+        self.batch().write().await.clear();
         if batch_end {
-            self.batch_end().lock().unwrap().clear();
+            self.batch_end().write().await.clear();
         }
 
         // We pop off the responses to cleanup our mappings.
@@ -596,7 +638,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     /// Get session data, if it has been received.
     /// Returns None if the server never sent it.
-    fn get_session_data(&self) -> Option<ModelingSessionData> {
+    async fn get_session_data(&self) -> Option<ModelingSessionData> {
         None
     }
 

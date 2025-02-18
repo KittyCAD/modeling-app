@@ -1,9 +1,6 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -17,6 +14,7 @@ use kcmc::{
     ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
+use tokio::sync::RwLock;
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
@@ -54,11 +52,11 @@ extern "C" {
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
-    batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
-    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
-    responses: Arc<Mutex<IndexMap<Uuid, WebSocketResponse>>>,
-    artifact_commands: Arc<Mutex<Vec<ArtifactCommand>>>,
-    execution_kind: Arc<Mutex<ExecutionKind>>,
+    batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
+    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
+    artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
+    execution_kind: Arc<RwLock<ExecutionKind>>,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -70,46 +68,22 @@ impl EngineConnection {
         #[allow(clippy::arc_with_non_send_sync)]
         Ok(EngineConnection {
             manager: Arc::new(manager),
-            batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(IndexMap::new())),
-            responses: Arc::new(Mutex::new(IndexMap::new())),
-            artifact_commands: Arc::new(Mutex::new(Vec::new())),
+            batch: Arc::new(RwLock::new(Vec::new())),
+            batch_end: Arc::new(RwLock::new(IndexMap::new())),
+            responses: Arc::new(RwLock::new(IndexMap::new())),
+            artifact_commands: Arc::new(RwLock::new(Vec::new())),
             execution_kind: Default::default(),
         })
     }
 }
 
-impl EngineConnection {
-    fn handle_command(
-        &self,
-        cmd: &ModelingCmd,
-        cmd_id: ModelingCmdId,
-        id_to_source_range: &HashMap<Uuid, SourceRange>,
-    ) -> Result<(), KclError> {
-        let cmd_id = *cmd_id.as_ref();
-        let range = id_to_source_range
-            .get(&cmd_id)
-            .copied()
-            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
-
-        // Add artifact command.
-        let mut artifact_commands = self.artifact_commands.lock().unwrap();
-        artifact_commands.push(ArtifactCommand {
-            cmd_id,
-            range,
-            command: cmd.clone(),
-        });
-        Ok(())
-    }
-}
-
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>> {
+    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
+    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
     }
 
@@ -118,18 +92,22 @@ impl crate::engine::EngineManager for EngineConnection {
         responses.clone()
     }
 
-    fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
-        let mut artifact_commands = self.artifact_commands.lock().unwrap();
+    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
+        self.artifact_commands.clone()
+    }
+
+    async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
+        let mut artifact_commands = self.artifact_commands.read().await;
         std::mem::take(&mut *artifact_commands)
     }
 
-    fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.lock().unwrap();
+    async fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.read().await;
         *guard
     }
 
-    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.lock().unwrap();
+    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.write().await;
         let original = *guard;
         *guard = execution_kind;
         original
@@ -214,18 +192,6 @@ impl crate::engine::EngineManager for EngineConnection {
         cmd: WebSocketRequest,
         id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
-        match &cmd {
-            WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
-                for request in requests {
-                    self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
-                }
-            }
-            WebSocketRequest::ModelingCmdReq(request) => {
-                self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
-            }
-            _ => {}
-        }
-
         // In isolated mode, we don't send the command to the engine.
         if self.execution_kind().is_isolated() {
             return match &cmd {

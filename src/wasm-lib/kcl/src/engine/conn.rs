@@ -1,10 +1,7 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::{anyhow, Result};
 use dashmap::DashMap;
@@ -17,9 +14,7 @@ use kcmc::{
     },
     ModelingCmd,
 };
-use kittycad_modeling_cmds::{
-    self as kcmc, id::ModelingCmdId, ok_response::OkModelingCmdResponse, websocket::ModelingBatch,
-};
+use kittycad_modeling_cmds::{self as kcmc, ok_response::OkModelingCmdResponse, websocket::ModelingBatch};
 use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
@@ -44,20 +39,20 @@ pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     shutdown_tx: mpsc::Sender<()>,
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
-    pending_errors: Arc<Mutex<Vec<String>>>,
+    pending_errors: Arc<RwLock<Vec<String>>>,
     #[allow(dead_code)]
     tcp_read_handle: Arc<TcpReadHandle>,
-    socket_health: Arc<Mutex<SocketHealth>>,
-    batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
-    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
-    artifact_commands: Arc<Mutex<Vec<ArtifactCommand>>>,
+    socket_health: Arc<RwLock<SocketHealth>>,
+    batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
+    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     /// If the server sends session data, it'll be copied to here.
-    session_data: Arc<Mutex<Option<ModelingSessionData>>>,
+    session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
-    execution_kind: Arc<Mutex<ExecutionKind>>,
+    execution_kind: Arc<RwLock<ExecutionKind>>,
 }
 
 pub struct TcpRead {
@@ -230,12 +225,12 @@ impl EngineConnection {
 
         let mut tcp_read = TcpRead { stream: tcp_read };
 
-        let session_data: Arc<Mutex<Option<ModelingSessionData>>> = Arc::new(Mutex::new(None));
+        let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
         let session_data2 = session_data.clone();
         let responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>> = Arc::new(DashMap::new());
         let responses_clone = responses.clone();
-        let socket_health = Arc::new(Mutex::new(SocketHealth::Active));
-        let pending_errors = Arc::new(Mutex::new(Vec::new()));
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let pending_errors = Arc::new(RwLock::new(Vec::new()));
         let pending_errors_clone = pending_errors.clone();
 
         let socket_health_tcp_read = socket_health.clone();
@@ -288,7 +283,7 @@ impl EngineConnection {
                                 resp: OkWebSocketResponseData::ModelingSessionData { session },
                                 ..
                             }) => {
-                                let mut sd = session_data2.lock().unwrap();
+                                let mut sd = session_data2.write().await;
                                 sd.replace(session.clone());
                             }
                             WebSocketResponse::Failure(FailureWebSocketResponse {
@@ -307,12 +302,13 @@ impl EngineConnection {
                                     );
                                 } else {
                                     // Add it to our pending errors.
-                                    let mut pe = pending_errors_clone.lock().unwrap();
+                                    let mut pe = pending_errors_clone.write().await;
                                     for error in errors {
                                         if !pe.contains(&error.message) {
                                             pe.push(error.message.clone());
                                         }
                                     }
+                                    drop(pe);
                                 }
                             }
                             _ => {}
@@ -327,7 +323,7 @@ impl EngineConnection {
                             WebSocketReadError::Read(e) => crate::logln!("could not read from WS: {:?}", e),
                             WebSocketReadError::Deser(e) => crate::logln!("could not deserialize msg from WS: {:?}", e),
                         }
-                        *socket_health_tcp_read.lock().unwrap() = SocketHealth::Inactive;
+                        *socket_health_tcp_read.write().await = SocketHealth::Inactive;
                         return Err(e);
                     }
                 }
@@ -343,45 +339,23 @@ impl EngineConnection {
             responses,
             pending_errors,
             socket_health,
-            batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(IndexMap::new())),
-            artifact_commands: Arc::new(Mutex::new(Vec::new())),
+            batch: Arc::new(RwLock::new(Vec::new())),
+            batch_end: Arc::new(RwLock::new(IndexMap::new())),
+            artifact_commands: Arc::new(RwLock::new(Vec::new())),
             default_planes: Default::default(),
             session_data,
             execution_kind: Default::default(),
         })
     }
-
-    fn handle_command(
-        &self,
-        cmd: &ModelingCmd,
-        cmd_id: ModelingCmdId,
-        id_to_source_range: &HashMap<Uuid, SourceRange>,
-    ) -> Result<(), KclError> {
-        let cmd_id = *cmd_id.as_ref();
-        let range = id_to_source_range
-            .get(&cmd_id)
-            .copied()
-            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
-
-        // Add artifact command.
-        let mut artifact_commands = self.artifact_commands.lock().unwrap();
-        artifact_commands.push(ArtifactCommand {
-            cmd_id,
-            range,
-            command: cmd.clone(),
-        });
-        Ok(())
-    }
 }
 
 #[async_trait::async_trait]
 impl EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>> {
+    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
+    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
     }
 
@@ -395,18 +369,17 @@ impl EngineManager for EngineConnection {
             .collect()
     }
 
-    fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
-        let mut artifact_commands = self.artifact_commands.lock().unwrap();
-        std::mem::take(&mut *artifact_commands)
+    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
+        self.artifact_commands.clone()
     }
 
-    fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.lock().unwrap();
+    async fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.read().await;
         *guard
     }
 
-    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.lock().unwrap();
+    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.write().await;
         let original = *guard;
         *guard = execution_kind;
         original
@@ -447,22 +420,10 @@ impl EngineManager for EngineConnection {
         id: uuid::Uuid,
         source_range: SourceRange,
         cmd: WebSocketRequest,
-        id_to_source_range: HashMap<Uuid, SourceRange>,
+        _id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
-        match &cmd {
-            WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
-                for request in requests {
-                    self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
-                }
-            }
-            WebSocketRequest::ModelingCmdReq(request) => {
-                self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
-            }
-            _ => {}
-        }
-
         // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().is_isolated() {
+        if self.execution_kind().await.is_isolated() {
             return match &cmd {
                 WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
                     let mut responses = HashMap::with_capacity(requests.len());
@@ -524,21 +485,20 @@ impl EngineManager for EngineConnection {
         // Wait for the response.
         let current_time = std::time::Instant::now();
         while current_time.elapsed().as_secs() < 60 {
-            if let Ok(guard) = self.socket_health.lock() {
-                if *guard == SocketHealth::Inactive {
-                    // Check if we have any pending errors.
-                    let pe = self.pending_errors.lock().unwrap();
-                    if !pe.is_empty() {
-                        return Err(KclError::Engine(KclErrorDetails {
-                            message: pe.join(", ").to_string(),
-                            source_ranges: vec![source_range],
-                        }));
-                    } else {
-                        return Err(KclError::Engine(KclErrorDetails {
-                            message: "Modeling command failed: websocket closed early".to_string(),
-                            source_ranges: vec![source_range],
-                        }));
-                    }
+            let guard = self.socket_health.read().await;
+            if *guard == SocketHealth::Inactive {
+                // Check if we have any pending errors.
+                let pe = self.pending_errors.read().await;
+                if !pe.is_empty() {
+                    return Err(KclError::Engine(KclErrorDetails {
+                        message: pe.join(", ").to_string(),
+                        source_ranges: vec![source_range],
+                    }));
+                } else {
+                    return Err(KclError::Engine(KclErrorDetails {
+                        message: "Modeling command failed: websocket closed early".to_string(),
+                        source_ranges: vec![source_range],
+                    }));
                 }
             }
             // We pop off the responses to cleanup our mappings.
@@ -553,17 +513,16 @@ impl EngineManager for EngineConnection {
         }))
     }
 
-    fn get_session_data(&self) -> Option<ModelingSessionData> {
-        self.session_data.lock().unwrap().clone()
+    async fn get_session_data(&self) -> Option<ModelingSessionData> {
+        self.session_data.read().await.clone()
     }
 
     async fn close(&self) {
         let _ = self.shutdown_tx.send(()).await;
         loop {
-            if let Ok(guard) = self.socket_health.lock() {
-                if *guard == SocketHealth::Inactive {
-                    return;
-                }
+            let guard = self.socket_health.read().await;
+            if *guard == SocketHealth::Inactive {
+                return;
             }
         }
     }
