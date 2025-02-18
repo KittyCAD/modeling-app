@@ -484,8 +484,8 @@ impl ExecutorContext {
     }
 
     /// Returns true if we should not send engine commands for any reason.
-    pub fn no_engine_commands(&self) -> bool {
-        self.is_mock() || self.engine.execution_kind().is_isolated()
+    pub async fn no_engine_commands(&self) -> bool {
+        self.is_mock() || self.engine.execution_kind().await.is_isolated()
     }
 
     pub async fn send_clear_scene(
@@ -713,7 +713,7 @@ impl ExecutorContext {
             "Post interpretation KCL memory stats: {:#?}",
             exec_state.memory().stats
         ));
-        let session_data = self.engine.get_session_data();
+        let session_data = self.engine.get_session_data().await;
         Ok(session_data)
     }
 
@@ -734,8 +734,11 @@ impl ExecutorContext {
         exec_state
             .global
             .artifact_commands
-            .extend(self.engine.take_artifact_commands());
-        exec_state.global.artifact_responses.extend(self.engine.responses());
+            .extend(self.engine.take_artifact_commands().await);
+        exec_state
+            .global
+            .artifact_responses
+            .extend(self.engine.take_responses().await);
         // Build the artifact graph.
         match build_artifact_graph(
             &exec_state.global.artifact_commands,
