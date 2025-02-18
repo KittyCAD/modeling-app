@@ -82,7 +82,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
   if (!newWindow) {
     newWindow = new BrowserWindow({
-      autoHideMenuBar: true,
+      autoHideMenuBar: false,
       show: false,
       width: 1800,
       height: 1200,
