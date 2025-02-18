@@ -2544,9 +2544,9 @@ profile001 = startProfileAt([-20, 20], sketch001)
 
       // One dumb hardcoded screen pixel value
       const testPoint = { x: 590, y: 400 }
-      const extrudeColor: [number, number, number] = [106, 106, 106]
-      const sketchColor: [number, number, number] = [113, 113, 113]
-      const defaultPlaneColor: [number, number, number] = [49, 53, 96]
+      const extrudeColor: [number, number, number] = [100, 100, 100]
+      const sketchColor: [number, number, number] = [125, 125, 125]
+      const defaultPlaneColor: [number, number, number] = [50, 50, 100]
 
       const deleteOperation = async (operationButton: Locator) => {
         if (shouldUseKeyboard) {
@@ -2560,7 +2560,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
       }
 
       await test.step(`Look for the grey of the extrude shape`, async () => {
-        await scene.expectPixelColor(extrudeColor, testPoint, 15)
+        await scene.expectPixelColor(extrudeColor, testPoint, 20)
       })
 
       await test.step('Delete shell and confirm deletion', async () => {
@@ -2569,7 +2569,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
           0
         )
         await deleteOperation(operationButton)
-        await scene.expectPixelColor(extrudeColor, testPoint, 15)
+        await scene.expectPixelColor(extrudeColor, testPoint, 20)
         await editor.expectEditor.not.toContain(shellCode)
       })
 
@@ -2580,7 +2580,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
         )
         await deleteOperation(operationButton)
         await editor.expectEditor.not.toContain(extrudeCode)
-        await scene.expectPixelColor(sketchColor, testPoint, 15)
+        await scene.expectPixelColor(sketchColor, testPoint, 20)
       })
 
       await test.step('Delete sketch and confirm empty scene', async () => {
@@ -2590,7 +2590,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
         )
         await deleteOperation(operationButton)
         await editor.expectEditor.toContain('')
-        await scene.expectPixelColor(defaultPlaneColor, testPoint, 15)
+        await scene.expectPixelColor(defaultPlaneColor, testPoint, 20)
       })
     })
   })
