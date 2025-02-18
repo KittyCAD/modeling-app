@@ -93,11 +93,6 @@ impl crate::engine::EngineManager for EngineConnection {
         self.artifact_commands.clone()
     }
 
-    async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
-        let mut artifact_commands = self.artifact_commands.read().await;
-        std::mem::take(&mut *artifact_commands)
-    }
-
     async fn execution_kind(&self) -> ExecutionKind {
         let guard = self.execution_kind.read().await;
         *guard
@@ -190,7 +185,7 @@ impl crate::engine::EngineManager for EngineConnection {
         id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().is_isolated() {
+        if self.execution_kind().await.is_isolated() {
             return match &cmd {
                 WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
                     let mut responses = HashMap::with_capacity(requests.len());
@@ -269,8 +264,7 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        let mut responses = self.responses.lock().unwrap();
-        responses.insert(id, ws_result.clone());
+        self.responses.write().await.insert(id, ws_result.clone());
 
         Ok(ws_result)
     }

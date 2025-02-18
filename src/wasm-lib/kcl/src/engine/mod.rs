@@ -82,6 +82,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         std::mem::take(&mut *self.artifact_commands().write().await)
     }
 
+    /// Take the responses that have accumulated so far and clear them.
+    async fn take_responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
+        std::mem::take(&mut *self.responses().write().await)
+    }
+
     /// Get the current execution kind.
     async fn execution_kind(&self) -> ExecutionKind;
 
