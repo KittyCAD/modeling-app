@@ -31,12 +31,16 @@ export function addShell({
   selection,
   artifactGraph,
   thickness,
+  insertIndex,
+  variableName,
   dependencies,
 }: {
   node: Node<Program>
   selection: Selections
   artifactGraph: ArtifactGraph
   thickness: Expr
+  insertIndex?: number
+  variableName?: string
   dependencies: {
     kclManager: KclManager
     engineCommandManager: EngineCommandManager
@@ -122,7 +126,8 @@ export function addShell({
     return extrudeNode
   }
 
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
   const shell = createCallExpressionStdLibKw(
     'shell',
     createIdentifier(extrudeNode.node.id.name),
@@ -131,13 +136,22 @@ export function addShell({
       createLabeledArg('thickness', thickness),
     ]
   )
-  const declaration = createVariableDeclaration(name, shell)
+  const variable = createVariableDeclaration(name, shell)
 
-  // TODO: check if we should append at the end like here or right after the extrude
-  modifiedAst.body.push(declaration)
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length
+      : 0
+
+  modifiedAst.body.length
+    ? modifiedAst.body.splice(insertAt, 0, variable)
+    : modifiedAst.body.push(variable)
+
   const pathToNode: PathToNode = [
     ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
+    [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['unlabeled', 'CallExpressionKw'],

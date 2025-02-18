@@ -116,6 +116,90 @@ const prepareToEditExtrude: PrepareToEditCallback =
     }
   }
 
+/**
+ * Gather up the argument values for the Extrude command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditShell: PrepareToEditCallback =
+  async function prepareToEditShell({ operation, artifact }) {
+    const baseCommand = {
+      name: 'Shell',
+      groupId: 'modeling',
+    }
+    console.log('ag', engineCommandManager.artifactGraph)
+    console.log('artifact', artifact)
+    console.log('operation', operation)
+    if (
+      !artifact ||
+      !('pathId' in artifact) ||
+      operation.type !== 'StdLibCall'
+    ) {
+      return baseCommand
+    }
+
+    // We have to go a little roundabout to get from the original artifact
+    // to the solid2DId that we need to pass to the Extrude command.
+    const pathArtifact = getArtifactOfTypes(
+      {
+        key: artifact.pathId,
+        types: ['path'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (
+      err(pathArtifact) ||
+      pathArtifact.type !== 'path' ||
+      !pathArtifact.solid2dId
+    )
+      return baseCommand
+    const solid2DArtifact = getArtifactOfTypes(
+      {
+        key: pathArtifact.solid2dId,
+        types: ['solid2d'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+      return baseCommand
+    }
+
+    // Convert the thickness argument from a string to a KCL expression
+    const thickness = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['thickness']?.sourceRange[0],
+        operation.labeledArgs?.['thickness']?.sourceRange[1]
+      ),
+      {}
+    )
+    if (err(thickness) || 'errors' in thickness) {
+      return baseCommand
+    }
+
+    // Assemble the default argument values for the Extrude command,
+    // with `nodeToEdit` set, which will let the Extrude actor know
+    // to edit the node that corresponds to the StdLibCall.
+    const argDefaultValues: ModelingCommandSchema['Shell'] = {
+      thickness,
+      selection: {
+        graphSelections: [
+          {
+            artifact: solid2DArtifact,
+            codeRef: pathArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      nodeToEdit: getNodePathFromSourceRange(
+        kclManager.ast,
+        sourceRangeFromRust(operation.sourceRange)
+      ),
+    }
+    return {
+      ...baseCommand,
+      argDefaultValues,
+    }
+  }
+
 const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   operation,
 }) => {
@@ -257,6 +341,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   shell: {
     label: 'Shell',
     icon: 'shell',
+    prepareToEdit: prepareToEditShell,
   },
   startSketchOn: {
     label: 'Sketch',
