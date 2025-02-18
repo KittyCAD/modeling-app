@@ -1,12 +1,12 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
-use super::types::{DefaultParamVal, ItemVisibility, LabelledExpression, LiteralValue, VariableKind};
 use crate::parsing::ast::types::{
-    Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression,
-    CallExpressionKw, ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression,
-    ImportItem, ImportSelector, ImportStatement, KclNone, Literal, LiteralIdentifier, MemberExpression, MemberObject,
-    ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
-    TagDeclarator, UnaryExpression, VariableDeclaration, VariableDeclarator,
+    Annotation, ArrayExpression, ArrayRangeExpression, Ascription, BinaryExpression, BinaryPart, BodyItem,
+    CallExpression, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression,
+    Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
+    Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, ObjectExpression, ObjectProperty,
+    Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator, Type, UnaryExpression,
+    VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -142,6 +142,7 @@ impl Expr {
             Expr::UnaryExpression(ue) => ue.compute_digest(),
             Expr::IfExpression(e) => e.compute_digest(),
             Expr::LabelledExpression(e) => e.compute_digest(),
+            Expr::AscribedExpression(e) => e.compute_digest(),
             Expr::None(_) => {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
@@ -183,20 +184,20 @@ impl LiteralIdentifier {
         }
     }
 }
-impl FnArgType {
+impl Type {
     pub fn compute_digest(&mut self) -> Digest {
         let mut hasher = Sha256::new();
 
         match self {
-            FnArgType::Primitive(prim) => {
+            Type::Primitive(prim) => {
                 hasher.update(b"FnArgType::Primitive");
                 hasher.update(prim.digestable_id())
             }
-            FnArgType::Array(prim) => {
+            Type::Array(prim) => {
                 hasher.update(b"FnArgType::Array");
                 hasher.update(prim.digestable_id())
             }
-            FnArgType::Object { properties } => {
+            Type::Object { properties } => {
                 hasher.update(b"FnArgType::Object");
                 hasher.update(properties.len().to_ne_bytes());
                 for prop in properties.iter_mut() {
@@ -406,6 +407,13 @@ impl LabelledExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.expr.compute_digest());
         hasher.update(slf.label.compute_digest());
+    });
+}
+
+impl Ascription {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.expr.compute_digest());
+        hasher.update(slf.ty.compute_digest());
     });
 }
 
