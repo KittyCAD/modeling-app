@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -24,22 +21,20 @@ const NEED_PLANES: bool = true;
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>>,
-    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
-    core_test: Arc<Mutex<String>>,
+    batch: Arc<RwLock<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>>,
+    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
+    core_test: Arc<RwLock<String>>,
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
-    execution_kind: Arc<Mutex<ExecutionKind>>,
+    execution_kind: Arc<RwLock<ExecutionKind>>,
 }
 
 impl EngineConnection {
-    pub async fn new(result: Arc<Mutex<String>>) -> Result<EngineConnection> {
-        if let Ok(mut code) = result.lock() {
-            code.push_str(CPP_PREFIX);
-        }
+    pub async fn new(result: Arc<RwLock<String>>) -> Result<EngineConnection> {
+        result.write().await.push_str(CPP_PREFIX);
 
         Ok(EngineConnection {
-            batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(IndexMap::new())),
+            batch: Arc::new(RwLock::new(Vec::new())),
+            batch_end: Arc::new(RwLock::new(IndexMap::new())),
             core_test: result,
             default_planes: Default::default(),
             execution_kind: Default::default(),
@@ -362,11 +357,11 @@ fn codegen_cpp_repl_uuid_setters(reps_id: &str, entity_ids: &[uuid::Uuid]) -> St
 
 #[async_trait::async_trait]
 impl kcl_lib::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>> {
+    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>> {
         self.batch_end.clone()
     }
 
@@ -374,17 +369,17 @@ impl kcl_lib::EngineManager for EngineConnection {
         IndexMap::new()
     }
 
-    fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
-        Vec::new()
+    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
+        Arc::new(RwLock::new(Vec::new()))
     }
 
-    fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.lock().unwrap();
+    async fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.read().await;
         *guard
     }
 
-    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.lock().unwrap();
+    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.write().await;
         let original = *guard;
         *guard = execution_kind;
         original
@@ -435,24 +430,18 @@ impl kcl_lib::EngineManager for EngineConnection {
             }) => {
                 let mut responses = HashMap::new();
                 for request in requests {
-                    let (new_code, this_response);
+                    let (new_code, this_response) = self.handle_command(&request.cmd_id, &request.cmd);
 
-                    if let Ok(mut test_code) = self.core_test.lock() {
-                        (new_code, this_response) = self.handle_command(&request.cmd_id, &request.cmd);
-
-                        if !new_code.is_empty() {
-                            let new_code = new_code
-                                .trim()
-                                .split(' ')
-                                .filter(|s| !s.is_empty())
-                                .collect::<Vec<_>>()
-                                .join(" ")
-                                + "\n";
-                            //println!("{new_code}");
-                            test_code.push_str(&new_code);
-                        }
-                    } else {
-                        this_response = OkModelingCmdResponse::Empty {};
+                    if !new_code.is_empty() {
+                        let new_code = new_code
+                            .trim()
+                            .split(' ')
+                            .filter(|s| !s.is_empty())
+                            .collect::<Vec<_>>()
+                            .join(" ")
+                            + "\n";
+                        //println!("{new_code}");
+                        self.core_test.write().await.push_str(&new_code);
                     }
 
                     responses.insert(
@@ -470,24 +459,18 @@ impl kcl_lib::EngineManager for EngineConnection {
             }
             WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd, cmd_id }) => {
                 //also handle unbatched requests inline
-                let (new_code, this_response);
+                let (new_code, this_response) = self.handle_command(&cmd_id, &cmd);
 
-                if let Ok(mut test_code) = self.core_test.lock() {
-                    (new_code, this_response) = self.handle_command(&cmd_id, &cmd);
-
-                    if !new_code.is_empty() {
-                        let new_code = new_code
-                            .trim()
-                            .split(' ')
-                            .filter(|s| !s.is_empty())
-                            .collect::<Vec<_>>()
-                            .join(" ")
-                            + "\n";
-                        //println!("{new_code}");
-                        test_code.push_str(&new_code);
-                    }
-                } else {
-                    this_response = OkModelingCmdResponse::Empty {};
+                if !new_code.is_empty() {
+                    let new_code = new_code
+                        .trim()
+                        .split(' ')
+                        .filter(|s| !s.is_empty())
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                        + "\n";
+                    //println!("{new_code}");
+                    self.core_test.write().await.push_str(&new_code);
                 }
 
                 Ok(WebSocketResponse::Success(kcmc::websocket::SuccessWebSocketResponse {

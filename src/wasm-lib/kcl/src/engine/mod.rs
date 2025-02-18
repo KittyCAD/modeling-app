@@ -131,7 +131,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Ensure artifact commands are cleared so that we don't accumulate them
         // across runs.
-        self.clear_artifact_commands();
+        self.clear_artifact_commands().await;
 
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
