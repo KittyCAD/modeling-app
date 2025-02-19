@@ -28,6 +28,7 @@ import {
 } from './commandLineArgs'
 
 import * as packageJSON from '../package.json'
+import { IS_PLAYWRIGHT_KEY } from '../e2e/playwright/storageStates'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -437,7 +438,8 @@ const getProjectPathAtStartup = async (
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+  // aka Forge for yarn tron:start live dev or playwright tests, but not dev packaged apps
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT_KEY) {
     return null
   }
 
