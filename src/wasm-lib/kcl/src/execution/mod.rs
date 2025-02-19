@@ -30,7 +30,9 @@ use crate::{
     CompilationError, ExecError, ExecutionKind, KclErrorWithOutputs,
 };
 
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+pub use artifact::{
+    Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane,
+};
 pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
 pub use geometry::*;
