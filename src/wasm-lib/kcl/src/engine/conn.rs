@@ -13,7 +13,7 @@ use kcmc::{
     },
     ModelingCmd,
 };
-use kittycad_modeling_cmds::{self as kcmc, ok_response::OkModelingCmdResponse, websocket::ModelingBatch};
+use kittycad_modeling_cmds::{self as kcmc};
 use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
@@ -415,35 +415,6 @@ impl EngineManager for EngineConnection {
         cmd: WebSocketRequest,
         _id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return match &cmd {
-                WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
-                    let mut responses = HashMap::with_capacity(requests.len());
-                    for request in requests {
-                        responses.insert(
-                            request.cmd_id,
-                            BatchResponse::Success {
-                                response: OkModelingCmdResponse::Empty {},
-                            },
-                        );
-                    }
-                    Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
-                        request_id: Some(id),
-                        resp: OkWebSocketResponseData::ModelingBatch { responses },
-                        success: true,
-                    }))
-                }
-                _ => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
-                    request_id: Some(id),
-                    resp: OkWebSocketResponseData::Modeling {
-                        modeling_response: OkModelingCmdResponse::Empty {},
-                    },
-                    success: true,
-                })),
-            };
-        }
-
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
