@@ -88,7 +88,10 @@ description: Variables in memory after executing circle_three_point.kcl
               30.0059,
               19.75
             ],
-            "type": "CircleThreePoint"
+            "type": "CircleThreePoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -130,6 +133,9 @@ description: Variables in memory after executing circle_three_point.kcl
             30.00594901040716,
             19.749999999999996
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

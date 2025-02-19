@@ -136,7 +136,10 @@ description: Variables in memory after executing angled_line.kcl
               19.93,
               15.04
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -161,7 +164,10 @@ description: Variables in memory after executing angled_line.kcl
               23.08,
               5.19
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -181,7 +187,10 @@ description: Variables in memory after executing angled_line.kcl
               7.91,
               1.09
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -201,7 +210,10 @@ description: Variables in memory after executing angled_line.kcl
               11.6718,
               -10.6731
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -221,7 +233,10 @@ description: Variables in memory after executing angled_line.kcl
               -1.3482,
               -0.6431
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -241,7 +256,10 @@ description: Variables in memory after executing angled_line.kcl
               4.83,
               12.56
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -283,6 +301,9 @@ description: Variables in memory after executing angled_line.kcl
             4.83,
             12.56
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -324,7 +345,10 @@ description: Variables in memory after executing angled_line.kcl
                   23.08,
                   5.190000000000001
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -417,7 +441,10 @@ description: Variables in memory after executing angled_line.kcl
           23.08,
           5.190000000000001
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",

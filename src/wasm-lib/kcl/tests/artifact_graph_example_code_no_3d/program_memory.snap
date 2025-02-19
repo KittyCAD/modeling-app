@@ -66,7 +66,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           -5.719999999999999,
           0.0000000000000014132424062160455
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": null
     },
@@ -111,7 +114,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           -5.719999999999998,
           8.210000000000003
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": null
     },
@@ -156,7 +162,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           5.820000000000001,
           8.21
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": null
     },
@@ -199,7 +208,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             -5.72,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -224,7 +236,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             -5.72,
             8.21
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -249,7 +264,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             5.82,
             8.21
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -269,7 +287,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             5.82,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -289,7 +310,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             5.82,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -331,6 +355,9 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           5.82,
           0.0
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -372,7 +399,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
                 -5.719999999999999,
                 0.0000000000000014132424062160455
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": null
           },
@@ -416,7 +446,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
                 -5.719999999999998,
                 8.210000000000003
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": null
           },
@@ -460,7 +493,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
                 5.820000000000001,
                 8.21
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": null
           },
@@ -515,7 +551,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             15.49,
             14.41
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -540,7 +579,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0,
             0.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -565,7 +607,10 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             -6.8,
             8.17
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -607,6 +652,9 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           0.0,
           14.36
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",

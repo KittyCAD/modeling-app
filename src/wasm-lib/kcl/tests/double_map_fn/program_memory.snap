@@ -111,7 +111,8 @@ description: Variables in memory after executing double_map_fn.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -127,7 +128,8 @@ description: Variables in memory after executing double_map_fn.kcl
         "type": "Number",
         "value": 1.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -143,7 +145,8 @@ description: Variables in memory after executing double_map_fn.kcl
         "type": "Number",
         "value": 2.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {

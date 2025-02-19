@@ -115,7 +115,10 @@ description: Variables in memory after executing tan_arc_x_line.kcl
           -1.8460007498427018,
           0.08059905810765156
         ],
-        "type": "TangentialArc"
+        "type": "TangentialArc",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": null
     },
@@ -165,7 +168,10 @@ description: Variables in memory after executing tan_arc_x_line.kcl
           -1.2218367846615423,
           -0.6005563831556522
         ],
-        "type": "TangentialArc"
+        "type": "TangentialArc",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": null
     },
@@ -215,7 +221,10 @@ description: Variables in memory after executing tan_arc_x_line.kcl
           -0.5976728194803829,
           -1.281711824418956
         ],
-        "type": "TangentialArc"
+        "type": "TangentialArc",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": null
     },

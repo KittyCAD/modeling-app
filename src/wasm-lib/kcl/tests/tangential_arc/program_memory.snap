@@ -98,7 +98,10 @@ description: Variables in memory after executing tangential_arc.kcl
               0.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -123,7 +126,10 @@ description: Variables in memory after executing tangential_arc.kcl
               -5.0,
               15.0
             ],
-            "type": "TangentialArc"
+            "type": "TangentialArc",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -143,7 +149,10 @@ description: Variables in memory after executing tangential_arc.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -185,6 +194,9 @@ description: Variables in memory after executing tangential_arc.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

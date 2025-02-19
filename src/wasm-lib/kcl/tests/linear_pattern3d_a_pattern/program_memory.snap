@@ -109,7 +109,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               2.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -129,7 +132,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               3.0,
               3.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -149,7 +155,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               3.0,
               -1.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -169,7 +178,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -211,6 +223,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -328,7 +343,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -348,7 +366,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -368,7 +389,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -388,7 +412,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -430,6 +457,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -543,7 +573,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -563,7 +596,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -583,7 +619,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -603,7 +642,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -645,6 +687,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -758,7 +803,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -778,7 +826,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -798,7 +849,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -818,7 +872,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -860,6 +917,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -973,7 +1033,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -993,7 +1056,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1013,7 +1079,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1033,7 +1102,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -1075,6 +1147,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -1188,7 +1263,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1208,7 +1286,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1228,7 +1309,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1248,7 +1332,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -1290,6 +1377,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -1403,7 +1493,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1423,7 +1516,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1443,7 +1539,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1463,7 +1562,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -1505,6 +1607,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -1618,7 +1723,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1638,7 +1746,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1658,7 +1769,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1678,7 +1792,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -1720,6 +1837,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -1838,7 +1958,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1858,7 +1981,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1878,7 +2004,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -1898,7 +2027,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -1940,6 +2072,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -2053,7 +2188,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2073,7 +2211,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2093,7 +2234,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2113,7 +2257,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -2155,6 +2302,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -2268,7 +2418,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2288,7 +2441,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2308,7 +2464,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2328,7 +2487,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -2370,6 +2532,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -2483,7 +2648,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2503,7 +2671,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2523,7 +2694,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2543,7 +2717,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -2585,6 +2762,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -2698,7 +2878,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2718,7 +2901,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2738,7 +2924,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2758,7 +2947,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -2800,6 +2992,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -2913,7 +3108,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2933,7 +3131,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2953,7 +3154,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -2973,7 +3177,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -3015,6 +3222,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3128,7 +3338,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3148,7 +3361,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3168,7 +3384,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3188,7 +3407,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -3230,6 +3452,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3343,7 +3568,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3363,7 +3591,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3383,7 +3614,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3403,7 +3637,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -3445,6 +3682,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3558,7 +3798,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3578,7 +3821,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3598,7 +3844,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3618,7 +3867,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -3660,6 +3912,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3773,7 +4028,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3793,7 +4051,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3813,7 +4074,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -3833,7 +4097,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -3875,6 +4142,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3988,7 +4258,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4008,7 +4281,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4028,7 +4304,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4048,7 +4327,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -4090,6 +4372,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -4203,7 +4488,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4223,7 +4511,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4243,7 +4534,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4263,7 +4557,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -4305,6 +4602,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -4418,7 +4718,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4438,7 +4741,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4458,7 +4764,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4478,7 +4787,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -4520,6 +4832,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -4633,7 +4948,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4653,7 +4971,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4673,7 +4994,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4693,7 +5017,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -4735,6 +5062,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -4848,7 +5178,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4868,7 +5201,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4888,7 +5224,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -4908,7 +5247,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -4950,6 +5292,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5063,7 +5408,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5083,7 +5431,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5103,7 +5454,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5123,7 +5477,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -5165,6 +5522,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5278,7 +5638,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5298,7 +5661,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5318,7 +5684,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5338,7 +5707,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -5380,6 +5752,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5493,7 +5868,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5513,7 +5891,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5533,7 +5914,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5553,7 +5937,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -5595,6 +5982,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5708,7 +6098,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5728,7 +6121,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5748,7 +6144,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5768,7 +6167,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -5810,6 +6212,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5923,7 +6328,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5943,7 +6351,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5963,7 +6374,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -5983,7 +6397,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -6025,6 +6442,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -6138,7 +6558,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6158,7 +6581,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6178,7 +6604,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6198,7 +6627,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -6240,6 +6672,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -6353,7 +6788,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6373,7 +6811,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6393,7 +6834,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6413,7 +6857,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -6455,6 +6902,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -6568,7 +7018,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6588,7 +7041,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6608,7 +7064,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6628,7 +7087,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -6670,6 +7132,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -6783,7 +7248,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6803,7 +7271,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6823,7 +7294,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -6843,7 +7317,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -6885,6 +7362,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -6998,7 +7478,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7018,7 +7501,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7038,7 +7524,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7058,7 +7547,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -7100,6 +7592,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -7213,7 +7708,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7233,7 +7731,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7253,7 +7754,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7273,7 +7777,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -7315,6 +7822,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -7428,7 +7938,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7448,7 +7961,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7468,7 +7984,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7488,7 +8007,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -7530,6 +8052,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -7643,7 +8168,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7663,7 +8191,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7683,7 +8214,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7703,7 +8237,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -7745,6 +8282,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -7858,7 +8398,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7878,7 +8421,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7898,7 +8444,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -7918,7 +8467,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -7960,6 +8512,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -8073,7 +8628,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8093,7 +8651,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8113,7 +8674,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8133,7 +8697,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -8175,6 +8742,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -8288,7 +8858,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8308,7 +8881,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8328,7 +8904,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8348,7 +8927,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -8390,6 +8972,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -8503,7 +9088,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8523,7 +9111,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8543,7 +9134,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8563,7 +9157,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -8605,6 +9202,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -8718,7 +9318,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8738,7 +9341,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8758,7 +9364,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8778,7 +9387,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -8820,6 +9432,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -8933,7 +9548,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8953,7 +9571,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8973,7 +9594,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -8993,7 +9617,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -9035,6 +9662,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -9148,7 +9778,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9168,7 +9801,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9188,7 +9824,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9208,7 +9847,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -9250,6 +9892,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -9363,7 +10008,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9383,7 +10031,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9403,7 +10054,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9423,7 +10077,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -9465,6 +10122,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -9578,7 +10238,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9598,7 +10261,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9618,7 +10284,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9638,7 +10307,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -9680,6 +10352,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -9793,7 +10468,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9813,7 +10491,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9833,7 +10514,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -9853,7 +10537,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -9895,6 +10582,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -10008,7 +10698,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10028,7 +10721,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10048,7 +10744,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10068,7 +10767,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -10110,6 +10812,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -10223,7 +10928,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10243,7 +10951,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10263,7 +10974,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10283,7 +10997,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -10325,6 +11042,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -10438,7 +11158,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10458,7 +11181,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10478,7 +11204,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10498,7 +11227,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -10540,6 +11272,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -10653,7 +11388,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10673,7 +11411,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10693,7 +11434,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10713,7 +11457,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -10755,6 +11502,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -10868,7 +11618,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10888,7 +11641,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10908,7 +11664,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -10928,7 +11687,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -10970,6 +11732,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -11083,7 +11848,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11103,7 +11871,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11123,7 +11894,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11143,7 +11917,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -11185,6 +11962,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -11298,7 +12078,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11318,7 +12101,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11338,7 +12124,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11358,7 +12147,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -11400,6 +12192,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -11513,7 +12308,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11533,7 +12331,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11553,7 +12354,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11573,7 +12377,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -11615,6 +12422,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -11728,7 +12538,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11748,7 +12561,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11768,7 +12584,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11788,7 +12607,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -11830,6 +12652,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -11943,7 +12768,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11963,7 +12791,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -11983,7 +12814,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -12003,7 +12837,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -12045,6 +12882,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -12158,7 +12998,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 2.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -12178,7 +13021,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 3.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -12198,7 +13044,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 3.0,
                 -1.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             {
               "__geoMeta": {
@@ -12218,7 +13067,10 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -12260,6 +13112,9 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0,
               0.0
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",

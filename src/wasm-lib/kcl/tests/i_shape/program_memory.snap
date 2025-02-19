@@ -59,7 +59,10 @@ description: Variables in memory after executing i_shape.kcl
             68.4,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -84,7 +87,10 @@ description: Variables in memory after executing i_shape.kcl
             73.4,
             5.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -104,7 +110,10 @@ description: Variables in memory after executing i_shape.kcl
             73.4,
             25.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -129,7 +138,10 @@ description: Variables in memory after executing i_shape.kcl
             68.4,
             30.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -149,7 +161,10 @@ description: Variables in memory after executing i_shape.kcl
             55.6,
             30.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -174,7 +189,10 @@ description: Variables in memory after executing i_shape.kcl
             50.6,
             35.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -194,7 +212,10 @@ description: Variables in memory after executing i_shape.kcl
             50.6,
             97.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -219,7 +240,10 @@ description: Variables in memory after executing i_shape.kcl
             55.6,
             102.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -239,7 +263,10 @@ description: Variables in memory after executing i_shape.kcl
             60.6,
             102.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -264,7 +291,10 @@ description: Variables in memory after executing i_shape.kcl
             65.6,
             107.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -284,7 +314,10 @@ description: Variables in memory after executing i_shape.kcl
             65.6,
             125.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -309,7 +342,10 @@ description: Variables in memory after executing i_shape.kcl
             60.6,
             130.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -329,7 +365,10 @@ description: Variables in memory after executing i_shape.kcl
             16.6,
             130.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -354,7 +393,10 @@ description: Variables in memory after executing i_shape.kcl
             11.6,
             125.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -374,7 +416,10 @@ description: Variables in memory after executing i_shape.kcl
             11.6,
             107.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -399,7 +444,10 @@ description: Variables in memory after executing i_shape.kcl
             16.6,
             102.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -419,7 +467,10 @@ description: Variables in memory after executing i_shape.kcl
             21.6,
             102.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -444,7 +495,10 @@ description: Variables in memory after executing i_shape.kcl
             26.6,
             97.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -464,7 +518,10 @@ description: Variables in memory after executing i_shape.kcl
             26.6,
             35.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -489,7 +546,10 @@ description: Variables in memory after executing i_shape.kcl
             21.6,
             30.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -509,7 +569,10 @@ description: Variables in memory after executing i_shape.kcl
             5.0,
             30.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -534,7 +597,10 @@ description: Variables in memory after executing i_shape.kcl
             0.0,
             25.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -554,7 +620,10 @@ description: Variables in memory after executing i_shape.kcl
             0.0,
             5.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -579,7 +648,10 @@ description: Variables in memory after executing i_shape.kcl
             5.0,
             0.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -599,7 +671,10 @@ description: Variables in memory after executing i_shape.kcl
             5.0,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -641,6 +716,9 @@ description: Variables in memory after executing i_shape.kcl
           5.0,
           0.0
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1085,7 +1163,10 @@ description: Variables in memory after executing i_shape.kcl
               68.4,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1110,7 +1191,10 @@ description: Variables in memory after executing i_shape.kcl
               73.4,
               5.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1130,7 +1214,10 @@ description: Variables in memory after executing i_shape.kcl
               73.4,
               25.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1155,7 +1242,10 @@ description: Variables in memory after executing i_shape.kcl
               68.4,
               30.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1175,7 +1265,10 @@ description: Variables in memory after executing i_shape.kcl
               55.6,
               30.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1200,7 +1293,10 @@ description: Variables in memory after executing i_shape.kcl
               50.6,
               35.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1220,7 +1316,10 @@ description: Variables in memory after executing i_shape.kcl
               50.6,
               97.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1245,7 +1344,10 @@ description: Variables in memory after executing i_shape.kcl
               55.6,
               102.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1265,7 +1367,10 @@ description: Variables in memory after executing i_shape.kcl
               60.6,
               102.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1290,7 +1395,10 @@ description: Variables in memory after executing i_shape.kcl
               65.6,
               107.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1310,7 +1418,10 @@ description: Variables in memory after executing i_shape.kcl
               65.6,
               125.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1335,7 +1446,10 @@ description: Variables in memory after executing i_shape.kcl
               60.6,
               130.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1355,7 +1469,10 @@ description: Variables in memory after executing i_shape.kcl
               16.6,
               130.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1380,7 +1497,10 @@ description: Variables in memory after executing i_shape.kcl
               11.6,
               125.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1400,7 +1520,10 @@ description: Variables in memory after executing i_shape.kcl
               11.6,
               107.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1425,7 +1548,10 @@ description: Variables in memory after executing i_shape.kcl
               16.6,
               102.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1445,7 +1571,10 @@ description: Variables in memory after executing i_shape.kcl
               21.6,
               102.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1470,7 +1599,10 @@ description: Variables in memory after executing i_shape.kcl
               26.6,
               97.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1490,7 +1622,10 @@ description: Variables in memory after executing i_shape.kcl
               26.6,
               35.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1515,7 +1650,10 @@ description: Variables in memory after executing i_shape.kcl
               21.6,
               30.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1535,7 +1673,10 @@ description: Variables in memory after executing i_shape.kcl
               5.0,
               30.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1560,7 +1701,10 @@ description: Variables in memory after executing i_shape.kcl
               0.0,
               25.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1580,7 +1724,10 @@ description: Variables in memory after executing i_shape.kcl
               0.0,
               5.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1605,7 +1752,10 @@ description: Variables in memory after executing i_shape.kcl
               5.0,
               0.0
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1625,7 +1775,10 @@ description: Variables in memory after executing i_shape.kcl
               5.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -1667,6 +1820,9 @@ description: Variables in memory after executing i_shape.kcl
             5.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1755,7 +1911,10 @@ description: Variables in memory after executing i_shape.kcl
             1.0,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1780,7 +1939,10 @@ description: Variables in memory after executing i_shape.kcl
             6.0,
             5.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1800,7 +1962,10 @@ description: Variables in memory after executing i_shape.kcl
             6.0,
             20.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1825,7 +1990,10 @@ description: Variables in memory after executing i_shape.kcl
             1.0,
             25.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1845,7 +2013,10 @@ description: Variables in memory after executing i_shape.kcl
             0.0,
             25.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1870,7 +2041,10 @@ description: Variables in memory after executing i_shape.kcl
             -5.0,
             20.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1890,7 +2064,10 @@ description: Variables in memory after executing i_shape.kcl
             -5.0,
             5.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1915,7 +2092,10 @@ description: Variables in memory after executing i_shape.kcl
             0.0,
             0.0
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1935,7 +2115,10 @@ description: Variables in memory after executing i_shape.kcl
             0.0,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -1977,6 +2160,9 @@ description: Variables in memory after executing i_shape.kcl
           0.0,
           0.0
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2029,7 +2215,13 @@ description: Variables in memory after executing i_shape.kcl
     "type": "Number",
     "value": 68.4,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
     "__meta": [
       {

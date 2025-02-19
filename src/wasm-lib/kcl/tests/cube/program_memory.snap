@@ -793,7 +793,10 @@ description: Variables in memory after executing cube.kcl
               -20.0,
               20.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -813,7 +816,10 @@ description: Variables in memory after executing cube.kcl
               20.0,
               20.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -833,7 +839,10 @@ description: Variables in memory after executing cube.kcl
               20.0,
               -20.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -853,7 +862,10 @@ description: Variables in memory after executing cube.kcl
               -20.0,
               -20.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -873,7 +885,10 @@ description: Variables in memory after executing cube.kcl
               -20.0,
               -20.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -915,6 +930,9 @@ description: Variables in memory after executing cube.kcl
             -20.0,
             -20.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
