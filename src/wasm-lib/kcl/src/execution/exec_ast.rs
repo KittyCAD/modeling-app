@@ -4,7 +4,6 @@ use async_recursion::async_recursion;
 use schemars::JsonSchema;
 
 use crate::{
-    engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
@@ -48,7 +47,7 @@ impl ExecutorContext {
                     let old_units = exec_state.length_unit();
                     exec_state.mod_local.settings.update_from_annotation(annotation)?;
                     let new_units = exec_state.length_unit();
-                    if !self.engine.execution_kind().await.is_isolated() && old_units != new_units {
+                    if old_units != new_units {
                         self.engine
                             .set_units(new_units.into(), annotation.as_source_range())
                             .await?;
@@ -113,9 +112,8 @@ impl ExecutorContext {
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
-                            let (env_ref, module_exports) = self
-                                .exec_module_for_items(module_id, exec_state, ExecutionKind::Isolated, source_range)
-                                .await?;
+                            let (env_ref, module_exports) =
+                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
                             for import_item in items {
                                 // Extract the item from the module.
                                 let item = exec_state
@@ -155,9 +153,8 @@ impl ExecutorContext {
                             }
                         }
                         ImportSelector::Glob(_) => {
-                            let (env_ref, module_exports) = self
-                                .exec_module_for_items(module_id, exec_state, ExecutionKind::Isolated, source_range)
-                                .await?;
+                            let (env_ref, module_exports) =
+                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
                             for name in module_exports.iter() {
                                 let item = exec_state
                                     .memory()
@@ -325,7 +322,6 @@ impl ExecutorContext {
         &self,
         module_id: ModuleId,
         exec_state: &mut ExecState,
-        exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<(EnvironmentRef, Vec<String>), KclError> {
         let path = exec_state.global.module_infos[&module_id].path.clone();
@@ -336,7 +332,7 @@ impl ExecutorContext {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
             ModuleRepr::Kcl(_, Some((env_ref, items))) => Ok((*env_ref, items.clone())),
             ModuleRepr::Kcl(program, cache) => self
-                .exec_module_from_ast(program, &path, exec_state, exec_kind, source_range)
+                .exec_module_from_ast(program, &path, exec_state, source_range)
                 .await
                 .map(|(_, er, items)| {
                     *cache = Some((er, items.clone()));
@@ -357,7 +353,6 @@ impl ExecutorContext {
         &self,
         module_id: ModuleId,
         exec_state: &mut ExecState,
-        exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
         let path = exec_state.global.module_infos[&module_id].path.clone();
@@ -367,7 +362,7 @@ impl ExecutorContext {
         let result = match &repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
             ModuleRepr::Kcl(program, _) => self
-                .exec_module_from_ast(program, &path, exec_state, exec_kind, source_range)
+                .exec_module_from_ast(program, &path, exec_state, source_range)
                 .await
                 .map(|(val, _, _)| val),
             ModuleRepr::Foreign(geom) => super::import::send_to_engine(geom.clone(), self)
@@ -385,7 +380,6 @@ impl ExecutorContext {
         program: &Node<Program>,
         path: &ModulePath,
         exec_state: &mut ExecState,
-        exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
         let old_units = exec_state.length_unit();
@@ -393,7 +387,6 @@ impl ExecutorContext {
         exec_state.global.mod_loader.enter_module(path);
         std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         exec_state.mut_memory().push_new_root_env();
-        let original_execution = self.engine.replace_execution_kind(exec_kind).await;
 
         let result = self
             .exec_program(program, exec_state, crate::execution::BodyType::Root)
@@ -403,10 +396,9 @@ impl ExecutorContext {
         std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         let env_ref = exec_state.mut_memory().pop_env();
         exec_state.global.mod_loader.leave_module(path);
-        if !exec_kind.is_isolated() && new_units != old_units {
+        if new_units != old_units {
             self.engine.set_units(old_units.into(), Default::default()).await?;
         }
-        self.engine.replace_execution_kind(original_execution).await;
 
         result
             .map_err(|err| {
@@ -442,7 +434,7 @@ impl ExecutorContext {
             Expr::Identifier(identifier) => {
                 let value = exec_state.memory().get(&identifier.name, identifier.into())?.clone();
                 if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
+                    self.exec_module_for_result(module_id, exec_state, metadata.source_range)
                         .await?
                         .unwrap_or_else(|| {
                             // The module didn't have a return value.  Currently,

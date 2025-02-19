@@ -48,7 +48,6 @@ pub struct EngineConnection {
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
-    execution_kind: Arc<RwLock<ExecutionKind>>,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -64,7 +63,6 @@ impl EngineConnection {
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             responses: Arc::new(RwLock::new(IndexMap::new())),
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
-            execution_kind: Default::default(),
         })
     }
 
@@ -146,18 +144,6 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
         self.artifact_commands.clone()
-    }
-
-    async fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.read().await;
-        *guard
-    }
-
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.write().await;
-        let original = *guard;
-        *guard = execution_kind;
-        original
     }
 
     async fn default_planes(
@@ -242,11 +228,6 @@ impl crate::engine::EngineManager for EngineConnection {
         let ws_result = self
             .do_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
             .await?;
-
-        // In isolated mode, we don't save the response.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(ws_result);
-        }
 
         let mut responses = self.responses.write().await;
         responses.insert(id, ws_result.clone());

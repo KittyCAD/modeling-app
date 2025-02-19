@@ -81,7 +81,7 @@ pub mod walk;
 mod wasm;
 
 pub use coredump::CoreDump;
-pub use engine::{EngineManager, ExecutionKind};
+pub use engine::EngineManager;
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
 pub use execution::{
     bust_cache, clear_mem_cache, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
