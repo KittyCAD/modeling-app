@@ -653,7 +653,7 @@ fn coerce(value: KclValue, ty: &Node<Type>, exec_state: &mut ExecState) -> Resul
                     x_axis,
                     y_axis,
                     z_axis,
-                    value: PlaneType::Custom,
+                    value: PlaneType::Uninit,
                     // TODO use length unit from origin
                     units: exec_state.length_unit(),
                     meta,
@@ -964,6 +964,9 @@ impl Node<UnaryExpression> {
                 plane.z_axis.x *= -1.0;
                 plane.z_axis.y *= -1.0;
                 plane.z_axis.z *= -1.0;
+
+                plane.value = PlaneType::Uninit;
+                plane.id = exec_state.next_uuid();
                 Ok(KclValue::Plane { value: plane })
             }
             _ => Err(KclError::Semantic(KclErrorDetails {

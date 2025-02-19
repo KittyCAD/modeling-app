@@ -29,7 +29,7 @@ yLine(length: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> yLine(15, %)
   |> angledLine({ angle = 30, length = 15 }, %)

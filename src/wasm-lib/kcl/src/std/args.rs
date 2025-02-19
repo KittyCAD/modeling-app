@@ -1118,10 +1118,10 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         // Case 0: actual plane
         if let KclValue::Plane { value } = arg {
             return Some(Self::Plane {
-                origin: Box::new(value.origin),
-                x_axis: Box::new(value.x_axis),
-                y_axis: Box::new(value.y_axis),
-                z_axis: Box::new(value.z_axis),
+                origin: value.origin,
+                x_axis: value.x_axis,
+                y_axis: value.y_axis,
+                z_axis: value.z_axis,
             });
         }
         // Case 1: predefined plane
@@ -1139,10 +1139,10 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         // Case 2: custom plane
         let obj = arg.as_object()?;
         let_field_of!(obj, plane, &KclObjectFields);
-        let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
-        let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
-        let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
-        let z_axis = plane.get("zAxis").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
+        let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val)?;
+        let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
+        let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val)?;
+        let z_axis = plane.get("zAxis").and_then(FromKclValue::from_kcl_val)?;
         Some(Self::Plane {
             origin,
             x_axis,

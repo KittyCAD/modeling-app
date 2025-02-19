@@ -13,6 +13,7 @@ use crate::{
     errors::KclError,
     execution::{ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
+    std::sketch::PlaneData,
 };
 
 type Point2D = kcmc::shared::Point2d<f64>;
@@ -267,10 +268,82 @@ pub struct Plane {
 }
 
 impl Plane {
-    pub(crate) fn from_plane_data(value: crate::std::sketch::PlaneData, exec_state: &mut ExecState) -> Self {
+    pub(crate) fn into_plane_data(self) -> PlaneData {
+        if self.origin == Point3d::new(0.0, 0.0, 0.0) {
+            match self {
+                Self {
+                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
+                    x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                    y_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                    z_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                    ..
+                } => return PlaneData::XY,
+                Self {
+                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
+                    x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                    y_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                    z_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: 0.0,
+                            z: -1.0,
+                        },
+                    ..
+                } => return PlaneData::NegXY,
+                Self {
+                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
+                    x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                    y_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                    z_axis:
+                        Point3d {
+                            x: 0.0,
+                            y: -1.0,
+                            z: 0.0,
+                        },
+                    ..
+                } => return PlaneData::XZ,
+                Self {
+                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
+                    x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                    y_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                    z_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                    ..
+                } => return PlaneData::NegXZ,
+                Self {
+                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
+                    x_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                    y_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                    z_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                    ..
+                } => return PlaneData::YZ,
+                Self {
+                    origin: Point3d { x: 0.0, y: 0.0, z: 0.0 },
+                    x_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                    y_axis: Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                    z_axis:
+                        Point3d {
+                            x: -1.0,
+                            y: 0.0,
+                            z: 0.0,
+                        },
+                    ..
+                } => return PlaneData::NegYZ,
+                _ => {}
+            }
+        }
+
+        PlaneData::Plane {
+            origin: self.origin,
+            x_axis: self.x_axis,
+            y_axis: self.y_axis,
+            z_axis: self.z_axis,
+        }
+    }
+
+    pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Self {
         let id = exec_state.global.id_generator.next_uuid();
         match value {
-            crate::std::sketch::PlaneData::XY => Plane {
+            PlaneData::XY => Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
@@ -281,7 +354,7 @@ impl Plane {
                 units: exec_state.length_unit(),
                 meta: vec![],
             },
-            crate::std::sketch::PlaneData::NegXY => Plane {
+            PlaneData::NegXY => Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
@@ -292,7 +365,7 @@ impl Plane {
                 units: exec_state.length_unit(),
                 meta: vec![],
             },
-            crate::std::sketch::PlaneData::XZ => Plane {
+            PlaneData::XZ => Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
@@ -303,7 +376,7 @@ impl Plane {
                 units: exec_state.length_unit(),
                 meta: vec![],
             },
-            crate::std::sketch::PlaneData::NegXZ => Plane {
+            PlaneData::NegXZ => Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
@@ -314,7 +387,7 @@ impl Plane {
                 units: exec_state.length_unit(),
                 meta: vec![],
             },
-            crate::std::sketch::PlaneData::YZ => Plane {
+            PlaneData::YZ => Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
@@ -325,7 +398,7 @@ impl Plane {
                 units: exec_state.length_unit(),
                 meta: vec![],
             },
-            crate::std::sketch::PlaneData::NegYZ => Plane {
+            PlaneData::NegYZ => Plane {
                 id,
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
@@ -336,7 +409,7 @@ impl Plane {
                 units: exec_state.length_unit(),
                 meta: vec![],
             },
-            crate::std::sketch::PlaneData::Plane {
+            PlaneData::Plane {
                 origin,
                 x_axis,
                 y_axis,
@@ -344,10 +417,10 @@ impl Plane {
             } => Plane {
                 id,
                 artifact_id: id.into(),
-                origin: *origin,
-                x_axis: *x_axis,
-                y_axis: *y_axis,
-                z_axis: *z_axis,
+                origin,
+                x_axis,
+                y_axis,
+                z_axis,
                 value: PlaneType::Custom,
                 units: exec_state.length_unit(),
                 meta: vec![],
@@ -356,9 +429,8 @@ impl Plane {
     }
 
     /// The standard planes are XY, YZ and XZ (in both positive and negative)
-    /// Custom planes are any other plane that the user might specify.
-    pub fn is_custom(&self) -> bool {
-        matches!(self.value, PlaneType::Custom)
+    pub fn is_standard(&self) -> bool {
+        !matches!(self.value, PlaneType::Custom | PlaneType::Uninit)
     }
 }
 
@@ -389,7 +461,6 @@ pub struct Face {
 /// Type for a plane.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
 #[display(style = "camelCase")]
 pub enum PlaneType {
     #[serde(rename = "XY", alias = "xy")]
@@ -402,9 +473,11 @@ pub enum PlaneType {
     #[display("YZ")]
     YZ,
     /// A custom plane.
-    #[serde(rename = "Custom")]
     #[display("Custom")]
     Custom,
+    /// A custom plane which has not been sent to the engine. It must be sent before it is used.
+    #[display("Uninit")]
+    Uninit,
 }
 
 /// A sketch is a collection of paths.

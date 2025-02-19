@@ -516,12 +516,10 @@ impl ArrayExpression {
 
 /// An expression is syntactically trivial: i.e., a literal, identifier, or similar.
 fn expr_is_trivial(expr: &Expr) -> bool {
-    match expr {
-        Expr::Literal(_) | Expr::Identifier(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_) => {
-            true
-        }
-        _ => false,
-    }
+    matches!(
+        expr,
+        Expr::Literal(_) | Expr::Identifier(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_)
+    )
 }
 
 impl ArrayRangeExpression {

@@ -27,7 +27,7 @@ profileStartY(sketch: Sketch) -> number
 ### Examples
 
 ```js
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
   |> startProfileAt([5, 2], %)
   |> angledLine({ angle = -60, length = 14 }, %)
   |> angledLineToY({ angle = 30, to = profileStartY(%) }, %)

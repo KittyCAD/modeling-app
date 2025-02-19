@@ -122,4 +122,7 @@ layout: manual
   * [`HALF_TURN`](kcl/const_std-prelude-HALF_TURN)
   * [`QUARTER_TURN`](kcl/const_std-prelude-QUARTER_TURN)
   * [`THREE_QUARTER_TURN`](kcl/const_std-prelude-THREE_QUARTER_TURN)
+  * [`XY`](kcl/const_std-prelude-XY)
+  * [`XZ`](kcl/const_std-prelude-XZ)
+  * [`YZ`](kcl/const_std-prelude-YZ)
   * [`ZERO`](kcl/const_std-prelude-ZERO)
