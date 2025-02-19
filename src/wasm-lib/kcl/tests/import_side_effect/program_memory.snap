@@ -1,111 +1,87 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing import_side_effect.kcl
+description: Variables in memory after executing import_side_effect.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "foo": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 32,
-                    "moduleId": 1,
-                    "raw": "0",
-                    "start": 31,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "end": 32,
-                  "moduleId": 1,
-                  "start": 24,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 34,
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": []
+  },
+  "foo": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "argument": {
+              "end": 32,
               "moduleId": 1,
-              "start": 22
-            },
-            "end": 34,
-            "moduleId": 1,
-            "params": [],
-            "start": 16,
-            "type": "FunctionExpression"
-          },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  }
-                },
-                "parent": null
+              "raw": "0",
+              "start": 31,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
               }
-            ],
-            "currentEnv": 0,
-            "return": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                16,
-                34,
-                1
-              ]
-            }
-          ]
-        }
+            },
+            "end": 32,
+            "moduleId": 1,
+            "start": 24,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 34,
+        "moduleId": 1,
+        "start": 22
       },
-      "parent": null
-    }
-  ],
-  "currentEnv": 0,
-  "return": null
+      "end": 34,
+      "moduleId": 1,
+      "params": [],
+      "start": 16,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      1,
+      1
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          16,
+          34,
+          1
+        ]
+      }
+    ]
+  }
 }

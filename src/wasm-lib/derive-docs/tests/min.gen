@@ -16,7 +16,10 @@ mod test_examples_min {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(&program, &mut crate::ExecState::new(&ctx.settings))
+            .run(
+                &program,
+                &mut crate::execution::ExecState::new(&ctx.settings),
+            )
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -73,7 +76,10 @@ mod test_examples_min {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(&program, &mut crate::ExecState::new(&ctx.settings))
+            .run(
+                &program,
+                &mut crate::execution::ExecState::new(&ctx.settings),
+            )
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -125,7 +131,7 @@ pub(crate) struct Min {}
 #[doc = "Std lib function: min\nThis is some function.\nIt does shit."]
 pub(crate) const Min: Min = Min {};
 fn boxed_min(
-    exec_state: &mut crate::ExecState,
+    exec_state: &mut crate::execution::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<

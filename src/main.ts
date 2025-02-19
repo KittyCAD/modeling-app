@@ -40,7 +40,6 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // default vite values based on mode
 process.env.NODE_ENV ??= viteEnv.MODE
-process.env.DEV ??= viteEnv.DEV + ''
 process.env.BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
 process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
 process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
@@ -54,6 +53,7 @@ process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
 console.log('process.env', process.env)
 
 /// Register our application to handle all "zoo-studio:" protocols.
+const singleInstanceLock = app.requestSingleInstanceLock()
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [
@@ -66,7 +66,13 @@ if (process.defaultApp) {
 
 // Global app listeners
 // Must be done before ready event.
-registerStartupListeners()
+// Checking against this lock is needed for Windows and Linux, see
+// https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
+if (!singleInstanceLock && !process.env.IS_PLAYWRIGHT) {
+  app.quit()
+} else {
+  registerStartupListeners()
+}
 
 const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   let newWindow
@@ -76,7 +82,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
   if (!newWindow) {
     newWindow = new BrowserWindow({
-      autoHideMenuBar: true,
+      autoHideMenuBar: false,
       show: false,
       width: 1800,
       height: 1200,

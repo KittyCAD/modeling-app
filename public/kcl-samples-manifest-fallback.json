@@ -36,6 +36,20 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "color-cube/main.kcl",
+    "multipleFiles": false,
+    "title": "Color Cube",
+    "description": "This is a color cube centered about the origin. It is used to help determine orientation in the scene."
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "cycloidal-gear/main.kcl",
+    "multipleFiles": false,
+    "title": "Cycloidal Gear",
+    "description": "A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation"
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "dodecahedron/main.kcl",
     "multipleFiles": false,
     "title": "Hollow Dodecahedron",
@@ -47,6 +61,13 @@
     "multipleFiles": false,
     "title": "Enclosure",
     "description": "An enclosure body and sealing lid for storing items"
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "exhaust-manifold/main.kcl",
+    "multipleFiles": false,
+    "title": "Exhaust Manifold",
+    "description": "A welded exhaust header for an inline 4-cylinder engine"
   },
   {
     "file": "main.kcl",

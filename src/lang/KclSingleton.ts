@@ -16,14 +16,16 @@ import {
   clearSceneAndBustCache,
   emptyExecState,
   ExecState,
+  getKclVersion,
   initPromise,
+  KclValue,
   parse,
   PathToNode,
   Program,
-  ProgramMemory,
   recast,
   SourceRange,
   topLevelRange,
+  VariableMap,
 } from 'lang/wasm'
 import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
@@ -58,11 +60,12 @@ export class KclManager {
       nonCodeNodes: {},
       startNodes: [],
     },
-    trivia: [],
+    innerAttrs: [],
+    outerAttrs: [],
   }
   private _execState: ExecState = emptyExecState()
-  private _programMemory: ProgramMemory = ProgramMemory.empty()
-  lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
+  private _variables: VariableMap = {}
+  lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
   private _logs: string[] = []
   private _errors: KCLError[] = []
@@ -73,12 +76,15 @@ export class KclManager {
   private _hasErrors = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
+  private _kclVersion: string | undefined = undefined
 
   engineCommandManager: EngineCommandManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
-  private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
+  private _variablesCallBack: (arg: {
+    [key in string]?: KclValue | undefined
+  }) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
@@ -97,22 +103,32 @@ export class KclManager {
     this._switchedFiles = switchedFiles
   }
 
-  get programMemory() {
-    return this._programMemory
+  get variables() {
+    return this._variables
   }
   // This is private because callers should be setting the entire execState.
-  private set programMemory(programMemory) {
-    this._programMemory = programMemory
-    this._programMemoryCallBack(programMemory)
+  private set variables(variables) {
+    this._variables = variables
+    this._variablesCallBack(variables)
   }
 
   private set execState(execState) {
     this._execState = execState
-    this.programMemory = execState.memory
+    this.variables = execState.variables
   }
 
   get execState() {
     return this._execState
+  }
+
+  // Get the kcl version from the wasm module
+  // and store it in the singleton
+  // so we don't waste time getting it multiple times
+  get kclVersion() {
+    if (this._kclVersion === undefined) {
+      this._kclVersion = getKclVersion()
+    }
+    return this._kclVersion
   }
 
   get errors() {
@@ -201,7 +217,7 @@ export class KclManager {
   }
 
   registerCallBacks({
-    setProgramMemory,
+    setVariables,
     setAst,
     setLogs,
     setErrors,
@@ -209,7 +225,7 @@ export class KclManager {
     setIsExecuting,
     setWasmInitFailed,
   }: {
-    setProgramMemory: (arg: ProgramMemory) => void
+    setVariables: (arg: VariableMap) => void
     setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
     setErrors: (errors: KCLError[]) => void
@@ -217,7 +233,7 @@ export class KclManager {
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
-    this._programMemoryCallBack = setProgramMemory
+    this._variablesCallBack = setVariables
     this._astCallBack = setAst
     this._logsCallBack = setLogs
     this._kclErrorsCallBack = setErrors
@@ -240,7 +256,8 @@ export class KclManager {
         nonCodeNodes: {},
         startNodes: [],
       },
-      trivia: [],
+      innerAttrs: [],
+      outerAttrs: [],
     }
   }
 
@@ -329,6 +346,7 @@ export class KclManager {
       ast,
       path: codeManager.currentFilePath || undefined,
       engineCommandManager: this.engineCommandManager,
+      isMock: false,
     })
 
     // Program was not interrupted, setup the scene
@@ -385,17 +403,16 @@ export class KclManager {
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     this.execState = execState
     if (!errors.length) {
-      this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
     this.ast = { ...ast }
-    // updateArtifactGraph relies on updated executeState/programMemory
+    // updateArtifactGraph relies on updated executeState/variables
     this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
     }
-
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
@@ -442,16 +459,16 @@ export class KclManager {
     const { logs, errors, execState } = await executeAst({
       ast: newAst,
       engineCommandManager: this.engineCommandManager,
-      // We make sure to send an empty program memory to denote we mean mock mode.
-      programMemoryOverride: ProgramMemory.empty(),
+      isMock: true,
     })
 
     this._logs = logs
     this.addDiagnostics(kclErrorsToDiagnostics(errors))
+
     this._execState = execState
-    this._programMemory = execState.memory
+    this._variables = execState.variables
     if (!errors.length) {
-      this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
   }

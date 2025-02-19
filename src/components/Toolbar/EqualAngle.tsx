@@ -95,7 +95,7 @@ export function applyConstraintEqualAngle({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
   })
   if (err(transform)) return transform
   const { modifiedAst, pathToNodeMap } = transform

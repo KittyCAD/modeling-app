@@ -80,13 +80,13 @@ const prepareToEditExtrude: PrepareToEditCallback =
     }
 
     // Convert the length argument from a string to a KCL expression
-    const distanceResult = await stringToKclExpression({
-      value: codeManager.code.slice(
+    const distanceResult = await stringToKclExpression(
+      codeManager.code.slice(
         operation.labeledArgs?.['length']?.sourceRange[0],
         operation.labeledArgs?.['length']?.sourceRange[1]
       ),
-      programMemory: kclManager.programMemory.clone(),
-    })
+      {}
+    )
     if (err(distanceResult) || 'errors' in distanceResult) {
       return baseCommand
     }
@@ -126,8 +126,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   if (
     operation.type !== 'StdLibCall' ||
     !operation.labeledArgs ||
-    !('std_plane' in operation.labeledArgs) ||
-    !operation.labeledArgs.std_plane ||
+    !operation.unlabeledArg ||
     !('offset' in operation.labeledArgs) ||
     !operation.labeledArgs.offset
   ) {
@@ -135,11 +134,9 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
   // TODO: Implement conversion to arbitrary plane selection
   // once the Offset Plane command supports it.
+  const stdPlane = operation.unlabeledArg
   const planeName = codeManager.code
-    .slice(
-      operation.labeledArgs.std_plane.sourceRange[0],
-      operation.labeledArgs.std_plane.sourceRange[1]
-    )
+    .slice(stdPlane.sourceRange[0], stdPlane.sourceRange[1])
     .replaceAll(`'`, ``)
 
   if (!isDefaultPlaneStr(planeName)) {
@@ -163,13 +160,13 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
 
   // Convert the distance argument from a string to a KCL expression
-  const distanceResult = await stringToKclExpression({
-    value: codeManager.code.slice(
+  const distanceResult = await stringToKclExpression(
+    codeManager.code.slice(
       operation.labeledArgs.offset.sourceRange[0],
       operation.labeledArgs.offset.sourceRange[1]
     ),
-    programMemory: kclManager.programMemory.clone(),
-  })
+    {}
+  )
 
   if (err(distanceResult) || 'errors' in distanceResult) {
     return baseCommand
