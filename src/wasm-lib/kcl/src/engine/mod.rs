@@ -227,6 +227,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        // In isolated mode, we don't send the command to the engine.
+        if self.execution_kind().await.is_isolated() {
+            return Ok(());
+        }
+
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
@@ -247,6 +252,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        // In isolated mode, we don't send the command to the engine.
+        if self.execution_kind().await.is_isolated() {
+            return Ok(());
+        }
+
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
