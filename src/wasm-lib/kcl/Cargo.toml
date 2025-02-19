@@ -60,7 +60,7 @@ serde_json = "1.0.138"
 sha2 = "0.10.8"
 tabled = { version = "0.15.0", optional = true }
 thiserror = "2.0.0"
-toml = "0.8.19"
+toml = "0.8.20"
 ts-rs = { version = "10.1.0", features = [
     "uuid-impl",
     "url-impl",
