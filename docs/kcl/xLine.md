@@ -29,7 +29,7 @@ xLine(length: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> xLine(15, %)
   |> angledLine({ angle = 80, length = 15 }, %)

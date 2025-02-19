@@ -942,7 +942,7 @@ yo = 5 + 6
 
 abc = 3
 identifierGuy = 5
-part001 = startSketchOn('XY')
+part001 = startSketchOn(XY)
 |> startProfileAt([-1.2, 4.83], %)
 |> line(end = [2.8, 0])
 |> angledLine([100 + 100, 3.01], %)
@@ -959,7 +959,7 @@ yo2 = hmm([identifierGuy + 5])"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_pipe_substitutions_unary() {
         let ast = r#"const myVar = 3
-const part001 = startSketchOn('XY')
+const part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
@@ -974,7 +974,7 @@ const part001 = startSketchOn('XY')
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_pipe_substitutions() {
         let ast = r#"const myVar = 3
-const part001 = startSketchOn('XY')
+const part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
@@ -997,7 +997,7 @@ const halfArmAngle = armAngle / 2
 const arrExpShouldNotBeIncluded = [1, 2, 3]
 const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
-const part001 = startSketchOn('XY')
+const part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> yLineTo(1, %)
   |> xLine(3.84, %) // selection-range-7ish-before-this
@@ -1018,7 +1018,7 @@ fn thing = () => {
   return -8
 }
 
-const firstExtrude = startSketchOn('XY')
+const firstExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line(end = [0, l])
   |> line(end = [w, 0])
@@ -1039,7 +1039,7 @@ fn thing = (x) => {
   return -x
 }
 
-const firstExtrude = startSketchOn('XY')
+const firstExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line(end = [0, l])
   |> line(end = [w, 0])
@@ -1060,7 +1060,7 @@ fn thing = (x) => {
   return [0, -x]
 }
 
-const firstExtrude = startSketchOn('XY')
+const firstExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line(end = [0, l])
   |> line(end = [w, 0])
@@ -1085,7 +1085,7 @@ fn thing = (x) => {
   return other_thing(x)
 }
 
-const firstExtrude = startSketchOn('XY')
+const firstExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line(end = [0, l])
   |> line(end = [w, 0])
@@ -1099,7 +1099,7 @@ const firstExtrude = startSketchOn('XY')
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_sketch() {
         let ast = r#"fn box = (h, l, w) => {
- const myBox = startSketchOn('XY')
+ const myBox = startSketchOn(XY)
     |> startProfileAt([0,0], %)
     |> line(end = [0, l])
     |> line(end = [w, 0])
@@ -1118,7 +1118,7 @@ const fnBox = box(3, 6, 10)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_period() {
         let ast = r#"fn box = (obj) => {
- let myBox = startSketchOn('XY')
+ let myBox = startSketchOn(XY)
     |> startProfileAt(obj.start, %)
     |> line(end = [0, obj.l])
     |> line(end = [obj.w, 0])
@@ -1137,7 +1137,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_brace() {
         let ast = r#"fn box = (obj) => {
- let myBox = startSketchOn('XY')
+ let myBox = startSketchOn(XY)
     |> startProfileAt(obj["start"], %)
     |> line(end = [0, obj["l"]])
     |> line(end = [obj["w"], 0])
@@ -1156,7 +1156,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_mix_period_brace() {
         let ast = r#"fn box = (obj) => {
- let myBox = startSketchOn('XY')
+ let myBox = startSketchOn(XY)
     |> startProfileAt(obj["start"], %)
     |> line(end = [0, obj["l"]])
     |> line(end = [obj["w"], 0])
@@ -1178,7 +1178,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
         let ast = r#"
 fn test2 = () => {
   return {
-    thing: startSketchOn('XY')
+    thing: startSketchOn(XY)
       |> startProfileAt([0, 0], %)
       |> line(end = [0, 1])
       |> line(end = [1, 0])
@@ -1199,7 +1199,7 @@ x2.thing
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_objects() {
         let ast = r#"fn box = (obj) => {
-let myBox = startSketchOn('XY')
+let myBox = startSketchOn(XY)
     |> startProfileAt(obj.start, %)
     |> line(end = [0, obj.l])
     |> line(end = [obj.w, 0])
@@ -1221,7 +1221,7 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_array() {
         let ast = r#"fn box = (h, l, w, start) => {
- const myBox = startSketchOn('XY')
+ const myBox = startSketchOn(XY)
     |> startProfileAt([0,0], %)
     |> line(end = [0, l])
     |> line(end = [w, 0])
@@ -1243,7 +1243,7 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_array_with_function() {
         let ast = r#"fn box = (arr) => {
- let myBox =startSketchOn('XY')
+ let myBox =startSketchOn(XY)
     |> startProfileAt(arr[0], %)
     |> line(end = [0, arr[1]])
     |> line(end = [arr[2], 0])
@@ -1329,7 +1329,7 @@ fn transform = (replicaId) => {
 }
 
 fn layer = () => {
-  return startSketchOn("XY")
+  return startSketchOn(XY)
     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
     |> extrude(length = 10)
 }
@@ -1442,7 +1442,7 @@ const leg1 = 5 // inches
 const leg2 = 8 // inches
 fn thickness = () => { return 0.56 }
 
-const bracket = startSketchOn('XY')
+const bracket = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
@@ -1639,7 +1639,7 @@ const leg2 = 8 // inches
 const thickness_squared = distance * p * FOS * 6 / sigmaAllow
 const thickness = 0.56 // inches. App does not support square root function yet
 
-const bracket = startSketchOn('XY')
+const bracket = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
@@ -1673,7 +1673,7 @@ const leg1 = 5 // inches
 const leg2 = 8 // inches
 const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
 const thickness = 0.32 // inches. App does not support square root function yet
-const bracket = startSketchOn('XY')
+const bracket = startSketchOn(XY)
   |> startProfileAt([0,0], %)
     |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
@@ -1697,7 +1697,7 @@ const leg1 = 5 // inches
 const leg2 = 8 // inches
 const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
 const thickness = 0.32 // inches. App does not support square root function yet
-const bracket = startSketchOn('XY')
+const bracket = startSketchOn(XY)
   |> startProfileAt([0,0], %)
     |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
@@ -1732,7 +1732,7 @@ let w = f() + f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_ids_stable_between_executions() {
-        let code = r#"sketch001 = startSketchOn('XZ')
+        let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfileAt([61.74, 206.13], %)
 |> xLine(305.11, %, $seg01)
 |> yLine(-291.85, %)
@@ -1757,7 +1757,7 @@ let w = f() + f()
         // Get the id_generator from the first execution.
         let id_generator = cache::read_old_ast().await.unwrap().exec_state.global.id_generator;
 
-        let code = r#"sketch001 = startSketchOn('XZ')
+        let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfileAt([62.74, 206.13], %)
 |> xLine(305.11, %, $seg01)
 |> yLine(-291.85, %)

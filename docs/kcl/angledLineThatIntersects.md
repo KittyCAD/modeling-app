@@ -29,7 +29,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch: Sketch, tag
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [5, 10])
   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)

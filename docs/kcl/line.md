@@ -30,7 +30,7 @@ line(sketch: Sketch, endAbsolute?: [number], end?: [number], tag?: TagDeclarator
 ### Examples
 
 ```js
-triangle = startSketchOn("XZ")
+triangle = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   // The 'end' argument means it ends at exactly [10, 0].
   // This is an absolute measurement, it is NOT relative to
@@ -41,7 +41,7 @@ triangle = startSketchOn("XZ")
   |> close()
   |> extrude(length = 5)
 
-box = startSketchOn("XZ")
+box = startSketchOn(XZ)
   |> startProfileAt([10, 10], %)
   // The 'to' argument means move the pen this much.
   // So, [10, 0] is a relative distance away from the current point.

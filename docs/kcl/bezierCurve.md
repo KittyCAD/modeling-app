@@ -29,7 +29,7 @@ bezierCurve(data: BezierData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 10])
   |> bezierCurve({
