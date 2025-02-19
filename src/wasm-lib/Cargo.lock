@@ -730,7 +730,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.36"
+version = "0.1.38"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1712,7 +1712,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.35"
+version = "0.2.38"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1779,7 +1779,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.21"
+version = "0.1.38"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
