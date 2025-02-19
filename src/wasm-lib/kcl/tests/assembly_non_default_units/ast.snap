@@ -1,0 +1,143 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing assembly_non_default_units.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "end": 172,
+        "path": {
+          "type": "Kcl",
+          "filename": "other1.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 153,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 192,
+        "path": {
+          "type": "Kcl",
+          "filename": "other2.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 173,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 200,
+        "expression": {
+          "end": 200,
+          "name": "other1",
+          "start": 194,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 194,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 207,
+        "expression": {
+          "end": 207,
+          "name": "other2",
+          "start": 201,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 201,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 208,
+    "innerAttrs": [
+      {
+        "end": 33,
+        "name": {
+          "end": 9,
+          "name": "settings",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 32,
+            "key": {
+              "end": 27,
+              "name": "defaultLengthUnit",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "start": 10,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 32,
+              "name": "in",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "1": [
+          {
+            "end": 194,
+            "start": 192,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 36,
+          "start": 33,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 87,
+          "start": 36,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Use a default unit that isn't the default of mm.",
+            "style": "line"
+          }
+        },
+        {
+          "end": 152,
+          "start": 88,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "This should look like two circles barely touching each other.",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}
