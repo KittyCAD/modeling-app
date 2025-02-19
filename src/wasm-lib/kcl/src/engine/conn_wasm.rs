@@ -4,19 +4,12 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::{
-    ok_response::OkModelingCmdResponse,
-    websocket::{
-        BatchResponse, ModelingBatch, OkWebSocketResponseData, SuccessWebSocketResponse, WebSocketRequest,
-        WebSocketResponse,
-    },
-};
+use kcmc::websocket::{WebSocketRequest, WebSocketResponse};
 use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
-use crate::engine::EngineManager;
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
@@ -82,35 +75,6 @@ impl EngineConnection {
         cmd: WebSocketRequest,
         id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return match &cmd {
-                WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
-                    let mut responses = HashMap::with_capacity(requests.len());
-                    for request in requests {
-                        responses.insert(
-                            request.cmd_id,
-                            BatchResponse::Success {
-                                response: OkModelingCmdResponse::Empty {},
-                            },
-                        );
-                    }
-                    Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
-                        request_id: Some(id),
-                        resp: OkWebSocketResponseData::ModelingBatch { responses },
-                        success: true,
-                    }))
-                }
-                _ => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
-                    request_id: Some(id),
-                    resp: OkWebSocketResponseData::Modeling {
-                        modeling_response: OkModelingCmdResponse::Empty {},
-                    },
-                    success: true,
-                })),
-            };
-        }
-
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to serialize source range: {:?}", e),
