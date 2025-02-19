@@ -959,9 +959,16 @@ impl Node<UnaryExpression> {
                     ty: ty.clone(),
                 })
             }
+            KclValue::Plane { value } => {
+                let mut plane = value.clone();
+                plane.z_axis.x *= -1.0;
+                plane.z_axis.y *= -1.0;
+                plane.z_axis.z *= -1.0;
+                Ok(KclValue::Plane { value: plane })
+            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "You can only negate numbers, but this is a {}",
+                    "You can only negate numbers or planes, but this is a {}",
                     value.human_friendly_type()
                 ),
                 source_ranges: vec![self.into()],
@@ -2076,6 +2083,26 @@ a = 42: Plane
             .unwrap_err()
             .to_string()
             .contains("could not coerce number value to type Plane"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn neg_plane() {
+        let program = r#"
+p = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 }
+}: Plane
+p2 = -p
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let mem = result.2.memory();
+        match mem.get("p2", SourceRange::default()).unwrap() {
+            KclValue::Plane { value } => assert_eq!(value.z_axis.z, -1.0),
+            _ => unreachable!(),
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
