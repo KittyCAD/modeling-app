@@ -204,7 +204,7 @@ async fn straight_line(
         (Some(_), Some(_)) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You cannot give both `end` and `end_absolute` params, you have to choose one or the other"
+                message: "You cannot give both `end` and `endAbsolute` params, you have to choose one or the other"
                     .to_owned(),
             }));
         }
@@ -213,7 +213,7 @@ async fn straight_line(
         (None, None) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You must supply either `end` or `end_absolute` arguments".to_owned(),
+                message: "You must supply either `end` or `endAbsolute` arguments".to_owned(),
             }));
         }
     };
