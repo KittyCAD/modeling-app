@@ -17,19 +17,23 @@ import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
-import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
 import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
-import argvFromYargs from './commandLineArgs'
+import {
+  argvFromYargs,
+  getPathOrUrlFromArgs,
+  parseCLIArgs,
+} from './commandLineArgs'
 
 import * as packageJSON from '../package.json'
 
 let mainWindow: BrowserWindow | null = null
 
 // Check the command line arguments for a project path
-const args = parseCLIArgs()
+const args = parseCLIArgs(process.argv)
+console.log(process.argv, args)
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -100,11 +104,13 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
 
   // Deep Link: Case of a cold start from Windows or Linux
-  const zooProtocolArg = process.argv.find((a) =>
-    a.startsWith(ZOO_STUDIO_PROTOCOL + '://')
-  )
-  if (!pathToOpen && zooProtocolArg) {
-    pathToOpen = zooProtocolArg
+  const pathOrUrl = getPathOrUrlFromArgs(args)
+  if (
+    !pathToOpen &&
+    pathOrUrl &&
+    pathOrUrl.startsWith(ZOO_STUDIO_PROTOCOL + '://')
+  ) {
+    pathToOpen = pathOrUrl
     console.log('Retrieved deep link from argv', pathToOpen)
   }
 
@@ -431,7 +437,7 @@ const getProjectPathAtStartup = async (
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
-  if (NODE_ENV !== 'production') {
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     return null
   }
 
@@ -484,17 +490,14 @@ const getProjectPathAtStartup = async (
   return null
 }
 
-function parseCLIArgs(): minimist.ParsedArgs {
-  return minimist(process.argv, {})
-}
-
 function registerStartupListeners() {
   // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     // Deep Link: second instance for Windows and Linux
-    const url = commandLine.pop()?.slice(0, -1)
-    console.log('Retrieved deep link from commandLine', url)
-    createWindow(url)
+    console.log(commandLine, parseCLIArgs(commandLine))
+    const pathOrUrl = getPathOrUrlFromArgs(parseCLIArgs(commandLine))
+    console.log('Retrieved path or deep link from second-instance cli', pathOrUrl)
+    createWindow(pathOrUrl)
   })
 
   /**
