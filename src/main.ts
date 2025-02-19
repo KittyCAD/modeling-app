@@ -496,7 +496,7 @@ function registerStartupListeners() {
     // Deep Link: second instance for Windows and Linux
     console.log(commandLine, parseCLIArgs(commandLine))
     const pathOrUrl = getPathOrUrlFromArgs(parseCLIArgs(commandLine))
-    console.log('Retrieved path or deep link from second-instance cli', pathOrUrl)
+    console.log('Retrieved path or deep link from second-instance', pathOrUrl)
     createWindow(pathOrUrl)
   })
 
