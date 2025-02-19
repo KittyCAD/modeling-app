@@ -4,7 +4,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
     exec::{ArtifactCommand, DefaultPlanes, IdGenerator},
-    ExecutionKind, KclError,
+    KclError,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -25,7 +25,6 @@ pub struct EngineConnection {
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
     core_test: Arc<RwLock<String>>,
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
-    execution_kind: Arc<RwLock<ExecutionKind>>,
 }
 
 impl EngineConnection {
@@ -37,7 +36,6 @@ impl EngineConnection {
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             core_test: result,
             default_planes: Default::default(),
-            execution_kind: Default::default(),
         })
     }
 
@@ -371,18 +369,6 @@ impl kcl_lib::EngineManager for EngineConnection {
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
         Arc::new(RwLock::new(Vec::new()))
-    }
-
-    async fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.read().await;
-        *guard
-    }
-
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.write().await;
-        let original = *guard;
-        *guard = execution_kind;
-        original
     }
 
     async fn default_planes(
