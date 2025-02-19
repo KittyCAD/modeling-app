@@ -222,7 +222,7 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
     name = "getOppositeEdge",
 }]
 async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
-    if args.ctx.no_engine_commands() {
+    if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
@@ -299,7 +299,7 @@ async fn inner_get_next_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
-    if args.ctx.no_engine_commands() {
+    if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
@@ -384,7 +384,7 @@ async fn inner_get_previous_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
-    if args.ctx.no_engine_commands() {
+    if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;

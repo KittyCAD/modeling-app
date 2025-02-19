@@ -1570,7 +1570,7 @@ export const ModelingMachineProvider = ({
                   : updatedSketchNodePaths[0]
             }
 
-            if (doesNeedSplitting) {
+            if (doesNeedSplitting || indexToDelete >= 0) {
               await kclManager.executeAstMock(moddedAst)
               await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
             }

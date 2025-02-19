@@ -48,7 +48,7 @@ impl ExecutorContext {
                     let old_units = exec_state.length_unit();
                     exec_state.mod_local.settings.update_from_annotation(annotation)?;
                     let new_units = exec_state.length_unit();
-                    if !self.engine.execution_kind().is_isolated() && old_units != new_units {
+                    if !self.engine.execution_kind().await.is_isolated() && old_units != new_units {
                         self.engine
                             .set_units(new_units.into(), annotation.as_source_range())
                             .await?;
@@ -393,7 +393,7 @@ impl ExecutorContext {
         exec_state.global.mod_loader.enter_module(path);
         std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         exec_state.mut_memory().push_new_root_env();
-        let original_execution = self.engine.replace_execution_kind(exec_kind);
+        let original_execution = self.engine.replace_execution_kind(exec_kind).await;
 
         let result = self
             .exec_program(program, exec_state, crate::execution::BodyType::Root)
@@ -406,7 +406,7 @@ impl ExecutorContext {
         if !exec_kind.is_isolated() && new_units != old_units {
             self.engine.set_units(old_units.into(), Default::default()).await?;
         }
-        self.engine.replace_execution_kind(original_execution);
+        self.engine.replace_execution_kind(original_execution).await;
 
         result
             .map_err(|err| {
@@ -1720,12 +1720,11 @@ impl JsonSchema for FunctionParam<'_> {
 
 #[cfg(test)]
 mod test {
+    use super::*;
     use crate::{
         execution::{memory::ProgramMemory, parse_execute},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
-
-    use super::*;
 
     #[test]
     fn test_assign_args_to_params() {
