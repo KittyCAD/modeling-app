@@ -125,7 +125,13 @@ description: Variables in memory after executing kw_fn_with_defaults.kcl
     "type": "Number",
     "value": 21.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
     "__meta": [
       {
@@ -148,7 +154,13 @@ description: Variables in memory after executing kw_fn_with_defaults.kcl
     "type": "Number",
     "value": 2.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
     "__meta": [
       {

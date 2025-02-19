@@ -82,7 +82,10 @@ description: Variables in memory after executing import_whole.kcl
               15.0,
               5.0
             ],
-            "type": "Circle"
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
           }
         ],
         "on": {
@@ -124,6 +127,9 @@ description: Variables in memory after executing import_whole.kcl
             15.0,
             5.0
           ],
+          "units": {
+            "type": "Inches"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

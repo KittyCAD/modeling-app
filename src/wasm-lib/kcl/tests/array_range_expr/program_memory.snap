@@ -39,7 +39,13 @@ description: Variables in memory after executing array_range_expr.kcl
     "type": "Number",
     "value": 5.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
     "__meta": [
       {
@@ -80,7 +86,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -96,7 +103,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 1.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -112,7 +120,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 2.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -128,7 +137,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 3.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -144,7 +154,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 4.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -174,7 +185,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -190,7 +202,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 1.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -206,7 +219,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 2.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -222,7 +236,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 3.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -238,7 +253,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 4.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -268,7 +284,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -284,7 +301,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 1.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -300,7 +318,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 2.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -316,7 +335,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 3.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -332,7 +352,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 4.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -348,7 +369,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -378,7 +400,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 1.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -394,7 +417,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 2.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -410,7 +434,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 3.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -426,7 +451,8 @@ description: Variables in memory after executing array_range_expr.kcl
         "type": "Number",
         "value": 4.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {

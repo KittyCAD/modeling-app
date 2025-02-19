@@ -373,7 +373,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           5.0,
           0.0
         ],
-        "type": "Circle"
+        "type": "Circle",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -476,7 +479,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               0.0,
               20.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -496,7 +502,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               20.0,
               20.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -516,7 +525,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               20.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -536,7 +548,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -578,6 +593,9 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -677,7 +695,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               5.0,
               0.0
             ],
-            "type": "Circle"
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -772,7 +793,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                     0.0,
                     20.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -792,7 +816,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                     20.0,
                     20.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -812,7 +839,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                     20.0,
                     0.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -832,7 +862,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                     0.0,
                     0.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 }
               ],
               "on": {
@@ -874,6 +907,9 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                   0.0,
                   0.0
                 ],
+                "units": {
+                  "type": "Mm"
+                },
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -937,6 +973,9 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             5.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -984,7 +1023,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                   5.0,
                   0.0
                 ],
-                "type": "Circle"
+                "type": "Circle",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",

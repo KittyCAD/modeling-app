@@ -544,7 +544,8 @@ fn generate_type(
         return Err(anyhow::anyhow!("Type name is not pascal cased: {}", name));
     }
 
-    let new_schema = recurse_and_create_references(name, schema, types)?;
+    let cleaned_schema = recurse_and_create_references(name, schema, types)?;
+    let new_schema = super::cleanup_number_tuples(&cleaned_schema);
 
     let schemars::schema::Schema::Object(o) = new_schema else {
         return Err(anyhow::anyhow!(

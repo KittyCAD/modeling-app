@@ -491,7 +491,10 @@ description: Variables in memory after executing function_sketch.kcl
               0.0,
               6.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -511,7 +514,10 @@ description: Variables in memory after executing function_sketch.kcl
               10.0,
               6.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -531,7 +537,10 @@ description: Variables in memory after executing function_sketch.kcl
               10.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -551,7 +560,10 @@ description: Variables in memory after executing function_sketch.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -593,6 +605,9 @@ description: Variables in memory after executing function_sketch.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
