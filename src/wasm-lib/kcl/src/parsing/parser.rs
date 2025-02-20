@@ -342,7 +342,9 @@ fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> PResult<Node<NonCo
             None
         } else {
             let value = match token.token_type {
-                TokenType::Whitespace if token.value.contains("\n\n") => NonCodeValue::NewLine,
+                TokenType::Whitespace if token.value.contains("\n\n") || token.value.contains("\n\r\n") => {
+                    NonCodeValue::NewLine
+                }
                 TokenType::LineComment => NonCodeValue::BlockComment {
                     value: token.value.trim_start_matches("//").trim().to_owned(),
                     style: CommentStyle::Line,
@@ -1402,7 +1404,7 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
         // if it has an empty line, it should be considered a noncode token, because the user
         // deliberately put an empty line there. We should track this and preserve it.
         if let Ok(ref ws_token) = found_ws {
-            if ws_token.value.contains("\n\n") {
+            if ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n") {
                 things_within_body.push(WithinFunction::NonCode(Node::new(
                     NonCodeNode {
                         value: NonCodeValue::NewLine,
@@ -1735,6 +1737,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
+        // TODO should allow other extensions if there is a format attribute.
         let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
         if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
             ParseContext::warn(CompilationError::err(

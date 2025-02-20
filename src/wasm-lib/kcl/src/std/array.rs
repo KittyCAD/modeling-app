@@ -17,7 +17,6 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let map_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
-        meta: meta.clone(),
         ctx: args.ctx.clone(),
         memory: f.memory,
     };
@@ -78,7 +77,9 @@ async fn call_map_closure(
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
-    let output = map_fn.call(exec_state, vec![Arg::synthetic(input)]).await?;
+    let output = map_fn
+        .call(exec_state, vec![Arg::synthetic(input)], source_range)
+        .await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
@@ -95,7 +96,6 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let reduce_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
-        meta: vec![args.source_range.into()],
         ctx: args.ctx.clone(),
         memory: f.memory,
     };
@@ -141,7 +141,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Declare a function that sketches a decagon.
 /// fn decagon(radius) {
 ///   // Each side of the decagon is turned this many degrees from the previous angle.
-///   stepAngle = (1/10) * tau()
+///   stepAngle = (1/10) * TAU
 ///
 ///   // Start the decagon sketch at this point.
 ///   startOfDecagonSketch = startSketchOn('XY')
@@ -164,7 +164,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// /*
 /// The `decagon` above is basically like this pseudo-code:
 /// fn decagon(radius):
-///     stepAngle = (1/10) * tau()
+///     stepAngle = (1/10) * TAU
 ///     plane = startSketchOn('XY')
 ///     startOfDecagonSketch = startProfileAt([(cos(0)*radius), (sin(0) * radius)], plane)
 ///
@@ -208,7 +208,7 @@ async fn call_reduce_closure(
 ) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
     let reduce_fn_args = vec![Arg::synthetic(elem), Arg::synthetic(start)];
-    let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args).await?;
+    let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args, source_range).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
