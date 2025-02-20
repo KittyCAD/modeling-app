@@ -181,7 +181,9 @@ test(
       await page.getByText('broken-code').click()
 
       await page.waitForTimeout(2000)
-      await editor.scrollToText('|> line(end = [0, wallMountL], tag = \'outerEdge\')')
+      await editor.scrollToText(
+        "|> line(end = [0, wallMountL], tag = 'outerEdge')"
+      )
 
       // error in guter
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
