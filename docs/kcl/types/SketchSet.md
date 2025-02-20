@@ -14,7 +14,9 @@ A sketch or a group of sketches.
 
 A sketch is a collection of paths.
 
-When you define a sketch to a variable like: ```no_run mySketch = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() ```
+When you define a sketch to a variable like:
+
+```no_run mySketch = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() ```
 
 The `mySketch` variable will be an executed [`Sketch`](/docs/kcl/types/Sketch) object. Executed being past tense, because the engine has already executed the commands to create the sketch.
 

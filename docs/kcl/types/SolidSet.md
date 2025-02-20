@@ -14,7 +14,9 @@ A solid or a group of solids.
 
 A solid is a collection of extrude surfaces.
 
-When you define a solid to a variable like: ```no_run myPart = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() |> extrude(length = 6) ```
+When you define a solid to a variable like:
+
+```no_run myPart = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() |> extrude(length = 6) ```
 
 The `myPart` variable will be an executed [`Solid`](/docs/kcl/types/Solid) object. Executed being past tense, because the engine has already executed the commands to create the solid.
 
