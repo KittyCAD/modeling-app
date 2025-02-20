@@ -1,3 +1,5 @@
+use std::ops::{Add, AddAssign, Mul};
+
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
@@ -354,11 +356,6 @@ impl Plane {
     }
 
     /// The standard planes are XY, YZ and XZ (in both positive and negative)
-    pub fn is_standard(&self) -> bool {
-        !self.is_custom()
-    }
-
-    /// The standard planes are XY, YZ and XZ (in both positive and negative)
     /// Custom planes are any other plane that the user might specify.
     pub fn is_custom(&self) -> bool {
         matches!(self.value, PlaneType::Custom)
@@ -411,6 +408,46 @@ pub enum PlaneType {
 }
 
 /// A sketch is a collection of paths.
+///
+/// When you define a sketch to a variable like:
+///
+/// ```kcl
+/// mySketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+/// ```
+///
+/// The `mySketch` variable will be an executed `Sketch` object. Executed being past
+/// tense, because the engine has already executed the commands to create the sketch.
+///
+/// The previous sketch commands will never be executed again, in this case.
+///
+/// If you would like to encapsulate the commands to create the sketch any time you call it,
+/// you can use a function.
+///
+/// ```kcl
+/// fn createSketch() {
+///    return startSketchOn('XY')
+///         |> startProfileAt([-12, 12], %)
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
+/// }
+/// ```
+///
+/// Now, every time you call `createSketch()`, the commands will be
+/// executed and a new sketch will be created.
+///
+/// When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`), you are assigning
+/// the executed sketch to that variable. Meaning that the sketch `mySketch` will not be executed
+/// again.
+///
+/// You can still execute _new_ commands on the sketch like `extrude`, `revolve`, `loft`, etc. and
+/// the sketch will be updated.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -469,6 +506,12 @@ impl SketchSurface {
         match self {
             SketchSurface::Plane(plane) => plane.z_axis,
             SketchSurface::Face(face) => face.z_axis,
+        }
+    }
+    pub(crate) fn units(&self) -> UnitLen {
+        match self {
+            SketchSurface::Plane(plane) => plane.units,
+            SketchSurface::Face(face) => face.units,
         }
     }
 }
@@ -535,7 +578,49 @@ impl Sketch {
     }
 }
 
-/// An solid is a collection of extrude surfaces.
+/// A solid is a collection of extrude surfaces.
+///
+/// When you define a solid to a variable like:
+///
+/// ```kcl
+/// myPart = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+/// ```
+///
+/// The `myPart` variable will be an executed `Solid` object. Executed being past
+/// tense, because the engine has already executed the commands to create the solid.
+///
+/// The previous solid commands will never be executed again, in this case.
+///
+/// If you would like to encapsulate the commands to create the solid any time you call it,
+/// you can use a function.
+///
+/// ```kcl
+/// fn createPart() {
+///    return startSketchOn('XY')
+///         |> startProfileAt([-12, 12], %)
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
+///         |> extrude(length = 6)
+/// }
+/// ```
+///
+/// Now, every time you call `createPart()`, the commands will be
+/// executed and a new solid will be created.
+///
+/// When you assign the result of `createPart()` to a variable (`myPart = createPart()`), you are assigning
+/// the executed solid to that variable. Meaning that the solid `myPart` will not be executed
+/// again.
+///
+/// You can still execute _new_ commands on the solid like `shell`, `fillet`, `chamfer`, etc.
+/// and the solid will be updated.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -690,6 +775,36 @@ impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
     }
 }
 
+impl Add for Point3d {
+    type Output = Point3d;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Point3d {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+        }
+    }
+}
+
+impl AddAssign for Point3d {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs
+    }
+}
+
+impl Mul<f64> for Point3d {
+    type Output = Point3d;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Point3d {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+        }
+    }
+}
+
 /// A base path.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -701,6 +816,7 @@ pub struct BasePath {
     /// The to point.
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
+    pub units: UnitLen,
     /// The tag of the path.
     pub tag: Option<TagNode>,
     /// Metadata.

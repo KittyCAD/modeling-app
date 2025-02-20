@@ -4,9 +4,11 @@ excerpt: "Return the value of `tau`. The full circle constant (τ). Equal to 2π
 layout: manual
 ---
 
+**WARNING:** This function is deprecated.
+
 Return the value of `tau`. The full circle constant (τ). Equal to 2π.
 
-
+**DEPRECATED** use the constant TAU
 
 ```js
 tau() -> number
@@ -20,7 +22,7 @@ tau() -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

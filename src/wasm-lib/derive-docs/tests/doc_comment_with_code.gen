@@ -173,7 +173,9 @@ impl crate::docs::StdLibFn for MyFunc {
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
             type_: "kittycad::types::InputFormat".to_string(),
-            schema: generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
+            schema: crate::docs::cleanup_number_tuples_root(
+                generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
+            ),
             required: false,
             label_required: true,
             description: String::new().to_string(),
@@ -185,7 +187,8 @@ impl crate::docs::StdLibFn for MyFunc {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = generator.root_schema_for::<Vec<Sketch>>();
+        let schema =
+            crate::docs::cleanup_number_tuples_root(generator.root_schema_for::<Vec<Sketch>>());
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "[Sketch]".to_string(),

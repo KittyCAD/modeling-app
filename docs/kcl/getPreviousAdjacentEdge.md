@@ -21,7 +21,7 @@ getPreviousAdjacentEdge(tag: TagIdentifier) -> Uuid
 
 ### Returns
 
-`Uuid` 
+`Uuid`
 
 
 ### Examples

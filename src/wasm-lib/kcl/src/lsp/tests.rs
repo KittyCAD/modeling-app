@@ -807,11 +807,8 @@ async fn test_kcl_lsp_completions_const_raw() {
     // Check the completions.
     if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
         assert!(completions.len() > 10);
-        // Find the one with label "const".
-        let const_completion = completions
-            .iter()
-            .find(|completion| completion.label == "const")
-            .unwrap();
+        // Find the one with label "fn".
+        let const_completion = completions.iter().find(|completion| completion.label == "fn").unwrap();
         assert_eq!(
             const_completion.kind,
             Some(tower_lsp::lsp_types::CompletionItemKind::KEYWORD)

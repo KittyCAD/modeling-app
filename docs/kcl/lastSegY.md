@@ -21,7 +21,7 @@ lastSegY(sketch: Sketch) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples
