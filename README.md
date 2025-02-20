@@ -83,7 +83,7 @@ yarn build:wasm
 yarn build:wasm:windows
 ```
 
-or if you have the gh cli installed and want to download the latest main wasm bundle
+Or if you have the gh cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`.
 
 ```
 # macOS/Linux
@@ -128,7 +128,7 @@ This will start the application and hot-reload on changes.
 
 Devtools can be opened with the usual Cmd-Opt-I (Mac) or Ctrl-Shift-I (Linux and Windows).
 
-To build with electron-builder, run `yarn tronb:package:dev` (or `yarn tronb:package:prod` to point to the .env.production variables)
+To package the app for your platform with electron-builder, run `yarn tronb:package:dev` (or `yarn tronb:package:prod` to point to the .env.production variables)
 
 ## Checking out commits / Bisecting
 
