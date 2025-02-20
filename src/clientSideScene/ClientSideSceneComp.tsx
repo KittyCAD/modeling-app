@@ -179,10 +179,7 @@ const Overlays = () => {
   // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
   // over the length labels on the line segments
   return (
-    <div
-      className="absolute inset-0 pointer-events-none"
-      style={{ zIndex: '99999999' }}
-    >
+    <div className="absolute inset-0 pointer-events-none z-sketchOverlayDropdown">
       {Object.entries(context.segmentOverlays)
         .flatMap((a) =>
           a[1].map((b) => ({ pathToNodeString: a[0], overlay: b }))
