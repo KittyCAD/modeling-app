@@ -39,8 +39,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{EnvironmentRef, ExecState, KclValue},
-    parsing::ast::types::FunctionExpression,
+    execution::{ExecState, KclValue},
 };
 
 pub type StdFn = fn(
@@ -329,11 +328,4 @@ pub enum Primitive {
     String,
     /// A uuid value.
     Uuid,
-}
-
-/// A closure used as an argument to a stdlib function.
-pub struct FnAsArg<'a> {
-    pub func: Option<&'a (crate::std::StdFn, crate::std::StdFnProps)>,
-    pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-    pub memory: Option<EnvironmentRef>,
 }

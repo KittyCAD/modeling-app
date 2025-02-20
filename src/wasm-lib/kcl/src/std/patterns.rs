@@ -16,15 +16,16 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::{args::Arg, FnAsArg};
+use super::args::Arg;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::NumericType, ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d,
-        Point3d, Sketch, SketchSet, Solid, SolidSet,
+        kcl_value::{FunctionSource, NumericType},
+        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid,
+        SolidSet,
     },
     std::Args,
-    SourceRange,
+    ExecutorContext, SourceRange,
 };
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
@@ -49,23 +50,10 @@ pub struct LinearPattern3dData {
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid_set = args.get_unlabeled_kw_arg("solidSet")?;
     let instances: u32 = args.get_kw_arg("instances")?;
-    let transform: FnAsArg<'_> = args.get_kw_arg("transform")?;
+    let transform: &FunctionSource = args.get_kw_arg("transform")?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    let solids = inner_pattern_transform(
-        solid_set,
-        instances,
-        FunctionParam {
-            inner: transform.func,
-            fn_expr: transform.expr,
-            ctx: args.ctx.clone(),
-            memory: transform.memory,
-        },
-        use_original,
-        exec_state,
-        &args,
-    )
-    .await?;
+    let solids = inner_pattern_transform(solid_set, instances, transform, use_original, exec_state, &args).await?;
     Ok(KclValue::Solids { value: solids })
 }
 
@@ -73,23 +61,11 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_set = args.get_unlabeled_kw_arg("sketchSet")?;
     let instances: u32 = args.get_kw_arg("instances")?;
-    let transform: FnAsArg<'_> = args.get_kw_arg("transform")?;
+    let transform: &FunctionSource = args.get_kw_arg("transform")?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
 
-    let sketches = inner_pattern_transform_2d(
-        sketch_set,
-        instances,
-        FunctionParam {
-            inner: transform.func,
-            fn_expr: transform.expr,
-            ctx: args.ctx.clone(),
-            memory: transform.memory,
-        },
-        use_original,
-        exec_state,
-        &args,
-    )
-    .await?;
+    let sketches =
+        inner_pattern_transform_2d(sketch_set, instances, transform, use_original, exec_state, &args).await?;
     Ok(KclValue::Sketches { value: sketches })
 }
 
@@ -291,7 +267,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 async fn inner_pattern_transform<'a>(
     solid_set: SolidSet,
     instances: u32,
-    transform: FunctionParam<'a>,
+    transform: &'a FunctionSource,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &'a Args,
@@ -305,7 +281,7 @@ async fn inner_pattern_transform<'a>(
         }));
     }
     for i in 1..instances {
-        let t = make_transform::<Box<Solid>>(i, &transform, args.source_range, exec_state).await?;
+        let t = make_transform::<Box<Solid>>(i, transform, args.source_range, exec_state, &args.ctx).await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(
@@ -344,7 +320,7 @@ async fn inner_pattern_transform<'a>(
 async fn inner_pattern_transform_2d<'a>(
     sketch_set: SketchSet,
     instances: u32,
-    transform: FunctionParam<'a>,
+    transform: &'a FunctionSource,
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &'a Args,
@@ -358,7 +334,7 @@ async fn inner_pattern_transform_2d<'a>(
         }));
     }
     for i in 1..instances {
-        let t = make_transform::<Box<Sketch>>(i, &transform, args.source_range, exec_state).await?;
+        let t = make_transform::<Box<Sketch>>(i, transform, args.source_range, exec_state, &args.ctx).await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(
@@ -439,9 +415,10 @@ async fn send_pattern_transform<T: GeometryTrait>(
 
 async fn make_transform<T: GeometryTrait>(
     i: u32,
-    transform: &FunctionParam<'_>,
+    transform: &FunctionSource,
     source_range: SourceRange,
     exec_state: &mut ExecState,
+    ctxt: &ExecutorContext,
 ) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::Number {
@@ -450,7 +427,9 @@ async fn make_transform<T: GeometryTrait>(
         meta: vec![source_range.into()],
     };
     let transform_fn_args = vec![Arg::synthetic(repetition_num)];
-    let transform_fn_return = transform.call(exec_state, transform_fn_args, source_range).await?;
+    let transform_fn_return = transform
+        .call(exec_state, ctxt, transform_fn_args, source_range)
+        .await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];

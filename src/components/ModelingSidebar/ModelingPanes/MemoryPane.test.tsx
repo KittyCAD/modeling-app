@@ -33,7 +33,7 @@ describe('processMemory', () => {
     const output = processMemory(execState.variables)
     expect(output.myVar).toEqual(5)
     expect(output.otherVar).toEqual(3)
-    expect(output.myFn).toEqual('__function(a)__')
+    expect(output.myFn).toEqual('__function__')
     expect(output.theExtrude).toEqual([
       {
         type: 'extrudePlane',

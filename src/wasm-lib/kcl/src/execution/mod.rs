@@ -34,7 +34,6 @@ use crate::{
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
-pub use exec_ast::FunctionParam;
 pub use geometry::*;
 pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
