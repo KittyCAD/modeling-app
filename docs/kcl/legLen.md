@@ -26,7 +26,7 @@ legLen(hypotenuse: number, leg: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

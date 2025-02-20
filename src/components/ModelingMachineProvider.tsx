@@ -796,11 +796,18 @@ export const ModelingMachineProvider = ({
         }),
         'animate-to-sketch': fromPromise(
           async ({ input: { selectionRanges } }) => {
+            const artifact = selectionRanges.graphSelections[0].artifact
             const plane = getPlaneFromArtifact(
-              selectionRanges.graphSelections[0].artifact,
+              artifact,
               engineCommandManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
+            // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plan
+            // but still works if the user selected a plane/face by defaulting to the first path
+            const mainPath =
+              artifact?.type === 'segment' || artifact?.type === 'solid2d'
+                ? artifact?.pathId
+                : plane?.pathIds[0]
             let sketch: KclValue | null = null
             for (const variable of Object.values(
               kclManager.execState.variables
@@ -808,7 +815,7 @@ export const ModelingMachineProvider = ({
               // find programMemory that matches path artifact
               if (
                 variable?.type === 'Sketch' &&
-                variable.value.artifactId === plane.pathIds[0]
+                variable.value.artifactId === mainPath
               ) {
                 sketch = variable
                 break
@@ -817,7 +824,7 @@ export const ModelingMachineProvider = ({
                 // if the variable is an sweep, check if the underlying sketch matches the artifact
                 variable?.type === 'Solid' &&
                 variable.value.sketch.on.type === 'plane' &&
-                variable.value.sketch.artifactId === plane.pathIds[0]
+                variable.value.sketch.artifactId === mainPath
               ) {
                 sketch = {
                   type: 'Sketch',
@@ -837,9 +844,8 @@ export const ModelingMachineProvider = ({
               info?.sketchDetails?.faceId || ''
             )
 
-            const sketchArtifact = engineCommandManager.artifactGraph.get(
-              plane.pathIds[0]
-            )
+            const sketchArtifact =
+              engineCommandManager.artifactGraph.get(mainPath)
             if (sketchArtifact?.type !== 'path')
               return Promise.reject(new Error('No sketch artifact'))
             const sketchPaths = getPathsFromArtifact({

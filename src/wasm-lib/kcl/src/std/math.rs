@@ -48,91 +48,19 @@ fn inner_rem(num: f64, divisor: f64) -> f64 {
 /// Compute the cosine of a number (in radians).
 pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
-    let result = inner_cos(num)?;
-
-    Ok(args.make_user_val_from_f64_with_type(result, NumericType::count()))
-}
-
-/// Compute the cosine of a number (in radians).
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 30,
-///     length = 3 / cos(toRadians(30)),
-///   }, %)
-///   |> yLineTo(0, %)
-///   |> close()
-///  
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "cos",
-    tags = ["math"],
-}]
-fn inner_cos(num: f64) -> Result<f64, KclError> {
-    Ok(num.cos())
+    Ok(args.make_user_val_from_f64_with_type(num.cos(), NumericType::count()))
 }
 
 /// Compute the sine of a number (in radians).
 pub async fn sin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
-    let result = inner_sin(num)?;
-
-    Ok(args.make_user_val_from_f64_with_type(result, NumericType::count()))
-}
-
-/// Compute the sine of a number (in radians).
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 50,
-///     length = 15 / sin(toDegrees(135)),
-///   }, %)
-///   |> yLineTo(0, %)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "sin",
-    tags = ["math"],
-}]
-fn inner_sin(num: f64) -> Result<f64, KclError> {
-    Ok(num.sin())
+    Ok(args.make_user_val_from_f64_with_type(num.sin(), NumericType::count()))
 }
 
 /// Compute the tangent of a number (in radians).
 pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
-    let result = inner_tan(num)?;
-
-    Ok(args.make_user_val_from_f64_with_type(result, NumericType::count()))
-}
-
-/// Compute the tangent of a number (in radians).
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 50,
-///     length = 50 * tan(1/2),
-///   }, %)
-///   |> yLineTo(0, %)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "tan",
-    tags = ["math"],
-}]
-fn inner_tan(num: f64) -> Result<f64, KclError> {
-    Ok(num.tan())
+    Ok(args.make_user_val_from_f64_with_type(num.tan(), NumericType::count()))
 }
 
 /// Return the value of `pi`. Archimedes’ constant (π).
@@ -143,6 +71,8 @@ pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 }
 
 /// Return the value of `pi`. Archimedes’ constant (π).
+///
+/// **DEPRECATED** use the constant PI
 ///
 /// ```no_run
 /// circumference = 70
@@ -155,6 +85,7 @@ pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 #[stdlib {
     name = "pi",
     tags = ["math"],
+    deprecated = true,
 }]
 fn inner_pi() -> Result<f64, KclError> {
     Ok(std::f64::consts::PI)
@@ -692,6 +623,8 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 
 /// Return the value of Euler’s number `e`.
 ///
+/// **DEPRECATED** use the constant E
+///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
@@ -707,6 +640,7 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 #[stdlib {
     name = "e",
     tags = ["math"],
+    deprecated = true,
 }]
 fn inner_e() -> Result<f64, KclError> {
     Ok(std::f64::consts::E)
@@ -720,6 +654,8 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 }
 
 /// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
+///
+/// **DEPRECATED** use the constant TAU
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
@@ -736,6 +672,7 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "tau",
     tags = ["math"],
+    deprecated = true,
 }]
 fn inner_tau() -> Result<f64, KclError> {
     Ok(std::f64::consts::TAU)

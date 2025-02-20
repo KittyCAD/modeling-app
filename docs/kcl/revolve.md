@@ -24,7 +24,7 @@ revolve(data: RevolveData, sketch: Sketch) -> Solid
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
 
 
 ### Examples

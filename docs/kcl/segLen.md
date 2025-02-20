@@ -21,7 +21,7 @@ segLen(tag: TagIdentifier) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

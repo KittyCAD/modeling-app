@@ -24,7 +24,7 @@ sweep(sketch: Sketch, path: SweepPath, sectional?: bool, tolerance?: number) -> 
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
 
 
 ### Examples

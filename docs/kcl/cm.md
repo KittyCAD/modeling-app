@@ -26,7 +26,7 @@ cm() -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples
