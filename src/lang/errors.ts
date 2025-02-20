@@ -285,7 +285,11 @@ export function complilationErrorsToDiagnostics(
             name: suggestion.title,
             apply: (view: EditorView, from: number, to: number) => {
               view.dispatch({
-                changes: { from, to, insert: suggestion.insert },
+                changes: {
+                  from: suggestion.source_range[0],
+                  to: suggestion.source_range[1],
+                  insert: suggestion.insert,
+                },
               })
             },
           },
