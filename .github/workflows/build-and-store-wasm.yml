@@ -24,7 +24,7 @@ jobs:
           workspaces: './src/wasm-lib'
       - name: build wasm
         run: |
-          yarn install:wasm-pack:sh
+          yarn install:wasm-pack
           yarn build:wasm
 
 
