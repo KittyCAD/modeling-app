@@ -18,12 +18,44 @@ chamfer(data: ChamferData, solid: Solid, tag?: TagDeclarator) -> Solid
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`ChamferData`](/docs/kcl/types/ChamferData) | Data for chamfers. | Yes |
-| `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces.
+
+When you define a solid to a variable like: ```no_run myPart = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() |> extrude(length = 6) ```
+
+The `myPart` variable will be an executed [`Solid`](/docs/kcl/types/Solid) object. Executed being past tense, because the engine has already executed the commands to create the solid.
+
+The previous solid commands will never be executed again, in this case.
+
+If you would like to encapsulate the commands to create the solid any time you call it, you can use a function.
+
+```no_run fn createPart() { return startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() |> extrude(length = 6) } ```
+
+Now, every time you call `createPart()`, the commands will be executed and a new solid will be created.
+
+When you assign the result of `createPart()` to a variable (`myPart = createPart()`, you are assigning the executed solid to that variable. Meaning that the solid `myPart` will not be executed again.
+
+You can still execute _new_ commands on the solid like `shell`, `fillet`, `chamfer`, etc. and the solid will be updated. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
 [`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
+
+When you define a solid to a variable like: ```no_run myPart = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() |> extrude(length = 6) ```
+
+The `myPart` variable will be an executed [`Solid`](/docs/kcl/types/Solid) object. Executed being past tense, because the engine has already executed the commands to create the solid.
+
+The previous solid commands will never be executed again, in this case.
+
+If you would like to encapsulate the commands to create the solid any time you call it, you can use a function.
+
+```no_run fn createPart() { return startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() |> extrude(length = 6) } ```
+
+Now, every time you call `createPart()`, the commands will be executed and a new solid will be created.
+
+When you assign the result of `createPart()` to a variable (`myPart = createPart()`, you are assigning the executed solid to that variable. Meaning that the solid `myPart` will not be executed again.
+
+You can still execute _new_ commands on the solid like `shell`, `fillet`, `chamfer`, etc. and the solid will be updated.
 
 
 ### Examples

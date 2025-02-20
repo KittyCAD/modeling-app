@@ -20,11 +20,43 @@ revolve(data: RevolveData, sketch: Sketch) -> Solid
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`RevolveData`](/docs/kcl/types/RevolveData) | Data for revolution surfaces. | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths.
+
+When you define a sketch to a variable like: ```no_run mySketch = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() ```
+
+The `mySketch` variable will be an executed [`Sketch`](/docs/kcl/types/Sketch) object. Executed being past tense, because the engine has already executed the commands to create the sketch.
+
+The previous sketch commands will never be executed again, in this case.
+
+If you would like to encapsulate the commands to create the sketch any time you call it, you can use a function.
+
+```no_run fn createSketch() { return startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() } ```
+
+Now, every time you call `createSketch()`, the commands will be executed and a new sketch will be created.
+
+When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`, you are assigning the executed sketch to that variable. Meaning that the sketch `mySketch` will not be executed again.
+
+You can still execute _new_ commands on the sketch like `extrude`, `revolve`, `loft`, etc. and the sketch will be updated. | Yes |
 
 ### Returns
 
 [`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
+
+When you define a solid to a variable like: ```no_run myPart = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() |> extrude(length = 6) ```
+
+The `myPart` variable will be an executed [`Solid`](/docs/kcl/types/Solid) object. Executed being past tense, because the engine has already executed the commands to create the solid.
+
+The previous solid commands will never be executed again, in this case.
+
+If you would like to encapsulate the commands to create the solid any time you call it, you can use a function.
+
+```no_run fn createPart() { return startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() |> extrude(length = 6) } ```
+
+Now, every time you call `createPart()`, the commands will be executed and a new solid will be created.
+
+When you assign the result of `createPart()` to a variable (`myPart = createPart()`, you are assigning the executed solid to that variable. Meaning that the solid `myPart` will not be executed again.
+
+You can still execute _new_ commands on the solid like `shell`, `fillet`, `chamfer`, etc. and the solid will be updated.
 
 
 ### Examples
