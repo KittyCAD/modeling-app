@@ -621,8 +621,10 @@ fn cleanup_type_description(object: &schemars::schema::SchemaObject) -> Result<s
                 let trimmed = code_block.trim_start_matches("```kcl").trim_end_matches("```");
                 let program = crate::Program::parse_no_errs(trimmed)?;
 
-                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
-                options.insert_final_newline = false;
+                let options = crate::parsing::ast::types::FormatOptions {
+                    insert_final_newline: false,
+                    ..Default::default()
+                };
                 let cleaned = program.ast.recast(&options, 0);
 
                 *description = description.replace(code_block, &format!("```kcl\n{}\n```", cleaned));
@@ -789,6 +791,9 @@ fn recurse_and_create_references(
             }
         }
     }
+
+    let obj = cleanup_type_description(&obj)
+        .map_err(|e| anyhow::anyhow!("Failed to cleanup type description for type `{}`: {}", name, e))?;
 
     Ok(schemars::schema::Schema::Object(obj.clone()))
 }
