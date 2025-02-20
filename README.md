@@ -48,19 +48,14 @@ We recommend downloading the latest application binary from [our Releases page](
 
 ## Running a development build
 
-Install a node version manager such as [fnm](https://github.com/Schniz/fnm).
+Install a node version manager such as [fnm](https://github.com/Schniz/fnm?tab=readme-ov-#installation).
 
-```
-# macOS/Linux 
-curl -fsSL https://fnm.vercel.app/install | bash
+On Windows, it's also recommended to upgrade your PowerShell version, we're using 7.
 
-# Windows
-winget install Schniz.fnm
-```
-
-Then in the repo
+Then in the repo run the following to install and use the node version specified in `.nvmrc`. You might need to specify your processor architecture with `--arch arm64` or `--arch x64` if it's not autodetected. 
 ```
 fnm install --corepack-enabled
+fnm use
 ```
 
 Install the NPM dependencies with:
@@ -81,13 +76,21 @@ yarn install:wasm-pack:windows
 
 Then to build the WASM layer, run:
 ```
+# macOS/Linux
 yarn build:wasm
+
+# Windows
+yarn build:wasm:windows
 ```
 
-or if you have the gh cli installed
+or if you have the gh cli installed and want to download the latest main wasm bundle
 
 ```
-./get-latest-wasm-bundle.sh # this will download the latest main wasm bundle
+# macOS/Linux
+yarn fetch:wasm
+
+# Windows
+yarn fetch:wasm:windows
 ```
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
