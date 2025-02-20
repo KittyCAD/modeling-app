@@ -414,7 +414,7 @@ pub enum PlaneType {
 ///
 /// When you define a sketch to a variable like:
 ///
-/// ```no_run
+/// ```kcl
 /// mySketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line(end = [24, 0])
@@ -431,7 +431,7 @@ pub enum PlaneType {
 /// If you would like to encapsulate the commands to create the sketch any time you call it,
 /// you can use a function.
 ///
-/// ```no_run
+/// ```kcl
 /// fn createSketch() {
 ///    return startSketchOn('XY')
 ///         |> startProfileAt([-12, 12], %)
@@ -585,7 +585,7 @@ impl Sketch {
 ///
 /// When you define a solid to a variable like:
 ///
-/// ```no_run
+/// ```kcl
 /// myPart = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line(end = [24, 0])
@@ -603,7 +603,7 @@ impl Sketch {
 /// If you would like to encapsulate the commands to create the solid any time you call it,
 /// you can use a function.
 ///
-/// ```no_run
+/// ```kcl
 /// fn createPart() {
 ///    return startSketchOn('XY')
 ///         |> startProfileAt([-12, 12], %)
