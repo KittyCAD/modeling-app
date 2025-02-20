@@ -96,6 +96,28 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     );
 
     hbs.register_helper(
+        "firstLine",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                // Get the first parameter passed to the helper
+                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
+
+                // Get the first line using lines() iterator
+                let first = param.lines().next().unwrap_or("");
+
+                // Write the result
+                out.write(first)?;
+                Ok(())
+            },
+        ),
+    );
+
+    hbs.register_helper(
         "neq",
         Box::new(
             |h: &handlebars::Helper,
@@ -566,6 +588,10 @@ fn generate_type(
         }));
     }
 
+    // Cleanup the description.
+    let object = cleanup_type_description(&object)
+        .map_err(|e| anyhow::anyhow!("Failed to cleanup type description for type `{}`: {}", name, e))?;
+
     let data = json!(schemars::schema::Schema::Object(object));
 
     let mut output = hbs.render("type", &data)?;
@@ -574,6 +600,39 @@ fn generate_type(
     expectorate::assert_contents(format!("{}/{}.md", TYPES_DIR, name), &output);
 
     Ok(())
+}
+
+fn cleanup_type_description(object: &schemars::schema::SchemaObject) -> Result<schemars::schema::SchemaObject> {
+    let mut object = object.clone();
+    if let Some(metadata) = object.metadata.as_mut() {
+        if let Some(description) = metadata.description.as_mut() {
+            // Find any ```kcl code blocks and format the code.
+            // Parse any code blocks from the doc string.
+            let mut code_blocks = Vec::new();
+            let d = description.clone();
+            for line in d.lines() {
+                if line.starts_with("```kcl") && line.ends_with("```") {
+                    code_blocks.push(line);
+                }
+            }
+
+            // Parse the kcl and recast it.
+            for code_block in &code_blocks {
+                let trimmed = code_block.trim_start_matches("```kcl").trim_end_matches("```");
+                let program = crate::Program::parse_no_errs(trimmed)?;
+
+                let options = crate::parsing::ast::types::FormatOptions {
+                    insert_final_newline: false,
+                    ..Default::default()
+                };
+                let cleaned = program.ast.recast(&options, 0);
+
+                *description = description.replace(code_block, &format!("```kcl\n{}\n```", cleaned));
+            }
+        }
+    }
+
+    Ok(object)
 }
 
 fn clean_function_name(name: &str) -> String {
@@ -732,6 +791,9 @@ fn recurse_and_create_references(
             }
         }
     }
+
+    let obj = cleanup_type_description(&obj)
+        .map_err(|e| anyhow::anyhow!("Failed to cleanup type description for type `{}`: {}", name, e))?;
 
     Ok(schemars::schema::Schema::Object(obj.clone()))
 }

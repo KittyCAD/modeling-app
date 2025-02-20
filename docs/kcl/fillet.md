@@ -18,12 +18,12 @@ fillet(data: FilletData, solid: Solid, tag?: TagDeclarator) -> Solid
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`FilletData`](/docs/kcl/types/FilletData) | Data for fillets. | Yes |
-| `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) | A solid is a collection of extrude surfaces. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
 
 
 ### Examples

@@ -25,7 +25,7 @@ loft(sketches: [Sketch], v_degree: NonZeroU32, bez_approximate_rational: bool, b
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
 
 
 ### Examples

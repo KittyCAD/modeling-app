@@ -33,6 +33,7 @@ layout: manual
 
 
 ----
+A unit of length.
 
 **Type:** `object`
 
@@ -140,6 +141,7 @@ layout: manual
 
 
 ----
+A unit of angle.
 
 **Type:** `object`
 
