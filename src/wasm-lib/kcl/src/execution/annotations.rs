@@ -24,11 +24,6 @@ pub(super) const IMPORT_COORDS_VALUES: [(&str, &System); 3] =
     [("zoo", KITTYCAD), ("opengl", OPENGL), ("vulkan", VULKAN)];
 pub(super) const IMPORT_LENGTH_UNIT: &str = "lengthUnit";
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub(super) enum AnnotationScope {
-    Module,
-}
-
 pub(super) fn is_significant(attr: &&Node<Annotation>) -> bool {
     match attr.name() {
         Some(name) => SIGNIFICANT_ATTRS.contains(&name),
