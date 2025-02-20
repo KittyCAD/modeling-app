@@ -445,7 +445,7 @@ pub enum PlaneType {
 /// Now, every time you call `createSketch()`, the commands will be
 /// executed and a new sketch will be created.
 ///
-/// When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`, you are assigning
+/// When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`), you are assigning
 /// the executed sketch to that variable. Meaning that the sketch `mySketch` will not be executed
 /// again.
 ///
@@ -618,7 +618,7 @@ impl Sketch {
 /// Now, every time you call `createPart()`, the commands will be
 /// executed and a new solid will be created.
 ///
-/// When you assign the result of `createPart()` to a variable (`myPart = createPart()`, you are assigning
+/// When you assign the result of `createPart()` to a variable (`myPart = createPart()`), you are assigning
 /// the executed solid to that variable. Meaning that the solid `myPart` will not be executed
 /// again.
 ///
