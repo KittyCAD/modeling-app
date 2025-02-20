@@ -837,6 +837,9 @@ fn recurse_and_create_references(
         } else {
             obj.metadata = to.metadata.clone();
         }
+
+        let obj = cleanup_type_description(&obj)
+            .map_err(|e| anyhow::anyhow!("Failed to cleanup type description for type `{}`: {}", name, e))?;
         return Ok(schemars::schema::Schema::Object(obj));
     }
 
