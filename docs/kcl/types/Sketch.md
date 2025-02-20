@@ -39,23 +39,7 @@ You can still execute _new_ commands on the sketch like `extrude`, `revolve`, `l
 | `tags` |`object`| Tag identifiers that have been declared in this sketch. | No |
 | `artifactId` |[`ArtifactId`](/docs/kcl/types/ArtifactId)| The original id of the sketch. This stays the same even if the sketch is is sketched on face etc. | No |
 | `originalId` |`string`|  | No |
-| `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A sketch is a collection of paths.
-
-When you define a sketch to a variable like: ```no_run mySketch = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() ```
-
-The `mySketch` variable will be an executed [`Sketch`](/docs/kcl/types/Sketch) object. Executed being past tense, because the engine has already executed the commands to create the sketch.
-
-The previous sketch commands will never be executed again, in this case.
-
-If you would like to encapsulate the commands to create the sketch any time you call it, you can use a function.
-
-```no_run fn createSketch() { return startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() } ```
-
-Now, every time you call `createSketch()`, the commands will be executed and a new sketch will be created.
-
-When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`, you are assigning the executed sketch to that variable. Meaning that the sketch `mySketch` will not be executed again.
-
-You can still execute _new_ commands on the sketch like `extrude`, `revolve`, `loft`, etc. and the sketch will be updated. | No |
+| `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A sketch is a collection of paths. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`| Metadata. | No |
 
 

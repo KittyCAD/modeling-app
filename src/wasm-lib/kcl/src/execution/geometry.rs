@@ -580,7 +580,7 @@ impl Sketch {
     }
 }
 
-/// An solid is a collection of extrude surfaces.
+/// A solid is a collection of extrude surfaces.
 ///
 /// When you define a solid to a variable like:
 /// ```no_run

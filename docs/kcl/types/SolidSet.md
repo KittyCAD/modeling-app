@@ -12,7 +12,7 @@ A solid or a group of solids.
 
 **This schema accepts exactly one of the following:**
 
-An solid is a collection of extrude surfaces.
+A solid is a collection of extrude surfaces.
 
 When you define a solid to a variable like: ```no_run myPart = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() |> extrude(length = 6) ```
 

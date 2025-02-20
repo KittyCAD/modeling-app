@@ -96,6 +96,28 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     );
 
     hbs.register_helper(
+        "firstLine",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                // Get the first parameter passed to the helper
+                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
+
+                // Get the first line using lines() iterator
+                let first = param.lines().next().unwrap_or("");
+
+                // Write the result
+                out.write(first)?;
+                Ok(())
+            },
+        ),
+    );
+
+    hbs.register_helper(
         "neq",
         Box::new(
             |h: &handlebars::Helper,
