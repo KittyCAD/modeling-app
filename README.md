@@ -63,7 +63,7 @@ Install the NPM dependencies with:
 yarn install
 ```
 
-This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We always use the latest stable version of Rust, so you may need to run `rustup update stable`. We have package scripts to run rustup, see `package.json` for reference:
+This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We have package scripts to run rustup, see `package.json` for reference:
 ```
 # macOS/Linux
 yarn install:rust
