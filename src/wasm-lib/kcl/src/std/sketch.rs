@@ -19,11 +19,11 @@ use crate::{
     },
     parsing::ast::types::TagNode,
     std::{
+        args::{Args, TyF64},
         utils::{
             arc_angles, arc_center_and_end, calculate_circle_center, get_tangential_arc_to_info, get_x_component,
             get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
         },
-        Args,
     },
 };
 
@@ -1406,7 +1406,7 @@ pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<
     let sketch: Sketch = args.get_sketch()?;
     let ty = sketch.units.into();
     let x = inner_profile_start_x(sketch)?;
-    Ok(args.make_user_val_from_f64_with_type(x, ty))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'x'
@@ -1431,7 +1431,7 @@ pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<
     let sketch: Sketch = args.get_sketch()?;
     let ty = sketch.units.into();
     let x = inner_profile_start_y(sketch)?;
-    Ok(args.make_user_val_from_f64_with_type(x, ty))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'y'
