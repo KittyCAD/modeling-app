@@ -8,7 +8,21 @@ A sketch is a collection of paths.
 
 When you define a sketch to a variable like:
 
-```no_run mySketch = startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() ```
+```no_run
+
+mySketch = startSketchOn('XY')
+
+|> startProfileAt([-12, 12], %)
+
+|> line(end = [24, 0])
+
+|> line(end = [0, -24])
+
+|> line(end = [-24, 0])
+
+|> close()
+
+```
 
 The `mySketch` variable will be an executed [`Sketch`](/docs/kcl/types/Sketch) object. Executed being past tense, because the engine has already executed the commands to create the sketch.
 
@@ -16,7 +30,25 @@ The previous sketch commands will never be executed again, in this case.
 
 If you would like to encapsulate the commands to create the sketch any time you call it, you can use a function.
 
-```no_run fn createSketch() { return startSketchOn('XY') |> startProfileAt([-12, 12], %) |> line(end = [24, 0]) |> line(end = [0, -24]) |> line(end = [-24, 0]) |> close() } ```
+```no_run
+
+fn createSketch() {
+
+return startSketchOn('XY')
+
+|> startProfileAt([-12, 12], %)
+
+|> line(end = [24, 0])
+
+|> line(end = [0, -24])
+
+|> line(end = [-24, 0])
+
+|> close()
+
+}
+
+```
 
 Now, every time you call `createSketch()`, the commands will be executed and a new sketch will be created.
 
