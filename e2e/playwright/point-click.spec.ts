@@ -106,81 +106,81 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         toolbar: ToolbarFixture,
         scene: SceneFixture
       ) =>
-      async ({
-        clickCoords,
-        cameraPos,
-        cameraTarget,
-        beforeChamferSnippet,
-        afterChamferSelectSnippet,
-        afterRectangle1stClickSnippet,
-        afterRectangle2ndClickSnippet,
-        beforeChamferSnippetEnd,
-      }: {
-        clickCoords: { x: number; y: number }
-        cameraPos: { x: number; y: number; z: number }
-        cameraTarget: { x: number; y: number; z: number }
-        beforeChamferSnippet: string
-        afterChamferSelectSnippet: string
-        afterRectangle1stClickSnippet: string
-        afterRectangle2ndClickSnippet: string
-        beforeChamferSnippetEnd?: string
-      }) => {
-        const [clickChamfer] = scene.makeMouseHelpers(
-          clickCoords.x,
-          clickCoords.y
-        )
-        const [rectangle1stClick] = scene.makeMouseHelpers(573, 149)
-        const [rectangle2ndClick, rectangle2ndMove] = scene.makeMouseHelpers(
-          598,
-          380,
-          { steps: 5 }
-        )
+        async ({
+          clickCoords,
+          cameraPos,
+          cameraTarget,
+          beforeChamferSnippet,
+          afterChamferSelectSnippet,
+          afterRectangle1stClickSnippet,
+          afterRectangle2ndClickSnippet,
+          beforeChamferSnippetEnd,
+        }: {
+          clickCoords: { x: number; y: number }
+          cameraPos: { x: number; y: number; z: number }
+          cameraTarget: { x: number; y: number; z: number }
+          beforeChamferSnippet: string
+          afterChamferSelectSnippet: string
+          afterRectangle1stClickSnippet: string
+          afterRectangle2ndClickSnippet: string
+          beforeChamferSnippetEnd?: string
+        }) => {
+          const [clickChamfer] = scene.makeMouseHelpers(
+            clickCoords.x,
+            clickCoords.y
+          )
+          const [rectangle1stClick] = scene.makeMouseHelpers(573, 149)
+          const [rectangle2ndClick, rectangle2ndMove] = scene.makeMouseHelpers(
+            598,
+            380,
+            { steps: 5 }
+          )
 
-        await scene.moveCameraTo(cameraPos, cameraTarget)
+          await scene.moveCameraTo(cameraPos, cameraTarget)
 
-        await test.step('check chamfer selection changes cursor positon', async () => {
-          await expect(async () => {
-            // sometimes initial click doesn't register
+          await test.step('check chamfer selection changes cursor positon', async () => {
+            await expect(async () => {
+              // sometimes initial click doesn't register
+              await clickChamfer()
+              // await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
+              await editor.expectActiveLinesToBe([
+                beforeChamferSnippetEnd || beforeChamferSnippet.slice(-5),
+              ])
+            }).toPass({ timeout: 15_000, intervals: [500] })
+          })
+
+          await test.step('starting a new and selecting a chamfer should animate to the new sketch and possible break up the initial chamfer if it had one than more tag', async () => {
+            await toolbar.startSketchPlaneSelection()
             await clickChamfer()
-            // await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
-            await editor.expectActiveLinesToBe([
-              beforeChamferSnippetEnd || beforeChamferSnippet.slice(-5),
-            ])
-          }).toPass({ timeout: 15_000, intervals: [500] })
-        })
+            // timeout wait for engine animation is unavoidable
+            await page.waitForTimeout(1000)
+            await editor.expectEditor.toContain(afterChamferSelectSnippet)
+          })
+          await test.step('make sure a basic sketch can be added', async () => {
+            await toolbar.rectangleBtn.click()
+            await rectangle1stClick()
+            await editor.expectEditor.toContain(afterRectangle1stClickSnippet)
+            await rectangle2ndMove({
+              pixelDiff: 50,
+            })
+            await rectangle2ndClick()
+            await editor.expectEditor.toContain(afterRectangle2ndClickSnippet, {
+              shouldNormalise: true,
+            })
+          })
 
-        await test.step('starting a new and selecting a chamfer should animate to the new sketch and possible break up the initial chamfer if it had one than more tag', async () => {
-          await toolbar.startSketchPlaneSelection()
-          await clickChamfer()
-          // timeout wait for engine animation is unavoidable
-          await page.waitForTimeout(1000)
-          await editor.expectEditor.toContain(afterChamferSelectSnippet)
-        })
-        await test.step('make sure a basic sketch can be added', async () => {
-          await toolbar.rectangleBtn.click()
-          await rectangle1stClick()
-          await editor.expectEditor.toContain(afterRectangle1stClickSnippet)
-          await rectangle2ndMove({
-            pixelDiff: 50,
+          await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
+            await toolbar.exitSketchBtn.click()
+            await scene.waitForExecutionDone()
           })
-          await rectangle2ndClick()
-          await editor.expectEditor.toContain(afterRectangle2ndClickSnippet, {
-            shouldNormalise: true,
+          await test.step('Check there is no errors after code created in previous steps executes', async () => {
+            await editor.expectState({
+              activeLines: ["sketch001 = startSketchOn('XZ')"],
+              highlightedCode: '',
+              diagnostics: [],
+            })
           })
-        })
-
-        await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
-          await toolbar.exitSketchBtn.click()
-          await scene.waitForExecutionDone()
-        })
-        await test.step('Check there is no errors after code created in previous steps executes', async () => {
-          await editor.expectState({
-            activeLines: ["sketch001 = startSketchOn('XZ')"],
-            highlightedCode: '',
-            diagnostics: [],
-          })
-        })
-      }
+        }
     test('works on all edge selections and can break up multi edges in a chamfer array', async ({
       context,
       page,
@@ -1478,9 +1478,9 @@ sketch002 = startSketchOn('XZ')
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = 'fillet( radius = 5, tags = [seg01] )'
+    const firstFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
     const secondFilletDeclaration =
-      'fillet(       radius = 5,       tags = [getOppositeEdge(seg01)]     )'
+      'fillet(radius = 5, tags = [getOppositeEdge(seg01)])'
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -1580,7 +1580,7 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(firstFilletDeclaration)
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|>fillet(radius=5,tags=[seg01])'],
+        activeLines: ['|> fillet(radius = 5, tags = [seg01])'],
         highlightedCode: '',
       })
     })
@@ -1660,7 +1660,7 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(secondFilletDeclaration)
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['radius=5,'],
+        activeLines: ['|>fillet(radius=5,tags=[getOppositeEdge(seg01)])'],
         highlightedCode: '',
       })
     })
@@ -1712,17 +1712,17 @@ extrude001 = extrude(sketch001, length = -12)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
-  |> fillet( radius = 5, tags = [seg01] ) // fillet01
-  |> fillet( radius = 5, tags = [seg02] ) // fillet02
-fillet03 = fillet(  extrude001, radius = 5,  tags = [getOppositeEdge(seg01)])
-fillet04 = fillet(  extrude001, radius = 5,  tags = [getOppositeEdge(seg02)])
+  |> fillet(radius = 5, tags = [seg01]) // fillet01
+  |> fillet(radius = 5, tags = [seg02]) // fillet02
+fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
+fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
 `
-    const pipedFilletDeclaration = 'fillet( radius = 5, tags = [seg01] )'
-    const secondPipedFilletDeclaration = 'fillet( radius = 5, tags = [seg02] )'
+    const pipedFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
+    const secondPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg02])'
     const standaloneFilletDeclaration =
-      'fillet03 = fillet(  extrude001, radius = 5,  tags = [getOppositeEdge(seg01)])'
+      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])'
     const secondStandaloneFilletDeclaration =
-      'fillet04 = fillet(  extrude001, radius = 5,  tags = [getOppositeEdge(seg02)])'
+      'fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
 
     // Locators
     const pipedFilletEdgeLocation = { x: 600, y: 193 }
@@ -1858,7 +1858,7 @@ extrude001 = extrude(sketch001, length = -12)
 `
     const firstChamferDeclaration = 'chamfer(length = 5, tags = [seg01])'
     const secondChamferDeclaration =
-      'chamfer(      length = 5,       tags = [getOppositeEdge(seg01)]    )'
+      'chamfer(length = 5, tags = [getOppositeEdge(seg01)])'
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2033,7 +2033,7 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(secondChamferDeclaration)
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['length=5,'],
+        activeLines: ['|>chamfer(length=5,tags=[getOppositeEdge(seg01)])'],
         highlightedCode: '',
       })
     })
@@ -2083,15 +2083,15 @@ extrude001 = extrude(sketch001, length = -12)
 extrude001 = extrude(sketch001, length = -12)
   |> chamfer(length = 5, tags = [seg01]) // chamfer01
   |> chamfer(length = 5, tags = [seg02]) // chamfer02
-chamfer03 = chamfer(  extrude001, length = 5,  tags = [getOppositeEdge(seg01)])
-chamfer04 = chamfer(  extrude001, length = 5,  tags = [getOppositeEdge(seg02)])
+chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])
+chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
 `
     const pipedChamferDeclaration = 'chamfer(length = 5, tags = [seg01])'
     const secondPipedChamferDeclaration = 'chamfer(length = 5, tags = [seg02])'
     const standaloneChamferDeclaration =
-      'chamfer03 = chamfer(  extrude001, length = 5,  tags = [getOppositeEdge(seg01)])'
+      'chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])'
     const secondStandaloneChamferDeclaration =
-      'chamfer04 = chamfer(  extrude001, length = 5,  tags = [getOppositeEdge(seg02)])'
+      'chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])'
 
     // Locators
     const pipedChamferEdgeLocation = { x: 600, y: 193 }
