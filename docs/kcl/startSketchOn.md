@@ -6,7 +6,15 @@ layout: manual
 
 Start a new 2-dimensional sketch on a specific plane or face.
 
+### Sketch on Face Behavior
 
+There are some important behaviors to understand when sketching on a face:
+
+The resulting sketch will _include_ the face and thus Solid that was sketched on. So say you were to export the resulting Sketch / Solid from a sketch on a face, you would get both the artifact of the sketch on the face and the parent face / Solid itself.
+
+This is important to understand because if you were to then sketch on the resulting Solid, it would again include the face and parent Solid that was sketched on. This could go on indefinitely.
+
+The point is if you want to export the result of a sketch on a face, you only need to export the final Solid that was created from the sketch on the face, since it will include all the parent faces and Solids.
 
 ```js
 startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface
