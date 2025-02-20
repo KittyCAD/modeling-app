@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use insta::rounded_redaction;
 
@@ -9,6 +9,31 @@ use crate::{
     parsing::ast::types::{Node, Program},
     ModuleId,
 };
+
+/// A simulation test.
+#[derive(Debug)]
+struct Test {
+    /// The name of the test.
+    name: String,
+    /// The name of the KCL file that's the entry point, e.g. "main.kcl", in the
+    /// `input_dir`.
+    entry_point: String,
+    /// Input KCL files are in this directory.
+    input_dir: PathBuf,
+    /// Expected snapshot output files are in this directory.
+    output_dir: PathBuf,
+}
+
+impl Test {
+    fn new(name: &str) -> Self {
+        Self {
+            name: name.to_owned(),
+            entry_point: "input.kcl".to_owned(),
+            input_dir: Path::new("tests").join(name),
+            output_dir: Path::new("tests").join(name),
+        }
+    }
+}
 
 /// Deserialize the data from a snapshot.
 fn get<T: serde::de::DeserializeOwned>(snapshot: &str) -> T {
@@ -21,16 +46,16 @@ fn get<T: serde::de::DeserializeOwned>(snapshot: &str) -> T {
         .unwrap()
 }
 
-fn assert_snapshot<F, R>(test_name: &str, operation: &str, f: F)
+fn assert_snapshot<F, R>(test: &Test, operation: &str, f: F)
 where
     F: FnOnce() -> R,
 {
     let mut settings = insta::Settings::clone_current();
     // These make the snapshots more readable and match our dir structure.
     settings.set_omit_expression(true);
-    settings.set_snapshot_path(format!("../tests/{test_name}"));
+    settings.set_snapshot_path(Path::new("..").join(&test.output_dir));
     settings.set_prepend_module_to_snapshot(false);
-    settings.set_description(format!("{operation} {test_name}.kcl"));
+    settings.set_description(format!("{operation} {}.kcl", &test.name));
     // Sorting maps makes them easier to diff.
     settings.set_sort_maps(true);
     // Replace UUIDs with the string "[uuid]", because otherwise the tests would constantly
@@ -43,23 +68,34 @@ where
     settings.bind(f);
 }
 
-fn read(filename: &'static str, test_name: &str) -> String {
-    std::fs::read_to_string(format!("tests/{test_name}/{filename}")).unwrap()
+fn read<P>(filename: &str, dir: P) -> String
+where
+    P: AsRef<Path>,
+{
+    std::fs::read_to_string(dir.as_ref().join(filename)).unwrap()
 }
 
 fn parse(test_name: &str) {
-    let input = read("input.kcl", test_name);
+    parse_test(&Test::new(test_name));
+}
+
+fn parse_test(test: &Test) {
+    let input = read(&test.entry_point, &test.input_dir);
     let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
 
     // Parse the tokens into an AST.
     let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
-    assert_snapshot(test_name, "Result of parsing", || {
+    assert_snapshot(test, "Result of parsing", || {
         insta::assert_json_snapshot!("ast", parse_res);
     });
 }
 
 fn unparse(test_name: &str) {
-    let input = read("ast.snap", test_name);
+    unparse_test(&Test::new(test_name));
+}
+
+fn unparse_test(test: &Test) {
+    let input = read("ast.snap", &test.output_dir);
     let ast_res: Result<Program, KclError> = get(&input);
     let Ok(ast) = ast_res else {
         return;
@@ -67,9 +103,9 @@ fn unparse(test_name: &str) {
     // Check recasting the AST produces the original string.
     let actual = ast.recast(&Default::default(), 0);
     if matches!(std::env::var("EXPECTORATE").as_deref(), Ok("overwrite")) {
-        std::fs::write(format!("tests/{test_name}/input.kcl"), &actual).unwrap();
+        std::fs::write(test.input_dir.join(&test.entry_point), &actual).unwrap();
     }
-    let expected = read("input.kcl", test_name);
+    let expected = read(&test.entry_point, &test.input_dir);
     pretty_assertions::assert_eq!(
         actual,
         expected,
@@ -78,8 +114,12 @@ fn unparse(test_name: &str) {
 }
 
 async fn execute(test_name: &str, render_to_png: bool) {
+    execute_test(&Test::new(test_name), render_to_png).await
+}
+
+async fn execute_test(test: &Test, render_to_png: bool) {
     // Read the AST from disk.
-    let input = read("ast.snap", test_name);
+    let input = read("ast.snap", &test.output_dir);
     let ast_res: Result<Node<Program>, KclError> = get(&input);
     let Ok(ast) = ast_res else {
         return;
@@ -89,27 +129,26 @@ async fn execute(test_name: &str, render_to_png: bool) {
     let exec_res = crate::test_server::execute_and_snapshot_ast(
         ast.into(),
         crate::settings::types::UnitLength::Mm,
-        Some(Path::new("tests").join(test_name).join("input.kcl").to_owned()),
+        Some(test.input_dir.join(&test.entry_point)),
     )
     .await;
     match exec_res {
         Ok((exec_state, png)) => {
-            let fail_path_str = format!("tests/{test_name}/execution_error.snap");
-            let fail_path = Path::new(&fail_path_str);
-            if std::fs::exists(fail_path).unwrap() {
-                panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl/{fail_path_str}")
+            let fail_path = test.output_dir.join("execution_error.snap");
+            if std::fs::exists(&fail_path).unwrap() {
+                panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl/{}", fail_path.to_string_lossy())
             }
             if render_to_png {
-                twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
+                twenty_twenty::assert_image(test.output_dir.join("rendered_model.png"), &png, 0.99);
             }
             let outcome = exec_state.to_wasm_outcome();
             assert_common_snapshots(
-                test_name,
+                test,
                 outcome.operations,
                 outcome.artifact_commands,
                 outcome.artifact_graph,
             );
-            assert_snapshot(test_name, "Variables in memory after executing", || {
+            assert_snapshot(test, "Variables in memory after executing", || {
                 insta::assert_json_snapshot!("program_memory", outcome.variables, {
                         ".**[].from[]" => rounded_redaction(4),
                         ".**[].to[]" => rounded_redaction(4),
@@ -120,9 +159,8 @@ async fn execute(test_name: &str, render_to_png: bool) {
             });
         }
         Err(e) => {
-            let ok_path_str = format!("tests/{test_name}/program_memory.snap");
-            let ok_path = Path::new(&ok_path_str);
-            let previously_passed = std::fs::exists(ok_path).unwrap();
+            let ok_path = test.output_dir.join("program_memory.snap");
+            let previously_passed = std::fs::exists(&ok_path).unwrap();
             match e.error {
                 crate::errors::ExecError::Kcl(error) => {
                     // Snapshot the KCL error with a fancy graphical report.
@@ -130,26 +168,21 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     // to source code, underlines, etc.
                     let report = crate::errors::Report {
                         error: error.error,
-                        filename: format!("{test_name}.kcl"),
-                        kcl_source: read("input.kcl", test_name),
+                        filename: format!("{}.kcl", &test.name),
+                        kcl_source: read(&test.entry_point, &test.input_dir),
                     };
                     let report = miette::Report::new(report);
                     if previously_passed {
-                        eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl/{ok_path_str} and other associated passing artifacts");
+                        eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl/{} and other associated passing artifacts", ok_path.to_string_lossy());
                         panic!("{report:?}");
                     }
                     let report = format!("{:?}", report);
 
-                    assert_snapshot(test_name, "Error from executing", || {
+                    assert_snapshot(test, "Error from executing", || {
                         insta::assert_snapshot!("execution_error", report);
                     });
 
-                    assert_common_snapshots(
-                        test_name,
-                        error.operations,
-                        error.artifact_commands,
-                        error.artifact_graph,
-                    );
+                    assert_common_snapshots(test, error.operations, error.artifact_commands, error.artifact_graph);
                 }
                 e => {
                     // These kinds of errors aren't expected to occur. We don't
@@ -165,12 +198,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
 /// Assert snapshots that should happen both when KCL execution succeeds and
 /// when it results in an error.
 fn assert_common_snapshots(
-    test_name: &str,
+    test: &Test,
     operations: Vec<Operation>,
     artifact_commands: Vec<ArtifactCommand>,
     artifact_graph: ArtifactGraph,
 ) {
-    assert_snapshot(test_name, "Operations executed", || {
+    assert_snapshot(test, "Operations executed", || {
         insta::assert_json_snapshot!("ops", operations, {
             "[].unlabeledArg.*.value.**[].from[]" => rounded_redaction(4),
             "[].unlabeledArg.*.value.**[].to[]" => rounded_redaction(4),
@@ -178,14 +211,14 @@ fn assert_common_snapshots(
             "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
         });
     });
-    assert_snapshot(test_name, "Artifact commands", || {
+    assert_snapshot(test, "Artifact commands", || {
         insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
             "[].command.segment.*.x" => rounded_redaction(4),
             "[].command.segment.*.y" => rounded_redaction(4),
             "[].command.segment.*.z" => rounded_redaction(4),
         });
     });
-    assert_snapshot(test_name, "Artifact graph flowchart", || {
+    assert_snapshot(test, "Artifact graph flowchart", || {
         let flowchart = artifact_graph
             .to_mermaid_flowchart()
             .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
