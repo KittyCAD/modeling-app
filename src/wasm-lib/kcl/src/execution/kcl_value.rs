@@ -6,10 +6,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclErrorDetails,
-    exec::Sketch,
     execution::{
-        ExecState, Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet,
-        TagIdentifier,
+        state::MetaSettings, EnvironmentRef, ExecState, ExecutorContext, Face, Helix, ImportedGeometry, Metadata,
+        Plane, Sketch, SketchSet, Solid, SolidSet, TagIdentifier,
     },
     parsing::{
         ast::types::{
@@ -18,10 +17,8 @@ use crate::{
         token::NumericSuffix,
     },
     std::{args::Arg, FnAsArg},
-    ExecutorContext, KclError, ModuleId, SourceRange,
+    KclError, ModuleId, SourceRange,
 };
-
-use super::{memory::EnvironmentRef, MetaSettings};
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
@@ -87,15 +84,12 @@ pub enum KclValue {
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     Function {
-        /// Adam Chalmers speculation:
-        /// Reference to a KCL stdlib function (written in Rust).
-        /// Some if the KCL value is an alias of a stdlib function,
-        /// None if it's a KCL function written/declared in KCL.
         #[serde(skip)]
-        func: Option<MemoryFunction>,
+        func: Option<crate::std::StdFn>,
         #[schemars(skip)]
         expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        memory: EnvironmentRef,
+        // Invariant: Always Some except for std lib functions
+        memory: Option<EnvironmentRef>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -326,7 +320,11 @@ impl KclValue {
 
     pub(crate) fn map_env_ref(&self, env_map: &HashMap<EnvironmentRef, EnvironmentRef>) -> Self {
         let mut result = self.clone();
-        if let KclValue::Function { ref mut memory, .. } = result {
+        if let KclValue::Function {
+            memory: Some(ref mut memory),
+            ..
+        } = result
+        {
             if let Some(new) = env_map.get(memory) {
                 *memory = *new;
             }
@@ -555,12 +553,13 @@ impl KclValue {
         args: Vec<Arg>,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
+        source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
         let KclValue::Function {
             func,
             expression,
             memory: closure_memory,
-            meta,
+            ..
         } = &self
         else {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -569,14 +568,20 @@ impl KclValue {
             }));
         };
         if let Some(func) = func {
-            exec_state.mut_memory().push_new_env_for_call(*closure_memory);
-            let result = func(args, *closure_memory, expression.clone(), meta.clone(), exec_state, ctx).await;
+            exec_state.mut_memory().push_new_env_for_rust_call();
+            let args = crate::std::Args::new(
+                args,
+                source_range,
+                ctx.clone(),
+                exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+            );
+            let result = func(exec_state, args).await.map(Some);
             exec_state.mut_memory().pop_env();
             result
         } else {
             crate::execution::exec_ast::call_user_defined_function(
                 args,
-                *closure_memory,
+                closure_memory.unwrap(),
                 expression.as_ref(),
                 exec_state,
                 &ctx,
@@ -611,7 +616,7 @@ impl KclValue {
         } else {
             crate::execution::exec_ast::call_user_defined_function_kw(
                 args.kw_args,
-                *closure_memory,
+                closure_memory.unwrap(),
                 expression.as_ref(),
                 exec_state,
                 &ctx,
@@ -640,12 +645,53 @@ impl NumericType {
         NumericType::Known(UnitType::Count)
     }
 
-    pub fn combine(self, other: &NumericType) -> NumericType {
+    /// Combine two types when we expect them to be equal.
+    pub fn combine_eq(self, other: &NumericType) -> NumericType {
         if &self == other {
             self
         } else {
             NumericType::Unknown
         }
+    }
+
+    /// Combine n types when we expect them to be equal.
+    ///
+    /// Precondition: tys.len() > 0
+    pub fn combine_n_eq(tys: &[NumericType]) -> NumericType {
+        let ty0 = tys[0].clone();
+        for t in &tys[1..] {
+            if t != &ty0 {
+                return NumericType::Unknown;
+            }
+        }
+        ty0
+    }
+
+    /// Combine two types in addition-like operations.
+    pub fn combine_add(a: NumericType, b: NumericType) -> NumericType {
+        if a == b {
+            return a;
+        }
+        NumericType::Unknown
+    }
+
+    /// Combine two types in multiplication-like operations.
+    pub fn combine_mul(a: NumericType, b: NumericType) -> NumericType {
+        if a == NumericType::count() {
+            return b;
+        }
+        if b == NumericType::count() {
+            return a;
+        }
+        NumericType::Unknown
+    }
+
+    /// Combine two types in division-like operations.
+    pub fn combine_div(a: NumericType, b: NumericType) -> NumericType {
+        if b == NumericType::count() {
+            return a;
+        }
+        NumericType::Unknown
     }
 
     pub fn from_parsed(suffix: NumericSuffix, settings: &super::MetaSettings) -> Self {
@@ -689,6 +735,7 @@ pub enum UnitType {
 }
 
 // TODO called UnitLen so as not to clash with UnitLength in settings)
+/// A unit of length.
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -770,6 +817,7 @@ impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
     }
 }
 
+/// A unit of angle.
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]

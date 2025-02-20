@@ -68,7 +68,7 @@ impl ExecState {
     pub fn new(exec_settings: &ExecutorSettings) -> Self {
         ExecState {
             global: GlobalState::new(exec_settings),
-            mod_local: ModuleState::new(exec_settings),
+            mod_local: ModuleState::new(exec_settings, None),
         }
     }
 
@@ -83,7 +83,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(exec_settings),
+            mod_local: ModuleState::new(exec_settings, None),
         };
     }
 
@@ -212,7 +212,7 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(exec_settings: &ExecutorSettings) -> Self {
+    pub(super) fn new(exec_settings: &ExecutorSettings, std_path: Option<String>) -> Self {
         ModuleState {
             pipe_value: Default::default(),
             module_exports: Default::default(),
@@ -220,6 +220,7 @@ impl ModuleState {
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),
                 default_angle_units: Default::default(),
+                std_path,
             },
         }
     }
@@ -231,6 +232,7 @@ impl ModuleState {
 pub struct MetaSettings {
     pub default_length_units: kcl_value::UnitLen,
     pub default_angle_units: kcl_value::UnitAngle,
+    pub std_path: Option<String>,
 }
 
 impl MetaSettings {

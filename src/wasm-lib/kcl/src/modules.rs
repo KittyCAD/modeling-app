@@ -43,20 +43,24 @@ pub(crate) struct ModuleLoader {
 impl ModuleLoader {
     pub(crate) fn cycle_check(&self, path: &ModulePath, source_range: SourceRange) -> Result<(), KclError> {
         if self.import_stack.contains(path.expect_path()) {
-            return Err(KclError::ImportCycle(KclErrorDetails {
-                message: format!(
-                    "circular import of modules is not allowed: {} -> {}",
-                    self.import_stack
-                        .iter()
-                        .map(|p| p.as_path().to_string_lossy())
-                        .collect::<Vec<_>>()
-                        .join(" -> "),
-                    path,
-                ),
-                source_ranges: vec![source_range],
-            }));
+            return Err(self.import_cycle_error(path, source_range));
         }
         Ok(())
+    }
+
+    pub(crate) fn import_cycle_error(&self, path: &ModulePath, source_range: SourceRange) -> KclError {
+        KclError::ImportCycle(KclErrorDetails {
+            message: format!(
+                "circular import of modules is not allowed: {} -> {}",
+                self.import_stack
+                    .iter()
+                    .map(|p| p.as_path().to_string_lossy())
+                    .collect::<Vec<_>>()
+                    .join(" -> "),
+                path,
+            ),
+            source_ranges: vec![source_range],
+        })
     }
 
     pub(crate) fn enter_module(&mut self, path: &ModulePath) {
@@ -73,8 +77,12 @@ impl ModuleLoader {
     }
 }
 
-pub(crate) fn read_std(_mod_name: &str) -> Option<&'static str> {
-    None
+pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
+    match mod_name {
+        "prelude" => Some(include_str!("../std/prelude.kcl")),
+        "math" => Some(include_str!("../std/math.kcl")),
+        _ => None,
+    }
 }
 
 /// Info about a module.
@@ -122,6 +130,13 @@ impl ModulePath {
         match self {
             ModulePath::Local(p) => p,
             _ => unreachable!(),
+        }
+    }
+
+    pub(crate) fn std_path(&self) -> Option<String> {
+        match self {
+            ModulePath::Local(_) => None,
+            ModulePath::Std(p) => Some(p.clone()),
         }
     }
 
