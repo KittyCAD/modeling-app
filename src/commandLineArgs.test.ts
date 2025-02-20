@@ -70,7 +70,6 @@ describe('getPathOrUrlFromArgs', () => {
       expect(getPathOrUrlFromArgs(args)).toContain('main.kcl')
     })
   })
-
   ;[
     ['linux', linuxSecondInstanceDeepLinkArgv],
     ['windows', winSecondInstanceDeepLinkArgv],
@@ -81,7 +80,6 @@ describe('getPathOrUrlFromArgs', () => {
       expect(getPathOrUrlFromArgs(args)).toContain('zoo-studio://')
     })
   })
-
   ;[
     ['linux', linuxColdStartPathArgv],
     ['windows', winColdStartPathArgv],
@@ -92,7 +90,6 @@ describe('getPathOrUrlFromArgs', () => {
       expect(getPathOrUrlFromArgs(args)).toContain('main.kcl')
     })
   })
-
   ;[
     ['linux', linuxColdStartNoPathArgv],
     ['windows', winColdStartNoPathArgv],
