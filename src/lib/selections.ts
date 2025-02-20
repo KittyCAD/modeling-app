@@ -32,12 +32,6 @@ import { PathToNodeMap } from 'lang/std/sketchcombos'
 import { err } from 'lib/trap'
 import {
   Artifact,
-  getArtifactOfTypes,
-  getArtifactsOfTypes,
-  getCapCodeRef,
-  getSweepEdgeCodeRef,
-  getSolid2dCodeRef,
-  getWallCodeRef,
   CodeRef,
   getCodeRefsByArtifactId,
   ArtifactId,
@@ -55,38 +49,7 @@ export type DefaultPlaneSelection = {
   id: string
 }
 
-/** @deprecated Use {@link Artifact} instead. */
-type Selection__old =
-  | {
-      type:
-        | 'default'
-        | 'line-end'
-        | 'line-mid'
-        | 'extrude-wall'
-        | 'solid2d'
-        | 'start-cap'
-        | 'end-cap'
-        | 'point'
-        | 'edge'
-        | 'adjacent-edge'
-        | 'line'
-        | 'arc'
-        | 'all'
-      range: SourceRange
-    }
-  | {
-      type: 'opposite-edgeCut' | 'adjacent-edgeCut' | 'base-edgeCut'
-      range: SourceRange
-      // TODO this is a temporary measure that well be made redundant with: https://github.com/KittyCAD/modeling-app/pull/3836
-      secondaryRange: SourceRange
-    }
 export type NonCodeSelection = Axis | DefaultPlaneSelection
-
-/** @deprecated Use {@link Selection} instead. */
-export type Selections__old = {
-  otherSelections: NonCodeSelection[]
-  codeBasedSelections: Selection__old[]
-}
 export interface Selection {
   artifact?: Artifact
   codeRef: CodeRef
@@ -94,76 +57,6 @@ export interface Selection {
 export type Selections = {
   otherSelections: Array<NonCodeSelection>
   graphSelections: Array<Selection>
-}
-
-/** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
- * this function should only be used for backwards compatibility with old functions.
- */
-function convertSelectionToOld(selection: Selection): Selection__old | null {
-  // return {} as Selection__old
-  // TODO implementation
-  const _artifact = selection.artifact
-  if (_artifact?.type === 'solid2d') {
-    const codeRef = getSolid2dCodeRef(
-      _artifact,
-      engineCommandManager.artifactGraph
-    )
-    if (err(codeRef)) return null
-    return { range: codeRef.range, type: 'solid2d' }
-  }
-  if (_artifact?.type === 'cap') {
-    const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
-    if (err(codeRef)) return null
-    return {
-      range: codeRef.range,
-      type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
-    }
-  }
-  if (_artifact?.type === 'wall') {
-    const codeRef = getWallCodeRef(
-      _artifact,
-      engineCommandManager.artifactGraph
-    )
-    if (err(codeRef)) return null
-    return { range: codeRef.range, type: 'extrude-wall' }
-  }
-  if (_artifact?.type === 'segment' || _artifact?.type === 'path') {
-    return { range: _artifact.codeRef.range, type: 'default' }
-  }
-  if (_artifact?.type === 'sweepEdge') {
-    const codeRef = getSweepEdgeCodeRef(
-      _artifact,
-      engineCommandManager.artifactGraph
-    )
-    if (err(codeRef)) return null
-    if (_artifact?.subType === 'adjacent') {
-      return { range: codeRef.range, type: 'adjacent-edge' }
-    }
-    return { range: codeRef.range, type: 'edge' }
-  }
-  if (_artifact?.type === 'edgeCut') {
-    const codeRef = _artifact.codeRef
-    return { range: codeRef.range, type: 'default' }
-  }
-  if (selection?.codeRef?.range) {
-    return { range: selection.codeRef.range, type: 'default' }
-  }
-  return null
-}
-/** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
- * this function should only be used for backwards compatibility with old functions.
- */
-export function convertSelectionsToOld(selection: Selections): Selections__old {
-  const selections: Selection__old[] = []
-  for (const artifact of selection.graphSelections) {
-    const converted = convertSelectionToOld(artifact)
-    if (converted) selections.push(converted)
-  }
-  const selectionsOld: Selections__old = {
-    otherSelections: selection.otherSelections,
-    codeBasedSelections: selections,
-  }
-  return selectionsOld
 }
 
 export async function getEventForSelectWithPoint({
@@ -311,7 +204,6 @@ export function handleSelectionBatch({
   selections.graphSelections.forEach(({ artifact }) => {
     artifact?.id &&
       selectionToEngine.push({
-        type: 'default',
         id: artifact?.id,
         range:
           getCodeRefsByArtifactId(
@@ -351,7 +243,6 @@ export function handleSelectionBatch({
 }
 
 type SelectionToEngine = {
-  type: Selection__old['type']
   id?: string
   range: SourceRange
 }
@@ -613,7 +504,6 @@ export function codeToIdSelections(
       if (selection.artifact?.id) {
         return [
           {
-            type: 'default',
             id: selection.artifact.id,
             range: selection.codeRef.range,
           },
@@ -661,7 +551,6 @@ export function codeToIdSelections(
       if (bestCandidate) {
         return [
           {
-            type: 'default',
             id: bestCandidate.id,
             range: selection.codeRef.range,
           },
@@ -671,7 +560,6 @@ export function codeToIdSelections(
       // If no matching artifact found, return selection without id
       return [
         {
-          type: 'default',
           range: selection.codeRef.range,
         },
       ]
