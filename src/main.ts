@@ -143,11 +143,13 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       // We're trying to open a custom protocol link
       // TODO: fix the replace %3 thing
       const urlNoProtocol = pathToOpen
+        .replace(ZOO_STUDIO_PROTOCOL + ':///', '') // cuz windows sees this somehow
         .replace(ZOO_STUDIO_PROTOCOL + '://', '')
         .replaceAll('%3D', '')
         .replaceAll('%3', '')
       console.log('urlNoProtocol', urlNoProtocol)
       const filteredPath = decodeURI(urlNoProtocol)
+      console.log('filteredPath', filteredPath)
       const startIndex = path.join(
         __dirname,
         `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
