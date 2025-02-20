@@ -105,7 +105,9 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
 
   // Deep Link: Case of a cold start from Windows or Linux
+  console.log('pathToOpen', pathToOpen)
   const pathOrUrl = getPathOrUrlFromArgs(args)
+  console.log('pathOrUrl', pathOrUrl)
   if (
     !pathToOpen &&
     pathOrUrl &&
@@ -127,6 +129,9 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
 
   // and load the index.html of the app.
+  console.log('MAIN_WINDOW_VITE_DEV_SERVER_URL', MAIN_WINDOW_VITE_DEV_SERVER_URL)
+  console.log('pathToOpen', pathToOpen)
+  console.log('pathIsCustomProtocolLink', pathIsCustomProtocolLink)
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     const filteredPath = pathToOpen
       ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
@@ -141,6 +146,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
         .replace(ZOO_STUDIO_PROTOCOL + '://', '')
         .replaceAll('%3D', '')
         .replaceAll('%3', '')
+      console.log('urlNoProtocol', urlNoProtocol)
       const filteredPath = decodeURI(urlNoProtocol)
       const startIndex = path.join(
         __dirname,
