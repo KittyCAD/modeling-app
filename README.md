@@ -83,7 +83,7 @@ yarn build:wasm
 yarn build:wasm:windows
 ```
 
-Or if you have the gh cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`.
+Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `yarn install:tools:windows`.
 
 ```
 # macOS/Linux
