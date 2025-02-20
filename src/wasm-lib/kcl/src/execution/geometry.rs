@@ -415,19 +415,12 @@ pub enum PlaneType {
 /// When you define a sketch to a variable like:
 ///
 /// ```no_run
-///
 /// mySketch = startSketchOn('XY')
-///
 ///     |> startProfileAt([-12, 12], %)
-///
 ///     |> line(end = [24, 0])
-///
 ///     |> line(end = [0, -24])
-///
 ///     |> line(end = [-24, 0])
-///
 ///     |> close()
-///
 /// ```
 ///
 /// The `mySketch` variable will be an executed `Sketch` object. Executed being past
@@ -439,23 +432,14 @@ pub enum PlaneType {
 /// you can use a function.
 ///
 /// ```no_run
-///
 /// fn createSketch() {
-///
 ///    return startSketchOn('XY')
-///
-///     |> startProfileAt([-12, 12], %)
-///
-///     |> line(end = [24, 0])
-///
-///     |> line(end = [0, -24])
-///
-///     |> line(end = [-24, 0])
-///
-///     |> close()
-///
+///         |> startProfileAt([-12, 12], %)
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
 /// }
-///
 /// ```
 ///
 /// Now, every time you call `createSketch()`, the commands will be
@@ -602,21 +586,13 @@ impl Sketch {
 /// When you define a solid to a variable like:
 ///
 /// ```no_run
-///
 /// myPart = startSketchOn('XY')
-///
 ///     |> startProfileAt([-12, 12], %)
-///
 ///     |> line(end = [24, 0])
-///
 ///     |> line(end = [0, -24])
-///
 ///     |> line(end = [-24, 0])
-///
 ///     |> close()
-///
 ///     |> extrude(length = 6)
-///
 /// ```
 ///
 /// The `myPart` variable will be an executed `Solid` object. Executed being past
@@ -628,25 +604,15 @@ impl Sketch {
 /// you can use a function.
 ///
 /// ```no_run
-///
 /// fn createPart() {
-///
 ///    return startSketchOn('XY')
-///
-///     |> startProfileAt([-12, 12], %)
-///
-///     |> line(end = [24, 0])
-///
-///     |> line(end = [0, -24])
-///
-///     |> line(end = [-24, 0])
-///
-///     |> close()
-///
-///     |> extrude(length = 6)
-///
+///         |> startProfileAt([-12, 12], %)
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
+///         |> extrude(length = 6)
 /// }
-///
 /// ```
 ///
 /// Now, every time you call `createPart()`, the commands will be
