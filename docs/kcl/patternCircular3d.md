@@ -27,7 +27,7 @@ patternCircular3d(solid_set: SolidSet, instances: integer, axis: [number], cente
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/Solid) 
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples

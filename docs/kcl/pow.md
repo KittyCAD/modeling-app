@@ -26,7 +26,7 @@ pow(num: number, pow: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

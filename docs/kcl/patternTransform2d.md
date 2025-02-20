@@ -24,7 +24,7 @@ patternTransform2d(sketch_set: SketchSet, instances: integer, transform: Functio
 
 ### Returns
 
-[`[Sketch]`](/docs/kcl/types/Sketch) 
+[`[Sketch]`](/docs/kcl/types/Sketch)
 
 
 ### Examples
