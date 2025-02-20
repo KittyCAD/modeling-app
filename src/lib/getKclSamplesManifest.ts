@@ -12,7 +12,7 @@ export async function getKclSamplesManifest() {
   const response = await fetch(KCL_SAMPLES_MANIFEST_URL)
   if (!response.ok) {
     console.error(
-      'Failed to fetch fallback KCL samples manifest:',
+      'Failed to fetch bundled KCL samples manifest:',
       response.statusText
     )
     return []
