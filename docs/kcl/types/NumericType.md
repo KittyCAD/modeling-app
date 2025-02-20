@@ -33,6 +33,7 @@ layout: manual
 
 
 ----
+A unit of length.
 
 **Type:** `object`
 

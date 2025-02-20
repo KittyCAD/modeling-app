@@ -730,6 +730,7 @@ pub enum UnitType {
 }
 
 // TODO called UnitLen so as not to clash with UnitLength in settings)
+/// A unit of length.
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -811,6 +812,7 @@ impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
     }
 }
 
+/// A unit of angle.
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
