@@ -413,7 +413,6 @@ export class KclManager {
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
     }
-
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
@@ -465,6 +464,7 @@ export class KclManager {
 
     this._logs = logs
     this.addDiagnostics(kclErrorsToDiagnostics(errors))
+
     this._execState = execState
     this._variables = execState.variables
     if (!errors.length) {

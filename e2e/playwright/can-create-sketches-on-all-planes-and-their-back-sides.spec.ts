@@ -43,8 +43,7 @@ test.describe(
         },
       }
 
-      const code = `sketch001 = startSketchOn('${plane}')
-    |> startProfileAt([0.9, -1.22], %)`
+      const code = `sketch001 = startSketchOn('${plane}')profile001 = startProfileAt([0.9, -1.22], sketch001)`
 
       await u.openDebugPanel()
 

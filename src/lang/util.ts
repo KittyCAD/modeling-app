@@ -11,23 +11,50 @@ import {
   LiteralValue,
   NumericSuffix,
 } from './wasm'
-import { filterArtifacts } from 'lang/std/artifactGraph'
+import { filterArtifacts, getFaceCodeRef } from 'lang/std/artifactGraph'
 import { isArray, isOverlap } from 'lib/utils'
 
-export function updatePathToNodeFromMap(
-  oldPath: PathToNode,
-  pathToNodeMap: { [key: number]: PathToNode }
+/**
+ * Updates pathToNode body indices to account for the insertion of an expression
+ * PathToNode expression is after the insertion index, that the body index is incremented
+ * Negative insertion index means no insertion
+ */
+export function updatePathToNodePostExprInjection(
+  pathToNode: PathToNode,
+  exprInsertIndex: number
 ): PathToNode {
-  const updatedPathToNode = structuredClone(oldPath)
-  let max = 0
-  Object.values(pathToNodeMap).forEach((path) => {
-    const index = Number(path[1][0])
-    if (index > max) {
-      max = index
-    }
-  })
-  updatedPathToNode[1][0] = max
-  return updatedPathToNode
+  if (exprInsertIndex < 0) return pathToNode
+  const bodyIndex = Number(pathToNode[1][0])
+  if (bodyIndex < exprInsertIndex) return pathToNode
+  const clone = structuredClone(pathToNode)
+  clone[1][0] = bodyIndex + 1
+  return clone
+}
+
+export function updateSketchDetailsNodePaths({
+  sketchEntryNodePath,
+  sketchNodePaths,
+  planeNodePath,
+  exprInsertIndex,
+}: {
+  sketchEntryNodePath: PathToNode
+  sketchNodePaths: Array<PathToNode>
+  planeNodePath: PathToNode
+  exprInsertIndex: number
+}) {
+  return {
+    updatedSketchEntryNodePath: updatePathToNodePostExprInjection(
+      sketchEntryNodePath,
+      exprInsertIndex
+    ),
+    updatedSketchNodePaths: sketchNodePaths.map((path) =>
+      updatePathToNodePostExprInjection(path, exprInsertIndex)
+    ),
+    updatedPlaneNodePath: updatePathToNodePostExprInjection(
+      planeNodePath,
+      exprInsertIndex
+    ),
+  }
 }
 
 export function isCursorInSketchCommandRange(
@@ -36,20 +63,30 @@ export function isCursorInSketchCommandRange(
 ): string | false {
   const overlappingEntries = filterArtifacts(
     {
-      types: ['segment', 'path'],
+      types: ['segment', 'path', 'plane', 'cap', 'wall'],
       predicate: (artifact) => {
+        const codeRefRange = getFaceCodeRef(artifact)?.range
         return selectionRanges.graphSelections.some(
           (selection) =>
             isArray(selection?.codeRef?.range) &&
-            isArray(artifact?.codeRef?.range) &&
-            isOverlap(selection?.codeRef?.range, artifact.codeRef.range)
+            isArray(codeRefRange) &&
+            isOverlap(selection?.codeRef?.range, codeRefRange)
         )
       },
     },
     artifactGraph
   )
   const firstEntry = [...overlappingEntries.values()]?.[0]
-  const parentId = firstEntry?.type === 'segment' ? firstEntry.pathId : false
+  const parentId =
+    firstEntry?.type === 'segment'
+      ? firstEntry.pathId
+      : ((firstEntry?.type === 'plane' ||
+          firstEntry?.type === 'cap' ||
+          firstEntry?.type === 'wall') &&
+          firstEntry.pathIds?.length) ||
+        false
+      ? firstEntry.pathIds[0]
+      : false
 
   return parentId
     ? parentId
@@ -81,9 +118,25 @@ export function findKwArg(
   label: string,
   call: CallExpressionKw
 ): Expr | undefined {
-  return call.arguments.find((arg) => {
+  return call?.arguments?.find((arg) => {
     return arg.label.name === label
   })?.arg
+}
+
+/**
+Search the keyword arguments from a call for an argument with this label,
+returns the index of the argument as well.
+*/
+export function findKwArgWithIndex(
+  label: string,
+  call: CallExpressionKw
+): { expr: Expr; argIndex: number } | undefined {
+  const index = call.arguments.findIndex((arg) => {
+    return arg.label.name === label
+  })
+  return index >= 0
+    ? { expr: call.arguments[index].arg, argIndex: index }
+    : undefined
 }
 
 /**

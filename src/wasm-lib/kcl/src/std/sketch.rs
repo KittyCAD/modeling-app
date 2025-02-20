@@ -204,7 +204,7 @@ async fn straight_line(
         (Some(_), Some(_)) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You cannot give both `end` and `end_absolute` params, you have to choose one or the other"
+                message: "You cannot give both `end` and `endAbsolute` params, you have to choose one or the other"
                     .to_owned(),
             }));
         }
@@ -213,7 +213,7 @@ async fn straight_line(
         (None, None) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You must supply either `end` or `end_absolute` arguments".to_owned(),
+                message: "You must supply either `end` or `endAbsolute` arguments".to_owned(),
             }));
         }
     };
@@ -242,6 +242,7 @@ async fn straight_line(
             from: from.into(),
             to: end,
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -543,6 +544,7 @@ async fn inner_angled_line(
             from: from.into(),
             to,
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1294,7 +1296,7 @@ pub(crate) async fn inner_start_profile_at(
             args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
                 .await?;
         }
-        SketchSurface::Plane(plane) if !plane.is_standard() => {
+        SketchSurface::Plane(plane) if plane.is_custom() => {
             // Hide whatever plane we are sketching on.
             // This is especially helpful for offset planes, which would be visible otherwise.
             args.batch_end_cmd(
@@ -1308,11 +1310,6 @@ pub(crate) async fn inner_start_profile_at(
         }
         _ => {}
     }
-
-    let units = match &sketch_surface {
-        SketchSurface::Face(face) => face.units,
-        SketchSurface::Plane(_) => exec_state.length_unit(),
-    };
 
     // Enter sketch mode on the surface.
     // We call this here so you can reuse the sketch surface for multiple sketches.
@@ -1352,6 +1349,7 @@ pub(crate) async fn inner_start_profile_at(
         from: to,
         to,
         tag: tag.clone(),
+        units: sketch_surface.units(),
         geo_meta: GeoMeta {
             id,
             metadata: args.source_range.into(),
@@ -1364,7 +1362,7 @@ pub(crate) async fn inner_start_profile_at(
         artifact_id: path_id.into(),
         on: sketch_surface.clone(),
         paths: vec![],
-        units,
+        units: sketch_surface.units(),
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();
@@ -1388,8 +1386,9 @@ pub(crate) async fn inner_start_profile_at(
 /// Returns the X component of the sketch profile start point.
 pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
+    let ty = sketch.units.into();
     let x = inner_profile_start_x(sketch)?;
-    Ok(args.make_user_val_from_f64(x))
+    Ok(args.make_user_val_from_f64_with_type(x, ty))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'x'
@@ -1412,8 +1411,9 @@ pub(crate) fn inner_profile_start_x(sketch: Sketch) -> Result<f64, KclError> {
 /// Returns the Y component of the sketch profile start point.
 pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
+    let ty = sketch.units.into();
     let x = inner_profile_start_y(sketch)?;
-    Ok(args.make_user_val_from_f64(x))
+    Ok(args.make_user_val_from_f64_with_type(x, ty))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'y'
@@ -1435,8 +1435,9 @@ pub(crate) fn inner_profile_start_y(sketch: Sketch) -> Result<f64, KclError> {
 /// Returns the sketch profile start point.
 pub async fn profile_start(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
+    let ty = sketch.units.into();
     let point = inner_profile_start(sketch)?;
-    Ok(KclValue::from_point2d(point, args.into()))
+    Ok(KclValue::from_point2d(point, ty, args.into()))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin
@@ -1527,6 +1528,7 @@ pub(crate) async fn inner_close(
             from: from.into(),
             to: to.into(),
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1675,6 +1677,7 @@ pub(crate) async fn inner_arc(
             from: from.into(),
             to: end.into(),
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1776,6 +1779,7 @@ pub(crate) async fn inner_arc_to(
             from: from.into(),
             to: data.end,
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1929,6 +1933,7 @@ async fn inner_tangential_arc(
             from: from.into(),
             to,
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -2023,6 +2028,7 @@ async fn inner_tangential_arc_to(
             from: from.into(),
             to,
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -2106,6 +2112,7 @@ async fn inner_tangential_arc_to_relative(
             from: from.into(),
             to,
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -2203,6 +2210,7 @@ async fn inner_bezier_curve(
             from: from.into(),
             to,
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),

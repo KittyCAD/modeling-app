@@ -40,7 +40,13 @@ overwrite-sim-test test_name:
     EXPECTORATE=overwrite {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::parse
     EXPECTORATE=overwrite {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::unparse
     {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
-    
-
+  
 test:
     export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
+
+publish-kcl version:
+    git tag {{version}}
+    git push --tags
+    cargo publish -p derive-docs
+    cargo publish -p kcl-lib
+    cargo publish -p kcl-test-server

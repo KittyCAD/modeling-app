@@ -20,8 +20,8 @@ use super::{args::Arg, FnAsArg};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, SketchSet,
-        Solid, SolidSet,
+        kcl_value::NumericType, ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d,
+        Point3d, Sketch, SketchSet, Solid, SolidSet,
     },
     std::Args,
     SourceRange,
@@ -58,7 +58,6 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
         FunctionParam {
             inner: transform.func,
             fn_expr: transform.expr,
-            meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
             memory: transform.memory,
         },
@@ -83,7 +82,6 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
         FunctionParam {
             inner: transform.func,
             fn_expr: transform.expr,
-            meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
             memory: transform.memory,
         },
@@ -446,12 +444,13 @@ async fn make_transform<T: GeometryTrait>(
     exec_state: &mut ExecState,
 ) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
-    let repetition_num = KclValue::Int {
+    let repetition_num = KclValue::Number {
         value: i.into(),
+        ty: NumericType::count(),
         meta: vec![source_range.into()],
     };
     let transform_fn_args = vec![Arg::synthetic(repetition_num)];
-    let transform_fn_return = transform.call(exec_state, transform_fn_args).await?;
+    let transform_fn_return = transform.call(exec_state, transform_fn_args, source_range).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
@@ -530,7 +529,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         }
         if let Some(angle) = rot.get("angle") {
             match angle {
-                KclValue::Number { value: number, meta: _ } => {
+                KclValue::Number { value: number, .. } => {
                     rotation.angle = Angle::from_degrees(*number);
                 }
                 _ => {
@@ -679,6 +678,8 @@ impl GeometryTrait for Box<Solid> {
 
 #[cfg(test)]
 mod tests {
+    use crate::execution::kcl_value::NumericType;
+
     use super::*;
 
     #[test]
@@ -688,14 +689,17 @@ mod tests {
                 KclValue::Number {
                     value: 1.1,
                     meta: Default::default(),
+                    ty: NumericType::Unknown,
                 },
                 KclValue::Number {
                     value: 2.2,
                     meta: Default::default(),
+                    ty: NumericType::Unknown,
                 },
                 KclValue::Number {
                     value: 3.3,
                     meta: Default::default(),
+                    ty: NumericType::Unknown,
                 },
             ],
             meta: Default::default(),

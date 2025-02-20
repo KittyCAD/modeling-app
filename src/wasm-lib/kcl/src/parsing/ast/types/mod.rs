@@ -26,8 +26,7 @@ use crate::{
     docs::StdLibFn,
     errors::KclError,
     execution::{annotations, KclValue, Metadata, TagIdentifier},
-    parsing::{ast::digest::Digest, PIPE_OPERATOR},
-    pretty::NumericSuffix,
+    parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
     ModuleId,
 };
@@ -887,6 +886,34 @@ impl Expr {
         }
     }
 
+    /// Describe this expression's type for a human, for typechecking.
+    /// This is a best-effort function, it's OK to give a shitty string here (but we should work on improving it)
+    pub fn human_friendly_type(&self) -> &'static str {
+        match self {
+            Expr::Literal(node) => match node.inner.value {
+                LiteralValue::Number { .. } => "number",
+                LiteralValue::String(_) => "string (text)",
+                LiteralValue::Bool(_) => "boolean (true/false value)",
+            },
+            Expr::Identifier(_) => "named constant",
+            Expr::TagDeclarator(_) => "tag declarator",
+            Expr::BinaryExpression(_) => "expression",
+            Expr::FunctionExpression(_) => "function definition",
+            Expr::CallExpression(_) => "function call",
+            Expr::CallExpressionKw(_) => "function call",
+            Expr::PipeExpression(_) => "pipeline of function calls",
+            Expr::PipeSubstitution(_) => "left-hand side of a |> pipeline",
+            Expr::ArrayExpression(_) => "array",
+            Expr::ArrayRangeExpression(_) => "array",
+            Expr::ObjectExpression(_) => "object",
+            Expr::MemberExpression(_) => "property of an object/array",
+            Expr::UnaryExpression(_) => "expression",
+            Expr::IfExpression(_) => "if expression",
+            Expr::LabelledExpression(_) => "labelled expression",
+            Expr::None(_) => "none",
+        }
+    }
+
     pub fn literal_bool(&self) -> Option<bool> {
         match self {
             Expr::Literal(lit) => match lit.value {
@@ -921,34 +948,6 @@ impl Expr {
         match self {
             Expr::Identifier(ident) => Some(&ident.name),
             _ => None,
-        }
-    }
-
-    /// Describe this expression's type for a human, for typechecking.
-    /// This is a best-effort function, it's OK to give a shitty string here (but we should work on improving it)
-    pub fn human_friendly_type(&self) -> &'static str {
-        match self {
-            Expr::Literal(node) => match node.inner.value {
-                LiteralValue::Number { .. } => "number",
-                LiteralValue::String(_) => "string (text)",
-                LiteralValue::Bool(_) => "boolean (true/false value)",
-            },
-            Expr::Identifier(_) => "named constant",
-            Expr::TagDeclarator(_) => "tag declarator",
-            Expr::BinaryExpression(_) => "expression",
-            Expr::FunctionExpression(_) => "function definition",
-            Expr::CallExpression(_) => "function call",
-            Expr::CallExpressionKw(_) => "function call",
-            Expr::PipeExpression(_) => "pipeline of function calls",
-            Expr::PipeSubstitution(_) => "left-hand side of a |> pipeline",
-            Expr::ArrayExpression(_) => "array",
-            Expr::ArrayRangeExpression(_) => "array",
-            Expr::ObjectExpression(_) => "object",
-            Expr::MemberExpression(_) => "property of an object/array",
-            Expr::UnaryExpression(_) => "expression",
-            Expr::IfExpression(_) => "if expression",
-            Expr::LabelledExpression(_) => "labelled expression",
-            Expr::None(_) => "none",
         }
     }
 }
@@ -1519,7 +1518,7 @@ impl ImportStatement {
             return None;
         }
 
-        path.rsplit('/').next().map(str::to_owned)
+        path.rsplit(&['/', '\\']).next().map(str::to_owned)
     }
 }
 
@@ -1581,7 +1580,7 @@ pub struct CallExpression {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
     pub callee: Node<Identifier>,
     pub unlabeled: Option<Expr>,
@@ -1591,6 +1590,9 @@ pub struct CallExpressionKw {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
+
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1714,6 +1716,7 @@ impl CallExpressionKw {
             unlabeled,
             arguments,
             digest: None,
+            non_code_meta: Default::default(),
         }))
     }
 
@@ -1992,31 +1995,36 @@ pub enum VariableKind {
 }
 
 impl VariableKind {
-    pub fn to_completion_items() -> Result<Vec<CompletionItem>> {
-        let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
-        let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = VariableKind::json_schema(&mut generator);
-        let schemars::schema::Schema::Object(o) = &schema else {
-            anyhow::bail!("expected object schema: {:#?}", schema);
-        };
-        let Some(subschemas) = &o.subschemas else {
-            anyhow::bail!("expected subschemas: {:#?}", schema);
-        };
-        let Some(one_ofs) = &subschemas.one_of else {
-            anyhow::bail!("expected one_of: {:#?}", schema);
-        };
-
-        // Iterate over all the VariableKinds and create a completion for each.
-        let mut completions = vec![];
-        for one_of in one_ofs {
-            completions.push(crate::docs::completion_item_from_enum_schema(
-                one_of,
-                CompletionItemKind::KEYWORD,
-            )?);
+    pub fn to_completion_items() -> Vec<CompletionItem> {
+        fn completion_item(keyword: &str, description: &str) -> CompletionItem {
+            CompletionItem {
+                label: keyword.to_owned(),
+                label_details: None,
+                kind: Some(CompletionItemKind::KEYWORD),
+                detail: Some(description.to_owned()),
+                documentation: Some(tower_lsp::lsp_types::Documentation::MarkupContent(
+                    tower_lsp::lsp_types::MarkupContent {
+                        kind: tower_lsp::lsp_types::MarkupKind::Markdown,
+                        value: description.to_owned(),
+                    },
+                )),
+                deprecated: Some(false),
+                preselect: None,
+                sort_text: None,
+                filter_text: None,
+                insert_text: None,
+                insert_text_format: None,
+                insert_text_mode: None,
+                text_edit: None,
+                additional_text_edits: None,
+                command: None,
+                commit_characters: None,
+                data: None,
+                tags: None,
+            }
         }
 
-        Ok(completions)
+        vec![completion_item("fn", "Declare a function.")]
     }
 }
 
@@ -2077,30 +2085,6 @@ impl Literal {
             value,
             digest: None,
         })
-    }
-}
-
-impl From<Node<Literal>> for KclValue {
-    fn from(literal: Node<Literal>) -> Self {
-        let meta = vec![literal.metadata()];
-        match literal.inner.value {
-            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
-            LiteralValue::String(value) => KclValue::String { value, meta },
-            LiteralValue::Bool(value) => KclValue::Bool { value, meta },
-        }
-    }
-}
-
-impl From<&Node<Literal>> for KclValue {
-    fn from(literal: &Node<Literal>) -> Self {
-        Self::from(literal.to_owned())
-    }
-}
-
-impl From<&BoxNode<Literal>> for KclValue {
-    fn from(literal: &BoxNode<Literal>) -> Self {
-        let b: &Node<Literal> = literal;
-        Self::from(b)
     }
 }
 
@@ -3088,20 +3072,7 @@ pub enum FnArgType {
 #[allow(clippy::large_enum_variant)]
 pub enum DefaultParamVal {
     KclNone(KclNone),
-    Literal(Literal),
-}
-
-// TODO: This should actually take metadata.
-impl From<DefaultParamVal> for KclValue {
-    fn from(v: DefaultParamVal) -> Self {
-        match v {
-            DefaultParamVal::KclNone(kcl_none) => Self::KclNone {
-                value: kcl_none,
-                meta: Default::default(),
-            },
-            DefaultParamVal::Literal(literal) => Self::from_literal(literal.value, Vec::new()),
-        }
-    }
+    Literal(Node<Literal>),
 }
 
 impl DefaultParamVal {
@@ -3494,7 +3465,7 @@ mod tests {
     // We have this as a test so we can ensure it never panics with an unwrap in the server.
     #[test]
     fn test_variable_kind_to_completion() {
-        let completions = VariableKind::to_completion_items().unwrap();
+        let completions = VariableKind::to_completion_items();
         assert!(!completions.is_empty());
     }
 

@@ -24,6 +24,7 @@ const mySketch001 = startSketchOn('XY')
         start: {
           to: [0, 0],
           from: [0, 0],
+          units: { type: 'Mm' },
           tag: null,
           __geoMeta: {
             id: expect.any(String),
@@ -35,6 +36,7 @@ const mySketch001 = startSketchOn('XY')
             type: 'ToPoint',
             tag: null,
             to: [-1.59, -1.54],
+            units: { type: 'Mm' },
             from: [0, 0],
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -45,6 +47,7 @@ const mySketch001 = startSketchOn('XY')
             type: 'ToPoint',
             to: [0.46, -5.82],
             from: [-1.59, -1.54],
+            units: { type: 'Mm' },
             tag: null,
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -111,6 +114,7 @@ const mySketch001 = startSketchOn('XY')
               type: 'ToPoint',
               from: [0, 0],
               to: [-1.59, -1.54],
+              units: { type: 'Mm' },
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
@@ -121,6 +125,7 @@ const mySketch001 = startSketchOn('XY')
               type: 'ToPoint',
               from: [-1.59, -1.54],
               to: [0.46, -5.82],
+              units: { type: 'Mm' },
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
@@ -229,6 +234,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [0, 0],
                 to: [-2.5, 0],
+                units: { type: 'Mm' },
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -239,6 +245,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [-2.5, 0],
                 to: [0, 10],
+                units: { type: 'Mm' },
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
@@ -254,6 +261,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [0, 10],
                 to: [2.5, 0],
+                units: { type: 'Mm' },
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -335,6 +343,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [0, 0],
                 to: [-2.5, 0],
+                units: { type: 'Mm' },
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -345,6 +354,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [-2.5, 0],
                 to: [0, 3],
+                units: { type: 'Mm' },
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
@@ -360,6 +370,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [0, 3],
                 to: [2.5, 0],
+                units: { type: 'Mm' },
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),

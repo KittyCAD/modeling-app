@@ -582,7 +582,7 @@ sketch002 = startSketchOn(extrude001, $seg01)
   it('finds sketch001 and sketch002 pipes to be lofted', async () => {
     const exampleCode = `sketch001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 1 }, %)
-plane001 = offsetPlane('XZ', 2)
+plane001 = offsetPlane('XZ', offset = 2)
 sketch002 = startSketchOn(plane001)
   |> circle({ center = [0, 0], radius = 3 }, %)
 `

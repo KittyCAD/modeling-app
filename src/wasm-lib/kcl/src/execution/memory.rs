@@ -144,7 +144,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{KclValue, Metadata},
+    execution::KclValue,
     source_range::SourceRange,
 };
 use env::Environment;
@@ -626,16 +626,8 @@ mod env {
     impl Environment {
         /// Create a new root environment (new program or module)
         pub(super) fn new_root() -> Self {
-            const NO_META: Vec<Metadata> = Vec::new();
-
             Self {
-                // Prelude
-                bindings: IndexMap::from([
-                    ("ZERO".to_string(), KclValue::from_number(0.0, NO_META)),
-                    ("QUARTER_TURN".to_string(), KclValue::from_number(90.0, NO_META)),
-                    ("HALF_TURN".to_string(), KclValue::from_number(180.0, NO_META)),
-                    ("THREE_QUARTER_TURN".to_string(), KclValue::from_number(270.0, NO_META)),
-                ]),
+                bindings: IndexMap::new(),
                 snapshots: Vec::new(),
                 parent: None,
             }
@@ -845,6 +837,8 @@ mod env {
 
 #[cfg(test)]
 mod test {
+    use crate::execution::kcl_value::NumericType;
+
     use super::*;
 
     fn sr() -> SourceRange {
@@ -852,8 +846,9 @@ mod test {
     }
 
     fn val(value: i64) -> KclValue {
-        KclValue::Int {
-            value,
+        KclValue::Number {
+            value: value as f64,
+            ty: NumericType::count(),
             meta: Vec::new(),
         }
     }
@@ -861,14 +856,14 @@ mod test {
     #[track_caller]
     fn assert_get(mem: &ProgramMemory, key: &str, n: i64) {
         match mem.get(key, sr()).unwrap() {
-            KclValue::Int { value, .. } => assert_eq!(*value, n),
+            KclValue::Number { value, .. } => assert_eq!(*value as i64, n),
             _ => unreachable!(),
         }
     }
 
-    fn expect_int(value: &KclValue) -> Option<i64> {
+    fn expect_small_number(value: &KclValue) -> Option<i64> {
         match value {
-            KclValue::Int { value, .. } => Some(*value),
+            KclValue::Number { value, .. } if value > &0.0 && value < &10.0 => Some(*value as i64),
             _ => None,
         }
     }
@@ -876,7 +871,7 @@ mod test {
     #[track_caller]
     fn assert_get_from(mem: &ProgramMemory, key: &str, n: i64, snapshot: EnvironmentRef) {
         match mem.get_from(key, snapshot, sr()).unwrap() {
-            KclValue::Int { value, .. } => assert_eq!(*value, n),
+            KclValue::Number { value, .. } => assert_eq!(*value as i64, n),
             _ => unreachable!(),
         }
     }
@@ -1127,7 +1122,7 @@ mod test {
         assert_get_from(mem, "b", 3, sn3);
         assert_get_from(mem, "b", 4, sn4);
 
-        let vals: Vec<_> = mem.walk_call_stack().filter_map(expect_int).collect();
+        let vals: Vec<_> = mem.walk_call_stack().filter_map(expect_small_number).collect();
         let expected = [6, 1, 3, 1, 7];
         assert_eq!(vals, expected);
 
@@ -1136,7 +1131,7 @@ mod test {
         mem.get_from("b", sn1, sr()).unwrap_err();
         assert_get_from(mem, "b", 3, sn2);
 
-        let vals: Vec<_> = mem.walk_call_stack().filter_map(expect_int).collect();
+        let vals: Vec<_> = mem.walk_call_stack().filter_map(expect_small_number).collect();
         let expected = [1, 7];
         assert_eq!(vals, expected);
 
@@ -1214,7 +1209,7 @@ mod test {
             KclValue::Function {
                 func: None,
                 expression: crate::parsing::ast::types::FunctionExpression::dummy(),
-                memory: sn2,
+                memory: Some(sn2),
                 meta: Vec::new(),
             },
             sr(),
@@ -1225,7 +1220,7 @@ mod test {
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 2);
         match mem.get("f", SourceRange::default()).unwrap() {
-            KclValue::Function { memory, .. } if *memory == sn1 => {}
+            KclValue::Function { memory, .. } if memory.unwrap() == sn1 => {}
             v => panic!("{v:#?}"),
         }
         assert_eq!(mem.environments.len(), 1);

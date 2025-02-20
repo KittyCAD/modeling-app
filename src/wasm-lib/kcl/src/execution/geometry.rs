@@ -1,3 +1,5 @@
+use std::ops::{Add, AddAssign, Mul};
+
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
@@ -253,9 +255,9 @@ pub struct Plane {
     pub value: PlaneType,
     /// Origin of the plane.
     pub origin: Point3d,
-    /// What should the plane’s X axis be?
+    /// What should the plane's X axis be?
     pub x_axis: Point3d,
-    /// What should the plane’s Y axis be?
+    /// What should the plane's Y axis be?
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
@@ -354,11 +356,6 @@ impl Plane {
     }
 
     /// The standard planes are XY, YZ and XZ (in both positive and negative)
-    pub fn is_standard(&self) -> bool {
-        !self.is_custom()
-    }
-
-    /// The standard planes are XY, YZ and XZ (in both positive and negative)
     /// Custom planes are any other plane that the user might specify.
     pub fn is_custom(&self) -> bool {
         matches!(self.value, PlaneType::Custom)
@@ -376,9 +373,9 @@ pub struct Face {
     pub artifact_id: ArtifactId,
     /// The tag of the face.
     pub value: String,
-    /// What should the face’s X axis be?
+    /// What should the face's X axis be?
     pub x_axis: Point3d,
-    /// What should the face’s Y axis be?
+    /// What should the face's Y axis be?
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
@@ -411,6 +408,46 @@ pub enum PlaneType {
 }
 
 /// A sketch is a collection of paths.
+///
+/// When you define a sketch to a variable like:
+///
+/// ```kcl
+/// mySketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+/// ```
+///
+/// The `mySketch` variable will be an executed `Sketch` object. Executed being past
+/// tense, because the engine has already executed the commands to create the sketch.
+///
+/// The previous sketch commands will never be executed again, in this case.
+///
+/// If you would like to encapsulate the commands to create the sketch any time you call it,
+/// you can use a function.
+///
+/// ```kcl
+/// fn createSketch() {
+///    return startSketchOn('XY')
+///         |> startProfileAt([-12, 12], %)
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
+/// }
+/// ```
+///
+/// Now, every time you call `createSketch()`, the commands will be
+/// executed and a new sketch will be created.
+///
+/// When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`), you are assigning
+/// the executed sketch to that variable. Meaning that the sketch `mySketch` will not be executed
+/// again.
+///
+/// You can still execute _new_ commands on the sketch like `extrude`, `revolve`, `loft`, etc. and
+/// the sketch will be updated.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -469,6 +506,12 @@ impl SketchSurface {
         match self {
             SketchSurface::Plane(plane) => plane.z_axis,
             SketchSurface::Face(face) => face.z_axis,
+        }
+    }
+    pub(crate) fn units(&self) -> UnitLen {
+        match self {
+            SketchSurface::Plane(plane) => plane.units,
+            SketchSurface::Face(face) => face.units,
         }
     }
 }
@@ -535,7 +578,49 @@ impl Sketch {
     }
 }
 
-/// An solid is a collection of extrude surfaces.
+/// A solid is a collection of extrude surfaces.
+///
+/// When you define a solid to a variable like:
+///
+/// ```kcl
+/// myPart = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+/// ```
+///
+/// The `myPart` variable will be an executed `Solid` object. Executed being past
+/// tense, because the engine has already executed the commands to create the solid.
+///
+/// The previous solid commands will never be executed again, in this case.
+///
+/// If you would like to encapsulate the commands to create the solid any time you call it,
+/// you can use a function.
+///
+/// ```kcl
+/// fn createPart() {
+///    return startSketchOn('XY')
+///         |> startProfileAt([-12, 12], %)
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
+///         |> extrude(length = 6)
+/// }
+/// ```
+///
+/// Now, every time you call `createPart()`, the commands will be
+/// executed and a new solid will be created.
+///
+/// When you assign the result of `createPart()` to a variable (`myPart = createPart()`), you are assigning
+/// the executed solid to that variable. Meaning that the solid `myPart` will not be executed
+/// again.
+///
+/// You can still execute _new_ commands on the solid like `shell`, `fillet`, `chamfer`, etc.
+/// and the solid will be updated.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -690,6 +775,36 @@ impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
     }
 }
 
+impl Add for Point3d {
+    type Output = Point3d;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Point3d {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+        }
+    }
+}
+
+impl AddAssign for Point3d {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs
+    }
+}
+
+impl Mul<f64> for Point3d {
+    type Output = Point3d;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Point3d {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+        }
+    }
+}
+
 /// A base path.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -701,6 +816,7 @@ pub struct BasePath {
     /// The to point.
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
+    pub units: UnitLen,
     /// The tag of the path.
     pub tag: Option<TagNode>,
     /// Metadata.
@@ -764,6 +880,19 @@ pub enum Path {
         /// This is used to compute the tangential angle.
         ccw: bool,
     },
+    CircleThreePoint {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Point 1 of the circle
+        #[ts(type = "[number, number]")]
+        p1: [f64; 2],
+        /// Point 2 of the circle
+        #[ts(type = "[number, number]")]
+        p2: [f64; 2],
+        /// Point 3 of the circle
+        #[ts(type = "[number, number]")]
+        p3: [f64; 2],
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -806,6 +935,7 @@ enum PathType {
     TangentialArc,
     TangentialArcTo,
     Circle,
+    CircleThreePoint,
     Horizontal,
     AngledLineTo,
     Arc,
@@ -818,6 +948,7 @@ impl From<&Path> for PathType {
             Path::TangentialArcTo { .. } => Self::TangentialArcTo,
             Path::TangentialArc { .. } => Self::TangentialArc,
             Path::Circle { .. } => Self::Circle,
+            Path::CircleThreePoint { .. } => Self::CircleThreePoint,
             Path::Horizontal { .. } => Self::Horizontal,
             Path::AngledLineTo { .. } => Self::AngledLineTo,
             Path::Base { .. } => Self::Base,
@@ -836,6 +967,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
             Path::Circle { base, .. } => base.geo_meta.id,
+            Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
         }
     }
@@ -849,6 +981,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
             Path::Circle { base, .. } => base.tag.clone(),
+            Path::CircleThreePoint { base, .. } => base.tag.clone(),
             Path::Arc { base, .. } => base.tag.clone(),
         }
     }
@@ -862,6 +995,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
+            Path::CircleThreePoint { base, .. } => base,
             Path::Arc { base, .. } => base,
         }
     }
@@ -899,6 +1033,15 @@ impl Path {
                 linear_distance(self.get_from(), self.get_to())
             }
             Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::CircleThreePoint { .. } => {
+                let circle_center = crate::std::utils::calculate_circle_from_3_points([
+                    self.get_base().from.into(),
+                    self.get_base().to.into(),
+                    self.get_base().to.into(),
+                ]);
+                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], &self.get_base().from);
+                2.0 * std::f64::consts::PI * radius
+            }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
                 linear_distance(self.get_from(), self.get_to())
@@ -915,6 +1058,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
+            Path::CircleThreePoint { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
         }
     }
@@ -934,6 +1078,17 @@ impl Path {
                 ccw: *ccw,
                 radius: *radius,
             },
+            Path::CircleThreePoint { p1, p2, p3, .. } => {
+                let circle_center =
+                    crate::std::utils::calculate_circle_from_3_points([(*p1).into(), (*p2).into(), (*p3).into()]);
+                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], p1);
+                let center_point = [circle_center.center.x, circle_center.center.y];
+                GetTangentialInfoFromPathsResult::Circle {
+                    center: center_point,
+                    ccw: true,
+                    radius,
+                }
+            }
             Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)

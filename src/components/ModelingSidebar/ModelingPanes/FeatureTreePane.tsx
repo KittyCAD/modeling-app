@@ -13,12 +13,7 @@ import {
   getOperationLabel,
   stdLibMap,
 } from 'lib/operations'
-import {
-  codeManager,
-  editorManager,
-  engineCommandManager,
-  kclManager,
-} from 'lib/singletons'
+import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { Actor, Prop } from 'xstate'
@@ -67,7 +62,7 @@ export const FeatureTreePane = () => {
               )
             : null
 
-          if (!artifact || !('codeRef' in artifact)) {
+          if (!artifact) {
             modelingSend({
               type: 'Set selection',
               data: {
@@ -329,6 +324,20 @@ const OperationItem = (props: {
     }
   }
 
+  function deleteOperation() {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'UserDefinedFunctionCall'
+    ) {
+      props.send({
+        type: 'deleteOperation',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+        },
+      })
+    }
+  }
+
   const menuItems = useMemo(
     () => [
       <ContextMenuItem
@@ -369,14 +378,24 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' &&
-      stdLibMap[props.item.name]?.prepareToEdit
+      ...(props.item.type === 'StdLibCall'
         ? [
-            <ContextMenuItem onClick={enterEditFlow}>
-              Edit {name}
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.prepareToEdit}
+              onClick={enterEditFlow}
+              hotkey="Double click"
+            >
+              Edit
             </ContextMenuItem>,
           ]
         : []),
+      <ContextMenuItem
+        onClick={deleteOperation}
+        hotkey="Delete"
+        data-testid="context-menu-delete"
+      >
+        Delete
+      </ContextMenuItem>,
     ],
     [props.item, props.send]
   )

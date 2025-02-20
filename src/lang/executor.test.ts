@@ -72,6 +72,7 @@ const newVar = myVar + 1`
         type: 'ToPoint',
         to: [0, 2],
         from: [0, 0],
+        units: { type: 'Mm' },
         __geoMeta: {
           sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
@@ -87,6 +88,7 @@ const newVar = myVar + 1`
         type: 'ToPoint',
         to: [2, 3],
         from: [0, 2],
+        units: { type: 'Mm' },
         tag: null,
         __geoMeta: {
           sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -97,6 +99,7 @@ const newVar = myVar + 1`
         type: 'ToPoint',
         to: [5, -1],
         from: [2, 3],
+        units: { type: 'Mm' },
         __geoMeta: {
           sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
@@ -165,6 +168,7 @@ const newVar = myVar + 1`
         start: {
           to: [0, 0],
           from: [0, 0],
+          units: { type: 'Mm' },
           tag: null,
           __geoMeta: {
             id: expect.any(String),
@@ -188,6 +192,7 @@ const newVar = myVar + 1`
             type: 'ToPoint',
             to: [1, 1],
             from: [0, 0],
+            units: { type: 'Mm' },
             tag: null,
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -198,6 +203,7 @@ const newVar = myVar + 1`
             type: 'ToPoint',
             to: [0, 1],
             from: [1, 1],
+            units: { type: 'Mm' },
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
               id: expect.any(String),
@@ -213,6 +219,7 @@ const newVar = myVar + 1`
             type: 'ToPoint',
             to: [1, 1],
             from: [0, 1],
+            units: { type: 'Mm' },
             tag: null,
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -239,6 +246,7 @@ const newVar = myVar + 1`
     expect(mem['three']).toEqual({
       type: 'Number',
       value: 3,
+      ty: expect.any(Object),
       __meta: [
         {
           sourceRange: [14, 15, 0],
@@ -248,12 +256,23 @@ const newVar = myVar + 1`
     expect(mem['yo']).toEqual({
       type: 'Array',
       value: [
-        { type: 'Number', value: 1, __meta: [{ sourceRange: [28, 29, 0] }] },
+        {
+          type: 'Number',
+          value: 1,
+          ty: expect.any(Object),
+          __meta: [{ sourceRange: [28, 29, 0] }],
+        },
         { type: 'String', value: '2', __meta: [{ sourceRange: [31, 34, 0] }] },
-        { type: 'Number', value: 3, __meta: [{ sourceRange: [14, 15, 0] }] },
+        {
+          type: 'Number',
+          value: 3,
+          ty: expect.any(Object),
+          __meta: [{ sourceRange: [14, 15, 0] }],
+        },
         {
           type: 'Number',
           value: 9,
+          ty: expect.any(Object),
           __meta: [{ sourceRange: [43, 44, 0] }, { sourceRange: [47, 48, 0] }],
         },
       ],
@@ -281,16 +300,19 @@ const newVar = myVar + 1`
         anum: {
           type: 'Number',
           value: 2,
+          ty: expect.any(Object),
           __meta: [{ sourceRange: [47, 48, 0] }],
         },
         identifier: {
           type: 'Number',
           value: 3,
+          ty: expect.any(Object),
           __meta: [{ sourceRange: [14, 15, 0] }],
         },
         binExp: {
           type: 'Number',
           value: 9,
+          ty: expect.any(Object),
           __meta: [{ sourceRange: [77, 78, 0] }, { sourceRange: [81, 82, 0] }],
         },
       },
@@ -404,6 +426,7 @@ describe('testing math operators', () => {
         ],
         type: 'Number',
         value: 1,
+        ty: expect.any(Object),
       },
       {
         __meta: [
@@ -413,6 +436,7 @@ describe('testing math operators', () => {
         ],
         type: 'Number',
         value: -3,
+        ty: expect.any(Object),
       },
     ])
   })

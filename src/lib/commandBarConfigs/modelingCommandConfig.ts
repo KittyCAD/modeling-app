@@ -58,7 +58,7 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
-    axisOrEdge: string
+    axisOrEdge: 'Axis' | 'Edge'
     axis: string
     edge: Selections
   }
@@ -106,6 +106,7 @@ export type ModelingCommandSchema = {
     prompt: string
     selection: Selections
   }
+  'Delete selection': {}
 }
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<

@@ -33,31 +33,45 @@ describe('processMemory', () => {
     const output = processMemory(execState.variables)
     expect(output.myVar).toEqual(5)
     expect(output.otherVar).toEqual(3)
-    expect(output).toEqual({
-      myVar: 5,
-      myFn: '__function(a)__',
-      otherVar: 3,
-      theExtrude: [
-        {
-          type: 'extrudePlane',
-          tag: null,
-          id: expect.any(String),
-          faceId: expect.any(String),
-          sourceRange: [expect.any(Number), expect.any(Number), 0],
-        },
-        {
-          type: 'extrudePlane',
-          tag: null,
-          id: expect.any(String),
-          faceId: expect.any(String),
-          sourceRange: [expect.any(Number), expect.any(Number), 0],
-        },
-      ],
-      theSketch: [
-        { type: 'ToPoint', to: [-3.35, 0.17], from: [0, 0], tag: null },
-        { type: 'ToPoint', to: [0.98, 5.16], from: [-3.35, 0.17], tag: null },
-        { type: 'ToPoint', to: [2.15, 4.32], from: [0.98, 5.16], tag: null },
-      ],
-    })
+    expect(output.myFn).toEqual('__function(a)__')
+    expect(output.theExtrude).toEqual([
+      {
+        type: 'extrudePlane',
+        tag: null,
+        id: expect.any(String),
+        faceId: expect.any(String),
+        sourceRange: [expect.any(Number), expect.any(Number), 0],
+      },
+      {
+        type: 'extrudePlane',
+        tag: null,
+        id: expect.any(String),
+        faceId: expect.any(String),
+        sourceRange: [expect.any(Number), expect.any(Number), 0],
+      },
+    ])
+    expect(output.theSketch).toEqual([
+      {
+        type: 'ToPoint',
+        to: [-3.35, 0.17],
+        from: [0, 0],
+        units: { type: 'Mm' },
+        tag: null,
+      },
+      {
+        type: 'ToPoint',
+        to: [0.98, 5.16],
+        from: [-3.35, 0.17],
+        units: { type: 'Mm' },
+        tag: null,
+      },
+      {
+        type: 'ToPoint',
+        to: [2.15, 4.32],
+        from: [0.98, 5.16],
+        units: { type: 'Mm' },
+        tag: null,
+      },
+    ])
   })
 })

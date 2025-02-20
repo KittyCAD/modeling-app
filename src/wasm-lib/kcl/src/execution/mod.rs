@@ -21,12 +21,13 @@ use crate::{
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
+        memory::ProgramMemory,
     },
     fs::FileManager,
-    parsing::ast::types::{Expr, FunctionExpression, Node, NodeRef, Program},
+    parsing::ast::types::{Expr, Node, NodeRef, Program},
     settings::types::UnitLength,
     source_range::SourceRange,
-    std::{args::Arg, StdLib},
+    std::StdLib,
     ExecError, KclErrorWithOutputs,
 };
 
@@ -131,16 +132,6 @@ impl std::hash::Hash for TagIdentifier {
     }
 }
 
-pub type MemoryFunction =
-    fn(
-        s: Vec<Arg>,
-        memory: EnvironmentRef,
-        expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        metadata: Vec<Metadata>,
-        exec_state: &ExecState,
-        ctx: ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<KclValue>, KclError>> + Send>>;
-
 /// Engine information for a tag.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -156,11 +147,9 @@ pub struct TagEngineInfo {
     pub surface: Option<ExtrudeSurface>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 pub enum BodyType {
-    Root,
+    Root(bool),
     Block,
 }
 
@@ -484,8 +473,8 @@ impl ExecutorContext {
     }
 
     /// Returns true if we should not send engine commands for any reason.
-    pub fn no_engine_commands(&self) -> bool {
-        self.is_mock() || self.engine.execution_kind().is_isolated()
+    pub async fn no_engine_commands(&self) -> bool {
+        self.is_mock() || self.engine.execution_kind().await.is_isolated()
     }
 
     pub async fn send_clear_scene(
@@ -507,18 +496,18 @@ impl ExecutorContext {
         assert!(self.is_mock());
 
         let mut exec_state = ExecState::new(&self.settings);
-        let mut mem = if use_prev_memory {
+        let (mut mem, init_mem) = if use_prev_memory {
             cache::read_old_memory()
                 .await
-                .unwrap_or_else(|| exec_state.memory().clone())
+                .map(|m| (m, false))
+                .unwrap_or_else(|| (ProgramMemory::new(), true))
         } else {
-            exec_state.memory().clone()
+            (ProgramMemory::new(), true)
         };
 
         // Add any extra variables to memory
         let mut to_restore = Vec::new();
         for (k, v) in variables {
-            crate::log::log(format!("add var: {k}"));
             to_restore.push((k.clone(), mem.get(&k, SourceRange::default()).ok().cloned()));
             mem.add(k, v, SourceRange::synthetic())
                 .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -530,7 +519,7 @@ impl ExecutorContext {
 
         *exec_state.mut_memory() = mem;
 
-        self.inner_run(&program.ast, &mut exec_state).await?;
+        self.inner_run(&program.ast, &mut exec_state, init_mem).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -549,14 +538,13 @@ impl ExecutorContext {
         cache::write_old_memory(mem).await;
 
         let outcome = exec_state.to_mock_wasm_outcome();
-        crate::log::log(format!("return mock {:#?}", outcome.variables));
         Ok(outcome)
     }
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
 
-        let (program, mut exec_state) = if let Some(OldAstState {
+        let (program, mut exec_state, init_mem) = if let Some(OldAstState {
             ast: old_ast,
             exec_state: old_state,
             settings: old_settings,
@@ -620,16 +608,16 @@ impl ExecutorContext {
                 old_state
             };
 
-            (program, exec_state)
+            (program, exec_state, clear_scene)
         } else {
             let mut exec_state = ExecState::new(&self.settings);
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
-            (program.ast, exec_state)
+            (program.ast, exec_state, true)
         };
 
-        let result = self.inner_run(&program, &mut exec_state).await;
+        let result = self.inner_run(&program, &mut exec_state, init_mem).await;
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -678,7 +666,7 @@ impl ExecutorContext {
         self.send_clear_scene(exec_state, Default::default())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-        self.inner_run(&program.ast, exec_state).await
+        self.inner_run(&program.ast, exec_state, true).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
@@ -687,6 +675,7 @@ impl ExecutorContext {
         &self,
         program: &Node<Program>,
         exec_state: &mut ExecState,
+        init_mem: bool,
     ) -> Result<Option<ModelingSessionData>, KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
@@ -696,14 +685,16 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.execute_and_build_graph(program, exec_state).await.map_err(|e| {
-            KclErrorWithOutputs::new(
-                e,
-                exec_state.mod_local.operations.clone(),
-                exec_state.global.artifact_commands.clone(),
-                exec_state.global.artifact_graph.clone(),
-            )
-        })?;
+        self.execute_and_build_graph(program, exec_state, init_mem)
+            .await
+            .map_err(|e| {
+                KclErrorWithOutputs::new(
+                    e,
+                    exec_state.mod_local.operations.clone(),
+                    exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
+                )
+            })?;
 
         if !self.is_mock() {
             cache::write_old_memory(exec_state.memory().clone()).await;
@@ -713,7 +704,7 @@ impl ExecutorContext {
             "Post interpretation KCL memory stats: {:#?}",
             exec_state.memory().stats
         ));
-        let session_data = self.engine.get_session_data();
+        let session_data = self.engine.get_session_data().await;
         Ok(session_data)
     }
 
@@ -723,19 +714,21 @@ impl ExecutorContext {
         &self,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
+        init_mem: bool,
     ) -> Result<Option<KclValue>, KclError> {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
-        let exec_result = self
-            .exec_program(program, exec_state, crate::execution::BodyType::Root)
-            .await;
+        let exec_result = self.exec_program(program, exec_state, BodyType::Root(init_mem)).await;
         // Move the artifact commands and responses to simplify cache management
         // and error creation.
         exec_state
             .global
             .artifact_commands
-            .extend(self.engine.take_artifact_commands());
-        exec_state.global.artifact_responses.extend(self.engine.responses());
+            .extend(self.engine.take_artifact_commands().await);
+        exec_state
+            .global
+            .artifact_responses
+            .extend(self.engine.take_responses().await);
         // Build the artifact graph.
         match build_artifact_graph(
             &exec_state.global.artifact_commands,
@@ -1279,7 +1272,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
-        let ast = r#"const myVar = pi() * 2"#;
+        let ast = r#"const myVar = PI * 2"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,

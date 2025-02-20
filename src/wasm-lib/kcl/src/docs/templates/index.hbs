@@ -9,6 +9,9 @@ layout: manual
 * [Types](kcl/types)
 * [Modules](kcl/modules)
 * [Known Issues](kcl/KNOWN-ISSUES)
+{{#each modules}}
+* **`{{name}}`**
 {{#each functions}}
-* [`{{name}}`](kcl/{{name}})
+  * [`{{name}}`](kcl/{{file_name}})
+{{/each}}
 {{/each}}

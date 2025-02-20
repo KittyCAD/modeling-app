@@ -3,9 +3,35 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing poop_chute.kcl
 ---
 {
+  "E": {
+    "type": "Number",
+    "value": 2.718281828459045,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          651,
+          689,
+          2
+        ]
+      }
+    ]
+  },
   "Fx": {
     "type": "Number",
     "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -19,6 +45,15 @@ description: Variables in memory after executing poop_chute.kcl
   "Fy": {
     "type": "Number",
     "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -32,26 +67,125 @@ description: Variables in memory after executing poop_chute.kcl
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
-    "__meta": []
+    "ty": {
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          109,
+          115,
+          1
+        ]
+      }
+    ]
+  },
+  "PI": {
+    "type": "Number",
+    "value": 3.141592653589793,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          328,
+          2
+        ]
+      }
+    ]
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
-    "__meta": []
+    "ty": {
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          89,
+          1
+        ]
+      }
+    ]
+  },
+  "TAU": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1042,
+          1080,
+          2
+        ]
+      }
+    ]
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
-    "__meta": []
+    "ty": {
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          144,
+          150,
+          1
+        ]
+      }
+    ]
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
-    "__meta": []
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          60,
+          61,
+          1
+        ]
+      }
+    ]
   },
   "back_length": {
     "type": "Number",
     "value": 7.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -65,6 +199,15 @@ description: Variables in memory after executing poop_chute.kcl
   "back_walls_width": {
     "type": "Number",
     "value": 2.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -75,9 +218,55 @@ description: Variables in memory after executing poop_chute.kcl
       }
     ]
   },
+  "cos": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [],
+        "end": 1477,
+        "moduleId": 2,
+        "start": 1477
+      },
+      "end": 1478,
+      "moduleId": 2,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 1450,
+            "moduleId": 2,
+            "name": "num",
+            "start": 1447,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 1446,
+      "type": "FunctionExpression"
+    },
+    "memory": null,
+    "__meta": [
+      {
+        "sourceRange": [
+          1446,
+          1478,
+          2
+        ]
+      }
+    ]
+  },
   "exit_height": {
     "type": "Number",
     "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -91,6 +280,15 @@ description: Variables in memory after executing poop_chute.kcl
   "filletRadius": {
     "type": "Number",
     "value": 0.05,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -104,6 +302,15 @@ description: Variables in memory after executing poop_chute.kcl
   "front_length": {
     "type": "Number",
     "value": 6.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -117,6 +324,15 @@ description: Variables in memory after executing poop_chute.kcl
   "front_walls_width": {
     "type": "Number",
     "value": 2.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -130,6 +346,15 @@ description: Variables in memory after executing poop_chute.kcl
   "height": {
     "type": "Number",
     "value": 5.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [
@@ -318,7 +543,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.0625,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -343,7 +571,10 @@ description: Variables in memory after executing poop_chute.kcl
               2.0,
               0.9375
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -363,7 +594,10 @@ description: Variables in memory after executing poop_chute.kcl
               2.0,
               5.5
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -383,7 +617,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.875,
               5.5
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -403,7 +640,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.875,
               0.9375
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -423,7 +663,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.0625,
               0.125
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -443,7 +686,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.9375,
               0.125
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -463,7 +709,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.125,
               0.9375
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -483,7 +732,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.125,
               5.5
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -503,7 +755,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.0,
               5.5
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -523,7 +778,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.0,
               0.9375
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -543,7 +801,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.9375,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -563,7 +824,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -605,6 +869,9 @@ description: Variables in memory after executing poop_chute.kcl
             1.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -646,7 +913,10 @@ description: Variables in memory after executing poop_chute.kcl
                   2.0,
                   0.9374999999999999
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -739,7 +1009,10 @@ description: Variables in memory after executing poop_chute.kcl
           2.0,
           0.9374999999999999
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -799,7 +1072,10 @@ description: Variables in memory after executing poop_chute.kcl
           2.0,
           0.9374999999999999
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -828,6 +1104,43 @@ description: Variables in memory after executing poop_chute.kcl
       }
     ]
   },
+  "sin": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [],
+        "end": 1875,
+        "moduleId": 2,
+        "start": 1875
+      },
+      "end": 1876,
+      "moduleId": 2,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 1848,
+            "moduleId": 2,
+            "name": "num",
+            "start": 1845,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 1844,
+      "type": "FunctionExpression"
+    },
+    "memory": null,
+    "__meta": [
+      {
+        "sourceRange": [
+          1844,
+          1876,
+          2
+        ]
+      }
+    ]
+  },
   "sketch001": {
     "type": "Sketch",
     "value": {
@@ -852,7 +1165,10 @@ description: Variables in memory after executing poop_chute.kcl
             1.0625,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -877,7 +1193,10 @@ description: Variables in memory after executing poop_chute.kcl
             2.0,
             0.9375
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -897,7 +1216,10 @@ description: Variables in memory after executing poop_chute.kcl
             2.0,
             5.5
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -917,7 +1239,10 @@ description: Variables in memory after executing poop_chute.kcl
             1.875,
             5.5
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -937,7 +1262,10 @@ description: Variables in memory after executing poop_chute.kcl
             1.875,
             0.9375
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -957,7 +1285,10 @@ description: Variables in memory after executing poop_chute.kcl
             1.0625,
             0.125
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -977,7 +1308,10 @@ description: Variables in memory after executing poop_chute.kcl
             0.9375,
             0.125
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -997,7 +1331,10 @@ description: Variables in memory after executing poop_chute.kcl
             0.125,
             0.9375
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1017,7 +1354,10 @@ description: Variables in memory after executing poop_chute.kcl
             0.125,
             5.5
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1037,7 +1377,10 @@ description: Variables in memory after executing poop_chute.kcl
             0.0,
             5.5
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1057,7 +1400,10 @@ description: Variables in memory after executing poop_chute.kcl
             0.0,
             0.9375
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1077,7 +1423,10 @@ description: Variables in memory after executing poop_chute.kcl
             0.9375,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1097,7 +1446,10 @@ description: Variables in memory after executing poop_chute.kcl
             1.0,
             0.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -1139,6 +1491,9 @@ description: Variables in memory after executing poop_chute.kcl
           1.0,
           0.0
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1180,7 +1535,10 @@ description: Variables in memory after executing poop_chute.kcl
                 2.0,
                 0.9374999999999999
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -1404,7 +1762,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.0625,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1429,7 +1790,10 @@ description: Variables in memory after executing poop_chute.kcl
               2.0,
               0.9375
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1449,7 +1813,10 @@ description: Variables in memory after executing poop_chute.kcl
               2.0,
               5.5
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1469,7 +1836,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.875,
               5.5
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1489,7 +1859,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.875,
               0.9375
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1509,7 +1882,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.0625,
               0.125
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1529,7 +1905,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.9375,
               0.125
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1549,7 +1928,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.125,
               0.9375
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1569,7 +1951,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.125,
               5.5
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1589,7 +1974,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.0,
               5.5
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1609,7 +1997,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.0,
               0.9375
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1629,7 +2020,10 @@ description: Variables in memory after executing poop_chute.kcl
               0.9375,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1649,7 +2043,10 @@ description: Variables in memory after executing poop_chute.kcl
               1.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -1691,6 +2088,9 @@ description: Variables in memory after executing poop_chute.kcl
             1.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1732,7 +2132,10 @@ description: Variables in memory after executing poop_chute.kcl
                   2.0,
                   0.9374999999999999
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -1794,9 +2197,55 @@ description: Variables in memory after executing poop_chute.kcl
       ]
     }
   },
+  "tan": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [],
+        "end": 2265,
+        "moduleId": 2,
+        "start": 2265
+      },
+      "end": 2266,
+      "moduleId": 2,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 2238,
+            "moduleId": 2,
+            "name": "num",
+            "start": 2235,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 2234,
+      "type": "FunctionExpression"
+    },
+    "memory": null,
+    "__meta": [
+      {
+        "sourceRange": [
+          2234,
+          2266,
+          2
+        ]
+      }
+    ]
+  },
   "wall_thickness": {
     "type": "Number",
     "value": 0.125,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
     "__meta": [
       {
         "sourceRange": [

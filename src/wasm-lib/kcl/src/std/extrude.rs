@@ -232,8 +232,9 @@ pub(crate) async fn do_post_extrude(
         sides: face_id_map,
         start_cap_id,
         end_cap_id,
-    } = analyze_faces(exec_state, &args, face_infos);
+    } = analyze_faces(exec_state, &args, face_infos).await;
     // Iterate over the sketch.value array and add face_id to GeoMeta
+    let no_engine_commands = args.ctx.no_engine_commands().await;
     let new_value = sketch
         .paths
         .iter()
@@ -243,7 +244,8 @@ pub(crate) async fn do_post_extrude(
                     Path::Arc { .. }
                     | Path::TangentialArc { .. }
                     | Path::TangentialArcTo { .. }
-                    | Path::Circle { .. } => {
+                    | Path::Circle { .. }
+                    | Path::CircleThreePoint { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
@@ -266,7 +268,7 @@ pub(crate) async fn do_post_extrude(
                         Some(extrude_surface)
                     }
                 }
-            } else if args.ctx.no_engine_commands() {
+            } else if no_engine_commands {
                 // Only pre-populate the extrude surface if we are in mock mode.
 
                 let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
@@ -312,12 +314,12 @@ struct Faces {
     start_cap_id: Option<Uuid>,
 }
 
-fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
+async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
     let mut faces = Faces {
         sides: HashMap::with_capacity(face_infos.len()),
         ..Default::default()
     };
-    if args.ctx.no_engine_commands() {
+    if args.ctx.no_engine_commands().await {
         // Create fake IDs for start and end caps, to make extrudes mock-execute safe
         faces.start_cap_id = Some(exec_state.next_uuid());
         faces.end_cap_id = Some(exec_state.next_uuid());
