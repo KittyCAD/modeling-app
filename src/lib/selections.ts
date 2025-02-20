@@ -11,6 +11,7 @@ import {
   Expr,
   defaultSourceRange,
   topLevelRange,
+  ArtifactGraph,
 } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { isNonNullable, uuidv4 } from 'lib/utils'
@@ -360,11 +361,13 @@ export function processCodeMirrorRanges({
   selectionRanges,
   isShiftDown,
   ast,
+  artifactGraph,
 }: {
   codeMirrorRanges: readonly SelectionRange[]
   selectionRanges: Selections
   isShiftDown: boolean
   ast: Program
+  artifactGraph: ArtifactGraph
 }): null | {
   modelingEvent: ModelingMachineEvent
   engineEvents: Models['WebSocketRequest_type'][]
@@ -392,8 +395,10 @@ export function processCodeMirrorRanges({
         },
       }
     })
-  const idBasedSelections: SelectionToEngine[] =
-    codeToIdSelections(codeBasedSelections)
+  const idBasedSelections: SelectionToEngine[] = codeToIdSelections(
+    codeBasedSelections,
+    artifactGraph
+  )
   const selections: Selection[] = []
   for (const { id, range } of idBasedSelections) {
     if (!id) {
@@ -406,11 +411,8 @@ export function processCodeMirrorRanges({
       })
       continue
     }
-    const artifact = engineCommandManager.artifactGraph.get(id)
-    const codeRefs = getCodeRefsByArtifactId(
-      id,
-      engineCommandManager.artifactGraph
-    )
+    const artifact = artifactGraph.get(id)
+    const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
     if (artifact && codeRefs) {
       selections.push({ artifact, codeRef: codeRefs[0] })
     } else if (codeRefs) {
@@ -602,7 +604,8 @@ export function canSubmitSelectionArg(
 }
 
 export function codeToIdSelections(
-  selections: Selection[]
+  selections: Selection[],
+  artifactGraph: ArtifactGraph
 ): SelectionToEngine[] {
   const selectionsOld = convertSelectionsToOld({
     graphSelections: selections,
@@ -612,7 +615,7 @@ export function codeToIdSelections(
     .flatMap((selection): null | SelectionToEngine[] => {
       const { type } = selection
       // TODO #868: loops over all artifacts will become inefficient at a large scale
-      const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
+      const overlappingEntries = Array.from(artifactGraph)
         .map(([id, artifact]) => {
           const codeRef = getFaceCodeRef(artifact)
           if (!codeRef) return null
@@ -651,9 +654,7 @@ export function codeToIdSelections(
           return
         }
         if (entry.artifact.type === 'path') {
-          const artifact = engineCommandManager.artifactGraph.get(
-            entry.artifact.solid2dId || ''
-          )
+          const artifact = artifactGraph.get(entry.artifact.solid2dId || '')
           if (artifact?.type !== 'solid2d') {
             bestCandidate = {
               artifact: entry.artifact,
@@ -696,9 +697,7 @@ export function codeToIdSelections(
         }
         if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
           if (!entry.artifact.surfaceId) return
-          const wall = engineCommandManager.artifactGraph.get(
-            entry.artifact.surfaceId
-          )
+          const wall = artifactGraph.get(entry.artifact.surfaceId)
           if (wall?.type !== 'wall') return
           bestCandidate = {
             artifact: wall,
@@ -710,7 +709,7 @@ export function codeToIdSelections(
         if (type === 'edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
             { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
-            engineCommandManager.artifactGraph
+            artifactGraph
           )
           const edge = [...edges].find(([_, edge]) => edge.type === 'sweepEdge')
           if (!edge) return
@@ -723,7 +722,7 @@ export function codeToIdSelections(
         if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
             { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
-            engineCommandManager.artifactGraph
+            artifactGraph
           )
           const edge = [...edges].find(
             ([_, edge]) =>
@@ -746,12 +745,12 @@ export function codeToIdSelections(
               key: entry.artifact.sweepId,
               types: ['sweep'],
             },
-            engineCommandManager.artifactGraph
+            artifactGraph
           )
           if (err(extrusion)) return
           const caps = getArtifactsOfTypes(
             { keys: extrusion.surfaceIds, types: ['cap'] },
-            engineCommandManager.artifactGraph
+            artifactGraph
           )
           const cap = [...caps].find(
             ([_, cap]) => cap.subType === (type === 'end-cap' ? 'end' : 'start')
@@ -770,7 +769,7 @@ export function codeToIdSelections(
               key: entry.artifact.consumedEdgeId,
               types: ['segment', 'sweepEdge'],
             },
-            engineCommandManager.artifactGraph
+            artifactGraph
           )
           if (err(consumedEdge)) return
           if (
@@ -795,7 +794,7 @@ export function codeToIdSelections(
           ) {
             const seg = getArtifactOfTypes(
               { key: consumedEdge.segId, types: ['segment'] },
-              engineCommandManager.artifactGraph
+              artifactGraph
             )
             if (err(seg)) return
             if (
