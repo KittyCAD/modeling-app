@@ -106,81 +106,81 @@ test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
         toolbar: ToolbarFixture,
         scene: SceneFixture
       ) =>
-        async ({
-          clickCoords,
-          cameraPos,
-          cameraTarget,
-          beforeChamferSnippet,
-          afterChamferSelectSnippet,
-          afterRectangle1stClickSnippet,
-          afterRectangle2ndClickSnippet,
-          beforeChamferSnippetEnd,
-        }: {
-          clickCoords: { x: number; y: number }
-          cameraPos: { x: number; y: number; z: number }
-          cameraTarget: { x: number; y: number; z: number }
-          beforeChamferSnippet: string
-          afterChamferSelectSnippet: string
-          afterRectangle1stClickSnippet: string
-          afterRectangle2ndClickSnippet: string
-          beforeChamferSnippetEnd?: string
-        }) => {
-          const [clickChamfer] = scene.makeMouseHelpers(
-            clickCoords.x,
-            clickCoords.y
-          )
-          const [rectangle1stClick] = scene.makeMouseHelpers(573, 149)
-          const [rectangle2ndClick, rectangle2ndMove] = scene.makeMouseHelpers(
-            598,
-            380,
-            { steps: 5 }
-          )
+      async ({
+        clickCoords,
+        cameraPos,
+        cameraTarget,
+        beforeChamferSnippet,
+        afterChamferSelectSnippet,
+        afterRectangle1stClickSnippet,
+        afterRectangle2ndClickSnippet,
+        beforeChamferSnippetEnd,
+      }: {
+        clickCoords: { x: number; y: number }
+        cameraPos: { x: number; y: number; z: number }
+        cameraTarget: { x: number; y: number; z: number }
+        beforeChamferSnippet: string
+        afterChamferSelectSnippet: string
+        afterRectangle1stClickSnippet: string
+        afterRectangle2ndClickSnippet: string
+        beforeChamferSnippetEnd?: string
+      }) => {
+        const [clickChamfer] = scene.makeMouseHelpers(
+          clickCoords.x,
+          clickCoords.y
+        )
+        const [rectangle1stClick] = scene.makeMouseHelpers(573, 149)
+        const [rectangle2ndClick, rectangle2ndMove] = scene.makeMouseHelpers(
+          598,
+          380,
+          { steps: 5 }
+        )
 
-          await scene.moveCameraTo(cameraPos, cameraTarget)
+        await scene.moveCameraTo(cameraPos, cameraTarget)
 
-          await test.step('check chamfer selection changes cursor positon', async () => {
-            await expect(async () => {
-              // sometimes initial click doesn't register
-              await clickChamfer()
-              // await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
-              await editor.expectActiveLinesToBe([
-                beforeChamferSnippetEnd || beforeChamferSnippet.slice(-5),
-              ])
-            }).toPass({ timeout: 15_000, intervals: [500] })
-          })
-
-          await test.step('starting a new and selecting a chamfer should animate to the new sketch and possible break up the initial chamfer if it had one than more tag', async () => {
-            await toolbar.startSketchPlaneSelection()
+        await test.step('check chamfer selection changes cursor positon', async () => {
+          await expect(async () => {
+            // sometimes initial click doesn't register
             await clickChamfer()
-            // timeout wait for engine animation is unavoidable
-            await page.waitForTimeout(1000)
-            await editor.expectEditor.toContain(afterChamferSelectSnippet)
-          })
-          await test.step('make sure a basic sketch can be added', async () => {
-            await toolbar.rectangleBtn.click()
-            await rectangle1stClick()
-            await editor.expectEditor.toContain(afterRectangle1stClickSnippet)
-            await rectangle2ndMove({
-              pixelDiff: 50,
-            })
-            await rectangle2ndClick()
-            await editor.expectEditor.toContain(afterRectangle2ndClickSnippet, {
-              shouldNormalise: true,
-            })
-          })
+            // await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
+            await editor.expectActiveLinesToBe([
+              beforeChamferSnippetEnd || beforeChamferSnippet.slice(-5),
+            ])
+          }).toPass({ timeout: 15_000, intervals: [500] })
+        })
 
-          await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
-            await toolbar.exitSketchBtn.click()
-            await scene.waitForExecutionDone()
+        await test.step('starting a new and selecting a chamfer should animate to the new sketch and possible break up the initial chamfer if it had one than more tag', async () => {
+          await toolbar.startSketchPlaneSelection()
+          await clickChamfer()
+          // timeout wait for engine animation is unavoidable
+          await page.waitForTimeout(1000)
+          await editor.expectEditor.toContain(afterChamferSelectSnippet)
+        })
+        await test.step('make sure a basic sketch can be added', async () => {
+          await toolbar.rectangleBtn.click()
+          await rectangle1stClick()
+          await editor.expectEditor.toContain(afterRectangle1stClickSnippet)
+          await rectangle2ndMove({
+            pixelDiff: 50,
           })
-          await test.step('Check there is no errors after code created in previous steps executes', async () => {
-            await editor.expectState({
-              activeLines: ["sketch001 = startSketchOn('XZ')"],
-              highlightedCode: '',
-              diagnostics: [],
-            })
+          await rectangle2ndClick()
+          await editor.expectEditor.toContain(afterRectangle2ndClickSnippet, {
+            shouldNormalise: true,
           })
-        }
+        })
+
+        await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
+          await toolbar.exitSketchBtn.click()
+          await scene.waitForExecutionDone()
+        })
+        await test.step('Check there is no errors after code created in previous steps executes', async () => {
+          await editor.expectState({
+            activeLines: ["sketch001 = startSketchOn('XZ')"],
+            highlightedCode: '',
+            diagnostics: [],
+          })
+        })
+      }
     test('works on all edge selections and can break up multi edges in a chamfer array', async ({
       context,
       page,
