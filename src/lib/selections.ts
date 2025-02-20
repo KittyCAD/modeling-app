@@ -607,227 +607,74 @@ export function codeToIdSelections(
   selections: Selection[],
   artifactGraph: ArtifactGraph
 ): SelectionToEngine[] {
-  const selectionsOld = convertSelectionsToOld({
-    graphSelections: selections,
-    otherSelections: [],
-  }).codeBasedSelections
-  return selectionsOld
+  return selections
     .flatMap((selection): null | SelectionToEngine[] => {
-      const { type } = selection
-      // TODO #868: loops over all artifacts will become inefficient at a large scale
+      // If we have an artifact directly, we can use it
+      if (selection.artifact?.id) {
+        return [
+          {
+            type: 'default',
+            id: selection.artifact.id,
+            range: selection.codeRef.range,
+          },
+        ]
+      }
+
+      // Otherwise, find overlapping artifacts based on code range
       const overlappingEntries = Array.from(artifactGraph)
         .map(([id, artifact]) => {
           const codeRef = getFaceCodeRef(artifact)
           if (!codeRef) return null
-          return isOverlap(codeRef.range, selection.range)
-            ? {
-                artifact,
-                selection,
-                id,
-              }
+          return isOverlap(codeRef.range, selection.codeRef.range)
+            ? { artifact, id }
             : null
         })
         .filter(isNonNullable)
 
-      /** TODO refactor
-       * selections in our app is a sourceRange plus some metadata
-       * The metadata is just a union type string of different types of artifacts or 3d features 'extrude-wall' 'segment' etc
-       * Because the source range is not enough to figure out what the user selected, so here we're using filtering through all the artifacts
-       * to find something that matches both the source range and the metadata.
-       *
-       * What we should migrate to is just storing what the user selected by what it matched in the artifactGraph it will simply the below a lot.
-       *
-       * In the case of a user moving the cursor them, we will still need to figure out what artifact from the graph matches best, but we will just need sane defaults
-       * and most of the time we can expect the user to be clicking in the 3d scene instead.
-       */
-      let bestCandidate:
-        | {
-            id: ArtifactId
-            artifact: unknown
-            selection: Selection__old
-          }
-        | undefined
-      overlappingEntries.forEach((entry) => {
-        // TODO probably need to remove much of the `type === 'xyz'` below
-        if (type === 'default' && entry.artifact.type === 'segment') {
+      let bestCandidate: { id: ArtifactId; artifact: Artifact } | undefined
+
+      for (const entry of overlappingEntries) {
+        if (entry.artifact.type === 'segment') {
           bestCandidate = entry
-          return
-        }
-        if (entry.artifact.type === 'path') {
-          const artifact = artifactGraph.get(entry.artifact.solid2dId || '')
-          if (artifact?.type !== 'solid2d') {
-            bestCandidate = {
-              artifact: entry.artifact,
-              selection,
-              id: entry.id,
-            }
-          }
-          if (!entry.artifact.solid2dId) {
-            console.error(
-              'Expected PathArtifact to have solid2dId, but none found'
-            )
-            return
-          }
-          bestCandidate = {
-            artifact: artifact,
-            selection,
-            id: entry.artifact.solid2dId,
-          }
-        }
-        if (entry.artifact.type === 'plane') {
-          bestCandidate = {
-            artifact: entry.artifact,
-            selection,
-            id: entry.id,
-          }
-        }
-        if (entry.artifact.type === 'cap') {
-          bestCandidate = {
-            artifact: entry.artifact,
-            selection,
-            id: entry.id,
-          }
-        }
-        if (entry.artifact.type === 'wall') {
-          bestCandidate = {
-            artifact: entry.artifact,
-            selection,
-            id: entry.id,
-          }
-        }
-        if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
-          if (!entry.artifact.surfaceId) return
-          const wall = artifactGraph.get(entry.artifact.surfaceId)
-          if (wall?.type !== 'wall') return
-          bestCandidate = {
-            artifact: wall,
-            selection,
-            id: entry.artifact.surfaceId,
-          }
-          return
-        }
-        if (type === 'edge' && entry.artifact.type === 'segment') {
-          const edges = getArtifactsOfTypes(
-            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
-            artifactGraph
-          )
-          const edge = [...edges].find(([_, edge]) => edge.type === 'sweepEdge')
-          if (!edge) return
-          bestCandidate = {
-            artifact: edge[1],
-            selection,
-            id: edge[0],
-          }
-        }
-        if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
-          const edges = getArtifactsOfTypes(
-            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
-            artifactGraph
-          )
-          const edge = [...edges].find(
-            ([_, edge]) =>
-              edge.type === 'sweepEdge' && edge.subType === 'adjacent'
-          )
-          if (!edge) return
-          bestCandidate = {
-            artifact: edge[1],
-            selection,
-            id: edge[0],
-          }
-        }
-        if (
-          (type === 'end-cap' || type === 'start-cap') &&
-          entry.artifact.type === 'path'
-        ) {
-          if (!entry.artifact.sweepId) return
-          const extrusion = getArtifactOfTypes(
-            {
-              key: entry.artifact.sweepId,
-              types: ['sweep'],
-            },
-            artifactGraph
-          )
-          if (err(extrusion)) return
-          const caps = getArtifactsOfTypes(
-            { keys: extrusion.surfaceIds, types: ['cap'] },
-            artifactGraph
-          )
-          const cap = [...caps].find(
-            ([_, cap]) => cap.subType === (type === 'end-cap' ? 'end' : 'start')
-          )
-          if (!cap) return
-          bestCandidate = {
-            artifact: entry.artifact,
-            selection,
-            id: cap[0],
-          }
-          return
-        }
-        if (entry.artifact.type === 'edgeCut') {
-          const consumedEdge = getArtifactOfTypes(
-            {
-              key: entry.artifact.consumedEdgeId,
-              types: ['segment', 'sweepEdge'],
-            },
-            artifactGraph
-          )
-          if (err(consumedEdge)) return
-          if (
-            consumedEdge.type === 'segment' &&
-            type === 'base-edgeCut' &&
-            isOverlap(
-              consumedEdge.codeRef.range,
-              selection.secondaryRange || [0, 0]
-            )
-          ) {
-            bestCandidate = {
-              artifact: entry.artifact,
-              selection,
-              id: entry.id,
-            }
-          } else if (
-            consumedEdge.type === 'sweepEdge' &&
-            ((type === 'adjacent-edgeCut' &&
-              consumedEdge.subType === 'adjacent') ||
-              (type === 'opposite-edgeCut' &&
-                consumedEdge.subType === 'opposite'))
-          ) {
-            const seg = getArtifactOfTypes(
-              { key: consumedEdge.segId, types: ['segment'] },
-              artifactGraph
-            )
-            if (err(seg)) return
-            if (
-              isOverlap(seg.codeRef.range, selection.secondaryRange || [0, 0])
-            ) {
-              bestCandidate = {
-                artifact: entry.artifact,
-                selection,
-                id: entry.id,
-              }
-            }
-          }
+          continue
         }
 
-        if (entry.artifact.type === 'sweep') {
-          bestCandidate = {
-            artifact: entry.artifact,
-            selection,
-            id: entry.id,
+        if (entry.artifact.type === 'path') {
+          const solid2dId = entry.artifact.solid2dId
+          if (!solid2dId) {
+            bestCandidate = entry
+            continue
           }
+          const solid2d = artifactGraph.get(solid2dId)
+          if (solid2d?.type === 'solid2d') {
+            bestCandidate = { id: solid2dId, artifact: solid2d }
+          }
+          continue
         }
-      })
+
+        if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
+          bestCandidate = entry
+          continue
+        }
+      }
 
       if (bestCandidate) {
         return [
           {
-            type,
+            type: 'default',
             id: bestCandidate.id,
-            range: bestCandidate.selection.range,
+            range: selection.codeRef.range,
           },
         ]
       }
-      return [selection]
+
+      // If no matching artifact found, return selection without id
+      return [
+        {
+          type: 'default',
+          range: selection.codeRef.range,
+        },
+      ]
     })
     .filter(isNonNullable)
 }
