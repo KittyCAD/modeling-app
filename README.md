@@ -71,7 +71,7 @@ yarn install:wasm-pack
 
 # Windows
 yarn install:rust:windows
-yarn install:wasm-pack:windows
+yarn install:wasm-pack
 ```
 
 Then to build the WASM layer, run:

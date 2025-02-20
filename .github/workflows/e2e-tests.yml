@@ -125,11 +125,15 @@ jobs:
     - name: Build Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
       shell: bash
-      run: yarn build:wasm
+      run: |
+        yarn install:wasm-pack
+        yarn build:wasm
     - name: OR Build Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
       shell: bash
-      run: yarn build:wasm
+      run: |
+        yarn install:wasm-pack
+        yarn build:wasm
     - name: build web
       shell: bash
       run: yarn tronb:vite:dev

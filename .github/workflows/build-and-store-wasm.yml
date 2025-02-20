@@ -23,7 +23,9 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
       - name: build wasm
-        run: yarn build:wasm
+        run: |
+          yarn install:wasm-pack
+          yarn build:wasm
 
 
       # Upload the WASM bundle as an artifact
