@@ -46,7 +46,7 @@ jobs:
       # TODO: see if we can fetch from main instead if no diff at src/wasm-lib
       - name: Run build:wasm
         run: |
-          yarn install:wasm-pack
+          yarn install:wasm-pack:sh
           yarn build:wasm
 
       - name: Set nightly version, product name, release notes, and icons
