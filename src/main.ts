@@ -19,7 +19,7 @@ import * as kittycad from '@kittycad/lib/import'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-import { reportRejection } from 'lib/trap'
+import { report, reportRejection } from 'lib/trap'
 import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
 import {
   argvFromYargs,
@@ -143,7 +143,6 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       // We're trying to open a custom protocol link
       // TODO: fix the replace %3 thing
       const urlNoProtocol = pathToOpen
-        .replace(ZOO_STUDIO_PROTOCOL + ':///', '') // cuz windows sees this somehow
         .replace(ZOO_STUDIO_PROTOCOL + '://', '')
         .replaceAll('%3D', '')
         .replaceAll('%3', '')
@@ -160,7 +159,10 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
         .loadFile(startIndex, {
           hash: filteredPath,
         })
-        .catch(reportRejection)
+        .catch((r) => {
+          dialog.showErrorBox('catch', JSON.stringify(r))
+          reportRejection(r)
+        })
     } else {
       // otherwise we're trying to open a local file from the command line
       getProjectPathAtStartup(pathToOpen)
