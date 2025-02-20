@@ -80,8 +80,13 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
         }
 
         if stage_modules.is_empty() {
-            panic!("loop");
+            anyhow::bail!("imports are acyclic");
         }
+
+        // not strictly needed here, but perhaps helpful to avoid thinking
+        // there's any implied ordering as well as helping to make tests
+        // easier.
+        stage_modules.sort();
 
         order.push(stage_modules);
 
@@ -142,7 +147,29 @@ import \"a.kcl\"
         modules.insert("b.kcl".to_owned(), &b);
 
         let order = import_graph(modules).unwrap();
-        assert_eq!(vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned()],], order);
+        assert_eq!(vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned()]], order);
+    }
+
+    #[test]
+    fn order_imports_none() {
+        let mut modules = HashMap::new();
+
+        let a = kcl!(
+            "
+y = 2
+"
+        );
+        modules.insert("a.kcl".to_owned(), &a);
+
+        let b = kcl!(
+            "
+x = 1
+"
+        );
+        modules.insert("b.kcl".to_owned(), &b);
+
+        let order = import_graph(modules).unwrap();
+        assert_eq!(vec![vec!["a.kcl".to_owned(), "b.kcl".to_owned()]], order);
     }
 
     #[test]
@@ -166,14 +193,31 @@ import \"a.kcl\"
         );
         modules.insert("c.kcl".to_owned(), &c);
 
-        let mut order = import_graph(modules).unwrap();
-        for o in order.iter_mut() {
-            o.sort();
-        }
-
+        let order = import_graph(modules).unwrap();
         assert_eq!(
-            vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned(), "c.kcl".to_owned()],],
+            vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned(), "c.kcl".to_owned()]],
             order
         );
+    }
+
+    #[test]
+    fn order_imports_cycle() {
+        let mut modules = HashMap::new();
+
+        let a = kcl!(
+            "
+import \"b.kcl\"
+"
+        );
+        modules.insert("a.kcl".to_owned(), &a);
+
+        let b = kcl!(
+            "
+import \"a.kcl\"
+"
+        );
+        modules.insert("b.kcl".to_owned(), &b);
+
+        assert!(import_graph(modules).is_err());
     }
 }
