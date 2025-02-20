@@ -1,3 +1,5 @@
+use std::ops::{Add, AddAssign, Mul};
+
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
@@ -354,11 +356,6 @@ impl Plane {
     }
 
     /// The standard planes are XY, YZ and XZ (in both positive and negative)
-    pub fn is_standard(&self) -> bool {
-        !self.is_custom()
-    }
-
-    /// The standard planes are XY, YZ and XZ (in both positive and negative)
     /// Custom planes are any other plane that the user might specify.
     pub fn is_custom(&self) -> bool {
         matches!(self.value, PlaneType::Custom)
@@ -692,6 +689,36 @@ impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
             x: LengthUnit(p.x),
             y: LengthUnit(p.y),
             z: LengthUnit(p.z),
+        }
+    }
+}
+
+impl Add for Point3d {
+    type Output = Point3d;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Point3d {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+        }
+    }
+}
+
+impl AddAssign for Point3d {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs
+    }
+}
+
+impl Mul<f64> for Point3d {
+    type Output = Point3d;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Point3d {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
         }
     }
 }

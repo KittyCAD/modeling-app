@@ -874,21 +874,6 @@ impl<'a> FromKclValue<'a> for crate::std::polar::PolarCoordsData {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let s = arg.as_str()?;
-        match s {
-            "XY" | "xy" => Some(Self::XY),
-            "-XY" | "-xy" => Some(Self::NegXY),
-            "XZ" | "xz" => Some(Self::XZ),
-            "-XZ" | "-xz" => Some(Self::NegXZ),
-            "YZ" | "yz" => Some(Self::YZ),
-            "-YZ" | "-yz" => Some(Self::NegYZ),
-            _ => None,
-        }
-    }
-}
-
 impl<'a> FromKclValue<'a> for crate::execution::Plane {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.as_plane().cloned()

@@ -1296,7 +1296,7 @@ pub(crate) async fn inner_start_profile_at(
             args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
                 .await?;
         }
-        SketchSurface::Plane(plane) if !plane.is_standard() => {
+        SketchSurface::Plane(plane) if plane.is_custom() => {
             // Hide whatever plane we are sketching on.
             // This is especially helpful for offset planes, which would be visible otherwise.
             args.batch_end_cmd(
