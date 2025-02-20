@@ -413,6 +413,7 @@ pub enum PlaneType {
 /// A sketch is a collection of paths.
 ///
 /// When you define a sketch to a variable like:
+///
 /// ```no_run
 /// mySketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
@@ -583,6 +584,7 @@ impl Sketch {
 /// A solid is a collection of extrude surfaces.
 ///
 /// When you define a solid to a variable like:
+///
 /// ```no_run
 /// myPart = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
