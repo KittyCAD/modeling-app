@@ -113,10 +113,8 @@ impl ExecutorContext {
                         prelude_range,
                     )
                     .await?;
-                let (module_memory, module_exports) = self
-                    .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, prelude_range)
-                    .await
-                    .unwrap();
+                let (module_memory, module_exports) =
+                    self.exec_module_for_items(id, exec_state, prelude_range).await.unwrap();
                 for name in module_exports {
                     let item = exec_state
                         .memory()
