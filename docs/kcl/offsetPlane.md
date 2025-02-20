@@ -9,7 +9,7 @@ Offset a plane by a distance along its normal.
 For example, if you offset the 'XZ' plane by 10, the new plane will be parallel to the 'XZ' plane and 10 units away from it.
 
 ```js
-offsetPlane(std_plane: StandardPlane, offset: number) -> Plane
+offsetPlane(plane: PlaneData, offset: number) -> Plane
 ```
 
 
@@ -17,7 +17,7 @@ offsetPlane(std_plane: StandardPlane, offset: number) -> Plane
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `std_plane` | [`StandardPlane`](/docs/kcl/types/StandardPlane) | Which standard plane (e.g. XY) should this new plane be created from? | Yes |
+| `plane` | [`PlaneData`](/docs/kcl/types/PlaneData) | The plane (e.g. 'XY') which this new plane is created from. | Yes |
 | `offset` | `number` | Distance from the standard plane this new plane will be created at. | Yes |
 
 ### Returns

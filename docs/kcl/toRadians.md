@@ -25,7 +25,7 @@ toRadians(num: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

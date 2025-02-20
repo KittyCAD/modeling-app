@@ -25,7 +25,7 @@ log2(num: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

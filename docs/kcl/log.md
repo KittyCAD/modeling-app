@@ -26,7 +26,7 @@ log(num: number, base: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

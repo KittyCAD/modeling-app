@@ -24,7 +24,7 @@ mirror2d(data: Mirror2dData, sketch_set: SketchSet) -> [Sketch]
 
 ### Returns
 
-[`[Sketch]`](/docs/kcl/types/Sketch) 
+[`[Sketch]`](/docs/kcl/types/Sketch)
 
 
 ### Examples

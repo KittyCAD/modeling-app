@@ -50,7 +50,7 @@ patternTransform(solid_set: SolidSet, instances: integer, transform: FunctionPar
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/Solid) 
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples

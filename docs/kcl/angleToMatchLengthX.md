@@ -23,7 +23,7 @@ angleToMatchLengthX(tag: TagIdentifier, to: number, sketch: Sketch) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

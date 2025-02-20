@@ -25,7 +25,7 @@ patternLinear2d(sketch_set: SketchSet, instances: integer, distance: number, axi
 
 ### Returns
 
-[`[Sketch]`](/docs/kcl/types/Sketch) 
+[`[Sketch]`](/docs/kcl/types/Sketch)
 
 
 ### Examples
