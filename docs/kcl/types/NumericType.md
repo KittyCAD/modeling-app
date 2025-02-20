@@ -141,6 +141,7 @@ A unit of length.
 
 
 ----
+A unit of angle.
 
 **Type:** `object`
 
