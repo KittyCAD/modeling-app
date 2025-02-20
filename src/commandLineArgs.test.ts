@@ -39,7 +39,7 @@ const macColdStartPathArgv = [
 const winSecondInstanceDeepLinkArgv = [
   'C:\\Program Files\\Zoo Modeling App\\Zoo Modeling App.exe',
   '--allow-file-access-from-files',
-  'zoo-studio:///?create-file=true&name=deeplinkscopy&code=cGxhbmUwMDEgPSBvZmZzZXRQbGFuZSgnWFonLCBvZmZzZXQgPSA1KQo%3D'
+  'zoo-studio:///?create-file=true&name=deeplinkscopy&code=cGxhbmUwMDEgPSBvZmZzZXRQbGFuZSgnWFonLCBvZmZzZXQgPSA1KQo%3D',
 ]
 
 const winSecondInstancePathArgv = [
@@ -60,7 +60,7 @@ const winColdStartPathArgv = [
 ]
 
 describe('getPathOrUrlFromArgs', () => {
-  [
+  ;[
     ['linux', linuxSecondInstancePathArgv],
     ['windows', winSecondInstancePathArgv],
     // macos doesn't uses the open-url scheme so is different
@@ -69,9 +69,9 @@ describe('getPathOrUrlFromArgs', () => {
       const args = parseCLIArgs(argv as string[])
       expect(getPathOrUrlFromArgs(args)).toContain('main.kcl')
     })
-  });
+  })
 
-  [
+  ;[
     ['linux', linuxSecondInstanceDeepLinkArgv],
     ['windows', winSecondInstanceDeepLinkArgv],
     // macos doesn't uses the open-url scheme so is different
@@ -80,9 +80,9 @@ describe('getPathOrUrlFromArgs', () => {
       const args = parseCLIArgs(argv as string[])
       expect(getPathOrUrlFromArgs(args)).toContain('zoo-studio://')
     })
-  });
+  })
 
-  [
+  ;[
     ['linux', linuxColdStartPathArgv],
     ['windows', winColdStartPathArgv],
     ['mac', macColdStartPathArgv],
@@ -91,9 +91,9 @@ describe('getPathOrUrlFromArgs', () => {
       const args = parseCLIArgs(argv as string[])
       expect(getPathOrUrlFromArgs(args)).toContain('main.kcl')
     })
-  });
+  })
 
-  [
+  ;[
     ['linux', linuxColdStartNoPathArgv],
     ['windows', winColdStartNoPathArgv],
     ['mac', macColdStartNoPathArgv],
@@ -102,5 +102,5 @@ describe('getPathOrUrlFromArgs', () => {
       const args = parseCLIArgs(argv as string[])
       expect(getPathOrUrlFromArgs(args)).toBeUndefined()
     })
-  });
+  })
 })

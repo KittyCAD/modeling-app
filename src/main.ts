@@ -497,7 +497,10 @@ function registerStartupListeners() {
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     // Deep Link: second instance for Windows and Linux
     // Likely convenient to keep for debugging
-    console.log('Parsed CLI args from second instance', parseCLIArgs(commandLine))
+    console.log(
+      'Parsed CLI args from second instance',
+      parseCLIArgs(commandLine)
+    )
     const pathOrUrl = getPathOrUrlFromArgs(parseCLIArgs(commandLine))
     console.log('Retrieved path or deep link from second-instance', pathOrUrl)
     createWindow(pathOrUrl)
