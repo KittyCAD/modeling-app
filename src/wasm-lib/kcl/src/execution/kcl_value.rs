@@ -640,12 +640,53 @@ impl NumericType {
         NumericType::Known(UnitType::Count)
     }
 
-    pub fn combine(self, other: &NumericType) -> NumericType {
+    /// Combine two types when we expect them to be equal.
+    pub fn combine_eq(self, other: &NumericType) -> NumericType {
         if &self == other {
             self
         } else {
             NumericType::Unknown
         }
+    }
+
+    /// Combine n types when we expect them to be equal.
+    ///
+    /// Precondition: tys.len() > 0
+    pub fn combine_n_eq(tys: &[NumericType]) -> NumericType {
+        let ty0 = tys[0].clone();
+        for t in &tys[1..] {
+            if t != &ty0 {
+                return NumericType::Unknown;
+            }
+        }
+        ty0
+    }
+
+    /// Combine two types in addition-like operations.
+    pub fn combine_add(a: NumericType, b: NumericType) -> NumericType {
+        if a == b {
+            return a;
+        }
+        NumericType::Unknown
+    }
+
+    /// Combine two types in multiplication-like operations.
+    pub fn combine_mul(a: NumericType, b: NumericType) -> NumericType {
+        if a == NumericType::count() {
+            return b;
+        }
+        if b == NumericType::count() {
+            return a;
+        }
+        NumericType::Unknown
+    }
+
+    /// Combine two types in division-like operations.
+    pub fn combine_div(a: NumericType, b: NumericType) -> NumericType {
+        if b == NumericType::count() {
+            return a;
+        }
+        NumericType::Unknown
     }
 
     pub fn from_parsed(suffix: NumericSuffix, settings: &super::MetaSettings) -> Self {

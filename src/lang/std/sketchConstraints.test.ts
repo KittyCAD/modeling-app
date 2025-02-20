@@ -386,6 +386,7 @@ part001 = startSketchOn('XY')
       type: 'ToPoint',
       to: [5.62, 1.79],
       from: [3.48, 0.44],
+      units: { type: 'Mm' },
       tag: null,
     })
   })
@@ -401,6 +402,7 @@ part001 = startSketchOn('XY')
     expect(segment).toEqual({
       to: [0, 0.04],
       from: [0, 0.04],
+      units: { type: 'Mm' },
       tag: null,
       type: 'Base',
     })

@@ -119,7 +119,13 @@ description: Variables in memory after executing index_of_array.kcl
     "type": "Number",
     "value": 1.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
     "__meta": [
       {

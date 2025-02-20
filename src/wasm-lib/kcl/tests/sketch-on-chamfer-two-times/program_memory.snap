@@ -161,7 +161,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               344.23,
               317.2
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -186,7 +189,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               344.23,
               99.94
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -206,7 +212,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               75.8,
               99.94
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -231,7 +240,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               75.8,
               317.2
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -251,7 +263,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               75.8,
               317.2
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -293,6 +308,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             75.8,
             317.2
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -334,7 +352,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   344.23,
                   317.2
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -393,7 +414,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   344.23,
                   99.94
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -452,7 +476,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   75.8,
                   317.2
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -711,7 +738,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               200.07,
               278.35
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -736,7 +766,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               200.07,
               146.08
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -761,7 +794,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               159.25,
               146.08
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -781,7 +817,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               159.25,
               278.35
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -801,7 +840,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               159.25,
               278.35
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -948,7 +990,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     344.23,
                     317.2
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -973,7 +1018,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     344.23,
                     99.94
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -993,7 +1041,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     75.8,
                     99.94
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -1018,7 +1069,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     75.8,
                     317.2
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -1038,7 +1092,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     75.8,
                     317.2
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 }
               ],
               "on": {
@@ -1080,6 +1137,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   75.8,
                   317.2
                 ],
+                "units": {
+                  "type": "Mm"
+                },
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1121,7 +1181,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                         344.23,
                         317.2
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -1180,7 +1243,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                         344.23,
                         99.94
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -1239,7 +1305,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                         75.8,
                         317.2
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -1425,6 +1494,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             159.25,
             278.35
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1466,7 +1538,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   200.07,
                   278.35
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -1525,7 +1600,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   200.07,
                   146.08
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -1584,7 +1662,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   159.25,
                   146.08
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -1677,7 +1758,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           344.23,
           317.2
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -1737,7 +1821,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           200.07,
           278.35
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -1797,7 +1884,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           -27.619999999999997,
           277.34
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": null
     },
@@ -1842,7 +1932,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           200.07,
           146.08
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -1902,7 +1995,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           -27.61999999999999,
           172.53999999999996
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": null
     },
@@ -1947,7 +2043,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           159.25,
           146.08
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -2007,7 +2106,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           -69.1,
           172.53999999999996
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": null
     },
@@ -2052,7 +2154,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           344.23,
           99.94
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -2112,7 +2217,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           75.8,
           317.2
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -2242,7 +2350,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             344.23,
             317.2
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -2267,7 +2378,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             344.23,
             99.94
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -2287,7 +2401,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             75.8,
             99.94
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -2312,7 +2429,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             75.8,
             317.2
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -2332,7 +2452,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             75.8,
             317.2
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -2374,6 +2497,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           75.8,
           317.2
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2415,7 +2541,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 344.23,
                 317.2
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -2474,7 +2603,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 344.23,
                 99.94
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -2533,7 +2665,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 75.8,
                 317.2
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -2678,7 +2813,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             200.07,
             278.35
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -2703,7 +2841,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             200.07,
             146.08
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -2728,7 +2869,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             159.25,
             146.08
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -2748,7 +2892,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             159.25,
             278.35
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -2768,7 +2915,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             159.25,
             278.35
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -2915,7 +3065,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   344.23,
                   317.2
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -2940,7 +3093,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   344.23,
                   99.94
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -2960,7 +3116,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   75.8,
                   99.94
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -2985,7 +3144,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   75.8,
                   317.2
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -3005,7 +3167,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   75.8,
                   317.2
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               }
             ],
             "on": {
@@ -3047,6 +3212,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 75.8,
                 317.2
               ],
+              "units": {
+                "type": "Mm"
+              },
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3088,7 +3256,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       344.23,
                       317.2
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -3147,7 +3318,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       344.23,
                       99.94
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -3206,7 +3380,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       75.8,
                       317.2
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -3392,6 +3569,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           159.25,
           278.35
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3433,7 +3613,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 200.07,
                 278.35
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -3492,7 +3675,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 200.07,
                 146.08
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -3551,7 +3737,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 159.25,
                 146.08
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -3626,7 +3815,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             -27.62,
             277.34
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -3651,7 +3843,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             -27.62,
             172.54
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -3676,7 +3871,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             -69.1,
             172.54
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -3696,7 +3894,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             -69.1,
             277.34
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -3716,7 +3917,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             -69.1,
             277.34
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -3863,7 +4067,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   344.23,
                   317.2
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -3888,7 +4095,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   344.23,
                   99.94
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -3908,7 +4118,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   75.8,
                   99.94
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -3933,7 +4146,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   75.8,
                   317.2
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -3953,7 +4169,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   75.8,
                   317.2
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               }
             ],
             "on": {
@@ -3995,6 +4214,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 75.8,
                 317.2
               ],
+              "units": {
+                "type": "Mm"
+              },
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4036,7 +4258,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       344.23,
                       317.2
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -4095,7 +4320,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       344.23,
                       99.94
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -4154,7 +4382,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       75.8,
                       317.2
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -4340,6 +4571,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           -69.1,
           277.34
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4381,7 +4615,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 -27.619999999999997,
                 277.34
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": null
           },
@@ -4425,7 +4662,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 -27.61999999999999,
                 172.53999999999996
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": null
           },
@@ -4469,7 +4709,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 -69.1,
                 172.53999999999996
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": null
           },

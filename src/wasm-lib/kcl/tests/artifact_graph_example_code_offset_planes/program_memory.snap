@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing artifact_graph_example_code_offset_planes.kcl
-snapshot_kind: text
 ---
 {
   "HALF_TURN": {
@@ -156,7 +155,10 @@ snapshot_kind: text
             6.78,
             15.01
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -198,6 +200,9 @@ snapshot_kind: text
           0.0,
           0.0
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",

@@ -82,7 +82,10 @@ description: Variables in memory after executing helix_ccw.kcl
               15.0,
               5.0
             ],
-            "type": "Circle"
+            "type": "Circle",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -124,6 +127,9 @@ description: Variables in memory after executing helix_ccw.kcl
             15.0,
             5.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

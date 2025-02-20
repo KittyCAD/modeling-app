@@ -2029,9 +2029,6 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
         await moveToClearToolBarPopover()
         await pointOnSegment({ shouldDbClick: true })
         await page.waitForTimeout(600)
-
-        await toolbar.lineBtn.click()
-        await page.waitForTimeout(100)
       })
 
       await test.step('select and delete code for a profile', async () => {})

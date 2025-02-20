@@ -869,7 +869,10 @@ description: Variables in memory after executing pipe_as_arg.kcl
               -200.0,
               200.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -889,7 +892,10 @@ description: Variables in memory after executing pipe_as_arg.kcl
               200.0,
               200.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -909,7 +915,10 @@ description: Variables in memory after executing pipe_as_arg.kcl
               200.0,
               -200.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -929,7 +938,10 @@ description: Variables in memory after executing pipe_as_arg.kcl
               -200.0,
               -200.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -949,7 +961,10 @@ description: Variables in memory after executing pipe_as_arg.kcl
               -200.0,
               -200.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -991,6 +1006,9 @@ description: Variables in memory after executing pipe_as_arg.kcl
             -200.0,
             -200.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

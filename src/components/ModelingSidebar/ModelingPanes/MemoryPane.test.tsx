@@ -54,9 +54,27 @@ describe('processMemory', () => {
         },
       ],
       theSketch: [
-        { type: 'ToPoint', to: [-3.35, 0.17], from: [0, 0], tag: null },
-        { type: 'ToPoint', to: [0.98, 5.16], from: [-3.35, 0.17], tag: null },
-        { type: 'ToPoint', to: [2.15, 4.32], from: [0.98, 5.16], tag: null },
+        {
+          type: 'ToPoint',
+          to: [-3.35, 0.17],
+          from: [0, 0],
+          units: { type: 'Mm' },
+          tag: null,
+        },
+        {
+          type: 'ToPoint',
+          to: [0.98, 5.16],
+          from: [-3.35, 0.17],
+          units: { type: 'Mm' },
+          tag: null,
+        },
+        {
+          type: 'ToPoint',
+          to: [2.15, 4.32],
+          from: [0.98, 5.16],
+          units: { type: 'Mm' },
+          tag: null,
+        },
       ],
     })
   })

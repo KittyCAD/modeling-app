@@ -7,7 +7,7 @@ use tower_lsp::LanguageServer;
 pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let stdlib = crate::std::StdLib::new();
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib)?;
-    let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib)?;
+    let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib);
 
     let zoo_client = crate::engine::new_zoo_client(None, None)?;
 

@@ -36,6 +36,13 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "color-cube/main.kcl",
+    "multipleFiles": false,
+    "title": "Color Cube",
+    "description": "This is a color cube centered about the origin. It is used to help determine orientation in the scene."
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "cycloidal-gear/main.kcl",
     "multipleFiles": false,
     "title": "Cycloidal Gear",

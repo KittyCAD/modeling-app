@@ -165,7 +165,7 @@ impl Backend {
     ) -> Result<Self, String> {
         let stdlib = crate::std::StdLib::new();
         let stdlib_completions = get_completions_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
-        let stdlib_signatures = get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
+        let stdlib_signatures = get_signatures_from_stdlib(&stdlib);
 
         Ok(Self {
             client,
@@ -1419,7 +1419,7 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
 }
 
 /// Get signatures from our stdlib.
-pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap<String, SignatureHelp>> {
+pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib) -> HashMap<String, SignatureHelp> {
     let mut signatures = HashMap::new();
     let combined = stdlib.combined();
 
@@ -1427,7 +1427,7 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap
         signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
     }
 
-    Ok(signatures)
+    signatures
 }
 
 /// Convert a position to a character index from the start of the file.

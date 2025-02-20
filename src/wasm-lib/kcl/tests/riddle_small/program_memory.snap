@@ -233,7 +233,10 @@ description: Variables in memory after executing riddle_small.kcl
               -25.0,
               34.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -253,7 +256,10 @@ description: Variables in memory after executing riddle_small.kcl
               -25.0,
               33.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -273,7 +279,10 @@ description: Variables in memory after executing riddle_small.kcl
               -26.0,
               33.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -293,7 +302,10 @@ description: Variables in memory after executing riddle_small.kcl
               -26.0,
               34.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -335,6 +347,9 @@ description: Variables in memory after executing riddle_small.kcl
             -26.0,
             34.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

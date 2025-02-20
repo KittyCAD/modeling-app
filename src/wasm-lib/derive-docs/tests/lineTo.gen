@@ -174,7 +174,9 @@ impl crate::docs::StdLibFn for LineTo {
             crate::docs::StdLibFnArg {
                 name: "data".to_string(),
                 type_: "LineToData".to_string(),
-                schema: generator.root_schema_for::<LineToData>(),
+                schema: crate::docs::cleanup_number_tuples_root(
+                    generator.root_schema_for::<LineToData>(),
+                ),
                 required: true,
                 label_required: true,
                 description: String::new().to_string(),
@@ -183,7 +185,9 @@ impl crate::docs::StdLibFn for LineTo {
             crate::docs::StdLibFnArg {
                 name: "sketch".to_string(),
                 type_: "Sketch".to_string(),
-                schema: generator.root_schema_for::<Sketch>(),
+                schema: crate::docs::cleanup_number_tuples_root(
+                    generator.root_schema_for::<Sketch>(),
+                ),
                 required: true,
                 label_required: true,
                 description: "the sketch you're adding the line to".to_string(),
@@ -196,7 +200,7 @@ impl crate::docs::StdLibFn for LineTo {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = generator.root_schema_for::<Sketch>();
+        let schema = crate::docs::cleanup_number_tuples_root(generator.root_schema_for::<Sketch>());
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "Sketch".to_string(),

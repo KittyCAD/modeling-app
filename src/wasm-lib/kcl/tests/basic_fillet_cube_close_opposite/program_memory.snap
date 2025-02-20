@@ -129,7 +129,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -149,7 +152,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               10.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -174,7 +180,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               10.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -199,7 +208,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -241,6 +253,9 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -282,7 +297,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
                   0.0,
                   10.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -341,7 +359,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
                   10.0,
                   0.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -400,7 +421,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
                   0.0,
                   0.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -509,7 +533,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           0.0,
           10.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -569,7 +596,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           10.0,
           0.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -629,7 +659,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           0.0,
           0.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",

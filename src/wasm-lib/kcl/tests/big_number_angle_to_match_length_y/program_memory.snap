@@ -108,7 +108,10 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
               1.0,
               3.82
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -128,7 +131,10 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
               3.0,
               3.3954
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -148,7 +154,10 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -190,6 +199,9 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -231,7 +243,10 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
                   1.0,
                   3.82
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -324,7 +339,10 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           1.0,
           3.82
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
