@@ -60,7 +60,7 @@ You can still execute _new_ commands on the solid like `shell`, `fillet`, `chamf
 | `startCapId` |`string`| The id of the extrusion start cap | No |
 | `endCapId` |`string`| The id of the extrusion end cap | No |
 | `edgeCuts` |`[` [`EdgeCut`](/docs/kcl/types/EdgeCut) `]`| Chamfers or fillets on this solid. | No |
-| `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A solid is a collection of extrude surfaces. | No |
+| `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`| Metadata. | No |
 
 

@@ -28,7 +28,7 @@ use crate::{
     settings::types::UnitLength,
     source_range::SourceRange,
     std::StdLib,
-    ExecError, KclErrorWithOutputs,
+    CompilationError, ExecError, KclErrorWithOutputs,
 };
 
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
@@ -70,6 +70,8 @@ pub struct ExecOutcome {
     pub artifact_commands: Vec<ArtifactCommand>,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Non-fatal errors and warnings.
+    pub errors: Vec<CompilationError>,
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -147,7 +149,7 @@ pub struct TagEngineInfo {
     pub surface: Option<ExtrudeSurface>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq)]
 pub enum BodyType {
     Root(bool),
     Block,
@@ -641,6 +643,8 @@ impl ExecutorContext {
     ///
     /// You can optionally pass in some initialization memory for partial
     /// execution.
+    ///
+    /// To access non-fatal errors and warnings, extract them from the `ExecState`.
     pub async fn run(
         &self,
         program: &crate::Program,
@@ -825,6 +829,16 @@ mod tests {
     #[track_caller]
     fn mem_get_json(memory: &ProgramMemory, name: &str) -> KclValue {
         memory.get(name, SourceRange::default()).unwrap().to_owned()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_warn() {
+        let text = "@blah";
+        let (_, _, exec_state) = parse_execute(text).await.unwrap();
+        let errs = exec_state.errors();
+        assert_eq!(errs.len(), 1);
+        assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
+        assert!(errs[0].message.contains("Unknown annotation"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
