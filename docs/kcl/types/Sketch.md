@@ -36,7 +36,7 @@ fn createSketch() {
 
 Now, every time you call `createSketch()`, the commands will be executed and a new sketch will be created.
 
-When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`, you are assigning the executed sketch to that variable. Meaning that the sketch `mySketch` will not be executed again.
+When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`), you are assigning the executed sketch to that variable. Meaning that the sketch `mySketch` will not be executed again.
 
 You can still execute _new_ commands on the sketch like `extrude`, `revolve`, `loft`, etc. and the sketch will be updated.
 

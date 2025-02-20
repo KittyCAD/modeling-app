@@ -46,7 +46,7 @@ fn createPart() {
 
 Now, every time you call `createPart()`, the commands will be executed and a new solid will be created.
 
-When you assign the result of `createPart()` to a variable (`myPart = createPart()`, you are assigning the executed solid to that variable. Meaning that the solid `myPart` will not be executed again.
+When you assign the result of `createPart()` to a variable (`myPart = createPart()`), you are assigning the executed solid to that variable. Meaning that the solid `myPart` will not be executed again.
 
 You can still execute _new_ commands on the solid like `shell`, `fillet`, `chamfer`, etc. and the solid will be updated.
 
