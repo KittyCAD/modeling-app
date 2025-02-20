@@ -19,7 +19,7 @@ import * as kittycad from '@kittycad/lib/import'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-import { report, reportRejection } from 'lib/trap'
+import { reportRejection } from 'lib/trap'
 import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
 import {
   argvFromYargs,
@@ -28,17 +28,16 @@ import {
 } from './commandLineArgs'
 
 import * as packageJSON from '../package.json'
-import { IS_PLAYWRIGHT_KEY } from '../e2e/playwright/storageStates'
 
 let mainWindow: BrowserWindow | null = null
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
-console.log(process.argv, args)
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
 const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
+const IS_PLAYWRIGHT = process.env.IS_PLAYWRIGHT
 
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
@@ -55,7 +54,8 @@ process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
   viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
 
 // Likely convenient to keep for debugging
-console.log('process.env', process.env)
+console.log('Environment vars', process.env)
+console.log('Parsed CLI args', args)
 
 /// Register our application to handle all "zoo-studio:" protocols.
 const singleInstanceLock = app.requestSingleInstanceLock()
@@ -73,7 +73,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
 // https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
-if (!singleInstanceLock && !process.env.IS_PLAYWRIGHT) {
+if (!singleInstanceLock && !IS_PLAYWRIGHT) {
   app.quit()
 } else {
   registerStartupListeners()
@@ -105,16 +105,14 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
 
   // Deep Link: Case of a cold start from Windows or Linux
-  console.log('pathToOpen', pathToOpen)
   const pathOrUrl = getPathOrUrlFromArgs(args)
-  console.log('pathOrUrl', pathOrUrl)
   if (
     !pathToOpen &&
     pathOrUrl &&
     pathOrUrl.startsWith(ZOO_STUDIO_PROTOCOL + '://')
   ) {
     pathToOpen = pathOrUrl
-    console.log('Retrieved deep link from argv', pathToOpen)
+    console.log('Retrieved deep link from CLI args', pathToOpen)
   }
 
   // Deep Link: Case of a second window opened for macOS
@@ -129,9 +127,6 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
 
   // and load the index.html of the app.
-  console.log('MAIN_WINDOW_VITE_DEV_SERVER_URL', MAIN_WINDOW_VITE_DEV_SERVER_URL)
-  console.log('pathToOpen', pathToOpen)
-  console.log('pathIsCustomProtocolLink', pathIsCustomProtocolLink)
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     const filteredPath = pathToOpen
       ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
@@ -146,23 +141,16 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
         .replace(ZOO_STUDIO_PROTOCOL + '://', '')
         .replaceAll('%3D', '')
         .replaceAll('%3', '')
-      console.log('urlNoProtocol', urlNoProtocol)
       const filteredPath = decodeURI(urlNoProtocol)
-      console.log('filteredPath', filteredPath)
-      console.log('MAIN_WINDOW_VITE_NAME', MAIN_WINDOW_VITE_NAME)
       const startIndex = path.join(
         __dirname,
         `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
       )
-      console.log('startIndex', startIndex)
       newWindow
         .loadFile(startIndex, {
           hash: filteredPath,
         })
-        .catch((r) => {
-          dialog.showErrorBox('catch', JSON.stringify(r))
-          reportRejection(r)
-        })
+        .catch(reportRejection)
     } else {
       // otherwise we're trying to open a local file from the command line
       getProjectPathAtStartup(pathToOpen)
@@ -451,7 +439,7 @@ const getProjectPathAtStartup = async (
   // startup.
   // Since the args passed are always '.'
   // aka Forge for yarn tron:start live dev or playwright tests, but not dev packaged apps
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT_KEY) {
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT) {
     return null
   }
 
@@ -508,7 +496,8 @@ function registerStartupListeners() {
   // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     // Deep Link: second instance for Windows and Linux
-    console.log(commandLine, parseCLIArgs(commandLine))
+    // Likely convenient to keep for debugging
+    console.log('Parsed CLI args from second instance', parseCLIArgs(commandLine))
     const pathOrUrl = getPathOrUrlFromArgs(parseCLIArgs(commandLine))
     console.log('Retrieved path or deep link from second-instance', pathOrUrl)
     createWindow(pathOrUrl)
