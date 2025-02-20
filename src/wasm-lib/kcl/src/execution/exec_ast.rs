@@ -534,7 +534,7 @@ impl ExecutorContext {
                         }));
                     }
                 } else {
-                    // Cloning memory here is crucial for semantics so that we close
+                    // Snapshotting memory here is crucial for semantics so that we close
                     // over variables.  Variables defined lexically later shouldn't
                     // be available to the function body.
                     KclValue::Function {
@@ -996,6 +996,12 @@ impl Node<CallExpressionKw> {
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
+                if func.deprecated() {
+                    exec_state.warn(CompilationError::err(
+                        self.callee.as_source_range(),
+                        format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
+                    ));
+                }
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = args
                         .kw_args
@@ -1120,6 +1126,12 @@ impl Node<CallExpression> {
 
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
+                if func.deprecated() {
+                    exec_state.warn(CompilationError::err(
+                        self.callee.as_source_range(),
+                        format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
+                    ));
+                }
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)
@@ -1207,7 +1219,7 @@ impl Node<CallExpression> {
                         source_ranges = meta.iter().map(|m| m.source_range).collect();
                     };
                     KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of user-defined function {} is undefined", fn_name),
+                        message: format!("Result of function {} is undefined", fn_name),
                         source_ranges,
                     })
                 })?;
@@ -1785,7 +1797,7 @@ pub(crate) async fn call_user_defined_function_kw(
 /// A function being used as a parameter into a stdlib function.  This is a
 /// closure, plus everything needed to execute it.
 pub struct FunctionParam<'a> {
-    pub inner: Option<&'a crate::std::StdFn>,
+    pub inner: Option<&'a (crate::std::StdFn, crate::std::StdFnProps)>,
     pub memory: Option<EnvironmentRef>,
     pub fn_expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub ctx: ExecutorContext,
@@ -1799,6 +1811,15 @@ impl FunctionParam<'_> {
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
         if let Some(inner) = self.inner {
+            if inner.1.deprecated {
+                exec_state.warn(CompilationError::err(
+                    source_range,
+                    format!(
+                        "`{}` is deprecated, see the docs for a recommended replacement",
+                        inner.1.name
+                    ),
+                ));
+            }
             let args = crate::std::Args::new(
                 args,
                 source_range,
@@ -1806,7 +1827,7 @@ impl FunctionParam<'_> {
                 exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
             );
 
-            inner(exec_state, args).await.map(Some)
+            inner.0(exec_state, args).await.map(Some)
         } else {
             call_user_defined_function(args, self.memory.unwrap(), self.fn_expr.as_ref(), exec_state, &self.ctx).await
         }

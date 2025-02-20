@@ -168,11 +168,35 @@ pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
     CORE_FNS.iter().find(|f| f.name() == name).cloned()
 }
 
-pub(crate) fn std_fn(path: &str, fn_name: &str) -> crate::std::StdFn {
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct StdFnProps {
+    pub name: String,
+    pub deprecated: bool,
+}
+
+impl StdFnProps {
+    fn default(name: &str) -> Self {
+        Self {
+            name: name.to_owned(),
+            deprecated: false,
+        }
+    }
+}
+
+pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
     match (path, fn_name) {
-        ("math", "cos") => |e, a| Box::pin(crate::std::math::cos(e, a)),
-        ("math", "sin") => |e, a| Box::pin(crate::std::math::sin(e, a)),
-        ("math", "tan") => |e, a| Box::pin(crate::std::math::tan(e, a)),
+        ("math", "cos") => (
+            |e, a| Box::pin(crate::std::math::cos(e, a)),
+            StdFnProps::default("std::math::cos"),
+        ),
+        ("math", "sin") => (
+            |e, a| Box::pin(crate::std::math::sin(e, a)),
+            StdFnProps::default("std::math::sin"),
+        ),
+        ("math", "tan") => (
+            |e, a| Box::pin(crate::std::math::tan(e, a)),
+            StdFnProps::default("std::math::tan"),
+        ),
         _ => unreachable!(),
     }
 }
@@ -309,7 +333,7 @@ pub enum Primitive {
 
 /// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
-    pub func: Option<&'a crate::std::StdFn>,
+    pub func: Option<&'a (crate::std::StdFn, crate::std::StdFnProps)>,
     pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub memory: Option<EnvironmentRef>,
 }

@@ -17,8 +17,8 @@ use crate::{
         },
         token::NumericSuffix,
     },
-    std::{args::Arg, FnAsArg},
-    KclError, ModuleId, SourceRange,
+    std::{args::Arg, FnAsArg, StdFnProps},
+    CompilationError, KclError, ModuleId, SourceRange,
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -86,7 +86,7 @@ pub enum KclValue {
     #[ts(skip)]
     Function {
         #[serde(skip)]
-        func: Option<crate::std::StdFn>,
+        func: Option<(crate::std::StdFn, StdFnProps)>,
         #[schemars(skip)]
         expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         // Invariant: Always Some except for std lib functions
@@ -569,6 +569,15 @@ impl KclValue {
             }));
         };
         if let Some(func) = func {
+            if func.1.deprecated {
+                exec_state.warn(CompilationError::err(
+                    source_range,
+                    format!(
+                        "`{}` is deprecated, see the docs for a recommended replacement",
+                        func.1.name
+                    ),
+                ));
+            }
             exec_state.mut_memory().push_new_env_for_rust_call();
             let args = crate::std::Args::new(
                 args,
@@ -576,7 +585,7 @@ impl KclValue {
                 ctx.clone(),
                 exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
             );
-            let result = func(exec_state, args).await.map(Some);
+            let result = func.0(exec_state, args).await.map(Some);
             exec_state.mut_memory().pop_env();
             result
         } else {
@@ -612,8 +621,17 @@ impl KclValue {
                 source_ranges: vec![callsite],
             }));
         };
-        if let Some(_func) = func {
-            todo!("Implement calling KCL stdlib fns that are aliased. Part of https://github.com/KittyCAD/modeling-app/issues/4600");
+        if let Some(func) = func {
+            if func.1.deprecated {
+                exec_state.warn(CompilationError::err(
+                    callsite,
+                    format!(
+                        "`{}` is deprecated, see the docs for a recommended replacement",
+                        func.1.name
+                    ),
+                ));
+            }
+            todo!("Implement KCL stdlib fns with keyword args");
         } else {
             crate::execution::exec_ast::call_user_defined_function_kw(
                 args.kw_args,
