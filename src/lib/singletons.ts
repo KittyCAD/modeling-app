@@ -10,8 +10,14 @@ export const codeManager = new CodeManager()
 
 export const engineCommandManager = new EngineCommandManager()
 
-// Accessible for tests mostly
-// @ts-ignore
+declare global {
+  interface Window {
+    tearDown: typeof engineCommandManager.tearDown
+    sceneInfra: typeof sceneInfra
+  }
+}
+
+// Accessible for tests
 window.tearDown = engineCommandManager.tearDown
 
 // This needs to be after codeManager is created.
