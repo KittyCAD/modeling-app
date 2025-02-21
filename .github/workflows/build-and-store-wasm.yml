@@ -22,7 +22,9 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: './src/wasm-lib'
-      - uses: taiki-e/install-action@wasm-pack
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack
       - name: build wasm
         run: yarn build:wasm
 
