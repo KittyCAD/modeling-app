@@ -112,7 +112,9 @@ impl crate::docs::StdLibFn for Show {
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
             type_: "number".to_string(),
-            schema: generator.root_schema_for::<Option<f64>>(),
+            schema: crate::docs::cleanup_number_tuples_root(
+                generator.root_schema_for::<Option<f64>>(),
+            ),
             required: false,
             label_required: true,
             description: String::new().to_string(),
@@ -124,7 +126,7 @@ impl crate::docs::StdLibFn for Show {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = generator.root_schema_for::<f64>();
+        let schema = crate::docs::cleanup_number_tuples_root(generator.root_schema_for::<f64>());
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "number".to_string(),

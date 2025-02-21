@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    errors::{KclError, KclErrorDetails},
+    errors::{KclError, KclErrorDetails, Severity},
     execution::{
         annotations, kcl_value, memory::ProgramMemory, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId,
         ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
@@ -14,6 +14,7 @@ use crate::{
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
     parsing::ast::types::Annotation,
     source_range::SourceRange,
+    CompilationError,
 };
 
 /// State for executing a program.
@@ -48,6 +49,8 @@ pub(super) struct GlobalState {
     pub artifact_graph: ArtifactGraph,
     /// Module loader.
     pub mod_loader: ModuleLoader,
+    /// Errors and warnings.
+    pub errors: Vec<CompilationError>,
 }
 
 #[derive(Debug, Clone)]
@@ -68,7 +71,7 @@ impl ExecState {
     pub fn new(exec_settings: &ExecutorSettings) -> Self {
         ExecState {
             global: GlobalState::new(exec_settings),
-            mod_local: ModuleState::new(exec_settings),
+            mod_local: ModuleState::new(exec_settings, None),
         }
     }
 
@@ -83,8 +86,23 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(exec_settings),
+            mod_local: ModuleState::new(exec_settings, None),
         };
+    }
+
+    /// Log a non-fatal error.
+    pub fn err(&mut self, e: CompilationError) {
+        self.global.errors.push(e);
+    }
+
+    /// Log a warning.
+    pub fn warn(&mut self, mut e: CompilationError) {
+        e.severity = Severity::Warning;
+        self.global.errors.push(e);
+    }
+
+    pub fn errors(&self) -> &[CompilationError] {
+        &self.global.errors
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -103,6 +121,7 @@ impl ExecState {
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
             artifact_graph: self.global.artifact_graph,
+            errors: self.global.errors,
         }
     }
 
@@ -119,6 +138,7 @@ impl ExecState {
             artifacts: Default::default(),
             artifact_commands: Default::default(),
             artifact_graph: Default::default(),
+            errors: self.global.errors,
         }
     }
 
@@ -194,6 +214,7 @@ impl GlobalState {
             artifact_responses: Default::default(),
             artifact_graph: Default::default(),
             mod_loader: Default::default(),
+            errors: Default::default(),
         };
 
         let root_id = ModuleId::default();
@@ -212,7 +233,7 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(exec_settings: &ExecutorSettings) -> Self {
+    pub(super) fn new(exec_settings: &ExecutorSettings, std_path: Option<String>) -> Self {
         ModuleState {
             pipe_value: Default::default(),
             module_exports: Default::default(),
@@ -220,6 +241,7 @@ impl ModuleState {
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),
                 default_angle_units: Default::default(),
+                std_path,
             },
         }
     }
@@ -231,6 +253,7 @@ impl ModuleState {
 pub struct MetaSettings {
     pub default_length_units: kcl_value::UnitLen,
     pub default_angle_units: kcl_value::UnitAngle,
+    pub std_path: Option<String>,
 }
 
 impl MetaSettings {

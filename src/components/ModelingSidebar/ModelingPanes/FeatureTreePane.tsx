@@ -324,6 +324,20 @@ const OperationItem = (props: {
     }
   }
 
+  function deleteOperation() {
+    if (
+      props.item.type === 'StdLibCall' ||
+      props.item.type === 'UserDefinedFunctionCall'
+    ) {
+      props.send({
+        type: 'deleteOperation',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+        },
+      })
+    }
+  }
+
   const menuItems = useMemo(
     () => [
       <ContextMenuItem
@@ -364,14 +378,24 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' &&
-      stdLibMap[props.item.name]?.prepareToEdit
+      ...(props.item.type === 'StdLibCall'
         ? [
-            <ContextMenuItem onClick={enterEditFlow}>
-              Edit {name}
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.prepareToEdit}
+              onClick={enterEditFlow}
+              hotkey="Double click"
+            >
+              Edit
             </ContextMenuItem>,
           ]
         : []),
+      <ContextMenuItem
+        onClick={deleteOperation}
+        hotkey="Delete"
+        data-testid="context-menu-delete"
+      >
+        Delete
+      </ContextMenuItem>,
     ],
     [props.item, props.send]
   )

@@ -22,7 +22,7 @@ map(array: [KclValue], map_fn: FunctionParam) -> [KclValue]
 
 ### Returns
 
-[`[KclValue]`](/docs/kcl/types/KclValue) 
+[`[KclValue]`](/docs/kcl/types/KclValue)
 
 
 ### Examples

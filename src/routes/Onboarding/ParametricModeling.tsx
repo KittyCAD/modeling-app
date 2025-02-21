@@ -1,21 +1,17 @@
 import { OnboardingButtons, useDemoCode } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
 import { isDesktop } from 'lib/isDesktop'
+import { useSettings } from 'machines/appMachine'
 
 export default function OnboardingParametricModeling() {
   useDemoCode()
   const {
-    settings: {
-      context: {
-        app: {
-          theme: { current: theme },
-        },
-      },
+    app: {
+      theme: { current: theme },
     },
-  } = useSettingsAuthContext()
+  } = useSettings()
   const getImageTheme = () =>
     theme === Themes.Light ||
     (theme === Themes.System && getSystemTheme() === Themes.Light)

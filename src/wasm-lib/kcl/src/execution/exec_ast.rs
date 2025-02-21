@@ -8,12 +8,11 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
-        cad_op::{OpArg, Operation},
+        cad_op::{OpArg, OpKclValue, Operation},
         kcl_value::NumericType,
         memory,
         state::ModuleState,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, TagEngineInfo,
-        TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, TagEngineInfo, TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
@@ -27,6 +26,7 @@ use crate::{
         args::{Arg, KwArgs},
         FunctionKind,
     },
+    CompilationError,
 };
 
 enum StatementKind<'a> {
@@ -34,43 +34,56 @@ enum StatementKind<'a> {
     Expression,
 }
 
+impl<'a> StatementKind<'a> {
+    fn expect_name(&self) -> &'a str {
+        match self {
+            StatementKind::Declaration { name } => name,
+            StatementKind::Expression => unreachable!(),
+        }
+    }
+}
+
 impl ExecutorContext {
+    /// Returns true if importing the prelude should be skipped.
     async fn handle_annotations(
         &self,
         annotations: impl Iterator<Item = &Node<Annotation>>,
-        scope: annotations::AnnotationScope,
+        body_type: BodyType,
         exec_state: &mut ExecState,
     ) -> Result<bool, KclError> {
         let mut no_prelude = false;
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
-                if scope == annotations::AnnotationScope::Module {
+                if matches!(body_type, BodyType::Root(_)) {
                     let old_units = exec_state.length_unit();
                     exec_state.mod_local.settings.update_from_annotation(annotation)?;
                     let new_units = exec_state.length_unit();
-                    if !self.engine.execution_kind().is_isolated() && old_units != new_units {
+                    if !self.engine.execution_kind().await.is_isolated() && old_units != new_units {
                         self.engine
                             .set_units(new_units.into(), annotation.as_source_range())
                             .await?;
                     }
                 } else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: "Settings can only be modified at the top level scope of a file".to_owned(),
-                        source_ranges: vec![annotation.as_source_range()],
-                    }));
+                    exec_state.err(CompilationError::err(
+                        annotation.as_source_range(),
+                        "Settings can only be modified at the top level scope of a file",
+                    ));
                 }
-            }
-            if annotation.name() == Some(annotations::NO_PRELUDE) {
-                if scope == annotations::AnnotationScope::Module {
+            } else if annotation.name() == Some(annotations::NO_PRELUDE) {
+                if matches!(body_type, BodyType::Root(_)) {
                     no_prelude = true;
                 } else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: "Prelude can only be skipped at the top level scope of a file".to_owned(),
-                        source_ranges: vec![annotation.as_source_range()],
-                    }));
+                    exec_state.err(CompilationError::err(
+                        annotation.as_source_range(),
+                        "Prelude can only be skipped at the top level scope of a file",
+                    ));
                 }
+            } else {
+                exec_state.warn(CompilationError::err(
+                    annotation.as_source_range(),
+                    "Unknown annotation",
+                ));
             }
-            // TODO warn on unknown annotations
         }
         Ok(no_prelude)
     }
@@ -83,14 +96,35 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        if body_type == BodyType::Root {
-            let _no_prelude = self
-                .handle_annotations(
-                    program.inner_attrs.iter(),
-                    annotations::AnnotationScope::Module,
+        let no_prelude = self
+            .handle_annotations(program.inner_attrs.iter(), body_type, exec_state)
+            .await?;
+
+        if !no_prelude && body_type == BodyType::Root(true) {
+            // Import std::prelude
+            let prelude_range = SourceRange::from(program).start_as_range();
+            let id = self
+                .open_module(
+                    &ImportPath::Std {
+                        path: vec!["std".to_owned(), "prelude".to_owned()],
+                    },
+                    &[],
                     exec_state,
+                    prelude_range,
                 )
                 .await?;
+            let (module_memory, module_exports) = self
+                .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, prelude_range)
+                .await
+                .unwrap();
+            for name in module_exports {
+                let item = exec_state
+                    .memory()
+                    .get_from(&name, module_memory, prelude_range)
+                    .cloned()
+                    .unwrap();
+                exec_state.mut_memory().add(name, item, prelude_range)?;
+            }
         }
 
         let mut last_expr = None;
@@ -98,7 +132,7 @@ impl ExecutorContext {
         for statement in &program.body {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
-                    if body_type != BodyType::Root {
+                    if !matches!(body_type, BodyType::Root(_)) {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: "Imports are only supported at the top-level of a file.".to_owned(),
                             source_ranges: vec![import_stmt.into()],
@@ -194,6 +228,7 @@ impl ExecutorContext {
                             &expression_statement.expression,
                             exec_state,
                             &metadata,
+                            &[],
                             StatementKind::Expression,
                         )
                         .await?,
@@ -204,13 +239,14 @@ impl ExecutorContext {
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
 
-                    let _annotations = &variable_declaration.outer_attrs;
+                    let annotations = &variable_declaration.outer_attrs;
 
                     let memory_item = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
                             exec_state,
                             &metadata,
+                            annotations,
                             StatementKind::Declaration { name: &var_name },
                         )
                         .await?;
@@ -227,7 +263,7 @@ impl ExecutorContext {
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
 
-                    if body_type == BodyType::Root {
+                    if matches!(body_type, BodyType::Root(_)) {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: "Cannot return from outside a function.".to_owned(),
                             source_ranges: vec![metadata.source_range],
@@ -239,6 +275,7 @@ impl ExecutorContext {
                             &return_statement.argument,
                             exec_state,
                             &metadata,
+                            &[],
                             StatementKind::Expression,
                         )
                         .await?;
@@ -256,7 +293,7 @@ impl ExecutorContext {
             }
         }
 
-        if BodyType::Root == body_type {
+        if matches!(body_type, BodyType::Root(_)) {
             // Flush the batch queue.
             self.engine
                 .flush_batch(
@@ -389,14 +426,14 @@ impl ExecutorContext {
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
         let old_units = exec_state.length_unit();
-        let mut local_state = ModuleState::new(&self.settings);
+        let mut local_state = ModuleState::new(&self.settings, path.std_path());
         exec_state.global.mod_loader.enter_module(path);
         std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         exec_state.mut_memory().push_new_root_env();
-        let original_execution = self.engine.replace_execution_kind(exec_kind);
+        let original_execution = self.engine.replace_execution_kind(exec_kind).await;
 
         let result = self
-            .exec_program(program, exec_state, crate::execution::BodyType::Root)
+            .exec_program(program, exec_state, crate::execution::BodyType::Root(true))
             .await;
 
         let new_units = exec_state.length_unit();
@@ -406,7 +443,7 @@ impl ExecutorContext {
         if !exec_kind.is_isolated() && new_units != old_units {
             self.engine.set_units(old_units.into(), Default::default()).await?;
         }
-        self.engine.replace_execution_kind(original_execution);
+        self.engine.replace_execution_kind(original_execution).await;
 
         result
             .map_err(|err| {
@@ -433,6 +470,7 @@ impl ExecutorContext {
         init: &Expr,
         exec_state: &mut ExecState,
         metadata: &Metadata,
+        annotations: &[Node<Annotation>],
         statement_kind: StatementKind<'a>,
     ) -> Result<KclValue, KclError> {
         let item = match init {
@@ -463,12 +501,50 @@ impl ExecutorContext {
                 }
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
-            Expr::FunctionExpression(function_expression) => KclValue::Function {
-                expression: function_expression.clone(),
-                meta: vec![metadata.to_owned()],
-                func: None,
-                memory: exec_state.mut_memory().snapshot(),
-            },
+            Expr::FunctionExpression(function_expression) => {
+                let mut rust_impl = false;
+                for attr in annotations {
+                    if attr.name.is_some() || attr.properties.is_none() {
+                        continue;
+                    }
+                    for p in attr.properties.as_ref().unwrap() {
+                        if &*p.key.name == "impl" {
+                            if let Some(s) = p.value.ident_name() {
+                                if s == "std_rust" {
+                                    rust_impl = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if rust_impl {
+                    if let Some(std_path) = &exec_state.mod_local.settings.std_path {
+                        KclValue::Function {
+                            expression: function_expression.clone(),
+                            meta: vec![metadata.to_owned()],
+                            func: Some(crate::std::std_fn(std_path, statement_kind.expect_name())),
+                            memory: None,
+                        }
+                    } else {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: "Rust implementation of functions is restricted to the standard library"
+                                .to_owned(),
+                            source_ranges: vec![metadata.source_range],
+                        }));
+                    }
+                } else {
+                    // Cloning memory here is crucial for semantics so that we close
+                    // over variables.  Variables defined lexically later shouldn't
+                    // be available to the function body.
+                    KclValue::Function {
+                        expression: function_expression.clone(),
+                        meta: vec![metadata.to_owned()],
+                        func: None,
+                        memory: Some(exec_state.mut_memory().snapshot()),
+                    }
+                }
+            }
             Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
@@ -501,7 +577,7 @@ impl ExecutorContext {
             Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::LabelledExpression(expr) => {
                 let result = self
-                    .execute_expr(&expr.expr, exec_state, metadata, statement_kind)
+                    .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
                 exec_state
                     .mut_memory()
@@ -700,34 +776,34 @@ impl Node<BinaryExpression> {
             return Ok(KclValue::Bool { value: raw_value, meta });
         }
 
-        let left = parse_number_as_f64(&left_value, self.left.clone().into())?;
-        let right = parse_number_as_f64(&right_value, self.right.clone().into())?;
+        let (left, lty) = parse_number_as_f64(&left_value, self.left.clone().into())?;
+        let (right, rty) = parse_number_as_f64(&right_value, self.right.clone().into())?;
 
         let value = match self.operator {
             BinaryOperator::Add => KclValue::Number {
                 value: left + right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_add(lty, rty),
             },
             BinaryOperator::Sub => KclValue::Number {
                 value: left - right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_add(lty, rty),
             },
             BinaryOperator::Mul => KclValue::Number {
                 value: left * right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_mul(lty, rty),
             },
             BinaryOperator::Div => KclValue::Number {
                 value: left / right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_div(lty, rty),
             },
             BinaryOperator::Mod => KclValue::Number {
                 value: left % right,
                 meta,
-                ty: NumericType::Unknown,
+                ty: NumericType::combine_div(lty, rty),
             },
             BinaryOperator::Pow => KclValue::Number {
                 value: left.powf(right),
@@ -836,7 +912,7 @@ pub(crate) async fn execute_pipe_body(
         source_range: SourceRange::from(first),
     };
     let output = ctx
-        .execute_expr(first, exec_state, &meta, StatementKind::Expression)
+        .execute_expr(first, exec_state, &meta, &[], StatementKind::Expression)
         .await?;
 
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
@@ -870,7 +946,7 @@ async fn inner_execute_pipe_body(
             source_range: SourceRange::from(expression),
         };
         let output = ctx
-            .execute_expr(expression, exec_state, &metadata, StatementKind::Expression)
+            .execute_expr(expression, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
         exec_state.mod_local.pipe_value = Some(output);
     }
@@ -891,7 +967,7 @@ impl Node<CallExpressionKw> {
             let source_range = SourceRange::from(arg_expr.arg.clone());
             let metadata = Metadata { source_range };
             let value = ctx
-                .execute_expr(&arg_expr.arg, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(&arg_expr.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
             fn_args.insert(arg_expr.label.name.clone(), Arg::new(value, source_range));
         }
@@ -902,7 +978,7 @@ impl Node<CallExpressionKw> {
             let source_range = SourceRange::from(arg_expr.clone());
             let metadata = Metadata { source_range };
             let value = ctx
-                .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
             Some(Arg::new(value, source_range))
         } else {
@@ -925,11 +1001,13 @@ impl Node<CallExpressionKw> {
                         .kw_args
                         .labeled
                         .iter()
-                        .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .unlabeled_kw_arg_unconverted()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                         is_error: false,
@@ -970,7 +1048,7 @@ impl Node<CallExpressionKw> {
                     .kw_args
                     .labeled
                     .iter()
-                    .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                     .collect();
                 exec_state
                     .mod_local
@@ -978,7 +1056,11 @@ impl Node<CallExpressionKw> {
                     .push(Operation::UserDefinedFunctionCall {
                         name: Some(fn_name.clone()),
                         function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                     });
@@ -1029,7 +1111,7 @@ impl Node<CallExpression> {
                 source_range: SourceRange::from(arg_expr),
             };
             let value = ctx
-                .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
             let arg = Arg::new(value, SourceRange::from(arg_expr));
             fn_args.push(arg);
@@ -1043,7 +1125,12 @@ impl Node<CallExpression> {
                         .args(false)
                         .iter()
                         .zip(&fn_args)
-                        .map(|(k, v)| (k.name.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| {
+                            (
+                                k.name.clone(),
+                                OpArg::new(OpKclValue::from(&arg.value), arg.source_range),
+                            )
+                        })
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
@@ -1104,11 +1191,14 @@ impl Node<CallExpression> {
                         source_range: callsite,
                     });
 
-                let return_value = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
-                    // Add the call expression to the source ranges.
-                    // TODO currently ignored by the frontend
-                    e.add_source_ranges(vec![source_range])
-                })?;
+                let return_value = func
+                    .call_fn(fn_args, exec_state, ctx.clone(), source_range)
+                    .await
+                    .map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        // TODO currently ignored by the frontend
+                        e.add_source_ranges(vec![source_range])
+                    })?;
 
                 let result = return_value.ok_or_else(move || {
                     let mut source_ranges: Vec<SourceRange> = vec![source_range];
@@ -1251,7 +1341,7 @@ impl Node<ArrayExpression> {
             // TODO: Carry statement kind here so that we know if we're
             // inside a variable declaration.
             let value = ctx
-                .execute_expr(element, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(element, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
 
             results.push(value);
@@ -1269,7 +1359,13 @@ impl Node<ArrayRangeExpression> {
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let metadata = Metadata::from(&self.start_element);
         let start = ctx
-            .execute_expr(&self.start_element, exec_state, &metadata, StatementKind::Expression)
+            .execute_expr(
+                &self.start_element,
+                exec_state,
+                &metadata,
+                &[],
+                StatementKind::Expression,
+            )
             .await?;
         let start = start.as_int().ok_or(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![self.into()],
@@ -1277,7 +1373,7 @@ impl Node<ArrayRangeExpression> {
         }))?;
         let metadata = Metadata::from(&self.end_element);
         let end = ctx
-            .execute_expr(&self.end_element, exec_state, &metadata, StatementKind::Expression)
+            .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
         let end = end.as_int().ok_or(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![self.into()],
@@ -1305,7 +1401,7 @@ impl Node<ArrayRangeExpression> {
                 .into_iter()
                 .map(|num| KclValue::Number {
                     value: num as f64,
-                    ty: NumericType::Unknown,
+                    ty: NumericType::count(),
                     meta: meta.clone(),
                 })
                 .collect(),
@@ -1321,7 +1417,7 @@ impl Node<ObjectExpression> {
         for property in &self.properties {
             let metadata = Metadata::from(&property.value);
             let result = ctx
-                .execute_expr(&property.value, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(&property.value, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
 
             object.insert(property.key.name.clone(), result);
@@ -1344,9 +1440,9 @@ fn article_for(s: &str) -> &'static str {
     }
 }
 
-pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<f64, KclError> {
-    if let KclValue::Number { value: n, .. } = &v {
-        Ok(*n)
+pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<(f64, NumericType), KclError> {
+    if let KclValue::Number { value: n, ty, .. } = &v {
+        Ok((*n, ty.clone()))
     } else {
         let actual_type = v.human_friendly_type();
         let article = if actual_type.starts_with(['a', 'e', 'i', 'o', 'u']) {
@@ -1366,7 +1462,13 @@ impl Node<IfExpression> {
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         // Check the `if` branch.
         let cond = ctx
-            .execute_expr(&self.cond, exec_state, &Metadata::from(self), StatementKind::Expression)
+            .execute_expr(
+                &self.cond,
+                exec_state,
+                &Metadata::from(self),
+                &[],
+                StatementKind::Expression,
+            )
             .await?
             .get_bool()?;
         if cond {
@@ -1384,6 +1486,7 @@ impl Node<IfExpression> {
                     &else_if.cond,
                     exec_state,
                     &Metadata::from(self),
+                    &[],
                     StatementKind::Expression,
                 )
                 .await?
@@ -1682,27 +1785,30 @@ pub(crate) async fn call_user_defined_function_kw(
 /// A function being used as a parameter into a stdlib function.  This is a
 /// closure, plus everything needed to execute it.
 pub struct FunctionParam<'a> {
-    pub inner: Option<&'a MemoryFunction>,
-    pub memory: EnvironmentRef,
+    pub inner: Option<&'a crate::std::StdFn>,
+    pub memory: Option<EnvironmentRef>,
     pub fn_expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-    pub meta: Vec<Metadata>,
     pub ctx: ExecutorContext,
 }
 
 impl FunctionParam<'_> {
-    pub async fn call(&self, exec_state: &mut ExecState, args: Vec<Arg>) -> Result<Option<KclValue>, KclError> {
+    pub async fn call(
+        &self,
+        exec_state: &mut ExecState,
+        args: Vec<Arg>,
+        source_range: SourceRange,
+    ) -> Result<Option<KclValue>, KclError> {
         if let Some(inner) = self.inner {
-            inner(
+            let args = crate::std::Args::new(
                 args,
-                self.memory,
-                self.fn_expr.clone(),
-                self.meta.clone(),
-                exec_state,
+                source_range,
                 self.ctx.clone(),
-            )
-            .await
+                exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+            );
+
+            inner(exec_state, args).await.map(Some)
         } else {
-            call_user_defined_function(args, self.memory, self.fn_expr.as_ref(), exec_state, &self.ctx).await
+            call_user_defined_function(args, self.memory.unwrap(), self.fn_expr.as_ref(), exec_state, &self.ctx).await
         }
     }
 }
@@ -1720,12 +1826,11 @@ impl JsonSchema for FunctionParam<'_> {
 
 #[cfg(test)]
 mod test {
+    use super::*;
     use crate::{
         execution::{memory::ProgramMemory, parse_execute},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
-
-    use super::*;
 
     #[test]
     fn test_assign_args_to_params() {

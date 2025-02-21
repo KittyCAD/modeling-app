@@ -807,11 +807,8 @@ async fn test_kcl_lsp_completions_const_raw() {
     // Check the completions.
     if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
         assert!(completions.len() > 10);
-        // Find the one with label "const".
-        let const_completion = completions
-            .iter()
-            .find(|completion| completion.label == "const")
-            .unwrap();
+        // Find the one with label "fn".
+        let const_completion = completions.iter().find(|completion| completion.label == "fn").unwrap();
         assert_eq!(
             const_completion.kind,
             Some(tower_lsp::lsp_types::CompletionItemKind::KEYWORD)
@@ -906,7 +903,7 @@ async fn test_kcl_lsp_on_hover() {
 
     // Check the hover.
     if let Some(hover) = hover {
-        assert_eq!(hover.contents, tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { kind: tower_lsp::lsp_types::MarkupKind::Markdown, value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a new 2-dimensional sketch on a specific plane or face.".to_string() }));
+        assert_eq!(hover.contents, tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { kind: tower_lsp::lsp_types::MarkupKind::Markdown, value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a new 2-dimensional sketch on a specific plane or face.\n\n### Sketch on Face Behavior\n\nThere are some important behaviors to understand when sketching on a face:\n\nThe resulting sketch will _include_ the face and thus Solid that was sketched on. So say you were to export the resulting Sketch / Solid from a sketch on a face, you would get both the artifact of the sketch on the face and the parent face / Solid itself.\n\nThis is important to understand because if you were to then sketch on the resulting Solid, it would again include the face and parent Solid that was sketched on. This could go on indefinitely.\n\nThe point is if you want to export the result of a sketch on a face, you only need to export the final Solid that was created from the sketch on the face, since it will include all the parent faces and Solids.".to_string() }));
     } else {
         panic!("Expected hover");
     }

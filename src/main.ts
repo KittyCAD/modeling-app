@@ -17,23 +17,27 @@ import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
-import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
 import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
-import argvFromYargs from './commandLineArgs'
+import {
+  argvFromYargs,
+  getPathOrUrlFromArgs,
+  parseCLIArgs,
+} from './commandLineArgs'
 
 import * as packageJSON from '../package.json'
 
 let mainWindow: BrowserWindow | null = null
 
 // Check the command line arguments for a project path
-const args = parseCLIArgs()
+const args = parseCLIArgs(process.argv)
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
 const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
+const IS_PLAYWRIGHT = process.env.IS_PLAYWRIGHT
 
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
@@ -50,7 +54,8 @@ process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
   viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
 
 // Likely convenient to keep for debugging
-console.log('process.env', process.env)
+console.log('Environment vars', process.env)
+console.log('Parsed CLI args', args)
 
 /// Register our application to handle all "zoo-studio:" protocols.
 const singleInstanceLock = app.requestSingleInstanceLock()
@@ -68,7 +73,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
 // https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
-if (!singleInstanceLock && !process.env.IS_PLAYWRIGHT) {
+if (!singleInstanceLock && !IS_PLAYWRIGHT) {
   app.quit()
 } else {
   registerStartupListeners()
@@ -82,7 +87,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
   if (!newWindow) {
     newWindow = new BrowserWindow({
-      autoHideMenuBar: true,
+      autoHideMenuBar: false,
       show: false,
       width: 1800,
       height: 1200,
@@ -100,12 +105,14 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
 
   // Deep Link: Case of a cold start from Windows or Linux
-  const zooProtocolArg = process.argv.find((a) =>
-    a.startsWith(ZOO_STUDIO_PROTOCOL + '://')
-  )
-  if (!pathToOpen && zooProtocolArg) {
-    pathToOpen = zooProtocolArg
-    console.log('Retrieved deep link from argv', pathToOpen)
+  const pathOrUrl = getPathOrUrlFromArgs(args)
+  if (
+    !pathToOpen &&
+    pathOrUrl &&
+    pathOrUrl.startsWith(ZOO_STUDIO_PROTOCOL + '://')
+  ) {
+    pathToOpen = pathOrUrl
+    console.log('Retrieved deep link from CLI args', pathToOpen)
   }
 
   // Deep Link: Case of a second window opened for macOS
@@ -431,7 +438,8 @@ const getProjectPathAtStartup = async (
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
-  if (NODE_ENV !== 'production') {
+  // aka Forge for yarn tron:start live dev or playwright tests, but not dev packaged apps
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT) {
     return null
   }
 
@@ -484,17 +492,18 @@ const getProjectPathAtStartup = async (
   return null
 }
 
-function parseCLIArgs(): minimist.ParsedArgs {
-  return minimist(process.argv, {})
-}
-
 function registerStartupListeners() {
   // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     // Deep Link: second instance for Windows and Linux
-    const url = commandLine.pop()?.slice(0, -1)
-    console.log('Retrieved deep link from commandLine', url)
-    createWindow(url)
+    // Likely convenient to keep for debugging
+    console.log(
+      'Parsed CLI args from second instance',
+      parseCLIArgs(commandLine)
+    )
+    const pathOrUrl = getPathOrUrlFromArgs(parseCLIArgs(commandLine))
+    console.log('Retrieved path or deep link from second-instance', pathOrUrl)
+    createWindow(pathOrUrl)
   })
 
   /**
