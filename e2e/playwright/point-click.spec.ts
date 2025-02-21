@@ -2869,7 +2869,7 @@ extrude001 = extrude(profile001, length = 100)
         highlightedHeaderArg: 'color',
         stage: 'arguments',
       })
-      const item = await page.getByText(option, { exact: true })
+      const item = page.getByText(option, { exact: true })
       await page.waitForTimeout(500) // just cause it's nice to see
       await item.click()
       await cmdBar.expectState({
