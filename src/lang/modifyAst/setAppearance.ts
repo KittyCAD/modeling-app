@@ -9,7 +9,7 @@ import {
   createPipeExpression,
 } from 'lang/modifyAst'
 import { createPipeSubstitution } from 'lang/modifyAst'
-import { COMMAND_APPEARANCE_COLOR_CLEAR as COMMAND_APPEARANCE_COLOR_DEFAULT } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { COMMAND_APPEARANCE_COLOR_DEFAULT } from 'lib/commandBarConfigs/modelingCommandConfig'
 
 export function setAppearance({
   ast,

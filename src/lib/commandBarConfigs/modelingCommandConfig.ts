@@ -32,7 +32,7 @@ export const EXTRUSION_RESULTS = [
   'intersect',
 ] as const
 
-export const COMMAND_APPEARANCE_COLOR_CLEAR = 'default'
+export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
 export type ModelingCommandSchema = {
   'Enter sketch': {}
@@ -692,11 +692,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         options: [
           { name: 'Red', value: '#FF0000' },
-          { name: 'Blue', value: '#0000FF' },
           { name: 'Green', value: '#00FF00' },
+          { name: 'Blue', value: '#0000FF' },
+          { name: 'Turquoise', value: '#00FFFF' },
+          { name: 'Purple', value: '#FF00FF' },
+          { name: 'Yellow', value: '#FFFF00' },
           { name: 'Black', value: '#000000' },
+          { name: 'Dark Grey', value: '#080808' },
+          { name: 'Light Grey', value: '#D3D3D3' },
           { name: 'White', value: '#FFFFFF' },
-          { name: 'Default', value: COMMAND_APPEARANCE_COLOR_CLEAR },
+          { name: 'Default (clear)', value: COMMAND_APPEARANCE_COLOR_DEFAULT },
         ],
       },
       // Add more fields
