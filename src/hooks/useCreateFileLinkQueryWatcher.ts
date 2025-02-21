@@ -2,10 +2,10 @@ import { base64ToString } from 'lib/base64'
 import { CREATE_FILE_URL_PARAM, DEFAULT_FILE_NAME } from 'lib/constants'
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useSettingsAuthContext } from './useSettingsAuthContext'
 import { isDesktop } from 'lib/isDesktop'
 import { FileLinkParams } from 'lib/links'
 import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
+import { useSettings } from 'machines/appMachine'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -26,7 +26,7 @@ export function useCreateFileLinkQuery(
   callback: (args: CreateFileSchemaMethodOptional) => void
 ) {
   const [searchParams] = useSearchParams()
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
 
   useEffect(() => {
     const createFileParam = searchParams.has(CREATE_FILE_URL_PARAM)
@@ -45,7 +45,7 @@ export function useCreateFileLinkQuery(
             ? params.name.replace('.kcl', '')
             : params.name
           : isDesktop()
-          ? settings.context.projects.defaultProjectName.current
+          ? settings.projects.defaultProjectName.current
           : DEFAULT_FILE_NAME,
         code: params.code || '',
         method: isDesktop() ? undefined : 'existingProject',
