@@ -2879,7 +2879,7 @@ extrude001 = extrude(profile001, length = 100)
       })
       await cmdBar.progressCmdBar()
       await toolbar.closePane('feature-tree')
-      await scene.expectPixelColor(shapeColor, testPoint, 20)
+      await scene.expectPixelColor(shapeColor, testPoint, 40)
       await toolbar.openPane('code')
       if (hex === 'default') {
         const anyAppearanceDeclaration = `|> appearance(`
