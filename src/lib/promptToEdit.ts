@@ -131,7 +131,7 @@ See later source ranges for more context. about the sweep`,
           prompts.push({
             prompt: `This selection is for a segment (line, xLine, angledLine etc) that has been swept (a general-sweep, either an extrusion, revolve, sweep or loft).
 Because it now refers to an edge the way to refer to this edge is to add a tag to the segment, and then use that tag directly.
-i.e. \`fillet({ radius = someInteger, tags = [newTag] }, %)\` will work in the case of filleting this edge
+i.e. \`fillet( radius = someInteger, tags = [newTag])\` will work in the case of filleting this edge
 See later source ranges for more context. about the sweep`,
             range: convertAppRangeToApiRange(selection.codeRef.range, code),
           })

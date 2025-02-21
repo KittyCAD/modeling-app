@@ -517,13 +517,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_solid_and_tag<'a, T>(&'a self) -> Result<(T, Box<Solid>, Option<TagNode>), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_tag_to_number_sketch(&self) -> Result<(TagIdentifier, f64, Sketch), KclError> {
         FromArgs::from_args(self, 0)
     }
@@ -991,29 +984,6 @@ impl<'a> FromKclValue<'a> for super::sketch::BezierData {
         let_field_of!(obj, control1);
         let_field_of!(obj, control2);
         Some(Self { to, control1, control2 })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::chamfer::ChamferData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, length);
-        let_field_of!(obj, tags);
-        Some(Self { length, tags })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::fillet::FilletData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, radius);
-        let_field_of!(obj, tolerance?);
-        let_field_of!(obj, tags);
-        Some(Self {
-            radius,
-            tolerance,
-            tags,
-        })
     }
 }
 
