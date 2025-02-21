@@ -9,5 +9,6 @@ KCL Semantic error
    ╭─[2:5]
  1 │ b = true
  2 │ x = b["property"]
-   ·     ─────────────
+   ·     ──────┬──────
+   ·           ╰── tests/invalid_member_object_prop/input.kcl
    ╰────

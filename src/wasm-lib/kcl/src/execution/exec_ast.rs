@@ -341,8 +341,9 @@ impl ExecutorContext {
                 // Add file path string to global state even if it fails to import
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
+                exec_state.add_id_to_source(id, source.clone());
                 // TODO handle parsing errors properly
-                let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
+                let parsed = crate::parsing::parse_str(&source.source, id).parse_errs_as_err()?;
                 exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed, None));
 
                 Ok(id)
@@ -370,7 +371,10 @@ impl ExecutorContext {
                 // Add file path string to global state even if it fails to import
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
-                let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err().unwrap();
+                exec_state.add_id_to_source(id, source.clone());
+                let parsed = crate::parsing::parse_str(&source.source, id)
+                    .parse_errs_as_err()
+                    .unwrap();
                 exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }
