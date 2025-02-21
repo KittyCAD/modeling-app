@@ -701,7 +701,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Dark Grey', value: '#080808' },
           { name: 'Light Grey', value: '#D3D3D3' },
           { name: 'White', value: '#FFFFFF' },
-          { name: 'Default (clear)', value: COMMAND_APPEARANCE_COLOR_DEFAULT },
+          {
+            name: 'Default (clear appearance)',
+            value: COMMAND_APPEARANCE_COLOR_DEFAULT,
+          },
         ],
       },
       // Add more fields

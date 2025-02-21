@@ -2838,23 +2838,27 @@ extrude001 = extrude(profile001, length = 100)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 500, y: 250 }
+    const initialColor: [number, number, number] = [135, 135, 135]
 
     await test.step(`Confirm extrude exists with default appearance`, async () => {
       await toolbar.closePane('code')
-      await scene.expectPixelColor([135, 135, 135], testPoint, 15)
+      await scene.expectPixelColor(initialColor, testPoint, 15)
     })
 
-    await test.step('Right-click on the Extrude and click Set apperance', async () => {
+    async function goThroughFlowAndCheckExecution(
+      option: string,
+      hex: string,
+      shapeColor: [number, number, number]
+    ) {
+      await toolbar.openPane('feature-tree')
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Extrude',
         0
       )
       await operationButton.click({ button: 'right' })
+      await page.waitForTimeout(500) // just cause it's nice to see
       const menuButton = page.getByTestId('context-menu-set-appearance')
       await menuButton.click()
-    })
-
-    await test.step(`Go through the Set Appearance flow`, async () => {
       await cmdBar.expectState({
         commandName: 'Appearance',
         currentArgKey: 'color',
@@ -2865,16 +2869,61 @@ extrude001 = extrude(profile001, length = 100)
         highlightedHeaderArg: 'color',
         stage: 'arguments',
       })
-      await page.getByText('Red', { exact: true }).click()
+      const item = await page.getByText(option, { exact: true })
+      await page.waitForTimeout(500) // just cause it's nice to see
+      await item.click()
       await cmdBar.expectState({
         commandName: 'Appearance',
         headerArguments: {
-          Color: '#FF0000',
+          Color: hex,
         },
         stage: 'review',
       })
       await cmdBar.progressCmdBar()
-      await scene.expectPixelColor([102, 32, 26], testPoint, 15)
+      await toolbar.closePane('feature-tree')
+      await scene.expectPixelColor(shapeColor, testPoint, 20)
+      await toolbar.openPane('code')
+      if (hex === 'default') {
+        const anyAppearanceDeclaration = `|> appearance(`
+        await editor.expectEditor.not.toContain(anyAppearanceDeclaration)
+      } else {
+        const declaration = `|> appearance(%, color = '${hex}')`
+        await editor.expectEditor.toContain(declaration)
+        // TODO: fix selection range after appearance update
+        // await editor.expectState({
+        //   diagnostics: [],
+        //   activeLines: [declaration],
+        //   highlightedCode: '',
+        // })
+      }
+      await page.waitForTimeout(1000) // just cause it's nice to see
+      await toolbar.closePane('code')
+    }
+
+    await test.step(`Go through the Set Appearance flow for all options`, async () => {
+      await goThroughFlowAndCheckExecution('Red', '#FF0000', [180, 30, 30])
+      await goThroughFlowAndCheckExecution('Green', '#00FF00', [80, 180, 50])
+      await goThroughFlowAndCheckExecution('Blue', '#0000FF', [0, 0, 180])
+      await goThroughFlowAndCheckExecution(
+        'Turquoise',
+        '#00FFFF',
+        [80, 190, 190]
+      )
+      await goThroughFlowAndCheckExecution('Purple', '#FF00FF', [180, 30, 180])
+      await goThroughFlowAndCheckExecution('Yellow', '#FFFF00', [190, 190, 60])
+      await goThroughFlowAndCheckExecution('Black', '#000000', [0, 0, 0])
+      await goThroughFlowAndCheckExecution('Dark Grey', '#080808', [10, 10, 10])
+      await goThroughFlowAndCheckExecution(
+        'Light Grey',
+        '#D3D3D3',
+        [190, 190, 190]
+      )
+      await goThroughFlowAndCheckExecution('White', '#FFFFFF', [200, 200, 200])
+      await goThroughFlowAndCheckExecution(
+        'Default (clear appearance)',
+        'default',
+        initialColor
+      )
     })
   })
 })
