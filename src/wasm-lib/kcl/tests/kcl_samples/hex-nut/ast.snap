@@ -1,0 +1,1047 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing hex-nut.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 421,
+          "id": {
+            "end": 415,
+            "name": "wallToWallLength",
+            "start": 399,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 421,
+            "raw": "0.5",
+            "start": 418,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.5,
+              "suffix": "None"
+            }
+          },
+          "start": 399,
+          "type": "VariableDeclarator"
+        },
+        "end": 421,
+        "kind": "const",
+        "start": 399,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 439,
+          "id": {
+            "end": 431,
+            "name": "thickness",
+            "start": 422,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 439,
+            "raw": "0.266",
+            "start": 434,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.266,
+              "suffix": "None"
+            }
+          },
+          "start": 422,
+          "type": "VariableDeclarator"
+        },
+        "end": 439,
+        "kind": "const",
+        "start": 422,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 457,
+          "id": {
+            "end": 448,
+            "name": "diameter",
+            "start": 440,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 457,
+            "raw": "0.3125",
+            "start": 451,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.3125,
+              "suffix": "None"
+            }
+          },
+          "start": 440,
+          "type": "VariableDeclarator"
+        },
+        "end": 457,
+        "kind": "const",
+        "start": 440,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1090,
+          "id": {
+            "end": 505,
+            "name": "hexNut",
+            "start": 499,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "declaration": {
+                    "end": 1066,
+                    "id": {
+                      "end": 544,
+                      "name": "hexNutSketch",
+                      "start": 532,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 566,
+                              "raw": "'-XZ'",
+                              "start": 561,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": "-XZ"
+                            }
+                          ],
+                          "callee": {
+                            "end": 560,
+                            "name": "startSketchOn",
+                            "start": 547,
+                            "type": "Identifier"
+                          },
+                          "end": 567,
+                          "start": 547,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "elements": [
+                                {
+                                  "end": 610,
+                                  "left": {
+                                    "computed": false,
+                                    "end": 599,
+                                    "object": {
+                                      "end": 596,
+                                      "name": "start",
+                                      "start": 591,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "end": 598,
+                                      "raw": "0",
+                                      "start": 597,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 591,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "end": 610,
+                                    "name": "innerDia",
+                                    "start": 602,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "start": 591,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                {
+                                  "computed": false,
+                                  "end": 620,
+                                  "object": {
+                                    "end": 617,
+                                    "name": "start",
+                                    "start": 612,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "property": {
+                                    "end": 619,
+                                    "raw": "1",
+                                    "start": 618,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 612,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                }
+                              ],
+                              "end": 621,
+                              "start": 590,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            },
+                            {
+                              "end": 624,
+                              "start": 623,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 589,
+                            "name": "startProfileAt",
+                            "start": 575,
+                            "type": "Identifier"
+                          },
+                          "end": 625,
+                          "start": 575,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 678,
+                              "properties": [
+                                {
+                                  "end": 657,
+                                  "key": {
+                                    "end": 651,
+                                    "name": "angle",
+                                    "start": 646,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 646,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 657,
+                                    "raw": "240",
+                                    "start": 654,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 240.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 676,
+                                  "key": {
+                                    "end": 665,
+                                    "name": "length",
+                                    "start": 659,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 659,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 676,
+                                    "name": "innerDia",
+                                    "start": 668,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 644,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 681,
+                              "start": 680,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 643,
+                            "name": "angledLine",
+                            "start": 633,
+                            "type": "Identifier"
+                          },
+                          "end": 682,
+                          "start": 633,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 735,
+                              "properties": [
+                                {
+                                  "end": 714,
+                                  "key": {
+                                    "end": 708,
+                                    "name": "angle",
+                                    "start": 703,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 703,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 714,
+                                    "raw": "180",
+                                    "start": 711,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 180.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 733,
+                                  "key": {
+                                    "end": 722,
+                                    "name": "length",
+                                    "start": 716,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 716,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 733,
+                                    "name": "innerDia",
+                                    "start": 725,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 701,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 738,
+                              "start": 737,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 700,
+                            "name": "angledLine",
+                            "start": 690,
+                            "type": "Identifier"
+                          },
+                          "end": 739,
+                          "start": 690,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 792,
+                              "properties": [
+                                {
+                                  "end": 771,
+                                  "key": {
+                                    "end": 765,
+                                    "name": "angle",
+                                    "start": 760,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 760,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 771,
+                                    "raw": "120",
+                                    "start": 768,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 120.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 790,
+                                  "key": {
+                                    "end": 779,
+                                    "name": "length",
+                                    "start": 773,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 773,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 790,
+                                    "name": "innerDia",
+                                    "start": 782,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 758,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 795,
+                              "start": 794,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 757,
+                            "name": "angledLine",
+                            "start": 747,
+                            "type": "Identifier"
+                          },
+                          "end": 796,
+                          "start": 747,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 848,
+                              "properties": [
+                                {
+                                  "end": 827,
+                                  "key": {
+                                    "end": 822,
+                                    "name": "angle",
+                                    "start": 817,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 817,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 827,
+                                    "raw": "60",
+                                    "start": 825,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 60.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 846,
+                                  "key": {
+                                    "end": 835,
+                                    "name": "length",
+                                    "start": 829,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 829,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 846,
+                                    "name": "innerDia",
+                                    "start": 838,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 815,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 851,
+                              "start": 850,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 814,
+                            "name": "angledLine",
+                            "start": 804,
+                            "type": "Identifier"
+                          },
+                          "end": 852,
+                          "start": 804,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 909,
+                              "properties": [
+                                {
+                                  "end": 882,
+                                  "key": {
+                                    "end": 878,
+                                    "name": "angle",
+                                    "start": 873,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 873,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 882,
+                                    "raw": "0",
+                                    "start": 881,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 907,
+                                  "key": {
+                                    "end": 890,
+                                    "name": "length",
+                                    "start": 884,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 884,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 907,
+                                    "left": {
+                                      "end": 901,
+                                      "name": "innerDia",
+                                      "start": 893,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "*",
+                                    "right": {
+                                      "end": 907,
+                                      "raw": ".90",
+                                      "start": 904,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.9,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 893,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                }
+                              ],
+                              "start": 871,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 912,
+                              "start": 911,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 870,
+                            "name": "angledLine",
+                            "start": 860,
+                            "type": "Identifier"
+                          },
+                          "end": 913,
+                          "start": 860,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [],
+                          "callee": {
+                            "end": 926,
+                            "name": "close",
+                            "start": 921,
+                            "type": "Identifier"
+                          },
+                          "end": 928,
+                          "start": 921,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "arguments": [
+                                {
+                                  "end": 1029,
+                                  "properties": [
+                                    {
+                                      "end": 988,
+                                      "key": {
+                                        "end": 965,
+                                        "name": "center",
+                                        "start": 959,
+                                        "type": "Identifier"
+                                      },
+                                      "start": 959,
+                                      "type": "ObjectProperty",
+                                      "value": {
+                                        "elements": [
+                                          {
+                                            "computed": false,
+                                            "end": 977,
+                                            "object": {
+                                              "end": 974,
+                                              "name": "start",
+                                              "start": 969,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            },
+                                            "property": {
+                                              "end": 976,
+                                              "raw": "0",
+                                              "start": 975,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 0.0,
+                                                "suffix": "None"
+                                              }
+                                            },
+                                            "start": 969,
+                                            "type": "MemberExpression",
+                                            "type": "MemberExpression"
+                                          },
+                                          {
+                                            "computed": false,
+                                            "end": 987,
+                                            "object": {
+                                              "end": 984,
+                                              "name": "start",
+                                              "start": 979,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            },
+                                            "property": {
+                                              "end": 986,
+                                              "raw": "1",
+                                              "start": 985,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 1.0,
+                                                "suffix": "None"
+                                              }
+                                            },
+                                            "start": 979,
+                                            "type": "MemberExpression",
+                                            "type": "MemberExpression"
+                                          }
+                                        ],
+                                        "end": 988,
+                                        "start": 968,
+                                        "type": "ArrayExpression",
+                                        "type": "ArrayExpression"
+                                      }
+                                    },
+                                    {
+                                      "end": 1020,
+                                      "key": {
+                                        "end": 1005,
+                                        "name": "radius",
+                                        "start": 999,
+                                        "type": "Identifier"
+                                      },
+                                      "start": 999,
+                                      "type": "ObjectProperty",
+                                      "value": {
+                                        "end": 1020,
+                                        "left": {
+                                          "end": 1016,
+                                          "name": "innerDia",
+                                          "start": 1008,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "operator": "/",
+                                        "right": {
+                                          "end": 1020,
+                                          "raw": "2",
+                                          "start": 1019,
+                                          "type": "Literal",
+                                          "type": "Literal",
+                                          "value": {
+                                            "value": 2.0,
+                                            "suffix": "None"
+                                          }
+                                        },
+                                        "start": 1008,
+                                        "type": "BinaryExpression",
+                                        "type": "BinaryExpression"
+                                      }
+                                    }
+                                  ],
+                                  "start": 948,
+                                  "type": "ObjectExpression",
+                                  "type": "ObjectExpression"
+                                },
+                                {
+                                  "end": 1032,
+                                  "start": 1031,
+                                  "type": "PipeSubstitution",
+                                  "type": "PipeSubstitution"
+                                }
+                              ],
+                              "callee": {
+                                "end": 947,
+                                "name": "circle",
+                                "start": 941,
+                                "type": "Identifier"
+                              },
+                              "end": 1033,
+                              "start": 941,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            {
+                              "end": 1036,
+                              "start": 1035,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 940,
+                            "name": "hole",
+                            "start": 936,
+                            "type": "Identifier"
+                          },
+                          "end": 1037,
+                          "start": 936,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "length"
+                              },
+                              "arg": {
+                                "end": 1065,
+                                "name": "thk",
+                                "start": 1062,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1052,
+                            "name": "extrude",
+                            "start": 1045,
+                            "type": "Identifier"
+                          },
+                          "end": 1066,
+                          "start": 1045,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        }
+                      ],
+                      "end": 1066,
+                      "start": 547,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "start": 532,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1066,
+                  "kind": "const",
+                  "start": 532,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "end": 1088,
+                    "name": "hexNutSketch",
+                    "start": 1076,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "end": 1088,
+                  "start": 1069,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 1090,
+              "start": 528
+            },
+            "end": 1090,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 511,
+                  "name": "start",
+                  "start": 506,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 516,
+                  "name": "thk",
+                  "start": 513,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 526,
+                  "name": "innerDia",
+                  "start": 518,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 505,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 499,
+          "type": "VariableDeclarator"
+        },
+        "end": 1090,
+        "kind": "fn",
+        "start": 496,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 1147,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "end": 1121,
+                  "raw": "0",
+                  "start": 1120,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                },
+                {
+                  "end": 1124,
+                  "raw": "0",
+                  "start": 1123,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                }
+              ],
+              "end": 1125,
+              "start": 1119,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            },
+            {
+              "end": 1136,
+              "name": "thickness",
+              "start": 1127,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 1146,
+              "name": "diameter",
+              "start": 1138,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 1118,
+            "name": "hexNut",
+            "start": 1112,
+            "type": "Identifier"
+          },
+          "end": 1147,
+          "start": 1112,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1112,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 1148,
+    "innerAttrs": [
+      {
+        "end": 33,
+        "name": {
+          "end": 9,
+          "name": "settings",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 32,
+            "key": {
+              "end": 27,
+              "name": "defaultLengthUnit",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "start": 10,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 32,
+              "name": "in",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "2": [
+          {
+            "end": 495,
+            "start": 457,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Define a function for the hex nut",
+              "style": "line"
+            }
+          }
+        ],
+        "3": [
+          {
+            "end": 1111,
+            "start": 1090,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Create a hex nut",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 44,
+          "start": 34,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Hex nut",
+            "style": "line"
+          }
+        },
+        {
+          "end": 336,
+          "start": 45,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "A hex nut is a type of fastener with a threaded hole and a hexagonal outer shape, used in a wide variety of applications to secure parts together. The hexagonal shape allows for a greater torque to be applied with wrenches or tools, making it one of the most common nut types in hardware.",
+            "style": "line"
+          }
+        },
+        {
+          "end": 339,
+          "start": 336,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 351,
+          "start": 339,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set Units",
+            "style": "line"
+          }
+        },
+        {
+          "end": 354,
+          "start": 351,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 398,
+          "start": 354,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Define constants (5/16\" - 24 thread size)",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

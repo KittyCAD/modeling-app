@@ -1,0 +1,1581 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Variables in memory after executing 3d-boaty.kcl
+---
+{
+  "E": {
+    "type": "Number",
+    "value": 2.718281828459045,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          651,
+          689,
+          2
+        ]
+      }
+    ]
+  },
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          109,
+          115,
+          1
+        ]
+      }
+    ]
+  },
+  "PI": {
+    "type": "Number",
+    "value": 3.141592653589793,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          328,
+          2
+        ]
+      }
+    ]
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          89,
+          1
+        ]
+      }
+    ]
+  },
+  "TAU": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1042,
+          1080,
+          2
+        ]
+      }
+    ]
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          144,
+          150,
+          1
+        ]
+      }
+    ]
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          60,
+          61,
+          1
+        ]
+      }
+    ]
+  },
+  "armRest": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "declaration": {
+              "end": 3718,
+              "id": {
+                "end": 3665,
+                "moduleId": 3,
+                "name": "path",
+                "start": 3661,
+                "type": "Identifier"
+              },
+              "init": {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "offset"
+                        },
+                        "arg": {
+                          "end": 3716,
+                          "moduleId": 3,
+                          "name": "offset",
+                          "start": 3710,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 3693,
+                      "moduleId": 3,
+                      "name": "offsetPlane",
+                      "start": 3682,
+                      "type": "Identifier"
+                    },
+                    "end": 3717,
+                    "moduleId": 3,
+                    "start": 3682,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "end": 3699,
+                      "moduleId": 3,
+                      "name": "plane",
+                      "start": 3694,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 3679,
+                  "moduleId": 3,
+                  "name": "armRestPath",
+                  "start": 3668,
+                  "type": "Identifier"
+                },
+                "end": 3718,
+                "moduleId": 3,
+                "start": 3668,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              "moduleId": 3,
+              "start": 3661,
+              "type": "VariableDeclarator"
+            },
+            "end": 3718,
+            "kind": "const",
+            "moduleId": 3,
+            "start": 3661,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "declaration": {
+              "end": 3788,
+              "id": {
+                "end": 3728,
+                "moduleId": 3,
+                "name": "profile",
+                "start": 3721,
+                "type": "Identifier"
+              },
+              "init": {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "offset"
+                        },
+                        "arg": {
+                          "end": 3778,
+                          "moduleId": 3,
+                          "raw": "20",
+                          "start": 3776,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 20.0,
+                            "suffix": "None"
+                          }
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 3759,
+                      "moduleId": 3,
+                      "name": "offsetPlane",
+                      "start": 3748,
+                      "type": "Identifier"
+                    },
+                    "end": 3779,
+                    "moduleId": 3,
+                    "start": 3748,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "end": 3765,
+                      "moduleId": 3,
+                      "raw": "\"-XZ\"",
+                      "start": 3760,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "-XZ"
+                    }
+                  },
+                  {
+                    "end": 3787,
+                    "moduleId": 3,
+                    "name": "offset",
+                    "start": 3781,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 3745,
+                  "moduleId": 3,
+                  "name": "armRestProfile",
+                  "start": 3731,
+                  "type": "Identifier"
+                },
+                "end": 3788,
+                "moduleId": 3,
+                "start": 3731,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              "moduleId": 3,
+              "start": 3721,
+              "type": "VariableDeclarator"
+            },
+            "end": 3788,
+            "kind": "const",
+            "moduleId": 3,
+            "start": 3721,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "end": 3818,
+            "expression": {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "path"
+                  },
+                  "arg": {
+                    "end": 3817,
+                    "moduleId": 3,
+                    "name": "path",
+                    "start": 3813,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 3796,
+                "moduleId": 3,
+                "name": "sweep",
+                "start": 3791,
+                "type": "Identifier"
+              },
+              "end": 3818,
+              "moduleId": 3,
+              "start": 3791,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 3804,
+                "moduleId": 3,
+                "name": "profile",
+                "start": 3797,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            },
+            "moduleId": 3,
+            "start": 3791,
+            "type": "ExpressionStatement",
+            "type": "ExpressionStatement"
+          },
+          {
+            "argument": {
+              "end": 3829,
+              "moduleId": 3,
+              "raw": "0",
+              "start": 3828,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            "end": 3829,
+            "moduleId": 3,
+            "start": 3821,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 3831,
+        "moduleId": 3,
+        "start": 3657
+      },
+      "end": 3831,
+      "moduleId": 3,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 3647,
+            "moduleId": 3,
+            "name": "plane",
+            "start": 3642,
+            "type": "Identifier"
+          }
+        },
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 3655,
+            "moduleId": 3,
+            "name": "offset",
+            "start": 3649,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 3641,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      3,
+      11
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          3641,
+          3831,
+          3
+        ]
+      }
+    ]
+  },
+  "backSlats": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "declaration": {
+              "end": 3059,
+              "id": {
+                "end": 3002,
+                "moduleId": 3,
+                "name": "b",
+                "start": 3001,
+                "type": "Identifier"
+              },
+              "init": {
+                "body": [
+                  {
+                    "arguments": [
+                      {
+                        "end": 3026,
+                        "moduleId": 3,
+                        "name": "plane",
+                        "start": 3021,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "callee": {
+                      "end": 3020,
+                      "moduleId": 3,
+                      "name": "backSlatsSketch",
+                      "start": 3005,
+                      "type": "Identifier"
+                    },
+                    "end": 3027,
+                    "moduleId": 3,
+                    "start": 3005,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  },
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "length"
+                        },
+                        "arg": {
+                          "end": 3058,
+                          "moduleId": 3,
+                          "name": "length",
+                          "start": 3052,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 3042,
+                      "moduleId": 3,
+                      "name": "extrude",
+                      "start": 3035,
+                      "type": "Identifier"
+                    },
+                    "end": 3059,
+                    "moduleId": 3,
+                    "start": 3035,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  }
+                ],
+                "end": 3059,
+                "moduleId": 3,
+                "start": 3005,
+                "type": "PipeExpression",
+                "type": "PipeExpression"
+              },
+              "moduleId": 3,
+              "start": 3001,
+              "type": "VariableDeclarator"
+            },
+            "end": 3059,
+            "kind": "const",
+            "moduleId": 3,
+            "start": 3001,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "argument": {
+              "end": 3070,
+              "moduleId": 3,
+              "name": "b",
+              "start": 3069,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "end": 3070,
+            "moduleId": 3,
+            "start": 3062,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 3072,
+        "moduleId": 3,
+        "start": 2997
+      },
+      "end": 3072,
+      "moduleId": 3,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 2987,
+            "moduleId": 3,
+            "name": "plane",
+            "start": 2982,
+            "type": "Identifier"
+          }
+        },
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 2995,
+            "moduleId": 3,
+            "name": "length",
+            "start": 2989,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 2981,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      3,
+      8
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          2981,
+          3072,
+          3
+        ]
+      }
+    ]
+  },
+  "benchLength": {
+    "type": "Number",
+    "value": 56.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          440,
+          442,
+          0
+        ]
+      }
+    ]
+  },
+  "connector": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "end": 1961,
+            "expression": {
+              "body": [
+                {
+                  "arguments": [
+                    {
+                      "end": 1918,
+                      "moduleId": 3,
+                      "name": "plane",
+                      "start": 1913,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    {
+                      "elements": [
+                        {
+                          "argument": {
+                            "end": 1924,
+                            "moduleId": 3,
+                            "raw": "12",
+                            "start": 1922,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 12.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 1924,
+                          "moduleId": 3,
+                          "operator": "-",
+                          "start": 1921,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        },
+                        {
+                          "end": 1927,
+                          "moduleId": 3,
+                          "raw": "8",
+                          "start": 1926,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 8.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 1928,
+                      "moduleId": 3,
+                      "start": 1920,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  ],
+                  "callee": {
+                    "end": 1912,
+                    "moduleId": 3,
+                    "name": "connectorSketch",
+                    "start": 1897,
+                    "type": "Identifier"
+                  },
+                  "end": 1929,
+                  "moduleId": 3,
+                  "start": 1897,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                {
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "type": "Identifier",
+                        "name": "length"
+                      },
+                      "arg": {
+                        "end": 1960,
+                        "moduleId": 3,
+                        "name": "length",
+                        "start": 1954,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "end": 1944,
+                    "moduleId": 3,
+                    "name": "extrude",
+                    "start": 1937,
+                    "type": "Identifier"
+                  },
+                  "end": 1961,
+                  "moduleId": 3,
+                  "start": 1937,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
+                }
+              ],
+              "end": 1961,
+              "moduleId": 3,
+              "start": 1897,
+              "type": "PipeExpression",
+              "type": "PipeExpression"
+            },
+            "moduleId": 3,
+            "start": 1897,
+            "type": "ExpressionStatement",
+            "type": "ExpressionStatement"
+          },
+          {
+            "end": 2027,
+            "expression": {
+              "body": [
+                {
+                  "arguments": [
+                    {
+                      "end": 1985,
+                      "moduleId": 3,
+                      "name": "plane",
+                      "start": 1980,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    {
+                      "elements": [
+                        {
+                          "end": 1990,
+                          "moduleId": 3,
+                          "raw": "16",
+                          "start": 1988,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 16.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 1993,
+                          "moduleId": 3,
+                          "raw": "8",
+                          "start": 1992,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 8.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 1994,
+                      "moduleId": 3,
+                      "start": 1987,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  ],
+                  "callee": {
+                    "end": 1979,
+                    "moduleId": 3,
+                    "name": "connectorSketch",
+                    "start": 1964,
+                    "type": "Identifier"
+                  },
+                  "end": 1995,
+                  "moduleId": 3,
+                  "start": 1964,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                {
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "type": "Identifier",
+                        "name": "length"
+                      },
+                      "arg": {
+                        "end": 2026,
+                        "moduleId": 3,
+                        "name": "length",
+                        "start": 2020,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "end": 2010,
+                    "moduleId": 3,
+                    "name": "extrude",
+                    "start": 2003,
+                    "type": "Identifier"
+                  },
+                  "end": 2027,
+                  "moduleId": 3,
+                  "start": 2003,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
+                }
+              ],
+              "end": 2027,
+              "moduleId": 3,
+              "start": 1964,
+              "type": "PipeExpression",
+              "type": "PipeExpression"
+            },
+            "moduleId": 3,
+            "start": 1964,
+            "type": "ExpressionStatement",
+            "type": "ExpressionStatement"
+          },
+          {
+            "argument": {
+              "end": 2038,
+              "moduleId": 3,
+              "raw": "0",
+              "start": 2037,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            "end": 2038,
+            "moduleId": 3,
+            "start": 2030,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 2040,
+        "moduleId": 3,
+        "start": 1893
+      },
+      "end": 2040,
+      "moduleId": 3,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 1883,
+            "moduleId": 3,
+            "name": "plane",
+            "start": 1878,
+            "type": "Identifier"
+          }
+        },
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 1891,
+            "moduleId": 3,
+            "name": "length",
+            "start": 1885,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 1877,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      3,
+      4
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          1877,
+          2040,
+          3
+        ]
+      }
+    ]
+  },
+  "cos": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [],
+        "end": 1477,
+        "moduleId": 2,
+        "start": 1477
+      },
+      "end": 1478,
+      "moduleId": 2,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 1450,
+            "moduleId": 2,
+            "name": "num",
+            "start": 1447,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 1446,
+      "type": "FunctionExpression"
+    },
+    "memory": null,
+    "__meta": [
+      {
+        "sourceRange": [
+          1446,
+          1478,
+          2
+        ]
+      }
+    ]
+  },
+  "divider": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "declaration": {
+              "end": 1405,
+              "id": {
+                "end": 1336,
+                "moduleId": 3,
+                "name": "right",
+                "start": 1331,
+                "type": "Identifier"
+              },
+              "init": {
+                "body": [
+                  {
+                    "arguments": [
+                      {
+                        "end": 1358,
+                        "moduleId": 3,
+                        "name": "plane",
+                        "start": 1353,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "callee": {
+                      "end": 1352,
+                      "moduleId": 3,
+                      "name": "dividerSketch",
+                      "start": 1339,
+                      "type": "Identifier"
+                    },
+                    "end": 1359,
+                    "moduleId": 3,
+                    "start": 1339,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  },
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "length"
+                        },
+                        "arg": {
+                          "end": 1404,
+                          "left": {
+                            "end": 1400,
+                            "moduleId": 3,
+                            "name": "dividerThickness",
+                            "start": 1384,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "moduleId": 3,
+                          "operator": "/",
+                          "right": {
+                            "end": 1404,
+                            "moduleId": 3,
+                            "raw": "2",
+                            "start": 1403,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 1384,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 1374,
+                      "moduleId": 3,
+                      "name": "extrude",
+                      "start": 1367,
+                      "type": "Identifier"
+                    },
+                    "end": 1405,
+                    "moduleId": 3,
+                    "start": 1367,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  }
+                ],
+                "end": 1405,
+                "moduleId": 3,
+                "start": 1339,
+                "type": "PipeExpression",
+                "type": "PipeExpression"
+              },
+              "moduleId": 3,
+              "start": 1331,
+              "type": "VariableDeclarator"
+            },
+            "end": 1405,
+            "kind": "const",
+            "moduleId": 3,
+            "start": 1331,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "declaration": {
+              "end": 1482,
+              "id": {
+                "end": 1412,
+                "moduleId": 3,
+                "name": "left",
+                "start": 1408,
+                "type": "Identifier"
+              },
+              "init": {
+                "body": [
+                  {
+                    "arguments": [
+                      {
+                        "end": 1434,
+                        "moduleId": 3,
+                        "name": "plane",
+                        "start": 1429,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "callee": {
+                      "end": 1428,
+                      "moduleId": 3,
+                      "name": "dividerSketch",
+                      "start": 1415,
+                      "type": "Identifier"
+                    },
+                    "end": 1435,
+                    "moduleId": 3,
+                    "start": 1415,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  },
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "length"
+                        },
+                        "arg": {
+                          "end": 1481,
+                          "left": {
+                            "argument": {
+                              "end": 1477,
+                              "moduleId": 3,
+                              "name": "dividerThickness",
+                              "start": 1461,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 1477,
+                            "moduleId": 3,
+                            "operator": "-",
+                            "start": 1460,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "moduleId": 3,
+                          "operator": "/",
+                          "right": {
+                            "end": 1481,
+                            "moduleId": 3,
+                            "raw": "2",
+                            "start": 1480,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 1460,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 1450,
+                      "moduleId": 3,
+                      "name": "extrude",
+                      "start": 1443,
+                      "type": "Identifier"
+                    },
+                    "end": 1482,
+                    "moduleId": 3,
+                    "start": 1443,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  }
+                ],
+                "end": 1482,
+                "moduleId": 3,
+                "start": 1415,
+                "type": "PipeExpression",
+                "type": "PipeExpression"
+              },
+              "moduleId": 3,
+              "start": 1408,
+              "type": "VariableDeclarator"
+            },
+            "end": 1482,
+            "kind": "const",
+            "moduleId": 3,
+            "start": 1408,
+            "type": "VariableDeclaration",
+            "type": "VariableDeclaration"
+          },
+          {
+            "end": 1531,
+            "expression": {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "thickness"
+                  },
+                  "arg": {
+                    "end": 1513,
+                    "moduleId": 3,
+                    "raw": "1.5",
+                    "start": 1510,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 1.5,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "faces"
+                  },
+                  "arg": {
+                    "elements": [
+                      {
+                        "end": 1529,
+                        "moduleId": 3,
+                        "raw": "\"end\"",
+                        "start": 1524,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": "end"
+                      }
+                    ],
+                    "end": 1530,
+                    "moduleId": 3,
+                    "start": 1523,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 1490,
+                "moduleId": 3,
+                "name": "shell",
+                "start": 1485,
+                "type": "Identifier"
+              },
+              "end": 1531,
+              "moduleId": 3,
+              "start": 1485,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 1496,
+                "moduleId": 3,
+                "name": "right",
+                "start": 1491,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            },
+            "moduleId": 3,
+            "start": 1485,
+            "type": "ExpressionStatement",
+            "type": "ExpressionStatement"
+          },
+          {
+            "end": 1581,
+            "expression": {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "thickness"
+                  },
+                  "arg": {
+                    "end": 1561,
+                    "moduleId": 3,
+                    "raw": "1.5",
+                    "start": 1558,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 1.5,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "faces"
+                  },
+                  "arg": {
+                    "elements": [
+                      {
+                        "end": 1579,
+                        "moduleId": 3,
+                        "raw": "\"start\"",
+                        "start": 1572,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": "start"
+                      }
+                    ],
+                    "end": 1580,
+                    "moduleId": 3,
+                    "start": 1571,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 1539,
+                "moduleId": 3,
+                "name": "shell",
+                "start": 1534,
+                "type": "Identifier"
+              },
+              "end": 1581,
+              "moduleId": 3,
+              "start": 1534,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 1544,
+                "moduleId": 3,
+                "name": "left",
+                "start": 1540,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            },
+            "moduleId": 3,
+            "start": 1534,
+            "type": "ExpressionStatement",
+            "type": "ExpressionStatement"
+          },
+          {
+            "argument": {
+              "end": 1592,
+              "moduleId": 3,
+              "raw": "0",
+              "start": 1591,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            "end": 1592,
+            "moduleId": 3,
+            "start": 1584,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 1594,
+        "moduleId": 3,
+        "start": 1327
+      },
+      "end": 1594,
+      "moduleId": 3,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 1325,
+            "moduleId": 3,
+            "name": "plane",
+            "start": 1320,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 1319,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      3,
+      2
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          1319,
+          1594,
+          3
+        ]
+      }
+    ]
+  },
+  "dividerThickness": {
+    "type": "Number",
+    "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          291,
+          3
+        ]
+      }
+    ]
+  },
+  "seatSlats": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [
+          {
+            "end": 2535,
+            "expression": {
+              "body": [
+                {
+                  "arguments": [
+                    {
+                      "end": 2502,
+                      "moduleId": 3,
+                      "name": "plane",
+                      "start": 2497,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  ],
+                  "callee": {
+                    "end": 2496,
+                    "moduleId": 3,
+                    "name": "seatSlatSketch",
+                    "start": 2482,
+                    "type": "Identifier"
+                  },
+                  "end": 2503,
+                  "moduleId": 3,
+                  "start": 2482,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                {
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "type": "Identifier",
+                        "name": "length"
+                      },
+                      "arg": {
+                        "end": 2534,
+                        "moduleId": 3,
+                        "name": "length",
+                        "start": 2528,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "end": 2518,
+                    "moduleId": 3,
+                    "name": "extrude",
+                    "start": 2511,
+                    "type": "Identifier"
+                  },
+                  "end": 2535,
+                  "moduleId": 3,
+                  "start": 2511,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
+                }
+              ],
+              "end": 2535,
+              "moduleId": 3,
+              "start": 2482,
+              "type": "PipeExpression",
+              "type": "PipeExpression"
+            },
+            "moduleId": 3,
+            "start": 2482,
+            "type": "ExpressionStatement",
+            "type": "ExpressionStatement"
+          },
+          {
+            "argument": {
+              "end": 2546,
+              "moduleId": 3,
+              "raw": "0",
+              "start": 2545,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            "end": 2546,
+            "moduleId": 3,
+            "start": 2538,
+            "type": "ReturnStatement",
+            "type": "ReturnStatement"
+          }
+        ],
+        "end": 2548,
+        "moduleId": 3,
+        "start": 2478
+      },
+      "end": 2548,
+      "moduleId": 3,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 2468,
+            "moduleId": 3,
+            "name": "plane",
+            "start": 2463,
+            "type": "Identifier"
+          }
+        },
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 2476,
+            "moduleId": 3,
+            "name": "length",
+            "start": 2470,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 2462,
+      "type": "FunctionExpression"
+    },
+    "memory": [
+      3,
+      6
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          2462,
+          2548,
+          3
+        ]
+      }
+    ]
+  },
+  "sin": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [],
+        "end": 1875,
+        "moduleId": 2,
+        "start": 1875
+      },
+      "end": 1876,
+      "moduleId": 2,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 1848,
+            "moduleId": 2,
+            "name": "num",
+            "start": 1845,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 1844,
+      "type": "FunctionExpression"
+    },
+    "memory": null,
+    "__meta": [
+      {
+        "sourceRange": [
+          1844,
+          1876,
+          2
+        ]
+      }
+    ]
+  },
+  "tan": {
+    "type": "Function",
+    "expression": {
+      "body": {
+        "body": [],
+        "end": 2265,
+        "moduleId": 2,
+        "start": 2265
+      },
+      "end": 2266,
+      "moduleId": 2,
+      "params": [
+        {
+          "type": "Parameter",
+          "identifier": {
+            "end": 2238,
+            "moduleId": 2,
+            "name": "num",
+            "start": 2235,
+            "type": "Identifier"
+          }
+        }
+      ],
+      "start": 2234,
+      "type": "FunctionExpression"
+    },
+    "memory": null,
+    "__meta": [
+      {
+        "sourceRange": [
+          2234,
+          2266,
+          2
+        ]
+      }
+    ]
+  }
+}

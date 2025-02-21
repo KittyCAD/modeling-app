@@ -1,0 +1,368 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed 80-20-rail.kcl
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "rail8020",
+    "functionSourceRange": [
+      214,
+      7133,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      7176,
+      7201,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "-XZ"
+        },
+        "sourceRange": [
+          312,
+          317,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      298,
+      318,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          5457,
+          5639,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          5641,
+          5642,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      5452,
+      5643,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 48.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          5668,
+          5678,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      5651,
+      5679,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 0.06,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
+        "sourceRange": [
+          5694,
+          6392,
+          0
+        ]
+      },
+      "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          6394,
+          6395,
+          0
+        ]
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [
+      5687,
+      6396,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 0.03,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
+        "sourceRange": [
+          6411,
+          7108,
+          0
+        ]
+      },
+      "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          7110,
+          7111,
+          0
+        ]
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [
+      6404,
+      7112,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]

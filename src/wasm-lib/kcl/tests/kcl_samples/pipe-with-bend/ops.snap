@@ -1,0 +1,121 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed pipe-with-bend.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
+        "sourceRange": [
+          364,
+          368,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      350,
+      369,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          720,
+          732,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          734,
+          735,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      715,
+      736,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "angle": {
+              "type": "Number",
+              "value": 90.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "axis": {
+              "type": "String",
+              "value": "Y"
+            }
+          }
+        },
+        "sourceRange": [
+          802,
+          835,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          837,
+          848,
+          0
+        ]
+      }
+    },
+    "name": "revolve",
+    "sourceRange": [
+      794,
+      849,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

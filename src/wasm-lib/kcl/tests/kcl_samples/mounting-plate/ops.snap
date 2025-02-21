@@ -1,0 +1,353 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed mounting-plate.kcl
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "rectShape",
+    "functionSourceRange": [
+      519,
+      889,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      1043,
+      1085,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": [
+          554,
+          558,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      540,
+      559,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1106,
+          1255,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1257,
+          1258,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      1101,
+      1259,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1270,
+          1418,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1420,
+          1421,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      1265,
+      1422,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1433,
+          1583,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1585,
+          1586,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      1428,
+      1587,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1598,
+          1747,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1749,
+          1750,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      1593,
+      1751,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1762,
+          1840,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1842,
+          1843,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      1757,
+      1844,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          1867,
+          1881,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      1850,
+      1882,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 0.5,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Inches"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
+        "sourceRange": [
+          1895,
+          2153,
+          0
+        ]
+      },
+      "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          2155,
+          2156,
+          0
+        ]
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [
+      1888,
+      2157,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]
