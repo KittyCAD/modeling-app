@@ -633,6 +633,7 @@ test.describe('Testing settings', () => {
             `Set default unit to "${unitOfMeasure}" as a user default`
           )
           await expect(toastMessage).toBeVisible()
+          await expect(toastMessage).not.toBeVisible()
         })
       }
       await changeUnitOfMeasureInUserTab('in')

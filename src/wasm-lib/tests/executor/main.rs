@@ -30,7 +30,7 @@ async fn kcl_test_fillet_duplicate_tags() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([229, 275, 0])], message: "Duplicate tags are not allowed." }"#,
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([229, 272, 0])], message: "Duplicate tags are not allowed." }"#,
     );
 }
 
@@ -834,15 +834,15 @@ part = rectShape([0, 0], 20, 20)
   |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
   |> hole(circle('XY', [holeIndex, -holeIndex], holeRadius), %)
   |> extrude(length = 2)
-  |> fillet({
-       radius: 4,
-       tags: [
+  |> fillet(
+       radius = 4,
+       tags = [
           getNextAdjacentEdge(edge1),
           getNextAdjacentEdge(edge2),
           getNextAdjacentEdge(edge3),
           getNextAdjacentEdge(edge4)
        ]
-     }, %)
+     )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
@@ -1218,18 +1218,18 @@ p = pentagon(32)
 circle0 = make_circle(p, p.sketch.tags.a, [0, 0], 2.5)
 plumbus0 = circle0
   |> extrude(length = 10)
-  |> fillet({
-       radius: 0.5,
-       tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1)]
-     }, %)
+  |> fillet(
+       radius = 0.5,
+       tags = [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1)]
+     )
 
 circle1 = make_circle(p, p.sketch.tags.b, [0, 0], 2.5)
 plumbus1 = circle1
    |> extrude(length = 10)
-   |> fillet({
-        radius: 0.5,
-        tags: [circle1.tags.arc1, getOppositeEdge(circle1.tags.arc1)]
-      }, %)
+   |> fillet(
+        radius = 0.5,
+        tags = [circle1.tags.arc1, getOppositeEdge(circle1.tags.arc1)]
+      )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1305,14 +1305,14 @@ bracket = startSketchOn('XY')
   |> line(end = [0, -wallMountL + thickness])
   |> close()
   |> extrude(length = width)
-  |> fillet({
-       radius: filletR,
-       tags: [getNextAdjacentEdge(innerEdge)]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [getNextAdjacentEdge(outerEdge)]
-     }, %)
+  |> fillet(
+       radius = filletR,
+       tags = [getNextAdjacentEdge(innerEdge)]
+     )
+  |> fillet(
+       radius = filletR + thickness,
+       tags = [getNextAdjacentEdge(outerEdge)]
+     )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
@@ -1470,18 +1470,18 @@ sketch001 = startSketchOn("XZ")
   |> close()
 
 baseExtrusion = extrude(sketch001, length = width)
-  |> fillet({
-    radius: cornerFilletRad,
-    tags: [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1), getOppositeEdge(cornerFillet2)],
-  }, %)
-  |> fillet({
-    radius: filletRad,
-    tags: [getPreviousAdjacentEdge(fillet1), getPreviousAdjacentEdge(fillet2)]
-  }, %)
-  |> fillet({
-   radius: filletRad + thickness,
-   tags: [getNextAdjacentEdge(fillet1), getNextAdjacentEdge(fillet2)],
- }, %)
+  |> fillet(
+    radius = cornerFilletRad,
+    tags = [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1), getOppositeEdge(cornerFillet2)],
+  )
+  |> fillet(
+    radius = filletRad,
+    tags = [getPreviousAdjacentEdge(fillet1), getPreviousAdjacentEdge(fillet2)]
+  )
+  |> fillet(
+   radius = filletRad + thickness,
+   tags = [getNextAdjacentEdge(fillet1), getNextAdjacentEdge(fillet2)],
+ )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1518,18 +1518,18 @@ sketch001 = startSketchOn("XZ")
   |> close()
 
 baseExtrusion = extrude(sketch001, length = width)
-  |> chamfer({
-    length: cornerChamferRad,
-    tags: [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1), getOppositeEdge(cornerChamfer2)],
-  }, %)
-  |> chamfer({
-    length: chamferRad,
-    tags: [getPreviousAdjacentEdge(chamfer1), getPreviousAdjacentEdge(chamfer2)]
-  }, %)
-  |> chamfer({
-   length: chamferRad + thickness,
-   tags: [getNextAdjacentEdge(chamfer1), getNextAdjacentEdge(chamfer2)],
- }, %)
+  |> chamfer(
+    length = cornerChamferRad,
+    tags = [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1), getOppositeEdge(cornerChamfer2)],
+    )
+  |> chamfer(
+    length = chamferRad,
+    tags = [getPreviousAdjacentEdge(chamfer1), getPreviousAdjacentEdge(chamfer2)],
+  )
+  |> chamfer(
+   length = chamferRad + thickness,
+   tags = [getNextAdjacentEdge(chamfer1), getNextAdjacentEdge(chamfer2)],
+   )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1570,10 +1570,10 @@ async fn kcl_test_linear_pattern3d_filleted_sketch() {
 part001 = cube([0,0], 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
-    |> fillet({
-      radius: 10,
-      tags: [getOppositeEdge(line1)]
-    }, %)
+    |> fillet(
+      radius = 10,
+      tags = [getOppositeEdge(line1)]
+    )
 
 pattn1 = patternLinear3d(
      part001,
@@ -1601,10 +1601,10 @@ async fn kcl_test_circular_pattern3d_filleted_sketch() {
 part001 = cube([0,0], 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
-  |> fillet({
-    radius: 10,
-    tags: [getOppositeEdge(line1)]
-  }, %)
+  |> fillet(
+    radius = 10,
+    tags = [getOppositeEdge(line1)]
+  )
 
 pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false) 
 
@@ -1628,10 +1628,10 @@ async fn kcl_test_circular_pattern3d_chamfered_sketch() {
 part001 = cube([0,0], 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
-  |> chamfer({
-    length: 10,
-    tags: [getOppositeEdge(line1)]
-  }, %)
+    |> chamfer(
+      length = 10,
+      tags = [getOppositeEdge(line1)],
+    )
 
 pattn2 = patternCircular3d(part001, axis = [0,0, 1], center = [-20, -20, -20], instances = 5, arcDegrees = 360, rotateDuplicates = false)
 "#;
@@ -1654,10 +1654,11 @@ async fn kcl_test_tag_chamfer_with_more_than_one_edge_should_fail() {
 part001 = cube([0,0], 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
-  |> chamfer({
-    length: 10,
-    tags: [line1, getOppositeEdge(line1)]
-  }, %, $chamfer1)
+  |> chamfer(
+    length = 10,
+    tags = [line1, getOppositeEdge(line1)],
+    tag = $chamfer1
+  )
 
 
 "#;

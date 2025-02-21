@@ -3,7 +3,6 @@ import { isDesktop } from '../lib/isDesktop'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
 import { PATHS } from 'lib/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
 import { CSSProperties, useCallback, useState } from 'react'
 import { Logo } from 'components/Logo'
@@ -15,6 +14,7 @@ import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import toast from 'react-hot-toast'
 import { authActor } from 'machines/appMachine'
+import { useSettings } from 'machines/appMachine'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -23,14 +23,8 @@ const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:t
 const SignIn = () => {
   const [userCode, setUserCode] = useState('')
   const {
-    settings: {
-      state: {
-        context: {
-          app: { theme },
-        },
-      },
-    },
-  } = useSettingsAuthContext()
+    app: { theme },
+  } = useSettings()
   const signInUrl = `${VITE_KC_SITE_BASE_URL}${
     PATHS.SIGN_IN
   }?callbackUrl=${encodeURIComponent(

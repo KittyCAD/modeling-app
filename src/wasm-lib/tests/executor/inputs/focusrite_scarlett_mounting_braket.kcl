@@ -53,15 +53,15 @@ fn bracketSketch = (w, d, t) => {
 const bs = bracketSketch(width, depth, thk)
 const bracketBody = bs
   |> extrude(length = length + 2 * thk)
-  |> fillet({
-       radius: radius,
-       tags: [
+  |> fillet(
+       radius = radius,
+       tags = [
          getPreviousAdjacentEdge(bs.tags.edge7),
          getPreviousAdjacentEdge(bs.tags.edge2),
          getPreviousAdjacentEdge(bs.tags.edge3),
          getPreviousAdjacentEdge(bs.tags.edge6)
        ]
-     }, %)
+     )
 
 // define the tab plane
 const tabPlane = {
@@ -88,13 +88,13 @@ const tabsR = startSketchOn(tabPlane)
        radius: holeDiam / 2
      }, %), %)
   |> extrude(length = -tabThk)
-  |> fillet({
-       radius: holeDiam / 2,
-       tags: [
+  |> fillet(
+       radius = holeDiam / 2,
+       tags = [
          getNextAdjacentEdge(edge12),
          getNextAdjacentEdge(edge13)
        ]
-     }, %)
+     )
   |> patternLinear3d(
        axis = [0, -1, 0],
        instances = 2,
@@ -116,13 +116,13 @@ const tabsL = startSketchOn(tabPlane)
        radius: holeDiam / 2
      }, %), %)
   |> extrude(length = -tabThk)
-  |> fillet({
-       radius: holeDiam / 2,
-       tags: [
+  |> fillet(
+       radius = holeDiam / 2,
+       tags = [
          getNextAdjacentEdge(edge21),
          getNextAdjacentEdge(edge22)
        ]
-     }, %)
+     )
   |> patternLinear3d(
        axis = [0, -1, 0],
        instances = 2,

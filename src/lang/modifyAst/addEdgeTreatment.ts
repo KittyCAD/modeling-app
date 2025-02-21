@@ -19,6 +19,8 @@ import {
   createArrayExpression,
   createIdentifier,
   createPipeExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
 } from '../modifyAst'
 import {
   getNodeFromPath,
@@ -166,13 +168,14 @@ export function modifyAstWithEdgeTreatmentAndTag(
     const firstTag = tagCalls[0] // can be Identifier or CallExpression (for opposite and adjacent edges)
 
     // edge treatment call
-    const edgeTreatmentCall = createCallExpressionStdLib(parameters.type, [
-      createObjectExpression({
-        [parameterName]: parameterValue,
-        tags: createArrayExpression(tagCalls),
-      }),
-      createPipeSubstitution(),
-    ])
+    const edgeTreatmentCall = createCallExpressionStdLibKw(
+      parameters.type,
+      null,
+      [
+        createLabeledArg(parameterName, parameterValue),
+        createLabeledArg('tags', createArrayExpression(tagCalls)),
+      ]
+    )
 
     // Locate the extrude call
     const locatedExtrudeDeclarator = locateExtrudeDeclarator(
@@ -751,6 +754,16 @@ export const isTagUsedInEdgeTreatment = ({
       ) {
         inEdgeTreatment = true
       }
+      if (inEdgeTreatment && node.type === 'CallExpressionKw') {
+        node.arguments.forEach((prop) => {
+          if (
+            prop.label.name === 'tags' &&
+            prop.arg.type === 'ArrayExpression'
+          ) {
+            inObj = true
+          }
+        })
+      }
       if (inEdgeTreatment && node.type === 'ObjectExpression') {
         node.properties.forEach((prop) => {
           if (
@@ -794,6 +807,16 @@ export const isTagUsedInEdgeTreatment = ({
         isEdgeTreatmentType(node.callee.name)
       ) {
         inEdgeTreatment = false
+      }
+      if (inEdgeTreatment && node.type === 'CallExpressionKw') {
+        node.arguments.forEach((prop) => {
+          if (
+            prop.label.name === 'tags' &&
+            prop.arg.type === 'ArrayExpression'
+          ) {
+            inObj = true
+          }
+        })
       }
       if (inEdgeTreatment && node.type === 'ObjectExpression') {
         node.properties.forEach((prop) => {

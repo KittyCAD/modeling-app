@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed pentagon_fillet_sugar.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -172,55 +173,44 @@ description: Operations executed pentagon_fillet_sugar.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 5.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "TagIdentifier",
-                  "value": "arc_tag",
-                  "artifact_id": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          653,
-          773,
+          670,
+          671,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "TagIdentifier",
+              "value": "arc_tag",
+              "artifact_id": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          775,
-          776,
+          687,
+          765,
           0
         ]
       }
@@ -228,11 +218,23 @@ description: Operations executed pentagon_fillet_sugar.kcl
     "name": "fillet",
     "sourceRange": [
       646,
-      777,
+      773,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -245,8 +247,8 @@ description: Operations executed pentagon_fillet_sugar.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      783,
-      796,
+      779,
+      792,
       0
     ]
   },
@@ -307,16 +309,16 @@ description: Operations executed pentagon_fillet_sugar.kcl
           }
         },
         "sourceRange": [
-          833,
-          843,
+          829,
+          839,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      816,
-      844,
+      812,
+      840,
       0
     ],
     "type": "StdLibCall",
@@ -336,66 +338,67 @@ description: Operations executed pentagon_fillet_sugar.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 5.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "TagIdentifier",
-                  "value": "arc_tag",
-                  "artifact_id": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          857,
-          977,
+          870,
+          871,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "TagIdentifier",
+              "value": "arc_tag",
+              "artifact_id": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          979,
-          980,
+          887,
+          965,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      850,
-      981,
+      846,
+      973,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

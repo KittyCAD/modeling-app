@@ -1,16 +1,16 @@
 import { Dialog } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CREATE_FILE_URL_PARAM } from 'lib/constants'
+import { useSettings } from 'machines/appMachine'
 
 const DownloadAppBanner = () => {
   const [searchParams] = useSearchParams()
   const hasCreateFileParam = searchParams.has(CREATE_FILE_URL_PARAM)
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const [isBannerDismissed, setIsBannerDismissed] = useState(
-    settings.context.app.dismissWebBanner.current || hasCreateFileParam
+    settings.app.dismissWebBanner.current
   )
 
   return (
