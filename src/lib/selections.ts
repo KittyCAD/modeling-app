@@ -35,10 +35,10 @@ import {
   CodeRef,
   getCodeRefsByArtifactId,
   ArtifactId,
-  getFaceCodeRef,
 } from 'lang/std/artifactGraph'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { DefaultPlaneStr } from './planes'
+import { ArtifactEntry, ArtifactIndex } from './artifactIndex'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -288,7 +288,8 @@ export function processCodeMirrorRanges({
     })
   const idBasedSelections: SelectionToEngine[] = codeToIdSelections(
     codeBasedSelections,
-    artifactGraph
+    artifactGraph,
+    engineCommandManager.artifactIndex
   )
   const selections: Selection[] = []
   for (const { id, range } of idBasedSelections) {
@@ -494,27 +495,60 @@ export function canSubmitSelectionArg(
   )
 }
 
-type ArtifactEntry = { artifact: Artifact; id: ArtifactId }
-
-function findOverlappingArtifacts(
+function findOverlappingArtifactsFromIndex(
   selection: Selection,
-  artifactGraph: ArtifactGraph
+  index: ArtifactIndex
 ): ArtifactEntry[] {
-  return Array.from(artifactGraph)
-    .map(([id, artifact]) => {
-      const codeRef = getFaceCodeRef(artifact)
-      if (!codeRef) return null
-      return isOverlap(codeRef.range, selection.codeRef.range)
-        ? { artifact, id }
-        : null
-    })
-    .filter(isNonNullable)
+  if (!selection.codeRef?.range) {
+    console.warn('Selection missing code reference range')
+    return []
+  }
+
+  const selectionRange = selection.codeRef.range
+  const results: ArtifactEntry[] = []
+
+  // Binary search to find the first range that could overlap
+  // Look for the first range that ends after our selection starts
+  let left = 0
+  let right = index.length - 1
+  let startIndex = 0
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+    const midRange = index[mid].range
+
+    if (midRange[1] < selectionRange[0]) {
+      // This range ends before our selection starts, look in right half
+      left = mid + 1
+    } else {
+      // This range might overlap, check left half for earlier overlaps
+      startIndex = mid
+      right = mid - 1
+    }
+  }
+
+  // Check all potential overlaps from the found position
+  for (let i = startIndex; i < index.length; i++) {
+    const { range, entry } = index[i]
+    // Stop if we've gone past possible overlaps
+    if (range[0] > selectionRange[1]) break
+
+    if (isOverlap(range, selectionRange)) {
+      results.push(entry)
+    }
+  }
+
+  return results
 }
 
 function getBestCandidate(
   entries: ArtifactEntry[],
   artifactGraph: ArtifactGraph
 ): ArtifactEntry | undefined {
+  if (!entries.length) {
+    return undefined
+  }
+
   for (const entry of entries) {
     // Segments take precedence
     if (entry.artifact.type === 'segment') {
@@ -548,23 +582,41 @@ function createSelectionToEngine(
 ): SelectionToEngine {
   return {
     ...(candidateId && { id: candidateId }),
-    range: selection.codeRef.range
+    range: selection.codeRef.range,
   }
 }
 
 export function codeToIdSelections(
   selections: Selection[],
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  artifactIndex: ArtifactIndex
 ): SelectionToEngine[] {
+  if (!selections?.length) {
+    return []
+  }
+
+  if (!artifactGraph) {
+    console.warn('Artifact graph is missing or empty')
+    return selections.map((selection) => createSelectionToEngine(selection))
+  }
+
   return selections
     .flatMap((selection): SelectionToEngine[] => {
+      if (!selection) {
+        console.warn('Null or undefined selection encountered')
+        return []
+      }
+
       // Direct artifact case
       if (selection.artifact?.id) {
         return [createSelectionToEngine(selection, selection.artifact.id)]
       }
 
       // Find matching artifacts by code range overlap
-      const overlappingEntries = findOverlappingArtifacts(selection, artifactGraph)
+      const overlappingEntries = findOverlappingArtifactsFromIndex(
+        selection,
+        artifactIndex
+      )
       const bestCandidate = getBestCandidate(overlappingEntries, artifactGraph)
 
       return [createSelectionToEngine(selection, bestCandidate?.id)]

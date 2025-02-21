@@ -31,6 +31,8 @@ import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
 import { DefaultPlaneStr } from 'lib/planes'
 import { defaultPlaneStrToKey } from 'lib/planes'
+import { buildArtifactIndex } from 'lib/artifactIndex'
+import { ArtifactIndex } from 'lib/artifactIndex'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1369,6 +1371,7 @@ export class EngineCommandManager extends EventTarget {
    * see: src/lang/std/artifactGraph-README.md for a full explanation.
    */
   artifactGraph: ArtifactGraph = new Map()
+  artifactIndex: ArtifactIndex = []
   /**
    * The pendingCommands object is a map of the commands that have been sent to the engine that are still waiting on a reply
    */
@@ -2146,6 +2149,7 @@ export class EngineCommandManager extends EventTarget {
   }
   updateArtifactGraph(execStateArtifactGraph: ExecState['artifactGraph']) {
     this.artifactGraph = execStateArtifactGraph
+    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)

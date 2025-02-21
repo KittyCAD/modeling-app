@@ -2,6 +2,7 @@ import { expect } from 'vitest'
 import { assertParse, initPromise, ArtifactGraph } from 'lang/wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { codeToIdSelections, Selection } from './selections'
+import { buildArtifactIndex } from './artifactIndex'
 
 beforeAll(async () => {
   await initPromise
@@ -1083,6 +1084,10 @@ profile004 = circle({
       },
     ],
   ]) as ArtifactGraph
+
+  // Build the index locally instead of using engineCommandManager
+  const artifactIndex = buildArtifactIndex(___artifactGraph)
+
   const cases = [
     [
       'basic segment selection',
@@ -1200,7 +1205,8 @@ profile004 = circle({
       ]
       const [artifactSelection] = codeToIdSelections(
         selections,
-        ___artifactGraph
+        ___artifactGraph,
+        artifactIndex
       )
       expect(artifactSelection.id).toBeTruthy()
       if (!artifactSelection.id) {
