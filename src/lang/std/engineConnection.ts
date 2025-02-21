@@ -589,7 +589,12 @@ class EngineConnection extends EventTarget {
         }
 
         const initiateConnectingExclusive = () => {
-          if (that.triggeredStart) return
+          if (!that.sdpAnswer) {
+            console.log('SDP answer is not yet available')
+            return false
+          }
+
+          if (that.triggeredStart) return false
           that.triggeredStart = true
 
           // Start connecting.
@@ -611,6 +616,7 @@ class EngineConnection extends EventTarget {
               type: ConnectingType.SetRemoteDescription,
             },
           }
+          return true
         }
 
         this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
@@ -643,14 +649,16 @@ class EngineConnection extends EventTarget {
           // Sometimes the remote end doesn't report the end of candidates.
           // They have 3 seconds to.
           setTimeout(() => {
-            initiateConnectingExclusive()
+            if (initiateConnectingExclusive()) {
+              console.warn('connected after 3 second delay')
+            }
           }, 3000)
         }
         this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
         this.pc?.addEventListener?.(
           'icegatheringstatechange',
           function (_event) {
-            console.log('icegatheringstatechange', this.iceGatheringState)
+            console.log('icegatheringstatechange', this.iceGatheringState)           
 
             if (this.iceGatheringState !== 'complete') return
             initiateConnectingExclusive()
