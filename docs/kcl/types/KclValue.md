@@ -59,7 +59,7 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: `Number`|  | No |
 | `value` |`number`|  | No |
-| `ty` |[`NumericType`](/docs/kcl/types/NumericType)| Any KCL value. | No |
+| `ty` |[`NumericType`](/docs/kcl/types/NumericType)|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
@@ -164,7 +164,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Plane`](/docs/kcl/types/Plane)|  | No |
-| `value` |[`Plane`](/docs/kcl/types/Plane)| Any KCL value. | No |
+| `value` |[`Plane`](/docs/kcl/types/Plane)| A plane. | No |
 
 
 ----
@@ -180,7 +180,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Face`](/docs/kcl/types/Face)|  | No |
-| `value` |[`Face`](/docs/kcl/types/Face)| Any KCL value. | No |
+| `value` |[`Face`](/docs/kcl/types/Face)| A face. | No |
 
 
 ----
@@ -196,7 +196,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Sketch`](/docs/kcl/types/Sketch)|  | No |
-| `value` |[`Sketch`](/docs/kcl/types/Sketch)| Any KCL value. | No |
+| `value` |[`Sketch`](/docs/kcl/types/Sketch)| A sketch is a collection of paths. | No |
 
 
 ----
@@ -228,7 +228,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Solid`](/docs/kcl/types/Solid)|  | No |
-| `value` |[`Solid`](/docs/kcl/types/Solid)| Any KCL value. | No |
+| `value` |[`Solid`](/docs/kcl/types/Solid)| A solid is a collection of extrude surfaces. | No |
 
 
 ----
@@ -260,7 +260,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Helix`](/docs/kcl/types/Helix)|  | No |
-| `value` |[`Helix`](/docs/kcl/types/Helix)| Any KCL value. | No |
+| `value` |[`Helix`](/docs/kcl/types/Helix)| A helix. | No |
 
 
 ----
@@ -312,7 +312,7 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Module`|  | No |
-| `value` |[`ModuleId`](/docs/kcl/types/ModuleId)| Any KCL value. | No |
+| `value` |[`ModuleId`](/docs/kcl/types/ModuleId)| Identifier of a source file.  Uses a u32 to keep the size small. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
@@ -329,7 +329,7 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`KclNone`](/docs/kcl/types/KclNone)|  | No |
-| `value` |[`KclNone`](/docs/kcl/types/KclNone)| Any KCL value. | No |
+| `value` |[`KclNone`](/docs/kcl/types/KclNone)| KCL value for an optional parameter which was not given an argument. (remember, parameters are in the function declaration, arguments are in the function call/application). | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
