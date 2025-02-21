@@ -142,6 +142,41 @@ impl KclErrorWithOutputs {
     }
 }
 
+impl IntoDiagnostic for KclErrorWithOutputs {
+    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
+        let message = self.error.get_message();
+        let source_ranges = self.error.source_ranges();
+
+        let mut diagnostics = Vec::new();
+        for source_range in &source_ranges {
+            diagnostics.push(Diagnostic {
+                range: source_range.to_lsp_range(code),
+                severity: Some(self.severity()),
+                code: None,
+                // TODO: this is neat we can pass a URL to a help page here for this specific error.
+                code_description: None,
+                source: Some("kcl".to_string()),
+                related_information: Some(vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
+                    location: tower_lsp::lsp_types::Location {
+                        uri: source_range.module_id().to_uri(),
+                        range: Default::default(),
+                    },
+                    message: message.to_string(),
+                }]),
+                message,
+                tags: None,
+                data: None,
+            });
+        }
+
+        diagnostics
+    }
+
+    fn severity(&self) -> DiagnosticSeverity {
+        DiagnosticSeverity::ERROR
+    }
+}
+
 #[derive(thiserror::Error, Debug)]
 #[error("{}", self.error.get_message())]
 pub struct Report {
@@ -304,29 +339,33 @@ impl KclError {
 }
 
 impl IntoDiagnostic for KclError {
-    fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
+    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.get_message();
         let source_ranges = self.source_ranges();
 
-        // Limit to only errors in the top-level file.
-        let module_id = ModuleId::default();
-        let source_ranges = source_ranges
-            .iter()
-            .filter(|r| r.module_id() == module_id)
-            .collect::<Vec<_>>();
-
-        Diagnostic {
-            range: source_ranges.first().map(|r| r.to_lsp_range(code)).unwrap_or_default(),
-            severity: Some(self.severity()),
-            code: None,
-            // TODO: this is neat we can pass a URL to a help page here for this specific error.
-            code_description: None,
-            source: Some("kcl".to_string()),
-            message,
-            related_information: None,
-            tags: None,
-            data: None,
+        let mut diagnostics = Vec::new();
+        for source_range in &source_ranges {
+            diagnostics.push(Diagnostic {
+                range: source_range.to_lsp_range(code),
+                severity: Some(self.severity()),
+                code: None,
+                // TODO: this is neat we can pass a URL to a help page here for this specific error.
+                code_description: None,
+                source: Some("kcl".to_string()),
+                related_information: Some(vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
+                    location: tower_lsp::lsp_types::Location {
+                        uri: source_range.module_id().to_uri(),
+                        range: Default::default(),
+                    },
+                    message: message.to_string(),
+                }]),
+                message,
+                tags: None,
+                data: None,
+            });
         }
+
+        diagnostics
     }
 
     fn severity(&self) -> DiagnosticSeverity {
