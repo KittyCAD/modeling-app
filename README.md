@@ -67,11 +67,11 @@ This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) wit
 ```
 # macOS/Linux
 yarn install:rust
-yarn install:wasm-pack
+yarn install:wasm-pack:sh
 
 # Windows
 yarn install:rust:windows
-yarn install:wasm-pack
+yarn install:wasm-pack:cargo
 ```
 
 Then to build the WASM layer, run:

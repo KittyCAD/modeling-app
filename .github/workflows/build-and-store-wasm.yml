@@ -22,10 +22,9 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: './src/wasm-lib'
+      - uses: taiki-e/install-action@wasm-pack
       - name: build wasm
-        run: |
-          yarn install:wasm-pack
-          yarn build:wasm
+        run: yarn build:wasm
 
 
       # Upload the WASM bundle as an artifact

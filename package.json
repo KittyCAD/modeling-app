@@ -72,7 +72,7 @@
     "install:rust": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
     "install:rust:windows": "winget install Microsoft.VisualStudio.2022.Community --silent --override \"--wait --quiet --add ProductLang En-us --add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended\" && winget install Rustlang.Rustup",
     "install:wasm-pack:sh": ". $HOME/.cargo/env && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y",
-    "install:wasm-pack": "cargo install wasm-pack",
+    "install:wasm-pack:cargo": "cargo install wasm-pack",
     "install:tools:windows": "winget install jqlang.jq MikeFarah.yq GitHub.cli",
     "start": "vite --port=3000 --host=0.0.0.0",
     "start:prod": "vite preview --port=3000",
