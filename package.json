@@ -95,7 +95,7 @@
     "build:wasm-dev": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --dev --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && yarn isomorphic-copy-wasm && yarn fmt",
     "build:wasm:nocopy": "yarn wasm-prep && cd src/wasm-lib && wasm-pack build --release --target web --out-dir pkg && cargo test -p kcl-lib export_bindings",
     "build:wasm": "yarn build:wasm:nocopy && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
-    "build:wasm:windows": "yarn install:wasm-pack && yarn build:wasm:nocopy && copy src\\wasm-lib\\pkg\\wasm_lib_bg.wasm public && yarn fmt",
+    "build:wasm:windows": "yarn install:wasm-pack:cargo && yarn build:wasm:nocopy && copy src\\wasm-lib\\pkg\\wasm_lib_bg.wasm public && yarn fmt",
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "wasm-prep": "rimraf src/wasm-lib/pkg && mkdirp src/wasm-lib/pkg && rimraf src/wasm-lib/kcl/bindings",
     "lint-fix": "eslint --fix --ext .ts --ext .tsx src e2e packages/codemirror-lsp-client/src",
