@@ -397,7 +397,7 @@ export function getEdgeTagCall(
 export function locateExtrudeDeclarator(
   node: Program,
   pathToExtrudeNode: PathToNode
-): { extrudeDeclarator: VariableDeclarator } | Error {
+): { extrudeDeclarator: VariableDeclarator; shallowPath: PathToNode } | Error {
   const nodeOfExtrudeCall = getNodeFromPath<VariableDeclaration>(
     node,
     pathToExtrudeNode,
@@ -424,7 +424,7 @@ export function locateExtrudeDeclarator(
     return new Error('Extrude must be a PipeExpression or CallExpression')
   }
 
-  return { extrudeDeclarator }
+  return { extrudeDeclarator, shallowPath: nodeOfExtrudeCall.shallowPath }
 }
 
 function getPathToNodeOfEdgeTreatmentLiteral(

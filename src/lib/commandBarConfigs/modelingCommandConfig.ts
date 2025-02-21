@@ -32,6 +32,8 @@ export const EXTRUSION_RESULTS = [
   'intersect',
 ] as const
 
+export const COMMAND_APPEARANCE_COLOR_CLEAR = 'default'
+
 export type ModelingCommandSchema = {
   'Enter sketch': {}
   Export: {
@@ -687,14 +689,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       color: {
         inputType: 'options',
-        defaultValue: KCL_DEFAULT_COLOR,
         required: true,
         options: [
-          { name: 'Red', isCurrent: true, value: '#FF0000' },
-          { name: 'Blue', isCurrent: false, value: '#0000FF' },
-          { name: 'Green', isCurrent: false, value: '#00FF00' },
-          { name: 'Black', isCurrent: false, value: '#000000' },
-          { name: 'White', isCurrent: false, value: '#FFFFFF' },
+          { name: 'Red', value: '#FF0000' },
+          { name: 'Blue', value: '#0000FF' },
+          { name: 'Green', value: '#00FF00' },
+          { name: 'Black', value: '#000000' },
+          { name: 'White', value: '#FFFFFF' },
+          { name: 'Default', value: COMMAND_APPEARANCE_COLOR_CLEAR },
         ],
       },
       // Add more fields

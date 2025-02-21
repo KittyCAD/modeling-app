@@ -9,6 +9,7 @@ import {
   createPipeExpression,
 } from 'lang/modifyAst'
 import { createPipeSubstitution } from 'lang/modifyAst'
+import { COMMAND_APPEARANCE_COLOR_CLEAR as COMMAND_APPEARANCE_COLOR_DEFAULT } from 'lib/commandBarConfigs/modelingCommandConfig'
 
 export function setAppearance({
   ast,
@@ -49,7 +50,12 @@ export function setAppearance({
         v.callee.name === 'appearance'
     )
     if (existingIndex > -1) {
-      declarator.init.body[existingIndex] = call
+      if (color === COMMAND_APPEARANCE_COLOR_DEFAULT) {
+        // Special case of unsetting the appearance aka deleting the node
+        declarator.init.body.splice(existingIndex, 1)
+      } else {
+        declarator.init.body[existingIndex] = call
+      }
     } else {
       declarator.init.body.push(call)
     }
@@ -59,6 +65,6 @@ export function setAppearance({
 
   return {
     modifiedAst,
-    pathToNode: nodeToEdit,
+    pathToNode: result.shallowPath,
   }
 }
