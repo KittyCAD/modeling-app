@@ -8,8 +8,8 @@ use super::{memory::EnvironmentRef, MetaSettings};
 use crate::{
     errors::KclErrorDetails,
     execution::{
-        state::MetaSettings, EnvironmentRef, ExecState, ExecutorContext, Face, Helix, ImportedGeometry, Metadata,
-        Plane, Sketch, SketchSet, Solid, SolidSet, TagIdentifier,
+        ExecState, ExecutorContext, Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, SketchSet, Solid, SolidSet,
+        TagIdentifier,
     },
     parsing::{
         ast::types::{
