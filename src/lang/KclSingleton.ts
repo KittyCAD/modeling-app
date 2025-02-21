@@ -281,6 +281,7 @@ export class KclManager {
 
   async safeParse(code: string): Promise<Node<Program> | null> {
     const result = parse(code)
+    console.log('[lets get this bread]PARSE FAILURE', result)
     this.diagnostics = []
     this._hasErrors = false
 

@@ -296,6 +296,7 @@ export interface ExecState {
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   errors: CompilationError[]
+  filenames: String[]
 }
 
 /**
@@ -310,6 +311,7 @@ export function emptyExecState(): ExecState {
     artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
     errors: [],
+    filenames: [],
   }
 }
 
@@ -336,6 +338,7 @@ function execStateFromRust(
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
     errors: execOutcome.errors,
+    filenames: execOutcome.filenames,
   }
 }
 
@@ -347,6 +350,7 @@ function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph: new Map<ArtifactId, Artifact>(),
     errors: execOutcome.errors,
+    filenames: execOutcome.filenames,
   }
 }
 
@@ -429,6 +433,7 @@ export const executeMock = async (
       JSON.stringify(variables),
       fileSystemManager
     )
+    console.log('EXEC OUTCOME!', execOutcome)
     return mockExecStateFromRust(execOutcome)
   } catch (e: any) {
     return Promise.reject(errFromErrWithOutputs(e))
@@ -454,8 +459,10 @@ export const executeWithEngine = async (
       engineCommandManager,
       fileSystemManager
     )
+    console.log('EXEC OUTCOME!', execOutcome)
     return execStateFromRust(execOutcome, node)
   } catch (e: any) {
+    console.log('[lets get this bread]runtime error?', JSON.parse(e))
     return Promise.reject(errFromErrWithOutputs(e))
   }
 }
@@ -474,7 +481,6 @@ const jsAppSettings = async () => {
 }
 
 const errFromErrWithOutputs = (e: any): KCLError => {
-  console.log('execute error', e)
   const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
   return new KCLError(
     parsed.error.kind,
@@ -512,9 +518,8 @@ export const makeDefaultPlanes = async (
   engineCommandManager: EngineCommandManager
 ): Promise<DefaultPlanes> => {
   try {
-    const planes: DefaultPlanes = await make_default_planes(
-      engineCommandManager
-    )
+    const planes: DefaultPlanes =
+      await make_default_planes(engineCommandManager)
     return planes
   } catch (e) {
     // TODO: do something real with the error.
