@@ -8,7 +8,7 @@
     "email": "info@zoo.dev",
     "url": "https://zoo.dev"
   },
-  "description": "Edit CAD visually or with code",
+  "description": "Zoo Modeling App",
   "main": ".vite/build/main.js",
   "license": "MIT",
   "dependencies": {
