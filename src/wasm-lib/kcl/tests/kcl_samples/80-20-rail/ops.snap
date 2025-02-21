@@ -8,14 +8,14 @@ description: Operations executed 80-20-rail.kcl
     "name": "rail8020",
     "functionSourceRange": [
       214,
-      7133,
+      7123,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      7176,
-      7201,
+      7166,
+      7191,
       0
     ]
   },
@@ -126,110 +126,99 @@ description: Operations executed 80-20-rail.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 0.06,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.06,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          5694,
-          6392,
+          5713,
+          5717,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          6394,
-          6395,
+          5735,
+          6382,
           0
         ]
       }
@@ -237,130 +226,143 @@ description: Operations executed 80-20-rail.kcl
     "name": "fillet",
     "sourceRange": [
       5687,
-      6396,
+      6391,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 0.03,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.03,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          6411,
-          7108,
+          6425,
+          6429,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          7110,
-          7111,
+          6447,
+          7093,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

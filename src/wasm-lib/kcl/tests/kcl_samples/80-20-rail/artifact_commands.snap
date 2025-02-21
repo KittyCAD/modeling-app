@@ -3905,8 +3905,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5749,
-      5775,
+      5748,
+      5774,
       0
     ],
     "command": {
@@ -3919,8 +3919,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5788,
-      5814,
+      5787,
+      5813,
       0
     ],
     "command": {
@@ -3933,8 +3933,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5827,
-      5853,
+      5826,
+      5852,
       0
     ],
     "command": {
@@ -3947,8 +3947,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5866,
-      5892,
+      5865,
+      5891,
       0
     ],
     "command": {
@@ -3961,8 +3961,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5905,
-      5932,
+      5904,
+      5931,
       0
     ],
     "command": {
@@ -3975,8 +3975,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5945,
-      5972,
+      5944,
+      5971,
       0
     ],
     "command": {
@@ -3989,8 +3989,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5985,
-      6012,
+      5984,
+      6011,
       0
     ],
     "command": {
@@ -4003,8 +4003,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6025,
-      6052,
+      6024,
+      6051,
       0
     ],
     "command": {
@@ -4017,8 +4017,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6065,
-      6092,
+      6064,
+      6091,
       0
     ],
     "command": {
@@ -4031,8 +4031,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6105,
-      6132,
+      6104,
+      6131,
       0
     ],
     "command": {
@@ -4045,8 +4045,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6145,
-      6172,
+      6144,
+      6171,
       0
     ],
     "command": {
@@ -4059,8 +4059,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6185,
-      6212,
+      6184,
+      6211,
       0
     ],
     "command": {
@@ -4073,8 +4073,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6225,
-      6252,
+      6224,
+      6251,
       0
     ],
     "command": {
@@ -4087,8 +4087,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6265,
-      6292,
+      6264,
+      6291,
       0
     ],
     "command": {
@@ -4101,8 +4101,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6305,
-      6332,
+      6304,
+      6331,
       0
     ],
     "command": {
@@ -4115,8 +4115,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6345,
-      6372,
+      6344,
+      6371,
       0
     ],
     "command": {
@@ -4129,8 +4129,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6466,
-      6492,
+      6460,
+      6486,
       0
     ],
     "command": {
@@ -4143,8 +4143,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6505,
-      6531,
+      6499,
+      6525,
       0
     ],
     "command": {
@@ -4157,8 +4157,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6544,
-      6570,
+      6538,
+      6564,
       0
     ],
     "command": {
@@ -4171,8 +4171,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6583,
-      6609,
+      6577,
+      6603,
       0
     ],
     "command": {
@@ -4185,8 +4185,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6622,
-      6648,
+      6616,
+      6642,
       0
     ],
     "command": {
@@ -4199,8 +4199,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6661,
-      6688,
+      6655,
+      6682,
       0
     ],
     "command": {
@@ -4213,8 +4213,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6701,
-      6728,
+      6695,
+      6722,
       0
     ],
     "command": {
@@ -4227,8 +4227,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6741,
-      6768,
+      6735,
+      6762,
       0
     ],
     "command": {
@@ -4241,8 +4241,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6781,
-      6808,
+      6775,
+      6802,
       0
     ],
     "command": {
@@ -4255,8 +4255,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6821,
-      6848,
+      6815,
+      6842,
       0
     ],
     "command": {
@@ -4269,8 +4269,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6861,
-      6888,
+      6855,
+      6882,
       0
     ],
     "command": {
@@ -4283,8 +4283,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6901,
-      6928,
+      6895,
+      6922,
       0
     ],
     "command": {
@@ -4297,8 +4297,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6941,
-      6968,
+      6935,
+      6962,
       0
     ],
     "command": {
@@ -4311,8 +4311,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6981,
-      7008,
+      6975,
+      7002,
       0
     ],
     "command": {
@@ -4325,8 +4325,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7021,
-      7048,
+      7015,
+      7042,
       0
     ],
     "command": {
@@ -4339,8 +4339,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7061,
-      7088,
+      7055,
+      7082,
       0
     ],
     "command": {
@@ -4354,7 +4354,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4370,7 +4370,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4386,7 +4386,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4402,7 +4402,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4418,7 +4418,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4434,7 +4434,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4450,7 +4450,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4466,7 +4466,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4482,7 +4482,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4498,7 +4498,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4514,7 +4514,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4530,7 +4530,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4546,7 +4546,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4562,7 +4562,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4578,7 +4578,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4594,7 +4594,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       5687,
-      6396,
+      6391,
       0
     ],
     "command": {
@@ -4609,8 +4609,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4625,8 +4625,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4641,8 +4641,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4657,8 +4657,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4673,8 +4673,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4689,8 +4689,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4705,8 +4705,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4721,8 +4721,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4737,8 +4737,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4753,8 +4753,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4769,8 +4769,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4785,8 +4785,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4801,8 +4801,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4817,8 +4817,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4833,8 +4833,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {
@@ -4849,8 +4849,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6404,
-      7112,
+      6399,
+      7102,
       0
     ],
     "command": {

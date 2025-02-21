@@ -50,7 +50,7 @@ description: Operations executed walkie-talkie.kcl
     "name": "button",
     "functionSourceRange": [
       241,
-      959,
+      954,
       8
     ],
     "unlabeledArg": null,
@@ -130,54 +130,43 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "length": {
         "value": {
-          "type": "Object",
-          "value": {
-            "length": {
-              "type": "Number",
-              "value": 0.05,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          753,
-          891,
+          772,
+          776,
           8
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          893,
-          894,
+          794,
+          881,
           8
         ]
       }
@@ -185,11 +174,23 @@ description: Operations executed walkie-talkie.kcl
     "name": "chamfer",
     "sourceRange": [
       745,
-      895,
+      890,
       8
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -241,7 +242,7 @@ description: Operations executed walkie-talkie.kcl
     "name": "button",
     "functionSourceRange": [
       241,
-      959,
+      954,
       8
     ],
     "unlabeledArg": null,
@@ -321,54 +322,43 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "length": {
         "value": {
-          "type": "Object",
-          "value": {
-            "length": {
-              "type": "Number",
-              "value": 0.05,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          753,
-          891,
+          772,
+          776,
           8
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          893,
-          894,
+          794,
+          881,
           8
         ]
       }
@@ -376,11 +366,23 @@ description: Operations executed walkie-talkie.kcl
     "name": "chamfer",
     "sourceRange": [
       745,
-      895,
+      890,
       8
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -432,7 +434,7 @@ description: Operations executed walkie-talkie.kcl
     "name": "button",
     "functionSourceRange": [
       241,
-      959,
+      954,
       8
     ],
     "unlabeledArg": null,
@@ -512,54 +514,43 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "length": {
         "value": {
-          "type": "Object",
-          "value": {
-            "length": {
-              "type": "Number",
-              "value": 0.05,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          753,
-          891,
+          772,
+          776,
           8
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          893,
-          894,
+          794,
+          881,
           8
         ]
       }
@@ -567,11 +558,23 @@ description: Operations executed walkie-talkie.kcl
     "name": "chamfer",
     "sourceRange": [
       745,
-      895,
+      890,
       8
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -623,7 +626,7 @@ description: Operations executed walkie-talkie.kcl
     "name": "button",
     "functionSourceRange": [
       241,
-      959,
+      954,
       8
     ],
     "unlabeledArg": null,
@@ -703,54 +706,43 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "length": {
         "value": {
-          "type": "Object",
-          "value": {
-            "length": {
-              "type": "Number",
-              "value": 0.05,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.05,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          753,
-          891,
+          772,
+          776,
           8
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          893,
-          894,
+          794,
+          881,
           8
         ]
       }
@@ -758,11 +750,23 @@ description: Operations executed walkie-talkie.kcl
     "name": "chamfer",
     "sourceRange": [
       745,
-      895,
+      890,
       8
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

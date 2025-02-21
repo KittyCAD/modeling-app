@@ -650,8 +650,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      809,
-      850,
+      808,
+      849,
       0
     ],
     "command": {
@@ -664,8 +664,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      861,
-      902,
+      860,
+      901,
       0
     ],
     "command": {
@@ -678,8 +678,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      913,
-      954,
+      912,
+      953,
       0
     ],
     "command": {
@@ -692,8 +692,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      965,
-      1006,
+      964,
+      1005,
       0
     ],
     "command": {
@@ -707,7 +707,7 @@ description: Artifact commands enclosure.kcl
     "cmdId": "[uuid]",
     "range": [
       740,
-      1026,
+      1021,
       0
     ],
     "command": {
@@ -723,7 +723,7 @@ description: Artifact commands enclosure.kcl
     "cmdId": "[uuid]",
     "range": [
       740,
-      1026,
+      1021,
       0
     ],
     "command": {
@@ -739,7 +739,7 @@ description: Artifact commands enclosure.kcl
     "cmdId": "[uuid]",
     "range": [
       740,
-      1026,
+      1021,
       0
     ],
     "command": {
@@ -755,7 +755,7 @@ description: Artifact commands enclosure.kcl
     "cmdId": "[uuid]",
     "range": [
       740,
-      1026,
+      1021,
       0
     ],
     "command": {
@@ -770,8 +770,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1105,
-      1175,
+      1100,
+      1170,
       0
     ],
     "command": {
@@ -787,8 +787,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1590,
-      1613,
+      1585,
+      1608,
       0
     ],
     "command": {
@@ -816,8 +816,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -836,8 +836,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -847,8 +847,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -864,8 +864,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -893,8 +893,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -905,8 +905,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -925,8 +925,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -936,8 +936,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -953,8 +953,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -982,8 +982,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -994,8 +994,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1744,
-      1852,
+      1739,
+      1847,
       0
     ],
     "command": {
@@ -1007,8 +1007,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1744,
-      1852,
+      1739,
+      1847,
       0
     ],
     "command": {
@@ -1020,8 +1020,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1040,8 +1040,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1054,8 +1054,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1065,8 +1065,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1077,8 +1077,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1090,8 +1090,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1104,8 +1104,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1118,8 +1118,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1132,8 +1132,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1146,8 +1146,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1590,
-      1613,
+      1585,
+      1608,
       0
     ],
     "command": {
@@ -1175,8 +1175,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1195,8 +1195,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1206,8 +1206,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1223,8 +1223,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1252,8 +1252,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1264,8 +1264,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1284,8 +1284,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1295,8 +1295,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1312,8 +1312,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1341,8 +1341,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1353,8 +1353,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1744,
-      1852,
+      1739,
+      1847,
       0
     ],
     "command": {
@@ -1366,8 +1366,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1744,
-      1852,
+      1739,
+      1847,
       0
     ],
     "command": {
@@ -1379,8 +1379,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1399,8 +1399,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1413,8 +1413,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1424,8 +1424,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1436,8 +1436,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1449,8 +1449,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1463,8 +1463,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1477,8 +1477,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1491,8 +1491,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1505,8 +1505,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1590,
-      1613,
+      1585,
+      1608,
       0
     ],
     "command": {
@@ -1534,8 +1534,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1554,8 +1554,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1565,8 +1565,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1582,8 +1582,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1611,8 +1611,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1623,8 +1623,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1643,8 +1643,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1654,8 +1654,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1671,8 +1671,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1700,8 +1700,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -1712,8 +1712,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1744,
-      1852,
+      1739,
+      1847,
       0
     ],
     "command": {
@@ -1725,8 +1725,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1744,
-      1852,
+      1739,
+      1847,
       0
     ],
     "command": {
@@ -1738,8 +1738,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1758,8 +1758,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1772,8 +1772,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1783,8 +1783,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1795,8 +1795,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1808,8 +1808,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1822,8 +1822,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1836,8 +1836,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1850,8 +1850,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -1864,8 +1864,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1590,
-      1613,
+      1585,
+      1608,
       0
     ],
     "command": {
@@ -1893,8 +1893,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1913,8 +1913,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1924,8 +1924,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1941,8 +1941,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1970,8 +1970,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -1982,8 +1982,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -2002,8 +2002,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -2013,8 +2013,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -2030,8 +2030,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -2059,8 +2059,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -2071,8 +2071,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1744,
-      1852,
+      1739,
+      1847,
       0
     ],
     "command": {
@@ -2084,8 +2084,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1744,
-      1852,
+      1739,
+      1847,
       0
     ],
     "command": {
@@ -2097,8 +2097,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -2117,8 +2117,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -2131,8 +2131,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -2142,8 +2142,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -2154,8 +2154,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -2167,8 +2167,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -2181,8 +2181,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -2195,8 +2195,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -2209,8 +2209,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1868,
-      1919,
+      1863,
+      1914,
       0
     ],
     "command": {
@@ -2223,8 +2223,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2396,
-      2415,
+      2391,
+      2410,
       0
     ],
     "command": {
@@ -2252,8 +2252,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2421,
-      2456,
+      2416,
+      2451,
       0
     ],
     "command": {
@@ -2272,8 +2272,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2421,
-      2456,
+      2416,
+      2451,
       0
     ],
     "command": {
@@ -2283,8 +2283,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2421,
-      2456,
+      2416,
+      2451,
       0
     ],
     "command": {
@@ -2300,8 +2300,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2462,
-      2510,
+      2457,
+      2505,
       0
     ],
     "command": {
@@ -2321,8 +2321,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2516,
-      2618,
+      2511,
+      2613,
       0
     ],
     "command": {
@@ -2342,8 +2342,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2624,
-      2744,
+      2619,
+      2739,
       0
     ],
     "command": {
@@ -2363,8 +2363,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2750,
-      2835,
+      2745,
+      2830,
       0
     ],
     "command": {
@@ -2384,8 +2384,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2841,
-      2848,
+      2836,
+      2843,
       0
     ],
     "command": {
@@ -2396,8 +2396,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2841,
-      2848,
+      2836,
+      2843,
       0
     ],
     "command": {
@@ -2407,8 +2407,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2859,
-      3019,
+      2854,
+      3014,
       0
     ],
     "command": {
@@ -2427,8 +2427,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2859,
-      3019,
+      2854,
+      3014,
       0
     ],
     "command": {
@@ -2438,8 +2438,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2859,
-      3019,
+      2854,
+      3014,
       0
     ],
     "command": {
@@ -2455,8 +2455,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2859,
-      3019,
+      2854,
+      3014,
       0
     ],
     "command": {
@@ -2484,8 +2484,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2859,
-      3019,
+      2854,
+      3014,
       0
     ],
     "command": {
@@ -2496,8 +2496,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2854,
-      3023,
+      2849,
+      3018,
       0
     ],
     "command": {
@@ -2509,8 +2509,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2854,
-      3023,
+      2849,
+      3018,
       0
     ],
     "command": {
@@ -2522,8 +2522,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3034,
-      3205,
+      3029,
+      3200,
       0
     ],
     "command": {
@@ -2542,8 +2542,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3034,
-      3205,
+      3029,
+      3200,
       0
     ],
     "command": {
@@ -2553,8 +2553,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3034,
-      3205,
+      3029,
+      3200,
       0
     ],
     "command": {
@@ -2570,8 +2570,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3034,
-      3205,
+      3029,
+      3200,
       0
     ],
     "command": {
@@ -2599,8 +2599,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3034,
-      3205,
+      3029,
+      3200,
       0
     ],
     "command": {
@@ -2611,8 +2611,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3029,
-      3209,
+      3024,
+      3204,
       0
     ],
     "command": {
@@ -2624,8 +2624,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3029,
-      3209,
+      3024,
+      3204,
       0
     ],
     "command": {
@@ -2637,8 +2637,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3220,
-      3382,
+      3215,
+      3377,
       0
     ],
     "command": {
@@ -2657,8 +2657,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3220,
-      3382,
+      3215,
+      3377,
       0
     ],
     "command": {
@@ -2668,8 +2668,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3220,
-      3382,
+      3215,
+      3377,
       0
     ],
     "command": {
@@ -2685,8 +2685,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3220,
-      3382,
+      3215,
+      3377,
       0
     ],
     "command": {
@@ -2714,8 +2714,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3220,
-      3382,
+      3215,
+      3377,
       0
     ],
     "command": {
@@ -2726,8 +2726,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3215,
-      3386,
+      3210,
+      3381,
       0
     ],
     "command": {
@@ -2739,8 +2739,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3215,
-      3386,
+      3210,
+      3381,
       0
     ],
     "command": {
@@ -2752,8 +2752,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3397,
-      3570,
+      3392,
+      3565,
       0
     ],
     "command": {
@@ -2772,8 +2772,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3397,
-      3570,
+      3392,
+      3565,
       0
     ],
     "command": {
@@ -2783,8 +2783,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3397,
-      3570,
+      3392,
+      3565,
       0
     ],
     "command": {
@@ -2800,8 +2800,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3397,
-      3570,
+      3392,
+      3565,
       0
     ],
     "command": {
@@ -2829,8 +2829,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3397,
-      3570,
+      3392,
+      3565,
       0
     ],
     "command": {
@@ -2841,8 +2841,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3392,
-      3574,
+      3387,
+      3569,
       0
     ],
     "command": {
@@ -2854,8 +2854,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3392,
-      3574,
+      3387,
+      3569,
       0
     ],
     "command": {
@@ -2867,8 +2867,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -2887,8 +2887,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -2901,8 +2901,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -2912,8 +2912,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -2924,8 +2924,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -2937,8 +2937,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -2951,8 +2951,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -2965,8 +2965,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -2979,8 +2979,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -2993,8 +2993,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3007,8 +3007,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3021,8 +3021,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3035,8 +3035,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3049,8 +3049,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3063,8 +3063,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3077,8 +3077,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3091,8 +3091,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3105,8 +3105,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3119,8 +3119,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3133,8 +3133,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3147,8 +3147,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3588,
-      3630,
+      3583,
+      3625,
       0
     ],
     "command": {
@@ -3161,8 +3161,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3705,
-      3746,
+      3699,
+      3740,
       0
     ],
     "command": {
@@ -3175,8 +3175,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3757,
-      3798,
+      3751,
+      3792,
       0
     ],
     "command": {
@@ -3189,8 +3189,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3809,
-      3850,
+      3803,
+      3844,
       0
     ],
     "command": {
@@ -3203,8 +3203,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3861,
-      3902,
+      3855,
+      3896,
       0
     ],
     "command": {
@@ -3217,8 +3217,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3636,
-      3922,
+      3631,
+      3912,
       0
     ],
     "command": {
@@ -3233,8 +3233,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3636,
-      3922,
+      3631,
+      3912,
       0
     ],
     "command": {
@@ -3249,8 +3249,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3636,
-      3922,
+      3631,
+      3912,
       0
     ],
     "command": {
@@ -3265,8 +3265,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3636,
-      3922,
+      3631,
+      3912,
       0
     ],
     "command": {
@@ -3281,8 +3281,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4015,
-      4099,
+      4005,
+      4089,
       0
     ],
     "command": {
@@ -3297,8 +3297,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4015,
-      4099,
+      4005,
+      4089,
       0
     ],
     "command": {
@@ -3308,8 +3308,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4015,
-      4099,
+      4005,
+      4089,
       0
     ],
     "command": {
@@ -3325,8 +3325,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4105,
-      4175,
+      4095,
+      4165,
       0
     ],
     "command": {
@@ -3346,8 +3346,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4181,
-      4305,
+      4171,
+      4295,
       0
     ],
     "command": {
@@ -3367,8 +3367,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4311,
-      4431,
+      4301,
+      4421,
       0
     ],
     "command": {
@@ -3388,8 +3388,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4437,
-      4522,
+      4427,
+      4512,
       0
     ],
     "command": {
@@ -3409,8 +3409,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4528,
-      4535,
+      4518,
+      4525,
       0
     ],
     "command": {
@@ -3421,8 +3421,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4546,
-      4722,
+      4536,
+      4712,
       0
     ],
     "command": {
@@ -3437,8 +3437,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4546,
-      4722,
+      4536,
+      4712,
       0
     ],
     "command": {
@@ -3448,8 +3448,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4546,
-      4722,
+      4536,
+      4712,
       0
     ],
     "command": {
@@ -3465,8 +3465,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4546,
-      4722,
+      4536,
+      4712,
       0
     ],
     "command": {
@@ -3494,8 +3494,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4546,
-      4722,
+      4536,
+      4712,
       0
     ],
     "command": {
@@ -3506,8 +3506,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4541,
-      4726,
+      4531,
+      4716,
       0
     ],
     "command": {
@@ -3519,8 +3519,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4541,
-      4726,
+      4531,
+      4716,
       0
     ],
     "command": {
@@ -3532,8 +3532,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4737,
-      4924,
+      4727,
+      4914,
       0
     ],
     "command": {
@@ -3548,8 +3548,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4737,
-      4924,
+      4727,
+      4914,
       0
     ],
     "command": {
@@ -3559,8 +3559,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4737,
-      4924,
+      4727,
+      4914,
       0
     ],
     "command": {
@@ -3576,8 +3576,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4737,
-      4924,
+      4727,
+      4914,
       0
     ],
     "command": {
@@ -3605,8 +3605,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4737,
-      4924,
+      4727,
+      4914,
       0
     ],
     "command": {
@@ -3617,8 +3617,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4732,
-      4928,
+      4722,
+      4918,
       0
     ],
     "command": {
@@ -3630,8 +3630,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4732,
-      4928,
+      4722,
+      4918,
       0
     ],
     "command": {
@@ -3643,8 +3643,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4939,
-      5117,
+      4929,
+      5107,
       0
     ],
     "command": {
@@ -3659,8 +3659,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4939,
-      5117,
+      4929,
+      5107,
       0
     ],
     "command": {
@@ -3670,8 +3670,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4939,
-      5117,
+      4929,
+      5107,
       0
     ],
     "command": {
@@ -3687,8 +3687,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4939,
-      5117,
+      4929,
+      5107,
       0
     ],
     "command": {
@@ -3716,8 +3716,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4939,
-      5117,
+      4929,
+      5107,
       0
     ],
     "command": {
@@ -3728,8 +3728,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4934,
-      5121,
+      4924,
+      5111,
       0
     ],
     "command": {
@@ -3741,8 +3741,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4934,
-      5121,
+      4924,
+      5111,
       0
     ],
     "command": {
@@ -3754,8 +3754,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5132,
-      5321,
+      5122,
+      5311,
       0
     ],
     "command": {
@@ -3770,8 +3770,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5132,
-      5321,
+      5122,
+      5311,
       0
     ],
     "command": {
@@ -3781,8 +3781,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5132,
-      5321,
+      5122,
+      5311,
       0
     ],
     "command": {
@@ -3798,8 +3798,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5132,
-      5321,
+      5122,
+      5311,
       0
     ],
     "command": {
@@ -3827,8 +3827,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5132,
-      5321,
+      5122,
+      5311,
       0
     ],
     "command": {
@@ -3839,8 +3839,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5127,
-      5325,
+      5117,
+      5315,
       0
     ],
     "command": {
@@ -3852,8 +3852,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5127,
-      5325,
+      5117,
+      5315,
       0
     ],
     "command": {
@@ -3865,8 +3865,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -3881,8 +3881,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -3895,8 +3895,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -3906,8 +3906,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -3918,8 +3918,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -3931,8 +3931,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -3945,8 +3945,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -3959,8 +3959,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -3973,8 +3973,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -3987,8 +3987,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4001,8 +4001,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4015,8 +4015,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4029,8 +4029,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4043,8 +4043,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4057,8 +4057,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4071,8 +4071,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4085,8 +4085,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4099,8 +4099,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4113,8 +4113,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4127,8 +4127,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4141,8 +4141,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5381,
+      5329,
+      5371,
       0
     ],
     "command": {
@@ -4155,8 +4155,22 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5456,
+      5445,
+      5486,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       5497,
+      5538,
       0
     ],
     "command": {
@@ -4169,8 +4183,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5508,
       5549,
+      5590,
       0
     ],
     "command": {
@@ -4183,8 +4197,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5560,
       5601,
+      5642,
       0
     ],
     "command": {
@@ -4197,22 +4211,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5612,
-      5653,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -4224,8 +4224,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -4237,8 +4237,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -4250,8 +4250,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -4263,8 +4263,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -4276,8 +4276,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -4289,8 +4289,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1621,
-      1736,
+      1616,
+      1731,
       0
     ],
     "command": {
@@ -4302,8 +4302,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1749,
-      1848,
+      1744,
+      1843,
       0
     ],
     "command": {
@@ -4315,8 +4315,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5387,
-      5673,
+      5377,
+      5658,
       0
     ],
     "command": {
@@ -4331,8 +4331,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5387,
-      5673,
+      5377,
+      5658,
       0
     ],
     "command": {
@@ -4347,8 +4347,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5387,
-      5673,
+      5377,
+      5658,
       0
     ],
     "command": {
@@ -4363,8 +4363,8 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5387,
-      5673,
+      5377,
+      5658,
       0
     ],
     "command": {

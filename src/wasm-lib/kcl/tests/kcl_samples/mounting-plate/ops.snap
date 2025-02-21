@@ -281,62 +281,51 @@ description: Operations executed mounting-plate.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          1895,
-          2153,
+          1912,
+          1924,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          2155,
-          2156,
+          1940,
+          2145,
           0
         ]
       }
@@ -344,10 +333,22 @@ description: Operations executed mounting-plate.kcl
     "name": "fillet",
     "sourceRange": [
       1888,
-      2157,
+      2152,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

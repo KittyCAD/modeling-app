@@ -1213,8 +1213,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1990,
-      2018,
+      1989,
+      2017,
       0
     ],
     "command": {
@@ -1227,8 +1227,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2029,
-      2057,
+      2028,
+      2056,
       0
     ],
     "command": {
@@ -1241,8 +1241,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2119,
-      2138,
+      2114,
+      2133,
       0
     ],
     "command": {
@@ -1270,8 +1270,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2144,
-      2169,
+      2139,
+      2164,
       0
     ],
     "command": {
@@ -1290,8 +1290,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2144,
-      2169,
+      2139,
+      2164,
       0
     ],
     "command": {
@@ -1301,8 +1301,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2144,
-      2169,
+      2139,
+      2164,
       0
     ],
     "command": {
@@ -1318,8 +1318,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2175,
-      2201,
+      2170,
+      2196,
       0
     ],
     "command": {
@@ -1339,8 +1339,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2207,
-      2311,
+      2202,
+      2306,
       0
     ],
     "command": {
@@ -1368,8 +1368,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2317,
-      2343,
+      2312,
+      2338,
       0
     ],
     "command": {
@@ -1389,8 +1389,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2441,
+      2344,
+      2436,
       0
     ],
     "command": {
@@ -1418,8 +1418,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1438,8 +1438,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1452,8 +1452,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1463,8 +1463,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1475,8 +1475,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1488,8 +1488,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1502,8 +1502,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1516,8 +1516,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1530,8 +1530,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1544,8 +1544,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1558,8 +1558,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1572,8 +1572,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1586,8 +1586,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2478,
-      2516,
+      2473,
+      2511,
       0
     ],
     "command": {
@@ -1600,8 +1600,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2856,
+      2825,
+      2851,
       0
     ],
     "command": {
@@ -1629,8 +1629,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2862,
-      2899,
+      2857,
+      2894,
       0
     ],
     "command": {
@@ -1649,8 +1649,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2862,
-      2899,
+      2857,
+      2894,
       0
     ],
     "command": {
@@ -1660,8 +1660,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2862,
-      2899,
+      2857,
+      2894,
       0
     ],
     "command": {
@@ -1677,8 +1677,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2905,
-      2927,
+      2900,
+      2922,
       0
     ],
     "command": {
@@ -1698,8 +1698,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2933,
-      2977,
+      2928,
+      2972,
       0
     ],
     "command": {
@@ -1719,8 +1719,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2983,
-      3022,
+      2978,
+      3017,
       0
     ],
     "command": {
@@ -1740,8 +1740,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3028,
-      3035,
+      3023,
+      3030,
       0
     ],
     "command": {
@@ -1752,8 +1752,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3028,
-      3035,
+      3023,
+      3030,
       0
     ],
     "command": {
@@ -1763,8 +1763,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3046,
-      3133,
+      3041,
+      3128,
       0
     ],
     "command": {
@@ -1783,8 +1783,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3046,
-      3133,
+      3041,
+      3128,
       0
     ],
     "command": {
@@ -1794,8 +1794,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3046,
-      3133,
+      3041,
+      3128,
       0
     ],
     "command": {
@@ -1811,8 +1811,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3046,
-      3133,
+      3041,
+      3128,
       0
     ],
     "command": {
@@ -1840,8 +1840,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3046,
-      3133,
+      3041,
+      3128,
       0
     ],
     "command": {
@@ -1852,8 +1852,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3041,
-      3137,
+      3036,
+      3132,
       0
     ],
     "command": {
@@ -1865,8 +1865,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3041,
-      3137,
+      3036,
+      3132,
       0
     ],
     "command": {
@@ -1878,8 +1878,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3148,
-      3235,
+      3143,
+      3230,
       0
     ],
     "command": {
@@ -1898,8 +1898,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3148,
-      3235,
+      3143,
+      3230,
       0
     ],
     "command": {
@@ -1909,8 +1909,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3148,
-      3235,
+      3143,
+      3230,
       0
     ],
     "command": {
@@ -1926,8 +1926,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3148,
-      3235,
+      3143,
+      3230,
       0
     ],
     "command": {
@@ -1955,8 +1955,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3148,
-      3235,
+      3143,
+      3230,
       0
     ],
     "command": {
@@ -1967,8 +1967,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3143,
-      3239,
+      3138,
+      3234,
       0
     ],
     "command": {
@@ -1980,8 +1980,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3143,
-      3239,
+      3138,
+      3234,
       0
     ],
     "command": {
@@ -1993,8 +1993,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2013,8 +2013,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2027,8 +2027,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2038,8 +2038,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2050,8 +2050,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2063,8 +2063,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2077,8 +2077,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2091,8 +2091,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2105,8 +2105,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2119,8 +2119,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2133,8 +2133,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2147,8 +2147,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2161,8 +2161,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2175,8 +2175,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2189,8 +2189,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2203,8 +2203,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2217,8 +2217,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3288,
-      3335,
+      3283,
+      3330,
       0
     ],
     "command": {
@@ -2231,8 +2231,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3408,
-      3436,
+      3402,
+      3430,
       0
     ],
     "command": {
@@ -2245,8 +2245,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3447,
-      3475,
+      3441,
+      3469,
       0
     ],
     "command": {
@@ -2260,7 +2260,7 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       1923,
-      2077,
+      2072,
       0
     ],
     "command": {
@@ -2276,7 +2276,7 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       1923,
-      2077,
+      2072,
       0
     ],
     "command": {
@@ -2291,8 +2291,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2862,
-      2899,
+      2857,
+      2894,
       0
     ],
     "command": {
@@ -2304,8 +2304,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3046,
-      3133,
+      3041,
+      3128,
       0
     ],
     "command": {
@@ -2317,8 +2317,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3148,
-      3235,
+      3143,
+      3230,
       0
     ],
     "command": {
@@ -2330,8 +2330,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3341,
-      3495,
+      3336,
+      3485,
       0
     ],
     "command": {
@@ -2346,8 +2346,8 @@ description: Artifact commands bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3341,
-      3495,
+      3336,
+      3485,
       0
     ],
     "command": {

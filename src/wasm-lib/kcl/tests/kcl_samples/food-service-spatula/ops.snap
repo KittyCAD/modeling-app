@@ -357,54 +357,43 @@ description: Operations executed food-service-spatula.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 5.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          2431,
-          2554,
+          2454,
+          2473,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          2556,
-          2563,
+          2484,
+          2562,
           0
         ]
       }
@@ -416,7 +405,19 @@ description: Operations executed food-service-spatula.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        2434,
+        2441,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
@@ -523,54 +524,43 @@ description: Operations executed food-service-spatula.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 4.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 4.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          3241,
-          3355,
+          3263,
+          3264,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          3357,
-          3363,
+          3275,
+          3362,
           0
         ]
       }
@@ -582,7 +572,19 @@ description: Operations executed food-service-spatula.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        3244,
+        3250,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {

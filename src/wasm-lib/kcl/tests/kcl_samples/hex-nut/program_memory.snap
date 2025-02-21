@@ -182,8 +182,8 @@ description: Variables in memory after executing hex-nut.kcl
     "__meta": [
       {
         "sourceRange": [
-          451,
-          457,
+          449,
+          455,
           0
         ]
       }
@@ -196,11 +196,11 @@ description: Variables in memory after executing hex-nut.kcl
         "body": [
           {
             "declaration": {
-              "end": 1066,
+              "end": 1064,
               "id": {
-                "end": 544,
+                "end": 542,
                 "name": "hexNutSketch",
-                "start": 532,
+                "start": 530,
                 "type": "Identifier"
               },
               "init": {
@@ -208,22 +208,22 @@ description: Variables in memory after executing hex-nut.kcl
                   {
                     "arguments": [
                       {
-                        "end": 566,
+                        "end": 564,
                         "raw": "'-XZ'",
-                        "start": 561,
+                        "start": 559,
                         "type": "Literal",
                         "type": "Literal",
                         "value": "-XZ"
                       }
                     ],
                     "callee": {
-                      "end": 560,
+                      "end": 558,
                       "name": "startSketchOn",
-                      "start": 547,
+                      "start": 545,
                       "type": "Identifier"
                     },
-                    "end": 567,
-                    "start": 547,
+                    "end": 565,
+                    "start": 545,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -232,21 +232,21 @@ description: Variables in memory after executing hex-nut.kcl
                       {
                         "elements": [
                           {
-                            "end": 610,
+                            "end": 608,
                             "left": {
                               "computed": false,
-                              "end": 599,
+                              "end": 597,
                               "object": {
-                                "end": 596,
+                                "end": 594,
                                 "name": "start",
-                                "start": 591,
+                                "start": 589,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "property": {
-                                "end": 598,
+                                "end": 596,
                                 "raw": "0",
-                                "start": 597,
+                                "start": 595,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -254,36 +254,36 @@ description: Variables in memory after executing hex-nut.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 591,
+                              "start": 589,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 610,
+                              "end": 608,
                               "name": "innerDia",
-                              "start": 602,
+                              "start": 600,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 591,
+                            "start": 589,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           {
                             "computed": false,
-                            "end": 620,
+                            "end": 618,
                             "object": {
-                              "end": 617,
+                              "end": 615,
                               "name": "start",
-                              "start": 612,
+                              "start": 610,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "property": {
-                              "end": 619,
+                              "end": 617,
                               "raw": "1",
-                              "start": 618,
+                              "start": 616,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -291,53 +291,53 @@ description: Variables in memory after executing hex-nut.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 612,
+                            "start": 610,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           }
                         ],
-                        "end": 621,
-                        "start": 590,
+                        "end": 619,
+                        "start": 588,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       },
                       {
-                        "end": 624,
-                        "start": 623,
+                        "end": 622,
+                        "start": 621,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 589,
+                      "end": 587,
                       "name": "startProfileAt",
-                      "start": 575,
+                      "start": 573,
                       "type": "Identifier"
                     },
-                    "end": 625,
-                    "start": 575,
+                    "end": 623,
+                    "start": 573,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   {
                     "arguments": [
                       {
-                        "end": 678,
+                        "end": 676,
                         "properties": [
                           {
-                            "end": 657,
+                            "end": 655,
                             "key": {
-                              "end": 651,
+                              "end": 649,
                               "name": "angle",
-                              "start": 646,
+                              "start": 644,
                               "type": "Identifier"
                             },
-                            "start": 646,
+                            "start": 644,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 657,
+                              "end": 655,
                               "raw": "240",
-                              "start": 654,
+                              "start": 652,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -347,65 +347,65 @@ description: Variables in memory after executing hex-nut.kcl
                             }
                           },
                           {
-                            "end": 676,
+                            "end": 674,
                             "key": {
-                              "end": 665,
+                              "end": 663,
                               "name": "length",
-                              "start": 659,
+                              "start": 657,
                               "type": "Identifier"
                             },
-                            "start": 659,
+                            "start": 657,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 676,
+                              "end": 674,
                               "name": "innerDia",
-                              "start": 668,
+                              "start": 666,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
-                        "start": 644,
+                        "start": 642,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       },
                       {
-                        "end": 681,
-                        "start": 680,
+                        "end": 679,
+                        "start": 678,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 643,
+                      "end": 641,
                       "name": "angledLine",
-                      "start": 633,
+                      "start": 631,
                       "type": "Identifier"
                     },
-                    "end": 682,
-                    "start": 633,
+                    "end": 680,
+                    "start": 631,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   {
                     "arguments": [
                       {
-                        "end": 735,
+                        "end": 733,
                         "properties": [
                           {
-                            "end": 714,
+                            "end": 712,
                             "key": {
-                              "end": 708,
+                              "end": 706,
                               "name": "angle",
-                              "start": 703,
+                              "start": 701,
                               "type": "Identifier"
                             },
-                            "start": 703,
+                            "start": 701,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 714,
+                              "end": 712,
                               "raw": "180",
-                              "start": 711,
+                              "start": 709,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -415,65 +415,65 @@ description: Variables in memory after executing hex-nut.kcl
                             }
                           },
                           {
-                            "end": 733,
+                            "end": 731,
                             "key": {
-                              "end": 722,
+                              "end": 720,
                               "name": "length",
-                              "start": 716,
+                              "start": 714,
                               "type": "Identifier"
                             },
-                            "start": 716,
+                            "start": 714,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 733,
+                              "end": 731,
                               "name": "innerDia",
-                              "start": 725,
+                              "start": 723,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
-                        "start": 701,
+                        "start": 699,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       },
                       {
-                        "end": 738,
-                        "start": 737,
+                        "end": 736,
+                        "start": 735,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 700,
+                      "end": 698,
                       "name": "angledLine",
-                      "start": 690,
+                      "start": 688,
                       "type": "Identifier"
                     },
-                    "end": 739,
-                    "start": 690,
+                    "end": 737,
+                    "start": 688,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   {
                     "arguments": [
                       {
-                        "end": 792,
+                        "end": 790,
                         "properties": [
                           {
-                            "end": 771,
+                            "end": 769,
                             "key": {
-                              "end": 765,
+                              "end": 763,
                               "name": "angle",
-                              "start": 760,
+                              "start": 758,
                               "type": "Identifier"
                             },
-                            "start": 760,
+                            "start": 758,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 771,
+                              "end": 769,
                               "raw": "120",
-                              "start": 768,
+                              "start": 766,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -483,65 +483,65 @@ description: Variables in memory after executing hex-nut.kcl
                             }
                           },
                           {
-                            "end": 790,
+                            "end": 788,
                             "key": {
-                              "end": 779,
+                              "end": 777,
                               "name": "length",
-                              "start": 773,
+                              "start": 771,
                               "type": "Identifier"
                             },
-                            "start": 773,
+                            "start": 771,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 790,
+                              "end": 788,
                               "name": "innerDia",
-                              "start": 782,
+                              "start": 780,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
-                        "start": 758,
+                        "start": 756,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       },
                       {
-                        "end": 795,
-                        "start": 794,
+                        "end": 793,
+                        "start": 792,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 757,
+                      "end": 755,
                       "name": "angledLine",
-                      "start": 747,
+                      "start": 745,
                       "type": "Identifier"
                     },
-                    "end": 796,
-                    "start": 747,
+                    "end": 794,
+                    "start": 745,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   {
                     "arguments": [
                       {
-                        "end": 848,
+                        "end": 846,
                         "properties": [
                           {
-                            "end": 827,
+                            "end": 825,
                             "key": {
-                              "end": 822,
+                              "end": 820,
                               "name": "angle",
-                              "start": 817,
+                              "start": 815,
                               "type": "Identifier"
                             },
-                            "start": 817,
+                            "start": 815,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 827,
+                              "end": 825,
                               "raw": "60",
-                              "start": 825,
+                              "start": 823,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -551,65 +551,65 @@ description: Variables in memory after executing hex-nut.kcl
                             }
                           },
                           {
-                            "end": 846,
+                            "end": 844,
                             "key": {
-                              "end": 835,
+                              "end": 833,
                               "name": "length",
-                              "start": 829,
+                              "start": 827,
                               "type": "Identifier"
                             },
-                            "start": 829,
+                            "start": 827,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 846,
+                              "end": 844,
                               "name": "innerDia",
-                              "start": 838,
+                              "start": 836,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
-                        "start": 815,
+                        "start": 813,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       },
                       {
-                        "end": 851,
-                        "start": 850,
+                        "end": 849,
+                        "start": 848,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 814,
+                      "end": 812,
                       "name": "angledLine",
-                      "start": 804,
+                      "start": 802,
                       "type": "Identifier"
                     },
-                    "end": 852,
-                    "start": 804,
+                    "end": 850,
+                    "start": 802,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   {
                     "arguments": [
                       {
-                        "end": 909,
+                        "end": 907,
                         "properties": [
                           {
-                            "end": 882,
+                            "end": 880,
                             "key": {
-                              "end": 878,
+                              "end": 876,
                               "name": "angle",
-                              "start": 873,
+                              "start": 871,
                               "type": "Identifier"
                             },
-                            "start": 873,
+                            "start": 871,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 882,
+                              "end": 880,
                               "raw": "0",
-                              "start": 881,
+                              "start": 879,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -619,29 +619,29 @@ description: Variables in memory after executing hex-nut.kcl
                             }
                           },
                           {
-                            "end": 907,
+                            "end": 905,
                             "key": {
-                              "end": 890,
+                              "end": 888,
                               "name": "length",
-                              "start": 884,
+                              "start": 882,
                               "type": "Identifier"
                             },
-                            "start": 884,
+                            "start": 882,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 907,
+                              "end": 905,
                               "left": {
-                                "end": 901,
+                                "end": 899,
                                 "name": "innerDia",
-                                "start": 893,
+                                "start": 891,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 907,
+                                "end": 905,
                                 "raw": ".90",
-                                "start": 904,
+                                "start": 902,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -649,44 +649,44 @@ description: Variables in memory after executing hex-nut.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 893,
+                              "start": 891,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           }
                         ],
-                        "start": 871,
+                        "start": 869,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       },
                       {
-                        "end": 912,
-                        "start": 911,
+                        "end": 910,
+                        "start": 909,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 870,
+                      "end": 868,
                       "name": "angledLine",
-                      "start": 860,
+                      "start": 858,
                       "type": "Identifier"
                     },
-                    "end": 913,
-                    "start": 860,
+                    "end": 911,
+                    "start": 858,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   {
                     "arguments": [],
                     "callee": {
-                      "end": 926,
+                      "end": 924,
                       "name": "close",
-                      "start": 921,
+                      "start": 919,
                       "type": "Identifier"
                     },
-                    "end": 928,
-                    "start": 921,
+                    "end": 926,
+                    "start": 919,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -695,34 +695,34 @@ description: Variables in memory after executing hex-nut.kcl
                       {
                         "arguments": [
                           {
-                            "end": 1029,
+                            "end": 1027,
                             "properties": [
                               {
-                                "end": 988,
+                                "end": 986,
                                 "key": {
-                                  "end": 965,
+                                  "end": 963,
                                   "name": "center",
-                                  "start": 959,
+                                  "start": 957,
                                   "type": "Identifier"
                                 },
-                                "start": 959,
+                                "start": 957,
                                 "type": "ObjectProperty",
                                 "value": {
                                   "elements": [
                                     {
                                       "computed": false,
-                                      "end": 977,
+                                      "end": 975,
                                       "object": {
-                                        "end": 974,
+                                        "end": 972,
                                         "name": "start",
-                                        "start": 969,
+                                        "start": 967,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 976,
+                                        "end": 974,
                                         "raw": "0",
-                                        "start": 975,
+                                        "start": 973,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -730,24 +730,24 @@ description: Variables in memory after executing hex-nut.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 969,
+                                      "start": 967,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
                                     {
                                       "computed": false,
-                                      "end": 987,
+                                      "end": 985,
                                       "object": {
-                                        "end": 984,
+                                        "end": 982,
                                         "name": "start",
-                                        "start": 979,
+                                        "start": 977,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 986,
+                                        "end": 984,
                                         "raw": "1",
-                                        "start": 985,
+                                        "start": 983,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -755,41 +755,41 @@ description: Variables in memory after executing hex-nut.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 979,
+                                      "start": 977,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     }
                                   ],
-                                  "end": 988,
-                                  "start": 968,
+                                  "end": 986,
+                                  "start": 966,
                                   "type": "ArrayExpression",
                                   "type": "ArrayExpression"
                                 }
                               },
                               {
-                                "end": 1020,
+                                "end": 1018,
                                 "key": {
-                                  "end": 1005,
+                                  "end": 1003,
                                   "name": "radius",
-                                  "start": 999,
+                                  "start": 997,
                                   "type": "Identifier"
                                 },
-                                "start": 999,
+                                "start": 997,
                                 "type": "ObjectProperty",
                                 "value": {
-                                  "end": 1020,
+                                  "end": 1018,
                                   "left": {
-                                    "end": 1016,
+                                    "end": 1014,
                                     "name": "innerDia",
-                                    "start": 1008,
+                                    "start": 1006,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "end": 1020,
+                                    "end": 1018,
                                     "raw": "2",
-                                    "start": 1019,
+                                    "start": 1017,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -797,49 +797,49 @@ description: Variables in memory after executing hex-nut.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 1008,
+                                  "start": 1006,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 }
                               }
                             ],
-                            "start": 948,
+                            "start": 946,
                             "type": "ObjectExpression",
                             "type": "ObjectExpression"
                           },
                           {
-                            "end": 1032,
-                            "start": 1031,
+                            "end": 1030,
+                            "start": 1029,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 947,
+                          "end": 945,
                           "name": "circle",
-                          "start": 941,
+                          "start": 939,
                           "type": "Identifier"
                         },
-                        "end": 1033,
-                        "start": 941,
+                        "end": 1031,
+                        "start": 939,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
-                        "end": 1036,
-                        "start": 1035,
+                        "end": 1034,
+                        "start": 1033,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 940,
+                      "end": 938,
                       "name": "hole",
-                      "start": 936,
+                      "start": 934,
                       "type": "Identifier"
                     },
-                    "end": 1037,
-                    "start": 936,
+                    "end": 1035,
+                    "start": 934,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -852,89 +852,89 @@ description: Variables in memory after executing hex-nut.kcl
                           "name": "length"
                         },
                         "arg": {
-                          "end": 1065,
+                          "end": 1063,
                           "name": "thk",
-                          "start": 1062,
+                          "start": 1060,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1052,
+                      "end": 1050,
                       "name": "extrude",
-                      "start": 1045,
+                      "start": 1043,
                       "type": "Identifier"
                     },
-                    "end": 1066,
-                    "start": 1045,
+                    "end": 1064,
+                    "start": 1043,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   }
                 ],
-                "end": 1066,
-                "start": 547,
+                "end": 1064,
+                "start": 545,
                 "type": "PipeExpression",
                 "type": "PipeExpression"
               },
-              "start": 532,
+              "start": 530,
               "type": "VariableDeclarator"
             },
-            "end": 1066,
+            "end": 1064,
             "kind": "const",
-            "start": 532,
+            "start": 530,
             "type": "VariableDeclaration",
             "type": "VariableDeclaration"
           },
           {
             "argument": {
-              "end": 1088,
+              "end": 1086,
               "name": "hexNutSketch",
-              "start": 1076,
+              "start": 1074,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "end": 1088,
-            "start": 1069,
+            "end": 1086,
+            "start": 1067,
             "type": "ReturnStatement",
             "type": "ReturnStatement"
           }
         ],
-        "end": 1090,
-        "start": 528
+        "end": 1088,
+        "start": 526
       },
-      "end": 1090,
+      "end": 1088,
       "params": [
         {
           "type": "Parameter",
           "identifier": {
-            "end": 511,
+            "end": 509,
             "name": "start",
-            "start": 506,
+            "start": 504,
             "type": "Identifier"
           }
         },
         {
           "type": "Parameter",
           "identifier": {
-            "end": 516,
+            "end": 514,
             "name": "thk",
-            "start": 513,
+            "start": 511,
             "type": "Identifier"
           }
         },
         {
           "type": "Parameter",
           "identifier": {
-            "end": 526,
+            "end": 524,
             "name": "innerDia",
-            "start": 518,
+            "start": 516,
             "type": "Identifier"
           }
         }
       ],
-      "start": 505,
+      "start": 503,
       "type": "FunctionExpression"
     },
     "memory": [
@@ -944,8 +944,8 @@ description: Variables in memory after executing hex-nut.kcl
     "__meta": [
       {
         "sourceRange": [
-          505,
-          1090,
+          503,
+          1088,
           0
         ]
       }
@@ -1040,8 +1040,8 @@ description: Variables in memory after executing hex-nut.kcl
     "__meta": [
       {
         "sourceRange": [
-          434,
-          439,
+          432,
+          437,
           0
         ]
       }
@@ -1062,8 +1062,8 @@ description: Variables in memory after executing hex-nut.kcl
     "__meta": [
       {
         "sourceRange": [
-          418,
-          421,
+          416,
+          419,
           0
         ]
       }

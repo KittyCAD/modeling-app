@@ -7,15 +7,15 @@ description: Operations executed hex-nut.kcl
     "type": "UserDefinedFunctionCall",
     "name": "hexNut",
     "functionSourceRange": [
-      505,
-      1090,
+      503,
+      1088,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1112,
-      1147,
+      1110,
+      1145,
       0
     ]
   },
@@ -27,16 +27,16 @@ description: Operations executed hex-nut.kcl
           "value": "-XZ"
         },
         "sourceRange": [
-          561,
-          566,
+          559,
+          564,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      547,
-      567,
+      545,
+      565,
       0
     ],
     "type": "StdLibCall",
@@ -52,8 +52,8 @@ description: Operations executed hex-nut.kcl
           }
         },
         "sourceRange": [
-          941,
-          1033,
+          939,
+          1031,
           0
         ]
       },
@@ -65,16 +65,16 @@ description: Operations executed hex-nut.kcl
           }
         },
         "sourceRange": [
-          1035,
-          1036,
+          1033,
+          1034,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      936,
-      1037,
+      934,
+      1035,
       0
     ],
     "type": "StdLibCall",
@@ -97,16 +97,16 @@ description: Operations executed hex-nut.kcl
           }
         },
         "sourceRange": [
-          1062,
-          1065,
+          1060,
+          1063,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1045,
-      1066,
+      1043,
+      1064,
       0
     ],
     "type": "StdLibCall",

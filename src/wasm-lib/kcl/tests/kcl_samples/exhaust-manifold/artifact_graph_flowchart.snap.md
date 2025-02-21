@@ -217,10 +217,10 @@ flowchart LR
   173["SweepEdge Adjacent"]
   174["SweepEdge Opposite"]
   175["SweepEdge Adjacent"]
-  176["EdgeCut Fillet<br>[3931, 4069, 0]"]
-  177["EdgeCut Fillet<br>[3931, 4069, 0]"]
-  178["EdgeCut Fillet<br>[4075, 4213, 0]"]
-  179["EdgeCut Fillet<br>[4075, 4213, 0]"]
+  176["EdgeCut Fillet<br>[3931, 4064, 0]"]
+  177["EdgeCut Fillet<br>[3931, 4064, 0]"]
+  178["EdgeCut Fillet<br>[4070, 4203, 0]"]
+  179["EdgeCut Fillet<br>[4070, 4203, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4

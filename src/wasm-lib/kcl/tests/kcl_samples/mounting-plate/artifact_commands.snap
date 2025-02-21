@@ -1356,8 +1356,8 @@ description: Artifact commands mounting-plate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1952,
-      1990,
+      1951,
+      1989,
       0
     ],
     "command": {
@@ -1370,8 +1370,8 @@ description: Artifact commands mounting-plate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2001,
-      2039,
+      2000,
+      2038,
       0
     ],
     "command": {
@@ -1384,8 +1384,8 @@ description: Artifact commands mounting-plate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2050,
-      2088,
+      2049,
+      2087,
       0
     ],
     "command": {
@@ -1398,8 +1398,8 @@ description: Artifact commands mounting-plate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2099,
-      2137,
+      2098,
+      2136,
       0
     ],
     "command": {
@@ -1413,7 +1413,7 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [
       1888,
-      2157,
+      2152,
       0
     ],
     "command": {
@@ -1429,7 +1429,7 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [
       1888,
-      2157,
+      2152,
       0
     ],
     "command": {
@@ -1445,7 +1445,7 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [
       1888,
-      2157,
+      2152,
       0
     ],
     "command": {
@@ -1461,7 +1461,7 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [
       1888,
-      2157,
+      2152,
       0
     ],
     "command": {

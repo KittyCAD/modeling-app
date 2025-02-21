@@ -1752,54 +1752,43 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 1.5,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          3938,
-          4065,
+          3955,
+          3958,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          4067,
-          4068,
+          3974,
+          4057,
           0
         ]
       }
@@ -1807,73 +1796,86 @@ description: Operations executed exhaust-manifold.kcl
     "name": "fillet",
     "sourceRange": [
       3931,
-      4069,
+      4064,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                },
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          4082,
-          4209,
+          4094,
+          4097,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          4211,
-          4212,
+          4113,
+          4196,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      4075,
-      4213,
+      4070,
+      4203,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

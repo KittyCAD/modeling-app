@@ -4310,8 +4310,8 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3986,
-      4012,
+      3985,
+      4011,
       0
     ],
     "command": {
@@ -4324,8 +4324,8 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4023,
-      4049,
+      4022,
+      4048,
       0
     ],
     "command": {
@@ -4338,8 +4338,8 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4130,
-      4156,
+      4124,
+      4150,
       0
     ],
     "command": {
@@ -4352,8 +4352,8 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4167,
-      4193,
+      4161,
+      4187,
       0
     ],
     "command": {
@@ -4419,7 +4419,7 @@ description: Artifact commands exhaust-manifold.kcl
     "cmdId": "[uuid]",
     "range": [
       3931,
-      4069,
+      4064,
       0
     ],
     "command": {
@@ -4435,7 +4435,7 @@ description: Artifact commands exhaust-manifold.kcl
     "cmdId": "[uuid]",
     "range": [
       3931,
-      4069,
+      4064,
       0
     ],
     "command": {
@@ -4450,8 +4450,8 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4075,
-      4213,
+      4070,
+      4203,
       0
     ],
     "command": {
@@ -4466,8 +4466,8 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4075,
-      4213,
+      4070,
+      4203,
       0
     ],
     "command": {

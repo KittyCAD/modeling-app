@@ -2826,98 +2826,75 @@ description: Result of parsing food-service-spatula.kcl
         "expression": {
           "arguments": [
             {
-              "end": 2554,
-              "properties": [
-                {
-                  "end": 2463,
-                  "key": {
-                    "end": 2441,
-                    "name": "radius",
-                    "start": 2435,
-                    "type": "Identifier"
-                  },
-                  "start": 2435,
-                  "type": "ObjectProperty",
-                  "value": {
-                    "end": 2463,
-                    "name": "flipperFilletRadius",
-                    "start": 2444,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  }
-                },
-                {
-                  "end": 2552,
-                  "key": {
-                    "end": 2471,
-                    "name": "tags",
-                    "start": 2467,
-                    "type": "Identifier"
-                  },
-                  "start": 2467,
-                  "type": "ObjectProperty",
-                  "value": {
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 2508,
-                            "name": "backEdge",
-                            "start": 2500,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          }
-                        ],
-                        "callee": {
-                          "end": 2499,
-                          "name": "getNextAdjacentEdge",
-                          "start": 2480,
-                          "type": "Identifier"
-                        },
-                        "end": 2509,
-                        "start": 2480,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "end": 2547,
-                            "name": "backEdge",
-                            "start": 2539,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          }
-                        ],
-                        "callee": {
-                          "end": 2538,
-                          "name": "getPreviousAdjacentEdge",
-                          "start": 2515,
-                          "type": "Identifier"
-                        },
-                        "end": 2548,
-                        "start": 2515,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      }
-                    ],
-                    "end": 2552,
-                    "start": 2474,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  }
-                }
-              ],
-              "start": 2431,
-              "type": "ObjectExpression",
-              "type": "ObjectExpression"
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "radius"
+              },
+              "arg": {
+                "end": 2473,
+                "name": "flipperFilletRadius",
+                "start": 2454,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
             },
             {
-              "end": 2563,
-              "name": "flipper",
-              "start": 2556,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "tags"
+              },
+              "arg": {
+                "elements": [
+                  {
+                    "arguments": [
+                      {
+                        "end": 2518,
+                        "name": "backEdge",
+                        "start": 2510,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "callee": {
+                      "end": 2509,
+                      "name": "getNextAdjacentEdge",
+                      "start": 2490,
+                      "type": "Identifier"
+                    },
+                    "end": 2519,
+                    "start": 2490,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  },
+                  {
+                    "arguments": [
+                      {
+                        "end": 2557,
+                        "name": "backEdge",
+                        "start": 2549,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "callee": {
+                      "end": 2548,
+                      "name": "getPreviousAdjacentEdge",
+                      "start": 2525,
+                      "type": "Identifier"
+                    },
+                    "end": 2558,
+                    "start": 2525,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  }
+                ],
+                "end": 2562,
+                "start": 2484,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
             }
           ],
           "callee": {
@@ -2928,8 +2905,15 @@ description: Result of parsing food-service-spatula.kcl
           },
           "end": 2564,
           "start": 2424,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "end": 2441,
+            "name": "flipper",
+            "start": 2434,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
         },
         "start": 2424,
         "type": "ExpressionStatement",
@@ -3543,102 +3527,79 @@ description: Result of parsing food-service-spatula.kcl
         "expression": {
           "arguments": [
             {
-              "end": 3355,
-              "properties": [
-                {
-                  "end": 3255,
-                  "key": {
-                    "end": 3251,
-                    "name": "radius",
-                    "start": 3245,
-                    "type": "Identifier"
-                  },
-                  "start": 3245,
-                  "type": "ObjectProperty",
-                  "value": {
-                    "end": 3255,
-                    "raw": "4",
-                    "start": 3254,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 4.0,
-                      "suffix": "None"
-                    }
-                  }
-                },
-                {
-                  "end": 3353,
-                  "key": {
-                    "end": 3263,
-                    "name": "tags",
-                    "start": 3259,
-                    "type": "Identifier"
-                  },
-                  "start": 3259,
-                  "type": "ObjectProperty",
-                  "value": {
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 3308,
-                            "name": "handleBottomEdge",
-                            "start": 3292,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          }
-                        ],
-                        "callee": {
-                          "end": 3291,
-                          "name": "getNextAdjacentEdge",
-                          "start": 3272,
-                          "type": "Identifier"
-                        },
-                        "end": 3309,
-                        "start": 3272,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "end": 3348,
-                            "name": "handleTopEdge",
-                            "start": 3335,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          }
-                        ],
-                        "callee": {
-                          "end": 3334,
-                          "name": "getNextAdjacentEdge",
-                          "start": 3315,
-                          "type": "Identifier"
-                        },
-                        "end": 3349,
-                        "start": 3315,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      }
-                    ],
-                    "end": 3353,
-                    "start": 3266,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  }
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "radius"
+              },
+              "arg": {
+                "end": 3264,
+                "raw": "4",
+                "start": 3263,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
                 }
-              ],
-              "start": 3241,
-              "type": "ObjectExpression",
-              "type": "ObjectExpression"
+              }
             },
             {
-              "end": 3363,
-              "name": "handle",
-              "start": 3357,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "tags"
+              },
+              "arg": {
+                "elements": [
+                  {
+                    "arguments": [
+                      {
+                        "end": 3317,
+                        "name": "handleBottomEdge",
+                        "start": 3301,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "callee": {
+                      "end": 3300,
+                      "name": "getNextAdjacentEdge",
+                      "start": 3281,
+                      "type": "Identifier"
+                    },
+                    "end": 3318,
+                    "start": 3281,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  },
+                  {
+                    "arguments": [
+                      {
+                        "end": 3357,
+                        "name": "handleTopEdge",
+                        "start": 3344,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "callee": {
+                      "end": 3343,
+                      "name": "getNextAdjacentEdge",
+                      "start": 3324,
+                      "type": "Identifier"
+                    },
+                    "end": 3358,
+                    "start": 3324,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  }
+                ],
+                "end": 3362,
+                "start": 3275,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
             }
           ],
           "callee": {
@@ -3649,8 +3610,15 @@ description: Result of parsing food-service-spatula.kcl
           },
           "end": 3364,
           "start": 3234,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "end": 3250,
+            "name": "handle",
+            "start": 3244,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
         },
         "start": 3234,
         "type": "ExpressionStatement",

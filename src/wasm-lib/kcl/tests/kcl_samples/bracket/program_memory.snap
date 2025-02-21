@@ -839,8 +839,8 @@ description: Variables in memory after executing bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2905,
-            2927,
+            2900,
+            2922,
             0
           ],
           "tag": null,
@@ -850,13 +850,13 @@ description: Variables in memory after executing bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2933,
-            2977,
+            2928,
+            2972,
             0
           ],
           "tag": {
-            "end": 2976,
-            "start": 2968,
+            "end": 2971,
+            "start": 2963,
             "type": "TagDeclarator",
             "value": "fillet3"
           },
@@ -866,13 +866,13 @@ description: Variables in memory after executing bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2983,
-            3022,
+            2978,
+            3017,
             0
           ],
           "tag": {
-            "end": 3021,
-            "start": 3013,
+            "end": 3016,
+            "start": 3008,
             "type": "TagDeclarator",
             "value": "fillet4"
           },
@@ -882,8 +882,8 @@ description: Variables in memory after executing bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3028,
-            3035,
+            3023,
+            3030,
             0
           ],
           "tag": null,
@@ -898,8 +898,8 @@ description: Variables in memory after executing bracket.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2905,
-                2927,
+                2900,
+                2922,
                 0
               ]
             },
@@ -921,8 +921,8 @@ description: Variables in memory after executing bracket.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2933,
-                2977,
+                2928,
+                2972,
                 0
               ]
             },
@@ -931,8 +931,8 @@ description: Variables in memory after executing bracket.kcl
               -0.375
             ],
             "tag": {
-              "end": 2976,
-              "start": 2968,
+              "end": 2971,
+              "start": 2963,
               "type": "TagDeclarator",
               "value": "fillet3"
             },
@@ -949,8 +949,8 @@ description: Variables in memory after executing bracket.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2983,
-                3022,
+                2978,
+                3017,
                 0
               ]
             },
@@ -959,8 +959,8 @@ description: Variables in memory after executing bracket.kcl
               -2.375
             ],
             "tag": {
-              "end": 3021,
-              "start": 3013,
+              "end": 3016,
+              "start": 3008,
               "type": "TagDeclarator",
               "value": "fillet4"
             },
@@ -977,8 +977,8 @@ description: Variables in memory after executing bracket.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3028,
-                3035,
+                3023,
+                3030,
                 0
               ]
             },
@@ -1043,8 +1043,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2862,
-              2899,
+              2857,
+              2894,
               0
             ]
           }
@@ -1061,8 +1061,8 @@ description: Variables in memory after executing bracket.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2933,
-                    2977,
+                    2928,
+                    2972,
                     0
                   ]
                 },
@@ -1071,8 +1071,8 @@ description: Variables in memory after executing bracket.kcl
                   -0.375
                 ],
                 "tag": {
-                  "end": 2976,
-                  "start": 2968,
+                  "end": 2971,
+                  "start": 2963,
                   "type": "TagDeclarator",
                   "value": "fillet3"
                 },
@@ -1089,13 +1089,13 @@ description: Variables in memory after executing bracket.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2933,
-                  2977,
+                  2928,
+                  2972,
                   0
                 ],
                 "tag": {
-                  "end": 2976,
-                  "start": 2968,
+                  "end": 2971,
+                  "start": 2963,
                   "type": "TagDeclarator",
                   "value": "fillet3"
                 },
@@ -1105,8 +1105,8 @@ description: Variables in memory after executing bracket.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2968,
-                  2976,
+                  2963,
+                  2971,
                   0
                 ]
               }
@@ -1123,8 +1123,8 @@ description: Variables in memory after executing bracket.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2983,
-                    3022,
+                    2978,
+                    3017,
                     0
                   ]
                 },
@@ -1133,8 +1133,8 @@ description: Variables in memory after executing bracket.kcl
                   -2.375
                 ],
                 "tag": {
-                  "end": 3021,
-                  "start": 3013,
+                  "end": 3016,
+                  "start": 3008,
                   "type": "TagDeclarator",
                   "value": "fillet4"
                 },
@@ -1151,13 +1151,13 @@ description: Variables in memory after executing bracket.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2983,
-                  3022,
+                  2978,
+                  3017,
                   0
                 ],
                 "tag": {
-                  "end": 3021,
-                  "start": 3013,
+                  "end": 3016,
+                  "start": 3008,
                   "type": "TagDeclarator",
                   "value": "fillet4"
                 },
@@ -1167,8 +1167,8 @@ description: Variables in memory after executing bracket.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  3013,
-                  3021,
+                  3008,
+                  3016,
                   0
                 ]
               }
@@ -1183,8 +1183,8 @@ description: Variables in memory after executing bracket.kcl
         "__meta": [
           {
             "sourceRange": [
-              2862,
-              2899,
+              2857,
+              2894,
               0
             ]
           }
@@ -1215,8 +1215,8 @@ description: Variables in memory after executing bracket.kcl
       "__meta": [
         {
           "sourceRange": [
-            2862,
-            2899,
+            2857,
+            2894,
             0
           ]
         }
@@ -1233,8 +1233,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2905,
-              2927,
+              2900,
+              2922,
               0
             ]
           },
@@ -1256,8 +1256,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2933,
-              2977,
+              2928,
+              2972,
               0
             ]
           },
@@ -1266,8 +1266,8 @@ description: Variables in memory after executing bracket.kcl
             -0.375
           ],
           "tag": {
-            "end": 2976,
-            "start": 2968,
+            "end": 2971,
+            "start": 2963,
             "type": "TagDeclarator",
             "value": "fillet3"
           },
@@ -1284,8 +1284,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2983,
-              3022,
+              2978,
+              3017,
               0
             ]
           },
@@ -1294,8 +1294,8 @@ description: Variables in memory after executing bracket.kcl
             -2.375
           ],
           "tag": {
-            "end": 3021,
-            "start": 3013,
+            "end": 3016,
+            "start": 3008,
             "type": "TagDeclarator",
             "value": "fillet4"
           },
@@ -1312,8 +1312,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3028,
-              3035,
+              3023,
+              3030,
               0
             ]
           },
@@ -1378,8 +1378,8 @@ description: Variables in memory after executing bracket.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2862,
-            2899,
+            2857,
+            2894,
             0
           ]
         }
@@ -1396,8 +1396,8 @@ description: Variables in memory after executing bracket.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2933,
-                  2977,
+                  2928,
+                  2972,
                   0
                 ]
               },
@@ -1406,8 +1406,8 @@ description: Variables in memory after executing bracket.kcl
                 -0.375
               ],
               "tag": {
-                "end": 2976,
-                "start": 2968,
+                "end": 2971,
+                "start": 2963,
                 "type": "TagDeclarator",
                 "value": "fillet3"
               },
@@ -1424,13 +1424,13 @@ description: Variables in memory after executing bracket.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2933,
-                2977,
+                2928,
+                2972,
                 0
               ],
               "tag": {
-                "end": 2976,
-                "start": 2968,
+                "end": 2971,
+                "start": 2963,
                 "type": "TagDeclarator",
                 "value": "fillet3"
               },
@@ -1440,8 +1440,8 @@ description: Variables in memory after executing bracket.kcl
           "__meta": [
             {
               "sourceRange": [
-                2968,
-                2976,
+                2963,
+                2971,
                 0
               ]
             }
@@ -1458,8 +1458,8 @@ description: Variables in memory after executing bracket.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2983,
-                  3022,
+                  2978,
+                  3017,
                   0
                 ]
               },
@@ -1468,8 +1468,8 @@ description: Variables in memory after executing bracket.kcl
                 -2.375
               ],
               "tag": {
-                "end": 3021,
-                "start": 3013,
+                "end": 3016,
+                "start": 3008,
                 "type": "TagDeclarator",
                 "value": "fillet4"
               },
@@ -1486,13 +1486,13 @@ description: Variables in memory after executing bracket.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2983,
-                3022,
+                2978,
+                3017,
                 0
               ],
               "tag": {
-                "end": 3021,
-                "start": 3013,
+                "end": 3016,
+                "start": 3008,
                 "type": "TagDeclarator",
                 "value": "fillet4"
               },
@@ -1502,8 +1502,8 @@ description: Variables in memory after executing bracket.kcl
           "__meta": [
             {
               "sourceRange": [
-                3013,
-                3021,
+                3008,
+                3016,
                 0
               ]
             }
@@ -1518,8 +1518,8 @@ description: Variables in memory after executing bracket.kcl
       "__meta": [
         {
           "sourceRange": [
-            2862,
-            2899,
+            2857,
+            2894,
             0
           ]
         }
@@ -1587,8 +1587,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2624,
-                      2637,
+                      2619,
+                      2632,
                       0
                     ]
                   }
@@ -1609,8 +1609,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2643,
-                      2644,
+                      2638,
+                      2639,
                       0
                     ]
                   }
@@ -1631,8 +1631,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2650,
-                      2651,
+                      2645,
+                      2646,
                       0
                     ]
                   }
@@ -1642,8 +1642,8 @@ description: Variables in memory after executing bracket.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2618,
-                  2653,
+                  2613,
+                  2648,
                   0
                 ]
               }
@@ -1667,8 +1667,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2673,
-                      2674,
+                      2668,
+                      2669,
                       0
                     ]
                   }
@@ -1689,8 +1689,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2680,
-                      2681,
+                      2675,
+                      2676,
                       0
                     ]
                   }
@@ -1711,8 +1711,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2687,
-                      2688,
+                      2682,
+                      2683,
                       0
                     ]
                   }
@@ -1722,8 +1722,8 @@ description: Variables in memory after executing bracket.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2667,
-                  2690,
+                  2662,
+                  2685,
                   0
                 ]
               }
@@ -1747,8 +1747,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2710,
-                      2711,
+                      2705,
+                      2706,
                       0
                     ]
                   }
@@ -1769,8 +1769,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2717,
-                      2718,
+                      2712,
+                      2713,
                       0
                     ]
                   }
@@ -1791,8 +1791,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2724,
-                      2725,
+                      2719,
+                      2720,
                       0
                     ]
                   }
@@ -1802,8 +1802,8 @@ description: Variables in memory after executing bracket.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2704,
-                  2727,
+                  2699,
+                  2722,
                   0
                 ]
               }
@@ -1827,8 +1827,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2747,
-                      2748,
+                      2742,
+                      2743,
                       0
                     ]
                   }
@@ -1849,8 +1849,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2754,
-                      2755,
+                      2749,
+                      2750,
                       0
                     ]
                   }
@@ -1871,8 +1871,8 @@ description: Variables in memory after executing bracket.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2761,
-                      2762,
+                      2756,
+                      2757,
                       0
                     ]
                   }
@@ -1882,8 +1882,8 @@ description: Variables in memory after executing bracket.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2741,
-                  2764,
+                  2736,
+                  2759,
                   0
                 ]
               }
@@ -1893,8 +1893,8 @@ description: Variables in memory after executing bracket.kcl
         "__meta": [
           {
             "sourceRange": [
-              2603,
-              2768,
+              2598,
+              2763,
               0
             ]
           }
@@ -1904,8 +1904,8 @@ description: Variables in memory after executing bracket.kcl
     "__meta": [
       {
         "sourceRange": [
-          2591,
-          2770,
+          2586,
+          2765,
           0
         ]
       }
@@ -2093,8 +2093,8 @@ description: Variables in memory after executing bracket.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2933,
-            2977,
+            2928,
+            2972,
             0
           ]
         },
@@ -2103,8 +2103,8 @@ description: Variables in memory after executing bracket.kcl
           -0.375
         ],
         "tag": {
-          "end": 2976,
-          "start": 2968,
+          "end": 2971,
+          "start": 2963,
           "type": "TagDeclarator",
           "value": "fillet3"
         },
@@ -2121,13 +2121,13 @@ description: Variables in memory after executing bracket.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          2933,
-          2977,
+          2928,
+          2972,
           0
         ],
         "tag": {
-          "end": 2976,
-          "start": 2968,
+          "end": 2971,
+          "start": 2963,
           "type": "TagDeclarator",
           "value": "fillet3"
         },
@@ -2137,8 +2137,8 @@ description: Variables in memory after executing bracket.kcl
     "__meta": [
       {
         "sourceRange": [
-          2968,
-          2976,
+          2963,
+          2971,
           0
         ]
       }
@@ -2156,8 +2156,8 @@ description: Variables in memory after executing bracket.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2983,
-            3022,
+            2978,
+            3017,
             0
           ]
         },
@@ -2166,8 +2166,8 @@ description: Variables in memory after executing bracket.kcl
           -2.375
         ],
         "tag": {
-          "end": 3021,
-          "start": 3013,
+          "end": 3016,
+          "start": 3008,
           "type": "TagDeclarator",
           "value": "fillet4"
         },
@@ -2184,13 +2184,13 @@ description: Variables in memory after executing bracket.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          2983,
-          3022,
+          2978,
+          3017,
           0
         ],
         "tag": {
-          "end": 3021,
-          "start": 3013,
+          "end": 3016,
+          "start": 3008,
           "type": "TagDeclarator",
           "value": "fillet4"
         },
@@ -2200,8 +2200,8 @@ description: Variables in memory after executing bracket.kcl
     "__meta": [
       {
         "sourceRange": [
-          3013,
-          3021,
+          3008,
+          3016,
           0
         ]
       }
@@ -2218,8 +2218,8 @@ description: Variables in memory after executing bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2175,
-            2201,
+            2170,
+            2196,
             0
           ],
           "tag": null,
@@ -2229,8 +2229,8 @@ description: Variables in memory after executing bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2207,
-            2311,
+            2202,
+            2306,
             0
           ],
           "tag": null,
@@ -2240,8 +2240,8 @@ description: Variables in memory after executing bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2317,
-            2343,
+            2312,
+            2338,
             0
           ],
           "tag": null,
@@ -2251,8 +2251,8 @@ description: Variables in memory after executing bracket.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2349,
-            2441,
+            2344,
+            2436,
             0
           ],
           "tag": null,
@@ -2267,8 +2267,8 @@ description: Variables in memory after executing bracket.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2175,
-                2201,
+                2170,
+                2196,
                 0
               ]
             },
@@ -2290,8 +2290,8 @@ description: Variables in memory after executing bracket.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2207,
-                2311,
+                2202,
+                2306,
                 0
               ]
             },
@@ -2319,8 +2319,8 @@ description: Variables in memory after executing bracket.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2317,
-                2343,
+                2312,
+                2338,
                 0
               ]
             },
@@ -2342,8 +2342,8 @@ description: Variables in memory after executing bracket.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2349,
-                2441,
+                2344,
+                2436,
                 0
               ]
             },
@@ -2414,8 +2414,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2144,
-              2169,
+              2139,
+              2164,
               0
             ]
           }
@@ -2428,8 +2428,8 @@ description: Variables in memory after executing bracket.kcl
         "__meta": [
           {
             "sourceRange": [
-              2144,
-              2169,
+              2139,
+              2164,
               0
             ]
           }
@@ -2444,8 +2444,8 @@ description: Variables in memory after executing bracket.kcl
       "__meta": [
         {
           "sourceRange": [
-            2144,
-            2169,
+            2139,
+            2164,
             0
           ]
         }
@@ -2484,8 +2484,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2175,
-              2201,
+              2170,
+              2196,
               0
             ]
           },
@@ -2507,8 +2507,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2207,
-              2311,
+              2202,
+              2306,
               0
             ]
           },
@@ -2536,8 +2536,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2317,
-              2343,
+              2312,
+              2338,
               0
             ]
           },
@@ -2559,8 +2559,8 @@ description: Variables in memory after executing bracket.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2349,
-              2441,
+              2344,
+              2436,
               0
             ]
           },
@@ -2631,8 +2631,8 @@ description: Variables in memory after executing bracket.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2144,
-            2169,
+            2139,
+            2164,
             0
           ]
         }
@@ -2645,8 +2645,8 @@ description: Variables in memory after executing bracket.kcl
       "__meta": [
         {
           "sourceRange": [
-            2144,
-            2169,
+            2139,
+            2164,
             0
           ]
         }

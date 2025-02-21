@@ -825,8 +825,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1929,
-      1967,
+      1928,
+      1966,
       0
     ],
     "command": {
@@ -839,8 +839,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1978,
-      2016,
+      1977,
+      2015,
       0
     ],
     "command": {
@@ -853,8 +853,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2027,
-      2065,
+      2026,
+      2064,
       0
     ],
     "command": {
@@ -867,8 +867,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2076,
-      2114,
+      2075,
+      2113,
       0
     ],
     "command": {
@@ -881,8 +881,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2413,
-      2436,
+      2408,
+      2431,
       0
     ],
     "command": {
@@ -910,8 +910,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2442,
-      2496,
+      2437,
+      2491,
       0
     ],
     "command": {
@@ -930,8 +930,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2442,
-      2496,
+      2437,
+      2491,
       0
     ],
     "command": {
@@ -941,8 +941,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2442,
-      2496,
+      2437,
+      2491,
       0
     ],
     "command": {
@@ -958,8 +958,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2502,
-      2555,
+      2497,
+      2550,
       0
     ],
     "command": {
@@ -979,8 +979,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2561,
-      2611,
+      2556,
+      2606,
       0
     ],
     "command": {
@@ -1000,8 +1000,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2617,
-      2671,
+      2612,
+      2666,
       0
     ],
     "command": {
@@ -1021,8 +1021,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2677,
-      2697,
+      2672,
+      2692,
       0
     ],
     "command": {
@@ -1033,8 +1033,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2677,
-      2697,
+      2672,
+      2692,
       0
     ],
     "command": {
@@ -1044,8 +1044,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2708,
-      2875,
+      2703,
+      2870,
       0
     ],
     "command": {
@@ -1064,8 +1064,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2708,
-      2875,
+      2703,
+      2870,
       0
     ],
     "command": {
@@ -1075,8 +1075,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2708,
-      2875,
+      2703,
+      2870,
       0
     ],
     "command": {
@@ -1092,8 +1092,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2708,
-      2875,
+      2703,
+      2870,
       0
     ],
     "command": {
@@ -1121,8 +1121,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2708,
-      2875,
+      2703,
+      2870,
       0
     ],
     "command": {
@@ -1133,8 +1133,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2703,
-      2879,
+      2698,
+      2874,
       0
     ],
     "command": {
@@ -1146,8 +1146,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2703,
-      2879,
+      2698,
+      2874,
       0
     ],
     "command": {
@@ -1159,8 +1159,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1179,8 +1179,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1193,8 +1193,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1204,8 +1204,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1216,8 +1216,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1229,8 +1229,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1243,8 +1243,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1257,8 +1257,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1271,8 +1271,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1285,8 +1285,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1299,8 +1299,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1313,8 +1313,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1327,8 +1327,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1341,8 +1341,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1355,8 +1355,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2885,
-      2910,
+      2880,
+      2905,
       0
     ],
     "command": {
@@ -1369,8 +1369,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2980,
-      3007,
+      2974,
+      3001,
       0
     ],
     "command": {
@@ -1383,8 +1383,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3018,
-      3045,
+      3012,
+      3039,
       0
     ],
     "command": {
@@ -1397,8 +1397,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2916,
-      3065,
+      2911,
+      3055,
       0
     ],
     "command": {
@@ -1413,8 +1413,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2916,
-      3065,
+      2911,
+      3055,
       0
     ],
     "command": {
@@ -1429,8 +1429,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3071,
-      3199,
+      3061,
+      3189,
       0
     ],
     "command": {
@@ -1473,8 +1473,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3263,
-      3286,
+      3253,
+      3276,
       0
     ],
     "command": {
@@ -1502,8 +1502,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3292,
-      3347,
+      3282,
+      3337,
       0
     ],
     "command": {
@@ -1522,8 +1522,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3292,
-      3347,
+      3282,
+      3337,
       0
     ],
     "command": {
@@ -1533,8 +1533,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3292,
-      3347,
+      3282,
+      3337,
       0
     ],
     "command": {
@@ -1550,8 +1550,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3353,
-      3407,
+      3343,
+      3397,
       0
     ],
     "command": {
@@ -1571,8 +1571,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3413,
-      3463,
+      3403,
+      3453,
       0
     ],
     "command": {
@@ -1592,8 +1592,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3469,
-      3522,
+      3459,
+      3512,
       0
     ],
     "command": {
@@ -1613,8 +1613,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3528,
-      3548,
+      3518,
+      3538,
       0
     ],
     "command": {
@@ -1625,8 +1625,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3528,
-      3548,
+      3518,
+      3538,
       0
     ],
     "command": {
@@ -1636,8 +1636,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3559,
-      3729,
+      3549,
+      3719,
       0
     ],
     "command": {
@@ -1656,8 +1656,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3559,
-      3729,
+      3549,
+      3719,
       0
     ],
     "command": {
@@ -1667,8 +1667,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3559,
-      3729,
+      3549,
+      3719,
       0
     ],
     "command": {
@@ -1684,8 +1684,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3559,
-      3729,
+      3549,
+      3719,
       0
     ],
     "command": {
@@ -1713,8 +1713,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3559,
-      3729,
+      3549,
+      3719,
       0
     ],
     "command": {
@@ -1725,8 +1725,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3554,
-      3733,
+      3544,
+      3723,
       0
     ],
     "command": {
@@ -1738,8 +1738,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3554,
-      3733,
+      3544,
+      3723,
       0
     ],
     "command": {
@@ -1751,8 +1751,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1771,8 +1771,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1785,8 +1785,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1796,8 +1796,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1808,8 +1808,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1821,8 +1821,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1835,8 +1835,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1849,8 +1849,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1863,8 +1863,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1877,8 +1877,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1891,8 +1891,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1905,8 +1905,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1919,8 +1919,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1933,8 +1933,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1947,8 +1947,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3739,
-      3764,
+      3729,
+      3754,
       0
     ],
     "command": {
@@ -1961,8 +1961,22 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3834,
+      3823,
+      3850,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       3861,
+      3888,
       0
     ],
     "command": {
@@ -1975,22 +1989,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3872,
-      3899,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3770,
-      3919,
+      3760,
+      3904,
       0
     ],
     "command": {
@@ -2005,8 +2005,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3919,
+      3760,
+      3904,
       0
     ],
     "command": {
@@ -2021,8 +2021,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3925,
-      4053,
+      3910,
+      4038,
       0
     ],
     "command": {
@@ -2065,8 +2065,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4339,
-      4362,
+      4324,
+      4347,
       0
     ],
     "command": {
@@ -2094,8 +2094,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4368,
-      4409,
+      4353,
+      4394,
       0
     ],
     "command": {
@@ -2114,8 +2114,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4368,
-      4409,
+      4353,
+      4394,
       0
     ],
     "command": {
@@ -2125,8 +2125,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4368,
-      4409,
+      4353,
+      4394,
       0
     ],
     "command": {
@@ -2142,8 +2142,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4415,
-      4435,
+      4400,
+      4420,
       0
     ],
     "command": {
@@ -2163,8 +2163,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4441,
-      4464,
+      4426,
+      4449,
       0
     ],
     "command": {
@@ -2184,8 +2184,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4470,
-      4477,
+      4455,
+      4462,
       0
     ],
     "command": {
@@ -2196,8 +2196,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4470,
-      4477,
+      4455,
+      4462,
       0
     ],
     "command": {
@@ -2207,8 +2207,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2227,8 +2227,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2241,8 +2241,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2252,8 +2252,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2264,8 +2264,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2277,8 +2277,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2291,8 +2291,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2305,8 +2305,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2319,8 +2319,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2333,8 +2333,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2347,8 +2347,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4483,
-      4511,
+      4468,
+      4496,
       0
     ],
     "command": {
@@ -2361,8 +2361,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4563,
-      4586,
+      4548,
+      4571,
       0
     ],
     "command": {
@@ -2390,8 +2390,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4592,
-      4632,
+      4577,
+      4617,
       0
     ],
     "command": {
@@ -2410,8 +2410,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4592,
-      4632,
+      4577,
+      4617,
       0
     ],
     "command": {
@@ -2421,8 +2421,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4592,
-      4632,
+      4577,
+      4617,
       0
     ],
     "command": {
@@ -2438,8 +2438,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4638,
-      4658,
+      4623,
+      4643,
       0
     ],
     "command": {
@@ -2459,8 +2459,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4664,
-      4685,
+      4649,
+      4670,
       0
     ],
     "command": {
@@ -2480,8 +2480,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4691,
-      4712,
+      4676,
+      4697,
       0
     ],
     "command": {
@@ -2501,8 +2501,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4718,
-      4725,
+      4703,
+      4710,
       0
     ],
     "command": {
@@ -2513,8 +2513,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4718,
-      4725,
+      4703,
+      4710,
       0
     ],
     "command": {
@@ -2524,8 +2524,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2544,8 +2544,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2558,8 +2558,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2569,8 +2569,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2581,8 +2581,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2594,8 +2594,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2608,8 +2608,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2622,8 +2622,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2636,8 +2636,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2650,8 +2650,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2664,8 +2664,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2678,8 +2678,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2692,8 +2692,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4731,
-      4759,
+      4716,
+      4744,
       0
     ],
     "command": {
@@ -2720,7 +2720,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       1871,
-      2134,
+      2129,
       0
     ],
     "command": {
@@ -2736,7 +2736,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       1871,
-      2134,
+      2129,
       0
     ],
     "command": {
@@ -2752,7 +2752,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       1871,
-      2134,
+      2129,
       0
     ],
     "command": {
@@ -2768,7 +2768,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       1871,
-      2134,
+      2129,
       0
     ],
     "command": {
@@ -2783,8 +2783,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2442,
-      2496,
+      2437,
+      2491,
       0
     ],
     "command": {
@@ -2796,8 +2796,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2708,
-      2875,
+      2703,
+      2870,
       0
     ],
     "command": {
@@ -2809,8 +2809,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3292,
-      3347,
+      3282,
+      3337,
       0
     ],
     "command": {
@@ -2822,8 +2822,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3559,
-      3729,
+      3549,
+      3719,
       0
     ],
     "command": {
@@ -2835,8 +2835,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4368,
-      4409,
+      4353,
+      4394,
       0
     ],
     "command": {
@@ -2848,8 +2848,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4592,
-      4632,
+      4577,
+      4617,
       0
     ],
     "command": {

@@ -754,13 +754,13 @@ description: Variables in memory after executing enclosure.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2462,
-            2510,
+            2457,
+            2505,
             0
           ],
           "tag": {
-            "end": 2509,
-            "start": 2488,
+            "end": 2504,
+            "start": 2483,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -770,13 +770,13 @@ description: Variables in memory after executing enclosure.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2516,
-            2618,
+            2511,
+            2613,
             0
           ],
           "tag": {
-            "end": 2617,
-            "start": 2596,
+            "end": 2612,
+            "start": 2591,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -786,13 +786,13 @@ description: Variables in memory after executing enclosure.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2624,
-            2744,
+            2619,
+            2739,
             0
           ],
           "tag": {
-            "end": 2743,
-            "start": 2722,
+            "end": 2738,
+            "start": 2717,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -802,13 +802,13 @@ description: Variables in memory after executing enclosure.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2750,
-            2835,
+            2745,
+            2830,
             0
           ],
           "tag": {
-            "end": 2834,
-            "start": 2813,
+            "end": 2829,
+            "start": 2808,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD002"
           },
@@ -823,8 +823,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2510,
+                2457,
+                2505,
                 0
               ]
             },
@@ -833,8 +833,8 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "end": 2509,
-              "start": 2488,
+              "end": 2504,
+              "start": 2483,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -851,8 +851,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2516,
-                2618,
+                2511,
+                2613,
                 0
               ]
             },
@@ -861,8 +861,8 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "end": 2617,
-              "start": 2596,
+              "end": 2612,
+              "start": 2591,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB002"
             },
@@ -879,8 +879,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2624,
-                2744,
+                2619,
+                2739,
                 0
               ]
             },
@@ -889,8 +889,8 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "end": 2743,
-              "start": 2722,
+              "end": 2738,
+              "start": 2717,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC002"
             },
@@ -907,8 +907,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2750,
-                2835,
+                2745,
+                2830,
                 0
               ]
             },
@@ -917,8 +917,8 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "end": 2834,
-              "start": 2813,
+              "end": 2829,
+              "start": 2808,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD002"
             },
@@ -935,8 +935,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2841,
-                2848,
+                2836,
+                2843,
                 0
               ]
             },
@@ -1001,8 +1001,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2421,
-              2456,
+              2416,
+              2451,
               0
             ]
           }
@@ -1019,8 +1019,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2462,
-                    2510,
+                    2457,
+                    2505,
                     0
                   ]
                 },
@@ -1029,8 +1029,8 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 2509,
-                  "start": 2488,
+                  "end": 2504,
+                  "start": 2483,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -1047,13 +1047,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2462,
-                  2510,
+                  2457,
+                  2505,
                   0
                 ],
                 "tag": {
-                  "end": 2509,
-                  "start": 2488,
+                  "end": 2504,
+                  "start": 2483,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -1063,8 +1063,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2488,
-                  2509,
+                  2483,
+                  2504,
                   0
                 ]
               }
@@ -1081,8 +1081,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2516,
-                    2618,
+                    2511,
+                    2613,
                     0
                   ]
                 },
@@ -1091,8 +1091,8 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 2617,
-                  "start": 2596,
+                  "end": 2612,
+                  "start": 2591,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -1109,13 +1109,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2516,
-                  2618,
+                  2511,
+                  2613,
                   0
                 ],
                 "tag": {
-                  "end": 2617,
-                  "start": 2596,
+                  "end": 2612,
+                  "start": 2591,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -1125,8 +1125,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2596,
-                  2617,
+                  2591,
+                  2612,
                   0
                 ]
               }
@@ -1143,8 +1143,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2624,
-                    2744,
+                    2619,
+                    2739,
                     0
                   ]
                 },
@@ -1153,8 +1153,8 @@ description: Variables in memory after executing enclosure.kcl
                   175.0
                 ],
                 "tag": {
-                  "end": 2743,
-                  "start": 2722,
+                  "end": 2738,
+                  "start": 2717,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -1171,13 +1171,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2624,
-                  2744,
+                  2619,
+                  2739,
                   0
                 ],
                 "tag": {
-                  "end": 2743,
-                  "start": 2722,
+                  "end": 2738,
+                  "start": 2717,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -1187,8 +1187,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2722,
-                  2743,
+                  2717,
+                  2738,
                   0
                 ]
               }
@@ -1205,8 +1205,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2750,
-                    2835,
+                    2745,
+                    2830,
                     0
                   ]
                 },
@@ -1215,8 +1215,8 @@ description: Variables in memory after executing enclosure.kcl
                   175.0
                 ],
                 "tag": {
-                  "end": 2834,
-                  "start": 2813,
+                  "end": 2829,
+                  "start": 2808,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD002"
                 },
@@ -1233,13 +1233,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2750,
-                  2835,
+                  2745,
+                  2830,
                   0
                 ],
                 "tag": {
-                  "end": 2834,
-                  "start": 2813,
+                  "end": 2829,
+                  "start": 2808,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD002"
                 },
@@ -1249,8 +1249,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2813,
-                  2834,
+                  2808,
+                  2829,
                   0
                 ]
               }
@@ -1265,8 +1265,8 @@ description: Variables in memory after executing enclosure.kcl
         "__meta": [
           {
             "sourceRange": [
-              2421,
-              2456,
+              2416,
+              2451,
               0
             ]
           }
@@ -1311,8 +1311,8 @@ description: Variables in memory after executing enclosure.kcl
       "__meta": [
         {
           "sourceRange": [
-            2421,
-            2456,
+            2416,
+            2451,
             0
           ]
         }
@@ -1330,13 +1330,13 @@ description: Variables in memory after executing enclosure.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4105,
-            4175,
+            4095,
+            4165,
             0
           ],
           "tag": {
-            "end": 4174,
-            "start": 4153,
+            "end": 4164,
+            "start": 4143,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -1346,13 +1346,13 @@ description: Variables in memory after executing enclosure.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4181,
-            4305,
+            4171,
+            4295,
             0
           ],
           "tag": {
-            "end": 4304,
-            "start": 4283,
+            "end": 4294,
+            "start": 4273,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -1362,13 +1362,13 @@ description: Variables in memory after executing enclosure.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4311,
-            4431,
+            4301,
+            4421,
             0
           ],
           "tag": {
-            "end": 4430,
-            "start": 4409,
+            "end": 4420,
+            "start": 4399,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -1378,13 +1378,13 @@ description: Variables in memory after executing enclosure.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4437,
-            4522,
+            4427,
+            4512,
             0
           ],
           "tag": {
-            "end": 4521,
-            "start": 4500,
+            "end": 4511,
+            "start": 4490,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD003"
           },
@@ -1399,8 +1399,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4105,
-                4175,
+                4095,
+                4165,
                 0
               ]
             },
@@ -1409,8 +1409,8 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "tag": {
-              "end": 4174,
-              "start": 4153,
+              "end": 4164,
+              "start": 4143,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA003"
             },
@@ -1427,8 +1427,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4181,
-                4305,
+                4171,
+                4295,
                 0
               ]
             },
@@ -1437,8 +1437,8 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "tag": {
-              "end": 4304,
-              "start": 4283,
+              "end": 4294,
+              "start": 4273,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB003"
             },
@@ -1455,8 +1455,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4311,
-                4431,
+                4301,
+                4421,
                 0
               ]
             },
@@ -1465,8 +1465,8 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "tag": {
-              "end": 4430,
-              "start": 4409,
+              "end": 4420,
+              "start": 4399,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC003"
             },
@@ -1483,8 +1483,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4437,
-                4522,
+                4427,
+                4512,
                 0
               ]
             },
@@ -1493,8 +1493,8 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "tag": {
-              "end": 4521,
-              "start": 4500,
+              "end": 4511,
+              "start": 4490,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD003"
             },
@@ -1511,8 +1511,8 @@ description: Variables in memory after executing enclosure.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4528,
-                4535,
+                4518,
+                4525,
                 0
               ]
             },
@@ -1560,13 +1560,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2462,
-                  2510,
+                  2457,
+                  2505,
                   0
                 ],
                 "tag": {
-                  "end": 2509,
-                  "start": 2488,
+                  "end": 2504,
+                  "start": 2483,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -1576,13 +1576,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2516,
-                  2618,
+                  2511,
+                  2613,
                   0
                 ],
                 "tag": {
-                  "end": 2617,
-                  "start": 2596,
+                  "end": 2612,
+                  "start": 2591,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -1592,13 +1592,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2624,
-                  2744,
+                  2619,
+                  2739,
                   0
                 ],
                 "tag": {
-                  "end": 2743,
-                  "start": 2722,
+                  "end": 2738,
+                  "start": 2717,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -1608,13 +1608,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2750,
-                  2835,
+                  2745,
+                  2830,
                   0
                 ],
                 "tag": {
-                  "end": 2834,
-                  "start": 2813,
+                  "end": 2829,
+                  "start": 2808,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD002"
                 },
@@ -1629,8 +1629,8 @@ description: Variables in memory after executing enclosure.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2462,
-                      2510,
+                      2457,
+                      2505,
                       0
                     ]
                   },
@@ -1639,8 +1639,8 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 2509,
-                    "start": 2488,
+                    "end": 2504,
+                    "start": 2483,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA002"
                   },
@@ -1657,8 +1657,8 @@ description: Variables in memory after executing enclosure.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2516,
-                      2618,
+                      2511,
+                      2613,
                       0
                     ]
                   },
@@ -1667,8 +1667,8 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 2617,
-                    "start": 2596,
+                    "end": 2612,
+                    "start": 2591,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB002"
                   },
@@ -1685,8 +1685,8 @@ description: Variables in memory after executing enclosure.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2624,
-                      2744,
+                      2619,
+                      2739,
                       0
                     ]
                   },
@@ -1695,8 +1695,8 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "end": 2743,
-                    "start": 2722,
+                    "end": 2738,
+                    "start": 2717,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC002"
                   },
@@ -1713,8 +1713,8 @@ description: Variables in memory after executing enclosure.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2750,
-                      2835,
+                      2745,
+                      2830,
                       0
                     ]
                   },
@@ -1723,8 +1723,8 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "end": 2834,
-                    "start": 2813,
+                    "end": 2829,
+                    "start": 2808,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentD002"
                   },
@@ -1741,8 +1741,8 @@ description: Variables in memory after executing enclosure.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2841,
-                      2848,
+                      2836,
+                      2843,
                       0
                     ]
                   },
@@ -1807,8 +1807,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2421,
-                    2456,
+                    2416,
+                    2451,
                     0
                   ]
                 }
@@ -1825,8 +1825,8 @@ description: Variables in memory after executing enclosure.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2462,
-                          2510,
+                          2457,
+                          2505,
                           0
                         ]
                       },
@@ -1835,8 +1835,8 @@ description: Variables in memory after executing enclosure.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 2509,
-                        "start": 2488,
+                        "end": 2504,
+                        "start": 2483,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA002"
                       },
@@ -1853,13 +1853,13 @@ description: Variables in memory after executing enclosure.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        2462,
-                        2510,
+                        2457,
+                        2505,
                         0
                       ],
                       "tag": {
-                        "end": 2509,
-                        "start": 2488,
+                        "end": 2504,
+                        "start": 2483,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA002"
                       },
@@ -1869,8 +1869,8 @@ description: Variables in memory after executing enclosure.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        2488,
-                        2509,
+                        2483,
+                        2504,
                         0
                       ]
                     }
@@ -1887,8 +1887,8 @@ description: Variables in memory after executing enclosure.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2516,
-                          2618,
+                          2511,
+                          2613,
                           0
                         ]
                       },
@@ -1897,8 +1897,8 @@ description: Variables in memory after executing enclosure.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 2617,
-                        "start": 2596,
+                        "end": 2612,
+                        "start": 2591,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentB002"
                       },
@@ -1915,13 +1915,13 @@ description: Variables in memory after executing enclosure.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        2516,
-                        2618,
+                        2511,
+                        2613,
                         0
                       ],
                       "tag": {
-                        "end": 2617,
-                        "start": 2596,
+                        "end": 2612,
+                        "start": 2591,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentB002"
                       },
@@ -1931,8 +1931,8 @@ description: Variables in memory after executing enclosure.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        2596,
-                        2617,
+                        2591,
+                        2612,
                         0
                       ]
                     }
@@ -1949,8 +1949,8 @@ description: Variables in memory after executing enclosure.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2624,
-                          2744,
+                          2619,
+                          2739,
                           0
                         ]
                       },
@@ -1959,8 +1959,8 @@ description: Variables in memory after executing enclosure.kcl
                         175.0
                       ],
                       "tag": {
-                        "end": 2743,
-                        "start": 2722,
+                        "end": 2738,
+                        "start": 2717,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentC002"
                       },
@@ -1977,13 +1977,13 @@ description: Variables in memory after executing enclosure.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        2624,
-                        2744,
+                        2619,
+                        2739,
                         0
                       ],
                       "tag": {
-                        "end": 2743,
-                        "start": 2722,
+                        "end": 2738,
+                        "start": 2717,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentC002"
                       },
@@ -1993,8 +1993,8 @@ description: Variables in memory after executing enclosure.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        2722,
-                        2743,
+                        2717,
+                        2738,
                         0
                       ]
                     }
@@ -2011,8 +2011,8 @@ description: Variables in memory after executing enclosure.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2750,
-                          2835,
+                          2745,
+                          2830,
                           0
                         ]
                       },
@@ -2021,8 +2021,8 @@ description: Variables in memory after executing enclosure.kcl
                         175.0
                       ],
                       "tag": {
-                        "end": 2834,
-                        "start": 2813,
+                        "end": 2829,
+                        "start": 2808,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentD002"
                       },
@@ -2039,13 +2039,13 @@ description: Variables in memory after executing enclosure.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        2750,
-                        2835,
+                        2745,
+                        2830,
                         0
                       ],
                       "tag": {
-                        "end": 2834,
-                        "start": 2813,
+                        "end": 2829,
+                        "start": 2808,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentD002"
                       },
@@ -2055,8 +2055,8 @@ description: Variables in memory after executing enclosure.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        2813,
-                        2834,
+                        2808,
+                        2829,
                         0
                       ]
                     }
@@ -2071,8 +2071,8 @@ description: Variables in memory after executing enclosure.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    2421,
-                    2456,
+                    2416,
+                    2451,
                     0
                   ]
                 }
@@ -2117,8 +2117,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2421,
-                  2456,
+                  2416,
+                  2451,
                   0
                 ]
               }
@@ -2130,8 +2130,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                3977,
-                4009,
+                3967,
+                3999,
                 0
               ]
             }
@@ -2153,8 +2153,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4015,
-              4099,
+              4005,
+              4089,
               0
             ]
           }
@@ -2171,8 +2171,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4105,
-                    4175,
+                    4095,
+                    4165,
                     0
                   ]
                 },
@@ -2181,8 +2181,8 @@ description: Variables in memory after executing enclosure.kcl
                   3.0
                 ],
                 "tag": {
-                  "end": 4174,
-                  "start": 4153,
+                  "end": 4164,
+                  "start": 4143,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA003"
                 },
@@ -2199,13 +2199,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  4105,
-                  4175,
+                  4095,
+                  4165,
                   0
                 ],
                 "tag": {
-                  "end": 4174,
-                  "start": 4153,
+                  "end": 4164,
+                  "start": 4143,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA003"
                 },
@@ -2215,8 +2215,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  4153,
-                  4174,
+                  4143,
+                  4164,
                   0
                 ]
               }
@@ -2233,8 +2233,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4181,
-                    4305,
+                    4171,
+                    4295,
                     0
                   ]
                 },
@@ -2243,8 +2243,8 @@ description: Variables in memory after executing enclosure.kcl
                   3.0
                 ],
                 "tag": {
-                  "end": 4304,
-                  "start": 4283,
+                  "end": 4294,
+                  "start": 4273,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB003"
                 },
@@ -2261,13 +2261,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  4181,
-                  4305,
+                  4171,
+                  4295,
                   0
                 ],
                 "tag": {
-                  "end": 4304,
-                  "start": 4283,
+                  "end": 4294,
+                  "start": 4273,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB003"
                 },
@@ -2277,8 +2277,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  4283,
-                  4304,
+                  4273,
+                  4294,
                   0
                 ]
               }
@@ -2295,8 +2295,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4311,
-                    4431,
+                    4301,
+                    4421,
                     0
                   ]
                 },
@@ -2305,8 +2305,8 @@ description: Variables in memory after executing enclosure.kcl
                   172.0
                 ],
                 "tag": {
-                  "end": 4430,
-                  "start": 4409,
+                  "end": 4420,
+                  "start": 4399,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC003"
                 },
@@ -2323,13 +2323,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  4311,
-                  4431,
+                  4301,
+                  4421,
                   0
                 ],
                 "tag": {
-                  "end": 4430,
-                  "start": 4409,
+                  "end": 4420,
+                  "start": 4399,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC003"
                 },
@@ -2339,8 +2339,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  4409,
-                  4430,
+                  4399,
+                  4420,
                   0
                 ]
               }
@@ -2357,8 +2357,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4437,
-                    4522,
+                    4427,
+                    4512,
                     0
                   ]
                 },
@@ -2367,8 +2367,8 @@ description: Variables in memory after executing enclosure.kcl
                   172.0
                 ],
                 "tag": {
-                  "end": 4521,
-                  "start": 4500,
+                  "end": 4511,
+                  "start": 4490,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD003"
                 },
@@ -2385,13 +2385,13 @@ description: Variables in memory after executing enclosure.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  4437,
-                  4522,
+                  4427,
+                  4512,
                   0
                 ],
                 "tag": {
-                  "end": 4521,
-                  "start": 4500,
+                  "end": 4511,
+                  "start": 4490,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD003"
                 },
@@ -2401,8 +2401,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  4500,
-                  4521,
+                  4490,
+                  4511,
                   0
                 ]
               }
@@ -2417,8 +2417,8 @@ description: Variables in memory after executing enclosure.kcl
         "__meta": [
           {
             "sourceRange": [
-              4015,
-              4099,
+              4005,
+              4089,
               0
             ]
           }
@@ -2463,8 +2463,8 @@ description: Variables in memory after executing enclosure.kcl
       "__meta": [
         {
           "sourceRange": [
-            4015,
-            4099,
+            4005,
+            4089,
             0
           ]
         }
@@ -2478,41 +2478,52 @@ description: Variables in memory after executing enclosure.kcl
         "body": [
           {
             "declaration": {
-              "end": 1517,
+              "end": 1512,
               "id": {
-                "end": 1355,
+                "end": 1350,
                 "name": "plane001",
-                "start": 1347,
+                "start": 1342,
                 "type": "Identifier"
               },
               "init": {
-                "end": 1517,
+                "end": 1512,
                 "properties": [
                   {
-                    "end": 1513,
+                    "end": 1508,
                     "key": {
-                      "end": 1369,
+                      "end": 1364,
                       "name": "plane",
-                      "start": 1364,
+                      "start": 1359,
                       "type": "Identifier"
                     },
-                    "start": 1364,
+                    "start": 1359,
                     "type": "ObjectProperty",
                     "value": {
-                      "end": 1513,
+                      "end": 1508,
                       "properties": [
                         {
-                          "end": 1414,
+                          "end": 1409,
                           "key": {
-                            "end": 1386,
+                            "end": 1381,
                             "name": "origin",
-                            "start": 1380,
+                            "start": 1375,
                             "type": "Identifier"
                           },
-                          "start": 1380,
+                          "start": 1375,
                           "type": "ObjectProperty",
                           "value": {
                             "elements": [
+                              {
+                                "end": 1388,
+                                "raw": "0.0",
+                                "start": 1385,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 0.0,
+                                  "suffix": "None"
+                                }
+                              },
                               {
                                 "end": 1393,
                                 "raw": "0.0",
@@ -2525,50 +2536,50 @@ description: Variables in memory after executing enclosure.kcl
                                 }
                               },
                               {
-                                "end": 1398,
-                                "raw": "0.0",
-                                "start": 1395,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              {
-                                "end": 1413,
+                                "end": 1408,
                                 "name": "wallThickness",
-                                "start": 1400,
+                                "start": 1395,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             ],
-                            "end": 1414,
-                            "start": 1389,
+                            "end": 1409,
+                            "start": 1384,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           }
                         },
                         {
-                          "end": 1445,
+                          "end": 1440,
                           "key": {
-                            "end": 1427,
+                            "end": 1422,
                             "name": "xAxis",
-                            "start": 1422,
+                            "start": 1417,
                             "type": "Identifier"
                           },
-                          "start": 1422,
+                          "start": 1417,
                           "type": "ObjectProperty",
                           "value": {
                             "elements": [
                               {
-                                "end": 1434,
+                                "end": 1429,
                                 "raw": "1.0",
-                                "start": 1431,
+                                "start": 1426,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 1.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              {
+                                "end": 1434,
+                                "raw": "0.0",
+                                "start": 1431,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 0.0,
                                   "suffix": "None"
                                 }
                               },
@@ -2582,41 +2593,30 @@ description: Variables in memory after executing enclosure.kcl
                                   "value": 0.0,
                                   "suffix": "None"
                                 }
-                              },
-                              {
-                                "end": 1444,
-                                "raw": "0.0",
-                                "start": 1441,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "None"
-                                }
                               }
                             ],
-                            "end": 1445,
-                            "start": 1430,
+                            "end": 1440,
+                            "start": 1425,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           }
                         },
                         {
-                          "end": 1476,
+                          "end": 1471,
                           "key": {
-                            "end": 1458,
+                            "end": 1453,
                             "name": "yAxis",
-                            "start": 1453,
+                            "start": 1448,
                             "type": "Identifier"
                           },
-                          "start": 1453,
+                          "start": 1448,
                           "type": "ObjectProperty",
                           "value": {
                             "elements": [
                               {
-                                "end": 1465,
+                                "end": 1460,
                                 "raw": "0.0",
-                                "start": 1462,
+                                "start": 1457,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2625,9 +2625,9 @@ description: Variables in memory after executing enclosure.kcl
                                 }
                               },
                               {
-                                "end": 1470,
+                                "end": 1465,
                                 "raw": "1.0",
-                                "start": 1467,
+                                "start": 1462,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2636,9 +2636,9 @@ description: Variables in memory after executing enclosure.kcl
                                 }
                               },
                               {
-                                "end": 1475,
+                                "end": 1470,
                                 "raw": "0.0",
-                                "start": 1472,
+                                "start": 1467,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2647,24 +2647,35 @@ description: Variables in memory after executing enclosure.kcl
                                 }
                               }
                             ],
-                            "end": 1476,
-                            "start": 1461,
+                            "end": 1471,
+                            "start": 1456,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           }
                         },
                         {
-                          "end": 1507,
+                          "end": 1502,
                           "key": {
-                            "end": 1489,
+                            "end": 1484,
                             "name": "zAxis",
-                            "start": 1484,
+                            "start": 1479,
                             "type": "Identifier"
                           },
-                          "start": 1484,
+                          "start": 1479,
                           "type": "ObjectProperty",
                           "value": {
                             "elements": [
+                              {
+                                "end": 1491,
+                                "raw": "0.0",
+                                "start": 1488,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 0.0,
+                                  "suffix": "None"
+                                }
+                              },
                               {
                                 "end": 1496,
                                 "raw": "0.0",
@@ -2678,19 +2689,8 @@ description: Variables in memory after executing enclosure.kcl
                               },
                               {
                                 "end": 1501,
-                                "raw": "0.0",
-                                "start": 1498,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 0.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              {
-                                "end": 1506,
                                 "raw": "1.0",
-                                "start": 1503,
+                                "start": 1498,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2699,39 +2699,39 @@ description: Variables in memory after executing enclosure.kcl
                                 }
                               }
                             ],
-                            "end": 1507,
-                            "start": 1492,
+                            "end": 1502,
+                            "start": 1487,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           }
                         }
                       ],
-                      "start": 1372,
+                      "start": 1367,
                       "type": "ObjectExpression",
                       "type": "ObjectExpression"
                     }
                   }
                 ],
-                "start": 1358,
+                "start": 1353,
                 "type": "ObjectExpression",
                 "type": "ObjectExpression"
               },
-              "start": 1347,
+              "start": 1342,
               "type": "VariableDeclarator"
             },
-            "end": 1517,
+            "end": 1512,
             "kind": "const",
-            "start": 1347,
+            "start": 1342,
             "type": "VariableDeclaration",
             "type": "VariableDeclaration"
           },
           {
             "declaration": {
-              "end": 1852,
+              "end": 1847,
               "id": {
-                "end": 1587,
+                "end": 1582,
                 "name": "sketch002",
-                "start": 1578,
+                "start": 1573,
                 "type": "Identifier"
               },
               "init": {
@@ -2739,55 +2739,55 @@ description: Variables in memory after executing enclosure.kcl
                   {
                     "arguments": [
                       {
-                        "end": 1612,
+                        "end": 1607,
                         "name": "plane001",
-                        "start": 1604,
+                        "start": 1599,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     ],
                     "callee": {
-                      "end": 1603,
+                      "end": 1598,
                       "name": "startSketchOn",
-                      "start": 1590,
+                      "start": 1585,
                       "type": "Identifier"
                     },
-                    "end": 1613,
-                    "start": 1590,
+                    "end": 1608,
+                    "start": 1585,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   {
                     "arguments": [
                       {
-                        "end": 1732,
+                        "end": 1727,
                         "properties": [
                           {
-                            "end": 1680,
+                            "end": 1675,
                             "key": {
-                              "end": 1645,
+                              "end": 1640,
                               "name": "center",
-                              "start": 1639,
+                              "start": 1634,
                               "type": "Identifier"
                             },
-                            "start": 1639,
+                            "start": 1634,
                             "type": "ObjectProperty",
                             "value": {
                               "elements": [
                                 {
                                   "computed": false,
-                                  "end": 1663,
+                                  "end": 1658,
                                   "object": {
-                                    "end": 1660,
+                                    "end": 1655,
                                     "name": "originStart",
-                                    "start": 1649,
+                                    "start": 1644,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "property": {
-                                    "end": 1662,
+                                    "end": 1657,
                                     "raw": "0",
-                                    "start": 1661,
+                                    "start": 1656,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -2795,24 +2795,24 @@ description: Variables in memory after executing enclosure.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 1649,
+                                  "start": 1644,
                                   "type": "MemberExpression",
                                   "type": "MemberExpression"
                                 },
                                 {
                                   "computed": false,
-                                  "end": 1679,
+                                  "end": 1674,
                                   "object": {
-                                    "end": 1676,
+                                    "end": 1671,
                                     "name": "originStart",
-                                    "start": 1665,
+                                    "start": 1660,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "property": {
-                                    "end": 1678,
+                                    "end": 1673,
                                     "raw": "1",
-                                    "start": 1677,
+                                    "start": 1672,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -2820,69 +2820,69 @@ description: Variables in memory after executing enclosure.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 1665,
+                                  "start": 1660,
                                   "type": "MemberExpression",
                                   "type": "MemberExpression"
                                 }
                               ],
-                              "end": 1680,
-                              "start": 1648,
+                              "end": 1675,
+                              "start": 1643,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             }
                           },
                           {
-                            "end": 1723,
+                            "end": 1718,
                             "key": {
-                              "end": 1697,
+                              "end": 1692,
                               "name": "radius",
-                              "start": 1691,
+                              "start": 1686,
                               "type": "Identifier"
                             },
-                            "start": 1691,
+                            "start": 1686,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1723,
+                              "end": 1718,
                               "left": {
-                                "end": 1707,
+                                "end": 1702,
                                 "name": "holeDia",
-                                "start": 1700,
+                                "start": 1695,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "+",
                               "right": {
-                                "end": 1723,
+                                "end": 1718,
                                 "name": "wallThickness",
-                                "start": 1710,
+                                "start": 1705,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1700,
+                              "start": 1695,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           }
                         ],
-                        "start": 1628,
+                        "start": 1623,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       },
                       {
-                        "end": 1735,
-                        "start": 1734,
+                        "end": 1730,
+                        "start": 1729,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 1627,
+                      "end": 1622,
                       "name": "circle",
-                      "start": 1621,
+                      "start": 1616,
                       "type": "Identifier"
                     },
-                    "end": 1736,
-                    "start": 1621,
+                    "end": 1731,
+                    "start": 1616,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -2891,34 +2891,34 @@ description: Variables in memory after executing enclosure.kcl
                       {
                         "arguments": [
                           {
-                            "end": 1844,
+                            "end": 1839,
                             "properties": [
                               {
-                                "end": 1808,
+                                "end": 1803,
                                 "key": {
-                                  "end": 1773,
+                                  "end": 1768,
                                   "name": "center",
-                                  "start": 1767,
+                                  "start": 1762,
                                   "type": "Identifier"
                                 },
-                                "start": 1767,
+                                "start": 1762,
                                 "type": "ObjectProperty",
                                 "value": {
                                   "elements": [
                                     {
                                       "computed": false,
-                                      "end": 1791,
+                                      "end": 1786,
                                       "object": {
-                                        "end": 1788,
+                                        "end": 1783,
                                         "name": "originStart",
-                                        "start": 1777,
+                                        "start": 1772,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 1790,
+                                        "end": 1785,
                                         "raw": "0",
-                                        "start": 1789,
+                                        "start": 1784,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -2926,24 +2926,24 @@ description: Variables in memory after executing enclosure.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 1777,
+                                      "start": 1772,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
                                     {
                                       "computed": false,
-                                      "end": 1807,
+                                      "end": 1802,
                                       "object": {
-                                        "end": 1804,
+                                        "end": 1799,
                                         "name": "originStart",
-                                        "start": 1793,
+                                        "start": 1788,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 1806,
+                                        "end": 1801,
                                         "raw": "1",
-                                        "start": 1805,
+                                        "start": 1800,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -2951,98 +2951,98 @@ description: Variables in memory after executing enclosure.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 1793,
+                                      "start": 1788,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     }
                                   ],
-                                  "end": 1808,
-                                  "start": 1776,
+                                  "end": 1803,
+                                  "start": 1771,
                                   "type": "ArrayExpression",
                                   "type": "ArrayExpression"
                                 }
                               },
                               {
-                                "end": 1835,
+                                "end": 1830,
                                 "key": {
-                                  "end": 1825,
+                                  "end": 1820,
                                   "name": "radius",
-                                  "start": 1819,
+                                  "start": 1814,
                                   "type": "Identifier"
                                 },
-                                "start": 1819,
+                                "start": 1814,
                                 "type": "ObjectProperty",
                                 "value": {
-                                  "end": 1835,
+                                  "end": 1830,
                                   "name": "holeDia",
-                                  "start": 1828,
+                                  "start": 1823,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 }
                               }
                             ],
-                            "start": 1756,
+                            "start": 1751,
                             "type": "ObjectExpression",
                             "type": "ObjectExpression"
                           },
                           {
-                            "end": 1847,
-                            "start": 1846,
+                            "end": 1842,
+                            "start": 1841,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 1755,
+                          "end": 1750,
                           "name": "circle",
-                          "start": 1749,
+                          "start": 1744,
                           "type": "Identifier"
                         },
-                        "end": 1848,
-                        "start": 1749,
+                        "end": 1843,
+                        "start": 1744,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
-                        "end": 1851,
-                        "start": 1850,
+                        "end": 1846,
+                        "start": 1845,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 1748,
+                      "end": 1743,
                       "name": "hole",
-                      "start": 1744,
+                      "start": 1739,
                       "type": "Identifier"
                     },
-                    "end": 1852,
-                    "start": 1744,
+                    "end": 1847,
+                    "start": 1739,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   }
                 ],
-                "end": 1852,
-                "start": 1590,
+                "end": 1847,
+                "start": 1585,
                 "type": "PipeExpression",
                 "type": "PipeExpression"
               },
-              "start": 1578,
+              "start": 1573,
               "type": "VariableDeclarator"
             },
-            "end": 1852,
+            "end": 1847,
             "kind": "const",
-            "start": 1578,
+            "start": 1573,
             "type": "VariableDeclaration",
             "type": "VariableDeclaration"
           },
           {
             "declaration": {
-              "end": 1919,
+              "end": 1914,
               "id": {
-                "end": 1865,
+                "end": 1860,
                 "name": "extrude002",
-                "start": 1855,
+                "start": 1850,
                 "type": "Identifier"
               },
               "init": {
@@ -3054,76 +3054,76 @@ description: Variables in memory after executing enclosure.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 1918,
+                      "end": 1913,
                       "left": {
-                        "end": 1902,
+                        "end": 1897,
                         "name": "height",
-                        "start": 1896,
+                        "start": 1891,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 1918,
+                        "end": 1913,
                         "name": "wallThickness",
-                        "start": 1905,
+                        "start": 1900,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 1896,
+                      "start": 1891,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1875,
+                  "end": 1870,
                   "name": "extrude",
-                  "start": 1868,
+                  "start": 1863,
                   "type": "Identifier"
                 },
-                "end": 1919,
-                "start": 1868,
+                "end": 1914,
+                "start": 1863,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "end": 1885,
+                  "end": 1880,
                   "name": "sketch002",
-                  "start": 1876,
+                  "start": 1871,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
               },
-              "start": 1855,
+              "start": 1850,
               "type": "VariableDeclarator"
             },
-            "end": 1919,
+            "end": 1914,
             "kind": "const",
-            "start": 1855,
+            "start": 1850,
             "type": "VariableDeclaration",
             "type": "VariableDeclaration"
           },
           {
             "argument": {
-              "end": 1940,
+              "end": 1935,
               "name": "extrude002",
-              "start": 1930,
+              "start": 1925,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "end": 1940,
-            "start": 1923,
+            "end": 1935,
+            "start": 1918,
             "type": "ReturnStatement",
             "type": "ReturnStatement"
           }
         ],
-        "end": 1942,
+        "end": 1937,
         "nonCodeMeta": {
           "nonCodeNodes": {
             "0": [
               {
-                "end": 1575,
-                "start": 1519,
+                "end": 1570,
+                "start": 1514,
                 "type": "NonCodeNode",
                 "value": {
                   "type": "newLineBlockComment",
@@ -3134,8 +3134,8 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "2": [
               {
-                "end": 1923,
-                "start": 1919,
+                "end": 1918,
+                "start": 1914,
                 "type": "NonCodeNode",
                 "value": {
                   "type": "newLine"
@@ -3145,8 +3145,8 @@ description: Variables in memory after executing enclosure.kcl
           },
           "startNodes": [
             {
-              "end": 1345,
-              "start": 1296,
+              "end": 1340,
+              "start": 1291,
               "type": "NonCodeNode",
               "value": {
                 "type": "blockComment",
@@ -3156,21 +3156,21 @@ description: Variables in memory after executing enclosure.kcl
             }
           ]
         },
-        "start": 1296
+        "start": 1291
       },
-      "end": 1942,
+      "end": 1937,
       "params": [
         {
           "type": "Parameter",
           "identifier": {
-            "end": 1293,
+            "end": 1288,
             "name": "originStart",
-            "start": 1282,
+            "start": 1277,
             "type": "Identifier"
           }
         }
       ],
-      "start": 1281,
+      "start": 1276,
       "type": "FunctionExpression"
     },
     "memory": [
@@ -3180,8 +3180,8 @@ description: Variables in memory after executing enclosure.kcl
     "__meta": [
       {
         "sourceRange": [
-          1281,
-          1942,
+          1276,
+          1937,
           0
         ]
       }
@@ -3328,8 +3328,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2462,
-            2510,
+            2457,
+            2505,
             0
           ]
         },
@@ -3338,8 +3338,8 @@ description: Variables in memory after executing enclosure.kcl
           0.0
         ],
         "tag": {
-          "end": 2509,
-          "start": 2488,
+          "end": 2504,
+          "start": 2483,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA002"
         },
@@ -3356,13 +3356,13 @@ description: Variables in memory after executing enclosure.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          2462,
-          2510,
+          2457,
+          2505,
           0
         ],
         "tag": {
-          "end": 2509,
-          "start": 2488,
+          "end": 2504,
+          "start": 2483,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA002"
         },
@@ -3372,8 +3372,8 @@ description: Variables in memory after executing enclosure.kcl
     "__meta": [
       {
         "sourceRange": [
-          2488,
-          2509,
+          2483,
+          2504,
           0
         ]
       }
@@ -3391,8 +3391,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            4105,
-            4175,
+            4095,
+            4165,
             0
           ]
         },
@@ -3401,8 +3401,8 @@ description: Variables in memory after executing enclosure.kcl
           3.0
         ],
         "tag": {
-          "end": 4174,
-          "start": 4153,
+          "end": 4164,
+          "start": 4143,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA003"
         },
@@ -3419,13 +3419,13 @@ description: Variables in memory after executing enclosure.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          4105,
-          4175,
+          4095,
+          4165,
           0
         ],
         "tag": {
-          "end": 4174,
-          "start": 4153,
+          "end": 4164,
+          "start": 4143,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA003"
         },
@@ -3435,8 +3435,8 @@ description: Variables in memory after executing enclosure.kcl
     "__meta": [
       {
         "sourceRange": [
-          4153,
-          4174,
+          4143,
+          4164,
           0
         ]
       }
@@ -3517,8 +3517,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2516,
-            2618,
+            2511,
+            2613,
             0
           ]
         },
@@ -3527,8 +3527,8 @@ description: Variables in memory after executing enclosure.kcl
           0.0
         ],
         "tag": {
-          "end": 2617,
-          "start": 2596,
+          "end": 2612,
+          "start": 2591,
           "type": "TagDeclarator",
           "value": "rectangleSegmentB002"
         },
@@ -3545,13 +3545,13 @@ description: Variables in memory after executing enclosure.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          2516,
-          2618,
+          2511,
+          2613,
           0
         ],
         "tag": {
-          "end": 2617,
-          "start": 2596,
+          "end": 2612,
+          "start": 2591,
           "type": "TagDeclarator",
           "value": "rectangleSegmentB002"
         },
@@ -3561,8 +3561,8 @@ description: Variables in memory after executing enclosure.kcl
     "__meta": [
       {
         "sourceRange": [
-          2596,
-          2617,
+          2591,
+          2612,
           0
         ]
       }
@@ -3580,8 +3580,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            4181,
-            4305,
+            4171,
+            4295,
             0
           ]
         },
@@ -3590,8 +3590,8 @@ description: Variables in memory after executing enclosure.kcl
           3.0
         ],
         "tag": {
-          "end": 4304,
-          "start": 4283,
+          "end": 4294,
+          "start": 4273,
           "type": "TagDeclarator",
           "value": "rectangleSegmentB003"
         },
@@ -3608,13 +3608,13 @@ description: Variables in memory after executing enclosure.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          4181,
-          4305,
+          4171,
+          4295,
           0
         ],
         "tag": {
-          "end": 4304,
-          "start": 4283,
+          "end": 4294,
+          "start": 4273,
           "type": "TagDeclarator",
           "value": "rectangleSegmentB003"
         },
@@ -3624,8 +3624,8 @@ description: Variables in memory after executing enclosure.kcl
     "__meta": [
       {
         "sourceRange": [
-          4283,
-          4304,
+          4273,
+          4294,
           0
         ]
       }
@@ -3706,8 +3706,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2624,
-            2744,
+            2619,
+            2739,
             0
           ]
         },
@@ -3716,8 +3716,8 @@ description: Variables in memory after executing enclosure.kcl
           175.0
         ],
         "tag": {
-          "end": 2743,
-          "start": 2722,
+          "end": 2738,
+          "start": 2717,
           "type": "TagDeclarator",
           "value": "rectangleSegmentC002"
         },
@@ -3734,13 +3734,13 @@ description: Variables in memory after executing enclosure.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          2624,
-          2744,
+          2619,
+          2739,
           0
         ],
         "tag": {
-          "end": 2743,
-          "start": 2722,
+          "end": 2738,
+          "start": 2717,
           "type": "TagDeclarator",
           "value": "rectangleSegmentC002"
         },
@@ -3750,8 +3750,8 @@ description: Variables in memory after executing enclosure.kcl
     "__meta": [
       {
         "sourceRange": [
-          2722,
-          2743,
+          2717,
+          2738,
           0
         ]
       }
@@ -3769,8 +3769,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            4311,
-            4431,
+            4301,
+            4421,
             0
           ]
         },
@@ -3779,8 +3779,8 @@ description: Variables in memory after executing enclosure.kcl
           172.0
         ],
         "tag": {
-          "end": 4430,
-          "start": 4409,
+          "end": 4420,
+          "start": 4399,
           "type": "TagDeclarator",
           "value": "rectangleSegmentC003"
         },
@@ -3797,13 +3797,13 @@ description: Variables in memory after executing enclosure.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          4311,
-          4431,
+          4301,
+          4421,
           0
         ],
         "tag": {
-          "end": 4430,
-          "start": 4409,
+          "end": 4420,
+          "start": 4399,
           "type": "TagDeclarator",
           "value": "rectangleSegmentC003"
         },
@@ -3813,8 +3813,8 @@ description: Variables in memory after executing enclosure.kcl
     "__meta": [
       {
         "sourceRange": [
-          4409,
-          4430,
+          4399,
+          4420,
           0
         ]
       }
@@ -3895,8 +3895,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2750,
-            2835,
+            2745,
+            2830,
             0
           ]
         },
@@ -3905,8 +3905,8 @@ description: Variables in memory after executing enclosure.kcl
           175.0
         ],
         "tag": {
-          "end": 2834,
-          "start": 2813,
+          "end": 2829,
+          "start": 2808,
           "type": "TagDeclarator",
           "value": "rectangleSegmentD002"
         },
@@ -3923,13 +3923,13 @@ description: Variables in memory after executing enclosure.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          2750,
-          2835,
+          2745,
+          2830,
           0
         ],
         "tag": {
-          "end": 2834,
-          "start": 2813,
+          "end": 2829,
+          "start": 2808,
           "type": "TagDeclarator",
           "value": "rectangleSegmentD002"
         },
@@ -3939,8 +3939,8 @@ description: Variables in memory after executing enclosure.kcl
     "__meta": [
       {
         "sourceRange": [
-          2813,
-          2834,
+          2808,
+          2829,
           0
         ]
       }
@@ -3958,8 +3958,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            4437,
-            4522,
+            4427,
+            4512,
             0
           ]
         },
@@ -3968,8 +3968,8 @@ description: Variables in memory after executing enclosure.kcl
           172.0
         ],
         "tag": {
-          "end": 4521,
-          "start": 4500,
+          "end": 4511,
+          "start": 4490,
           "type": "TagDeclarator",
           "value": "rectangleSegmentD003"
         },
@@ -3986,13 +3986,13 @@ description: Variables in memory after executing enclosure.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          4437,
-          4522,
+          4427,
+          4512,
           0
         ],
         "tag": {
-          "end": 4521,
-          "start": 4500,
+          "end": 4511,
+          "start": 4490,
           "type": "TagDeclarator",
           "value": "rectangleSegmentD003"
         },
@@ -4002,8 +4002,8 @@ description: Variables in memory after executing enclosure.kcl
     "__meta": [
       {
         "sourceRange": [
-          4500,
-          4521,
+          4490,
+          4511,
           0
         ]
       }
@@ -4516,8 +4516,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2462,
-              2510,
+              2457,
+              2505,
               0
             ]
           },
@@ -4526,8 +4526,8 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "end": 2509,
-            "start": 2488,
+            "end": 2504,
+            "start": 2483,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -4544,8 +4544,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2516,
-              2618,
+              2511,
+              2613,
               0
             ]
           },
@@ -4554,8 +4554,8 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "end": 2617,
-            "start": 2596,
+            "end": 2612,
+            "start": 2591,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -4572,8 +4572,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2624,
-              2744,
+              2619,
+              2739,
               0
             ]
           },
@@ -4582,8 +4582,8 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "end": 2743,
-            "start": 2722,
+            "end": 2738,
+            "start": 2717,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -4600,8 +4600,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2750,
-              2835,
+              2745,
+              2830,
               0
             ]
           },
@@ -4610,8 +4610,8 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "end": 2834,
-            "start": 2813,
+            "end": 2829,
+            "start": 2808,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD002"
           },
@@ -4628,8 +4628,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2841,
-              2848,
+              2836,
+              2843,
               0
             ]
           },
@@ -4694,8 +4694,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2421,
-            2456,
+            2416,
+            2451,
             0
           ]
         }
@@ -4712,8 +4712,8 @@ description: Variables in memory after executing enclosure.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2462,
-                  2510,
+                  2457,
+                  2505,
                   0
                 ]
               },
@@ -4722,8 +4722,8 @@ description: Variables in memory after executing enclosure.kcl
                 0.0
               ],
               "tag": {
-                "end": 2509,
-                "start": 2488,
+                "end": 2504,
+                "start": 2483,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -4740,13 +4740,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2510,
+                2457,
+                2505,
                 0
               ],
               "tag": {
-                "end": 2509,
-                "start": 2488,
+                "end": 2504,
+                "start": 2483,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -4756,8 +4756,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                2488,
-                2509,
+                2483,
+                2504,
                 0
               ]
             }
@@ -4774,8 +4774,8 @@ description: Variables in memory after executing enclosure.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2516,
-                  2618,
+                  2511,
+                  2613,
                   0
                 ]
               },
@@ -4784,8 +4784,8 @@ description: Variables in memory after executing enclosure.kcl
                 0.0
               ],
               "tag": {
-                "end": 2617,
-                "start": 2596,
+                "end": 2612,
+                "start": 2591,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB002"
               },
@@ -4802,13 +4802,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2516,
-                2618,
+                2511,
+                2613,
                 0
               ],
               "tag": {
-                "end": 2617,
-                "start": 2596,
+                "end": 2612,
+                "start": 2591,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB002"
               },
@@ -4818,8 +4818,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                2596,
-                2617,
+                2591,
+                2612,
                 0
               ]
             }
@@ -4836,8 +4836,8 @@ description: Variables in memory after executing enclosure.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2624,
-                  2744,
+                  2619,
+                  2739,
                   0
                 ]
               },
@@ -4846,8 +4846,8 @@ description: Variables in memory after executing enclosure.kcl
                 175.0
               ],
               "tag": {
-                "end": 2743,
-                "start": 2722,
+                "end": 2738,
+                "start": 2717,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC002"
               },
@@ -4864,13 +4864,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2624,
-                2744,
+                2619,
+                2739,
                 0
               ],
               "tag": {
-                "end": 2743,
-                "start": 2722,
+                "end": 2738,
+                "start": 2717,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC002"
               },
@@ -4880,8 +4880,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                2722,
-                2743,
+                2717,
+                2738,
                 0
               ]
             }
@@ -4898,8 +4898,8 @@ description: Variables in memory after executing enclosure.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2750,
-                  2835,
+                  2745,
+                  2830,
                   0
                 ]
               },
@@ -4908,8 +4908,8 @@ description: Variables in memory after executing enclosure.kcl
                 175.0
               ],
               "tag": {
-                "end": 2834,
-                "start": 2813,
+                "end": 2829,
+                "start": 2808,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentD002"
               },
@@ -4926,13 +4926,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2750,
-                2835,
+                2745,
+                2830,
                 0
               ],
               "tag": {
-                "end": 2834,
-                "start": 2813,
+                "end": 2829,
+                "start": 2808,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentD002"
               },
@@ -4942,8 +4942,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                2813,
-                2834,
+                2808,
+                2829,
                 0
               ]
             }
@@ -4958,8 +4958,8 @@ description: Variables in memory after executing enclosure.kcl
       "__meta": [
         {
           "sourceRange": [
-            2421,
-            2456,
+            2416,
+            2451,
             0
           ]
         }
@@ -4976,8 +4976,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4105,
-              4175,
+              4095,
+              4165,
               0
             ]
           },
@@ -4986,8 +4986,8 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "tag": {
-            "end": 4174,
-            "start": 4153,
+            "end": 4164,
+            "start": 4143,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -5004,8 +5004,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4181,
-              4305,
+              4171,
+              4295,
               0
             ]
           },
@@ -5014,8 +5014,8 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "tag": {
-            "end": 4304,
-            "start": 4283,
+            "end": 4294,
+            "start": 4273,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -5032,8 +5032,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4311,
-              4431,
+              4301,
+              4421,
               0
             ]
           },
@@ -5042,8 +5042,8 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "tag": {
-            "end": 4430,
-            "start": 4409,
+            "end": 4420,
+            "start": 4399,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -5060,8 +5060,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4437,
-              4522,
+              4427,
+              4512,
               0
             ]
           },
@@ -5070,8 +5070,8 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "tag": {
-            "end": 4521,
-            "start": 4500,
+            "end": 4511,
+            "start": 4490,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD003"
           },
@@ -5088,8 +5088,8 @@ description: Variables in memory after executing enclosure.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4528,
-              4535,
+              4518,
+              4525,
               0
             ]
           },
@@ -5137,13 +5137,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2510,
+                2457,
+                2505,
                 0
               ],
               "tag": {
-                "end": 2509,
-                "start": 2488,
+                "end": 2504,
+                "start": 2483,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -5153,13 +5153,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2516,
-                2618,
+                2511,
+                2613,
                 0
               ],
               "tag": {
-                "end": 2617,
-                "start": 2596,
+                "end": 2612,
+                "start": 2591,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB002"
               },
@@ -5169,13 +5169,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2624,
-                2744,
+                2619,
+                2739,
                 0
               ],
               "tag": {
-                "end": 2743,
-                "start": 2722,
+                "end": 2738,
+                "start": 2717,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC002"
               },
@@ -5185,13 +5185,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2750,
-                2835,
+                2745,
+                2830,
                 0
               ],
               "tag": {
-                "end": 2834,
-                "start": 2813,
+                "end": 2829,
+                "start": 2808,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentD002"
               },
@@ -5206,8 +5206,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2462,
-                    2510,
+                    2457,
+                    2505,
                     0
                   ]
                 },
@@ -5216,8 +5216,8 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 2509,
-                  "start": 2488,
+                  "end": 2504,
+                  "start": 2483,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -5234,8 +5234,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2516,
-                    2618,
+                    2511,
+                    2613,
                     0
                   ]
                 },
@@ -5244,8 +5244,8 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 2617,
-                  "start": 2596,
+                  "end": 2612,
+                  "start": 2591,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -5262,8 +5262,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2624,
-                    2744,
+                    2619,
+                    2739,
                     0
                   ]
                 },
@@ -5272,8 +5272,8 @@ description: Variables in memory after executing enclosure.kcl
                   175.0
                 ],
                 "tag": {
-                  "end": 2743,
-                  "start": 2722,
+                  "end": 2738,
+                  "start": 2717,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -5290,8 +5290,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2750,
-                    2835,
+                    2745,
+                    2830,
                     0
                   ]
                 },
@@ -5300,8 +5300,8 @@ description: Variables in memory after executing enclosure.kcl
                   175.0
                 ],
                 "tag": {
-                  "end": 2834,
-                  "start": 2813,
+                  "end": 2829,
+                  "start": 2808,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD002"
                 },
@@ -5318,8 +5318,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2841,
-                    2848,
+                    2836,
+                    2843,
                     0
                   ]
                 },
@@ -5384,8 +5384,8 @@ description: Variables in memory after executing enclosure.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2421,
-                  2456,
+                  2416,
+                  2451,
                   0
                 ]
               }
@@ -5402,8 +5402,8 @@ description: Variables in memory after executing enclosure.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2462,
-                        2510,
+                        2457,
+                        2505,
                         0
                       ]
                     },
@@ -5412,8 +5412,8 @@ description: Variables in memory after executing enclosure.kcl
                       0.0
                     ],
                     "tag": {
-                      "end": 2509,
-                      "start": 2488,
+                      "end": 2504,
+                      "start": 2483,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
@@ -5430,13 +5430,13 @@ description: Variables in memory after executing enclosure.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2462,
-                      2510,
+                      2457,
+                      2505,
                       0
                     ],
                     "tag": {
-                      "end": 2509,
-                      "start": 2488,
+                      "end": 2504,
+                      "start": 2483,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
@@ -5446,8 +5446,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2488,
-                      2509,
+                      2483,
+                      2504,
                       0
                     ]
                   }
@@ -5464,8 +5464,8 @@ description: Variables in memory after executing enclosure.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2516,
-                        2618,
+                        2511,
+                        2613,
                         0
                       ]
                     },
@@ -5474,8 +5474,8 @@ description: Variables in memory after executing enclosure.kcl
                       0.0
                     ],
                     "tag": {
-                      "end": 2617,
-                      "start": 2596,
+                      "end": 2612,
+                      "start": 2591,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB002"
                     },
@@ -5492,13 +5492,13 @@ description: Variables in memory after executing enclosure.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2516,
-                      2618,
+                      2511,
+                      2613,
                       0
                     ],
                     "tag": {
-                      "end": 2617,
-                      "start": 2596,
+                      "end": 2612,
+                      "start": 2591,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB002"
                     },
@@ -5508,8 +5508,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2596,
-                      2617,
+                      2591,
+                      2612,
                       0
                     ]
                   }
@@ -5526,8 +5526,8 @@ description: Variables in memory after executing enclosure.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2624,
-                        2744,
+                        2619,
+                        2739,
                         0
                       ]
                     },
@@ -5536,8 +5536,8 @@ description: Variables in memory after executing enclosure.kcl
                       175.0
                     ],
                     "tag": {
-                      "end": 2743,
-                      "start": 2722,
+                      "end": 2738,
+                      "start": 2717,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC002"
                     },
@@ -5554,13 +5554,13 @@ description: Variables in memory after executing enclosure.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2624,
-                      2744,
+                      2619,
+                      2739,
                       0
                     ],
                     "tag": {
-                      "end": 2743,
-                      "start": 2722,
+                      "end": 2738,
+                      "start": 2717,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC002"
                     },
@@ -5570,8 +5570,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2722,
-                      2743,
+                      2717,
+                      2738,
                       0
                     ]
                   }
@@ -5588,8 +5588,8 @@ description: Variables in memory after executing enclosure.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2750,
-                        2835,
+                        2745,
+                        2830,
                         0
                       ]
                     },
@@ -5598,8 +5598,8 @@ description: Variables in memory after executing enclosure.kcl
                       175.0
                     ],
                     "tag": {
-                      "end": 2834,
-                      "start": 2813,
+                      "end": 2829,
+                      "start": 2808,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentD002"
                     },
@@ -5616,13 +5616,13 @@ description: Variables in memory after executing enclosure.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2750,
-                      2835,
+                      2745,
+                      2830,
                       0
                     ],
                     "tag": {
-                      "end": 2834,
-                      "start": 2813,
+                      "end": 2829,
+                      "start": 2808,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentD002"
                     },
@@ -5632,8 +5632,8 @@ description: Variables in memory after executing enclosure.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      2813,
-                      2834,
+                      2808,
+                      2829,
                       0
                     ]
                   }
@@ -5648,8 +5648,8 @@ description: Variables in memory after executing enclosure.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  2421,
-                  2456,
+                  2416,
+                  2451,
                   0
                 ]
               }
@@ -5694,8 +5694,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                2421,
-                2456,
+                2416,
+                2451,
                 0
               ]
             }
@@ -5707,8 +5707,8 @@ description: Variables in memory after executing enclosure.kcl
         "__meta": [
           {
             "sourceRange": [
-              3977,
-              4009,
+              3967,
+              3999,
               0
             ]
           }
@@ -5730,8 +5730,8 @@ description: Variables in memory after executing enclosure.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            4015,
-            4099,
+            4005,
+            4089,
             0
           ]
         }
@@ -5748,8 +5748,8 @@ description: Variables in memory after executing enclosure.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4105,
-                  4175,
+                  4095,
+                  4165,
                   0
                 ]
               },
@@ -5758,8 +5758,8 @@ description: Variables in memory after executing enclosure.kcl
                 3.0
               ],
               "tag": {
-                "end": 4174,
-                "start": 4153,
+                "end": 4164,
+                "start": 4143,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA003"
               },
@@ -5776,13 +5776,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                4105,
-                4175,
+                4095,
+                4165,
                 0
               ],
               "tag": {
-                "end": 4174,
-                "start": 4153,
+                "end": 4164,
+                "start": 4143,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA003"
               },
@@ -5792,8 +5792,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                4153,
-                4174,
+                4143,
+                4164,
                 0
               ]
             }
@@ -5810,8 +5810,8 @@ description: Variables in memory after executing enclosure.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4181,
-                  4305,
+                  4171,
+                  4295,
                   0
                 ]
               },
@@ -5820,8 +5820,8 @@ description: Variables in memory after executing enclosure.kcl
                 3.0
               ],
               "tag": {
-                "end": 4304,
-                "start": 4283,
+                "end": 4294,
+                "start": 4273,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB003"
               },
@@ -5838,13 +5838,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                4181,
-                4305,
+                4171,
+                4295,
                 0
               ],
               "tag": {
-                "end": 4304,
-                "start": 4283,
+                "end": 4294,
+                "start": 4273,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB003"
               },
@@ -5854,8 +5854,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                4283,
-                4304,
+                4273,
+                4294,
                 0
               ]
             }
@@ -5872,8 +5872,8 @@ description: Variables in memory after executing enclosure.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4311,
-                  4431,
+                  4301,
+                  4421,
                   0
                 ]
               },
@@ -5882,8 +5882,8 @@ description: Variables in memory after executing enclosure.kcl
                 172.0
               ],
               "tag": {
-                "end": 4430,
-                "start": 4409,
+                "end": 4420,
+                "start": 4399,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC003"
               },
@@ -5900,13 +5900,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                4311,
-                4431,
+                4301,
+                4421,
                 0
               ],
               "tag": {
-                "end": 4430,
-                "start": 4409,
+                "end": 4420,
+                "start": 4399,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC003"
               },
@@ -5916,8 +5916,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                4409,
-                4430,
+                4399,
+                4420,
                 0
               ]
             }
@@ -5934,8 +5934,8 @@ description: Variables in memory after executing enclosure.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4437,
-                  4522,
+                  4427,
+                  4512,
                   0
                 ]
               },
@@ -5944,8 +5944,8 @@ description: Variables in memory after executing enclosure.kcl
                 172.0
               ],
               "tag": {
-                "end": 4521,
-                "start": 4500,
+                "end": 4511,
+                "start": 4490,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentD003"
               },
@@ -5962,13 +5962,13 @@ description: Variables in memory after executing enclosure.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                4437,
-                4522,
+                4427,
+                4512,
                 0
               ],
               "tag": {
-                "end": 4521,
-                "start": 4500,
+                "end": 4511,
+                "start": 4490,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentD003"
               },
@@ -5978,8 +5978,8 @@ description: Variables in memory after executing enclosure.kcl
           "__meta": [
             {
               "sourceRange": [
-                4500,
-                4521,
+                4490,
+                4511,
                 0
               ]
             }
@@ -5994,8 +5994,8 @@ description: Variables in memory after executing enclosure.kcl
       "__meta": [
         {
           "sourceRange": [
-            4015,
-            4099,
+            4005,
+            4089,
             0
           ]
         }

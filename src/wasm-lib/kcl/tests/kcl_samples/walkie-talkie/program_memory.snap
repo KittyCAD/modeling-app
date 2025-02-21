@@ -618,7 +618,7 @@ description: Variables in memory after executing walkie-talkie.kcl
           },
           {
             "declaration": {
-              "end": 933,
+              "end": 928,
               "id": {
                 "end": 687,
                 "moduleId": 8,
@@ -670,115 +670,87 @@ description: Variables in memory after executing walkie-talkie.kcl
                   {
                     "arguments": [
                       {
-                        "end": 891,
-                        "moduleId": 8,
-                        "properties": [
-                          {
-                            "end": 777,
-                            "key": {
-                              "end": 770,
-                              "moduleId": 8,
-                              "name": "length",
-                              "start": 764,
-                              "type": "Identifier"
-                            },
-                            "moduleId": 8,
-                            "start": 764,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 777,
-                              "moduleId": 8,
-                              "raw": ".050",
-                              "start": 773,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.05,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "end": 882,
-                            "key": {
-                              "end": 792,
-                              "moduleId": 8,
-                              "name": "tags",
-                              "start": 788,
-                              "type": "Identifier"
-                            },
-                            "moduleId": 8,
-                            "start": 788,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "arguments": [
-                                    {
-                                      "end": 832,
-                                      "moduleId": 8,
-                                      "name": "tag1",
-                                      "start": 828,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    }
-                                  ],
-                                  "callee": {
-                                    "end": 827,
-                                    "moduleId": 8,
-                                    "name": "getNextAdjacentEdge",
-                                    "start": 808,
-                                    "type": "Identifier"
-                                  },
-                                  "end": 833,
-                                  "moduleId": 8,
-                                  "start": 808,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
-                                },
-                                {
-                                  "arguments": [
-                                    {
-                                      "end": 870,
-                                      "moduleId": 8,
-                                      "name": "tag2",
-                                      "start": 866,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    }
-                                  ],
-                                  "callee": {
-                                    "end": 865,
-                                    "moduleId": 8,
-                                    "name": "getNextAdjacentEdge",
-                                    "start": 846,
-                                    "type": "Identifier"
-                                  },
-                                  "end": 871,
-                                  "moduleId": 8,
-                                  "start": 846,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
-                                }
-                              ],
-                              "end": 882,
-                              "moduleId": 8,
-                              "start": 795,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            }
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "length"
+                        },
+                        "arg": {
+                          "end": 776,
+                          "moduleId": 8,
+                          "raw": ".050",
+                          "start": 772,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.05,
+                            "suffix": "None"
                           }
-                        ],
-                        "start": 753,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                        }
                       },
                       {
-                        "end": 894,
-                        "moduleId": 8,
-                        "start": 893,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "tags"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "arguments": [
+                                {
+                                  "end": 831,
+                                  "moduleId": 8,
+                                  "name": "tag1",
+                                  "start": 827,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                }
+                              ],
+                              "callee": {
+                                "end": 826,
+                                "moduleId": 8,
+                                "name": "getNextAdjacentEdge",
+                                "start": 807,
+                                "type": "Identifier"
+                              },
+                              "end": 832,
+                              "moduleId": 8,
+                              "start": 807,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            {
+                              "arguments": [
+                                {
+                                  "end": 869,
+                                  "moduleId": 8,
+                                  "name": "tag2",
+                                  "start": 865,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                }
+                              ],
+                              "callee": {
+                                "end": 864,
+                                "moduleId": 8,
+                                "name": "getNextAdjacentEdge",
+                                "start": 845,
+                                "type": "Identifier"
+                              },
+                              "end": 870,
+                              "moduleId": 8,
+                              "start": 845,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            }
+                          ],
+                          "end": 881,
+                          "moduleId": 8,
+                          "start": 794,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
                       }
                     ],
                     "callee": {
@@ -788,11 +760,12 @@ description: Variables in memory after executing walkie-talkie.kcl
                       "start": 745,
                       "type": "Identifier"
                     },
-                    "end": 895,
+                    "end": 890,
                     "moduleId": 8,
                     "start": 745,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
                   },
                   {
                     "arguments": [
@@ -803,10 +776,10 @@ description: Variables in memory after executing walkie-talkie.kcl
                           "name": "color"
                         },
                         "arg": {
-                          "end": 932,
+                          "end": 927,
                           "moduleId": 8,
                           "raw": "\"#ff0000\"",
-                          "start": 923,
+                          "start": 918,
                           "type": "Literal",
                           "type": "Literal",
                           "value": "#ff0000"
@@ -814,21 +787,21 @@ description: Variables in memory after executing walkie-talkie.kcl
                       }
                     ],
                     "callee": {
-                      "end": 914,
+                      "end": 909,
                       "moduleId": 8,
                       "name": "appearance",
-                      "start": 904,
+                      "start": 899,
                       "type": "Identifier"
                     },
-                    "end": 933,
+                    "end": 928,
                     "moduleId": 8,
-                    "start": 904,
+                    "start": 899,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   }
                 ],
-                "end": 933,
+                "end": 928,
                 "moduleId": 8,
                 "start": 690,
                 "type": "PipeExpression",
@@ -838,7 +811,7 @@ description: Variables in memory after executing walkie-talkie.kcl
               "start": 674,
               "type": "VariableDeclarator"
             },
-            "end": 933,
+            "end": 928,
             "kind": "const",
             "moduleId": 8,
             "start": 674,
@@ -847,29 +820,29 @@ description: Variables in memory after executing walkie-talkie.kcl
           },
           {
             "argument": {
-              "end": 957,
+              "end": 952,
               "moduleId": 8,
               "name": "buttonExtrude",
-              "start": 944,
+              "start": 939,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "end": 957,
+            "end": 952,
             "moduleId": 8,
-            "start": 937,
+            "start": 932,
             "type": "ReturnStatement",
             "type": "ReturnStatement"
           }
         ],
-        "end": 959,
+        "end": 954,
         "moduleId": 8,
         "nonCodeMeta": {
           "nonCodeNodes": {
             "1": [
               {
-                "end": 937,
+                "end": 932,
                 "moduleId": 8,
-                "start": 933,
+                "start": 928,
                 "type": "NonCodeNode",
                 "value": {
                   "type": "newLine"
@@ -881,7 +854,7 @@ description: Variables in memory after executing walkie-talkie.kcl
         },
         "start": 267
       },
-      "end": 959,
+      "end": 954,
       "moduleId": 8,
       "params": [
         {
@@ -926,7 +899,7 @@ description: Variables in memory after executing walkie-talkie.kcl
       {
         "sourceRange": [
           241,
-          959,
+          954,
           8
         ]
       }

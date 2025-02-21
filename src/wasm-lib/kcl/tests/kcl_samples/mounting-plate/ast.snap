@@ -1051,7 +1051,7 @@ description: Result of parsing mounting-plate.kcl
       },
       {
         "declaration": {
-          "end": 2157,
+          "end": 2152,
           "id": {
             "end": 1090,
             "name": "part",
@@ -1886,251 +1886,229 @@ description: Result of parsing mounting-plate.kcl
               {
                 "arguments": [
                   {
-                    "end": 2153,
-                    "properties": [
-                      {
-                        "end": 1925,
-                        "key": {
-                          "end": 1910,
-                          "name": "radius",
-                          "start": 1904,
-                          "type": "Identifier"
-                        },
-                        "start": 1904,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 1925,
-                          "name": "filletRadius",
-                          "start": 1913,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        }
-                      },
-                      {
-                        "end": 2146,
-                        "key": {
-                          "end": 1938,
-                          "name": "tags",
-                          "start": 1934,
-                          "type": "Identifier"
-                        },
-                        "start": 1934,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "arguments": [
-                                {
-                                  "computed": false,
-                                  "end": 1989,
-                                  "object": {
-                                    "computed": false,
-                                    "end": 1983,
-                                    "object": {
-                                      "end": 1978,
-                                      "name": "rs",
-                                      "start": 1976,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "end": 1983,
-                                      "name": "tags",
-                                      "start": 1979,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "start": 1976,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "property": {
-                                    "end": 1989,
-                                    "name": "edge1",
-                                    "start": 1984,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1976,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                }
-                              ],
-                              "callee": {
-                                "end": 1975,
-                                "name": "getPreviousAdjacentEdge",
-                                "start": 1952,
-                                "type": "Identifier"
-                              },
-                              "end": 1990,
-                              "start": 1952,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
-                            },
-                            {
-                              "arguments": [
-                                {
-                                  "computed": false,
-                                  "end": 2038,
-                                  "object": {
-                                    "computed": false,
-                                    "end": 2032,
-                                    "object": {
-                                      "end": 2027,
-                                      "name": "rs",
-                                      "start": 2025,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "end": 2032,
-                                      "name": "tags",
-                                      "start": 2028,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "start": 2025,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "property": {
-                                    "end": 2038,
-                                    "name": "edge2",
-                                    "start": 2033,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 2025,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                }
-                              ],
-                              "callee": {
-                                "end": 2024,
-                                "name": "getPreviousAdjacentEdge",
-                                "start": 2001,
-                                "type": "Identifier"
-                              },
-                              "end": 2039,
-                              "start": 2001,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
-                            },
-                            {
-                              "arguments": [
-                                {
-                                  "computed": false,
-                                  "end": 2087,
-                                  "object": {
-                                    "computed": false,
-                                    "end": 2081,
-                                    "object": {
-                                      "end": 2076,
-                                      "name": "rs",
-                                      "start": 2074,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "end": 2081,
-                                      "name": "tags",
-                                      "start": 2077,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "start": 2074,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "property": {
-                                    "end": 2087,
-                                    "name": "edge3",
-                                    "start": 2082,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 2074,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                }
-                              ],
-                              "callee": {
-                                "end": 2073,
-                                "name": "getPreviousAdjacentEdge",
-                                "start": 2050,
-                                "type": "Identifier"
-                              },
-                              "end": 2088,
-                              "start": 2050,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
-                            },
-                            {
-                              "arguments": [
-                                {
-                                  "computed": false,
-                                  "end": 2136,
-                                  "object": {
-                                    "computed": false,
-                                    "end": 2130,
-                                    "object": {
-                                      "end": 2125,
-                                      "name": "rs",
-                                      "start": 2123,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "end": 2130,
-                                      "name": "tags",
-                                      "start": 2126,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "start": 2123,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "property": {
-                                    "end": 2136,
-                                    "name": "edge4",
-                                    "start": 2131,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 2123,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                }
-                              ],
-                              "callee": {
-                                "end": 2122,
-                                "name": "getPreviousAdjacentEdge",
-                                "start": 2099,
-                                "type": "Identifier"
-                              },
-                              "end": 2137,
-                              "start": 2099,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
-                            }
-                          ],
-                          "end": 2146,
-                          "start": 1941,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      }
-                    ],
-                    "start": 1895,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 1924,
+                      "name": "filletRadius",
+                      "start": 1912,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
                   },
                   {
-                    "end": 2156,
-                    "start": 2155,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tags"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "computed": false,
+                              "end": 1988,
+                              "object": {
+                                "computed": false,
+                                "end": 1982,
+                                "object": {
+                                  "end": 1977,
+                                  "name": "rs",
+                                  "start": 1975,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "end": 1982,
+                                  "name": "tags",
+                                  "start": 1978,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 1975,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "property": {
+                                "end": 1988,
+                                "name": "edge1",
+                                "start": 1983,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 1975,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1974,
+                            "name": "getPreviousAdjacentEdge",
+                            "start": 1951,
+                            "type": "Identifier"
+                          },
+                          "end": 1989,
+                          "start": 1951,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "computed": false,
+                              "end": 2037,
+                              "object": {
+                                "computed": false,
+                                "end": 2031,
+                                "object": {
+                                  "end": 2026,
+                                  "name": "rs",
+                                  "start": 2024,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "end": 2031,
+                                  "name": "tags",
+                                  "start": 2027,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 2024,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "property": {
+                                "end": 2037,
+                                "name": "edge2",
+                                "start": 2032,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 2024,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2023,
+                            "name": "getPreviousAdjacentEdge",
+                            "start": 2000,
+                            "type": "Identifier"
+                          },
+                          "end": 2038,
+                          "start": 2000,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "computed": false,
+                              "end": 2086,
+                              "object": {
+                                "computed": false,
+                                "end": 2080,
+                                "object": {
+                                  "end": 2075,
+                                  "name": "rs",
+                                  "start": 2073,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "end": 2080,
+                                  "name": "tags",
+                                  "start": 2076,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 2073,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "property": {
+                                "end": 2086,
+                                "name": "edge3",
+                                "start": 2081,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 2073,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2072,
+                            "name": "getPreviousAdjacentEdge",
+                            "start": 2049,
+                            "type": "Identifier"
+                          },
+                          "end": 2087,
+                          "start": 2049,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "computed": false,
+                              "end": 2135,
+                              "object": {
+                                "computed": false,
+                                "end": 2129,
+                                "object": {
+                                  "end": 2124,
+                                  "name": "rs",
+                                  "start": 2122,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "end": 2129,
+                                  "name": "tags",
+                                  "start": 2125,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 2122,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "property": {
+                                "end": 2135,
+                                "name": "edge4",
+                                "start": 2130,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 2122,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2121,
+                            "name": "getPreviousAdjacentEdge",
+                            "start": 2098,
+                            "type": "Identifier"
+                          },
+                          "end": 2136,
+                          "start": 2098,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 2145,
+                      "start": 1940,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -2139,13 +2117,14 @@ description: Result of parsing mounting-plate.kcl
                   "start": 1888,
                   "type": "Identifier"
                 },
-                "end": 2157,
+                "end": 2152,
                 "start": 1888,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 2157,
+            "end": 2152,
             "start": 1093,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2153,14 +2132,14 @@ description: Result of parsing mounting-plate.kcl
           "start": 1086,
           "type": "VariableDeclarator"
         },
-        "end": 2157,
+        "end": 2152,
         "kind": "const",
         "start": 1086,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 2158,
+    "end": 2153,
     "innerAttrs": [
       {
         "end": 240,

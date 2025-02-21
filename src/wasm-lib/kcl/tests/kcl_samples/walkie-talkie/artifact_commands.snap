@@ -653,8 +653,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      594,
-      623,
+      593,
+      622,
       3
     ],
     "command": {
@@ -667,8 +667,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      634,
-      663,
+      633,
+      662,
       3
     ],
     "command": {
@@ -681,8 +681,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      674,
-      703,
+      673,
+      702,
       3
     ],
     "command": {
@@ -695,8 +695,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      714,
-      743,
+      713,
+      742,
       3
     ],
     "command": {
@@ -710,7 +710,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       528,
-      763,
+      758,
       3
     ],
     "command": {
@@ -726,7 +726,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       528,
-      763,
+      758,
       3
     ],
     "command": {
@@ -742,7 +742,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       528,
-      763,
+      758,
       3
     ],
     "command": {
@@ -758,7 +758,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       528,
-      763,
+      758,
       3
     ],
     "command": {
@@ -773,8 +773,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      857,
-      982,
+      852,
+      977,
       3
     ],
     "command": {
@@ -789,8 +789,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      857,
-      982,
+      852,
+      977,
       3
     ],
     "command": {
@@ -800,8 +800,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      857,
-      982,
+      852,
+      977,
       3
     ],
     "command": {
@@ -817,8 +817,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      988,
-      1046,
+      983,
+      1041,
       3
     ],
     "command": {
@@ -838,8 +838,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1052,
-      1177,
+      1047,
+      1172,
       3
     ],
     "command": {
@@ -859,8 +859,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1183,
-      1241,
+      1178,
+      1236,
       3
     ],
     "command": {
@@ -880,8 +880,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1247,
-      1375,
+      1242,
+      1370,
       3
     ],
     "command": {
@@ -901,8 +901,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1381,
-      1461,
+      1376,
+      1456,
       3
     ],
     "command": {
@@ -922,8 +922,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1467,
-      1596,
+      1462,
+      1591,
       3
     ],
     "command": {
@@ -943,8 +943,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1602,
-      1681,
+      1597,
+      1676,
       3
     ],
     "command": {
@@ -964,8 +964,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1687,
-      1694,
+      1682,
+      1689,
       3
     ],
     "command": {
@@ -976,8 +976,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -992,8 +992,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1006,8 +1006,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1017,8 +1017,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1029,8 +1029,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1042,8 +1042,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1056,8 +1056,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1070,8 +1070,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1084,8 +1084,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1098,8 +1098,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1112,8 +1112,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1126,8 +1126,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1140,8 +1140,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1154,8 +1154,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1168,8 +1168,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1182,8 +1182,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1196,8 +1196,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1210,8 +1210,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1224,8 +1224,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1238,8 +1238,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1252,8 +1252,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1708,
-      1744,
+      1703,
+      1739,
       3
     ],
     "command": {
@@ -1266,8 +1266,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1834,
-      1888,
+      1829,
+      1883,
       3
     ],
     "command": {
@@ -1282,8 +1282,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1834,
-      1888,
+      1829,
+      1883,
       3
     ],
     "command": {
@@ -1293,8 +1293,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1834,
-      1888,
+      1829,
+      1883,
       3
     ],
     "command": {
@@ -1310,8 +1310,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1894,
-      1923,
+      1889,
+      1918,
       3
     ],
     "command": {
@@ -1331,8 +1331,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1929,
-      1952,
+      1924,
+      1947,
       3
     ],
     "command": {
@@ -1352,8 +1352,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1958,
-      1982,
+      1953,
+      1977,
       3
     ],
     "command": {
@@ -1373,8 +1373,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1988,
-      2044,
+      1983,
+      2039,
       3
     ],
     "command": {
@@ -1394,8 +1394,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2050,
-      2057,
+      2045,
+      2052,
       3
     ],
     "command": {
@@ -1406,8 +1406,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1422,8 +1422,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1436,8 +1436,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1447,8 +1447,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1459,8 +1459,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1472,8 +1472,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1486,8 +1486,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1500,8 +1500,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1514,8 +1514,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1528,8 +1528,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1542,8 +1542,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1556,8 +1556,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1570,8 +1570,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2111,
+      2066,
+      2106,
       3
     ],
     "command": {
@@ -1584,8 +1584,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2191,
-      2228,
+      2186,
+      2223,
       3
     ],
     "command": {
@@ -1600,8 +1600,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2191,
-      2228,
+      2186,
+      2223,
       3
     ],
     "command": {
@@ -1611,8 +1611,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2191,
-      2228,
+      2186,
+      2223,
       3
     ],
     "command": {
@@ -1628,8 +1628,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2234,
-      2259,
+      2229,
+      2254,
       3
     ],
     "command": {
@@ -1649,8 +1649,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2292,
+      2260,
+      2287,
       3
     ],
     "command": {
@@ -1670,8 +1670,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2298,
-      2324,
+      2293,
+      2319,
       3
     ],
     "command": {
@@ -1691,8 +1691,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2330,
-      2337,
+      2325,
+      2332,
       3
     ],
     "command": {
@@ -1703,8 +1703,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1719,8 +1719,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1733,8 +1733,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1744,8 +1744,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1756,8 +1756,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1769,8 +1769,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1783,8 +1783,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1797,8 +1797,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1811,8 +1811,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1825,8 +1825,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1839,8 +1839,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1853,8 +1853,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1867,8 +1867,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2338,
-      2370,
+      2333,
+      2365,
       3
     ],
     "command": {
@@ -1881,8 +1881,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2376,
-      2414,
+      2371,
+      2409,
       3
     ],
     "command": {
@@ -30068,8 +30068,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      808,
-      833,
+      807,
+      832,
       8
     ],
     "command": {
@@ -30082,8 +30082,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      846,
-      871,
+      845,
+      870,
       8
     ],
     "command": {
@@ -30096,8 +30096,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      904,
-      933,
+      899,
+      928,
       8
     ],
     "command": {
@@ -30480,8 +30480,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      808,
-      833,
+      807,
+      832,
       8
     ],
     "command": {
@@ -30494,8 +30494,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      846,
-      871,
+      845,
+      870,
       8
     ],
     "command": {
@@ -30508,8 +30508,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      904,
-      933,
+      899,
+      928,
       8
     ],
     "command": {
@@ -30892,8 +30892,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      808,
-      833,
+      807,
+      832,
       8
     ],
     "command": {
@@ -30906,8 +30906,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      846,
-      871,
+      845,
+      870,
       8
     ],
     "command": {
@@ -30920,8 +30920,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      904,
-      933,
+      899,
+      928,
       8
     ],
     "command": {
@@ -31304,8 +31304,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      808,
-      833,
+      807,
+      832,
       8
     ],
     "command": {
@@ -31318,8 +31318,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      846,
-      871,
+      845,
+      870,
       8
     ],
     "command": {
@@ -31332,8 +31332,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      904,
-      933,
+      899,
+      928,
       8
     ],
     "command": {
@@ -31710,8 +31710,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      912,
-      937,
+      911,
+      936,
       6
     ],
     "command": {
@@ -31724,8 +31724,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      948,
-      973,
+      947,
+      972,
       6
     ],
     "command": {
@@ -31738,8 +31738,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      984,
-      1009,
+      983,
+      1008,
       6
     ],
     "command": {
@@ -31752,8 +31752,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1020,
-      1045,
+      1019,
+      1044,
       6
     ],
     "command": {
@@ -31766,8 +31766,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1071,
-      1132,
+      1066,
+      1127,
       6
     ],
     "command": {
@@ -31801,7 +31801,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       745,
-      895,
+      890,
       8
     ],
     "command": {
@@ -31817,52 +31817,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       745,
-      895,
-      8
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.05,
-      "tolerance": 0.0000001,
-      "cut_type": "chamfer"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      314,
-      355,
-      8
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      745,
-      895,
-      8
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.05,
-      "tolerance": 0.0000001,
-      "cut_type": "chamfer"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      745,
-      895,
+      890,
       8
     ],
     "command": {
@@ -31891,7 +31846,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       745,
-      895,
+      890,
       8
     ],
     "command": {
@@ -31907,7 +31862,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       745,
-      895,
+      890,
       8
     ],
     "command": {
@@ -31936,7 +31891,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       745,
-      895,
+      890,
       8
     ],
     "command": {
@@ -31952,7 +31907,52 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       745,
-      895,
+      890,
+      8
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.05,
+      "tolerance": 0.0000001,
+      "cut_type": "chamfer"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      314,
+      355,
+      8
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      745,
+      890,
+      8
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.05,
+      "tolerance": 0.0000001,
+      "cut_type": "chamfer"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      745,
+      890,
       8
     ],
     "command": {
@@ -31981,7 +31981,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       855,
-      1065,
+      1060,
       6
     ],
     "command": {
@@ -31997,7 +31997,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       855,
-      1065,
+      1060,
       6
     ],
     "command": {
@@ -32013,7 +32013,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       855,
-      1065,
+      1060,
       6
     ],
     "command": {
@@ -32029,7 +32029,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       855,
-      1065,
+      1060,
       6
     ],
     "command": {
