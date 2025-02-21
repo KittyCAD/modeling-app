@@ -8,6 +8,6 @@
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 {{#each properties}}
-| `{{@key}}` | {{~ > propertyType this ~}} | {{{this.description}}} | {{#if (lookup ../required @key)}}Yes{{else}}No{{/if}} |
+| `{{@key}}` | {{~ > propertyType this ~}} | {{{firstLine this.description}}} | {{#if (lookup ../required @key)}}Yes{{else}}No{{/if}} |
 {{/each}}
 {{/if}}

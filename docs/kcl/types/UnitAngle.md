@@ -1,9 +1,10 @@
 ---
 title: "UnitAngle"
-excerpt: ""
+excerpt: "A unit of angle."
 layout: manual
 ---
 
+A unit of angle.
 
 
 

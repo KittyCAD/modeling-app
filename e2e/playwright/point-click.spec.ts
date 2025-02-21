@@ -5,6 +5,7 @@ import { ToolbarFixture } from './fixtures/toolbarFixture'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { getUtils } from './test-utils'
+import { Locator } from '@playwright/test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -2502,6 +2503,94 @@ extrude002 = extrude(sketch002, length = 50)
         })
         await toolbar.closePane('code')
         await scene.expectPixelColor([73, 73, 73], testPoint, 15)
+      })
+    })
+  })
+
+  const shellPointAndClickDeletionCases = [
+    { shouldUseKeyboard: true },
+    { shouldUseKeyboard: false },
+  ]
+  shellPointAndClickDeletionCases.forEach(({ shouldUseKeyboard }) => {
+    test(`Shell point-and-click deletion (shouldUseKeyboard: ${shouldUseKeyboard})`, async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
+      const sketchCode = `sketch001 = startSketchOn('XY')
+profile001 = startProfileAt([-20, 20], sketch001)
+    |> xLine(40, %)
+    |> yLine(-60, %)
+    |> xLine(-40, %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+`
+      const extrudeCode = `extrude001 = extrude(profile001, length = 40)
+`
+      const shellCode = `shell001 = shell(extrude001, faces = ['end'], thickness = 5)
+`
+      const initialCode = sketchCode + extrudeCode + shellCode
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
+      await toolbar.openPane('feature-tree')
+
+      // One dumb hardcoded screen pixel value
+      const testPoint = { x: 590, y: 400 }
+      const extrudeColor: [number, number, number] = [100, 100, 100]
+      const sketchColor: [number, number, number] = [140, 140, 140]
+      const defaultPlaneColor: [number, number, number] = [50, 50, 100]
+
+      const deleteOperation = async (operationButton: Locator) => {
+        if (shouldUseKeyboard) {
+          await operationButton.click({ button: 'left' })
+          await page.keyboard.press('Backspace')
+        } else {
+          await operationButton.click({ button: 'right' })
+          const editButton = page.getByTestId('context-menu-delete')
+          await editButton.click()
+        }
+      }
+
+      await test.step(`Look for the grey of the extrude shape`, async () => {
+        await scene.expectPixelColor(extrudeColor, testPoint, 20)
+      })
+
+      await test.step('Delete shell and confirm deletion', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Shell',
+          0
+        )
+        await deleteOperation(operationButton)
+        await scene.expectPixelColor(extrudeColor, testPoint, 20)
+        await editor.expectEditor.not.toContain(shellCode)
+      })
+
+      await test.step('Delete extrude and confirm deletion', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Extrude',
+          0
+        )
+        await deleteOperation(operationButton)
+        await editor.expectEditor.not.toContain(extrudeCode)
+        await scene.expectPixelColor(sketchColor, testPoint, 20)
+      })
+
+      await test.step('Delete sketch and confirm empty scene', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Sketch',
+          0
+        )
+        await deleteOperation(operationButton)
+        await editor.expectEditor.toContain('')
+        await scene.expectPixelColor(defaultPlaneColor, testPoint, 20)
       })
     })
   })

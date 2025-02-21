@@ -3,6 +3,8 @@ use std::{any::type_name, collections::HashMap, num::NonZeroU32};
 use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 
 use super::shapes::PolygonType;
 use crate::{
@@ -58,6 +60,32 @@ impl KwArgs {
     /// Are there no arguments?
     pub fn is_empty(&self) -> bool {
         self.labeled.len() == 0 && self.unlabeled.is_none()
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct TyF64 {
+    pub n: f64,
+    pub ty: NumericType,
+}
+
+impl TyF64 {
+    pub fn new(n: f64, ty: NumericType) -> Self {
+        Self { n, ty }
+    }
+
+    pub fn count(n: f64) -> Self {
+        Self {
+            n,
+            ty: NumericType::count(),
+        }
+    }
+
+    pub fn map(mut self, n: f64) -> Self {
+        self.n = n;
+        self
     }
 }
 
@@ -283,12 +311,12 @@ impl Args {
         // before what ever we call next.
         for id in ids {
             // Pop it off the batch_end and add it to the batch.
-            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().shift_remove(&id) else {
+            let Some(item) = self.ctx.engine.batch_end().write().await.shift_remove(&id) else {
                 // It might be in the batch already.
                 continue;
             };
             // Add it to the batch.
-            self.ctx.engine.batch().lock().unwrap().push(item);
+            self.ctx.engine.batch().write().await.push(item);
         }
 
         // Run flush.
@@ -327,17 +355,17 @@ impl Args {
         )
     }
 
-    pub(crate) fn make_user_val_from_f64_with_type(&self, f: f64, ty: NumericType) -> KclValue {
+    pub(crate) fn make_user_val_from_f64_with_type(&self, f: TyF64) -> KclValue {
         KclValue::from_number_with_type(
-            f,
-            ty,
+            f.n,
+            f.ty,
             vec![Metadata {
                 source_range: self.source_range,
             }],
         )
     }
 
-    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
+    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>, ty: &NumericType) -> Result<KclValue, KclError> {
         let array = f
             .into_iter()
             .map(|n| KclValue::Number {
@@ -345,7 +373,7 @@ impl Args {
                 meta: vec![Metadata {
                     source_range: self.source_range,
                 }],
-                ty: NumericType::Unknown,
+                ty: ty.clone(),
             })
             .collect::<Vec<_>>();
         Ok(KclValue::Array {
@@ -360,7 +388,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_number_with_type(&self) -> Result<(f64, NumericType), KclError> {
+    pub(crate) fn get_number_with_type(&self) -> Result<TyF64, KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -381,12 +409,12 @@ impl Args {
         Ok(numbers)
     }
 
-    pub(crate) fn get_number_array_with_types(&self) -> Result<Vec<(f64, NumericType)>, KclError> {
+    pub(crate) fn get_number_array_with_types(&self) -> Result<Vec<TyF64>, KclError> {
         let numbers = self
             .args
             .iter()
             .map(|arg| {
-                let Some(num) = <(f64, NumericType)>::from_kcl_val(&arg.value) else {
+                let Some(num) = <TyF64>::from_kcl_val(&arg.value) else {
                     return Err(KclError::Semantic(KclErrorDetails {
                         source_ranges: arg.source_ranges(),
                         message: format!("Expected a number but found {}", arg.value.human_friendly_type()),
@@ -409,10 +437,10 @@ impl Args {
         }
 
         let mut numbers = numbers.into_iter();
-        let (a, ta) = numbers.next().unwrap();
-        let (b, tb) = numbers.next().unwrap();
-        let ty = ta.combine(&tb);
-        Ok((a, b, ty))
+        let a = numbers.next().unwrap();
+        let b = numbers.next().unwrap();
+        let ty = a.ty.combine_eq(&b.ty);
+        Ok((a.n, b.n, ty))
     }
 
     pub(crate) fn get_circle_args(
@@ -877,21 +905,6 @@ impl<'a> FromKclValue<'a> for crate::std::polar::PolarCoordsData {
         let_field_of!(obj, angle);
         let_field_of!(obj, length);
         Some(Self { angle, length })
-    }
-}
-
-impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let s = arg.as_str()?;
-        match s {
-            "XY" | "xy" => Some(Self::XY),
-            "-XY" | "-xy" => Some(Self::NegXY),
-            "XZ" | "xz" => Some(Self::XZ),
-            "-XZ" | "-xz" => Some(Self::NegXZ),
-            "YZ" | "yz" => Some(Self::YZ),
-            "-YZ" | "-yz" => Some(Self::NegYZ),
-            _ => None,
-        }
     }
 }
 
@@ -1491,10 +1504,10 @@ impl<'a> FromKclValue<'a> for f64 {
         }
     }
 }
-impl<'a> FromKclValue<'a> for (f64, NumericType) {
+impl<'a> FromKclValue<'a> for TyF64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, ty, .. } => Some((*value, ty.clone())),
+            KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
             _ => None,
         }
     }
