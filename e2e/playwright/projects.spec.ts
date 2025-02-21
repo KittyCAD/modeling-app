@@ -114,7 +114,7 @@ test(
   }
 )
 
-test.fixme(
+test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page, editor }, testInfo) => {
@@ -421,7 +421,7 @@ test(
   }
 )
 
-test.fixme(
+test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
