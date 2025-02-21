@@ -95,7 +95,7 @@ test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
       await page.mouse.move(700, 200)
       await page.mouse.down({ button: 'right' })
       await page.waitForTimeout(100)
-      
+
       const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
       expect(appLogoBBox).not.toBeNull()
       if (!appLogoBBox) throw new Error('app logo not found')
