@@ -20,11 +20,11 @@ import {
   getUniqueProjectName,
   getNextFileName,
 } from 'lib/desktopFS'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from 'lib/isDesktop'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 import {
   CREATE_FILE_URL_PARAM,
   FILE_EXT,
@@ -77,9 +77,7 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
     searchParams.delete('units')
     setSearchParams(searchParams)
   }, [searchParams, setSearchParams])
-  const {
-    settings: { context: settings },
-  } = useSettingsAuthContext()
+  const settings = useSettings()
 
   const [state, send, actor] = useMachine(
     projectsMachine.provide({
@@ -183,9 +181,7 @@ const ProjectsContextDesktop = ({
     setSearchParams(searchParams)
   }, [searchParams, setSearchParams])
   const { onProjectOpen } = useLspContext()
-  const {
-    settings: { context: settings },
-  } = useSettingsAuthContext()
+  const settings = useSettings()
 
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectPaths, projectsDir } = useProjectsLoader([

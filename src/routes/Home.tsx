@@ -12,11 +12,9 @@ import {
   getSortFunction,
   getSortIcon,
 } from '../lib/sorting'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isDesktop } from 'lib/isDesktop'
 import { kclManager } from 'lib/singletons'
-import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
@@ -26,6 +24,7 @@ import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { useProjectsContext } from 'hooks/useProjectsContext'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
+import { useSettings } from 'machines/appMachine'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -46,11 +45,8 @@ const Home = () => {
     })
   })
 
-  useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const navigate = useNavigate()
-  const {
-    settings: { context: settings },
-  } = useSettingsAuthContext()
+  const settings = useSettings()
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
