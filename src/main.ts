@@ -397,7 +397,7 @@ app.on('ready', () => {
 
   autoUpdater.on('error', (error) => {
     console.error('updater-error', error)
-    mainWindow?.webContents.send('updater-error', error)
+    mainWindow?.webContents.send('update-error', error)
   })
 
   autoUpdater.on('update-available', (info) => {
