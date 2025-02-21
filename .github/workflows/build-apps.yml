@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - pierremtb/issue5050-Windows-elevated-perms-prompt-should-show-app-name-not-description
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
   schedule:
@@ -14,8 +13,7 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  # IS_RELEASE: ${{ github.ref_type == 'tag' }}
-  IS_RELEASE: true
+  IS_RELEASE: ${{ github.ref_type == 'tag' }}
   IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
 
 concurrency:
@@ -53,11 +51,11 @@ jobs:
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: yarn files:flip-to-nightly
 
-      # - name: Set release version
-      #   if: ${{ env.IS_RELEASE == 'true' }}
-      #   run: |
-      #     export VERSION=${GITHUB_REF_NAME#v}
-      #     yarn files:set-version
+      - name: Set release version
+        if: ${{ env.IS_RELEASE == 'true' }}
+        run: |
+          export VERSION=${GITHUB_REF_NAME#v}
+          yarn files:set-version
 
       - uses: actions/upload-artifact@v4
         with:
@@ -136,8 +134,6 @@ jobs:
           max_attempts: 3
           command: yarn install
 
-      - run: yarn tronb:vite
-
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
         run: |
@@ -167,8 +163,8 @@ jobs:
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
-        # this is just not doing any codesign or release yml generation
-        run: yarn electron-builder --config
+        # this is just not doing any codesign or release yml generation, and points to dev infra
+        run: yarn tronb:package:dev
 
       - name: Build the app (release)
         if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
@@ -187,7 +183,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn electron-builder --config --publish always
+          command: yarn tronb:package:prod
 
       - name: List artifacts in out/
         run: ls -R out
@@ -248,7 +244,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn electron-builder --config --publish always
+          command: yarn tronb:package:prod
 
       - uses: actions/upload-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -392,19 +388,19 @@ jobs:
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: 'google-github-actions/auth@v2.1.7'
+        uses: 'google-github-actions/auth@v2.1.8'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: google-github-actions/setup-gcloud@v2.1.2
+        uses: google-github-actions/setup-gcloud@v2.1.4
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 
       - name: Upload nightly files to public bucket
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: google-github-actions/upload-cloud-storage@v2.2.1
+        uses: google-github-actions/upload-cloud-storage@v2.2.2
         with:
           path: out
           glob: '*'
