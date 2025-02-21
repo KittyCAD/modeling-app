@@ -72,6 +72,9 @@ pub struct ExecOutcome {
     pub artifact_graph: ArtifactGraph,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
+    /// File Names in module Id array index order
+    pub filenames: Vec<String>
+
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

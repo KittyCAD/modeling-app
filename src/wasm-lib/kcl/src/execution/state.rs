@@ -122,6 +122,7 @@ impl ExecState {
             artifact_commands: self.global.artifact_commands,
             artifact_graph: self.global.artifact_graph,
             errors: self.global.errors,
+            filenames: self.global.module_infos.iter().map(|pair|(pair.1.path.to_string())).collect()
         }
     }
 
@@ -139,6 +140,7 @@ impl ExecState {
             artifact_commands: Default::default(),
             artifact_graph: Default::default(),
             errors: self.global.errors,
+            filenames: Default::default()
         }
     }
 
