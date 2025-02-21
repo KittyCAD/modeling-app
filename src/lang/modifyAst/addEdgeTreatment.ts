@@ -10,7 +10,6 @@ import {
   Program,
   VariableDeclaration,
   VariableDeclarator,
-  sketchFromKclValue,
 } from '../wasm'
 import {
   createCallExpressionStdLib,
@@ -33,11 +32,11 @@ import {
   sketchLineHelperMap,
   sketchLineHelperMapKw,
 } from '../std/sketch'
-import { err, trap } from 'lib/trap'
+import { err } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import { isArray } from 'lib/utils'
-import { Artifact, getSweepFromSuspectedPath } from 'lang/std/artifactGraph'
+import { Artifact, getSweepArtifactFromSelection } from 'lang/std/artifactGraph'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { findKwArg } from 'lang/util'
 import { KclManager } from 'lang/KclSingleton'
@@ -119,8 +118,7 @@ export function modifyAstWithEdgeTreatmentAndTag(
     const result = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
       selection,
-      artifactGraph,
-      dependencies
+      artifactGraph
     )
     if (err(result)) return result
     const { pathToSegmentNode, pathToExtrudeNode } = result
@@ -276,39 +274,19 @@ function insertParametersIntoAst(
 export function getPathToExtrudeForSegmentSelection(
   ast: Program,
   selection: Selection,
-  artifactGraph: ArtifactGraph,
-  dependencies: {
-    kclManager: KclManager
-    engineCommandManager: EngineCommandManager
-    editorManager: EditorManager
-    codeManager: CodeManager
-  }
+  artifactGraph: ArtifactGraph
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
   const pathToSegmentNode = getNodePathFromSourceRange(
     ast,
     selection.codeRef?.range
   )
 
-  const varDecNode = getNodeFromPath<VariableDeclaration>(
-    ast,
-    pathToSegmentNode,
-    'VariableDeclaration'
-  )
-  if (err(varDecNode)) return varDecNode
-  const sketchVar = varDecNode.node.declaration.id.name
-
-  const sketch = sketchFromKclValue(
-    dependencies.kclManager.variables[sketchVar],
-    sketchVar
-  )
-  if (trap(sketch)) return sketch
-
-  const extrusion = getSweepFromSuspectedPath(sketch.id, artifactGraph)
-  if (err(extrusion)) return extrusion
+  const sweepArtifact = getSweepArtifactFromSelection(selection, artifactGraph)
+  if (err(sweepArtifact)) return sweepArtifact
 
   const pathToExtrudeNode = getNodePathFromSourceRange(
     ast,
-    extrusion.codeRef.range
+    sweepArtifact.codeRef.range
   )
   if (err(pathToExtrudeNode)) return pathToExtrudeNode
 
