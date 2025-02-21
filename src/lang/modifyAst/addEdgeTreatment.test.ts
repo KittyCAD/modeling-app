@@ -129,25 +129,33 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   // ast
   const ast = assertParse(code)
 
-  // selection
+  // range
   const segmentRange = topLevelRange(
     code.indexOf(selectedSegmentSnippet),
     code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length
   )
-  const selection: Selection = {
-    codeRef: codeRefFromRange(segmentRange, ast),
-  }
 
   // executeAst and artifactGraph
   await kclManager.executeAst({ ast })
   const artifactGraph = engineCommandManager.artifactGraph
 
+  // find artifact
+  const maybeArtifact = [...artifactGraph].find(([, artifact]) => {
+    if (!('codeRef' in artifact && artifact.codeRef)) return false
+    return isOverlap(artifact.codeRef.range, segmentRange)
+  })
+
+  // build selection
+  const selection: Selection = {
+    codeRef: codeRefFromRange(segmentRange, ast),
+    artifact: maybeArtifact ? maybeArtifact[1] : undefined,
+  }
+
   // get extrude expression
   const pathResult = getPathToExtrudeForSegmentSelection(
     ast,
     selection,
-    artifactGraph,
-    dependencies
+    artifactGraph
   )
   if (err(pathResult)) return pathResult
   const { pathToExtrudeNode } = pathResult
@@ -228,6 +236,56 @@ extrude002 = extrude(sketch002, length = -15)
 extrude003 = extrude(sketch003, length = -15)`
     const selectedSegmentSnippet = `line(end = [20, 0])`
     const expectedExtrudeSnippet = `extrude002 = extrude(sketch002, length = -15)`
+    await runGetPathToExtrudeForSegmentSelectionTest(
+      code,
+      selectedSegmentSnippet,
+      expectedExtrudeSnippet
+    )
+  })
+  it('should return the correct paths for a (piped) extrude based on the other body (face)', async () => {
+    const code = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-25, -25], %)
+  |> yLine(50, %)
+  |> xLine(50, %)
+  |> yLine(-50, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 50)
+sketch002 = startSketchOn(sketch001, 'END')
+  |> startProfileAt([-15, -15], %)
+  |> yLine(30, %)
+  |> xLine(30, %)
+  |> yLine(-30, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 30)`
+    const selectedSegmentSnippet = `xLine(30, %)`
+    const expectedExtrudeSnippet = `extrude(length = 30)`
+    await runGetPathToExtrudeForSegmentSelectionTest(
+      code,
+      selectedSegmentSnippet,
+      expectedExtrudeSnippet
+    )
+  })
+  it('should return the correct paths for a (non-piped) extrude based on the other body (face)', async () => {
+    const code = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-25, -25], %)
+  |> yLine(50, %)
+  |> xLine(50, %)
+  |> yLine(-50, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 50)
+sketch002 = startSketchOn(extrude001, 'END')
+  |> startProfileAt([-15, -15], %)
+  |> yLine(30, %)
+  |> xLine(30, %)
+  |> yLine(-30, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(sketch002, length = 30)`
+    const selectedSegmentSnippet = `xLine(30, %)`
+    const expectedExtrudeSnippet = `extrude002 = extrude(sketch002, length = 30)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
       selectedSegmentSnippet,
