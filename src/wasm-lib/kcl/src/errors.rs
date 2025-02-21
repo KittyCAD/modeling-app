@@ -2,11 +2,14 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
+use indexmap::IndexMap;
+
 use crate::{
     execution::{ArtifactCommand, ArtifactGraph, Operation},
     lsp::IntoDiagnostic,
     source_range::SourceRange,
     ModuleId,
+    modules::{ModulePath},
 };
 
 /// How did the KCL execution fail
@@ -116,6 +119,7 @@ pub struct KclErrorWithOutputs {
     pub operations: Vec<Operation>,
     pub artifact_commands: Vec<ArtifactCommand>,
     pub artifact_graph: ArtifactGraph,
+    pub filenames: IndexMap<ModuleId, ModulePath>,
 }
 
 impl KclErrorWithOutputs {
@@ -124,12 +128,14 @@ impl KclErrorWithOutputs {
         operations: Vec<Operation>,
         artifact_commands: Vec<ArtifactCommand>,
         artifact_graph: ArtifactGraph,
+        filenames: IndexMap<ModuleId, ModulePath>,
     ) -> Self {
         Self {
             error,
             operations,
             artifact_commands,
             artifact_graph,
+            filenames
         }
     }
     pub fn no_outputs(error: KclError) -> Self {
@@ -138,6 +144,7 @@ impl KclErrorWithOutputs {
             operations: Default::default(),
             artifact_commands: Default::default(),
             artifact_graph: Default::default(),
+            filenames: Default::default()
         }
     }
 }

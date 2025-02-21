@@ -18,6 +18,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     engine::EngineManager,
     errors::KclError,
+    modules::{ModuleId, ModulePath},
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
@@ -73,7 +74,7 @@ pub struct ExecOutcome {
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
-    pub filenames: Vec<String>
+    pub filenames: IndexMap<ModuleId, ModulePath>,
 
 }
 
@@ -703,11 +704,17 @@ impl ExecutorContext {
         self.execute_and_build_graph(program, exec_state, init_mem)
             .await
             .map_err(|e| {
+
+        let who_knows : IndexMap<ModuleId, ModulePath> = exec_state.global.path_to_source_id.iter()
+                        .map(|(k, v)| (v.clone(), k.clone()))
+                        .collect();
+
                 KclErrorWithOutputs::new(
                     e,
                     exec_state.mod_local.operations.clone(),
                     exec_state.global.artifact_commands.clone(),
                     exec_state.global.artifact_graph.clone(),
+                    who_knows
                 )
             })?;
 

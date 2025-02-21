@@ -57,7 +57,11 @@ pub async fn execute_with_engine(
         // The serde-wasm-bindgen does not work here because of weird HashMap issues.
         // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
         Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
-        Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
+        Err(err) => {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("outcome {:?}", err).into());
+            Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?)
+        },
     }
 }
 
@@ -96,7 +100,7 @@ pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
-    let mut findings = vec![];
+        let mut findings = vec![];
     for discovered_finding in program.lint_all().into_iter().flatten() {
         findings.push(discovered_finding);
     }
