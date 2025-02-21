@@ -2856,7 +2856,6 @@ extrude001 = extrude(profile001, length = 100)
         0
       )
       await operationButton.click({ button: 'right' })
-      await page.waitForTimeout(500) // just cause it's nice to see
       const menuButton = page.getByTestId('context-menu-set-appearance')
       await menuButton.click()
       await cmdBar.expectState({
@@ -2870,7 +2869,6 @@ extrude001 = extrude(profile001, length = 100)
         stage: 'arguments',
       })
       const item = page.getByText(option, { exact: true })
-      await page.waitForTimeout(500) // just cause it's nice to see
       await item.click()
       await cmdBar.expectState({
         commandName: 'Appearance',
@@ -2896,7 +2894,6 @@ extrude001 = extrude(profile001, length = 100)
         //   highlightedCode: '',
         // })
       }
-      await page.waitForTimeout(1000) // just cause it's nice to see
       await toolbar.closePane('code')
     }
 
