@@ -1,0 +1,166 @@
+// Food Service Spatula
+// Use these spatulas for mixing, flipping, and scraping.
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define constants in millimeters (mm)
+flipperThickness = 3.5
+flipperLength = 70.0
+handleWidth = 15.0
+gripLength = 150.0
+flipperFilletRadius = 5.0
+flipperSlotWidth = 10.0
+gripWidth = 10.0
+gripHeight = 20.0
+gripFilletRadius = 3.0
+gripSlotWidth = 8.0
+
+// function for drawing slots on a sketch given the start and end points as well as a width
+fn slot(sketch1, start, end, width) {
+  angle = if start[0] == end[0] {
+    if end[1] > start[1] {
+      90
+    } else {
+      270
+    }
+  } else {
+    if end[0] < start[0] {
+      toDegrees(atan((end[1] - start[1]) / (end[0] - start[0]))) + 180
+    } else {
+      toDegrees(      atan((end[1] - start[1]) / (end[0] - start[0])))
+    }
+  }
+  dist = sqrt(pow(end[1] - start[1], 2) + pow(end[0] - start[0], 2))
+  xstart = width / 2 * cos(toRadians(angle - 90)) + start[0]
+  ystart = width / 2 * sin(toRadians(angle - 90)) + start[1]
+  slotSketch = startProfileAt([xstart, ystart], sketch1)
+    |> angledLine({ angle = angle, length = dist }, %, $line000)
+    |> tangentialArc({ radius = width / 2, offset = 180 }, %, $arc000)
+    |> angledLine({ angle = angle, length = -dist }, %, $line001)
+    |> tangentialArcTo([profileStartX(%), profileStartY(%)], %, $arc001)
+    |> close()
+  return slotSketch
+}
+
+// create a sketch on the "XY" plane
+sketch000 = startSketchOn('XY')
+
+// create a profile of the flipper
+flipperProfile = startProfileAt([-flipperLength, -32.0], sketch000)
+  |> line(end = [flipperLength, 2.0])
+  |> yLine(60.0, %, $backEdge)
+  |> line(end = [-flipperLength, 2.0])
+  |> arc({
+       angleEnd = 196.912390,
+       angleStart = 163.087610,
+       radius = 110.0
+     }, %)
+  |> close()
+
+// create a profile of the middle
+slotProfile000 = slot(sketch000, [-25, 0], [-55, 0], flipperSlotWidth)
+
+// create a profile of the top slot
+slotProfile001 = slot(sketch000, [-25, 18], [-55, 19], flipperSlotWidth)
+
+// create a profile of the bottom slot
+slotProfile002 = slot(sketch000, [-25, -18], [-55, -19], flipperSlotWidth)
+
+// create a profile with slots for the spatula
+spatulaProfile = flipperProfile
+  |> hole(slotProfile000, %)
+  |> hole(slotProfile001, %)
+  |> hole(slotProfile002, %)
+
+// extrude the profile to create the spatula flipper
+flipper = extrude(spatulaProfile, length = flipperThickness)
+
+// fillet the edges of the flipper
+fillet(
+  flipper,
+  radius = flipperFilletRadius,
+  tags = [
+    getNextAdjacentEdge(backEdge),
+    getPreviousAdjacentEdge(backEdge)
+  ]
+)
+
+// create a sketch on the "XZ" plane offset by half the thickness
+sketch001 = startSketchOn(offsetPlane("XZ", offset = -handleWidth / 2))
+
+// create a profile of the spatula handle
+handleProfile = startProfileAt([0.0, flipperThickness], sketch001)
+  |> line(end = [31.819805, 31.819805], tag = $handleBottomEdge)
+  |> line(end = [140.953893, 51.303021])
+  |> line(end = [-1.710101, 4.698463])
+  |> line(end = [-141.995517, -51.682142], tag = $handleTopEdge)
+  |> line(end = [-36.139148, -36.139148])
+  |> xLine(7.071068, %)
+  |> close()
+
+// create an extrusion extrude001
+handle = extrude(handleProfile, length = handleWidth)
+
+// fillet the bend of the spatula handle
+fillet(
+  handle,
+  radius = 4,
+  tags = [
+    getNextAdjacentEdge(handleBottomEdge),
+    getNextAdjacentEdge(handleTopEdge)
+  ]
+)
+
+// define a plane which is at the end of the handle
+handlePlane = {
+  plane = {
+    origin = [208.593833, 0.0, 75.921946],
+    xAxis = [0.342020, -0.0, -0.939693],
+    yAxis = [0.0, 1.0, 0.0],
+    zAxis = [0.939693, -0.0, 0.342020]
+  }
+}
+
+// create a sketch on the handle plane
+sketch002 = startSketchOn(handlePlane)
+
+// create a profile of the grip
+gripProfile = startProfileAt([-26.806746, -10.0], sketch002)
+  |> xLine(gripWidth - (2 * gripFilletRadius), %)
+  |> arc({
+       angleStart = -90.0,
+       angleEnd = 0.0,
+       radius = gripFilletRadius
+     }, %)
+  |> yLine(gripHeight - (2 * gripFilletRadius), %)
+  |> arc({
+       angleStart = 0.0,
+       angleEnd = 90.0,
+       radius = gripFilletRadius
+     }, %)
+  |> xLine(-(gripWidth - (2 * gripFilletRadius)), %)
+  |> arc({
+       angleStart = 90.0,
+       angleEnd = 180.0,
+       radius = gripFilletRadius
+     }, %)
+  |> yLine(-(gripHeight - (2 * gripFilletRadius)), %, $gripEdgeTop)
+  |> arc({
+       angleStart = 180.0,
+       angleEnd = 270.0,
+       radius = gripFilletRadius
+     }, %)
+  |> close()
+
+// extrude the grip profile to create the grip
+grip = extrude(gripProfile, length = -gripLength)
+
+// create a sketch on the grip for the hole
+sketch003 = startSketchOn(grip, gripEdgeTop)
+
+// create a profile for the grip hole
+gripHoleProfile = slot(sketch003, [0, 200], [0, 210], gripSlotWidth)
+
+// cut a hole in the grip
+extrude(gripHoleProfile, length = -gripWidth-20)
