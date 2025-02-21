@@ -19,13 +19,6 @@ interface KclSampleFile {
   description: string
 }
 
-try {
-  // @ts-expect-error
-  await fs.exists(DIR_KCL_SAMPLES, { recursive: true })
-} catch (e) {
-  console.log(e)
-}
-
 // @ts-expect-error
 let files = await fs.readdir(DIR_KCL_SAMPLES)
 // @ts-expect-error
