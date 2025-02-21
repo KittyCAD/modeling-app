@@ -2359,11 +2359,11 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
   |> line(end = [-20, 0])
   |> close()
   |> extrude(length = 3.14)
-  |> fillet({
-    radius: 3.14,
-    tags: ["tag_or_edge_fn"],
-  }, %)"#
-                    .to_string(),
+  |> fillet(
+    radius = 3.14,
+    tags = ["tag_or_edge_fn"],
+  )"#
+                .to_string(),
             },
         })
         .await;

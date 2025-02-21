@@ -29,22 +29,22 @@ sketch001 = startSketchOn('XZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg06)
   |> close()
   |> extrude(%, length = width)
-  |> fillet({
+  |> fillet(
        radius = extFilletRadius,
-       tags = [getNextAdjacentEdge(seg03)]
-     }, %)
-  |> fillet({
+       tags = [getNextAdjacentEdge(seg03)],
+     )
+  |> fillet(
        radius = filletRadius,
-       tags = [getNextAdjacentEdge(seg06)]
-     }, %)
-  |> fillet({
-    radius = filletRadius,
-    tags = [seg02, getOppositeEdge(seg02)],
-  }, %)
-  |> fillet({
-    radius = filletRadius,
-    tags = [seg05, getOppositeEdge(seg05)],
-  }, %)
+       tags = [getNextAdjacentEdge(seg06)],
+     )
+  |> fillet(
+      radius = filletRadius,
+      tags = [seg02, getOppositeEdge(seg02)],
+    )
+  |> fillet(
+      radius = filletRadius,
+      tags = [seg05, getOppositeEdge(seg05)],
+    )
 
 sketch002 = startSketchOn(sketch001, seg03)
   |> circle({

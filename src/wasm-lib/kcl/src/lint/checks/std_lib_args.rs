@@ -109,14 +109,14 @@ const bracket = startSketchOn('XY')
   |> line([0, -wallMountL + thickness], %)
   |> close()
   |> extrude(width, %)
-  |> fillet({
-       radius: filletR,
-       tags: [getPreviousAdjacentEdge(innerEdge, %)]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [getPreviousAdjacentEdge(outerEdge, %)]
-     }, %)
+  |> fillet(
+       radius = filletR,
+       tags = [getPreviousAdjacentEdge(innerEdge, %)]
+     )
+  |> fillet(
+       radius = filletR + thickness,
+       tags = [getPreviousAdjacentEdge(outerEdge, %)]
+     )
 "
     );
 
@@ -156,14 +156,14 @@ const bracket = startSketchOn('XY')
   |> line([0, -wallMountL + thickness], %)
   |> close()
   |> extrude(width, %)
-  |> fillet({
-       radius: filletR,
-       tags: [getPreviousAdjacentEdge(innerEdge)]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [getPreviousAdjacentEdge(outerEdge)]
-     }, %)
+  |> fillet(
+       radius = filletR,
+       tags = [getPreviousAdjacentEdge(innerEdge)]
+     )
+  |> fillet(
+       radius = filletR + thickness,
+       tags = [getPreviousAdjacentEdge(outerEdge)]
+     )
 "
     );
 }

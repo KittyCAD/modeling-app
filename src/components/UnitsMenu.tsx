@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { settingsActor, useSettings } from 'machines/appMachine'
 import { changeKclSettings, unitLengthToUnitLen } from 'lang/wasm'
 import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
 import { codeManager, kclManager } from 'lib/singletons'
@@ -8,24 +8,25 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function UnitsMenu() {
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const [hasPerFileLengthUnit, setHasPerFileLengthUnit] = useState(
     Boolean(kclManager.fileSettings.defaultLengthUnit)
   )
   const [lengthSetting, setLengthSetting] = useState(
     kclManager.fileSettings.defaultLengthUnit ||
-      settings.context.modeling.defaultUnit.current
+      settings.modeling.defaultUnit.current
   )
   useEffect(() => {
     setHasPerFileLengthUnit(Boolean(kclManager.fileSettings.defaultLengthUnit))
     setLengthSetting(
       kclManager.fileSettings.defaultLengthUnit ||
-        settings.context.modeling.defaultUnit.current
+        settings.modeling.defaultUnit.current
     )
   }, [
     kclManager.fileSettings.defaultLengthUnit,
-    settings.context.modeling.defaultUnit.current,
+    settings.modeling.defaultUnit.current,
   ])
+
   return (
     <Popover className="relative pointer-events-auto">
       {({ close }) => (
@@ -75,7 +76,7 @@ export function UnitsMenu() {
                             .catch(reportRejection)
                         }
                       } else {
-                        settings.send({
+                        settingsActor.send({
                           type: 'set.modeling.defaultUnit',
                           data: {
                             level: 'project',
