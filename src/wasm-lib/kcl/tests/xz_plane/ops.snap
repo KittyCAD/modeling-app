@@ -33,7 +33,13 @@ description: Operations executed xz_plane.kcl
           "type": "Number",
           "value": 12.0,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": [

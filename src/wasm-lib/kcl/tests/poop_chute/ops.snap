@@ -102,7 +102,13 @@ description: Operations executed poop_chute.kcl
                           "type": "Number",
                           "value": 5.5000001,
                           "ty": {
-                            "type": "Unknown"
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
                           }
                         }
                       ]
@@ -172,7 +178,13 @@ description: Operations executed poop_chute.kcl
           "type": "Number",
           "value": 1.5,
           "ty": {
-            "type": "Unknown"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": [
