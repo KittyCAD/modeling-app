@@ -18,6 +18,7 @@ import {
 } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { Selection } from 'lib/selections'
 import { err } from 'lib/trap'
 import { Cap, Plane, Wall } from 'wasm-lib/kcl/bindings/Artifact'
 import { CapSubType } from 'wasm-lib/kcl/bindings/Artifact'
@@ -453,6 +454,37 @@ export function getSweepFromSuspectedPath(
     { key: path.sweepId, types: ['sweep'] },
     artifactGraph
   )
+}
+
+export function getSweepArtifactFromSelection(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): SweepArtifact | Error {
+  let sweepArtifact: Artifact | null = null
+  if (selection.artifact?.type === 'sweepEdge') {
+    const _artifact = getArtifactOfTypes(
+      { key: selection.artifact.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(_artifact)) return _artifact
+    sweepArtifact = _artifact
+  } else if (selection.artifact?.type === 'segment') {
+    const _pathArtifact = getArtifactOfTypes(
+      { key: selection.artifact.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(_pathArtifact)) return _pathArtifact
+    if (!_pathArtifact.sweepId) return new Error('Path does not have a sweepId')
+    const _artifact = getArtifactOfTypes(
+      { key: _pathArtifact.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(_artifact)) return _artifact
+    sweepArtifact = _artifact
+  }
+  if (!sweepArtifact) return new Error('No sweep artifact found')
+
+  return sweepArtifact
 }
 
 export function getCodeRefsByArtifactId(
