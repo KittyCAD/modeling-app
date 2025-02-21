@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing fillet-and-shell.kcl
+snapshot_kind: text
 ---
 {
   "E": {
@@ -1150,11 +1151,11 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "body": [
           {
             "declaration": {
-              "end": 1512,
+              "end": 1508,
               "id": {
-                "end": 1311,
+                "end": 1307,
                 "name": "screw",
-                "start": 1306,
+                "start": 1302,
                 "type": "Identifier"
               },
               "init": {
@@ -1162,22 +1163,22 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   {
                     "arguments": [
                       {
-                        "end": 1332,
+                        "end": 1328,
                         "raw": "\"XY\"",
-                        "start": 1328,
+                        "start": 1324,
                         "type": "Literal",
                         "type": "Literal",
                         "value": "XY"
                       }
                     ],
                     "callee": {
-                      "end": 1327,
+                      "end": 1323,
                       "name": "startSketchOn",
-                      "start": 1314,
+                      "start": 1310,
                       "type": "Identifier"
                     },
-                    "end": 1333,
-                    "start": 1314,
+                    "end": 1329,
+                    "start": 1310,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -1186,9 +1187,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
                       {
                         "elements": [
                           {
-                            "end": 1358,
+                            "end": 1354,
                             "raw": "0",
-                            "start": 1357,
+                            "start": 1353,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1197,9 +1198,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
                             }
                           },
                           {
-                            "end": 1361,
+                            "end": 1357,
                             "raw": "0",
-                            "start": 1360,
+                            "start": 1356,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1208,81 +1209,81 @@ description: Variables in memory after executing fillet-and-shell.kcl
                             }
                           }
                         ],
-                        "end": 1362,
-                        "start": 1356,
+                        "end": 1358,
+                        "start": 1352,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       },
                       {
-                        "end": 1365,
-                        "start": 1364,
+                        "end": 1361,
+                        "start": 1360,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 1355,
+                      "end": 1351,
                       "name": "startProfileAt",
-                      "start": 1341,
+                      "start": 1337,
                       "type": "Identifier"
                     },
-                    "end": 1366,
-                    "start": 1341,
+                    "end": 1362,
+                    "start": 1337,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   {
                     "arguments": [
                       {
-                        "end": 1414,
+                        "end": 1410,
                         "properties": [
                           {
-                            "end": 1398,
+                            "end": 1394,
                             "key": {
-                              "end": 1389,
+                              "end": 1385,
                               "name": "center",
-                              "start": 1383,
+                              "start": 1379,
                               "type": "Identifier"
                             },
-                            "start": 1383,
+                            "start": 1379,
                             "type": "ObjectProperty",
                             "value": {
                               "elements": [
                                 {
-                                  "end": 1394,
+                                  "end": 1390,
                                   "name": "x",
-                                  "start": 1393,
+                                  "start": 1389,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 {
-                                  "end": 1397,
+                                  "end": 1393,
                                   "name": "y",
-                                  "start": 1396,
+                                  "start": 1392,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 }
                               ],
-                              "end": 1398,
-                              "start": 1392,
+                              "end": 1394,
+                              "start": 1388,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             }
                           },
                           {
-                            "end": 1412,
+                            "end": 1408,
                             "key": {
-                              "end": 1406,
+                              "end": 1402,
                               "name": "radius",
-                              "start": 1400,
+                              "start": 1396,
                               "type": "Identifier"
                             },
-                            "start": 1400,
+                            "start": 1396,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1412,
+                              "end": 1408,
                               "raw": "2.5",
-                              "start": 1409,
+                              "start": 1405,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1292,25 +1293,25 @@ description: Variables in memory after executing fillet-and-shell.kcl
                             }
                           }
                         ],
-                        "start": 1381,
+                        "start": 1377,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       },
                       {
-                        "end": 1417,
-                        "start": 1416,
+                        "end": 1413,
+                        "start": 1412,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 1380,
+                      "end": 1376,
                       "name": "circle",
-                      "start": 1374,
+                      "start": 1370,
                       "type": "Identifier"
                     },
-                    "end": 1418,
-                    "start": 1374,
+                    "end": 1414,
+                    "start": 1370,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -1319,55 +1320,55 @@ description: Variables in memory after executing fillet-and-shell.kcl
                       {
                         "arguments": [
                           {
-                            "end": 1472,
+                            "end": 1468,
                             "properties": [
                               {
-                                "end": 1455,
+                                "end": 1451,
                                 "key": {
-                                  "end": 1446,
+                                  "end": 1442,
                                   "name": "center",
-                                  "start": 1440,
+                                  "start": 1436,
                                   "type": "Identifier"
                                 },
-                                "start": 1440,
+                                "start": 1436,
                                 "type": "ObjectProperty",
                                 "value": {
                                   "elements": [
                                     {
-                                      "end": 1451,
+                                      "end": 1447,
                                       "name": "x",
-                                      "start": 1450,
+                                      "start": 1446,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 1454,
+                                      "end": 1450,
                                       "name": "y",
-                                      "start": 1453,
+                                      "start": 1449,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     }
                                   ],
-                                  "end": 1455,
-                                  "start": 1449,
+                                  "end": 1451,
+                                  "start": 1445,
                                   "type": "ArrayExpression",
                                   "type": "ArrayExpression"
                                 }
                               },
                               {
-                                "end": 1470,
+                                "end": 1466,
                                 "key": {
-                                  "end": 1463,
+                                  "end": 1459,
                                   "name": "radius",
-                                  "start": 1457,
+                                  "start": 1453,
                                   "type": "Identifier"
                                 },
-                                "start": 1457,
+                                "start": 1453,
                                 "type": "ObjectProperty",
                                 "value": {
-                                  "end": 1470,
+                                  "end": 1466,
                                   "raw": "1.25",
-                                  "start": 1466,
+                                  "start": 1462,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1377,43 +1378,43 @@ description: Variables in memory after executing fillet-and-shell.kcl
                                 }
                               }
                             ],
-                            "start": 1438,
+                            "start": 1434,
                             "type": "ObjectExpression",
                             "type": "ObjectExpression"
                           },
                           {
-                            "end": 1475,
-                            "start": 1474,
+                            "end": 1471,
+                            "start": 1470,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 1437,
+                          "end": 1433,
                           "name": "circle",
-                          "start": 1431,
+                          "start": 1427,
                           "type": "Identifier"
                         },
-                        "end": 1476,
-                        "start": 1431,
+                        "end": 1472,
+                        "start": 1427,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
-                        "end": 1479,
-                        "start": 1478,
+                        "end": 1475,
+                        "start": 1474,
                         "type": "PipeSubstitution",
                         "type": "PipeSubstitution"
                       }
                     ],
                     "callee": {
-                      "end": 1430,
+                      "end": 1426,
                       "name": "hole",
-                      "start": 1426,
+                      "start": 1422,
                       "type": "Identifier"
                     },
-                    "end": 1480,
-                    "start": 1426,
+                    "end": 1476,
+                    "start": 1422,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
@@ -1426,89 +1427,89 @@ description: Variables in memory after executing fillet-and-shell.kcl
                           "name": "length"
                         },
                         "arg": {
-                          "end": 1511,
+                          "end": 1507,
                           "name": "height",
-                          "start": 1505,
+                          "start": 1501,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1495,
+                      "end": 1491,
                       "name": "extrude",
-                      "start": 1488,
+                      "start": 1484,
                       "type": "Identifier"
                     },
-                    "end": 1512,
-                    "start": 1488,
+                    "end": 1508,
+                    "start": 1484,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   }
                 ],
-                "end": 1512,
-                "start": 1314,
+                "end": 1508,
+                "start": 1310,
                 "type": "PipeExpression",
                 "type": "PipeExpression"
               },
-              "start": 1306,
+              "start": 1302,
               "type": "VariableDeclarator"
             },
-            "end": 1512,
+            "end": 1508,
             "kind": "const",
-            "start": 1306,
+            "start": 1302,
             "type": "VariableDeclaration",
             "type": "VariableDeclaration"
           },
           {
             "argument": {
-              "end": 1527,
+              "end": 1523,
               "name": "screw",
-              "start": 1522,
+              "start": 1518,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "end": 1527,
-            "start": 1515,
+            "end": 1523,
+            "start": 1511,
             "type": "ReturnStatement",
             "type": "ReturnStatement"
           }
         ],
-        "end": 1529,
-        "start": 1302
+        "end": 1525,
+        "start": 1298
       },
-      "end": 1529,
+      "end": 1525,
       "params": [
         {
           "type": "Parameter",
           "identifier": {
-            "end": 1289,
+            "end": 1285,
             "name": "x",
-            "start": 1288,
+            "start": 1284,
             "type": "Identifier"
           }
         },
         {
           "type": "Parameter",
           "identifier": {
-            "end": 1292,
+            "end": 1288,
             "name": "y",
-            "start": 1291,
+            "start": 1287,
             "type": "Identifier"
           }
         },
         {
           "type": "Parameter",
           "identifier": {
-            "end": 1300,
+            "end": 1296,
             "name": "height",
-            "start": 1294,
+            "start": 1290,
             "type": "Identifier"
           }
         }
       ],
-      "start": 1287,
+      "start": 1283,
       "type": "FunctionExpression"
     },
     "memory": [
@@ -1518,8 +1519,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          1287,
-          1529,
+          1283,
+          1525,
           0
         ]
       }
