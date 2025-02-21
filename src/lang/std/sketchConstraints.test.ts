@@ -53,7 +53,7 @@ async function testingSwapSketchFnCall({
     return Promise.reject(new Error('transformInfos undefined'))
   const ast2 = transformAstSketchLines({
     ast,
-    programMemory: execState.memory,
+    memVars: execState.variables,
     selectionRanges: selections,
     transformInfos,
     referenceSegName: '',
@@ -373,7 +373,7 @@ part001 = startSketchOn('XY')
     const execState = await enginelessExecutor(assertParse(code))
     const index = code.indexOf('// normal-segment') - 7
     const sg = sketchFromKclValue(
-      execState.memory.get('part001'),
+      execState.variables['part001'],
       'part001'
     ) as Sketch
     const _segment = getSketchSegmentFromSourceRange(
@@ -386,6 +386,7 @@ part001 = startSketchOn('XY')
       type: 'ToPoint',
       to: [5.62, 1.79],
       from: [3.48, 0.44],
+      units: { type: 'Mm' },
       tag: null,
     })
   })
@@ -393,7 +394,7 @@ part001 = startSketchOn('XY')
     const execState = await enginelessExecutor(assertParse(code))
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
-      sketchFromKclValue(execState.memory.get('part001'), 'part001') as Sketch,
+      sketchFromKclValue(execState.variables['part001'], 'part001') as Sketch,
       topLevelRange(index, index)
     )
     if (err(_segment)) throw _segment
@@ -401,6 +402,7 @@ part001 = startSketchOn('XY')
     expect(segment).toEqual({
       to: [0, 0.04],
       from: [0, 0.04],
+      units: { type: 'Mm' },
       tag: null,
       type: 'Base',
     })

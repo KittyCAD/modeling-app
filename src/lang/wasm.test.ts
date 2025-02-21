@@ -18,7 +18,7 @@ it('can execute parsed AST', async () => {
   expect(pResult.program).not.toEqual(null)
   const execState = await enginelessExecutor(pResult.program as Node<Program>)
   expect(err(execState)).toEqual(false)
-  expect(execState.memory.get('x')?.value).toEqual(1)
+  expect(execState.variables['x']?.value).toEqual(1)
 })
 
 it('formats numbers with units', () => {

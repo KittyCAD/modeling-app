@@ -13,7 +13,7 @@ use winnow::{
 use super::TokenStream;
 use crate::{
     parsing::token::{Token, TokenType},
-    source_range::ModuleId,
+    ModuleId,
 };
 
 lazy_static! {
@@ -99,7 +99,7 @@ pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
         '#' => hash,
         '$' => dollar,
         '!' => alt((operator, bang)),
-        ' ' | '\t' | '\n' => whitespace,
+        ' ' | '\t' | '\n' | '\r' => whitespace,
         _ => alt((operator, keyword_type_or_word))
     }
     .parse_next(i)

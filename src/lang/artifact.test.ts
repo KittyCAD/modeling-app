@@ -15,8 +15,7 @@ const mySketch001 = startSketchOn('XY')
   |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45, %)`
     const execState = await enginelessExecutor(assertParse(code))
-    // @ts-ignore
-    const sketch001 = execState.memory.get('mySketch001')
+    const sketch001 = execState.variables['mySketch001']
     expect(sketch001).toEqual({
       type: 'Sketch',
       value: {
@@ -25,6 +24,7 @@ const mySketch001 = startSketchOn('XY')
         start: {
           to: [0, 0],
           from: [0, 0],
+          units: { type: 'Mm' },
           tag: null,
           __geoMeta: {
             id: expect.any(String),
@@ -36,6 +36,7 @@ const mySketch001 = startSketchOn('XY')
             type: 'ToPoint',
             tag: null,
             to: [-1.59, -1.54],
+            units: { type: 'Mm' },
             from: [0, 0],
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -46,6 +47,7 @@ const mySketch001 = startSketchOn('XY')
             type: 'ToPoint',
             to: [0.46, -5.82],
             from: [-1.59, -1.54],
+            units: { type: 'Mm' },
             tag: null,
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -73,8 +75,7 @@ const mySketch001 = startSketchOn('XY')
   // |> rx(45, %)
   |> extrude(length = 2)`
     const execState = await enginelessExecutor(assertParse(code))
-    // @ts-ignore
-    const sketch001 = execState.memory.get('mySketch001')
+    const sketch001 = execState.variables['mySketch001']
     expect(sketch001).toEqual({
       type: 'Solid',
       value: {
@@ -113,6 +114,7 @@ const mySketch001 = startSketchOn('XY')
               type: 'ToPoint',
               from: [0, 0],
               to: [-1.59, -1.54],
+              units: { type: 'Mm' },
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
@@ -123,6 +125,7 @@ const mySketch001 = startSketchOn('XY')
               type: 'ToPoint',
               from: [-1.59, -1.54],
               to: [0.46, -5.82],
+              units: { type: 'Mm' },
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
@@ -165,9 +168,9 @@ const sk2 = startSketchOn('XY')
 
 `
     const execState = await enginelessExecutor(assertParse(code))
-    const programMemory = execState.memory
+    const variables = execState.variables
     // @ts-ignore
-    const geos = [programMemory.get('theExtrude'), programMemory.get('sk2')]
+    const geos = [variables['theExtrude'], variables['sk2']]
     expect(geos).toEqual([
       {
         type: 'Solid',
@@ -231,6 +234,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [0, 0],
                 to: [-2.5, 0],
+                units: { type: 'Mm' },
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -241,6 +245,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [-2.5, 0],
                 to: [0, 10],
+                units: { type: 'Mm' },
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
@@ -256,6 +261,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [0, 10],
                 to: [2.5, 0],
+                units: { type: 'Mm' },
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -337,6 +343,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [0, 0],
                 to: [-2.5, 0],
+                units: { type: 'Mm' },
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -347,6 +354,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [-2.5, 0],
                 to: [0, 3],
+                units: { type: 'Mm' },
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
@@ -362,6 +370,7 @@ const sk2 = startSketchOn('XY')
                 type: 'ToPoint',
                 from: [0, 3],
                 to: [2.5, 0],
+                units: { type: 'Mm' },
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),

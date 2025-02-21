@@ -25,7 +25,7 @@ acos(num: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

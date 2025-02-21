@@ -23,7 +23,7 @@ assertLessThan(left: number, right: number, message: string) -> ()
 
 ### Returns
 
-`()` 
+`()`
 
 
 ### Examples

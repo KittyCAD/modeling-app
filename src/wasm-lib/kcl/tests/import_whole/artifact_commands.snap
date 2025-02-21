@@ -287,7 +287,7 @@ snapshot_kind: text
     "range": [
       0,
       35,
-      1
+      3
     ],
     "command": {
       "type": "set_scene_units",
@@ -299,7 +299,7 @@ snapshot_kind: text
     "range": [
       36,
       55,
-      1
+      3
     ],
     "command": {
       "type": "make_plane",
@@ -328,7 +328,7 @@ snapshot_kind: text
     "range": [
       61,
       104,
-      1
+      3
     ],
     "command": {
       "type": "enable_sketch_mode",
@@ -348,7 +348,7 @@ snapshot_kind: text
     "range": [
       61,
       104,
-      1
+      3
     ],
     "command": {
       "type": "start_path"
@@ -359,7 +359,7 @@ snapshot_kind: text
     "range": [
       61,
       104,
-      1
+      3
     ],
     "command": {
       "type": "move_path_pen",
@@ -376,7 +376,7 @@ snapshot_kind: text
     "range": [
       61,
       104,
-      1
+      3
     ],
     "command": {
       "type": "extend_path",
@@ -405,7 +405,7 @@ snapshot_kind: text
     "range": [
       61,
       104,
-      1
+      3
     ],
     "command": {
       "type": "close_path",
@@ -417,7 +417,7 @@ snapshot_kind: text
     "range": [
       110,
       130,
-      1
+      3
     ],
     "command": {
       "type": "enable_sketch_mode",
@@ -437,7 +437,7 @@ snapshot_kind: text
     "range": [
       110,
       130,
-      1
+      3
     ],
     "command": {
       "type": "extrude",
@@ -451,7 +451,7 @@ snapshot_kind: text
     "range": [
       110,
       130,
-      1
+      3
     ],
     "command": {
       "type": "sketch_mode_disable"
@@ -462,7 +462,7 @@ snapshot_kind: text
     "range": [
       110,
       130,
-      1
+      3
     ],
     "command": {
       "type": "object_bring_to_front",
@@ -474,7 +474,7 @@ snapshot_kind: text
     "range": [
       110,
       130,
-      1
+      3
     ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
@@ -487,7 +487,7 @@ snapshot_kind: text
     "range": [
       110,
       130,
-      1
+      3
     ],
     "command": {
       "type": "solid3d_get_opposite_edge",
@@ -501,7 +501,7 @@ snapshot_kind: text
     "range": [
       110,
       130,
-      1
+      3
     ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",

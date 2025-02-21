@@ -31,14 +31,14 @@ layout: manual
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 {{#each args}}
-| `{{name}}` | `{{type_}}` | {{{description}}} | {{#if required}}Yes{{else}}No{{/if}} |
+| `{{name}}` | `{{type_}}` | {{{firstLine description}}} | {{#if required}}Yes{{else}}No{{/if}} |
 {{/each}}
 {{/if}}
 
 {{#if return_value}}
 ### Returns
 
-`{{return_value.type_}}` {{#if return_value.description}}- {{{return_value.description}}}{{/if}}
+`{{return_value.type_}}`{{#if return_value.description}} - {{{firstLine return_value.description}}}{{/if}}
 
 {{/if}}
 

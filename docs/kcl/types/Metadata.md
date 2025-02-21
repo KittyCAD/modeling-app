@@ -16,6 +16,6 @@ Metadata.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sourceRange` |`SourceRange`| The source range. | No |
+| `sourceRange` |[`SourceRange`](/docs/kcl/types/SourceRange)| The source range. | No |
 
 

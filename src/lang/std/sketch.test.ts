@@ -124,7 +124,7 @@ describe('testing changeSketchArguments', () => {
     const sourceStart = code.indexOf(lineToChange)
     const changeSketchArgsRetVal = changeSketchArguments(
       ast,
-      execState.memory,
+      execState.variables,
       {
         type: 'sourceRange',
         sourceRange: topLevelRange(
@@ -160,7 +160,7 @@ mySketch001 = startSketchOn('XY')
     expect(sourceStart).toBe(89)
     const newSketchLnRetVal = addNewSketchLn({
       node: ast,
-      programMemory: execState.memory,
+      variables: execState.variables,
       input: {
         type: 'straight-segment',
         from: [0, 0],
@@ -190,7 +190,7 @@ mySketch001 = startSketchOn('XY')
 
     const modifiedAst2 = addCloseToPipe({
       node: ast,
-      programMemory: execState.memory,
+      variables: execState.variables,
       pathToNode: [
         ['body', ''],
         [0, 'index'],

@@ -26,7 +26,7 @@ atan2(y: number, x: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

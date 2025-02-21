@@ -48,13 +48,15 @@ expression: actual
                 "type": "Identifier"
               },
               "default_value": {
+                "end": 13,
+                "raw": "2",
+                "start": 12,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
                   "value": 2.0,
                   "suffix": "None"
-                },
-                "raw": "2"
+                }
               }
             }
           ],

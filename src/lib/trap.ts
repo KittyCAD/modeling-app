@@ -97,3 +97,7 @@ export function trap<T>(
     })
   return true
 }
+
+export function reject(errOrString: Error | string): Promise<never> {
+  return Promise.reject(errOrString)
+}

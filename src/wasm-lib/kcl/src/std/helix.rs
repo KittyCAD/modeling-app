@@ -125,7 +125,7 @@ async fn inner_helix(
         meta: vec![args.source_range.into()],
     });
 
-    if args.ctx.is_mock() {
+    if args.ctx.no_engine_commands().await {
         return Ok(helix_result);
     }
 

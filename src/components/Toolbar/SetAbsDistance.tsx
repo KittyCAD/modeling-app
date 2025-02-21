@@ -92,6 +92,7 @@ export async function applyConstraintAbsDistance({
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
+  exprInsertIndex: number
 }> {
   const info = absDistanceInfo({
     selectionRanges,
@@ -104,7 +105,7 @@ export async function applyConstraintAbsDistance({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
   })
   if (err(transform1)) return Promise.reject(transform1)
@@ -124,13 +125,14 @@ export async function applyConstraintAbsDistance({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
   })
   if (err(transform2)) return Promise.reject(transform2)
   const { modifiedAst: _modifiedAst, pathToNodeMap } = transform2
 
+  let exprInsertIndex = -1
   if (variableName) {
     const newBody = [..._modifiedAst.body]
     newBody.splice(
@@ -143,8 +145,9 @@ export async function applyConstraintAbsDistance({
       const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
       pathToNode[index][0] = Number(pathToNode[index][0]) + 1
     })
+    exprInsertIndex = newVariableInsertIndex
   }
-  return { modifiedAst: _modifiedAst, pathToNodeMap }
+  return { modifiedAst: _modifiedAst, pathToNodeMap, exprInsertIndex }
 }
 
 export function applyConstraintAxisAlign({
@@ -172,7 +175,7 @@ export function applyConstraintAxisAlign({
     ast: structuredClone(kclManager.ast),
     selectionRanges,
     transformInfos,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
   })

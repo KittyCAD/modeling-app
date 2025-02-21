@@ -42,6 +42,7 @@ use tower_lsp::{
 };
 
 use crate::{
+    docs::kcl_doc::DocData,
     errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
@@ -102,8 +103,6 @@ pub struct Backend {
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
     pub ast_map: DashMap<String, Node<crate::parsing::ast::types::Program>>,
-    /// Memory maps.
-    pub memory_map: DashMap<String, crate::execution::ProgramMemory>,
     /// Current code.
     pub code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
@@ -166,8 +165,9 @@ impl Backend {
         can_send_telemetry: bool,
     ) -> Result<Self, String> {
         let stdlib = crate::std::StdLib::new();
-        let stdlib_completions = get_completions_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
-        let stdlib_signatures = get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
+        let kcl_std = crate::docs::kcl_doc::walk_prelude();
+        let stdlib_completions = get_completions_from_stdlib(&stdlib, &kcl_std).map_err(|e| e.to_string())?;
+        let stdlib_signatures = get_signatures_from_stdlib(&stdlib, &kcl_std);
 
         Ok(Self {
             client,
@@ -181,7 +181,6 @@ impl Backend {
             workspace_folders: Default::default(),
             token_map: Default::default(),
             ast_map: Default::default(),
-            memory_map: Default::default(),
             code_map: Default::default(),
             diagnostics_map: Default::default(),
             symbols_map: Default::default(),
@@ -193,7 +192,6 @@ impl Backend {
     fn remove_from_ast_maps(&self, filename: &str) {
         self.ast_map.remove(filename);
         self.symbols_map.remove(filename);
-        self.memory_map.remove(filename);
     }
 }
 
@@ -279,13 +277,6 @@ impl crate::lsp::backend::Backend for Backend {
             }
         };
 
-        // Try to get the memory for the current code.
-        let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
-            *memory != crate::execution::ProgramMemory::default()
-        } else {
-            false
-        };
-
         // Get the previous tokens.
         let tokens_changed = if let Some(previous_tokens) = self.token_map.get(&filename) {
             *previous_tokens != tokens
@@ -293,8 +284,10 @@ impl crate::lsp::backend::Backend for Backend {
             true
         };
 
+        let had_diagnostics = self.has_diagnostics(params.uri.as_ref()).await;
+
         // Check if the tokens are the same.
-        if !tokens_changed && !force && has_memory && !self.has_diagnostics(params.uri.as_ref()).await {
+        if !tokens_changed && !force && !had_diagnostics {
             // We return early here because the tokens are the same.
             return;
         }
@@ -343,7 +336,7 @@ impl crate::lsp::backend::Backend for Backend {
             None => true,
         };
 
-        if !ast_changed && !force && has_memory {
+        if !ast_changed && !force && !had_diagnostics {
             // Return early if the ast did not change and we don't need to force.
             return;
         }
@@ -680,24 +673,13 @@ impl Backend {
 
         match executor_ctx.run_with_caching(ast.clone()).await {
             Err(err) => {
-                self.memory_map.remove(params.uri.as_str());
                 self.add_to_diagnostics(params, &[err.error], false).await;
 
                 // Since we already published the diagnostics we don't really care about the error
                 // string.
                 Err(anyhow::anyhow!("failed to execute code"))
             }
-            Ok(outcome) => {
-                let memory = outcome.memory;
-                self.memory_map.insert(params.uri.to_string(), memory.clone());
-
-                // Send the notification to the client that the memory was updated.
-                self.client
-                    .send_notification::<custom_notifications::MemoryUpdated>(memory)
-                    .await;
-
-                Ok(())
-            }
+            Ok(_) => Ok(()),
         }
     }
 
@@ -815,8 +797,6 @@ impl Backend {
         &self,
         params: custom_notifications::UpdateUnitsParams,
     ) -> RpcResult<Option<custom_notifications::UpdateUnitsResponse>> {
-        let filename = params.text_document.uri.to_string();
-
         {
             let mut ctx = self.executor_ctx.write().await;
             // Borrow the executor context mutably.
@@ -831,16 +811,8 @@ impl Backend {
                 .log_message(MessageType::INFO, format!("update units: {:?}", params))
                 .await;
 
-            // Try to get the memory for the current code.
-            let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
-                *memory != crate::execution::ProgramMemory::default()
-            } else {
-                false
-            };
-
             if executor_ctx.settings.units == params.units
                 && !self.has_diagnostics(params.text_document.uri.as_ref()).await
-                && has_memory
             {
                 // Return early the units are the same.
                 return Ok(None);
@@ -1432,7 +1404,10 @@ impl LanguageServer for Backend {
 }
 
 /// Get completions from our stdlib.
-pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap<String, CompletionItem>> {
+pub fn get_completions_from_stdlib(
+    stdlib: &crate::std::StdLib,
+    kcl_std: &[DocData],
+) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
     let combined = stdlib.combined();
 
@@ -1440,7 +1415,11 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
         completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
     }
 
-    let variable_kinds = VariableKind::to_completion_items()?;
+    for d in kcl_std {
+        completions.insert(d.name().to_owned(), d.to_completion_item());
+    }
+
+    let variable_kinds = VariableKind::to_completion_items();
     for variable_kind in variable_kinds {
         completions.insert(variable_kind.label.clone(), variable_kind);
     }
@@ -1449,7 +1428,7 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
 }
 
 /// Get signatures from our stdlib.
-pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap<String, SignatureHelp>> {
+pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocData]) -> HashMap<String, SignatureHelp> {
     let mut signatures = HashMap::new();
     let combined = stdlib.combined();
 
@@ -1457,7 +1436,13 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap
         signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
     }
 
-    Ok(signatures)
+    for d in kcl_std {
+        if let Some(sig) = d.to_signature_help() {
+            signatures.insert(d.name().to_owned(), sig);
+        }
+    }
+
+    signatures
 }
 
 /// Convert a position to a character index from the start of the file.

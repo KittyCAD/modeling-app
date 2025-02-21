@@ -26,7 +26,7 @@ rem(num: number, divisor: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

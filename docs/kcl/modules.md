@@ -57,3 +57,55 @@ Imported symbols can be renamed for convenience or to avoid name collisions.
 ```
 import increment as inc, decrement as dec from "util.kcl"
 ```
+
+## Importing files from other CAD systems
+
+`import` can also be used to import files from other CAD systems. The format of the statement is the
+same as for KCL files. You can only import the whole file, not items from it. E.g.,
+
+```
+import "tests/inputs/cube.obj"
+
+// Use `cube` just like a KCL object.
+```
+
+```
+import "tests/inputs/cube-2.sldprt" as cube
+
+// Use `cube` just like a KCL object.
+```
+
+You can make the file format explicit using a format attribute (useful if using a different
+extension), e.g.,
+
+```
+@(format = obj)
+import "tests/inputs/cube"
+```
+
+For formats lacking unit data (such as STL, OBJ, or PLY files), the default
+unit of measurement is millimeters. Alternatively you may specify the unit
+by using an attirbute. Likewise, you can also specify a coordinate system. E.g.,
+
+```
+@(unitLength = ft, coords = opengl)
+import "tests/inputs/cube.obj"
+```
+
+When importing a GLTF file, the bin file will be imported as well.
+
+Import paths are relative to the current project directory. Imports currently only work when
+using the native Modeling App, not in the browser.
+
+### Supported values
+
+File formats: `fbx`, `gltf`/`glb`, `obj`+, `ply`+, `sldprt`, `step`/`stp`, `stl`+. (Those marked with a
+'+' support customising the length unit and coordinate system).
+
+Length units: `mm` (the default), `cm`, `m`, `inch`, `ft`, `yd`.
+
+Coordinate systems:
+
+- `zoo` (the default), forward: -Y, up: +Z, handedness: right
+- `opengl`, forward: +Z, up: +Y, handedness: right
+- `vulkan`, forward: +Z, up: -Y, handedness: left

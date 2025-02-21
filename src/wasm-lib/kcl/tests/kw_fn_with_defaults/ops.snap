@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed kw_fn_with_defaults.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -32,6 +31,19 @@ snapshot_kind: text
       0
     ],
     "unlabeledArg": {
+      "value": {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      },
       "sourceRange": [
         88,
         89,
@@ -40,6 +52,19 @@ snapshot_kind: text
     },
     "labeledArgs": {
       "by": {
+        "value": {
+          "type": "Number",
+          "value": 20.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           96,
           98,

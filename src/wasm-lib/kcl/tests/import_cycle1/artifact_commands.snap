@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands import_cycle1.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -280,6 +279,18 @@ snapshot_kind: text
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      33,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "in"
     }
   }
 ]

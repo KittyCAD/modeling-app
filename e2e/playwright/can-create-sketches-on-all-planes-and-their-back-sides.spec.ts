@@ -19,6 +19,8 @@ test.describe(
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      // FIXME: Cannot use scene.waitForExecutionDone() since there is no KCL code
+      await page.waitForTimeout(10000)
       await u.openDebugPanel()
 
       const coord =
@@ -41,8 +43,7 @@ test.describe(
         },
       }
 
-      const code = `sketch001 = startSketchOn('${plane}')
-    |> startProfileAt([0.9, -1.22], %)`
+      const code = `sketch001 = startSketchOn('${plane}')profile001 = startProfileAt([0.9, -1.22], sketch001)`
 
       await u.openDebugPanel()
 

@@ -112,7 +112,7 @@ async fn inner_mirror_2d(
         SketchSet::Sketches(sketches) => sketches,
     };
 
-    if args.ctx.is_mock() {
+    if args.ctx.no_engine_commands().await {
         return Ok(starting_sketches);
     }
 

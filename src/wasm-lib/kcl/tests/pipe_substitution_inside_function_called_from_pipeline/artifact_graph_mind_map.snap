@@ -1,6 +1,0 @@
----
-source: kcl/src/simulation_tests.rs
-description: Artifact graph mind map pipe_substitution_inside_function_called_from_pipeline.kcl
-extension: md
-snapshot_kind: binary
----

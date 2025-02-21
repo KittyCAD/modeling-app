@@ -43,6 +43,21 @@ module.exports = {
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif`,
       },
+      /**
+       * We want the z-index of major UI areas
+       * to be consolidated in this one spot,
+       * so we can make sure they coordinate.
+       */
+      zIndex: {
+        // TODO change use of `z-<number>` to use these instead
+        // underlay: '-1',
+        // tooltip: '1',
+        // commandBar: '2',
+        // modal: '3',
+        sketchSegmentIndicators: '5',
+        sketchOverlayDropdown: '6',
+        // top: '99',
+      },
     },
   },
   darkMode: 'class',

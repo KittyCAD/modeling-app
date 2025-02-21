@@ -82,6 +82,7 @@ function moreNodePathFromSourceRange(
           return moreNodePathFromSourceRange(arg, sourceRange, path)
         }
       }
+      return path
     }
     return path
   }

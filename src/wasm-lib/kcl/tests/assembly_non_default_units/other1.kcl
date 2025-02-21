@@ -1,0 +1,8 @@
+@settings(defaultLengthUnit = in)
+
+// This is not used, but it triggers the problem.
+import radius from "globals.kcl"
+
+// Use the same units as in the main importing file.
+startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)

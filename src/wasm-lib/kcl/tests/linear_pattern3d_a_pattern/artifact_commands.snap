@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands linear_pattern3d_a_pattern.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -631,7 +630,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       189,
-      276,
+      277,
       0
     ],
     "command": {
@@ -819,8 +818,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      287,
-      367,
+      288,
+      369,
       0
     ],
     "command": {
@@ -1008,8 +1007,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      287,
-      367,
+      288,
+      369,
       0
     ],
     "command": {
@@ -1197,8 +1196,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      287,
-      367,
+      288,
+      369,
       0
     ],
     "command": {
@@ -1386,8 +1385,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      287,
-      367,
+      288,
+      369,
       0
     ],
     "command": {
@@ -1575,8 +1574,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      287,
-      367,
+      288,
+      369,
       0
     ],
     "command": {
@@ -1764,8 +1763,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      287,
-      367,
+      288,
+      369,
       0
     ],
     "command": {
@@ -1953,8 +1952,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      287,
-      367,
+      288,
+      369,
       0
     ],
     "command": {

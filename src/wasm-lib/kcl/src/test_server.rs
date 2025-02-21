@@ -5,9 +5,9 @@ use std::path::PathBuf;
 use crate::{
     engine::new_zoo_client,
     errors::ExecErrorWithState,
-    execution::{ExecutorContext, ExecutorSettings},
+    execution::{ExecState, ExecutorContext, ExecutorSettings},
     settings::types::UnitLength,
-    ConnectionError, ExecError, ExecState, KclErrorWithOutputs, Program,
+    ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -70,6 +70,12 @@ async fn do_execute_and_snapshot(
     ctx.run_with_ui_outputs(&program, &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
+    if !exec_state.errors().is_empty() {
+        return Err(ExecErrorWithState::new(
+            KclErrorWithOutputs::no_outputs(KclError::Semantic(exec_state.errors()[0].clone().into())).into(),
+            exec_state.clone(),
+        ));
+    }
     let snapshot_png_bytes = ctx
         .prepare_snapshot()
         .await

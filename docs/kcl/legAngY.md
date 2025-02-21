@@ -26,7 +26,7 @@ legAngY(hypotenuse: number, leg: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

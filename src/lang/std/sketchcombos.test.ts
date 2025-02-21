@@ -193,7 +193,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
         ast,
         selectionRanges: transformedSelection,
         transformInfos,
-        programMemory: execState.memory,
+        memVars: execState.variables,
       })
       if (err(newAst)) return Promise.reject(newAst)
 
@@ -356,7 +356,7 @@ part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory: execState.memory,
+      memVars: execState.variables,
     })
     if (err(newAst)) return Promise.reject(newAst)
 
@@ -445,7 +445,7 @@ part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory: execState.memory,
+      memVars: execState.variables,
       referenceSegName: '',
     })
     if (err(newAst)) return Promise.reject(newAst)
@@ -505,7 +505,7 @@ part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory: execState.memory,
+      memVars: execState.variables,
       referenceSegName: '',
     })
     if (err(newAst)) return Promise.reject(newAst)
@@ -600,7 +600,7 @@ async function helperThing(
     ast,
     selectionRanges: makeSelections(selectionRanges),
     transformInfos,
-    programMemory: execState.memory,
+    memVars: execState.variables,
   })
 
   if (err(newAst)) return Promise.reject(newAst)

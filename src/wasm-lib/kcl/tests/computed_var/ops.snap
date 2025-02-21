@@ -1,6 +1,25 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed computed_var.kcl
-snapshot_kind: text
 ---
-[]
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "cos",
+    "functionSourceRange": [
+      1446,
+      1478,
+      2
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      247,
+      258,
+      0
+    ]
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]

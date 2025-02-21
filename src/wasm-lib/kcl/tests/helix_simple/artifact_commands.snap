@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands helix_simple.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -383,7 +384,7 @@ description: Artifact commands helix_simple.kcl
     "cmdId": "[uuid]",
     "range": [
       151,
-      242,
+      257,
       0
     ],
     "command": {

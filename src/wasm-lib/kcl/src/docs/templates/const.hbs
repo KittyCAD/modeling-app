@@ -1,0 +1,33 @@
+---
+title: "{{name}}"
+excerpt: "{{safe_yaml summary}}"
+layout: manual
+---
+
+{{#if deprecated}}
+**WARNING:** This function is deprecated.
+
+{{/if}}
+{{{summary}}}
+
+{{{description}}}
+
+```js
+{{{name}}}{{#if type_}}: {{{type_}}}{{/if}}{{#if value}} = {{{value}}}{{/if}}
+```
+
+{{#if examples}}
+### Examples
+
+{{#each examples}}
+```js
+{{{this.content}}}
+```
+
+{{#unless @root.is_utilities}}
+![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
+
+{{/unless}}
+{{/each}}
+{{/if}}
+

@@ -26,7 +26,7 @@ mm() -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

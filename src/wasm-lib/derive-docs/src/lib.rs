@@ -328,7 +328,7 @@ fn do_stdlib_inner(
         let label_required = !(i == 0 && metadata.unlabeled_first);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
-               generator.root_schema_for::<#ty_ident>()
+                #docs_crate::cleanup_number_tuples_root(generator.root_schema_for::<#ty_ident>())
             };
             arg_types.push(quote! {
                 #docs_crate::StdLibFnArg {
@@ -393,7 +393,7 @@ fn do_stdlib_inner(
     let return_type = if !ret_ty_string.is_empty() || ret_ty_string != "()" {
         let ret_ty_string = rust_type_to_openapi_type(&ret_ty_string);
         quote! {
-            let schema = generator.root_schema_for::<#return_type_inner>();
+            let schema = #docs_crate::cleanup_number_tuples_root(generator.root_schema_for::<#return_type_inner>());
             Some(#docs_crate::StdLibFnArg {
                 name: "".to_string(),
                 type_: #ret_ty_string.to_string(),
@@ -442,7 +442,7 @@ fn do_stdlib_inner(
         #const_struct
 
         fn #boxed_fn_name_ident(
-            exec_state: &mut crate::ExecState,
+            exec_state: &mut crate::execution::ExecState,
             args: crate::std::Args,
         ) -> std::pin::Pin<
             Box<dyn std::future::Future<Output = anyhow::Result<crate::execution::KclValue, crate::errors::KclError>> + Send + '_>,
@@ -831,7 +831,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::execution::ContextType::Mock,
             };
 
-            if let Err(e) = ctx.run(&program, &mut crate::ExecState::new(&ctx.settings)).await {
+            if let Err(e) = ctx.run(&program, &mut crate::execution::ExecState::new(&ctx.settings)).await {
                     return Err(miette::Report::new(crate::errors::Report {
                         error: e,
                         filename: format!("{}{}", #fn_name, #index),

@@ -1,6 +1,5 @@
 import { ToolTip } from 'lang/langHelpers'
 import {
-  ProgramMemory,
   Path,
   SourceRange,
   Program,
@@ -10,14 +9,15 @@ import {
   Literal,
   BinaryPart,
   CallExpressionKw,
+  VariableMap,
 } from '../wasm'
 import { LineInputsType } from './sketchcombos'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export interface ModifyAstBase {
   node: Node<Program>
-  // TODO #896: Remove ProgramMemory from this interface
-  previousProgramMemory: ProgramMemory
+  // TODO #896: Remove memory variables from this interface
+  variables: VariableMap
   pathToNode: PathToNode
 }
 
@@ -45,6 +45,13 @@ interface ArcSegmentInput {
   center: [number, number]
   radius: number
 }
+/** Inputs for three point circle */
+interface CircleThreePointSegmentInput {
+  type: 'circle-three-point-segment'
+  p1: [number, number]
+  p2: [number, number]
+  p3: [number, number]
+}
 
 /**
  * SegmentInputs is a union type that can be either a StraightSegmentInput or an ArcSegmentInput.
@@ -52,7 +59,10 @@ interface ArcSegmentInput {
  * - StraightSegmentInput: Represents a straight segment with a starting point (from) and an ending point (to).
  * - ArcSegmentInput: Represents an arc segment with a starting point (from), a center point, and a radius.
  */
-export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
+export type SegmentInputs =
+  | StraightSegmentInput
+  | ArcSegmentInput
+  | CircleThreePointSegmentInput
 
 /**
  * Interface for adding or replacing a sketch stblib call expression to a sketch.
@@ -85,6 +95,9 @@ export type InputArgKeys =
   | 'intersectTag'
   | 'radius'
   | 'center'
+  | 'p1'
+  | 'p2'
+  | 'p3'
 export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType
@@ -239,7 +252,8 @@ export interface SketchLineHelper {
   getConstraintInfo: (
     callExp: Node<CallExpression>,
     code: string,
-    pathToNode: PathToNode
+    pathToNode: PathToNode,
+    filterValue?: string
   ) => ConstrainInfo[]
 }
 
@@ -267,6 +281,7 @@ export interface SketchLineHelperKw {
   getConstraintInfo: (
     callExp: Node<CallExpressionKw>,
     code: string,
-    pathToNode: PathToNode
+    pathToNode: PathToNode,
+    filterValue?: string
   ) => ConstrainInfo[]
 }

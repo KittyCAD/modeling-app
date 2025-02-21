@@ -6,6 +6,10 @@ description: Operations executed helix_simple.kcl
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
         "sourceRange": [
           60,
           64,
@@ -25,44 +29,105 @@ description: Operations executed helix_simple.kcl
   {
     "labeledArgs": {
       "angleStart": {
+        "value": {
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          170,
-          171,
+          173,
+          174,
           0
         ]
       },
       "axis": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "edge001",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
-          234,
-          241,
+          247,
+          254,
           0
         ]
       },
       "ccw": {
+        "value": {
+          "type": "Bool",
+          "value": true
+        },
         "sourceRange": [
-          179,
-          183,
+          184,
+          188,
           0
         ]
       },
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          211,
-          213,
+          220,
+          222,
           0
         ]
       },
       "radius": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          224,
-          225,
+          235,
+          236,
           0
         ]
       },
       "revolutions": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          199,
-          200,
+          206,
+          207,
           0
         ]
       }
@@ -70,7 +135,7 @@ description: Operations executed helix_simple.kcl
     "name": "helix",
     "sourceRange": [
       151,
-      242,
+      257,
       0
     ],
     "type": "StdLibCall",

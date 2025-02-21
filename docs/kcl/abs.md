@@ -25,7 +25,7 @@ abs(num: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

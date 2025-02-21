@@ -5,10 +5,9 @@ import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
 import { Expr } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
-import {
-  getCalculatedKclExpressionValue,
-  programMemoryFromVariables,
-} from './kclHelpers'
+import { getCalculatedKclExpressionValue } from './kclHelpers'
+import { parse, resultIsOk } from 'lang/wasm'
+import { err } from 'lib/trap'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -34,7 +33,7 @@ export function useCalculateKclExpression({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { programMemory, code } = useKclContext()
+  const { variables, code } = useKclContext()
   const { context } = useModelingContext()
   // If there is no selection, use the end of the code
   // so all variables are available
@@ -50,7 +49,20 @@ export function useCalculateKclExpression({
     bodyPath: [],
   })
   const [valueNode, setValueNode] = useState<Expr | null>(null)
-  const [calcResult, setCalcResult] = useState('NAN')
+  // Gotcha: If we do not attempt to parse numeric literals instantly it means that there is an async action to verify
+  // the value is good. This means all E2E tests have a race condition on when they can hit "next" in the command bar.
+  // Most scenarios automatically pass a numeric literal. We can try to parse that first, otherwise make it go through the slow
+  // async method.
+  // If we pass in numeric literals, we should instantly parse them, they have nothing to do with application memory
+  const _code_value = `const __result__ = ${value}`
+  const codeValueParseResult = parse(_code_value)
+  let isValueParsable = true
+  if (err(codeValueParseResult) || !resultIsOk(codeValueParseResult)) {
+    isValueParsable = false
+  }
+  const initialCalcResult: number | string =
+    Number.isNaN(Number(value)) || !isValueParsable ? 'NAN' : value
+  const [calcResult, setCalcResult] = useState(initialCalcResult)
   const [newVariableName, setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
 
@@ -65,7 +77,7 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     if (
-      programMemory.has(newVariableName) ||
+      variables[newVariableName] ||
       newVariableName === '' ||
       !isValidVariableName(newVariableName)
     ) {
@@ -73,33 +85,22 @@ export function useCalculateKclExpression({
     } else {
       setIsNewVariableNameUnique(true)
     }
-  }, [programMemory, newVariableName])
+  }, [variables, newVariableName])
 
   useEffect(() => {
-    if (!programMemory) return
+    if (!variables) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
-      kclManager.programMemory,
+      kclManager.variables,
       // If there is no selection, use the end of the code
       selectionRange || [code.length, code.length]
     )
     setAvailableVarInfo(varInfo)
-  }, [kclManager.ast, kclManager.programMemory, selectionRange])
+  }, [kclManager.ast, kclManager.variables, selectionRange])
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const programMemory = programMemoryFromVariables(
-        availableVarInfo.variables
-      )
-      if (programMemory instanceof Error) {
-        setCalcResult('NAN')
-        setValueNode(null)
-        return
-      }
-      const result = await getCalculatedKclExpressionValue({
-        value,
-        programMemory,
-      })
+      const result = await getCalculatedKclExpressionValue(value, {})
       if (result instanceof Error || 'errors' in result) {
         setCalcResult('NAN')
         setValueNode(null)
@@ -113,7 +114,7 @@ export function useCalculateKclExpression({
       setCalcResult('NAN')
       setValueNode(null)
     })
-  }, [value, availableVarInfo, code, kclManager.programMemory])
+  }, [value, availableVarInfo, code, kclManager.variables])
 
   return {
     valueNode,

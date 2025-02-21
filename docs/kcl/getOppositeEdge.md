@@ -21,7 +21,7 @@ getOppositeEdge(tag: TagIdentifier) -> Uuid
 
 ### Returns
 
-`Uuid` 
+`Uuid`
 
 
 ### Examples

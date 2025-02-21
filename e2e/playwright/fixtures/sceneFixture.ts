@@ -1,6 +1,6 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { uuidv4 } from 'lib/utils'
+import { isArray, uuidv4 } from 'lib/utils'
 import {
   closeDebugPanel,
   doAndWaitForImageDiff,
@@ -9,13 +9,15 @@ import {
   sendCustomCmd,
 } from '../test-utils'
 
-type mouseParams = {
+type MouseParams = {
   pixelDiff?: number
+  shouldDbClick?: boolean
+  delay?: number
 }
-type mouseDragToParams = mouseParams & {
+type MouseDragToParams = MouseParams & {
   fromPoint: { x: number; y: number }
 }
-type mouseDragFromParams = mouseParams & {
+type MouseDragFromParams = MouseParams & {
   toPoint: { x: number; y: number }
 }
 
@@ -26,12 +28,12 @@ type SceneSerialised = {
   }
 }
 
-type ClickHandler = (clickParams?: mouseParams) => Promise<void | boolean>
-type MoveHandler = (moveParams?: mouseParams) => Promise<void | boolean>
-type DblClickHandler = (clickParams?: mouseParams) => Promise<void | boolean>
-type DragToHandler = (dragParams: mouseDragToParams) => Promise<void | boolean>
+type ClickHandler = (clickParams?: MouseParams) => Promise<void | boolean>
+type MoveHandler = (moveParams?: MouseParams) => Promise<void | boolean>
+type DblClickHandler = (clickParams?: MouseParams) => Promise<void | boolean>
+type DragToHandler = (dragParams: MouseDragToParams) => Promise<void | boolean>
 type DragFromHandler = (
-  dragParams: mouseDragFromParams
+  dragParams: MouseDragFromParams
 ) => Promise<void | boolean>
 
 export class SceneFixture {
@@ -77,17 +79,26 @@ export class SceneFixture {
     { steps }: { steps: number } = { steps: 20 }
   ): [ClickHandler, MoveHandler, DblClickHandler] =>
     [
-      (clickParams?: mouseParams) => {
+      (clickParams?: MouseParams) => {
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
-            () => this.page.mouse.click(x, y),
+            () =>
+              clickParams?.shouldDbClick
+                ? this.page.mouse.dblclick(x, y, {
+                    delay: clickParams?.delay || 0,
+                  })
+                : this.page.mouse.click(x, y, {
+                    delay: clickParams?.delay || 0,
+                  }),
             clickParams.pixelDiff
           )
         }
-        return this.page.mouse.click(x, y)
+        return clickParams?.shouldDbClick
+          ? this.page.mouse.dblclick(x, y, { delay: clickParams?.delay || 0 })
+          : this.page.mouse.click(x, y, { delay: clickParams?.delay || 0 })
       },
-      (moveParams?: mouseParams) => {
+      (moveParams?: MouseParams) => {
         if (moveParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -97,7 +108,7 @@ export class SceneFixture {
         }
         return this.page.mouse.move(x, y, { steps })
       },
-      (clickParams?: mouseParams) => {
+      (clickParams?: MouseParams) => {
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -114,7 +125,7 @@ export class SceneFixture {
     { steps }: { steps: number } = { steps: 20 }
   ): [DragToHandler, DragFromHandler] =>
     [
-      (dragToParams: mouseDragToParams) => {
+      (dragToParams: MouseDragToParams) => {
         if (dragToParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -131,7 +142,7 @@ export class SceneFixture {
           targetPosition: { x, y },
         })
       },
-      (dragFromParams: mouseDragFromParams) => {
+      (dragFromParams: MouseDragFromParams) => {
         if (dragFromParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -219,7 +230,7 @@ export class SceneFixture {
   }
 
   expectPixelColor = async (
-    colour: [number, number, number],
+    colour: [number, number, number] | [number, number, number][],
     coords: { x: number; y: number },
     diff: number
   ) => {
@@ -241,22 +252,36 @@ export class SceneFixture {
   }
 }
 
+function isColourArray(
+  colour: [number, number, number] | [number, number, number][]
+): colour is [number, number, number][] {
+  return isArray(colour[0])
+}
+
 export async function expectPixelColor(
   page: Page,
-  colour: [number, number, number],
+  colour: [number, number, number] | [number, number, number][],
   coords: { x: number; y: number },
   diff: number
 ) {
   let finalValue = colour
   await expect
-    .poll(async () => {
-      const pixel = (await getPixelRGBs(page)(coords, 1))[0]
-      if (!pixel) return null
-      finalValue = pixel
-      return pixel.every(
-        (channel, index) => Math.abs(channel - colour[index]) < diff
-      )
-    })
+    .poll(
+      async () => {
+        const pixel = (await getPixelRGBs(page)(coords, 1))[0]
+        if (!pixel) return null
+        finalValue = pixel
+        if (!isColourArray(colour)) {
+          return pixel.every(
+            (channel, index) => Math.abs(channel - colour[index]) < diff
+          )
+        }
+        return colour.some((c) =>
+          c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
+        )
+      },
+      { timeout: 10_000 }
+    )
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(

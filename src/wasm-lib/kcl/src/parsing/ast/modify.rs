@@ -15,8 +15,8 @@ use crate::{
         ArrayExpression, CallExpression, ConstraintLevel, FormatOptions, Literal, Node, PipeExpression,
         PipeSubstitution, VariableDeclarator,
     },
-    source_range::{ModuleId, SourceRange},
-    Program,
+    source_range::SourceRange,
+    ModuleId, Program,
 };
 
 type Point3d = kcmc::shared::Point3d<f64>;

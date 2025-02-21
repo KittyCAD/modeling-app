@@ -17,6 +17,5 @@ layout: manual
 |----------|------|-------------|----------|
 | `environments` |`[` [`Environment`](/docs/kcl/types/Environment) `]`|  | No |
 | `currentEnv` |`integer`|  | No |
-| `return` |[`KclValue`](/docs/kcl/types/KclValue)|  | No |
 
 

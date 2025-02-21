@@ -945,4 +945,76 @@ fn cube`
       ).toBeVisible()
     })
   })
+
+  /**
+   * This test assumes that the default value of the "highlight edges" setting is "on".
+   */
+  test(`Toggle stream settings multiple times`, async ({
+    page,
+    scene,
+    homePage,
+    context,
+    toolbar,
+    cmdBar,
+  }, testInfo) => {
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = join(dir, 'project-000')
+      await fsp.mkdir(projectDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('cube.kcl'),
+        join(projectDir, 'main.kcl')
+      )
+    })
+
+    await test.step(`First snapshot`, async () => {
+      await homePage.openProject('project-000')
+      await toolbar.closePane('code')
+      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
+      await scene.clickNoWhere()
+    })
+
+    const toast = (value: boolean) =>
+      page.getByText(
+        `Set highlight edges to "${String(value)}" as a user default`
+      )
+    const initialPath = testInfo.snapshotPath('toggle-settings-initial.png')
+    const initialScreenshot = await scene.streamWrapper.screenshot({
+      path: initialPath,
+      mask: [page.getByTestId('model-state-indicator')],
+    })
+
+    await test.step(`Toggle highlightEdges off`, async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Settings · modeling · highlight edges')
+      await cmdBar.selectOption({ name: 'off' }).click()
+      const falseToast = toast(false)
+      await expect(falseToast).toBeVisible()
+      await falseToast.waitFor({ state: 'detached' })
+    })
+
+    await expect(scene.streamWrapper).not.toHaveScreenshot(
+      'toggle-settings-initial.png',
+      {
+        maxDiffPixels: 15,
+        mask: [page.getByTestId('model-state-indicator')],
+      }
+    )
+
+    await test.step(`Toggle highlightEdges on`, async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Settings · modeling · highlight edges')
+      await cmdBar.selectOption({ name: 'on' }).click()
+      const trueToast = toast(true)
+      await expect(trueToast).toBeVisible()
+      await trueToast.waitFor({ state: 'detached' })
+    })
+
+    await expect(scene.streamWrapper).toHaveScreenshot(
+      'toggle-settings-initial.png',
+      {
+        maxDiffPixels: 15,
+        mask: [page.getByTestId('model-state-indicator')],
+      }
+    )
+  })
 })

@@ -26,7 +26,7 @@ yd() -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

@@ -33,9 +33,14 @@ tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8"
 uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
 
+[features]
+dhat-heap = ["kcl-lib/dhat-heap"]
+
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
+# Enable the feature in a transitive dependency.
+getrandom = { version = "0.2", features = ["js"] }
 js-sys = "0.3.72"
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen-futures = { version = "0.4.44", features = ["futures-core-03-stream"] }
@@ -75,7 +80,7 @@ members = [
 [workspace.dependencies]
 http = "1"
 kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.93", features = [
+kittycad-modeling-cmds = { version = "0.2.97", features = [
   "ts-rs",
   "websocket",
 ] }
