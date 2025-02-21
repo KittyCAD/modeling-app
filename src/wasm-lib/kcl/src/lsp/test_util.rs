@@ -6,10 +6,11 @@ use tower_lsp::LanguageServer;
 // Create a fake kcl lsp server for testing.
 pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let stdlib = crate::std::StdLib::new();
-    let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib)?;
-    let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib)?;
+    let kcl_std = crate::docs::kcl_doc::walk_prelude();
+    let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib, &kcl_std)?;
+    let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib, &kcl_std);
 
-    let zoo_client = crate::execution::new_zoo_client(None, None)?;
+    let zoo_client = crate::engine::new_zoo_client(None, None)?;
 
     let executor_ctx = if execute {
         Some(crate::execution::ExecutorContext::new(&zoo_client, Default::default()).await?)
@@ -28,7 +29,6 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         stdlib_signatures,
         token_map: Default::default(),
         ast_map: Default::default(),
-        memory_map: Default::default(),
         code_map: Default::default(),
         diagnostics_map: Default::default(),
         symbols_map: Default::default(),
@@ -37,7 +37,6 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         can_send_telemetry: true,
         executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
         can_execute: Arc::new(tokio::sync::RwLock::new(can_execute)),
-        last_successful_ast_state: Default::default(),
         is_initialized: Default::default(),
     })
     .custom_method("kcl/updateUnits", crate::lsp::kcl::Backend::update_units)

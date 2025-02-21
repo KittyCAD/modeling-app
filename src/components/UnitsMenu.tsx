@@ -1,9 +1,31 @@
 import { Popover } from '@headlessui/react'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { changeKclSettings, unitLengthToUnitLen } from 'lang/wasm'
 import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
+import { codeManager, kclManager } from 'lib/singletons'
+import { err, reportRejection } from 'lib/trap'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
 export function UnitsMenu() {
   const { settings } = useSettingsAuthContext()
+  const [hasPerFileLengthUnit, setHasPerFileLengthUnit] = useState(
+    Boolean(kclManager.fileSettings.defaultLengthUnit)
+  )
+  const [lengthSetting, setLengthSetting] = useState(
+    kclManager.fileSettings.defaultLengthUnit ||
+      settings.context.modeling.defaultUnit.current
+  )
+  useEffect(() => {
+    setHasPerFileLengthUnit(Boolean(kclManager.fileSettings.defaultLengthUnit))
+    setLengthSetting(
+      kclManager.fileSettings.defaultLengthUnit ||
+        settings.context.modeling.defaultUnit.current
+    )
+  }, [
+    kclManager.fileSettings.defaultLengthUnit,
+    settings.context.modeling.defaultUnit.current,
+  ])
   return (
     <Popover className="relative pointer-events-auto">
       {({ close }) => (
@@ -18,7 +40,7 @@ export function UnitsMenu() {
               <div className="absolute w-[1px] h-[1em] bg-primary right-0 top-1/2 -translate-y-1/2"></div>
             </div>
             <span className="sr-only">Current units are:&nbsp;</span>
-            {settings.context.modeling.defaultUnit.current}
+            {lengthSetting}
           </Popover.Button>
           <Popover.Panel
             className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
@@ -31,18 +53,41 @@ export function UnitsMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      settings.send({
-                        type: 'set.modeling.defaultUnit',
-                        data: {
-                          level: 'project',
-                          value: unit,
-                        },
-                      })
+                      if (hasPerFileLengthUnit) {
+                        const newCode = changeKclSettings(codeManager.code, {
+                          defaultLengthUnits: unitLengthToUnitLen(unit),
+                          defaultAngleUnits: { type: 'Degrees' },
+                          stdPath: null,
+                        })
+                        if (err(newCode)) {
+                          toast.error(
+                            `Failed to set per-file units: ${newCode.message}`
+                          )
+                        } else {
+                          codeManager.updateCodeStateEditor(newCode)
+                          Promise.all([
+                            codeManager.writeToFile(),
+                            kclManager.executeCode(),
+                          ])
+                            .then(() => {
+                              toast.success(`Updated per-file units to ${unit}`)
+                            })
+                            .catch(reportRejection)
+                        }
+                      } else {
+                        settings.send({
+                          type: 'set.modeling.defaultUnit',
+                          data: {
+                            level: 'project',
+                            value: unit,
+                          },
+                        })
+                      }
                       close()
                     }}
                   >
                     <span className="flex-1">{baseUnitLabels[unit]}</span>
-                    {unit === settings.context.modeling.defaultUnit.current && (
+                    {unit === lengthSetting && (
                       <span className="text-chalkboard-60">current</span>
                     )}
                   </button>

@@ -3,59 +3,22 @@
 use derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Color, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
     execution::{ExecState, KclValue, Plane, PlaneType},
-    std::{sketch::PlaneData, Args},
+    std::Args,
 };
 
-/// One of the standard planes.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub enum StandardPlane {
-    /// The XY plane.
-    #[serde(rename = "XY", alias = "xy")]
-    XY,
-    /// The opposite side of the XY plane.
-    #[serde(rename = "-XY", alias = "-xy")]
-    NegXY,
-    /// The XZ plane.
-    #[serde(rename = "XZ", alias = "xz")]
-    XZ,
-    /// The opposite side of the XZ plane.
-    #[serde(rename = "-XZ", alias = "-xz")]
-    NegXZ,
-    /// The YZ plane.
-    #[serde(rename = "YZ", alias = "yz")]
-    YZ,
-    /// The opposite side of the YZ plane.
-    #[serde(rename = "-YZ", alias = "-yz")]
-    NegYZ,
-}
-
-impl From<StandardPlane> for PlaneData {
-    fn from(value: StandardPlane) -> Self {
-        match value {
-            StandardPlane::XY => PlaneData::XY,
-            StandardPlane::NegXY => PlaneData::NegXY,
-            StandardPlane::XZ => PlaneData::XZ,
-            StandardPlane::NegXZ => PlaneData::NegXZ,
-            StandardPlane::YZ => PlaneData::YZ,
-            StandardPlane::NegYZ => PlaneData::NegYZ,
-        }
-    }
-}
+use super::sketch::PlaneData;
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
+    let std_plane = args.get_unlabeled_kw_arg("plane")?;
+    let offset = args.get_kw_arg("offset")?;
     let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
     make_offset_plane_in_engine(&plane, exec_state, &args).await?;
-    Ok(KclValue::Plane(Box::new(plane)))
+    Ok(KclValue::Plane { value: Box::new(plane) })
 }
 
 /// Offset a plane by a distance along its normal.
@@ -67,13 +30,13 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // Loft a square and a circle on the `XY` plane using offset.
 /// squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('XY', 150))
+/// circleSketch = startSketchOn(offsetPlane('XY', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -83,13 +46,13 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // Loft a square and a circle on the `XZ` plane using offset.
 /// squareSketch = startSketchOn('XZ')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('XZ', 150))
+/// circleSketch = startSketchOn(offsetPlane('XZ', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -99,13 +62,13 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // Loft a square and a circle on the `YZ` plane using offset.
 /// squareSketch = startSketchOn('YZ')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('YZ', 150))
+/// circleSketch = startSketchOn(offsetPlane('YZ', offset = 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -115,13 +78,13 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // Loft a square and a circle on the `-XZ` plane using offset.
 /// squareSketch = startSketchOn('-XZ')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
-/// circleSketch = startSketchOn(offsetPlane('-XZ', -150))
+/// circleSketch = startSketchOn(offsetPlane('-XZ', offset = -150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -133,50 +96,30 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///   |> circle({ radius = 10, center = [0, 0] }, %)
 ///   
 /// // Triangle on the plane 4 units above
-/// startSketchOn(offsetPlane("XY", 4))
+/// startSketchOn(offsetPlane("XY", offset = 4))
 ///   |> startProfileAt([0, 0], %)
-///   |> line([10, 0], %)
-///   |> line([0, 10], %)
-///   |> close(%)
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> close()
 /// ```
 
 #[stdlib {
     name = "offsetPlane",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        plane = { docs = "The plane (e.g. 'XY') which this new plane is created from." },
+        offset = { docs = "Distance from the standard plane this new plane will be created at." },
+    }
 }]
-async fn inner_offset_plane(
-    std_plane: StandardPlane,
-    offset: f64,
-    exec_state: &mut ExecState,
-) -> Result<Plane, KclError> {
-    // Convert to the plane type.
-    let plane_data: PlaneData = std_plane.into();
-    // Convert to a plane.
-    let mut plane = Plane::from_plane_data(plane_data, exec_state);
-    // Though offset planes are derived from standard planes, they are not
+async fn inner_offset_plane(plane: PlaneData, offset: f64, exec_state: &mut ExecState) -> Result<Plane, KclError> {
+    let mut plane = Plane::from_plane_data(plane, exec_state);
+    // Though offset planes might be derived from standard planes, they are not
     // standard planes themselves.
     plane.value = PlaneType::Custom;
 
-    match std_plane {
-        StandardPlane::XY => {
-            plane.origin.z += offset;
-        }
-        StandardPlane::XZ => {
-            plane.origin.y -= offset;
-        }
-        StandardPlane::YZ => {
-            plane.origin.x += offset;
-        }
-        StandardPlane::NegXY => {
-            plane.origin.z -= offset;
-        }
-        StandardPlane::NegXZ => {
-            plane.origin.y += offset;
-        }
-        StandardPlane::NegYZ => {
-            plane.origin.x -= offset;
-        }
-    }
+    plane.origin += plane.z_axis * offset;
 
     Ok(plane)
 }

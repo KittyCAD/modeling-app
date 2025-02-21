@@ -1,22 +1,21 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed pipe_as_arg.kcl
-snapshot_kind: text
 ---
 [
   {
     "type": "UserDefinedFunctionCall",
     "name": "double",
     "functionSourceRange": [
-      333,
-      355,
+      375,
+      397,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      408,
-      417,
+      450,
+      459,
       0
     ]
   },
@@ -28,42 +27,54 @@ snapshot_kind: text
     "name": "cube",
     "functionSourceRange": [
       7,
-      322,
+      364,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      394,
-      426,
+      436,
+      468,
       0
     ]
   },
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 400.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
         "sourceRange": [
-          310,
-          316,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          318,
-          319,
+          355,
+          361,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      302,
-      320,
+      338,
+      362,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

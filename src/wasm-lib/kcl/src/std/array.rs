@@ -17,9 +17,8 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let map_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
-        meta: meta.clone(),
         ctx: args.ctx.clone(),
-        memory: *f.memory,
+        memory: f.memory,
     };
     let new_array = inner_map(array, map_fn, exec_state, &args).await?;
     Ok(KclValue::Array { value: new_array, meta })
@@ -72,13 +71,15 @@ async fn inner_map<'a>(
     Ok(new_array)
 }
 
-async fn call_map_closure<'a>(
+async fn call_map_closure(
     input: KclValue,
-    map_fn: &FunctionParam<'a>,
+    map_fn: &FunctionParam<'_>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
-    let output = map_fn.call(exec_state, vec![Arg::synthetic(input)]).await?;
+    let output = map_fn
+        .call(exec_state, vec![Arg::synthetic(input)], source_range)
+        .await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
@@ -95,9 +96,8 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let reduce_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
-        meta: vec![args.source_range.into()],
         ctx: args.ctx.clone(),
-        memory: *f.memory,
+        memory: f.memory,
     };
     inner_reduce(array, start, reduce_fn, exec_state, &args).await
 }
@@ -141,7 +141,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Declare a function that sketches a decagon.
 /// fn decagon(radius) {
 ///   // Each side of the decagon is turned this many degrees from the previous angle.
-///   stepAngle = (1/10) * tau()
+///   stepAngle = (1/10) * TAU
 ///
 ///   // Start the decagon sketch at this point.
 ///   startOfDecagonSketch = startSketchOn('XY')
@@ -154,7 +154,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///       // Draw one edge of the decagon.
 ///       x = cos(stepAngle * i) * radius
 ///       y = sin(stepAngle * i) * radius
-///       return lineTo([x, y], partialDecagon)
+///       return line(partialDecagon, end = [x, y])
 ///   })
 ///
 ///   return fullDecagon
@@ -164,7 +164,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// /*
 /// The `decagon` above is basically like this pseudo-code:
 /// fn decagon(radius):
-///     stepAngle = (1/10) * tau()
+///     stepAngle = (1/10) * TAU
 ///     plane = startSketchOn('XY')
 ///     startOfDecagonSketch = startProfileAt([(cos(0)*radius), (sin(0) * radius)], plane)
 ///
@@ -173,13 +173,13 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     for i in [1..10]:
 ///         x = cos(stepAngle * i) * radius
 ///         y = sin(stepAngle * i) * radius
-///         partialDecagon = lineTo([x, y], partialDecagon)
+///         partialDecagon = line(partialDecagon, end = [x, y])
 ///     fullDecagon = partialDecagon // it's now full
 ///     return fullDecagon
 /// */
 ///
 /// // Use the `decagon` function declared above, to sketch a decagon with radius 5.
-/// decagon(5.0) |> close(%)
+/// decagon(5.0) |> close()
 /// ```
 #[stdlib {
     name = "reduce",
@@ -199,16 +199,16 @@ async fn inner_reduce<'a>(
     Ok(reduced)
 }
 
-async fn call_reduce_closure<'a>(
+async fn call_reduce_closure(
     elem: KclValue,
     start: KclValue,
-    reduce_fn: &FunctionParam<'a>,
+    reduce_fn: &FunctionParam<'_>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
     let reduce_fn_args = vec![Arg::synthetic(elem), Arg::synthetic(start)];
-    let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args).await?;
+    let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args, source_range).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
@@ -272,8 +272,8 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     name = "pop",
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        array = "The array to pop from.  Must not be empty.",
+    args = {
+        array = { docs = "The array to pop from.  Must not be empty."},
     }
 }]
 async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {

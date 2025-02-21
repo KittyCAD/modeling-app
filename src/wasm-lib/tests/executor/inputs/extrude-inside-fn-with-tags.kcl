@@ -17,10 +17,10 @@ const tabThk = 4
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge01)
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge02)
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge03)
-    |> close(%, $edge04)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge01)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge02)
+    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge03)
+    |> close(tag = $edge04)
   return rr
 }
 
@@ -38,15 +38,15 @@ const bracketPlane = {
 fn bracketSketch = (w, d, t) => {
   const s = startSketchOn(bracketPlane)
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, $edge1)
-    |> lineTo([w / 2 + t, -t], %, $edge2)
-    |> lineTo([w / 2 + t, d + t], %, $edge3)
-    |> lineTo([w / 2, d + t], %, $edge4)
-    |> lineTo([w / 2, 0], %, $edge5)
-    |> lineTo([-w / 2, 0], %, $edge6)
-    |> lineTo([-w / 2, d + t], %, $edge7)
-    |> close(%, $edge8)
-    |> extrude(length + 2 * thk, %)
+    |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
+    |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
+    |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
+    |> line(endAbsolute = [w / 2, d + t], tag = $edge4)
+    |> line(endAbsolute = [w / 2, 0], tag = $edge5)
+    |> line(endAbsolute = [-w / 2, 0], tag = $edge6)
+    |> line(endAbsolute = [-w / 2, d + t], tag = $edge7)
+    |> close(tag = $edge8)
+    |> extrude(length = length + 2 * thk)
   return s
 }
 
@@ -67,8 +67,8 @@ const bracketBody = bs
 // sketch on the face
 const retBack = startSketchOn(bs, bs.sketch.tags.edge4)
   |> startProfileAt([length / 2 + thk, 0], %)
-  |> line([0, thk], %)
-  |> line([-thk, 0], %)
-  |> line([0, -thk], %)
-  |> close(%)
-  |> extrude(width - 40, %)
+  |> line(end = [0, thk])
+  |> line(end = [-thk, 0])
+  |> line(end = [0, -thk])
+  |> close()
+  |> extrude(length = width - 40)

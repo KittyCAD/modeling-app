@@ -1,15 +1,13 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 55
 description: Result of parsing circle_three_point.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
         "declaration": {
-          "end": 98,
+          "end": 124,
           "id": {
             "end": 9,
             "name": "sketch001",
@@ -56,7 +54,10 @@ snapshot_kind: text
                           "start": 60,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 25.0
+                          "value": {
+                            "value": 25.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 66,
@@ -64,7 +65,10 @@ snapshot_kind: text
                           "start": 64,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 25.0
+                          "value": {
+                            "value": 25.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
                       "end": 67,
@@ -87,7 +91,10 @@ snapshot_kind: text
                           "start": 75,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 30.0
+                          "value": {
+                            "value": 30.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 81,
@@ -95,7 +102,10 @@ snapshot_kind: text
                           "start": 79,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 20.0
+                          "value": {
+                            "value": 20.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
                       "end": 82,
@@ -118,7 +128,10 @@ snapshot_kind: text
                           "start": 90,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 27.0
+                          "value": {
+                            "value": 27.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 96,
@@ -126,7 +139,10 @@ snapshot_kind: text
                           "start": 94,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 15.0
+                          "value": {
+                            "value": 15.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
                       "end": 97,
@@ -147,9 +163,42 @@ snapshot_kind: text
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
+                    },
+                    "arg": {
+                      "end": 123,
+                      "raw": "10",
+                      "start": 121,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 10.0,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 111,
+                  "name": "extrude",
+                  "start": 104,
+                  "type": "Identifier"
+                },
+                "end": 124,
+                "start": 104,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 98,
+            "end": 124,
             "start": 12,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -157,61 +206,14 @@ snapshot_kind: text
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 98,
+        "end": 124,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
-      },
-      {
-        "declaration": {
-          "end": 131,
-          "id": {
-            "end": 106,
-            "name": "example",
-            "start": 99,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "end": 119,
-                "raw": "10",
-                "start": 117,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 10.0
-              },
-              {
-                "end": 130,
-                "name": "sketch001",
-                "start": 121,
-                "type": "Identifier",
-                "type": "Identifier"
-              }
-            ],
-            "callee": {
-              "end": 116,
-              "name": "extrude",
-              "start": 109,
-              "type": "Identifier"
-            },
-            "end": 131,
-            "start": 109,
-            "type": "CallExpression",
-            "type": "CallExpression"
-          },
-          "start": 99,
-          "type": "VariableDeclarator"
-        },
-        "end": 131,
-        "kind": "const",
-        "start": 99,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
       }
     ],
-    "end": 132,
+    "end": 125,
     "start": 0
   }
 }

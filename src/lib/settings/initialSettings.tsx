@@ -16,10 +16,11 @@ import { isDesktop } from 'lib/isDesktop'
 import { useRef } from 'react'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { toSync } from 'lib/utils'
+import { isArray, toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
 
 /**
  * A setting that can be set at the user or project level
@@ -239,7 +240,7 @@ export function createSettings() {
                   if (
                     inputRef.current &&
                     inputRefVal &&
-                    !Array.isArray(inputRefVal)
+                    !isArray(inputRefVal)
                   ) {
                     updateValue(inputRefVal)
                   } else {
@@ -374,6 +375,30 @@ export function createSettings() {
               value: v,
               isCurrent:
                 settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
+      }),
+      /**
+       * What methodology to use for orbiting the camera
+       */
+      cameraOrbit: new Setting<CameraOrbitType>({
+        defaultValue: 'spherical',
+        hideOnLevel: 'project',
+        description: 'What methodology to use for orbiting the camera',
+        validate: (v) => ['spherical', 'trackball'].includes(v),
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.cameraOrbit.current,
+          options: (cmdContext, settingsContext) =>
+            (['spherical', 'trackball'] as const).map((v) => ({
+              name: v.charAt(0).toUpperCase() + v.slice(1),
+              value: v,
+              isCurrent:
+                settingsContext.modeling.cameraOrbit.shouldShowCurrentLabel(
                   cmdContext.argumentsToSubmit.level as SettingsLevel,
                   v
                 ),

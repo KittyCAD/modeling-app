@@ -5,6 +5,8 @@ use std::{fmt, iter::Enumerate, num::NonZeroUsize, str::FromStr};
 
 use anyhow::Result;
 use parse_display::Display;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 use tokeniser::Input;
 use tower_lsp::lsp_types::SemanticTokenType;
 use winnow::{
@@ -16,8 +18,8 @@ use winnow::{
 use crate::{
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
-    source_range::{ModuleId, SourceRange},
-    CompilationError,
+    source_range::SourceRange,
+    CompilationError, ModuleId,
 };
 
 mod tokeniser;
@@ -28,7 +30,8 @@ pub(crate) use tokeniser::RESERVED_WORDS;
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
 pub const NUM_SUFFIXES: [&str; 9] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad"];
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[repr(u32)]
 pub enum NumericSuffix {
     None,
     Count,
@@ -51,6 +54,21 @@ impl NumericSuffix {
     pub fn is_some(self) -> bool {
         self != Self::None
     }
+
+    pub fn digestable_id(&self) -> &[u8] {
+        match self {
+            NumericSuffix::None => &[],
+            NumericSuffix::Count => b"_",
+            NumericSuffix::Mm => b"mm",
+            NumericSuffix::Cm => b"cm",
+            NumericSuffix::M => b"m",
+            NumericSuffix::Inch => b"in",
+            NumericSuffix::Ft => b"ft",
+            NumericSuffix::Yd => b"yd",
+            NumericSuffix::Deg => b"deg",
+            NumericSuffix::Rad => b"rad",
+        }
+    }
 }
 
 impl FromStr for NumericSuffix {
@@ -59,15 +77,32 @@ impl FromStr for NumericSuffix {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "_" => Ok(NumericSuffix::Count),
-            "mm" => Ok(NumericSuffix::Mm),
-            "cm" => Ok(NumericSuffix::Cm),
-            "m" => Ok(NumericSuffix::M),
+            "mm" | "millimeters" => Ok(NumericSuffix::Mm),
+            "cm" | "centimeters" => Ok(NumericSuffix::Cm),
+            "m" | "meters" => Ok(NumericSuffix::M),
             "inch" | "in" => Ok(NumericSuffix::Inch),
-            "ft" => Ok(NumericSuffix::Ft),
-            "yd" => Ok(NumericSuffix::Yd),
-            "deg" => Ok(NumericSuffix::Deg),
-            "rad" => Ok(NumericSuffix::Rad),
+            "ft" | "feet" => Ok(NumericSuffix::Ft),
+            "yd" | "yards" => Ok(NumericSuffix::Yd),
+            "deg" | "degrees" => Ok(NumericSuffix::Deg),
+            "rad" | "radians" => Ok(NumericSuffix::Rad),
             _ => Err(CompilationError::err(SourceRange::default(), "invalid unit of measure")),
+        }
+    }
+}
+
+impl fmt::Display for NumericSuffix {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            NumericSuffix::None => Ok(()),
+            NumericSuffix::Count => write!(f, "_"),
+            NumericSuffix::Mm => write!(f, "mm"),
+            NumericSuffix::Cm => write!(f, "cm"),
+            NumericSuffix::M => write!(f, "m"),
+            NumericSuffix::Inch => write!(f, "in"),
+            NumericSuffix::Ft => write!(f, "ft"),
+            NumericSuffix::Yd => write!(f, "yd"),
+            NumericSuffix::Deg => write!(f, "deg"),
+            NumericSuffix::Rad => write!(f, "rad"),
         }
     }
 }

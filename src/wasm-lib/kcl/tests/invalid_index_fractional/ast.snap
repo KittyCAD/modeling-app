@@ -22,7 +22,10 @@ description: Result of parsing invalid_index_fractional.kcl
                 "start": 7,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 11,
@@ -30,7 +33,10 @@ description: Result of parsing invalid_index_fractional.kcl
                 "start": 10,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2.0
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 14,
@@ -38,7 +44,10 @@ description: Result of parsing invalid_index_fractional.kcl
                 "start": 13,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             ],
             "end": 15,
@@ -80,7 +89,10 @@ description: Result of parsing invalid_index_fractional.kcl
               "start": 24,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.2
+              "value": {
+                "value": 1.2,
+                "suffix": "None"
+              }
             },
             "start": 20,
             "type": "MemberExpression",

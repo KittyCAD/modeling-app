@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_in_object.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -9,20 +8,24 @@ snapshot_kind: text
     "name": "test",
     "functionSourceRange": [
       7,
-      161,
+      170,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      393,
-      399,
+      411,
+      417,
       0
     ]
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
           35,
           39,
@@ -45,59 +48,81 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": -10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          415,
-          418,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          420,
-          421,
+          442,
+          445,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      407,
-      422,
+      425,
+      446,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionCall",
     "name": "test2",
     "functionSourceRange": [
-      171,
-      387,
+      180,
+      405,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      429,
-      436,
+      453,
+      460,
       0
     ]
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
-          231,
-          235,
+          240,
+          244,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      217,
-      236,
+      226,
+      245,
       0
     ],
     "type": "StdLibCall",
@@ -109,27 +134,45 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          467,
-          469,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          471,
-          472,
+          500,
+          502,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      459,
-      473,
+      483,
+      503,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

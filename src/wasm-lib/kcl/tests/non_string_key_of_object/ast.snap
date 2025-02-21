@@ -33,7 +33,10 @@ description: Result of parsing non_string_key_of_object.kcl
                   "start": 14,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 123.0
+                  "value": {
+                    "value": 123.0,
+                    "suffix": "None"
+                  }
                 }
               }
             ],
@@ -75,7 +78,10 @@ description: Result of parsing non_string_key_of_object.kcl
               "start": 30,
               "type": "Literal",
               "type": "Literal",
-              "value": 3.0
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
             },
             "start": 26,
             "type": "MemberExpression",

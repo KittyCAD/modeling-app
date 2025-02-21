@@ -552,6 +552,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
       })
     },
 
+    cloneFile: async (name: string) => {
+      return test?.step(`Cloning file '${name}'`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+          .click({ button: 'right' })
+        await page.getByTestId('context-menu-clone').click()
+      })
+    },
+
     selectFile: async (name: string) => {
       return test?.step(`Select ${name}`, async () => {
         await page
@@ -1078,7 +1088,7 @@ export async function createProject({
   returnHome?: boolean
 }) {
   await test.step(`Create project and navigate to it`, async () => {
-    await page.getByRole('button', { name: 'New project' }).click()
+    await page.getByRole('button', { name: 'Create project' }).click()
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 

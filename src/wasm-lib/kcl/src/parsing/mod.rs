@@ -4,7 +4,8 @@ use crate::{
         ast::types::{Node, Program},
         token::TokenStream,
     },
-    source_range::{ModuleId, SourceRange},
+    source_range::SourceRange,
+    ModuleId,
 };
 
 pub(crate) mod ast;

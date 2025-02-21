@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom'
 import { Models } from '@kittycad/lib'
 import { SettingsAuthProviderJest } from './SettingsAuthProvider'
-import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 
 type User = Models['User_type']
 
@@ -124,9 +123,7 @@ function TestWrap({ children }: { children: React.ReactNode }) {
       <Route
         path="/file/:id"
         element={
-          <CommandBarProvider>
-            <SettingsAuthProviderJest>{children}</SettingsAuthProviderJest>
-          </CommandBarProvider>
+          <SettingsAuthProviderJest>{children}</SettingsAuthProviderJest>
         }
       />
     ),

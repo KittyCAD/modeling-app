@@ -10,6 +10,7 @@ import {
   SourceRange,
   Expr,
   defaultSourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { isNonNullable, uuidv4 } from 'lib/utils'
@@ -17,14 +18,10 @@ import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
-import {
-  getNodeFromPath,
-  getNodePathFromSourceRange,
-  isSingleCursorInPipe,
-} from 'lang/queryAst'
+import { getNodeFromPath, isSingleCursorInPipe } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { CommandArgument } from './commandTypes'
 import {
-  DefaultPlaneStr,
   getParentGroup,
   SEGMENT_BODIES_PLUS_PROFILE_START,
 } from 'clientSideScene/sceneEntities'
@@ -43,8 +40,10 @@ import {
   CodeRef,
   getCodeRefsByArtifactId,
   ArtifactId,
+  getFaceCodeRef,
 } from 'lang/std/artifactGraph'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { DefaultPlaneStr } from './planes'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -63,7 +62,7 @@ type Selection__old =
         | 'line-end'
         | 'line-mid'
         | 'extrude-wall'
-        | 'solid2D'
+        | 'solid2d'
         | 'start-cap'
         | 'end-cap'
         | 'point'
@@ -103,13 +102,13 @@ function convertSelectionToOld(selection: Selection): Selection__old | null {
   // return {} as Selection__old
   // TODO implementation
   const _artifact = selection.artifact
-  if (_artifact?.type === 'solid2D') {
+  if (_artifact?.type === 'solid2d') {
     const codeRef = getSolid2dCodeRef(
       _artifact,
       engineCommandManager.artifactGraph
     )
     if (err(codeRef)) return null
-    return { range: codeRef.range, type: 'solid2D' }
+    return { range: codeRef.range, type: 'solid2d' }
   }
   if (_artifact?.type === 'cap') {
     const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
@@ -269,7 +268,7 @@ export function getEventForSegmentSelection(
         selectionType: 'singleCodeCursor',
         selection: {
           codeRef: {
-            range: [node.node.start, node.node.end, true],
+            range: topLevelRange(node.node.start, node.node.end),
             pathToNode: group.userData.pathToNode,
           },
         },
@@ -278,18 +277,19 @@ export function getEventForSegmentSelection(
   }
   if (!id || !group) return null
   const artifact = engineCommandManager.artifactGraph.get(id)
-  const codeRefs = getCodeRefsByArtifactId(
-    id,
-    engineCommandManager.artifactGraph
-  )
-  if (!artifact || !codeRefs) return null
+  if (!artifact) return null
+  const node = getNodeFromPath<Expr>(kclManager.ast, group.userData.pathToNode)
+  if (err(node)) return null
   return {
     type: 'Set selection',
     data: {
       selectionType: 'singleCodeCursor',
       selection: {
         artifact,
-        codeRef: codeRefs[0],
+        codeRef: {
+          pathToNode: group?.userData?.pathToNode,
+          range: [node.node.start, node.node.end, 0],
+        },
       },
     },
   }
@@ -381,10 +381,13 @@ export function processCodeMirrorRanges({
   if (!isChange) return null
   const codeBasedSelections: Selections['graphSelections'] =
     codeMirrorRanges.map(({ from, to }) => {
-      const pathToNode = getNodePathFromSourceRange(ast, [from, to, true])
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        topLevelRange(from, to)
+      )
       return {
         codeRef: {
-          range: [from, to, true],
+          range: topLevelRange(from, to),
           pathToNode,
         },
       }
@@ -439,15 +442,18 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
-    const nodeMeta = getNodeFromPath<Node<CallExpression>>(
+    const nodeMeta = getNodeFromPath<Node<CallExpression | CallExpression>>(
       updated,
       segmentGroup.userData.pathToNode,
-      'CallExpression'
+      ['CallExpression', 'CallExpressionKw']
     )
     if (err(nodeMeta)) return
     const node = nodeMeta.node
     const groupHasCursor = codeBasedSelections.some((selection) => {
-      return isOverlap(selection?.codeRef?.range, [node.start, node.end, true])
+      return isOverlap(
+        selection?.codeRef?.range,
+        topLevelRange(node.start, node.end)
+      )
     })
 
     const color = groupHasCursor
@@ -568,17 +574,14 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionCountByType(selection)
   if (selectionsByType === 'none') return null
 
-  return selectionsByType
-    .entries()
+  return [...selectionsByType.entries()]
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${type
-          .replace('wall', 'face')
-          .replace('solid2D', 'face')
-          .replace('segment', 'face')}${count > 1 ? 's' : ''}`
+        `${count} ${type.replace('wall', 'face').replace('solid2d', 'face')}${
+          count > 1 ? 's' : ''
+        }`
     )
-    .toArray()
     .join(', ')
 }
 
@@ -588,7 +591,7 @@ export function canSubmitSelectionArg(
 ) {
   return (
     selectionsByType !== 'none' &&
-    selectionsByType.entries().every(([type, count]) => {
+    [...selectionsByType.entries()].every(([type, count]) => {
       const foundIndex = argument.selectionTypes.findIndex((s) => s === type)
       return (
         foundIndex !== -1 &&
@@ -611,8 +614,9 @@ export function codeToIdSelections(
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          if (!('codeRef' in artifact)) return null
-          return isOverlap(artifact.codeRef.range, selection.range)
+          const codeRef = getFaceCodeRef(artifact)
+          if (!codeRef) return null
+          return isOverlap(codeRef.range, selection.range)
             ? {
                 artifact,
                 selection,
@@ -650,7 +654,7 @@ export function codeToIdSelections(
           const artifact = engineCommandManager.artifactGraph.get(
             entry.artifact.solid2dId || ''
           )
-          if (artifact?.type !== 'solid2D') {
+          if (artifact?.type !== 'solid2d') {
             bestCandidate = {
               artifact: entry.artifact,
               selection,
@@ -667,6 +671,27 @@ export function codeToIdSelections(
             artifact: artifact,
             selection,
             id: entry.artifact.solid2dId,
+          }
+        }
+        if (entry.artifact.type === 'plane') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
+          }
+        }
+        if (entry.artifact.type === 'cap') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
+          }
+        }
+        if (entry.artifact.type === 'wall') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
           }
         }
         if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
@@ -816,8 +841,8 @@ export async function sendSelectEventToEngine(
     clientX: e.clientX,
     clientY: e.clientY,
     el,
-    streamWidth: el.clientWidth,
-    streamHeight: el.clientHeight,
+    streamWidth: engineCommandManager.width,
+    streamHeight: engineCommandManager.height,
   })
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -864,7 +889,6 @@ export function updateSelections(
             JSON.stringify(pathToNode)
           ) {
             artifact = a
-            console.log('found artifact', a)
             break
           }
         }
@@ -873,7 +897,7 @@ export function updateSelections(
       return {
         artifact: artifact,
         codeRef: {
-          range: [node.start, node.end, true],
+          range: topLevelRange(node.start, node.end),
           pathToNode: pathToNode,
         },
       }
@@ -887,7 +911,7 @@ export function updateSelections(
     if (err(node)) return node
     pathToNodeBasedSelections.push({
       codeRef: {
-        range: [node.node.start, node.node.end, true],
+        range: topLevelRange(node.node.start, node.node.end),
         pathToNode: pathToNode,
       },
     })

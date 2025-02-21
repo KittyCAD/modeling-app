@@ -17,10 +17,11 @@ import {
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { err, reportRejection } from 'lib/trap'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ViewControlContextMenu } from './ViewControlMenu'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import { useSelector } from '@xstate/react'
 
 enum StreamState {
   Playing = 'playing',
@@ -35,7 +36,7 @@ export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send } = useModelingContext()
-  const { commandBarState } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
@@ -301,7 +302,7 @@ export const Stream = () => {
           return
         }
         const path = getArtifactOfTypes(
-          { key: entity_id, types: ['path', 'solid2D', 'segment'] },
+          { key: entity_id, types: ['path', 'solid2d', 'segment', 'helix'] },
           engineCommandManager.artifactGraph
         )
         if (err(path)) {

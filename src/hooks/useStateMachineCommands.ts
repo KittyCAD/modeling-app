@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { AnyStateMachine, Actor, StateFrom, EventFrom } from 'xstate'
 import { createMachineCommand } from '../lib/createMachineCommand'
-import { useCommandsContext } from './useCommandsContext'
 import { modelingMachine } from 'machines/modelingMachine'
 import { authMachine } from 'machines/authMachine'
 import { settingsMachine } from 'machines/settingsMachine'
@@ -15,6 +14,7 @@ import { useKclContext } from 'lang/KclProvider'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { useAppState } from 'AppState'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -48,7 +48,6 @@ export default function useStateMachineCommands<
   allCommandsRequireNetwork = false,
   onCancel,
 }: UseStateMachineCommandsArgs<T, S>) {
-  const { commandBarSend } = useCommandsContext()
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
@@ -76,10 +75,13 @@ export default function useStateMachineCommands<
       })
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
-    commandBarSend({ type: 'Add commands', data: { commands: newCommands } })
+    commandBarActor.send({
+      type: 'Add commands',
+      data: { commands: newCommands },
+    })
 
     return () => {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Remove commands',
         data: { commands: newCommands },
       })

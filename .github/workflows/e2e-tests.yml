@@ -3,7 +3,6 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -46,7 +45,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
+    - uses: actions/create-github-app-token@v1
+      id: app-token
+      with:
+        app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+        private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
     - uses: actions/checkout@v4
+      with:
+        token: ${{ steps.app-token.outputs.token }}
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
@@ -123,9 +130,9 @@ jobs:
       if: steps.download-wasm.outcome == 'failure'
       shell: bash
       run: yarn build:wasm
-    - name: build electron
+    - name: build web
       shell: bash
-      run: yarn tron:package
+      run: yarn tronb:vite:dev
     - name: Run ubuntu/chrome snapshots
       if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
       shell: bash
@@ -153,11 +160,11 @@ jobs:
       continue-on-error: true
       run: rm -r test-results
     - name: check for changes
-      if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
+      if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 && github.ref != 'refs/heads/main' }}
       shell: bash
       id: git-check
       run: |
-          git add .
+          git add e2e/playwright/snapshot-tests.spec.ts-snapshots
           if git status | grep -q "Changes to be committed"
           then echo "modified=true" >> $GITHUB_OUTPUT
           else echo "modified=false" >> $GITHUB_OUTPUT
@@ -166,14 +173,14 @@ jobs:
       if: steps.git-check.outputs.modified == 'true'
       shell: bash
       run: |
-        git add .
+        git add e2e/playwright/snapshot-tests.spec.ts-snapshots
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         git fetch origin
         echo ${{ github.head_ref }}
         git checkout ${{ github.head_ref }}
-        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
+        git commit -m "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
         git push
         git push origin ${{ github.head_ref }}
     # only upload artifacts if there's actually changes

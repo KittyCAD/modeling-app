@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands import_side_effect.kcl
-snapshot_kind: text
 ---
 [
   {

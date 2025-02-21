@@ -1,12 +1,15 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed pentagon_fillet_sugar.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
           152,
           156,
@@ -26,16 +29,22 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 200.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          387,
-          401,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          403,
-          404,
+          396,
+          410,
           0
         ]
       }
@@ -43,49 +52,72 @@ snapshot_kind: text
     "name": "extrude",
     "sourceRange": [
       379,
-      405,
+      411,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionCall",
     "name": "circl",
     "functionSourceRange": [
-      415,
-      565,
+      421,
+      571,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      572,
-      586,
+      578,
+      592,
       0
     ]
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          450,
-          451,
+          456,
+          457,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "c",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
-          453,
-          457,
+          459,
+          463,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      436,
-      458,
+      442,
+      464,
       0
     ],
     "type": "StdLibCall",
@@ -97,50 +129,106 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 100.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          614,
-          624,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          626,
-          627,
+          629,
+          639,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      606,
-      628,
+      612,
+      640,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "TagIdentifier",
+                  "value": "arc_tag",
+                  "artifact_id": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
-          641,
-          761,
+          653,
+          773,
           0
         ]
       },
       "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          763,
-          764,
+          775,
+          776,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      634,
-      765,
+      646,
+      777,
       0
     ],
     "type": "StdLibCall",
@@ -150,39 +238,50 @@ snapshot_kind: text
     "type": "UserDefinedFunctionCall",
     "name": "circl",
     "functionSourceRange": [
-      415,
-      565,
+      421,
+      571,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      771,
-      784,
+      783,
+      796,
       0
     ]
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          450,
-          451,
+          456,
+          457,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "a",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
-          453,
-          457,
+          459,
+          463,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      436,
-      458,
+      442,
+      464,
       0
     ],
     "type": "StdLibCall",
@@ -194,50 +293,106 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 100.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          812,
-          822,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          824,
-          825,
+          833,
+          843,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      804,
-      826,
+      816,
+      844,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "TagIdentifier",
+                  "value": "arc_tag",
+                  "artifact_id": "[uuid]"
+                },
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
-          839,
-          959,
+          857,
+          977,
           0
         ]
       },
       "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          961,
-          962,
+          979,
+          980,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      832,
-      963,
+      850,
+      981,
       0
     ],
     "type": "StdLibCall",

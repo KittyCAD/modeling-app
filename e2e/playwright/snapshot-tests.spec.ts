@@ -55,13 +55,6 @@ test.skip(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context }) => {
-    // skip on macos and windows.
-    test.skip(
-      // eslint-disable-next-line jest/valid-title
-      process.platform === 'darwin' || process.platform === 'win32',
-      'Skip on macos and windows'
-    )
-
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -105,8 +98,8 @@ part001 = startSketchOn('-XZ')
       }, %)
   |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
-  |> close(%)
-  |> extrude(4, %)`
+  |> close()
+  |> extrude(length = 4)`
       )
     })
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -340,12 +333,12 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
 
   const code = `part001 = startSketchOn('${plane}')
   |> startProfileAt([7.00, 4.40], %)
-  |> line([6.60, -0.20], %)
-  |> line([2.80, 5.00], %)
-  |> line([-5.60, 4.40], %)
-  |> line([-5.40, -3.80], %)
-  |> close(%)
-  |> extrude(10.00, %)
+  |> line(end = [6.60, -0.20])
+  |> line(end = [2.80, 5.00])
+  |> line(end = [-5.60, 4.40])
+  |> line(end = [-5.40, -3.80])
+  |> close()
+  |> extrude(length = 10.00)
 `
   await page.addInitScript(async (code: string) => {
     localStorage.setItem('persistCode', code)
@@ -451,8 +444,7 @@ test(
 
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    code += `
-  |> startProfileAt([7.19, -9.7], %)`
+    code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
     await expect(page.locator('.cm-content')).toHaveText(code)
     await page.waitForTimeout(100)
 
@@ -463,7 +455,9 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
 
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+    const lineEndClick = () =>
+      page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+    await lineEndClick()
     await page.waitForTimeout(100)
 
     code += `
@@ -473,6 +467,15 @@ test(
     await page
       .getByRole('button', { name: 'arc Tangential Arc', exact: true })
       .click()
+
+    // click on the end of the profile to continue it
+    await page.waitForTimeout(300)
+    await lineEndClick()
+    await page.waitForTimeout(100)
+
+    // click to continue profile
+    await page.mouse.move(813, 392, { steps: 10 })
+    await page.waitForTimeout(100)
 
     await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
 
@@ -596,8 +599,7 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')
-  |> circle({ center = [14.44, -2.44], radius = 1 }, %)`
+      `sketch001 = startSketchOn('XZ')profile001 = circle({ center = [14.44, -2.44], radius = 1 }, sketch001)`
     )
   }
 )
@@ -641,8 +643,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `
-  |> startProfileAt([7.19, -9.7], %)`
+      code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -658,6 +659,10 @@ test.describe(
       await page
         .getByRole('button', { name: 'arc Tangential Arc', exact: true })
         .click()
+      await page.waitForTimeout(100)
+
+      // click to continue profile
+      await page.mouse.click(813, 392)
       await page.waitForTimeout(100)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
@@ -746,8 +751,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `
-  |> startProfileAt([182.59, -246.32], %)`
+      code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -763,6 +767,10 @@ test.describe(
       await page
         .getByRole('button', { name: 'arc Tangential Arc', exact: true })
         .click()
+      await page.waitForTimeout(100)
+
+      // click to continue profile
+      await page.mouse.click(813, 392)
       await page.waitForTimeout(100)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
@@ -814,16 +822,16 @@ test(
         'persistCode',
         `part001 = startSketchOn('-XZ')
   |> startProfileAt([1.4, 2.47], %)
-  |> line([9.31, 10.55], %, $seg01)
-  |> line([11.91, -10.42], %)
-  |> close(%)
-  |> extrude(${KCL_DEFAULT_LENGTH}, %)
+  |> line(end = [9.31, 10.55], tag = $seg01)
+  |> line(end = [11.91, -10.42])
+  |> close()
+  |> extrude(length = ${KCL_DEFAULT_LENGTH})
 part002 = startSketchOn(part001, seg01)
   |> startProfileAt([8, 8], %)
-  |> line([4.68, 3.05], %)
-  |> line([0, -7.79], %)
-  |> close(%)
-  |> extrude(${KCL_DEFAULT_LENGTH}, %)
+  |> line(end = [4.68, 3.05])
+  |> line(end = [0, -7.79])
+  |> close()
+  |> extrude(length = ${KCL_DEFAULT_LENGTH})
 `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -879,10 +887,10 @@ test(
         'persistCode',
         `part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
+  |> close()
 `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -922,11 +930,11 @@ test(
         'persistCode',
         `part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)
-  |> extrude(10, %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
+  |> close()
+  |> extrude(length = 10)
 `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -1111,11 +1119,11 @@ test.fixme('theme persists', async ({ page, context }) => {
       'persistCode',
       `part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)
-  |> extrude(10, %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
+  |> close()
+  |> extrude(length = 10)
 `
     )
   }, KCL_DEFAULT_LENGTH)
@@ -1181,11 +1189,11 @@ test.describe('code color goober', { tag: '@snapshot' }, () => {
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
   |> startProfileAt([0.05, 0.05], %)
-  |> line([0, 7], %)
+  |> line(end = [0, 7])
   |> tangentialArc({ offset = 90, radius = 5 }, %)
-  |> line([-3, 0], %)
+  |> line(end = [-3, 0])
   |> tangentialArc({ offset = -90, radius = 5 }, %)
-  |> line([0, 7], %)
+  |> line(end = [0, 7])
 
 sweepSketch = startSketchOn('XY')
   |> startProfileAt([2, 0], %)
@@ -1194,14 +1202,12 @@ sweepSketch = startSketchOn('XY')
        angleStart = 0,
        radius = 2
      }, %)
-  |> sweep({
-    path = sweepPath,
-  }, %)
-  |> appearance({
+  |> sweep(path = sweepPath)
+  |> appearance(
        color = "#bb00ff",
        metalness = 90,
        roughness = 90
-     }, %)
+     )
 `
       )
     })
@@ -1229,11 +1235,11 @@ sweepSketch = startSketchOn('XY')
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
   |> startProfileAt([0.05, 0.05], %)
-  |> line([0, 7], %)
+  |> line(end = [0, 7])
   |> tangentialArc({ offset = 90, radius = 5 }, %)
-  |> line([-3, 0], %)
+  |> line(end = [-3, 0])
   |> tangentialArc({ offset = -90, radius = 5 }, %)
-  |> line([0, 7], %)
+  |> line(end = [0, 7])
 
 sweepSketch = startSketchOn('XY')
   |> startProfileAt([2, 0], %)
@@ -1242,14 +1248,12 @@ sweepSketch = startSketchOn('XY')
        angleStart = 0,
        radius = 2
      }, %)
-  |> sweep({
-    path = sweepPath,
-  }, %)
-  |> appearance({
+  |> sweep(path = sweepPath)
+  |> appearance(
        color = "#bb00ff",
        metalness = 90,
        roughness = 90
-     }, %)
+     )
 `
       )
     })

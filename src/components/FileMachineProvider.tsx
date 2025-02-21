@@ -12,7 +12,6 @@ import {
   StateFrom,
   fromPromise,
 } from 'xstate'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
 import { isDesktop } from 'lib/isDesktop'
 import {
@@ -30,6 +29,8 @@ import {
 } from 'lib/getKclSamplesManifest'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { markOnce } from 'lib/performance'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -47,9 +48,10 @@ export const FileMachineProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { commandBarSend } = useCommandsContext()
   const { settings } = useSettingsAuthContext()
-  const { project, file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const token = useToken()
+  const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { project, file } = projectData
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
@@ -90,7 +92,7 @@ export const FileMachineProvider = ({
         navigateToFile: ({ context, event }) => {
           if (event.type !== 'xstate.done.actor.create-and-open-file') return
           if (event.output && 'name' in event.output) {
-            commandBarSend({ type: 'Close' })
+            commandBarActor.send({ type: 'Close' })
             navigate(
               `..${PATHS.FILE}/${encodeURIComponent(
                 context.selectedDirectory +
@@ -122,22 +124,43 @@ export const FileMachineProvider = ({
           let createdName = input.name.trim() || DEFAULT_FILE_NAME
           let createdPath: string
 
-          if (input.makeDir) {
+          if (
+            (input.targetPathToClone &&
+              (await window.electron.statIsDirectory(
+                input.targetPathToClone
+              ))) ||
+            input.makeDir
+          ) {
             let { name, path } = getNextDirName({
-              entryName: createdName,
-              baseDir: input.selectedDirectory.path,
+              entryName: input.targetPathToClone
+                ? window.electron.path.basename(input.targetPathToClone)
+                : createdName,
+              baseDir: input.targetPathToClone
+                ? window.electron.path.dirname(input.targetPathToClone)
+                : input.selectedDirectory.path,
             })
             createdName = name
             createdPath = path
             await window.electron.mkdir(createdPath)
           } else {
             const { name, path } = getNextFileName({
-              entryName: createdName,
-              baseDir: input.selectedDirectory.path,
+              entryName: input.targetPathToClone
+                ? window.electron.path.basename(input.targetPathToClone)
+                : createdName,
+              baseDir: input.targetPathToClone
+                ? window.electron.path.dirname(input.targetPathToClone)
+                : input.selectedDirectory.path,
             })
             createdName = name
             createdPath = path
-            await window.electron.writeFile(createdPath, input.content ?? '')
+            if (input.targetPathToClone) {
+              await window.electron.copyFile(
+                input.targetPathToClone,
+                createdPath
+              )
+            } else {
+              await window.electron.writeFile(createdPath, input.content ?? '')
+            }
           }
 
           return {
@@ -296,55 +319,65 @@ export const FileMachineProvider = ({
 
   const kclCommandMemo = useMemo(
     () =>
-      kclCommands(
-        async (data) => {
-          if (data.method === 'overwrite') {
-            codeManager.updateCodeStateEditor(data.code)
-            await kclManager.executeCode(true)
-            await codeManager.writeToFile()
-          } else if (data.method === 'newFile' && isDesktop()) {
-            send({
-              type: 'Create file',
-              data: {
-                name: data.sampleName,
-                content: data.code,
-                makeDir: false,
-              },
-            })
-          }
-
-          // Either way, we want to overwrite the defaultUnit project setting
-          // with the sample's setting.
-          if (data.sampleUnits) {
-            settings.send({
-              type: 'set.modeling.defaultUnit',
-              data: {
-                level: 'project',
-                value: data.sampleUnits,
-              },
-            })
-          }
+      kclCommands({
+        authToken: token ?? '',
+        projectData,
+        settings: {
+          defaultUnit: settings?.context?.modeling.defaultUnit.current ?? 'mm',
         },
-        kclSamples.map((sample) => ({
-          value: sample.pathFromProjectDirectoryToFirstFile,
-          name: sample.title,
-        }))
-      ).filter(
+        specialPropsForSampleCommand: {
+          onSubmit: async (data) => {
+            if (data.method === 'overwrite') {
+              codeManager.updateCodeStateEditor(data.code)
+              await kclManager.executeCode(true)
+              await codeManager.writeToFile()
+            } else if (data.method === 'newFile' && isDesktop()) {
+              send({
+                type: 'Create file',
+                data: {
+                  name: data.sampleName,
+                  content: data.code,
+                  makeDir: false,
+                },
+              })
+            }
+
+            // Either way, we want to overwrite the defaultUnit project setting
+            // with the sample's setting.
+            if (data.sampleUnits) {
+              settings.send({
+                type: 'set.modeling.defaultUnit',
+                data: {
+                  level: 'project',
+                  value: data.sampleUnits,
+                },
+              })
+            }
+          },
+          providedOptions: kclSamples.map((sample) => ({
+            value: sample.pathFromProjectDirectoryToFirstFile,
+            name: sample.title,
+          })),
+        },
+      }).filter(
         (command) => kclSamples.length || command.name !== 'open-kcl-example'
       ),
     [codeManager, kclManager, send, kclSamples]
   )
 
   useEffect(() => {
-    commandBarSend({ type: 'Add commands', data: { commands: kclCommandMemo } })
+    commandBarActor.send({
+      type: 'Add commands',
+      data: { commands: kclCommandMemo },
+    })
 
     return () => {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Remove commands',
         data: { commands: kclCommandMemo },
       })
     }
-  }, [commandBarSend, kclCommandMemo])
+  }, [commandBarActor.send, kclCommandMemo])
 
   return (
     <FileContext.Provider

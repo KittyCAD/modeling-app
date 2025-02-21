@@ -2,10 +2,10 @@ import toast from 'react-hot-toast'
 import ReactJson from 'react-json-view'
 import { useMemo } from 'react'
 import {
-  ProgramMemory,
   Path,
   ExtrudeSurface,
   sketchFromKclValueOptional,
+  VariableMap,
 } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
@@ -15,12 +15,12 @@ import Tooltip from 'components/Tooltip'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 export const MemoryPaneMenu = () => {
-  const { programMemory } = useKclContext()
+  const { variables } = useKclContext()
 
   function copyProgramMemoryToClipboard() {
     if (globalThis && 'navigator' in globalThis) {
       navigator.clipboard
-        .writeText(JSON.stringify(programMemory))
+        .writeText(JSON.stringify(variables))
         .then(() => toast.success('Program memory copied to clipboard'))
         .catch((e) =>
           trap(new Error('Failed to copy program memory to clipboard'))
@@ -50,12 +50,9 @@ export const MemoryPaneMenu = () => {
 
 export const MemoryPane = () => {
   const theme = useResolvedTheme()
-  const { programMemory } = useKclContext()
+  const { variables } = useKclContext()
   const { state } = useModelingContext()
-  const ProcessedMemory = useMemo(
-    () => processMemory(programMemory),
-    [programMemory]
-  )
+  const ProcessedMemory = useMemo(() => processMemory(variables), [variables])
   return (
     <div className="h-full relative">
       <div className="absolute inset-0 p-2 flex flex-col items-start">
@@ -85,9 +82,10 @@ export const MemoryPane = () => {
   )
 }
 
-export const processMemory = (programMemory: ProgramMemory) => {
+export const processMemory = (variables: VariableMap) => {
   const processedMemory: any = {}
-  for (const [key, val] of programMemory?.visibleEntries()) {
+  for (const [key, val] of Object.entries(variables)) {
+    if (val === undefined) continue
     if (
       val.type === 'Sketch' ||
       // @ts-ignore
@@ -95,9 +93,11 @@ export const processMemory = (programMemory: ProgramMemory) => {
     ) {
       const sk = sketchFromKclValueOptional(val, key)
       if (val.type === 'Solid') {
-        processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
-          return rest
-        })
+        processedMemory[key] = val.value.value.map(
+          ({ ...rest }: ExtrudeSurface) => {
+            return rest
+          }
+        )
       } else if (!(sk instanceof Reason)) {
         processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
           return rest

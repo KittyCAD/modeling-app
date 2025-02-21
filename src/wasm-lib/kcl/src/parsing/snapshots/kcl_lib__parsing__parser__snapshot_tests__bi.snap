@@ -19,7 +19,10 @@ expression: actual
           "start": 4,
           "type": "Literal",
           "type": "Literal",
-          "value": 3.0
+          "value": {
+            "value": 3.0,
+            "suffix": "None"
+          }
         },
         "start": 0,
         "type": "VariableDeclarator"
@@ -76,7 +79,10 @@ expression: actual
                 "start": 28,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               }
             }
           ],

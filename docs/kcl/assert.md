@@ -22,7 +22,7 @@ assert(data: bool, message: string) -> ()
 
 ### Returns
 
-`()` 
+`()`
 
 
 ### Examples

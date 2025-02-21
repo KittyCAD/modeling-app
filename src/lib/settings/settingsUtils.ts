@@ -49,6 +49,7 @@ export function configurationToSettingsPayload(
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
       cameraProjection: configuration?.settings?.modeling?.camera_projection,
+      cameraOrbit: configuration?.settings?.modeling?.camera_orbit,
       mouseControls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),

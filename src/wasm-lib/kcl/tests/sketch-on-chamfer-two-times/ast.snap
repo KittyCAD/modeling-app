@@ -1,13 +1,14 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing sketch-on-chamfer-two-times.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
         "declaration": {
-          "end": 425,
+          "end": 440,
           "id": {
             "end": 9,
             "name": "sketch001",
@@ -48,7 +49,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 53,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 75.8
+                        "value": {
+                          "value": 75.8,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 64,
@@ -56,7 +60,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 59,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 317.2
+                        "value": {
+                          "value": 317.2,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 65,
@@ -92,7 +99,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 117,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 126,
@@ -100,7 +110,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 120,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 268.43
+                        "value": {
+                          "value": 268.43,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 127,
@@ -167,7 +180,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 211,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 90.0
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 180,
                         "type": "BinaryExpression",
@@ -179,7 +195,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 222,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 217.26
+                        "value": {
+                          "value": 217.26,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 235,
@@ -292,100 +311,109 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 379,
-                            "start": 378,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
-                          "end": 377,
-                          "name": "profileStartX",
-                          "start": 364,
-                          "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 391,
+                              "start": 390,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 389,
+                            "name": "profileStartX",
+                            "start": 376,
+                            "type": "Identifier"
+                          },
+                          "end": 392,
+                          "start": 376,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
-                        "end": 380,
-                        "start": 364,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "end": 397,
-                            "start": 396,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
-                          "end": 395,
-                          "name": "profileStartY",
-                          "start": 382,
-                          "type": "Identifier"
-                        },
-                        "end": 398,
-                        "start": 382,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      }
-                    ],
-                    "end": 399,
-                    "start": 363,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                        {
+                          "arguments": [
+                            {
+                              "end": 409,
+                              "start": 408,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 407,
+                            "name": "profileStartY",
+                            "start": 394,
+                            "type": "Identifier"
+                          },
+                          "end": 410,
+                          "start": 394,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 411,
+                      "start": 375,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   },
                   {
-                    "end": 402,
-                    "start": 401,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 410,
-                    "start": 404,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "seg02"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tag"
+                    },
+                    "arg": {
+                      "end": 425,
+                      "start": 419,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg02"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 362,
-                  "name": "lineTo",
+                  "end": 360,
+                  "name": "line",
                   "start": 356,
                   "type": "Identifier"
                 },
-                "end": 411,
+                "end": 426,
                 "start": 356,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "end": 424,
-                    "start": 423,
+                    "end": 439,
+                    "start": 438,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 422,
+                  "end": 437,
                   "name": "close",
-                  "start": 417,
+                  "start": 432,
                   "type": "Identifier"
                 },
-                "end": 425,
-                "start": 417,
+                "end": 440,
+                "start": 432,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 425,
+            "end": 440,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
@@ -410,7 +438,7 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 425,
+        "end": 440,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -418,11 +446,11 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
       },
       {
         "declaration": {
-          "end": 660,
+          "end": 684,
           "id": {
-            "end": 436,
+            "end": 451,
             "name": "extrude001",
-            "start": 426,
+            "start": 441,
             "type": "Identifier"
           },
           "init": {
@@ -430,301 +458,320 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "end": 450,
-                    "raw": "100",
-                    "start": 447,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": 100.0
-                  },
-                  {
-                    "end": 461,
-                    "name": "sketch001",
-                    "start": 452,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
+                    },
+                    "arg": {
+                      "end": 485,
+                      "raw": "100",
+                      "start": 482,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 100.0,
+                        "suffix": "None"
+                      }
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 446,
+                  "end": 461,
                   "name": "extrude",
-                  "start": 439,
+                  "start": 454,
                   "type": "Identifier"
                 },
-                "end": 462,
-                "start": 439,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 486,
+                "start": 454,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "end": 471,
+                  "name": "sketch001",
+                  "start": 462,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
               },
               {
                 "arguments": [
                   {
-                    "end": 506,
+                    "end": 530,
                     "properties": [
                       {
-                        "end": 488,
+                        "end": 512,
                         "key": {
-                          "end": 483,
+                          "end": 507,
                           "name": "radius",
-                          "start": 477,
+                          "start": 501,
                           "type": "Identifier"
                         },
-                        "start": 477,
+                        "start": 501,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 488,
+                          "end": 512,
                           "raw": "20",
-                          "start": 486,
+                          "start": 510,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 20.0
+                          "value": {
+                            "value": 20.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
-                        "end": 504,
+                        "end": 528,
                         "key": {
-                          "end": 494,
+                          "end": 518,
                           "name": "tags",
-                          "start": 490,
+                          "start": 514,
                           "type": "Identifier"
                         },
-                        "start": 490,
+                        "start": 514,
                         "type": "ObjectProperty",
                         "value": {
                           "elements": [
                             {
-                              "end": 503,
+                              "end": 527,
                               "name": "seg01",
-                              "start": 498,
+                              "start": 522,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
-                          "end": 504,
-                          "start": 497,
+                          "end": 528,
+                          "start": 521,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       }
                     ],
-                    "start": 475,
+                    "start": 499,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 509,
-                    "start": 508,
+                    "end": 533,
+                    "start": 532,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 474,
+                  "end": 498,
                   "name": "fillet",
-                  "start": 468,
+                  "start": 492,
                   "type": "Identifier"
                 },
-                "end": 510,
-                "start": 468,
+                "end": 534,
+                "start": 492,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 555,
+                    "end": 579,
                     "properties": [
                       {
-                        "end": 537,
+                        "end": 561,
                         "key": {
-                          "end": 532,
+                          "end": 556,
                           "name": "length",
-                          "start": 526,
+                          "start": 550,
                           "type": "Identifier"
                         },
-                        "start": 526,
+                        "start": 550,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 537,
+                          "end": 561,
                           "raw": "50",
-                          "start": 535,
+                          "start": 559,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 50.0
+                          "value": {
+                            "value": 50.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
-                        "end": 553,
+                        "end": 577,
                         "key": {
-                          "end": 543,
+                          "end": 567,
                           "name": "tags",
-                          "start": 539,
+                          "start": 563,
                           "type": "Identifier"
                         },
-                        "start": 539,
+                        "start": 563,
                         "type": "ObjectProperty",
                         "value": {
                           "elements": [
                             {
-                              "end": 552,
+                              "end": 576,
                               "name": "seg02",
-                              "start": 547,
+                              "start": 571,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
-                          "end": 553,
-                          "start": 546,
+                          "end": 577,
+                          "start": 570,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       }
                     ],
-                    "start": 524,
+                    "start": 548,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 558,
-                    "start": 557,
+                    "end": 582,
+                    "start": 581,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 566,
-                    "start": 560,
+                    "end": 590,
+                    "start": 584,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "seg04"
                   }
                 ],
                 "callee": {
-                  "end": 523,
+                  "end": 547,
                   "name": "chamfer",
-                  "start": 516,
+                  "start": 540,
                   "type": "Identifier"
                 },
-                "end": 567,
-                "start": 516,
+                "end": 591,
+                "start": 540,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 648,
+                    "end": 672,
                     "properties": [
                       {
-                        "end": 601,
+                        "end": 625,
                         "key": {
-                          "end": 596,
+                          "end": 620,
                           "name": "length",
-                          "start": 590,
+                          "start": 614,
                           "type": "Identifier"
                         },
-                        "start": 590,
+                        "start": 614,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 601,
+                          "end": 625,
                           "raw": "50",
-                          "start": 599,
+                          "start": 623,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 50.0
+                          "value": {
+                            "value": 50.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
-                        "end": 641,
+                        "end": 665,
                         "key": {
-                          "end": 614,
+                          "end": 638,
                           "name": "tags",
-                          "start": 610,
+                          "start": 634,
                           "type": "Identifier"
                         },
-                        "start": 610,
+                        "start": 634,
                         "type": "ObjectProperty",
                         "value": {
                           "elements": [
                             {
                               "arguments": [
                                 {
-                                  "end": 639,
+                                  "end": 663,
                                   "name": "seg01",
-                                  "start": 634,
+                                  "start": 658,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 }
                               ],
                               "callee": {
-                                "end": 633,
+                                "end": 657,
                                 "name": "getOppositeEdge",
-                                "start": 618,
+                                "start": 642,
                                 "type": "Identifier"
                               },
-                              "end": 640,
-                              "start": 618,
+                              "end": 664,
+                              "start": 642,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             }
                           ],
-                          "end": 641,
-                          "start": 617,
+                          "end": 665,
+                          "start": 641,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       }
                     ],
-                    "start": 581,
+                    "start": 605,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 651,
-                    "start": 650,
+                    "end": 675,
+                    "start": 674,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 659,
-                    "start": 653,
+                    "end": 683,
+                    "start": 677,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "seg03"
                   }
                 ],
                 "callee": {
-                  "end": 580,
+                  "end": 604,
                   "name": "chamfer",
-                  "start": 573,
+                  "start": 597,
                   "type": "Identifier"
                 },
-                "end": 660,
-                "start": 573,
+                "end": 684,
+                "start": 597,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 660,
-            "start": 439,
+            "end": 684,
+            "start": 454,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 426,
+          "start": 441,
           "type": "VariableDeclarator"
         },
-        "end": 660,
+        "end": 684,
         "kind": "const",
-        "start": 426,
+        "start": 441,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1100,
+          "end": 1133,
           "id": {
-            "end": 671,
+            "end": 695,
             "name": "sketch003",
-            "start": 662,
+            "start": 686,
             "type": "Identifier"
           },
           "init": {
@@ -732,28 +779,28 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "end": 698,
+                    "end": 722,
                     "name": "extrude001",
-                    "start": 688,
+                    "start": 712,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 705,
+                    "end": 729,
                     "name": "seg04",
-                    "start": 700,
+                    "start": 724,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 687,
+                  "end": 711,
                   "name": "startSketchOn",
-                  "start": 674,
+                  "start": 698,
                   "type": "Identifier"
                 },
-                "end": 706,
-                "start": 674,
+                "end": 730,
+                "start": 698,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -763,48 +810,54 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                     "elements": [
                       {
                         "argument": {
-                          "end": 733,
+                          "end": 757,
                           "raw": "69.1",
-                          "start": 729,
+                          "start": 753,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 69.1
+                          "value": {
+                            "value": 69.1,
+                            "suffix": "None"
+                          }
                         },
-                        "end": 733,
+                        "end": 757,
                         "operator": "-",
-                        "start": 728,
+                        "start": 752,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       {
-                        "end": 741,
+                        "end": 765,
                         "raw": "277.34",
-                        "start": 735,
+                        "start": 759,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 277.34
+                        "value": {
+                          "value": 277.34,
+                          "suffix": "None"
+                        }
                       }
                     ],
-                    "end": 742,
-                    "start": 727,
+                    "end": 766,
+                    "start": 751,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 745,
-                    "start": 744,
+                    "end": 769,
+                    "start": 768,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 726,
+                  "end": 750,
                   "name": "startProfileAt",
-                  "start": 712,
+                  "start": 736,
                   "type": "Identifier"
                 },
-                "end": 746,
-                "start": 712,
+                "end": 770,
+                "start": 736,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -813,49 +866,55 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "elements": [
                       {
-                        "end": 765,
+                        "end": 789,
                         "raw": "0",
-                        "start": 764,
+                        "start": 788,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
-                        "end": 772,
+                        "end": 796,
                         "raw": "41.48",
-                        "start": 767,
+                        "start": 791,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 41.48
+                        "value": {
+                          "value": 41.48,
+                          "suffix": "None"
+                        }
                       }
                     ],
-                    "end": 773,
-                    "start": 763,
+                    "end": 797,
+                    "start": 787,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 776,
-                    "start": 775,
+                    "end": 800,
+                    "start": 799,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 799,
-                    "start": 778,
+                    "end": 823,
+                    "start": 802,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA003"
                   }
                 ],
                 "callee": {
-                  "end": 762,
+                  "end": 786,
                   "name": "angledLine",
-                  "start": 752,
+                  "start": 776,
                   "type": "Identifier"
                 },
-                "end": 800,
-                "start": 752,
+                "end": 824,
+                "start": 776,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -864,77 +923,83 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "elements": [
                       {
-                        "end": 859,
+                        "end": 883,
                         "left": {
                           "arguments": [
                             {
-                              "end": 853,
+                              "end": 877,
                               "name": "rectangleSegmentA003",
-                              "start": 833,
+                              "start": 857,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 832,
+                            "end": 856,
                             "name": "segAng",
-                            "start": 826,
+                            "start": 850,
                             "type": "Identifier"
                           },
-                          "end": 854,
-                          "start": 826,
+                          "end": 878,
+                          "start": 850,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 859,
+                          "end": 883,
                           "raw": "90",
-                          "start": 857,
+                          "start": 881,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 90.0
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
                         },
-                        "start": 826,
+                        "start": 850,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 873,
+                        "end": 897,
                         "raw": "104.8",
-                        "start": 868,
+                        "start": 892,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 104.8
+                        "value": {
+                          "value": 104.8,
+                          "suffix": "None"
+                        }
                       }
                     ],
-                    "end": 880,
-                    "start": 817,
+                    "end": 904,
+                    "start": 841,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 883,
-                    "start": 882,
+                    "end": 907,
+                    "start": 906,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 906,
-                    "start": 885,
+                    "end": 930,
+                    "start": 909,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB002"
                   }
                 ],
                 "callee": {
-                  "end": 816,
+                  "end": 840,
                   "name": "angledLine",
-                  "start": 806,
+                  "start": 830,
                   "type": "Identifier"
                 },
-                "end": 907,
-                "start": 806,
+                "end": 931,
+                "start": 830,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -945,21 +1010,21 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       {
                         "arguments": [
                           {
-                            "end": 960,
+                            "end": 984,
                             "name": "rectangleSegmentA003",
-                            "start": 940,
+                            "start": 964,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 939,
+                          "end": 963,
                           "name": "segAng",
-                          "start": 933,
+                          "start": 957,
                           "type": "Identifier"
                         },
-                        "end": 961,
-                        "start": 933,
+                        "end": 985,
+                        "start": 957,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -967,171 +1032,173 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "argument": {
                           "arguments": [
                             {
-                              "end": 998,
+                              "end": 1022,
                               "name": "rectangleSegmentA003",
-                              "start": 978,
+                              "start": 1002,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 977,
+                            "end": 1001,
                             "name": "segLen",
-                            "start": 971,
+                            "start": 995,
                             "type": "Identifier"
                           },
-                          "end": 999,
-                          "start": 971,
+                          "end": 1023,
+                          "start": 995,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "end": 999,
+                        "end": 1023,
                         "operator": "-",
-                        "start": 970,
+                        "start": 994,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 1006,
-                    "start": 924,
+                    "end": 1030,
+                    "start": 948,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1009,
-                    "start": 1008,
+                    "end": 1033,
+                    "start": 1032,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 1032,
-                    "start": 1011,
+                    "end": 1056,
+                    "start": 1035,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC002"
                   }
                 ],
                 "callee": {
-                  "end": 923,
+                  "end": 947,
                   "name": "angledLine",
-                  "start": 913,
+                  "start": 937,
                   "type": "Identifier"
                 },
-                "end": 1033,
-                "start": 913,
+                "end": 1057,
+                "start": 937,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 1062,
-                            "start": 1061,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
-                          "end": 1060,
-                          "name": "profileStartX",
-                          "start": 1047,
-                          "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 1098,
+                              "start": 1097,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1096,
+                            "name": "profileStartX",
+                            "start": 1083,
+                            "type": "Identifier"
+                          },
+                          "end": 1099,
+                          "start": 1083,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
-                        "end": 1063,
-                        "start": 1047,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "end": 1080,
-                            "start": 1079,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
-                          "end": 1078,
-                          "name": "profileStartY",
-                          "start": 1065,
-                          "type": "Identifier"
-                        },
-                        "end": 1081,
-                        "start": 1065,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      }
-                    ],
-                    "end": 1082,
-                    "start": 1046,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 1085,
-                    "start": 1084,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                        {
+                          "arguments": [
+                            {
+                              "end": 1116,
+                              "start": 1115,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1114,
+                            "name": "profileStartY",
+                            "start": 1101,
+                            "type": "Identifier"
+                          },
+                          "end": 1117,
+                          "start": 1101,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1118,
+                      "start": 1082,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 1045,
-                  "name": "lineTo",
-                  "start": 1039,
+                  "end": 1067,
+                  "name": "line",
+                  "start": 1063,
                   "type": "Identifier"
                 },
-                "end": 1086,
-                "start": 1039,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 1119,
+                "start": 1063,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "end": 1099,
-                    "start": 1098,
+                    "end": 1132,
+                    "start": 1131,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1097,
+                  "end": 1130,
                   "name": "close",
-                  "start": 1092,
+                  "start": 1125,
                   "type": "Identifier"
                 },
-                "end": 1100,
-                "start": 1092,
+                "end": 1133,
+                "start": 1125,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1100,
-            "start": 674,
+            "end": 1133,
+            "start": 698,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 662,
+          "start": 686,
           "type": "VariableDeclarator"
         },
-        "end": 1100,
+        "end": 1133,
         "kind": "const",
-        "start": 662,
+        "start": 686,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1541,
+          "end": 1583,
           "id": {
-            "end": 1110,
+            "end": 1143,
             "name": "sketch002",
-            "start": 1101,
+            "start": 1134,
             "type": "Identifier"
           },
           "init": {
@@ -1139,28 +1206,28 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
               {
                 "arguments": [
                   {
-                    "end": 1137,
+                    "end": 1170,
                     "name": "extrude001",
-                    "start": 1127,
+                    "start": 1160,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1144,
+                    "end": 1177,
                     "name": "seg03",
-                    "start": 1139,
+                    "start": 1172,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 1126,
+                  "end": 1159,
                   "name": "startSketchOn",
-                  "start": 1113,
+                  "start": 1146,
                   "type": "Identifier"
                 },
-                "end": 1145,
-                "start": 1113,
+                "end": 1178,
+                "start": 1146,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1169,42 +1236,48 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "elements": [
                       {
-                        "end": 1173,
+                        "end": 1206,
                         "raw": "159.25",
-                        "start": 1167,
+                        "start": 1200,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 159.25
+                        "value": {
+                          "value": 159.25,
+                          "suffix": "None"
+                        }
                       },
                       {
-                        "end": 1181,
+                        "end": 1214,
                         "raw": "278.35",
-                        "start": 1175,
+                        "start": 1208,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 278.35
+                        "value": {
+                          "value": 278.35,
+                          "suffix": "None"
+                        }
                       }
                     ],
-                    "end": 1182,
-                    "start": 1166,
+                    "end": 1215,
+                    "start": 1199,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1185,
-                    "start": 1184,
+                    "end": 1218,
+                    "start": 1217,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1165,
+                  "end": 1198,
                   "name": "startProfileAt",
-                  "start": 1151,
+                  "start": 1184,
                   "type": "Identifier"
                 },
-                "end": 1186,
-                "start": 1151,
+                "end": 1219,
+                "start": 1184,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1213,49 +1286,55 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "elements": [
                       {
-                        "end": 1205,
+                        "end": 1238,
                         "raw": "0",
-                        "start": 1204,
+                        "start": 1237,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
-                        "end": 1212,
+                        "end": 1245,
                         "raw": "40.82",
-                        "start": 1207,
+                        "start": 1240,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 40.82
+                        "value": {
+                          "value": 40.82,
+                          "suffix": "None"
+                        }
                       }
                     ],
-                    "end": 1213,
-                    "start": 1203,
+                    "end": 1246,
+                    "start": 1236,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1216,
-                    "start": 1215,
+                    "end": 1249,
+                    "start": 1248,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 1239,
-                    "start": 1218,
+                    "end": 1272,
+                    "start": 1251,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA002"
                   }
                 ],
                 "callee": {
-                  "end": 1202,
+                  "end": 1235,
                   "name": "angledLine",
-                  "start": 1192,
+                  "start": 1225,
                   "type": "Identifier"
                 },
-                "end": 1240,
-                "start": 1192,
+                "end": 1273,
+                "start": 1225,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1264,77 +1343,83 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                   {
                     "elements": [
                       {
-                        "end": 1299,
+                        "end": 1332,
                         "left": {
                           "arguments": [
                             {
-                              "end": 1293,
+                              "end": 1326,
                               "name": "rectangleSegmentA002",
-                              "start": 1273,
+                              "start": 1306,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 1272,
+                            "end": 1305,
                             "name": "segAng",
-                            "start": 1266,
+                            "start": 1299,
                             "type": "Identifier"
                           },
-                          "end": 1294,
-                          "start": 1266,
+                          "end": 1327,
+                          "start": 1299,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 1299,
+                          "end": 1332,
                           "raw": "90",
-                          "start": 1297,
+                          "start": 1330,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 90.0
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
                         },
-                        "start": 1266,
+                        "start": 1299,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 1314,
+                        "end": 1347,
                         "raw": "132.27",
-                        "start": 1308,
+                        "start": 1341,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 132.27
+                        "value": {
+                          "value": 132.27,
+                          "suffix": "None"
+                        }
                       }
                     ],
-                    "end": 1321,
-                    "start": 1257,
+                    "end": 1354,
+                    "start": 1290,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1324,
-                    "start": 1323,
+                    "end": 1357,
+                    "start": 1356,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 1347,
-                    "start": 1326,
+                    "end": 1380,
+                    "start": 1359,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB001"
                   }
                 ],
                 "callee": {
-                  "end": 1256,
+                  "end": 1289,
                   "name": "angledLine",
-                  "start": 1246,
+                  "start": 1279,
                   "type": "Identifier"
                 },
-                "end": 1348,
-                "start": 1246,
+                "end": 1381,
+                "start": 1279,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1345,21 +1430,21 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                       {
                         "arguments": [
                           {
-                            "end": 1401,
+                            "end": 1434,
                             "name": "rectangleSegmentA002",
-                            "start": 1381,
+                            "start": 1414,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 1380,
+                          "end": 1413,
                           "name": "segAng",
-                          "start": 1374,
+                          "start": 1407,
                           "type": "Identifier"
                         },
-                        "end": 1402,
-                        "start": 1374,
+                        "end": 1435,
+                        "start": 1407,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -1367,219 +1452,231 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "argument": {
                           "arguments": [
                             {
-                              "end": 1439,
+                              "end": 1472,
                               "name": "rectangleSegmentA002",
-                              "start": 1419,
+                              "start": 1452,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 1418,
+                            "end": 1451,
                             "name": "segLen",
-                            "start": 1412,
+                            "start": 1445,
                             "type": "Identifier"
                           },
-                          "end": 1440,
-                          "start": 1412,
+                          "end": 1473,
+                          "start": 1445,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "end": 1440,
+                        "end": 1473,
                         "operator": "-",
-                        "start": 1411,
+                        "start": 1444,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 1447,
-                    "start": 1365,
+                    "end": 1480,
+                    "start": 1398,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1450,
-                    "start": 1449,
+                    "end": 1483,
+                    "start": 1482,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 1473,
-                    "start": 1452,
+                    "end": 1506,
+                    "start": 1485,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC001"
                   }
                 ],
                 "callee": {
-                  "end": 1364,
+                  "end": 1397,
                   "name": "angledLine",
-                  "start": 1354,
+                  "start": 1387,
                   "type": "Identifier"
                 },
-                "end": 1474,
-                "start": 1354,
+                "end": 1507,
+                "start": 1387,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 1503,
-                            "start": 1502,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
-                          "end": 1501,
-                          "name": "profileStartX",
-                          "start": 1488,
-                          "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 1548,
+                              "start": 1547,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1546,
+                            "name": "profileStartX",
+                            "start": 1533,
+                            "type": "Identifier"
+                          },
+                          "end": 1549,
+                          "start": 1533,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
-                        "end": 1504,
-                        "start": 1488,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "end": 1521,
-                            "start": 1520,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
-                          "end": 1519,
-                          "name": "profileStartY",
-                          "start": 1506,
-                          "type": "Identifier"
-                        },
-                        "end": 1522,
-                        "start": 1506,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      }
-                    ],
-                    "end": 1523,
-                    "start": 1487,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 1526,
-                    "start": 1525,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                        {
+                          "arguments": [
+                            {
+                              "end": 1566,
+                              "start": 1565,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1564,
+                            "name": "profileStartY",
+                            "start": 1551,
+                            "type": "Identifier"
+                          },
+                          "end": 1567,
+                          "start": 1551,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1568,
+                      "start": 1532,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 1486,
-                  "name": "lineTo",
-                  "start": 1480,
+                  "end": 1517,
+                  "name": "line",
+                  "start": 1513,
                   "type": "Identifier"
                 },
-                "end": 1527,
-                "start": 1480,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 1569,
+                "start": 1513,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "end": 1540,
-                    "start": 1539,
+                    "end": 1582,
+                    "start": 1581,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1538,
+                  "end": 1580,
                   "name": "close",
-                  "start": 1533,
+                  "start": 1575,
                   "type": "Identifier"
                 },
-                "end": 1541,
-                "start": 1533,
+                "end": 1583,
+                "start": 1575,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1541,
-            "start": 1113,
+            "end": 1583,
+            "start": 1146,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1101,
+          "start": 1134,
           "type": "VariableDeclarator"
         },
-        "end": 1541,
+        "end": 1583,
         "kind": "const",
-        "start": 1101,
+        "start": 1134,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1577,
+          "end": 1628,
           "id": {
-            "end": 1552,
+            "end": 1594,
             "name": "extrude002",
-            "start": 1542,
+            "start": 1584,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 1565,
-                "raw": "50",
-                "start": 1563,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 50.0
-              },
-              {
-                "end": 1576,
-                "name": "sketch002",
-                "start": 1567,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "length"
+                },
+                "arg": {
+                  "end": 1627,
+                  "raw": "50",
+                  "start": 1625,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 50.0,
+                    "suffix": "None"
+                  }
+                }
               }
             ],
             "callee": {
-              "end": 1562,
+              "end": 1604,
               "name": "extrude",
-              "start": 1555,
+              "start": 1597,
               "type": "Identifier"
             },
-            "end": 1577,
-            "start": 1555,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "end": 1628,
+            "start": 1597,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 1614,
+              "name": "sketch002",
+              "start": 1605,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
-          "start": 1542,
+          "start": 1584,
           "type": "VariableDeclarator"
         },
-        "end": 1577,
+        "end": 1628,
         "kind": "const",
-        "start": 1542,
+        "start": 1584,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 1578,
+    "end": 1629,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
-            "end": 662,
-            "start": 660,
+            "end": 686,
+            "start": 684,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

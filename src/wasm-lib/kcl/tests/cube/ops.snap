@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed cube.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -9,42 +8,119 @@ snapshot_kind: text
     "name": "cube",
     "functionSourceRange": [
       7,
-      322,
+      375,
       0
     ],
     "unlabeledArg": null,
-    "labeledArgs": {},
+    "labeledArgs": {
+      "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
+        "sourceRange": [
+          417,
+          423,
+          0
+        ]
+      },
+      "sideLength": {
+        "value": {
+          "type": "Number",
+          "value": 40.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          404,
+          406,
+          0
+        ]
+      }
+    },
     "sourceRange": [
-      333,
-      349,
+      386,
+      424,
       0
     ]
   },
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 40.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          310,
-          316,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          318,
-          319,
+          362,
+          372,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      302,
-      320,
+      345,
+      373,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

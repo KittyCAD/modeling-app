@@ -1,0 +1,6 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph flowchart parametric_with_tan_arc.kcl
+extension: md
+snapshot_kind: binary
+---

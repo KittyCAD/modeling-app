@@ -20,7 +20,10 @@ description: Result of parsing parametric.kcl
             "start": 13,
             "type": "Literal",
             "type": "Literal",
-            "value": 35000.0
+            "value": {
+              "value": 35000.0,
+              "suffix": "None"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -46,7 +49,10 @@ description: Result of parsing parametric.kcl
             "start": 34,
             "type": "Literal",
             "type": "Literal",
-            "value": 9.0
+            "value": {
+              "value": 9.0,
+              "suffix": "None"
+            }
           },
           "start": 26,
           "type": "VariableDeclarator"
@@ -72,7 +78,10 @@ description: Result of parsing parametric.kcl
             "start": 48,
             "type": "Literal",
             "type": "Literal",
-            "value": 150.0
+            "value": {
+              "value": 150.0,
+              "suffix": "None"
+            }
           },
           "start": 44,
           "type": "VariableDeclarator"
@@ -98,7 +107,10 @@ description: Result of parsing parametric.kcl
             "start": 87,
             "type": "Literal",
             "type": "Literal",
-            "value": 6.0
+            "value": {
+              "value": 6.0,
+              "suffix": "None"
+            }
           },
           "start": 76,
           "type": "VariableDeclarator"
@@ -124,7 +136,10 @@ description: Result of parsing parametric.kcl
             "start": 105,
             "type": "Literal",
             "type": "Literal",
-            "value": 2.0
+            "value": {
+              "value": 2.0,
+              "suffix": "None"
+            }
           },
           "start": 99,
           "type": "VariableDeclarator"
@@ -150,7 +165,10 @@ description: Result of parsing parametric.kcl
             "start": 115,
             "type": "Literal",
             "type": "Literal",
-            "value": 5.0
+            "value": {
+              "value": 5.0,
+              "suffix": "None"
+            }
           },
           "start": 108,
           "type": "VariableDeclarator"
@@ -176,7 +194,10 @@ description: Result of parsing parametric.kcl
             "start": 134,
             "type": "Literal",
             "type": "Literal",
-            "value": 8.0
+            "value": {
+              "value": 8.0,
+              "suffix": "None"
+            }
           },
           "start": 127,
           "type": "VariableDeclarator"
@@ -246,7 +267,10 @@ description: Result of parsing parametric.kcl
                       "start": 184,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 6.0
+                      "value": {
+                        "value": 6.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 163,
                     "type": "BinaryExpression",
@@ -299,7 +323,7 @@ description: Result of parsing parametric.kcl
       },
       {
         "declaration": {
-          "end": 467,
+          "end": 488,
           "id": {
             "end": 225,
             "name": "bracket",
@@ -340,7 +364,10 @@ description: Result of parsing parametric.kcl
                         "start": 269,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 273,
@@ -348,7 +375,10 @@ description: Result of parsing parametric.kcl
                         "start": 272,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 274,
@@ -377,33 +407,37 @@ description: Result of parsing parametric.kcl
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 291,
-                        "raw": "0",
-                        "start": 290,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 0.0
-                      },
-                      {
-                        "end": 297,
-                        "name": "leg1",
-                        "start": 293,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "end": 298,
-                    "start": 289,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 301,
-                    "start": 300,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 297,
+                          "raw": "0",
+                          "start": 296,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 303,
+                          "name": "leg1",
+                          "start": 299,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "end": 304,
+                      "start": 295,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -412,281 +446,304 @@ description: Result of parsing parametric.kcl
                   "start": 284,
                   "type": "Identifier"
                 },
-                "end": 302,
+                "end": 305,
                 "start": 284,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 318,
-                        "name": "leg2",
-                        "start": 314,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      },
-                      {
-                        "end": 321,
-                        "raw": "0",
-                        "start": 320,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 0.0
-                      }
-                    ],
-                    "end": 322,
-                    "start": 313,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 325,
-                    "start": 324,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 327,
+                          "name": "leg2",
+                          "start": 323,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        {
+                          "end": 330,
+                          "raw": "0",
+                          "start": 329,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 331,
+                      "start": 322,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 312,
+                  "end": 315,
                   "name": "line",
-                  "start": 308,
+                  "start": 311,
                   "type": "Identifier"
                 },
-                "end": 326,
-                "start": 308,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 332,
+                "start": 311,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 339,
-                        "raw": "0",
-                        "start": 338,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 0.0
-                      },
-                      {
-                        "argument": {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
                           "end": 351,
-                          "name": "thickness",
-                          "start": 342,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "raw": "0",
+                          "start": 350,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         },
-                        "end": 351,
-                        "operator": "-",
-                        "start": 341,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
-                    "end": 352,
-                    "start": 337,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 355,
-                    "start": 354,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 336,
-                  "name": "line",
-                  "start": 332,
-                  "type": "Identifier"
-                },
-                "end": 356,
-                "start": 332,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "end": 385,
-                        "left": {
+                        {
                           "argument": {
-                            "end": 373,
-                            "name": "leg2",
-                            "start": 369,
+                            "end": 363,
+                            "name": "thickness",
+                            "start": 354,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 373,
+                          "end": 363,
                           "operator": "-",
-                          "start": 368,
+                          "start": 353,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
-                        },
-                        "operator": "+",
-                        "right": {
-                          "end": 385,
-                          "name": "thickness",
-                          "start": 376,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "start": 368,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      {
-                        "end": 388,
-                        "raw": "0",
-                        "start": 387,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 0.0
-                      }
-                    ],
-                    "end": 389,
-                    "start": 367,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 392,
-                    "start": 391,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                        }
+                      ],
+                      "end": 364,
+                      "start": 349,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 366,
+                  "end": 342,
                   "name": "line",
-                  "start": 362,
+                  "start": 338,
                   "type": "Identifier"
                 },
-                "end": 393,
-                "start": 362,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 365,
+                "start": 338,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 406,
-                        "raw": "0",
-                        "start": 405,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 0.0
-                      },
-                      {
-                        "end": 425,
-                        "left": {
-                          "argument": {
-                            "end": 413,
-                            "name": "leg1",
-                            "start": 409,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 400,
+                          "left": {
+                            "argument": {
+                              "end": 388,
+                              "name": "leg2",
+                              "start": 384,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 388,
+                            "operator": "-",
+                            "start": 383,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 400,
+                            "name": "thickness",
+                            "start": 391,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 413,
-                          "operator": "-",
-                          "start": 408,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
+                          "start": 383,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
                         },
-                        "operator": "+",
-                        "right": {
-                          "end": 425,
-                          "name": "thickness",
-                          "start": 416,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "start": 408,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      }
-                    ],
-                    "end": 426,
-                    "start": 404,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 429,
-                    "start": 428,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                        {
+                          "end": 403,
+                          "raw": "0",
+                          "start": 402,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 404,
+                      "start": 382,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 403,
+                  "end": 375,
                   "name": "line",
-                  "start": 399,
+                  "start": 371,
                   "type": "Identifier"
                 },
-                "end": 430,
-                "start": 399,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 405,
+                "start": 371,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "end": 443,
-                    "start": 442,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 424,
+                          "raw": "0",
+                          "start": 423,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 443,
+                          "left": {
+                            "argument": {
+                              "end": 431,
+                              "name": "leg1",
+                              "start": 427,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 431,
+                            "operator": "-",
+                            "start": 426,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 443,
+                            "name": "thickness",
+                            "start": 434,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 426,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      ],
+                      "end": 444,
+                      "start": 422,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 415,
+                  "name": "line",
+                  "start": 411,
+                  "type": "Identifier"
+                },
+                "end": 445,
+                "start": 411,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 458,
+                    "start": 457,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 441,
+                  "end": 456,
                   "name": "close",
-                  "start": 436,
+                  "start": 451,
                   "type": "Identifier"
                 },
-                "end": 444,
-                "start": 436,
+                "end": 459,
+                "start": 451,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 463,
-                    "name": "width",
-                    "start": 458,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  {
-                    "end": 466,
-                    "start": 465,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
+                    },
+                    "arg": {
+                      "end": 487,
+                      "name": "width",
+                      "start": 482,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 457,
+                  "end": 472,
                   "name": "extrude",
-                  "start": 450,
+                  "start": 465,
                   "type": "Identifier"
                 },
-                "end": 467,
-                "start": 450,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 488,
+                "start": 465,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 467,
+            "end": 488,
             "start": 228,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -694,14 +751,14 @@ description: Result of parsing parametric.kcl
           "start": 218,
           "type": "VariableDeclarator"
         },
-        "end": 467,
+        "end": 488,
         "kind": "const",
         "start": 218,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 468,
+    "end": 489,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [

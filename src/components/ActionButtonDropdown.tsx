@@ -1,9 +1,11 @@
 import { Popover } from '@headlessui/react'
 import { ActionButtonProps } from './ActionButton'
 import { CustomIcon } from './CustomIcon'
+import Tooltip from './Tooltip'
 
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
   name?: string
+  dropdownTooltipText?: string
   splitMenuItems: {
     id: string
     label: string
@@ -17,6 +19,7 @@ type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
 export function ActionButtonDropdown({
   splitMenuItems,
   className,
+  dropdownTooltipText = 'More tools',
   children,
   ...props
 }: ActionButtonSplitProps) {
@@ -26,7 +29,14 @@ export function ActionButtonDropdown({
       {({ close }) => (
         <>
           {children}
-          <Popover.Button className="border-transparent dark:border-transparent p-0 m-0 rounded-none !outline-none ui-open:border-primary ui-open:bg-primary">
+          <Popover.Button
+            className={
+              '!border-transparent dark:!border-transparent ' +
+              'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent ' +
+              'enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 ' +
+              'pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10 p-0 m-0 rounded-none !outline-none ui-open:border-primary ui-open:bg-primary'
+            }
+          >
             <CustomIcon
               name="caretDown"
               className={
@@ -37,6 +47,14 @@ export function ActionButtonDropdown({
             <span className="sr-only">
               {props.name ? props.name + ': ' : ''}open menu
             </span>
+            <Tooltip
+              delay={0}
+              position="bottom"
+              hoverOnly
+              wrapperClassName="ui-open:!hidden"
+            >
+              {dropdownTooltipText}
+            </Tooltip>
           </Popover.Button>
           <Popover.Panel
             as="ul"

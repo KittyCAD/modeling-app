@@ -47,7 +47,10 @@ description: Result of parsing if_else.kcl
                         "start": 85,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 4.0
+                        "value": {
+                          "value": 4.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 85,
                       "type": "ExpressionStatement",
@@ -71,7 +74,10 @@ description: Result of parsing if_else.kcl
                     "start": 98,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 5.0
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 98,
                   "type": "ExpressionStatement",
@@ -92,7 +98,10 @@ description: Result of parsing if_else.kcl
                     "start": 64,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 3.0
+                    "value": {
+                      "value": 3.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 64,
                   "type": "ExpressionStatement",
@@ -131,7 +140,10 @@ description: Result of parsing if_else.kcl
               "start": 117,
               "type": "Literal",
               "type": "Literal",
-              "value": 3.0
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 125,
@@ -139,7 +151,10 @@ description: Result of parsing if_else.kcl
               "start": 120,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.001
+              "value": {
+                "value": 0.001,
+                "suffix": "None"
+              }
             },
             {
               "end": 158,
@@ -207,7 +222,10 @@ description: Result of parsing if_else.kcl
                         "start": 199,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 4.0
+                        "value": {
+                          "value": 4.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 199,
                       "type": "ExpressionStatement",
@@ -231,7 +249,10 @@ description: Result of parsing if_else.kcl
                     "start": 212,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 5.0
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 212,
                   "type": "ExpressionStatement",
@@ -252,7 +273,10 @@ description: Result of parsing if_else.kcl
                     "start": 178,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 3.0
+                    "value": {
+                      "value": 3.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 178,
                   "type": "ExpressionStatement",
@@ -291,7 +315,10 @@ description: Result of parsing if_else.kcl
               "start": 231,
               "type": "Literal",
               "type": "Literal",
-              "value": 4.0
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 239,
@@ -299,7 +326,10 @@ description: Result of parsing if_else.kcl
               "start": 234,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.001
+              "value": {
+                "value": 0.001,
+                "suffix": "None"
+              }
             },
             {
               "end": 277,
@@ -367,7 +397,10 @@ description: Result of parsing if_else.kcl
                         "start": 319,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 4.0
+                        "value": {
+                          "value": 4.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 319,
                       "type": "ExpressionStatement",
@@ -391,7 +424,10 @@ description: Result of parsing if_else.kcl
                     "start": 332,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 5.0
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 332,
                   "type": "ExpressionStatement",
@@ -412,7 +448,10 @@ description: Result of parsing if_else.kcl
                     "start": 297,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 3.0
+                    "value": {
+                      "value": 3.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 297,
                   "type": "ExpressionStatement",
@@ -451,7 +490,10 @@ description: Result of parsing if_else.kcl
               "start": 351,
               "type": "Literal",
               "type": "Literal",
-              "value": 5.0
+              "value": {
+                "value": 5.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 359,
@@ -459,7 +501,10 @@ description: Result of parsing if_else.kcl
               "start": 354,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.001
+              "value": {
+                "value": 0.001,
+                "suffix": "None"
+              }
             },
             {
               "end": 394,

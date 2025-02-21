@@ -1,5 +1,13 @@
-import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
-import { Identifier, assertParse, initPromise, Parameter } from './wasm'
+import { getNodeFromPath, LABELED_ARG_FIELD, ARG_INDEX_FIELD } from './queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import {
+  Identifier,
+  assertParse,
+  initPromise,
+  Parameter,
+  SourceRange,
+  topLevelRange,
+} from './wasm'
 import { err } from 'lib/trap'
 
 beforeAll(async () => {
@@ -11,17 +19,16 @@ describe('testing getNodePathFromSourceRange', () => {
     const code = `
 const myVar = 5
 const sk3 = startSketchAt([0, 0])
-  |> lineTo([1, 2], %)
-  |> lineTo([3, 4], %, $yo)
-  |> close(%)
+  |> line(endAbsolute = [1, 2])
+  |> line(endAbsolute = [3, 4], tag = $yo)
+  |> close()
 `
-    const subStr = 'lineTo([3, 4], %, $yo)'
+    const subStr = 'line(endAbsolute = [3, 4], tag = $yo)'
     const lineToSubstringIndex = code.indexOf(subStr)
-    const sourceRange: [number, number, boolean] = [
+    const sourceRange = topLevelRange(
       lineToSubstringIndex,
-      lineToSubstringIndex + subStr.length,
-      true,
-    ]
+      lineToSubstringIndex + subStr.length
+    )
 
     const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
@@ -29,15 +36,15 @@ const sk3 = startSketchAt([0, 0])
     if (err(_node)) throw _node
     const { node } = _node
 
-    expect([node.start, node.end, true]).toEqual(sourceRange)
-    expect(node.type).toBe('CallExpression')
+    expect(topLevelRange(node.start, node.end)).toEqual(sourceRange)
+    expect(node.type).toBe('CallExpressionKw')
   })
   it('gets path right for function definition params', () => {
     const code = `fn cube = (pos, scale) => {
   const sg = startSketchAt(pos)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }
@@ -45,11 +52,7 @@ const sk3 = startSketchAt([0, 0])
 const b1 = cube([0,0], 10)`
     const subStr = 'pos, scale'
     const subStrIndex = code.indexOf(subStr)
-    const sourceRange: [number, number, boolean] = [
-      subStrIndex,
-      subStrIndex + 'pos'.length,
-      true,
-    ]
+    const sourceRange = topLevelRange(subStrIndex, subStrIndex + 'pos'.length)
 
     const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
@@ -71,9 +74,9 @@ const b1 = cube([0,0], 10)`
   it('gets path right for deep within function definition body', () => {
     const code = `fn cube = (pos, scale) => {
   const sg = startSketchAt(pos)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }
@@ -81,11 +84,7 @@ const b1 = cube([0,0], 10)`
 const b1 = cube([0,0], 10)`
     const subStr = 'scale, 0'
     const subStrIndex = code.indexOf(subStr)
-    const sourceRange: [number, number, boolean] = [
-      subStrIndex,
-      subStrIndex + 'scale'.length,
-      true,
-    ]
+    const sourceRange = topLevelRange(subStrIndex, subStrIndex + 'scale'.length)
 
     const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
@@ -104,8 +103,9 @@ const b1 = cube([0,0], 10)`
       ['init', ''],
       ['body', 'PipeExpression'],
       [2, 'index'],
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
+      ['arguments', 'CallExpressionKw'],
+      [0, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
       ['elements', 'ArrayExpression'],
       [0, 'index'],
     ])

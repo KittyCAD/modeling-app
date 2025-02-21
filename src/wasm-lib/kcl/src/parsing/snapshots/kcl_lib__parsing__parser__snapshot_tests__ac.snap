@@ -21,7 +21,10 @@ expression: actual
             "start": 14,
             "type": "Literal",
             "type": "Literal",
-            "value": 10.0
+            "value": {
+              "value": 10.0,
+              "suffix": "None"
+            }
           },
           "endInclusive": true,
           "start": 10,
@@ -31,7 +34,10 @@ expression: actual
             "start": 11,
             "type": "Literal",
             "type": "Literal",
-            "value": 0.0
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
+            }
           },
           "type": "ArrayRangeExpression",
           "type": "ArrayRangeExpression"

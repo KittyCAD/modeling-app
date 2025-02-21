@@ -1,4 +1,4 @@
-import { assign, fromPromise, setup } from 'xstate'
+import { assign, createActor, fromPromise, setup, SnapshotFrom } from 'xstate'
 import {
   Command,
   CommandArgument,
@@ -9,6 +9,8 @@ import { Selections__old } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
+import { useSelector } from '@xstate/react'
+import { authCommands } from 'lib/commandBarConfigs/authCommandConfig'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -79,6 +81,7 @@ export type CommandBarMachineEvent =
 export const commandBarMachine = setup({
   types: {
     context: {} as CommandBarContext,
+    input: {} as { commands: Command[] },
     events: {} as CommandBarMachineEvent,
   },
   actions: {
@@ -246,9 +249,21 @@ export const commandBarMachine = setup({
   },
   guards: {
     'Command needs review': ({ context }) =>
-      context.selectedCommand?.needsReview || false,
-    'Command has no arguments': () => false,
-    'All arguments are skippable': () => false,
+      context.selectedCommand?.needsReview ||
+      ('nodeToEdit' in context.argumentsToSubmit &&
+        context.argumentsToSubmit.nodeToEdit !== undefined) ||
+      false,
+    'Command has no arguments': ({ context }) => {
+      return (
+        !context.selectedCommand?.args ||
+        Object.keys(context.selectedCommand?.args).length === 0
+      )
+    },
+    'All arguments are skippable': ({ context }) => {
+      return Object.values(context.selectedCommand!.args!).every(
+        (argConfig) => argConfig.skip
+      )
+    },
     'Has selected command': ({ context }) => !!context.selectedCommand,
   },
   actors: {
@@ -399,8 +414,8 @@ export const commandBarMachine = setup({
   },
 }).createMachine({
   /** @xstate-layout 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 */
-  context: {
-    commands: [],
+  context: ({ input }) => ({
+    commands: input.commands || [],
     selectedCommand: undefined,
     currentArgument: undefined,
     selectionRanges: {
@@ -415,7 +430,7 @@ export const commandBarMachine = setup({
       setCurrentMachine: () => {},
       noMachinesReason: () => undefined,
     },
-  },
+  }),
   id: 'Command Bar',
   initial: 'Closed',
   states: {
@@ -619,4 +634,17 @@ function sortCommands(a: Command, b: Command) {
   if (b.groupId === 'settings' && !(a.groupId === 'settings')) return -1
   if (a.groupId === 'settings' && !(b.groupId === 'settings')) return 1
   return a.name.localeCompare(b.name)
+}
+
+export const commandBarActor = createActor(commandBarMachine, {
+  input: {
+    commands: [...authCommands],
+  },
+}).start()
+
+/** Basic state snapshot selector */
+const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+  state
+export const useCommandBarState = () => {
+  return useSelector(commandBarActor, cmdBarStateSelector)
 }

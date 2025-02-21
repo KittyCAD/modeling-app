@@ -10,6 +10,7 @@ import {
 import {
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
+  PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
@@ -624,4 +625,20 @@ export const getUser = async (
     console.error(e)
   }
   return Promise.reject(new Error('unreachable'))
+}
+
+export const writeProjectThumbnailFile = async (
+  dataUrl: string,
+  projectDirectoryPath: string
+) => {
+  const filePath = window.electron.path.join(
+    projectDirectoryPath,
+    PROJECT_IMAGE_NAME
+  )
+  const data = atob(dataUrl.substring('data:image/png;base64,'.length))
+  const asArray = new Uint8Array(data.length)
+  for (let i = 0, len = data.length; i < len; ++i) {
+    asArray[i] = data.charCodeAt(i)
+  }
+  return window.electron.writeFile(filePath, asArray)
 }

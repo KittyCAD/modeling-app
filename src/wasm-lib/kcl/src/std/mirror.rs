@@ -42,51 +42,51 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // Mirror an un-closed sketch across the Y axis.
 /// sketch001 = startSketchOn('XZ')
 ///     |> startProfileAt([0, 10], %)
-///     |> line([15, 0], %)
-///     |> line([-7, -3], %)
-///     |> line([9, -1], %)
-///     |> line([-8, -5], %)
-///     |> line([9, -3], %)
-///     |> line([-8, -3], %)
-///     |> line([9, -1], %)
-///     |> line([-19, -0], %)
+///     |> line(end = [15, 0])
+///     |> line(end = [-7, -3])
+///     |> line(end = [9, -1])
+///     |> line(end = [-8, -5])
+///     |> line(end = [9, -3])
+///     |> line(end = [-8, -3])
+///     |> line(end = [9, -1])
+///     |> line(end = [-19, -0])
 ///     |> mirror2d({axis = 'Y'}, %)
 ///
-/// example = extrude(10, sketch001)
+/// example = extrude(sketch001, length = 10)
 /// ```
 ///
 /// ```no_run
 /// // Mirror a un-closed sketch across the Y axis.
 /// sketch001 = startSketchOn('XZ')
 ///     |> startProfileAt([0, 8.5], %)
-///     |> line([20, -8.5], %)
-///     |> line([-20, -8.5], %)
+///     |> line(end = [20, -8.5])
+///     |> line(end = [-20, -8.5])
 ///     |> mirror2d({axis = 'Y'}, %)
 ///
-/// example = extrude(10, sketch001)
+/// example = extrude(sketch001, length = 10)
 /// ```
 ///
 /// ```no_run
 /// // Mirror a un-closed sketch across an edge.
 /// helper001 = startSketchOn('XZ')
 ///  |> startProfileAt([0, 0], %)
-///  |> line([0, 10], %, $edge001)
+///  |> line(end = [0, 10], tag = $edge001)
 ///
 /// sketch001 = startSketchOn('XZ')
 ///     |> startProfileAt([0, 8.5], %)
-///     |> line([20, -8.5], %)
-///     |> line([-20, -8.5], %)
+///     |> line(end = [20, -8.5])
+///     |> line(end = [-20, -8.5])
 ///     |> mirror2d({axis = edge001}, %)
 ///
-/// example = extrude(10, sketch001)
+/// // example = extrude(sketch001, length = 10)
 /// ```
 ///
 /// ```no_run
 /// // Mirror an un-closed sketch across a custom axis.
 /// sketch001 = startSketchOn('XZ')
 ///     |> startProfileAt([0, 8.5], %)
-///     |> line([20, -8.5], %)
-///     |> line([-20, -8.5], %)
+///     |> line(end = [20, -8.5])
+///     |> line(end = [-20, -8.5])
 ///     |> mirror2d({
 ///   axis = {
 ///     custom = {
@@ -96,7 +96,7 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///   }
 /// }, %)
 ///
-/// example = extrude(10, sketch001)
+/// example = extrude(sketch001, length = 10)
 /// ```
 #[stdlib {
     name = "mirror2d",
@@ -112,7 +112,7 @@ async fn inner_mirror_2d(
         SketchSet::Sketches(sketches) => sketches,
     };
 
-    if args.ctx.is_mock() {
+    if args.ctx.no_engine_commands().await {
         return Ok(starting_sketches);
     }
 

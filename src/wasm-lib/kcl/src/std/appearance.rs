@@ -24,7 +24,7 @@ lazy_static::lazy_static! {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Validate)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub struct AppearanceData {
+struct AppearanceData {
     /// Color of the new material, a hex string like "#ff0000".
     #[schemars(regex(pattern = "#[0-9a-fA-F]{6}"))]
     pub color: String,
@@ -39,7 +39,16 @@ pub struct AppearanceData {
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid_set): (AppearanceData, SolidSet) = args.get_data_and_solid_set()?;
+    let solid_set: SolidSet = args.get_unlabeled_kw_arg("solidSet")?;
+
+    let color: String = args.get_kw_arg("color")?;
+    let metalness: Option<f64> = args.get_kw_arg_opt("metalness")?;
+    let roughness: Option<f64> = args.get_kw_arg_opt("roughness")?;
+    let data = AppearanceData {
+        color,
+        metalness,
+        roughness,
+    };
 
     // Validate the data.
     data.validate().map_err(|err| {
@@ -57,7 +66,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
         }));
     }
 
-    let result = inner_appearance(data, solid_set, args).await?;
+    let result = inner_appearance(solid_set, data.color, data.metalness, data.roughness, args).await?;
     Ok(result.into())
 }
 
@@ -68,13 +77,14 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// // Add color to an extruded solid.
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> lineTo([10, 0], %)
-///   |> lineTo([0, 10], %)
-///   |> lineTo([-10, 0], %)
-///   |> close(%)
+///   |> line(endAbsolute = [10, 0])
+///   |> line(endAbsolute = [0, 10])
+///   |> line(endAbsolute = [-10, 0])
+///   |> close()
 ///
-/// example = extrude(5, exampleSketch)
-///  |> appearance({color= '#ff0000', metalness= 50, roughness= 50}, %)
+/// example = extrude(exampleSketch, length = 5)
+///  // There are other options besides 'color', but they're optional.
+///  |> appearance(color='#ff0000')
 /// ```
 ///
 /// ```no_run
@@ -82,11 +92,11 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// sketch001 = startSketchOn('XY')
 ///     |> circle({ center = [15, 0], radius = 5 }, %)
 ///     |> revolve({ angle = 360, axis = 'y' }, %)
-///     |> appearance({
+///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,
 ///         roughness = 90
-///     }, %)
+///     )
 /// ```
 ///
 /// ```no_run
@@ -94,19 +104,19 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// fn cube(center) {
 ///    return startSketchOn('XY')
 ///    |> startProfileAt([center[0] - 10, center[1] - 10], %)
-///    |> lineTo([center[0] + 10, center[1] - 10], %)
-///     |> lineTo([center[0] + 10, center[1] + 10], %)
-///     |> lineTo([center[0] - 10, center[1] + 10], %)
-///     |> close(%)
-///    |> extrude(10, %)
+///    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+///     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+///     |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+///     |> close()
+///    |> extrude(length = 10)
 /// }
 ///
 /// example0 = cube([0, 0])
 /// example1 = cube([20, 0])
 /// example2 = cube([40, 0])
 ///
-///  appearance({color= '#ff0000', metalness= 50, roughness= 50}, [example0, example1])
-///  appearance({color= '#00ff00', metalness= 50, roughness= 50}, example2)
+///  appearance([example0, example1], color='#ff0000', metalness=50, roughness=50)
+///  appearance(example2, color='#00ff00', metalness=50, roughness=50)
 /// ```
 ///
 /// ```no_run
@@ -114,21 +124,22 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// // This example shows setting the appearance _after_ the shell.
 /// firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
-///     |> line([24, 0], %)
-///     |> line([0, -24], %)
-///     |> line([-24, 0], %)
-///     |> close(%)
-///     |> extrude(6, %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
 ///
-/// shell({
+/// shell(
+///     firstSketch,
 ///     faces = ['end'],
 ///     thickness = 0.25,
-/// }, firstSketch)
-///     |> appearance({
+/// )
+///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,
 ///         roughness = 90
-///     }, %)
+///     )
 /// ```
 ///
 /// ```no_run
@@ -136,21 +147,22 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// // This example shows setting the appearance _before_ the shell.
 /// firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
-///     |> line([24, 0], %)
-///     |> line([0, -24], %)
-///     |> line([-24, 0], %)
-///     |> close(%)
-///     |> extrude(6, %)
-///     |> appearance({
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,
 ///         roughness = 90
-///     }, %)
+///     )
 ///
-/// shell({
+/// shell(
+///     firstSketch,
 ///     faces = ['end'],
 ///     thickness = 0.25,
-/// }, firstSketch)
+/// )
 /// ```
 ///
 /// ```no_run
@@ -158,22 +170,22 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// // This example shows _before_ the pattern.
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> line([0, 2], %)
-///   |> line([3, 1], %)
-///   |> line([0, -4], %)
-///   |> close(%)
+///   |> line(end = [0, 2])
+///   |> line(end = [3, 1])
+///   |> line(end = [0, -4])
+///   |> close()
 ///
-/// example = extrude(1, exampleSketch)
-///     |> appearance({
+/// example = extrude(exampleSketch, length = 1)
+///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,
 ///         roughness = 90
-///     }, %)
-///   |> patternLinear3d({
-///       axis = [1, 0, 1],
-///       instances = 7,
-///       distance = 6
-///     }, %)
+///        )
+///     |> patternLinear3d(
+///         axis = [1, 0, 1],
+///         instances = 7,
+///         distance = 6
+///        )
 /// ```
 ///
 /// ```no_run
@@ -181,45 +193,45 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// // This example shows _after_ the pattern.
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> line([0, 2], %)
-///   |> line([3, 1], %)
-///   |> line([0, -4], %)
-///   |> close(%)
+///   |> line(end = [0, 2])
+///   |> line(end = [3, 1])
+///   |> line(end = [0, -4])
+///   |> close()
 ///
-/// example = extrude(1, exampleSketch)
-///   |> patternLinear3d({
+/// example = extrude(exampleSketch, length = 1)
+///   |> patternLinear3d(
 ///       axis = [1, 0, 1],
 ///       instances = 7,
 ///       distance = 6
-///     }, %)
-///     |> appearance({
-///         color = '#ff0000',
-///         metalness = 90,
-///         roughness = 90
-///     }, %)
+///      )
+///   |> appearance(
+///       color = '#ff0000',
+///       metalness = 90,
+///       roughness = 90
+///      )
 /// ```
 ///
 /// ```no_run
 /// // Color the result of a 2D pattern that was extruded.
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([.5, 25], %)
-///   |> line([0, 5], %)
-///   |> line([-1, 0], %)
-///   |> line([0, -5], %)
-///   |> close(%)
-///   |> patternCircular2d({
+///   |> line(end = [0, 5])
+///   |> line(end = [-1, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///   |> patternCircular2d(
 ///        center = [0, 0],
 ///        instances = 13,
 ///        arcDegrees = 360,
 ///        rotateDuplicates = true
-///      }, %)
+///      )
 ///
-/// example = extrude(1, exampleSketch)
-///     |> appearance({
+/// example = extrude(exampleSketch, length = 1)
+///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,
 ///         roughness = 90
-///     }, %)
+///     )
 /// ```
 ///
 /// ```no_run
@@ -228,17 +240,17 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
-///     |> line([0, 7], %)
+///     |> line(end = [0, 7])
 ///     |> tangentialArc({
 ///         offset: 90,
 ///         radius: 5
 ///     }, %)
-///     |> line([-3, 0], %)
+///     |> line(end = [-3, 0])
 ///     |> tangentialArc({
 ///         offset: -90,
 ///         radius: 5
 ///     }, %)
-///     |> line([0, 7], %)
+///     |> line(end = [0, 7])
 ///
 /// pipeHole = startSketchOn('XY')
 ///     |> circle({
@@ -252,26 +264,38 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///         radius = 2,
 ///         }, %)              
 ///     |> hole(pipeHole, %)
-///     |> sweep({
-///         path: sweepPath,
-///     }, %)
-///     |> appearance({
-///         color: "#ff0000",
-///         metalness: 50,
-///         roughness: 50
-///     }, %)
+///     |> sweep(path = sweepPath)
+///     |> appearance(
+///         color = "#ff0000",
+///         metalness = 50,
+///         roughness = 50
+///     )
 /// ```
 #[stdlib {
     name = "appearance",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid_set = { docs = "The solid(s) whose appearance is being set" },
+        color = { docs = "Color of the new material, a hex string like '#ff0000'"},
+        metalness = { docs = "Metalness of the new material, a percentage like 95.7." },
+        roughness = { docs = "Roughness of the new material, a percentage like 95.7." },
+    }
 }]
-async fn inner_appearance(data: AppearanceData, solid_set: SolidSet, args: Args) -> Result<SolidSet, KclError> {
+async fn inner_appearance(
+    solid_set: SolidSet,
+    color: String,
+    metalness: Option<f64>,
+    roughness: Option<f64>,
+    args: Args,
+) -> Result<SolidSet, KclError> {
     let solids: Vec<Box<Solid>> = solid_set.into();
 
     for solid in &solids {
         // Set the material properties.
-        let rgb = rgba_simple::RGB::<f32>::from_hex(&data.color).map_err(|err| {
+        let rgb = rgba_simple::RGB::<f32>::from_hex(&color).map_err(|err| {
             KclError::Semantic(KclErrorDetails {
-                message: format!("Invalid hex color (`{}`): {}", data.color, err),
+                message: format!("Invalid hex color (`{color}`): {err}"),
                 source_ranges: vec![args.source_range],
             })
         })?;
@@ -288,8 +312,8 @@ async fn inner_appearance(data: AppearanceData, solid_set: SolidSet, args: Args)
             ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
                 object_id: solid.id,
                 color,
-                metalness: data.metalness.unwrap_or_default() as f32 / 100.0,
-                roughness: data.roughness.unwrap_or_default() as f32 / 100.0,
+                metalness: metalness.unwrap_or_default() as f32 / 100.0,
+                roughness: roughness.unwrap_or_default() as f32 / 100.0,
                 ambient_occlusion: 0.0,
             }),
         )

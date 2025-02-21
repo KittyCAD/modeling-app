@@ -8,10 +8,10 @@ import Tooltip from './Tooltip'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
+import { useToken } from 'machines/appMachine'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {
-  const { auth } = useSettingsAuthContext()
-  const token = auth?.context?.token
+  const token = useToken()
   const coreDumpManager = useMemo(
     () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []

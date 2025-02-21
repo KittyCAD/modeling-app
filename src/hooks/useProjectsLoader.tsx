@@ -14,7 +14,7 @@ export const useProjectsLoader = (deps?: [number]) => {
 
   useEffect(() => {
     // Useless on web, until we get fake filesystems over there.
-    if (!isDesktop) return
+    if (!isDesktop()) return
 
     if (deps && deps[0] === lastTs) return
 

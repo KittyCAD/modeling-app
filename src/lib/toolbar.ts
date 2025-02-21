@@ -1,9 +1,7 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { DEV } from 'env'
-import { commandBarMachine } from 'machines/commandBarMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
 import {
-  canRectangleOrCircleTool,
-  isClosedSketch,
   isEditingExistingSketch,
   modelingMachine,
   pipeHasCircle,
@@ -21,7 +19,6 @@ type ToolbarMode = {
 export interface ToolbarItemCallbackProps {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
-  commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
   sketchPathId: string | false
 }
 
@@ -73,7 +70,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'sketch',
         status: 'available',
         title: ({ sketchPathId }) =>
-          `${sketchPathId ? 'Edit' : 'Start'} Sketch`,
+          sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
@@ -84,8 +81,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'extrude',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
@@ -98,13 +95,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'revolve',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
         icon: 'revolve',
-        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+        status: 'available',
         title: 'Revolve',
         hotkey: 'R',
         description:
@@ -119,13 +116,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'sweep',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Sweep', groupId: 'modeling' },
           }),
         icon: 'sweep',
-        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+        status: 'available',
         title: 'Sweep',
         hotkey: 'W',
         description:
@@ -139,8 +136,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'loft',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Loft', groupId: 'modeling' },
           }),
@@ -160,8 +157,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'fillet3d',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Fillet', groupId: 'modeling' },
           }),
@@ -174,8 +171,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'chamfer3d',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Chamfer', groupId: 'modeling' },
           }),
@@ -188,8 +185,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'shell',
-        onClick: ({ commandBarSend }) => {
-          commandBarSend({
+        onClick: () => {
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Shell', groupId: 'modeling' },
           })
@@ -208,15 +205,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Hole',
         description: 'Create a hole in a 3D solid.',
         links: [],
-      },
-      {
-        id: 'helix',
-        onClick: () => console.error('Helix not yet implemented'),
-        icon: 'helix',
-        status: 'kcl-only',
-        title: 'Helix',
-        description: 'Create a helix or spiral in 3D about an axis.',
-        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
       },
       'break',
       [
@@ -266,11 +254,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           ],
         },
       ],
+      'break',
       [
         {
           id: 'plane-offset',
-          onClick: ({ commandBarSend }) => {
-            commandBarSend({
+          onClick: () => {
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Offset plane', groupId: 'modeling' },
             })
@@ -280,7 +269,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Offset plane',
           description: 'Create a plane parallel to an existing plane.',
-          links: [],
+          links: [
+            {
+              label: 'KCL docs',
+              url: 'https://zoo.dev/docs/kcl/offsetPlane',
+            },
+          ],
         },
         {
           id: 'plane-points',
@@ -292,12 +286,27 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           links: [],
         },
       ],
+      {
+        id: 'helix',
+        onClick: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Helix', groupId: 'modeling' },
+          })
+        },
+        hotkey: 'H',
+        icon: 'helix',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+        title: 'Helix',
+        description: 'Create a helix or spiral in 3D about an axis.',
+        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
+      },
       'break',
       [
         {
           id: 'text-to-cad',
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Text-to-CAD', groupId: 'modeling' },
             }),
@@ -305,12 +314,17 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Text-to-CAD',
           description: 'Generate geometry from a text prompt.',
-          links: [],
+          links: [
+            {
+              label: 'API docs',
+              url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
+            },
+          ],
         },
         {
           id: 'prompt-to-edit',
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Prompt-to-edit', groupId: 'modeling' },
             }),
@@ -350,34 +364,18 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       {
         id: 'line',
         onClick: ({ modelingState, modelingSend }) => {
-          if (modelingState.matches({ Sketch: { 'Line tool': 'No Points' } })) {
-            // Exit the sketch state if there are no points and they press ESC
-            modelingSend({
-              type: 'Cancel',
-            })
-          } else {
-            // Exit the tool if there are points and they press ESC
-            modelingSend({
-              type: 'change tool',
-              data: {
-                tool: !modelingState.matches({ Sketch: 'Line tool' })
-                  ? 'line'
-                  : 'none',
-              },
-            })
-          }
+          modelingSend({
+            type: 'change tool',
+            data: {
+              tool: !modelingState.matches({ Sketch: 'Line tool' })
+                ? 'line'
+                : 'none',
+            },
+          })
         },
         icon: 'line',
         status: 'available',
-        disabled: (state) =>
-          state.matches('Sketch no face') ||
-          state.matches({
-            Sketch: { 'Rectangle tool': 'Awaiting second corner' },
-          }) ||
-          state.matches({
-            Sketch: { 'Circle tool': 'Awaiting Radius' },
-          }) ||
-          isClosedSketch(state.context),
+        disabled: (state) => state.matches('Sketch no face'),
         title: 'Line',
         hotkey: (state) =>
           state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
@@ -457,14 +455,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'circle',
           status: 'available',
           title: 'Center circle',
-          disabled: (state) =>
-            state.matches('Sketch no face') ||
-            (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Circle tool' }) &&
-              !state.matches({ Sketch: 'circle3PointToolSelect' })),
+          disabled: (state) => state.matches('Sketch no face'),
           isActive: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ||
-            state.matches({ Sketch: 'circle3PointToolSelect' }),
+            state.matches({ Sketch: 'Circle three point tool' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
           showTitle: false,
@@ -478,9 +472,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               type: 'change tool',
               data: {
                 tool: !modelingState.matches({
-                  Sketch: 'circle3PointToolSelect',
+                  Sketch: 'Circle three point tool',
                 })
-                  ? 'circle3Points'
+                  ? 'circleThreePointNeo'
                   : 'none',
               },
             }),
@@ -506,10 +500,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'rectangle',
           status: 'available',
-          disabled: (state) =>
-            state.matches('Sketch no face') ||
-            (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Rectangle tool' })),
+          disabled: (state) => state.matches('Sketch no face'),
           title: 'Corner rectangle',
           hotkey: (state) =>
             state.matches({ Sketch: 'Rectangle tool' }) ? ['Esc', 'R'] : 'R',
@@ -532,10 +523,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'arc',
           status: 'available',
-          disabled: (state) =>
-            state.matches('Sketch no face') ||
-            (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Center Rectangle tool' })),
+          disabled: (state) => state.matches('Sketch no face'),
           title: 'Center rectangle',
           hotkey: (state) =>
             state.matches({ Sketch: 'Center Rectangle tool' })
@@ -583,8 +571,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         {
           id: 'constraint-length',
           disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: {
                 name: 'Constrain length',

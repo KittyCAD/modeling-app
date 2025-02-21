@@ -1,12 +1,15 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_on_face_after_fillets_referencing_face.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
           1006,
           1010,
@@ -26,50 +29,101 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 6.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          1280,
-          1285,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          1287,
-          1288,
+          1322,
+          1327,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1272,
-      1289,
+      1305,
+      1328,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 0.25,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
-          1302,
-          1382,
+          1341,
+          1421,
           0
         ]
       },
       "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          1384,
-          1385,
+          1423,
+          1424,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      1295,
-      1386,
+      1334,
+      1425,
       0
     ],
     "type": "StdLibCall",
@@ -78,50 +132,88 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 0.5707134902949093,
+              "ty": {
+                "type": "Unknown"
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
-          1399,
-          1491,
-          0
-        ]
-      },
-      "solid": {
-        "sourceRange": [
-          1493,
-          1494,
-          0
-        ]
-      }
-    },
-    "name": "fillet",
-    "sourceRange": [
-      1392,
-      1495,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1523,
+          1438,
           1530,
           0
         ]
       },
-      "tag": {
+      "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           1532,
-          1537,
+          1533,
+          0
+        ]
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [
+      1431,
+      1534,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1562,
+          1569,
+          0
+        ]
+      },
+      "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg01",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          1571,
+          1576,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1509,
-      1538,
+      1548,
+      1577,
       0
     ],
     "type": "StdLibCall",
@@ -130,27 +222,45 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          1740,
-          1742,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          1744,
-          1745,
+          1806,
+          1808,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1732,
-      1746,
+      1789,
+      1809,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

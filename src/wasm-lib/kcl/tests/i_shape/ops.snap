@@ -1,30 +1,41 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed i_shape.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "hole_sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          2348,
-          2353,
+          2351,
+          2356,
           0
         ]
       },
       "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          2355,
-          2356,
+          2358,
+          2359,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2343,
-      2357,
+      2346,
+      2360,
       0
     ],
     "type": "StdLibCall",
@@ -33,27 +44,45 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 3.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          2371,
-          2374,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          2376,
-          2377,
+          2383,
+          2386,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2363,
-      2378,
+      2366,
+      2387,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

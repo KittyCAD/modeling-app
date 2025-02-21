@@ -26,7 +26,7 @@ export const FILE_EXT = '.kcl'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
-export const PROJECT_IMAGE_NAME = `main.jpg` as const
+export const PROJECT_IMAGE_NAME = `thumbnail.png` as const
 /** The localStorage key for last-opened projects */
 export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
@@ -58,6 +58,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
   PLANE: 'plane',
+  HELIX: 'helix',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -68,7 +69,6 @@ export const KCL_DEFAULT_DEGREE = `360`
 /** localStorage key for the playwright test-specific app settings file */
 export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
 
-export const DEFAULT_HOST = 'https://api.zoo.dev'
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
@@ -110,6 +110,9 @@ export const KCL_SAMPLES_MANIFEST_URLS = {
   localFallback: '/kcl-samples-manifest-fallback.json',
 } as const
 
+/** URL parameter to create a file */
+export const CREATE_FILE_URL_PARAM = 'create-file'
+
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 
@@ -139,3 +142,12 @@ export const VIEW_NAMES_SEMANTIC = {
 } as const
 /** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
+
+/** Custom URL protocol our desktop registers */
+export const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
+
+/**
+ * A query parameter that triggers a modal
+ * to "open in desktop app" when present in the URL
+ */
+export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'

@@ -14,6 +14,7 @@ import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import toast from 'react-hot-toast'
+import { authActor } from 'machines/appMachine'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -22,7 +23,6 @@ const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:t
 const SignIn = () => {
   const [userCode, setUserCode] = useState('')
   const {
-    auth: { send },
     settings: {
       state: {
         context: {
@@ -70,7 +70,7 @@ const SignIn = () => {
       toast.error('Error while trying to log in')
       return
     }
-    send({ type: 'Log in', token })
+    authActor.send({ type: 'Log in', token })
   }
 
   return (

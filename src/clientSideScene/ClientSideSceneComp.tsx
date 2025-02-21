@@ -23,19 +23,19 @@ import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
 import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
 import {
   CallExpression,
+  CallExpressionKw,
   PathToNode,
   Program,
-  SourceRange,
   Expr,
   parse,
   recast,
   defaultSourceRange,
   resultIsOk,
-  ProgramMemory,
+  topLevelRange,
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
-import { getConstraintInfo } from 'lang/std/sketch'
+import { getConstraintInfo, getConstraintInfoKw } from 'lang/std/sketch'
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
@@ -46,8 +46,8 @@ import {
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
 import { err, reportRejection, trap } from 'lib/trap'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -124,6 +124,7 @@ export const ClientSideScene = ({
         'mouseup',
         toSync(sceneInfra.onMouseUp, reportRejection)
       )
+      sceneEntitiesManager.tearDownSketch({ removeAxis: true })
     }
   }, [])
 
@@ -144,7 +145,8 @@ export const ClientSideScene = ({
       state.matches({ Sketch: 'Line tool' }) ||
       state.matches({ Sketch: 'Tangential arc to' }) ||
       state.matches({ Sketch: 'Rectangle tool' }) ||
-      state.matches({ Sketch: 'Circle tool' })
+      state.matches({ Sketch: 'Circle tool' }) ||
+      state.matches({ Sketch: 'Circle three point tool' })
     ) {
       cursor = 'crosshair'
     } else {
@@ -177,17 +179,17 @@ const Overlays = () => {
   // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
   // over the length labels on the line segments
   return (
-    <div
-      className="absolute inset-0 pointer-events-none"
-      style={{ zIndex: '99999999' }}
-    >
+    <div className="absolute inset-0 pointer-events-none z-sketchOverlayDropdown">
       {Object.entries(context.segmentOverlays)
-        .filter((a) => a[1].visible)
-        .map(([pathToNodeString, overlay], index) => {
+        .flatMap((a) =>
+          a[1].map((b) => ({ pathToNodeString: a[0], overlay: b }))
+        )
+        .filter((a) => a.overlay.visible)
+        .map(({ pathToNodeString, overlay }, index) => {
           return (
             <Overlay
               overlay={overlay}
-              key={pathToNodeString}
+              key={pathToNodeString + String(index)}
               pathToNodeString={pathToNodeString}
               overlayIndex={index}
             />
@@ -213,10 +215,10 @@ const Overlay = ({
   // It's possible for the pathToNode to request a newer AST node
   // than what's available in the AST at the moment of query.
   // It eventually settles on being updated.
-  const _node1 = getNodeFromPath<Node<CallExpression>>(
+  const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
     kclManager.ast,
     overlay.pathToNode,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
 
   // For that reason, to prevent console noise, we do not use err here.
@@ -226,11 +228,20 @@ const Overlay = ({
   }
   const callExpression = _node1.node
 
-  const constraints = getConstraintInfo(
-    callExpression,
-    codeManager.code,
-    overlay.pathToNode
-  )
+  const constraints =
+    callExpression.type === 'CallExpression'
+      ? getConstraintInfo(
+          callExpression,
+          codeManager.code,
+          overlay.pathToNode,
+          overlay.filterValue
+        )
+      : getConstraintInfoKw(
+          callExpression,
+          codeManager.code,
+          overlay.pathToNode,
+          overlay.filterValue
+        )
 
   const offset = 20 // px
   // We could put a boolean in settings that
@@ -249,7 +260,6 @@ const Overlay = ({
       state.matches({ Sketch: 'Tangential arc to' }) ||
       state.matches({ Sketch: 'Rectangle tool' })
     )
-
   return (
     <div className={`absolute w-0 h-0`}>
       <div
@@ -307,17 +317,18 @@ const Overlay = ({
           this will likely change soon when we implement multi-profile so we'll leave it for now
           issue: https://github.com/KittyCAD/modeling-app/issues/3910
           */}
-          {callExpression?.callee?.name !== 'circle' && (
-            <SegmentMenu
-              verticalPosition={
-                overlay.windowCoords[1] > window.innerHeight / 2
-                  ? 'top'
-                  : 'bottom'
-              }
-              pathToNode={overlay.pathToNode}
-              stdLibFnName={constraints[0]?.stdLibFnName}
-            />
-          )}
+          {callExpression?.callee?.name !== 'circle' &&
+            callExpression?.callee?.name !== 'circleThreePoint' && (
+              <SegmentMenu
+                verticalPosition={
+                  overlay.windowCoords[1] > window.innerHeight / 2
+                    ? 'top'
+                    : 'bottom'
+                }
+                pathToNode={overlay.pathToNode}
+                stdLibFnName={constraints[0]?.stdLibFnName}
+              />
+            )}
         </div>
       )}
     </div>
@@ -413,7 +424,7 @@ export async function deleteSegment({
   modifiedAst = deleteSegmentFromPipeExpression(
     dependentRanges,
     modifiedAst,
-    kclManager.programMemory,
+    kclManager.variables,
     codeManager.code,
     pathToNode
   )
@@ -427,8 +438,8 @@ export async function deleteSegment({
   const testExecute = await executeAst({
     ast: modifiedAst,
     engineCommandManager: engineCommandManager,
-    // We make sure to send an empty program memory to denote we mean mock mode.
-    programMemoryOverride: ProgramMemory.empty(),
+    isMock: true,
+    usePrevMemory: false,
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')
@@ -438,6 +449,8 @@ export async function deleteSegment({
   if (!sketchDetails) return
   await sceneEntitiesManager.updateAstAndRejigSketch(
     pathToNode,
+    sketchDetails.sketchNodePaths,
+    sketchDetails.planeNodePath,
     modifiedAst,
     sketchDetails.zAxis,
     sketchDetails.yAxis,
@@ -510,7 +523,6 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { commandBarSend } = useCommandsContext()
   const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
@@ -600,8 +612,8 @@ const ConstraintSymbol = ({
   if (err(_node)) return
   const node = _node.node
 
-  const range: SourceRange = node
-    ? [node.start, node.end, true]
+  const range = node
+    ? topLevelRange(node.start, node.end)
     : defaultSourceRange()
 
   if (_type === 'intersectionTag') return null
@@ -630,7 +642,7 @@ const ConstraintSymbol = ({
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={toSync(async () => {
           if (!isConstrained) {
-            commandBarSend({
+            commandBarActor.send({
               type: 'Find and select command',
               data: {
                 name: 'Constrain with named value',
@@ -650,10 +662,10 @@ const ConstraintSymbol = ({
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 
-              const _node1 = getNodeFromPath<CallExpression>(
+              const _node1 = getNodeFromPath<CallExpression | CallExpressionKw>(
                 pResult.program!,
                 pathToNode,
-                'CallExpression',
+                ['CallExpression', 'CallExpressionKw'],
                 true
               )
               if (trap(_node1)) return Promise.reject(_node1)
@@ -664,7 +676,7 @@ const ConstraintSymbol = ({
                 shallowPath,
                 argPosition,
                 kclManager.ast,
-                kclManager.programMemory
+                kclManager.variables
               )
 
               if (!transform) return
@@ -756,7 +768,6 @@ export const CamDebugSettings = () => {
     sceneInfra.camControls.reactCameraProperties
   )
   const [fov, setFov] = useState(12)
-  const { commandBarSend } = useCommandsContext()
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
@@ -775,7 +786,7 @@ export const CamDebugSettings = () => {
         type="checkbox"
         checked={camSettings.type === 'perspective'}
         onChange={() =>
-          commandBarSend({
+          commandBarActor.send({
             type: 'Find and select command',
             data: {
               groupId: 'settings',

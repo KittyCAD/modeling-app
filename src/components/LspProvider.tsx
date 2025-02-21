@@ -27,6 +27,7 @@ import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { err } from 'lib/trap'
 import { isDesktop } from 'lib/isDesktop'
 import { codeManager } from 'lib/singletons'
+import { useToken } from 'machines/appMachine'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -69,8 +70,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
-  const { auth } = useSettingsAuthContext()
-  const token = auth?.context.token
+  const token = useToken()
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
@@ -156,8 +156,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
                 plugin.updateFoldingRanges()
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 plugin.requestSemanticTokens()
-                break
-              case 'kcl/memoryUpdated':
                 break
             }
           } catch (error) {

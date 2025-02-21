@@ -15,6 +15,8 @@ import {
 } from 'lib/desktop'
 import { COOKIE_NAME } from 'lib/constants'
 import { markOnce } from 'lib/performance'
+import { ACTOR_IDS } from './machineConstants'
+import withBaseUrl from '../lib/withBaseURL'
 
 const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
 
@@ -50,7 +52,7 @@ export type Events =
     }
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
-const persistedToken =
+export const persistedToken =
   VITE_KC_DEV_TOKEN ||
   getCookie(COOKIE_NAME) ||
   localStorage?.getItem(TOKEN_PERSIST_KEY) ||
@@ -69,18 +71,17 @@ export const authMachine = setup({
           }
         }
   },
-  actions: {
-    goToIndexPage: () => {},
-    goToSignInPage: () => {},
-  },
   actors: {
     getUser: fromPromise(({ input }: { input: { token?: string } }) =>
       getUser(input)
     ),
+    logout: fromPromise(async () =>
+      isDesktop() ? writeTokenFile('') : logout()
+    ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwAWQ9gBspuQCYAnAGYAHPYCsx+4ccAaEAE9E1q7YcoZyxrYR1m7mcrYAvnE+aFh4BMTk1LSQjExgAE55VHnYKmIAhuhkRQC2qcLikpDSDPJKSCBqGlo67QYI9gDs5tge5o6h5vau7oY+-v3mA9jWco4u5iu21ua2YcYJSRg4Eln0zJkABFQYrbqdmtoMun2GA7YjxuPmLqvGNh5zRCfJaOcyLUzuAYuFyGcwHEDJY6NCAAeQwTEuskUd3UDx6oD6Im2wUcAzkMJ2cjBxlMgIWLmwZLWljecjJTjh8IYVAgcF0iJxXUez0QIgGxhJZIpu2ptL8AWwtje1nCW2iq1shns8MRdXSlGRjEFeKevUQjkcy3sqwGHimbg83nlCF22GMytVUWMMUc8USCKO2BOdCN7Xu3VNBKMKsVFp2hm2vu+1id83slkVrgTxhcW0pNJ1geDkDR6GNEZFCAT1kZZLk9cMLltb0WdPMjewjjC1mzOZCtk5CSAA */
-  id: 'Auth',
+  /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOhzEwGsBJAMwBkB7KGCa-AYgkcJIIDdGlMGWwVKAWgA2zVhIIBtAAwBdRKAAOjWLgAuuHupAAPRAGYArAEYSADgu2AnGYBMLpVYBsZz7YA0IACeiG6OJM62tmZKLgDsno5KtvEAvikBaFh4hKTkVHRMLJDsHGAATmWMZSQaUui6tFWoouLSspDy+MpqSCBaOvqGvaYIljb2Tq7uXj7+QYgALFYW4clWy1ZmVgsWsZtpGRg4BMQkMkVsnIUABIwArrrdRv16BvhGI74LJBYW7o5WKJmKILObBUZeEgJP4LTxKMwIhZmBYLA4gTLHHJnWQEKAAeQeXB4IgEQhEGOyp3OUFxBN0CFJmHqb26T16L0G72GiCsSg8PyszkBCViTiUjgC4Jcnhc4SUsQcvgsoL2VjRFJOpGptMJ5Uq1Vq9UaZWaGqx2vw+IeDPwgiZnNZqme2leQ1An1s31+-0BCJBYJCLm+lk8CRl9hRyos6qOlK17QgdI4N0UTvZLs5Hx58NsJARuys0tDSl+AYQthsgNi0TMqt2LjVaPwjAgcCMZuIzoGbyzCAknkliH7Maympa+QYCfYXddXPdixcg4QvKUdk2u2iLkcsXhCRHmKpU7nfQzPe5CAsMpIXi8MvFKM8VliS5c1jzj53W3isNFqPS6NjMcLStXQZ0zc8ohsJI-kcFxXEcR9HAWF9gTzDxbCUXxAQWEsdn3ONsQuOkwLPedl22MIzFg3YP1gl9PG+bYvGsSxlUcRJozSFIgA */
+  id: ACTOR_IDS.AUTH,
   initial: 'checkIfLoggedIn',
   context: {
     token: persistedToken,
@@ -112,19 +113,30 @@ export const authMachine = setup({
       },
     },
     loggedIn: {
-      entry: ['goToIndexPage'],
       on: {
         'Log out': {
-          target: 'loggedOut',
-          actions: () => {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            if (isDesktop()) writeTokenFile('')
-          },
+          target: 'loggingOut',
+        },
+      },
+    },
+    loggingOut: {
+      invoke: {
+        src: 'logout',
+        onDone: 'loggedOut',
+        onError: {
+          target: 'loggedIn',
+          actions: [
+            ({ event }) => {
+              console.error(
+                'Error while logging out',
+                'error' in event ? `: ${event.error}` : ''
+              )
+            },
+          ],
         },
       },
     },
     loggedOut: {
-      entry: ['goToSignInPage'],
       on: {
         'Log in': {
           target: 'checkIfLoggedIn',
@@ -234,4 +246,13 @@ async function getAndSyncStoredToken(input: {
   // has token in file, update localStorage
   localStorage.setItem(TOKEN_PERSIST_KEY, fileToken)
   return fileToken
+}
+
+async function logout() {
+  localStorage.removeItem(TOKEN_PERSIST_KEY)
+  if (isDesktop()) return Promise.resolve(null)
+  return fetch(withBaseUrl('/logout'), {
+    method: 'POST',
+    credentials: 'include',
+  })
 }

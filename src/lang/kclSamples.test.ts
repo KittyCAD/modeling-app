@@ -1,4 +1,4 @@
-import { assertParse, initPromise, programMemoryInit } from './wasm'
+import { assertParse, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 
 import path from 'node:path'
@@ -28,7 +28,14 @@ try {
   console.log(e)
 }
 
-child_process.spawnSync('git', ['clone', URL_GIT_KCL_SAMPLES, DIR_KCL_SAMPLES])
+child_process.spawnSync('git', [
+  'clone',
+  '--single-branch',
+  '--branch',
+  'next',
+  URL_GIT_KCL_SAMPLES,
+  DIR_KCL_SAMPLES,
+])
 
 // @ts-expect-error
 let files = await fs.readdir(DIR_KCL_SAMPLES)
@@ -52,27 +59,22 @@ afterAll(async () => {
   } catch (e) {}
 })
 
-afterEach(() => {
-  process.chdir('..')
-})
-
-// The tests have to be sequential because we need to change directories
-// to support `import` working properly.
-// @ts-expect-error
-describe.sequential('Test KCL Samples from public Github repository', () => {
-  // @ts-expect-error
-  describe.sequential('when performing enginelessExecutor', () => {
+describe('Test KCL Samples from public Github repository', () => {
+  describe('when performing enginelessExecutor', () => {
     manifest.forEach((file: KclSampleFile) => {
-      // @ts-expect-error
-      it.sequential(
+      it(
         `should execute ${file.title} (${file.file}) successfully`,
         async () => {
-          const [dirProject, fileKcl] =
-            file.pathFromProjectDirectoryToFirstFile.split('/')
-          process.chdir(dirProject)
-          const code = await fs.readFile(fileKcl, 'utf-8')
+          const code = await fs.readFile(
+            file.pathFromProjectDirectoryToFirstFile,
+            'utf-8'
+          )
           const ast = assertParse(code)
-          await enginelessExecutor(ast, programMemoryInit())
+          await enginelessExecutor(
+            ast,
+            false,
+            file.pathFromProjectDirectoryToFirstFile
+          )
         },
         files.length * 1000
       )

@@ -15,7 +15,7 @@ fn transform = (replicaId) => {
 fn layer = () => {
   return startSketchOn("XY") // or some other plane idk
     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
-    |> extrude(h, %)
+    |> extrude(length = h)
     // |> fillet({
     //        radius: h / 2.01,
     //        tags: [tag1, getOppositeEdge(tag1)]
@@ -23,4 +23,4 @@ fn layer = () => {
 }
 // The vase is 100 layers tall.
 // The 100 layers are replica of each other, with a slight transformation applied to each.
-let vase = layer() |> patternTransform(100, transform, %)
+let vase = layer() |> patternTransform(instances = 100, transform = transform)

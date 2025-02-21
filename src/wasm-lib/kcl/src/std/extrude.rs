@@ -14,16 +14,18 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid,
+        SolidSet,
     },
     std::Args,
 };
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch_set) = args.get_number_sketch_set()?;
+    let sketch_set = args.get_unlabeled_kw_arg("sketch_set")?;
+    let length = args.get_kw_arg("length")?;
 
-    let result = inner_extrude(length, sketch_set, exec_state, args).await?;
+    let result = inner_extrude(sketch_set, length, exec_state, args).await?;
 
     Ok(result.into())
 }
@@ -35,22 +37,22 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// example = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> line([10, 0], %)
+///   |> line(end = [10, 0])
 ///   |> arc({
 ///     angleStart = 120,
 ///     angleEnd = 0,
 ///     radius = 5,
 ///   }, %)
-///   |> line([5, 0], %)
-///   |> line([0, 10], %)
+///   |> line(end = [5, 0])
+///   |> line(end = [0, 10])
 ///   |> bezierCurve({
 ///     control1 = [-10, 0],
 ///     control2 = [2, 10],
 ///     to = [-5, 10],
 ///   }, %)
-///   |> line([-5, -2], %)
-///   |> close(%)
-///   |> extrude(10, %)
+///   |> line(end = [-5, -2])
+///   |> close()
+///   |> extrude(length = 10)
 /// ```
 ///
 /// ```no_run
@@ -61,26 +63,32 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     angleEnd = -60,
 ///     radius = 5,
 ///   }, %)
-///   |> line([10, 0], %)
-///   |> line([5, 0], %)
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
 ///   |> bezierCurve({
 ///     control1 = [-3, 0],
 ///     control2 = [2, 10],
 ///     to = [-5, 10],
 ///   }, %)
-///   |> line([-4, 10], %)
-///   |> line([-5, -2], %)
-///   |> close(%)
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
 ///
-/// example = extrude(10, exampleSketch)
+/// example = extrude(exampleSketch, length = 10)
 /// ```
 #[stdlib {
     name = "extrude",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_set = { docs = "Which sketches should be extruded"},
+        length = { docs = "How far to extrude the given sketches"},
+    }
 }]
 async fn inner_extrude(
-    length: f64,
     sketch_set: SketchSet,
+    length: f64,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidSet, KclError> {
@@ -109,6 +117,9 @@ async fn inner_extrude(
         )
         .await?;
 
+        // TODO: We're reusing the same UUID for multiple commands.  This seems
+        // like the artifact graph would never be able to find all the
+        // responses.
         args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Extrude {
@@ -125,7 +136,7 @@ async fn inner_extrude(
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
         )
         .await?;
-        solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
+        solids.push(do_post_extrude(sketch.clone(), id.into(), length, exec_state, args.clone()).await?);
     }
 
     Ok(solids.into())
@@ -133,6 +144,7 @@ async fn inner_extrude(
 
 pub(crate) async fn do_post_extrude(
     sketch: Sketch,
+    solid_id: ArtifactId,
     length: f64,
     exec_state: &mut ExecState,
     args: Args,
@@ -220,8 +232,9 @@ pub(crate) async fn do_post_extrude(
         sides: face_id_map,
         start_cap_id,
         end_cap_id,
-    } = analyze_faces(exec_state, &args, face_infos);
+    } = analyze_faces(exec_state, &args, face_infos).await;
     // Iterate over the sketch.value array and add face_id to GeoMeta
+    let no_engine_commands = args.ctx.no_engine_commands().await;
     let new_value = sketch
         .paths
         .iter()
@@ -231,7 +244,8 @@ pub(crate) async fn do_post_extrude(
                     Path::Arc { .. }
                     | Path::TangentialArc { .. }
                     | Path::TangentialArcTo { .. }
-                    | Path::Circle { .. } => {
+                    | Path::Circle { .. }
+                    | Path::CircleThreePoint { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
@@ -254,7 +268,7 @@ pub(crate) async fn do_post_extrude(
                         Some(extrude_surface)
                     }
                 }
-            } else if args.ctx.is_mock() {
+            } else if no_engine_commands {
                 // Only pre-populate the extrude surface if we are in mock mode.
 
                 let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
@@ -278,8 +292,10 @@ pub(crate) async fn do_post_extrude(
         // that we passed in to the function, but it's actually the id of the
         // sketch.
         id: sketch.id,
+        artifact_id: solid_id,
         value: new_value,
         meta: sketch.meta.clone(),
+        units: sketch.units,
         sketch,
         height: length,
         start_cap_id,
@@ -298,12 +314,12 @@ struct Faces {
     start_cap_id: Option<Uuid>,
 }
 
-fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
+async fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
     let mut faces = Faces {
         sides: HashMap::with_capacity(face_infos.len()),
         ..Default::default()
     };
-    if args.ctx.is_mock() {
+    if args.ctx.no_engine_commands().await {
         // Create fake IDs for start and end caps, to make extrudes mock-execute safe
         faces.start_cap_id = Some(exec_state.next_uuid());
         faces.end_cap_id = Some(exec_state.next_uuid());
