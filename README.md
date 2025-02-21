@@ -50,7 +50,7 @@ We recommend downloading the latest application binary from [our Releases page](
 
 Install a node version manager such as [fnm](https://github.com/Schniz/fnm?tab=readme-ov-#installation).
 
-On Windows, it's also recommended to upgrade your PowerShell version, we're using 7.
+On Windows, it's also recommended to [upgrade your PowerShell version](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.5#winget), we're using 7.
 
 Then in the repo run the following to install and use the node version specified in `.nvmrc`. You might need to specify your processor architecture with `--arch arm64` or `--arch x64` if it's not autodetected. 
 ```
