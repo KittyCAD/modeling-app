@@ -494,75 +494,80 @@ export function canSubmitSelectionArg(
   )
 }
 
+type ArtifactEntry = { artifact: Artifact; id: ArtifactId }
+
+function findOverlappingArtifacts(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): ArtifactEntry[] {
+  return Array.from(artifactGraph)
+    .map(([id, artifact]) => {
+      const codeRef = getFaceCodeRef(artifact)
+      if (!codeRef) return null
+      return isOverlap(codeRef.range, selection.codeRef.range)
+        ? { artifact, id }
+        : null
+    })
+    .filter(isNonNullable)
+}
+
+function getBestCandidate(
+  entries: ArtifactEntry[],
+  artifactGraph: ArtifactGraph
+): ArtifactEntry | undefined {
+  for (const entry of entries) {
+    // Segments take precedence
+    if (entry.artifact.type === 'segment') {
+      return entry
+    }
+
+    // Handle paths and their solid2d references
+    if (entry.artifact.type === 'path') {
+      const solid2dId = entry.artifact.solid2dId
+      if (!solid2dId) {
+        return entry
+      }
+      const solid2d = artifactGraph.get(solid2dId)
+      if (solid2d?.type === 'solid2d') {
+        return { id: solid2dId, artifact: solid2d }
+      }
+      continue
+    }
+
+    // Other valid artifact types
+    if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
+      return entry
+    }
+  }
+  return undefined
+}
+
+function createSelectionToEngine(
+  selection: Selection,
+  candidateId?: ArtifactId
+): SelectionToEngine {
+  return {
+    ...(candidateId && { id: candidateId }),
+    range: selection.codeRef.range
+  }
+}
+
 export function codeToIdSelections(
   selections: Selection[],
   artifactGraph: ArtifactGraph
 ): SelectionToEngine[] {
   return selections
-    .flatMap((selection): null | SelectionToEngine[] => {
-      // If we have an artifact directly, we can use it
+    .flatMap((selection): SelectionToEngine[] => {
+      // Direct artifact case
       if (selection.artifact?.id) {
-        return [
-          {
-            id: selection.artifact.id,
-            range: selection.codeRef.range,
-          },
-        ]
+        return [createSelectionToEngine(selection, selection.artifact.id)]
       }
 
-      // Otherwise, find overlapping artifacts based on code range
-      const overlappingEntries = Array.from(artifactGraph)
-        .map(([id, artifact]) => {
-          const codeRef = getFaceCodeRef(artifact)
-          if (!codeRef) return null
-          return isOverlap(codeRef.range, selection.codeRef.range)
-            ? { artifact, id }
-            : null
-        })
-        .filter(isNonNullable)
+      // Find matching artifacts by code range overlap
+      const overlappingEntries = findOverlappingArtifacts(selection, artifactGraph)
+      const bestCandidate = getBestCandidate(overlappingEntries, artifactGraph)
 
-      let bestCandidate: { id: ArtifactId; artifact: Artifact } | undefined
-
-      for (const entry of overlappingEntries) {
-        if (entry.artifact.type === 'segment') {
-          bestCandidate = entry
-          continue
-        }
-
-        if (entry.artifact.type === 'path') {
-          const solid2dId = entry.artifact.solid2dId
-          if (!solid2dId) {
-            bestCandidate = entry
-            continue
-          }
-          const solid2d = artifactGraph.get(solid2dId)
-          if (solid2d?.type === 'solid2d') {
-            bestCandidate = { id: solid2dId, artifact: solid2d }
-          }
-          continue
-        }
-
-        if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
-          bestCandidate = entry
-          continue
-        }
-      }
-
-      if (bestCandidate) {
-        return [
-          {
-            id: bestCandidate.id,
-            range: selection.codeRef.range,
-          },
-        ]
-      }
-
-      // If no matching artifact found, return selection without id
-      return [
-        {
-          range: selection.codeRef.range,
-        },
-      ]
+      return [createSelectionToEngine(selection, bestCandidate?.id)]
     })
     .filter(isNonNullable)
 }
