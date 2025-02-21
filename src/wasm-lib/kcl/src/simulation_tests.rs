@@ -10,6 +10,8 @@ use crate::{
     ModuleId,
 };
 
+mod kcl_samples;
+
 /// A simulation test.
 #[derive(Debug)]
 struct Test {
