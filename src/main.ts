@@ -396,8 +396,8 @@ app.on('ready', () => {
   }, fifteenMinutes)
 
   autoUpdater.on('error', (error) => {
-    console.error('updater-error', error)
-    mainWindow?.webContents.send('updater-error', error)
+    console.error('update-error', error)
+    mainWindow?.webContents.send('update-error', error)
   })
 
   autoUpdater.on('update-available', (info) => {
