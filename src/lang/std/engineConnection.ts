@@ -658,7 +658,7 @@ class EngineConnection extends EventTarget {
         this.pc?.addEventListener?.(
           'icegatheringstatechange',
           function (_event) {
-            console.log('icegatheringstatechange', this.iceGatheringState)           
+            console.log('icegatheringstatechange', this.iceGatheringState)
 
             if (this.iceGatheringState !== 'complete') return
             initiateConnectingExclusive()
