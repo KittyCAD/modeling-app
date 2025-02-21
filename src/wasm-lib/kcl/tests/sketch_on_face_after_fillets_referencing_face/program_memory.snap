@@ -1,26 +1,8 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing sketch_on_face_after_fillets_referencing_face.kcl
-snapshot_kind: text
 ---
 {
-  "E": {
-    "type": "Number",
-    "value": 2.718281828459045,
-    "ty": {
-      "type": "Known",
-      "type": "Count"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          651,
-          689,
-          2
-        ]
-      }
-    ]
-  },
   "FOS": {
     "type": "Number",
     "value": 2.0,
@@ -39,24 +21,6 @@ snapshot_kind: text
           719,
           720,
           0
-        ]
-      }
-    ]
-  },
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Known",
-      "type": "Angle",
-      "type": "Degrees"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          109,
-          115,
-          1
         ]
       }
     ]
@@ -109,98 +73,6 @@ snapshot_kind: text
           665,
           666,
           0
-        ]
-      }
-    ]
-  },
-  "PI": {
-    "type": "Number",
-    "value": 3.141592653589793,
-    "ty": {
-      "type": "Known",
-      "type": "Count"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          290,
-          328,
-          2
-        ]
-      }
-    ]
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Known",
-      "type": "Angle",
-      "type": "Degrees"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          84,
-          89,
-          1
-        ]
-      }
-    ]
-  },
-  "TAU": {
-    "type": "Number",
-    "value": 6.283185307179586,
-    "ty": {
-      "type": "Known",
-      "type": "Count"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1042,
-          1080,
-          2
-        ]
-      }
-    ]
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Known",
-      "type": "Angle",
-      "type": "Degrees"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          144,
-          150,
-          1
-        ]
-      }
-    ]
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          60,
-          61,
-          1
         ]
       }
     ]
@@ -740,18 +612,6 @@ snapshot_kind: text
       ]
     }
   },
-  "cos": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          1446,
-          1478,
-          2
-        ]
-      }
-    ]
-  },
   "filletR": {
     "type": "Number",
     "value": 0.25,
@@ -1025,18 +885,6 @@ snapshot_kind: text
           573,
           578,
           0
-        ]
-      }
-    ]
-  },
-  "sin": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          1844,
-          1876,
-          2
         ]
       }
     ]
@@ -1831,18 +1679,6 @@ snapshot_kind: text
         }
       ]
     }
-  },
-  "tan": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          2234,
-          2266,
-          2
-        ]
-      }
-    ]
   },
   "thickness": {
     "type": "Number",

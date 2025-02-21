@@ -21,14 +21,13 @@ use crate::{
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
-        memory::ProgramMemory,
     },
     fs::FileManager,
-    parsing::ast::types::{Expr, Node, NodeRef, Program},
+    parsing::ast::types::{Expr, ImportPath, Node, NodeRef, Program},
     settings::types::UnitLength,
     source_range::SourceRange,
     std::StdLib,
-    CompilationError, ExecError, KclErrorWithOutputs,
+    CompilationError, ExecError, ExecutionKind, KclErrorWithOutputs,
 };
 
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
@@ -150,7 +149,7 @@ pub struct TagEngineInfo {
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq)]
 pub enum BodyType {
-    Root(bool),
+    Root,
     Block,
 }
 
@@ -488,6 +487,14 @@ impl ExecutorContext {
             .await
     }
 
+    async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
+        self.eval_prelude(exec_state, SourceRange::synthetic())
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        exec_state.mut_memory().push_new_root_env(true);
+        Ok(())
+    }
+
     pub async fn run_mock(
         &self,
         program: crate::Program,
@@ -497,58 +504,60 @@ impl ExecutorContext {
         assert!(self.is_mock());
 
         let mut exec_state = ExecState::new(&self.settings);
-        let (mut mem, init_mem) = if use_prev_memory {
-            cache::read_old_memory()
-                .await
-                .map(|m| (m, false))
-                .unwrap_or_else(|| (ProgramMemory::new(), true))
+        if use_prev_memory {
+            match cache::read_old_memory().await {
+                Some(mem) => *exec_state.mut_memory() = mem,
+                None => self.prepare_mem(&mut exec_state).await?,
+            }
         } else {
-            (ProgramMemory::new(), true)
+            self.prepare_mem(&mut exec_state).await?
         };
 
-        // Add any extra variables to memory
         let mut to_restore = Vec::new();
-        for (k, v) in variables {
-            to_restore.push((k.clone(), mem.get(&k, SourceRange::default()).ok().cloned()));
-            mem.add(k, v, SourceRange::synthetic())
-                .map_err(KclErrorWithOutputs::no_outputs)?;
+        {
+            let mem = exec_state.mut_memory();
+
+            // Push a scope so that old variables can be overwritten (since we might be re-executing some
+            // part of the scene).
+            mem.push_new_env_for_scope();
+
+            // Add any extra variables to memory (we want to remove these variables after execution, but
+            // can't do this using scopes because we want to keep the results of computation in other cases).
+            for (k, v) in variables {
+                to_restore.push((k.clone(), mem.get(&k, SourceRange::default()).ok().cloned()));
+                mem.add(k, v, SourceRange::synthetic())
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+            }
         }
 
-        // Push a scope so that old variables can be overwritten (since we might be re-executing some
-        // part of the scene).
-        mem.push_new_env_for_scope();
-
-        *exec_state.mut_memory() = mem;
-
-        self.inner_run(&program.ast, &mut exec_state, init_mem).await?;
+        let result = self.inner_run(&program.ast, &mut exec_state, true).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
         // memory, not to the exec_state which is not cached for mock execution.
         let mut mem = exec_state.memory().clone();
 
-        let top = mem.pop_and_preserve_env();
+        mem.squash_env(result.0);
         for (k, v) in to_restore {
             match v {
                 Some(v) => mem.insert_or_update(k, v),
                 None => mem.clear(k),
             }
         }
-        mem.squash_env(top);
-
         cache::write_old_memory(mem).await;
 
-        let outcome = exec_state.to_mock_wasm_outcome();
+        let outcome = exec_state.to_mock_wasm_outcome(result.0);
         Ok(outcome)
     }
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
 
-        let (program, mut exec_state, init_mem) = if let Some(OldAstState {
+        let (program, mut exec_state, preserve_mem) = if let Some(OldAstState {
             ast: old_ast,
-            exec_state: old_state,
+            exec_state: mut old_state,
             settings: old_settings,
+            result_env,
         }) = cache::read_old_ast().await
         {
             let old = CacheInformation {
@@ -591,17 +600,18 @@ impl ExecutorContext {
                             ast: old_ast,
                             exec_state: old_state.clone(),
                             settings: self.settings.clone(),
+                            result_env,
                         })
                         .await;
 
-                        return Ok(old_state.to_wasm_outcome());
+                        return Ok(old_state.to_wasm_outcome(result_env));
                     }
                     (true, program.ast)
                 }
-                CacheResult::NoAction(false) => return Ok(old_state.to_wasm_outcome()),
+                CacheResult::NoAction(false) => return Ok(old_state.to_wasm_outcome(result_env)),
             };
 
-            let exec_state = if clear_scene {
+            let (exec_state, preserve_mem) = if clear_scene {
                 // Pop the execution state, since we are starting fresh.
                 let mut exec_state = old_state;
                 exec_state.reset(&self.settings);
@@ -612,38 +622,40 @@ impl ExecutorContext {
                     .await
                     .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                exec_state
+                (exec_state, false)
             } else {
-                old_state
+                old_state.mut_memory().restore_env(result_env);
+                (old_state, true)
             };
 
-            (program, exec_state, clear_scene)
+            (program, exec_state, preserve_mem)
         } else {
             let mut exec_state = ExecState::new(&self.settings);
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
-            (program.ast, exec_state, true)
+            (program.ast, exec_state, false)
         };
 
-        let result = self.inner_run(&program, &mut exec_state, init_mem).await;
+        let result = self.inner_run(&program, &mut exec_state, preserve_mem).await;
 
         if result.is_err() {
             cache::bust_cache().await;
         }
 
         // Throw the error.
-        result?;
+        let result = result?;
 
         // Save this as the last successful execution to the cache.
         cache::write_old_ast(OldAstState {
             ast: program,
             exec_state: exec_state.clone(),
             settings: self.settings.clone(),
+            result_env: result.0,
         })
         .await;
 
-        Ok(exec_state.to_wasm_outcome())
+        Ok(exec_state.to_wasm_outcome(result.0))
     }
 
     /// Perform the execution of a program.
@@ -656,7 +668,7 @@ impl ExecutorContext {
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
-    ) -> Result<Option<ModelingSessionData>, KclError> {
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclError> {
         self.run_with_ui_outputs(program, exec_state)
             .await
             .map_err(|e| e.into())
@@ -673,11 +685,11 @@ impl ExecutorContext {
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
-    ) -> Result<Option<ModelingSessionData>, KclErrorWithOutputs> {
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         self.send_clear_scene(exec_state, Default::default())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-        self.inner_run(&program.ast, exec_state, true).await
+        self.inner_run(&program.ast, exec_state, false).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
@@ -686,8 +698,8 @@ impl ExecutorContext {
         &self,
         program: &Node<Program>,
         exec_state: &mut ExecState,
-        init_mem: bool,
-    ) -> Result<Option<ModelingSessionData>, KclErrorWithOutputs> {
+        preserve_mem: bool,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Re-apply the settings, in case the cache was busted.
@@ -696,7 +708,8 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.execute_and_build_graph(program, exec_state, init_mem)
+        let env_ref = self
+            .execute_and_build_graph(program, exec_state, preserve_mem)
             .await
             .map_err(|e| {
                 KclErrorWithOutputs::new(
@@ -708,7 +721,9 @@ impl ExecutorContext {
             })?;
 
         if !self.is_mock() {
-            cache::write_old_memory(exec_state.memory().clone()).await;
+            let mut mem = exec_state.memory().clone();
+            mem.restore_env(env_ref);
+            cache::write_old_memory(mem).await;
         }
 
         crate::log::log(format!(
@@ -716,7 +731,7 @@ impl ExecutorContext {
             exec_state.memory().stats
         ));
         let session_data = self.engine.get_session_data().await;
-        Ok(session_data)
+        Ok((env_ref, session_data))
     }
 
     /// Execute an AST's program and build auxiliary outputs like the artifact
@@ -725,11 +740,18 @@ impl ExecutorContext {
         &self,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
-        init_mem: bool,
-    ) -> Result<Option<KclValue>, KclError> {
+        preserve_mem: bool,
+    ) -> Result<EnvironmentRef, KclError> {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
-        let exec_result = self.exec_program(program, exec_state, BodyType::Root(init_mem)).await;
+
+        self.eval_prelude(exec_state, SourceRange::from(program).start_as_range())
+            .await?;
+
+        let exec_result = self
+            .exec_module_body(program, exec_state, ExecutionKind::Normal, preserve_mem)
+            .await;
+
         // Move the artifact commands and responses to simplify cache management
         // and error creation.
         exec_state
@@ -749,13 +771,37 @@ impl ExecutorContext {
         ) {
             Ok(artifact_graph) => {
                 exec_state.global.artifact_graph = artifact_graph;
-                exec_result
+                exec_result.map(|(_, env_ref)| env_ref)
             }
             Err(err) => {
                 // Prefer the exec error.
                 exec_result.and(Err(err))
             }
         }
+    }
+
+    /// 'Import' std::prelude as the outermost scope.
+    async fn eval_prelude(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Result<(), KclError> {
+        if exec_state.memory().requires_std() {
+            let id = self
+                .open_module(
+                    &ImportPath::Std {
+                        path: vec!["std".to_owned(), "prelude".to_owned()],
+                    },
+                    &[],
+                    exec_state,
+                    source_range,
+                )
+                .await?;
+            let (module_memory, _) = self
+                .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, source_range)
+                .await
+                .unwrap();
+
+            exec_state.mut_memory().set_std(module_memory);
+        }
+
+        Ok(())
     }
 
     /// Update the units for the executor.
@@ -809,7 +855,7 @@ impl ExecutorContext {
 }
 
 #[cfg(test)]
-async fn parse_execute(code: &str) -> Result<(crate::Program, ExecutorContext, ExecState)> {
+async fn parse_execute(code: &str) -> Result<(crate::Program, EnvironmentRef, ExecutorContext, ExecState)> {
     let program = crate::Program::parse_no_errs(code)?;
 
     let ctx = ExecutorContext {
@@ -820,9 +866,9 @@ async fn parse_execute(code: &str) -> Result<(crate::Program, ExecutorContext, E
         context_type: ContextType::Mock,
     };
     let mut exec_state = ExecState::new(&ctx.settings);
-    ctx.run(&program, &mut exec_state).await?;
+    let result = ctx.run(&program, &mut exec_state).await?;
 
-    Ok((program, ctx, exec_state))
+    Ok((program, result.0, ctx, exec_state))
 }
 
 #[cfg(test)]
@@ -834,14 +880,14 @@ mod tests {
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
-    fn mem_get_json(memory: &ProgramMemory, name: &str) -> KclValue {
-        memory.get(name, SourceRange::default()).unwrap().to_owned()
+    fn mem_get_json(memory: &ProgramMemory, env: EnvironmentRef, name: &str) -> KclValue {
+        memory.get_from(name, env, SourceRange::default()).unwrap().to_owned()
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_warn() {
         let text = "@blah";
-        let (_, _, exec_state) = parse_execute(text).await.unwrap();
+        let (_, _, _, exec_state) = parse_execute(text).await.unwrap();
         let errs = exec_state.errors();
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
@@ -855,7 +901,7 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_warn_on_deprecated() {
         let text = "p = pi()";
-        let (_, _, exec_state) = parse_execute(text).await.unwrap();
+        let (_, _, _, exec_state) = parse_execute(text).await.unwrap();
         let errs = exec_state.errors();
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
@@ -1230,6 +1276,14 @@ const answer = returnX()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_override_prelude() {
+        let text = "PI = 3.0";
+        let (_, _, _, exec_state) = parse_execute(text).await.unwrap();
+        let errs = exec_state.errors();
+        assert!(errs.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_cannot_shebang_in_fn() {
         let ast = r#"
 fn foo () {
@@ -1291,48 +1345,51 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
-        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(5.0, mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap());
+        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(5.0, mem_get_json(exec_state.memory(), env, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
-        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap());
+        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(7.4, mem_get_json(exec_state.memory(), env, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
-        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap());
+        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), env, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
         let ast = r#"const myVar = PI * 2"#;
-        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,
-            mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap()
+            mem_get_json(exec_state.memory(), env, "myVar").as_f64().unwrap()
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
-        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(exec_state.memory(), "thing").as_f64().unwrap());
+        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(7.4, mem_get_json(exec_state.memory(), env, "thing").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_default() {
         let ast = r#"const inMm = 25.4 * mm()
 const inInches = 1.0 * inch()"#;
-        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(25.4, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap());
-        assert_eq!(25.4, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
+        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(25.4, mem_get_json(exec_state.memory(), env, "inMm").as_f64().unwrap());
+        assert_eq!(
+            25.4,
+            mem_get_json(exec_state.memory(), env, "inInches").as_f64().unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1340,9 +1397,15 @@ const inInches = 1.0 * inch()"#;
         let ast = r#"@settings(defaultLengthUnit = inch)
 const inMm = 25.4 * mm()
 const inInches = 1.0 * inch()"#;
-        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap().round());
-        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
+        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            1.0,
+            mem_get_json(exec_state.memory(), env, "inMm").as_f64().unwrap().round()
+        );
+        assert_eq!(
+            1.0,
+            mem_get_json(exec_state.memory(), env, "inInches").as_f64().unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1350,9 +1413,15 @@ const inInches = 1.0 * inch()"#;
         let ast = r#"@settings(defaultLengthUnit = in)
 const inMm = 25.4 * mm()
 const inInches = 2.0 * inch()"#;
-        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap().round());
-        assert_eq!(2.0, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
+        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            1.0,
+            mem_get_json(exec_state.memory(), env, "inMm").as_f64().unwrap().round()
+        );
+        assert_eq!(
+            2.0,
+            mem_get_json(exec_state.memory(), env, "inInches").as_f64().unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1391,11 +1460,17 @@ fn check = (x) => {
 }
 check(false)
 "#;
-        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(false, mem_get_json(exec_state.memory(), "notTrue").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(exec_state.memory(), "notFalse").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(exec_state.memory(), "c").as_bool().unwrap());
-        assert_eq!(false, mem_get_json(exec_state.memory(), "d").as_bool().unwrap());
+        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            false,
+            mem_get_json(exec_state.memory(), env, "notTrue").as_bool().unwrap()
+        );
+        assert_eq!(
+            true,
+            mem_get_json(exec_state.memory(), env, "notFalse").as_bool().unwrap()
+        );
+        assert_eq!(true, mem_get_json(exec_state.memory(), env, "c").as_bool().unwrap());
+        assert_eq!(false, mem_get_json(exec_state.memory(), env, "d").as_bool().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1748,5 +1823,45 @@ let w = f() + f()
 
         // Ensure the settings are as expected.
         assert_eq!(settings_state, ctx.settings);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_variables() {
+        let ctx = ExecutorContext::new_mock().await;
+
+        let program = crate::Program::parse_no_errs("x = y").unwrap();
+        let mut vars = IndexMap::new();
+        vars.insert(
+            "y".to_owned(),
+            KclValue::Number {
+                value: 2.0,
+                ty: kcl_value::NumericType::Unknown,
+                meta: Vec::new(),
+            },
+        );
+        let result = ctx.run_mock(program, true, vars).await.unwrap();
+        assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
+        cache::read_old_memory()
+            .await
+            .unwrap()
+            .get("y", SourceRange::default())
+            .unwrap_err();
+
+        let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
+        let result = ctx.run_mock(program2, true, IndexMap::new()).await.unwrap();
+        assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_after_not_mock() {
+        let ctx = ExecutorContext::new_with_default_client(UnitLength::Mm).await.unwrap();
+        let program = crate::Program::parse_no_errs("x = 2").unwrap();
+        let result = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
+
+        let ctx2 = ExecutorContext::new_mock().await;
+        let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
+        let result = ctx2.run_mock(program2, true, IndexMap::new()).await.unwrap();
+        assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
     }
 }
