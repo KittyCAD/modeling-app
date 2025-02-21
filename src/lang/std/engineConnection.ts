@@ -563,7 +563,7 @@ class EngineConnection extends EventTarget {
     this.disconnectAll()
   }
 
-  initiateConnectionExclusive(): boolean {
+  initiateConnectionExclusive(ignoreIceGatheringState: boolean): boolean {
     // Only run if:
     // - A peer connection exists,
     // - ICE gathering is complete,
@@ -571,9 +571,10 @@ class EngineConnection extends EventTarget {
     // - And we haven’t already triggered this connection.
     if (
       !this.pc ||
-      this.pc.iceGatheringState !== 'complete' ||
       this.triggeredStart ||
-      !this.sdpAnswer
+      !this.sdpAnswer ||
+      ignoreIceGatheringState ||
+      this.pc.iceGatheringState !== 'complete'
     ) {
       return false
     }
@@ -657,7 +658,7 @@ class EngineConnection extends EventTarget {
           // This is null when the ICE gathering state is done.
           // Windows ONLY uses this to signal it's done!
           if (event.candidate === null) {
-            this.initiateConnectionExclusive()
+            this.initiateConnectionExclusive(false)
             return
           }
 
@@ -681,7 +682,7 @@ class EngineConnection extends EventTarget {
           // Sometimes the remote end doesn't report the end of candidates.
           // They have 3 seconds to.
           setTimeout(() => {
-            if (this.initiateConnectionExclusive()) {
+            if (this.initiateConnectionExclusive(true)) {
               console.warn('connected after 3 second delay')
             }
           }, 3000)
@@ -693,7 +694,7 @@ class EngineConnection extends EventTarget {
             console.log('icegatheringstatechange', this.iceGatheringState)
 
             if (this.iceGatheringState !== 'complete') return
-            that.initiateConnectionExclusive()
+            that.initiateConnectionExclusive(false)
           }
         )
 
@@ -1236,7 +1237,7 @@ class EngineConnection extends EventTarget {
 
               // We might have received this after ice candidates finish
               // Make sure we attempt to connect when we do.
-              this.initiateConnectionExclusive()
+              this.initiateConnectionExclusive(false)
               break
 
             case 'trickle_ice':
