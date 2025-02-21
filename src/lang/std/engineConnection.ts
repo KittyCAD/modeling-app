@@ -572,7 +572,7 @@ class EngineConnection extends EventTarget {
     if (
       !this.pc ||
       this.triggeredStart ||
-      !this.sdpAnswer ||
+      !this.sdpAnswer
     ) {
       return false
     }
@@ -656,7 +656,7 @@ class EngineConnection extends EventTarget {
           // This is null when the ICE gathering state is done.
           // Windows ONLY uses this to signal it's done!
           if (event.candidate === null) {
-            this.initiateConnectionExclusive()
+            that.initiateConnectionExclusive()
             return
           }
 
