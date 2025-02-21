@@ -563,7 +563,7 @@ class EngineConnection extends EventTarget {
     this.disconnectAll()
   }
 
-  initiateConnectionExclusive(ignoreIceGatheringState: boolean): boolean {
+  initiateConnectionExclusive(): boolean {
     // Only run if:
     // - A peer connection exists,
     // - ICE gathering is complete,
@@ -573,8 +573,6 @@ class EngineConnection extends EventTarget {
       !this.pc ||
       this.triggeredStart ||
       !this.sdpAnswer ||
-      ignoreIceGatheringState ||
-      this.pc.iceGatheringState !== 'complete'
     ) {
       return false
     }
@@ -658,7 +656,7 @@ class EngineConnection extends EventTarget {
           // This is null when the ICE gathering state is done.
           // Windows ONLY uses this to signal it's done!
           if (event.candidate === null) {
-            this.initiateConnectionExclusive(false)
+            this.initiateConnectionExclusive()
             return
           }
 
@@ -682,7 +680,7 @@ class EngineConnection extends EventTarget {
           // Sometimes the remote end doesn't report the end of candidates.
           // They have 3 seconds to.
           setTimeout(() => {
-            if (this.initiateConnectionExclusive(true)) {
+            if (that.initiateConnectionExclusive()) {
               console.warn('connected after 3 second delay')
             }
           }, 3000)
@@ -694,7 +692,7 @@ class EngineConnection extends EventTarget {
             console.log('icegatheringstatechange', this.iceGatheringState)
 
             if (this.iceGatheringState !== 'complete') return
-            that.initiateConnectionExclusive(false)
+            that.initiateConnectionExclusive()
           }
         )
 
@@ -1237,7 +1235,7 @@ class EngineConnection extends EventTarget {
 
               // We might have received this after ice candidates finish
               // Make sure we attempt to connect when we do.
-              this.initiateConnectionExclusive(false)
+              this.initiateConnectionExclusive()
               break
 
             case 'trickle_ice':
