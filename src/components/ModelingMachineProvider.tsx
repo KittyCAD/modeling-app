@@ -1721,8 +1721,11 @@ export const ModelingMachineProvider = ({
     previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
   }, [allowOrbitInSketchMode])
 
-  // Allow using the delete key to delete solids
-  useHotkeys(['backspace', 'delete', 'del'], () => {
+  // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
+  const deleteKeys = window.electron.os.isMac
+    ? ['backspace', 'delete', 'del']
+    : ['delete', 'del']
+  useHotkeys(deleteKeys, () => {
     modelingSend({ type: 'Delete selection' })
   })
 
