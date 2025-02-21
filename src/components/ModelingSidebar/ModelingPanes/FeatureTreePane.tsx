@@ -395,6 +395,7 @@ const OperationItem = (props: {
             <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.supportsAppearance}
               onClick={enterAppearanceFlow}
+              data-testid='context-menu-set-appearance'
             >
               Set appearance
             </ContextMenuItem>,

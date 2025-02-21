@@ -2812,4 +2812,69 @@ radius = 8.69
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
     })
   })
+
+  test(`Set appearance`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn('XZ')
+profile001 = circle({
+  center = [0, 0],
+  radius = 100
+}, sketch001)
+extrude001 = extrude(profile001, length = 100)
+`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 500, y: 250 }
+
+    await test.step(`Confirm extrude exists with default appearance`, async () => {
+      await toolbar.closePane('code')
+      await scene.expectPixelColor([135, 135, 135], testPoint, 15)
+    })
+
+    await test.step('Right-click on the Extrude and click Set apperance', async () => {
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Extrude',
+        0
+      )
+      await operationButton.click({ button: 'right' })
+      const menuButton = page.getByTestId('context-menu-set-appearance')
+      await menuButton.click()
+    })
+
+    await test.step(`Go through the Set Appearance flow`, async () => {
+      await cmdBar.expectState({
+        commandName: 'Appearance',
+        currentArgKey: 'color',
+        currentArgValue: '',
+        headerArguments: {
+          Color: '',
+        },
+        highlightedHeaderArg: 'color',
+        stage: 'arguments',
+      })
+      await page.getByText('Red', { exact: true }).click()
+      await cmdBar.expectState({
+        commandName: 'Appearance',
+        headerArguments: {
+          Color: '#FF0000',
+        },
+        stage: 'review',
+      })
+      await cmdBar.progressCmdBar()
+      await scene.expectPixelColor([102, 32, 26], testPoint, 15)
+    })
+  })
 })
