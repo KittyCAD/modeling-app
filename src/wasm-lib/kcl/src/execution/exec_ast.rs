@@ -8,7 +8,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
-        cad_op::{OpArg, Operation},
+        cad_op::{OpArg, OpKclValue, Operation},
         kcl_value::NumericType,
         memory,
         state::ModuleState,
@@ -26,6 +26,7 @@ use crate::{
         args::{Arg, KwArgs},
         FunctionKind,
     },
+    CompilationError,
 };
 
 enum StatementKind<'a> {
@@ -47,13 +48,13 @@ impl ExecutorContext {
     async fn handle_annotations(
         &self,
         annotations: impl Iterator<Item = &Node<Annotation>>,
-        scope: annotations::AnnotationScope,
+        body_type: BodyType,
         exec_state: &mut ExecState,
     ) -> Result<bool, KclError> {
         let mut no_prelude = false;
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
-                if scope == annotations::AnnotationScope::Module {
+                if matches!(body_type, BodyType::Root(_)) {
                     let old_units = exec_state.length_unit();
                     exec_state.mod_local.settings.update_from_annotation(annotation)?;
                     let new_units = exec_state.length_unit();
@@ -63,23 +64,26 @@ impl ExecutorContext {
                             .await?;
                     }
                 } else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: "Settings can only be modified at the top level scope of a file".to_owned(),
-                        source_ranges: vec![annotation.as_source_range()],
-                    }));
+                    exec_state.err(CompilationError::err(
+                        annotation.as_source_range(),
+                        "Settings can only be modified at the top level scope of a file",
+                    ));
                 }
-            }
-            if annotation.name() == Some(annotations::NO_PRELUDE) {
-                if scope == annotations::AnnotationScope::Module {
+            } else if annotation.name() == Some(annotations::NO_PRELUDE) {
+                if matches!(body_type, BodyType::Root(_)) {
                     no_prelude = true;
                 } else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: "Prelude can only be skipped at the top level scope of a file".to_owned(),
-                        source_ranges: vec![annotation.as_source_range()],
-                    }));
+                    exec_state.err(CompilationError::err(
+                        annotation.as_source_range(),
+                        "Prelude can only be skipped at the top level scope of a file",
+                    ));
                 }
+            } else {
+                exec_state.warn(CompilationError::err(
+                    annotation.as_source_range(),
+                    "Unknown annotation",
+                ));
             }
-            // TODO warn on unknown annotations
         }
         Ok(no_prelude)
     }
@@ -92,40 +96,34 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        if let BodyType::Root(init_mem) = body_type {
-            let no_prelude = self
-                .handle_annotations(
-                    program.inner_attrs.iter(),
-                    annotations::AnnotationScope::Module,
+        let no_prelude = self
+            .handle_annotations(program.inner_attrs.iter(), body_type, exec_state)
+            .await?;
+
+        if !no_prelude && body_type == BodyType::Root(true) {
+            // Import std::prelude
+            let prelude_range = SourceRange::from(program).start_as_range();
+            let id = self
+                .open_module(
+                    &ImportPath::Std {
+                        path: vec!["std".to_owned(), "prelude".to_owned()],
+                    },
+                    &[],
                     exec_state,
+                    prelude_range,
                 )
                 .await?;
-
-            if !no_prelude && init_mem {
-                // Import std::prelude
-                let prelude_range = SourceRange::from(program).start_as_range();
-                let id = self
-                    .open_module(
-                        &ImportPath::Std {
-                            path: vec!["std".to_owned(), "prelude".to_owned()],
-                        },
-                        &[],
-                        exec_state,
-                        prelude_range,
-                    )
-                    .await?;
-                let (module_memory, module_exports) = self
-                    .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, prelude_range)
-                    .await
+            let (module_memory, module_exports) = self
+                .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, prelude_range)
+                .await
+                .unwrap();
+            for name in module_exports {
+                let item = exec_state
+                    .memory()
+                    .get_from(&name, module_memory, prelude_range)
+                    .cloned()
                     .unwrap();
-                for name in module_exports {
-                    let item = exec_state
-                        .memory()
-                        .get_from(&name, module_memory, prelude_range)
-                        .cloned()
-                        .unwrap();
-                    exec_state.mut_memory().add(name, item, prelude_range)?;
-                }
+                exec_state.mut_memory().add(name, item, prelude_range)?;
             }
         }
 
@@ -1003,11 +1001,13 @@ impl Node<CallExpressionKw> {
                         .kw_args
                         .labeled
                         .iter()
-                        .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .unlabeled_kw_arg_unconverted()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                         is_error: false,
@@ -1048,7 +1048,7 @@ impl Node<CallExpressionKw> {
                     .kw_args
                     .labeled
                     .iter()
-                    .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                     .collect();
                 exec_state
                     .mod_local
@@ -1056,7 +1056,11 @@ impl Node<CallExpressionKw> {
                     .push(Operation::UserDefinedFunctionCall {
                         name: Some(fn_name.clone()),
                         function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                     });
@@ -1121,7 +1125,12 @@ impl Node<CallExpression> {
                         .args(false)
                         .iter()
                         .zip(&fn_args)
-                        .map(|(k, v)| (k.name.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| {
+                            (
+                                k.name.clone(),
+                                OpArg::new(OpKclValue::from(&arg.value), arg.source_range),
+                            )
+                        })
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),

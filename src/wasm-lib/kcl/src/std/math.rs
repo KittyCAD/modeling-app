@@ -6,8 +6,8 @@ use derive_docs::stdlib;
 use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{kcl_value::NumericType, ExecState, KclValue},
-    std::Args,
+    execution::{ExecState, KclValue},
+    std::args::{Args, TyF64},
 };
 
 /// Compute the remainder after dividing `num` by `div`.
@@ -48,19 +48,19 @@ fn inner_rem(num: f64, divisor: f64) -> f64 {
 /// Compute the cosine of a number (in radians).
 pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
-    Ok(args.make_user_val_from_f64_with_type(num.cos(), NumericType::count()))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.cos())))
 }
 
 /// Compute the sine of a number (in radians).
 pub async fn sin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
-    Ok(args.make_user_val_from_f64_with_type(num.sin(), NumericType::count()))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.sin())))
 }
 
 /// Compute the tangent of a number (in radians).
 pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
-    Ok(args.make_user_val_from_f64_with_type(num.tan(), NumericType::count()))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.tan())))
 }
 
 /// Return the value of `pi`. Archimedes’ constant (π).

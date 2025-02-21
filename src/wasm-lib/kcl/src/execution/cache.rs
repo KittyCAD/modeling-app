@@ -533,6 +533,42 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(true));
+
+        // Change the settings back.
+        let old_settings = ctx.settings.clone();
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &old_settings,
+            },
+            CacheInformation {
+                ast: &program.ast,
+                settings: &ctx.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(result, CacheResult::NoAction(true));
+
+        // Change the settings back.
+        let old_settings = ctx.settings.clone();
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &old_settings,
+            },
+            CacheInformation {
+                ast: &program.ast,
+                settings: &ctx.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(result, CacheResult::NoAction(true));
     }
 
     // Changing the units settings using an annotation with the exact same file

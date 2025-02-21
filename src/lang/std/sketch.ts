@@ -2573,22 +2573,22 @@ export function replaceSketchLine({
  *
  * However things get complicated in situations like:
  * ```ts
- * |> chamfer({
- *     length: 1,
- *     tags: [tag1, tagOfInterest]
- *   }, %)
+ * |> chamfer(
+ *     length = 1,
+ *     tags = [tag1, tagOfInterest],
+ *   )
  * ```
  * Because tag declarator is not allowed on a chamfer with more than one tag,
  * They must be pulled apart into separate chamfer calls:
  * ```ts
- * |> chamfer({
- *     length: 1,
- *     tags: [tag1]
- *   }, %)
- * |> chamfer({
- *     length: 1,
- *     tags: [tagOfInterest]
- *   }, %, $newTagDeclarator)
+ * |> chamfer(
+ *     length = 1,
+ *     tags = [tag1],
+ *   )
+ * |> chamfer(
+ *     length = 1,
+ *     tags = [tagOfInterest],
+ *   , tag = $newTagDeclarator)
  * ```
  */
 function addTagToChamfer(
@@ -2625,25 +2625,22 @@ function addTagToChamfer(
   const callExpr = isPipeExpression
     ? pipeExpr.node.body[pipeIndex]
     : variableDec.node.init
-  if (callExpr.type !== 'CallExpression')
+  if (callExpr.type !== 'CallExpressionKw')
     return new Error('no chamfer call Expr')
-  const chamferObjArg = callExpr.arguments[0]
-  if (chamferObjArg.type !== 'ObjectExpression')
-    return new Error('first argument should be an object expression')
-  const inputTags = getObjExprProperty(chamferObjArg, 'tags')
+  const inputTags = findKwArg('tags', callExpr)
   if (!inputTags) return new Error('no tags property')
-  if (inputTags.expr.type !== 'ArrayExpression')
+  if (inputTags.type !== 'ArrayExpression')
     return new Error('tags should be an array expression')
 
-  const isChamferBreakUpNeeded = inputTags.expr.elements.length > 1
+  const isChamferBreakUpNeeded = inputTags.elements.length > 1
   if (!isChamferBreakUpNeeded) {
-    return addTag(2)(tagInfo)
+    return addTagKw()(tagInfo)
   }
 
   // There's more than one input tag, we need to break that chamfer call into a separate chamfer call
   // so that it can have a tag declarator added.
-  const tagIndexToPullOut = inputTags.expr.elements.findIndex((tag) => {
-    // e.g. chamfer({ tags: [tagOfInterest, tag2] }, %)
+  const tagIndexToPullOut = inputTags.elements.findIndex((tag) => {
+    // e.g. chamfer(tags: [tagOfInterest, tag2])
     //                       ^^^^^^^^^^^^^
     const elementMatchesBaseTagType =
       edgeCutMeta?.subType === 'base' &&
@@ -2651,7 +2648,7 @@ function addTagToChamfer(
       tag.name === edgeCutMeta.tagName
     if (elementMatchesBaseTagType) return true
 
-    // e.g. chamfer({ tags: [getOppositeEdge(tagOfInterest), tag2] }, %)
+    // e.g. chamfer(tags: [getOppositeEdge(tagOfInterest), tag2])
     //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     const tagMatchesOppositeTagType =
       edgeCutMeta?.subType === 'opposite' &&
@@ -2661,7 +2658,7 @@ function addTagToChamfer(
       tag.arguments[0].name === edgeCutMeta.tagName
     if (tagMatchesOppositeTagType) return true
 
-    // e.g. chamfer({ tags: [getNextAdjacentEdge(tagOfInterest), tag2] }, %)
+    // e.g. chamfer(tags: [getNextAdjacentEdge(tagOfInterest), tag2])
     //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     const tagMatchesAdjacentTagType =
       edgeCutMeta?.subType === 'adjacent' &&
@@ -2675,34 +2672,30 @@ function addTagToChamfer(
   })
   if (tagIndexToPullOut === -1) return new Error('tag not found')
   // get the tag we're pulling out
-  const tagToPullOut = inputTags.expr.elements[tagIndexToPullOut]
+  const tagToPullOut = inputTags.elements[tagIndexToPullOut]
   // and remove it from the original chamfer call
   // [pullOutTag, tag2] to [tag2]
-  inputTags.expr.elements.splice(tagIndexToPullOut, 1)
+  inputTags.elements.splice(tagIndexToPullOut, 1)
 
   // get the length of the chamfer we're breaking up, as the new chamfer will have the same length
-  const chamferLength = getObjExprProperty(chamferObjArg, 'length')
+  const chamferLength = findKwArg('length', callExpr)
   if (!chamferLength) return new Error('no chamfer length')
   const tagDec = createTagDeclarator(findUniqueName(_node, 'seg', 2))
-  const solid3dIdentifierUsedInOriginalChamfer = callExpr.arguments[1]
-  const newExpressionToInsert = createCallExpression('chamfer', [
-    createObjectExpression({
-      length: chamferLength.expr,
-      // single tag to add to the new chamfer call
-      tags: createArrayExpression([tagToPullOut]),
-    }),
-    isPipeExpression
-      ? createPipeSubstitution()
-      : solid3dIdentifierUsedInOriginalChamfer,
-    tagDec,
+  const solid3dIdentifierUsedInOriginalChamfer = callExpr.unlabeled
+  const solid = isPipeExpression ? null : solid3dIdentifierUsedInOriginalChamfer
+  const newExpressionToInsert = createCallExpressionStdLibKw('chamfer', solid, [
+    createLabeledArg('length', chamferLength),
+    // single tag to add to the new chamfer call
+    createLabeledArg('tags', createArrayExpression([tagToPullOut])),
+    createLabeledArg('tag', tagDec),
   ])
 
-  // insert the new chamfer call with the tag declarator, add its above the original
+  // insert the new chamfer call with the tag declarator, add it above the original
   // alternatively we could use `pipeIndex + 1` to insert it below the original
   if (isPipeExpression) {
     pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
   } else {
-    callExpr.arguments[1] = createPipeSubstitution()
+    callExpr.unlabeled = null // defaults to pipe substitution
     variableDec.node.init = createPipeExpression([
       newExpressionToInsert,
       callExpr,

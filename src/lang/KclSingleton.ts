@@ -401,6 +401,10 @@ export class KclManager {
     this.errors = errors
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
+    // Add warnings and non-fatal errors
+    this.addDiagnostics(
+      isInterrupted ? [] : complilationErrorsToDiagnostics(execState.errors)
+    )
     this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
@@ -464,6 +468,8 @@ export class KclManager {
 
     this._logs = logs
     this.addDiagnostics(kclErrorsToDiagnostics(errors))
+    // Add warnings and non-fatal errors
+    this.addDiagnostics(complilationErrorsToDiagnostics(execState.errors))
 
     this._execState = execState
     this._variables = execState.variables

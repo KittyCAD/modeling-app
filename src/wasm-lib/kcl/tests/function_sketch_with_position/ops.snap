@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed function_sketch_with_position.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -23,6 +22,10 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
           45,
           49,
@@ -42,6 +45,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 3.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           198,
           199,
@@ -56,7 +72,19 @@ snapshot_kind: text
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "type": "UserDefinedFunctionReturn"

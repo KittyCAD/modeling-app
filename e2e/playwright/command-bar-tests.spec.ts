@@ -82,7 +82,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('Enter') // submit
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toContainText(
-      `fillet({ radius = ${KCL_DEFAULT_LENGTH}, tags = [seg01] }, %)`
+      `fillet( radius = ${KCL_DEFAULT_LENGTH}, tags = [seg01] )`
     )
   })
 
