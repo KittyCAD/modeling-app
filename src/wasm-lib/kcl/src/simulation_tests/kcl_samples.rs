@@ -11,7 +11,7 @@ use super::Test;
 
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
-    static ref INPUTS_DIR: PathBuf = Path::new("../../../kcl-samples").to_path_buf();
+    static ref INPUTS_DIR: PathBuf = Path::new("../../../public/kcl-samples").to_path_buf();
     /// The directory containing the expected output.  We keep them isolated in
     /// their own directory, separate from other simulation tests, so that we
     /// know whether we've checked them all.
