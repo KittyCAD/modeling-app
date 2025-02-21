@@ -5,7 +5,4 @@ part001 = startSketchOn('XY')
   |> line(end = [0, -10], tag = $thing2)
   |> close(tag = $thing3)
   |> extrude(length = 10)
-  |> fillet({
-       radius = 2,
-       tags = [getNextAdjacentEdge(thing3)]
-     }, %)
+  |> fillet(radius = 2, tags = [getNextAdjacentEdge(thing3)])

@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_on_face_after_fillets_referencing_face.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -72,50 +73,39 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 0.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
             },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          1341,
-          1421,
+          1350,
+          1357,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          1423,
-          1424,
+          1366,
+          1398,
           0
         ]
       }
@@ -123,64 +113,77 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
     "name": "fillet",
     "sourceRange": [
       1334,
-      1425,
+      1399,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
         "value": {
-          "type": "Object",
-          "value": {
-            "radius": {
-              "type": "Number",
-              "value": 0.5707134902949093,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            "tags": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Uuid",
-                  "value": "[uuid]"
-                }
-              ]
-            }
+          "type": "Number",
+          "value": 0.5707134902949093,
+          "ty": {
+            "type": "Unknown"
           }
         },
         "sourceRange": [
-          1438,
-          1530,
+          1421,
+          1440,
           0
         ]
       },
-      "solid": {
+      "tags": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
         },
         "sourceRange": [
-          1532,
-          1533,
+          1449,
+          1481,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      1431,
-      1534,
+      1405,
+      1482,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
@@ -192,8 +195,8 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           }
         },
         "sourceRange": [
-          1562,
-          1569,
+          1510,
+          1517,
           0
         ]
       },
@@ -204,16 +207,16 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          1571,
-          1576,
+          1519,
+          1524,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1548,
-      1577,
+      1496,
+      1525,
       0
     ],
     "type": "StdLibCall",
@@ -236,16 +239,16 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           }
         },
         "sourceRange": [
-          1806,
-          1808,
+          1754,
+          1756,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1789,
-      1809,
+      1737,
+      1757,
       0
     ],
     "type": "StdLibCall",
