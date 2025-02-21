@@ -67,7 +67,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         const sampleCodeUrl = `/kcl-samples/${encodeURIComponent(
           projectPathPart
         )}/${encodeURIComponent(primaryKclFile)}`
-        console.log('sampleCodeUrl', sampleCodeUrl)
 
         fetch(sampleCodeUrl)
           .then(async (codeResponse): Promise<OnSubmitProps> => {
