@@ -569,11 +569,7 @@ class EngineConnection extends EventTarget {
     // - ICE gathering is complete,
     // - We have an SDP answer,
     // - And we haven’t already triggered this connection.
-    if (
-      !this.pc ||
-      this.triggeredStart ||
-      !this.sdpAnswer
-    ) {
+    if (!this.pc || this.triggeredStart || !this.sdpAnswer) {
       return false
     }
     this.triggeredStart = true
