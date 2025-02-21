@@ -45,7 +45,7 @@ jobs:
           workspaces: './src/wasm-lib'
 
       # TODO: see if we can fetch from main instead if no diff at src/wasm-lib
-      - uses: taiki-e/install-action@v2.48.20
+      - uses: taiki-e/install-action@2dbeb92
         with:
           tool: wasm-pack
 
