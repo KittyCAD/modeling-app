@@ -1,12 +1,15 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed artifact_graph_example_code1.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
           26,
           30,
@@ -26,6 +29,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": -10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           288,
           291,
@@ -41,6 +57,12 @@ snapshot_kind: text
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         268,
         277,
@@ -50,17 +72,51 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "radius": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "TagIdentifier",
+                  "value": "seg01",
+                  "artifact_id": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
-          314,
-          315,
+          305,
+          335,
           0
         ]
       },
-      "tags": {
+      "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          324,
-          331,
+          337,
+          338,
           0
         ]
       }
@@ -68,7 +124,7 @@ snapshot_kind: text
     "name": "fillet",
     "sourceRange": [
       298,
-      332,
+      339,
       0
     ],
     "type": "StdLibCall",
@@ -77,24 +133,35 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          359,
-          369,
+          366,
+          376,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg02",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
-          371,
-          376,
+          378,
+          383,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      345,
-      377,
+      352,
+      384,
       0
     ],
     "type": "StdLibCall",
@@ -103,24 +170,43 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          576,
-          577,
+          583,
+          584,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      548,
-      578,
+      555,
+      585,
       0
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
-        556,
-        565,
+        563,
+        572,
         0
       ]
     }

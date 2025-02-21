@@ -1,12 +1,15 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
         "sourceRange": [
           26,
           30,
@@ -26,6 +29,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 100.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           482,
           485,
@@ -41,6 +57,12 @@ snapshot_kind: text
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         462,
         471,
@@ -50,17 +72,51 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "radius": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "radius": {
+              "type": "Number",
+              "value": 20.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "TagIdentifier",
+                  "value": "seg01",
+                  "artifact_id": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
-          508,
-          510,
+          499,
+          530,
           0
         ]
       },
-      "tags": {
+      "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          519,
-          526,
+          532,
+          533,
           0
         ]
       }
@@ -68,7 +124,7 @@ snapshot_kind: text
     "name": "fillet",
     "sourceRange": [
       492,
-      527,
+      534,
       0
     ],
     "type": "StdLibCall",
@@ -76,32 +132,69 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "length": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "length": {
+              "type": "Number",
+              "value": 50.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Uuid",
+                  "value": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
-          550,
-          552,
+          548,
+          615,
+          0
+        ]
+      },
+      "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          617,
+          618,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "seg03"
+        },
         "sourceRange": [
-          593,
-          599,
-          0
-        ]
-      },
-      "tags": {
-        "sourceRange": [
-          561,
-          585,
+          620,
+          626,
           0
         ]
       }
     },
     "name": "chamfer",
     "sourceRange": [
-      533,
-      600,
+      540,
+      627,
       0
     ],
     "type": "StdLibCall",
@@ -109,32 +202,70 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "length": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "length": {
+              "type": "Number",
+              "value": 50.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "tags": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "TagIdentifier",
+                  "value": "seg02",
+                  "artifact_id": "[uuid]"
+                }
+              ]
+            }
+          }
+        },
         "sourceRange": [
-          623,
-          625,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          649,
-          655,
-          0
-        ]
-      },
-      "tags": {
-        "sourceRange": [
-          634,
           641,
+          672,
+          0
+        ]
+      },
+      "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          674,
+          675,
+          0
+        ]
+      },
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "seg04"
+        },
+        "sourceRange": [
+          677,
+          683,
           0
         ]
       }
     },
     "name": "chamfer",
     "sourceRange": [
-      606,
-      656,
+      633,
+      684,
       0
     ],
     "type": "StdLibCall",
@@ -143,24 +274,35 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          684,
-          694,
+          712,
+          722,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg04",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
-          696,
-          701,
+          724,
+          729,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      670,
-      702,
+      698,
+      730,
       0
     ],
     "type": "StdLibCall",
@@ -169,24 +311,35 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          1132,
-          1142,
+          1160,
+          1170,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg03",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
-          1144,
-          1149,
+          1172,
+          1177,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1118,
-      1150,
+      1146,
+      1178,
       0
     ],
     "type": "StdLibCall",
@@ -195,24 +348,43 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 50.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          1597,
-          1599,
+          1625,
+          1627,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1569,
-      1600,
+      1597,
+      1628,
       0
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
-        1577,
-        1586,
+        1605,
+        1614,
         0
       ]
     }

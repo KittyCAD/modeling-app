@@ -171,7 +171,12 @@ fn assert_common_snapshots(
     artifact_graph: ArtifactGraph,
 ) {
     assert_snapshot(test_name, "Operations executed", || {
-        insta::assert_json_snapshot!("ops", operations);
+        insta::assert_json_snapshot!("ops", operations, {
+            "[].unlabeledArg.*.value.**[].from[]" => rounded_redaction(4),
+            "[].unlabeledArg.*.value.**[].to[]" => rounded_redaction(4),
+            "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
+            "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
+        });
     });
     assert_snapshot(test_name, "Artifact commands", || {
         insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
