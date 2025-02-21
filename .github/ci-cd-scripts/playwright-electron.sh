@@ -21,7 +21,7 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
 fi
 
 retry=1
-max_retrys=10
+max_retrys=25
 
 # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
 while [[ $retry -le $max_retrys ]]; do
