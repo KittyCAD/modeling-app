@@ -6,6 +6,7 @@ pub mod array;
 pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
+pub mod clone;
 pub mod convert;
 pub mod extrude;
 pub mod fillet;
@@ -104,6 +105,7 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternCircular3D),
         Box::new(crate::std::patterns::PatternTransform),
         Box::new(crate::std::patterns::PatternTransform2D),
+        Box::new(crate::std::clone::Clone),
         Box::new(crate::std::array::Reduce),
         Box::new(crate::std::array::Map),
         Box::new(crate::std::array::Push),

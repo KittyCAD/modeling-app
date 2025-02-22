@@ -8,8 +8,8 @@ use super::{memory::EnvironmentRef, MetaSettings};
 use crate::{
     errors::KclErrorDetails,
     execution::{
-        ExecState, ExecutorContext, Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, SketchSet, Solid, SolidSet,
-        TagIdentifier,
+        ExecState, ExecutorContext, Face, Geometry, Helix, ImportedGeometry, Metadata, Plane, Sketch, SketchSet, Solid,
+        SolidSet, TagIdentifier,
     },
     parsing::{
         ast::types::{
@@ -845,6 +845,15 @@ impl TryFrom<NumericSuffix> for UnitAngle {
             NumericSuffix::Deg => Ok(Self::Degrees),
             NumericSuffix::Rad => Ok(Self::Radians),
             _ => Err(()),
+        }
+    }
+}
+
+impl From<Geometry> for KclValue {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketch { value: x },
+            Geometry::Solid(x) => Self::Solid { value: x },
         }
     }
 }
