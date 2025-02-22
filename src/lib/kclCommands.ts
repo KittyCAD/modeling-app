@@ -1,12 +1,12 @@
 import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
 import { Command, CommandArgumentOption } from './commandTypes'
-import { kclManager } from './singletons'
+import { codeManager, kclManager } from './singletons'
 import { isDesktop } from './isDesktop'
-import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from './constants'
+import { FILE_EXT } from './constants'
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
-import { parseProjectSettings } from 'lang/wasm'
-import { err, reportRejection } from './trap'
-import { projectConfigurationToSettingsPayload } from './settings/settingsUtils'
+import { reportRejection } from './trap'
+import { IndexLoaderData } from './types'
+import { copyFileShareLink } from './links'
 
 interface OnSubmitProps {
   sampleName: string
@@ -15,10 +15,21 @@ interface OnSubmitProps {
   method: 'overwrite' | 'newFile'
 }
 
-export function kclCommands(
-  onSubmit: (p: OnSubmitProps) => Promise<void>,
-  providedOptions: CommandArgumentOption<string>[]
-): Command[] {
+interface KclCommandConfig {
+  // TODO: find a different approach that doesn't require
+  // special props for a single command
+  specialPropsForSampleCommand: {
+    onSubmit: (p: OnSubmitProps) => Promise<void>
+    providedOptions: CommandArgumentOption<string>[]
+  }
+  projectData: IndexLoaderData
+  authToken: string
+  settings: {
+    defaultUnit: UnitLength_type
+  }
+}
+
+export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
     {
       name: 'format-code',
@@ -55,59 +66,28 @@ export function kclCommands(
         const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
           projectPathPart
         )}/${encodeURIComponent(primaryKclFile)}`
-        const sampleSettingsFileUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
-          projectPathPart
-        )}/${PROJECT_SETTINGS_FILE_NAME}`
 
-        Promise.allSettled([fetch(sampleCodeUrl), fetch(sampleSettingsFileUrl)])
-          .then((results) => {
-            const a =
-              'value' in results[0] ? results[0].value : results[0].reason
-            const b =
-              'value' in results[1] ? results[1].value : results[1].reason
-            return [a, b]
-          })
-          .then(
-            async ([
-              codeResponse,
-              settingsResponse,
-            ]): Promise<OnSubmitProps> => {
-              if (!codeResponse.ok) {
-                console.error(
-                  'Failed to fetch sample code:',
-                  codeResponse.statusText
-                )
-                return Promise.reject(new Error('Failed to fetch sample code'))
-              }
-              const code = await codeResponse.text()
-
-              // It's possible that a sample doesn't have a project.toml
-              // associated with it.
-              let projectSettingsPayload: ReturnType<
-                typeof projectConfigurationToSettingsPayload
-              > = {}
-              if (settingsResponse.ok) {
-                const parsedProjectSettings = parseProjectSettings(
-                  await settingsResponse.text()
-                )
-                if (!err(parsedProjectSettings)) {
-                  projectSettingsPayload =
-                    projectConfigurationToSettingsPayload(parsedProjectSettings)
-                }
-              }
-
-              return {
-                sampleName: data.sample.split('/')[0] + FILE_EXT,
-                code,
-                method: data.method,
-                sampleUnits:
-                  projectSettingsPayload.modeling?.defaultUnit || 'mm',
-              }
+        fetch(sampleCodeUrl)
+          .then(async (codeResponse): Promise<OnSubmitProps> => {
+            if (!codeResponse.ok) {
+              console.error(
+                'Failed to fetch sample code:',
+                codeResponse.statusText
+              )
+              return Promise.reject(new Error('Failed to fetch sample code'))
             }
-          )
+            const code = await codeResponse.text()
+            return {
+              sampleName: data.sample.split('/')[0] + FILE_EXT,
+              code,
+              method: data.method,
+            }
+          })
           .then((props) => {
             if (props?.code) {
-              onSubmit(props).catch(reportError)
+              commandProps.specialPropsForSampleCommand
+                .onSubmit(props)
+                .catch(reportError)
             }
           })
           .catch(reportError)
@@ -149,8 +129,23 @@ export function kclCommands(
             }
             return value
           },
-          options: providedOptions,
+          options: commandProps.specialPropsForSampleCommand.providedOptions,
         },
+      },
+    },
+    {
+      name: 'share-file-link',
+      displayName: 'Share current part (via Zoo link)',
+      description: 'Create a link that contains a copy of the current file.',
+      groupId: 'code',
+      needsReview: false,
+      icon: 'link',
+      onSubmit: () => {
+        copyFileShareLink({
+          token: commandProps.authToken,
+          code: codeManager.code,
+          name: commandProps.projectData.project?.name || '',
+        }).catch(reportRejection)
       },
     },
   ]

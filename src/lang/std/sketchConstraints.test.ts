@@ -5,6 +5,7 @@ import {
   initPromise,
   sketchFromKclValue,
   SourceRange,
+  topLevelRange,
 } from '../wasm'
 import {
   ConstraintType,
@@ -31,10 +32,10 @@ async function testingSwapSketchFnCall({
   constraintType: ConstraintType
 }): Promise<{
   newCode: string
-  originalRange: [number, number, boolean]
+  originalRange: SourceRange
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
-  const range: SourceRange = [startIndex, startIndex + callToSwap.length, true]
+  const range = topLevelRange(startIndex, startIndex + callToSwap.length)
   const ast = assertParse(inputCode)
 
   const execState = await enginelessExecutor(ast)
@@ -52,7 +53,7 @@ async function testingSwapSketchFnCall({
     return Promise.reject(new Error('transformInfos undefined'))
   const ast2 = transformAstSketchLines({
     ast,
-    programMemory: execState.memory,
+    memVars: execState.variables,
     selectionRanges: selections,
     transformInfos,
     referenceSegName: '',
@@ -72,8 +73,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   const bigExampleArr = [
     `part001 = startSketchOn('XY')`,
     `  |> startProfileAt([0, 0], %)`,
-    `  |> lineTo([1, 1], %, $abc1)`,
-    `  |> line([-2.04, -0.7], %, $abc2)`,
+    `  |> line(endAbsolute = [1, 1], tag = $abc1)`,
+    `  |> line(end = [-2.04, -0.7], tag = $abc2)`,
     `  |> angledLine({ angle = 157, length = 1.69 }, %, $abc3)`,
     `  |> angledLineOfXLength({ angle = 217, length = 0.86 }, %, $abc4)`,
     `  |> angledLineOfYLength({ angle = 104, length = 1.58 }, %, $abc5)`,
@@ -83,8 +84,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
     `  |> yLine(1.57, %, $abc9)`,
     `  |> xLineTo(1.49, %, $abc10)`,
     `  |> yLineTo(2.64, %, $abc11)`,
-    `  |> lineTo([2.55, 3.58], %) // lineTo`,
-    `  |> line([0.73, -0.75], %)`,
+    `  |> line(endAbsolute = [2.55, 3.58]) // lineTo`,
+    `  |> line(end = [0.73, -0.75])`,
     `  |> angledLine([63, 1.38], %) // angledLine`,
     `  |> angledLineOfXLength([319, 1.15], %) // angledLineOfXLength`,
     `  |> angledLineOfYLength([50, 1.35], %) // angledLineOfYLength`,
@@ -97,7 +98,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   ]
   const bigExample = bigExampleArr.join('\n')
   it('line with tag converts to xLine', async () => {
-    const callToSwap = 'line([-2.04, -0.7], %, $abc2)'
+    const callToSwap = 'line(end = [-2.04, -0.7], tag = $abc2)'
     const expectedLine = 'xLine(-2.04, %, $abc2)'
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
@@ -109,7 +110,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
   })
   it('line w/o tag converts to xLine', async () => {
-    const callToSwap = 'line([0.73, -0.75], %)'
+    const callToSwap = 'line(end = [0.73, -0.75])'
     const expectedLine = 'xLine(0.73, %)'
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
@@ -123,7 +124,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('lineTo with tag converts to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'lineTo([1, 1], %, $abc1)',
+      callToSwap: 'line(endAbsolute = [1, 1], tag = $abc1)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLineTo(1, %, $abc1)'
@@ -134,7 +135,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('lineTo w/o tag converts to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'lineTo([2.55, 3.58], %)',
+      callToSwap: 'line(endAbsolute = [2.55, 3.58])',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLineTo(2.55, %) // lineTo'
@@ -271,21 +272,21 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
     `part001 = startSketchOn('XY')`,
     `  |> startProfileAt([0, 0], %)`,
     // `  |> rx(90, %)`,
-    `  |> lineTo([1, 1], %)`,
-    `  |> line([lineX, 2.13], %)`,
-    `  |> lineTo([lineToX, 2.85], %)`,
+    `  |> line(endAbsolute = [1, 1])`,
+    `  |> line(end = [lineX, 2.13])`,
+    `  |> line(endAbsolute = [lineToX, 2.85])`,
     `  |> angledLine([angledLineAngle, 1.64], %)`,
     `  |> angledLineOfXLength([329, angledLineOfXLengthX], %)`,
     `  |> angledLineOfYLength([222, angledLineOfYLengthY], %)`,
     `  |> angledLineToX([330, angledLineToXx], %)`,
     `  |> angledLineToY([217, angledLineToYy], %)`,
-    `  |> line([0.89, -0.1], %)`,
+    `  |> line(end = [0.89, -0.1])`,
   ]
   const varExample = variablesExampleArr.join('\n')
   it('line keeps variable when converted to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: varExample,
-      callToSwap: 'line([lineX, 2.13], %)',
+      callToSwap: 'line(end = [lineX, 2.13])',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(lineX, %)'
@@ -296,7 +297,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
   it('lineTo keeps variable when converted to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: varExample,
-      callToSwap: 'lineTo([lineToX, 2.85], %)',
+      callToSwap: 'line(endAbsolute = [lineToX, 2.85])',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLineTo(lineToX, %)'
@@ -364,24 +365,28 @@ describe('testing getSketchSegmentIndexFromSourceRange', () => {
   const code = `
 part001 = startSketchOn('XY')
   |> startProfileAt([0, 0.04], %) // segment-in-start
-  |> line([0, 0.4], %)
+  |> line(end = [0, 0.4])
   |> xLine(3.48, %)
-  |> line([2.14, 1.35], %) // normal-segment
+  |> line(end = [2.14, 1.35]) // normal-segment
   |> xLine(3.54, %)`
   it('normal case works', async () => {
     const execState = await enginelessExecutor(assertParse(code))
     const index = code.indexOf('// normal-segment') - 7
     const sg = sketchFromKclValue(
-      execState.memory.get('part001'),
+      execState.variables['part001'],
       'part001'
     ) as Sketch
-    const _segment = getSketchSegmentFromSourceRange(sg, [index, index, true])
+    const _segment = getSketchSegmentFromSourceRange(
+      sg,
+      topLevelRange(index, index)
+    )
     if (err(_segment)) throw _segment
     const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
       type: 'ToPoint',
       to: [5.62, 1.79],
       from: [3.48, 0.44],
+      units: { type: 'Mm' },
       tag: null,
     })
   })
@@ -389,14 +394,15 @@ part001 = startSketchOn('XY')
     const execState = await enginelessExecutor(assertParse(code))
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
-      sketchFromKclValue(execState.memory.get('part001'), 'part001') as Sketch,
-      [index, index, true]
+      sketchFromKclValue(execState.variables['part001'], 'part001') as Sketch,
+      topLevelRange(index, index)
     )
     if (err(_segment)) throw _segment
     const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
       to: [0, 0.04],
       from: [0, 0.04],
+      units: { type: 'Mm' },
       tag: null,
       type: 'Base',
     })

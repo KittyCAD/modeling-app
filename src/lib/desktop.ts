@@ -4,12 +4,14 @@ import { Project, FileEntry } from 'lib/project'
 
 import {
   defaultAppSettings,
+  initPromise,
   parseAppSettings,
   parseProjectSettings,
 } from 'lang/wasm'
 import {
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
+  PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
@@ -130,11 +132,20 @@ export async function createNewProjectDirectory(
 export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
-  if (configuration === undefined) {
-    configuration = await readAppSettingsFile()
+  // Make sure we have wasm initialized.
+  const initializedResult = await initPromise
+  if (err(initializedResult)) {
+    return Promise.reject(initializedResult)
   }
 
-  if (err(configuration)) return Promise.reject(configuration)
+  if (configuration === undefined) {
+    configuration = await readAppSettingsFile().catch((e) => {
+      console.error(e)
+      return e
+    })
+  }
+
+  if (err(configuration) || !configuration) return Promise.reject(configuration)
   const projectDir = await ensureProjectDirectoryExists(configuration)
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
@@ -624,4 +635,20 @@ export const getUser = async (
     console.error(e)
   }
   return Promise.reject(new Error('unreachable'))
+}
+
+export const writeProjectThumbnailFile = async (
+  dataUrl: string,
+  projectDirectoryPath: string
+) => {
+  const filePath = window.electron.path.join(
+    projectDirectoryPath,
+    PROJECT_IMAGE_NAME
+  )
+  const data = atob(dataUrl.substring('data:image/png;base64,'.length))
+  const asArray = new Uint8Array(data.length)
+  for (let i = 0, len = data.length; i < len; ++i) {
+    asArray[i] = data.charCodeAt(i)
+  }
+  return window.electron.writeFile(filePath, asArray)
 }

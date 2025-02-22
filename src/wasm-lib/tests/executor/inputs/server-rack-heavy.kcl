@@ -28,8 +28,8 @@ fn caster = (originStart) => {
     |> xLine(3.543, %)
     |> yLine(3.543, %)
     |> xLine(-3.543, %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
     |> hole(circle({ center: [
          (3.543 - 2.756) / 2,
          (3.543 - 2.756) / 2
@@ -46,7 +46,7 @@ fn caster = (originStart) => {
          (3.543 - 2.756) / 2 + 2.756,
          (3.543 - 2.756) / 2 + 2.756
        ], radius: 8.8 / 2 / 25.4 }, %), %)
-    |> extrude(-.25, %)
+    |> extrude(length = -.25)
 
   const sketch002c = startSketchOn(sketch001c, 'START')
     |> startProfileAt([-originStart[0], 2.2 + originStart[1]], %)
@@ -55,8 +55,8 @@ fn caster = (originStart) => {
          angle_end: 330,
          radius: 3.2 / 2
        }, %)
-    |> close(%)
-    |> extrude(3.1, %)
+    |> close()
+    |> extrude(length = 3.1)
 
   const plane002c = {
     plane: {
@@ -72,7 +72,7 @@ fn caster = (originStart) => {
   }
   const sketch003c = startSketchOn(plane002c)
     |> circle({ center: [0, 1.2], radius 2.48 / 2 }, %)
-  const examplec = extrude(-1 - (3 / 16), sketch003c)
+  const examplec = extrude(sketch003c, length = -1 - (3 / 16))
   return examplec
 }
 
@@ -113,9 +113,9 @@ const sketch001l = startSketchOn(plane001)
   |> xLine(serverDepth + .8, %)
   |> angledLineToY({ angle: -45, to: 1 }, %)
   |> xLine(-serverDepth + 2 - .8, %, $seg01)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude001l = extrude(1, sketch001l)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude001l = extrude(sketch001l, length = 1)
 
 const sketch002l = startSketchOn(plane001)
   |> startProfileAt([serverDepth + .8, 0], %)
@@ -125,9 +125,9 @@ const sketch002l = startSketchOn(plane001)
        to: serverDepth - 1 + .8
      }, %)
   |> yLine(-railHeight * 1.75, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude002l = extrude(1, sketch002l)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude002l = extrude(sketch002l, length = 1)
 
 const sketch003l = startSketchOn(plane001)
   |> startProfileAt([
@@ -140,9 +140,9 @@ const sketch003l = startSketchOn(plane001)
        to: railHeight * 1.75 - 1 + 2
      }, %)
   |> xLine(serverDepth - 2 + .8, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude003l = extrude(1, sketch003l)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude003l = extrude(sketch003l, length = 1)
 
 const sketch004l = startSketchOn(plane001)
   |> startProfileAt([0, 0], %)
@@ -152,18 +152,18 @@ const sketch004l = startSketchOn(plane001)
        to: railHeight * 1.75 + 2 - 1
      }, %)
   |> yLine(-railHeight * 1.75, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude004l = extrude(1, sketch004l)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude004l = extrude(sketch004l, length = 1)
 
 const sketch005l = startSketchOn(plane001)
   |> startProfileAt([serverDepth - 1.25, 1], %)
-  |> line([-serverDepth + 2.25, railHeight * 1.75], %, $lineToIntersect4)
+  |> line(end = [-serverDepth + 2.25, railHeight * 1.75], tag = $lineToIntersect4)
   |> xLine(1, %)
-  |> line([serverDepth - 2.25, -railHeight * 1.75], %, $lineToIntersect5)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude005l = extrude(1, sketch005l)
+  |> line(end = [serverDepth - 2.25, -railHeight * 1.75], tag = $lineToIntersect5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude005l = extrude(sketch005l, length = 1)
 
 const sketch006l = startSketchOn(plane001)
   |> startProfileAt([1, 1], %)
@@ -174,9 +174,9 @@ const sketch006l = startSketchOn(plane001)
      }, %)
   |> angledLine({ angle: -70, length: 1.414 }, %)
   |> angledLineToY({ angle: 70 + 180, to: 2 - 1 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude006l = extrude(1, sketch006l)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude006l = extrude(sketch006l, length = 1)
 
 const sketch007l = startSketchOn(plane001)
   |> startProfileAt([
@@ -193,9 +193,9 @@ const sketch007l = startSketchOn(plane001)
        angle: 70 + 180,
        to: railHeight * 1.75 + 1
      }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude007l = extrude(1, sketch007l)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude007l = extrude(sketch007l, length = 1)
 
 // right wall
 const plane002 = {
@@ -216,18 +216,18 @@ const sketch001w = startSketchOn(plane002)
   |> xLine(depth, %)
   |> angledLineToY({ angle: -45, to: 1 }, %)
   |> xLine(-depth + 2, %, $seg01w)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude001w = extrude(1, sketch001w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude001w = extrude(sketch001w, length = 1)
 
 const sketch002w = startSketchOn(plane002)
   |> startProfileAt([depth, 0], %)
   |> yLine(railHeight * 1.75 + 2, %)
   |> angledLineToX({ angle: -135, to: depth - 1 }, %)
   |> yLine(-railHeight * 1.75, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude002w = extrude(1, sketch002w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude002w = extrude(sketch002w, length = 1)
 
 const sketch003w = startSketchOn(plane002)
   |> startProfileAt([depth, railHeight * 1.75 + 2], %)
@@ -237,9 +237,9 @@ const sketch003w = startSketchOn(plane002)
        to: railHeight * 1.75 - 1 + 2
      }, %)
   |> xLine(depth - 2, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude003w = extrude(1, sketch003w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude003w = extrude(sketch003w, length = 1)
 
 const sketch004w = startSketchOn(plane002)
   |> startProfileAt([0, 0], %)
@@ -249,18 +249,18 @@ const sketch004w = startSketchOn(plane002)
        to: railHeight * 1.75 + 2 - 1
      }, %)
   |> yLine(-railHeight * 1.75, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude004w = extrude(1, sketch004w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude004w = extrude(sketch004w, length = 1)
 
 const sketch005w = startSketchOn(plane002)
   |> startProfileAt([1, 40.6 + 1.75 / 2], %)
   |> angledLine({ angle: -23, length: 35.5 }, %)
   |> angledLine({ angle: -23 + 90 + 45, length: 1.413 }, %)
   |> angledLineToX({ angle: -23, to: 1 }, %, $lineToIntersect)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude005w = extrude(1, sketch005w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude005w = extrude(sketch005w, length = 1)
 
 const sketch006w = startSketchOn(plane002)
   |> startProfileAt([
@@ -274,9 +274,9 @@ const sketch006w = startSketchOn(plane002)
        intersectTag: lineToIntersect,
        offset: 0
      }, %, $lineToIntersect2)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude006w = extrude(1, sketch006w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude006w = extrude(sketch006w, length = 1)
 
 const sketch007w = startSketchOn(plane002)
   |> startProfileAt([depth - 1, 60.65 + 1.75 / 2], %)
@@ -287,9 +287,9 @@ const sketch007w = startSketchOn(plane002)
        intersectTag: lineToIntersect2,
        offset: 0
      }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude007w = extrude(1, sketch007w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude007w = extrude(sketch007w, length = 1)
 
 const sketch008w = startSketchOn(plane002)
   |> startProfileAt([1, 41.7 + 1.75 / 2], %)
@@ -304,27 +304,27 @@ const sketch008w = startSketchOn(plane002)
        intersectTag: lineToIntersect,
        offset: 0
      }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude008w = extrude(1, sketch008w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude008w = extrude(sketch008w, length = 1)
 
 const sketch009w = startSketchOn(plane002)
   |> startProfileAt([31.2, 33.3 + 1.75 / 2], %)
   |> angledLine({ angle: -23 - 45, length: 1.414 }, %)
   |> angledLine({ angle: 90 - 23, length: 28 }, %)
   |> angledLine({ angle: -23 + 45, length: -1.414 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude009w = extrude(1, sketch009w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude009w = extrude(sketch009w, length = 1)
 
 const sketch010w = startSketchOn(plane002)
   |> startProfileAt([31.2, 33.3 + 1.75 / 2], %)
   |> angledLine({ angle: -23 - 45, length: 1.414 }, %)
   |> angledLine({ angle: 180 - 23, length: 28 }, %)
   |> angledLine({ angle: -23 + 45, length: 1.414 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude010w = extrude(1, sketch010w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude010w = extrude(sketch010w, length = 1)
 
 const sketch011w = startSketchOn(plane002)
   |> startProfileAt([
@@ -334,9 +334,9 @@ const sketch011w = startSketchOn(plane002)
   |> angledLine({ angle: 90 - 23, length: 28 - 2 }, %)
   |> angledLine({ angle: -23 - 45, length: -1.414 }, %)
   |> angledLine({ angle: 90 - 23 + 180, length: 28 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude011w = extrude(1, sketch011w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude011w = extrude(sketch011w, length = 1)
 
 const sketch012w = startSketchOn(plane002)
   |> startProfileAt([
@@ -346,9 +346,9 @@ const sketch012w = startSketchOn(plane002)
   |> angledLine({ angle: 180 - 23, length: 28 - 2 }, %)
   |> angledLine({ angle: -23 - 45, length: -1.414 }, %)
   |> angledLine({ angle: -23, length: 28 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude012w = extrude(1, sketch012w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude012w = extrude(sketch012w, length = 1)
 
 const sketch013w = startSketchOn(plane002)
   |> startProfileAt([
@@ -358,9 +358,9 @@ const sketch013w = startSketchOn(plane002)
   |> angledLine({ angle: -23, length: 1 }, %)
   |> angledLineToX({ angle: -23 + 90, to: 1 }, %)
   |> yLine(2.56, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude013w = extrude(1, sketch013w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude013w = extrude(sketch013w, length = 1)
 
 const sketch014w = startSketchOn(plane002)
   |> startProfileAt([
@@ -370,9 +370,9 @@ const sketch014w = startSketchOn(plane002)
   |> angledLine({ angle: -23 - 90, length: 36 / 2 }, %)
   |> angledLine({ angle: -23, length: 1 }, %)
   |> angledLine({ angle: -23 - 90, length: -36 / 2 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude014w = extrude(1, sketch014w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude014w = extrude(sketch014w, length = 1)
 
 const sketch015w = startSketchOn(plane002)
   |> startProfileAt([
@@ -382,9 +382,9 @@ const sketch015w = startSketchOn(plane002)
   |> angledLine({ angle: -23 - 90, length: 36 / 2 }, %)
   |> angledLine({ angle: -23, length: 1 }, %)
   |> angledLine({ angle: -23 - 90, length: -36 / 2 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude015w = extrude(1, sketch015w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude015w = extrude(sketch015w, length = 1)
 
 const sketch016w = startSketchOn(plane002)
   |> startProfileAt([
@@ -394,9 +394,9 @@ const sketch016w = startSketchOn(plane002)
   |> angledLine({ angle: -23 - 90, length: 36 / 2 }, %)
   |> angledLine({ angle: -23, length: 1 }, %)
   |> angledLine({ angle: -23 - 90, length: -36 / 2 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude016w = extrude(1, sketch016w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude016w = extrude(sketch016w, length = 1)
 
 const sketch017w = startSketchOn(plane002)
   |> startProfileAt([
@@ -414,9 +414,9 @@ const sketch017w = startSketchOn(plane002)
        angleEnd: -23,
        radius: 7 / 2 + 1
      }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude017w = extrude(1, sketch017w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude017w = extrude(sketch017w, length = 1)
 
 const sketch018w = startSketchOn(plane002)
   |> startProfileAt([
@@ -434,18 +434,18 @@ const sketch018w = startSketchOn(plane002)
        angleEnd: -23,
        radius: 7 / 2 + 1
      }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude018w = extrude(1, sketch018w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude018w = extrude(sketch018w, length = 1)
 
 const sketch019w = startSketchOn(plane002)
   |> startProfileAt([1, 27.8 + 1.75 / 2], %)
   |> angledLine({ angle: -23, length: 7 }, %)
   |> angledLine({ angle: -23 + 90, length: -1 }, %)
   |> angledLineToX({ angle: -23, to: 1 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude019w = extrude(1, sketch019w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude019w = extrude(sketch019w, length = 1)
 
 const sketch020w = startSketchOn(plane002)
   |> startProfileAt([
@@ -455,18 +455,18 @@ const sketch020w = startSketchOn(plane002)
   |> angledLine({ angle: -23, length: 7 }, %)
   |> angledLine({ angle: -23 + 90, length: -1 }, %)
   |> angledLine({ angle: -23 + 180, length: 7 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude020w = extrude(1, sketch020w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude020w = extrude(sketch020w, length = 1)
 
 const sketch021w = startSketchOn(plane002)
   |> startProfileAt([1, 21.9], %)
   |> angledLineToX({ angle: -23, to: depth - 1 }, %)
   |> yLine(-1.1, %)
   |> angledLineToX({ angle: -23, to: 1 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude021w = extrude(1, sketch021w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude021w = extrude(sketch021w, length = 1)
 
 const sketch022w = startSketchOn(plane002)
   |> startProfileAt([depth - 1, 74.1], %)
@@ -476,9 +476,9 @@ const sketch022w = startSketchOn(plane002)
      }, %)
   |> xLine(-2.56, %)
   |> angledLineToX({ angle: -23, to: depth - 1 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude022w = extrude(1, sketch022w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude022w = extrude(sketch022w, length = 1)
 
 const sketch023w = startSketchOn(plane002)
   |> startProfileAt([1, 69.53 + 1.75], %)
@@ -488,27 +488,27 @@ const sketch023w = startSketchOn(plane002)
      }, %)
   |> xLine(1.086, %)
   |> angledLineToX({ angle: 90 - 23, to: 1 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude023w = extrude(1, sketch023w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude023w = extrude(sketch023w, length = 1)
 
 const sketch024w = startSketchOn(plane002)
   |> startProfileAt([1, 16.5], %)
   |> angledLineToY({ angle: -23, to: 1 }, %)
   |> xLine(-2.56, %)
   |> angledLineToX({ angle: -23, to: 1 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude024w = extrude(1, sketch024w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude024w = extrude(sketch024w, length = 1)
 
 const sketch025w = startSketchOn(plane002)
   |> startProfileAt([1, 4], %)
   |> angledLineToY({ angle: -23, to: 1 }, %)
   |> xLine(-2.56, %)
   |> angledLineToX({ angle: -23, to: 1 }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude025w = extrude(1, sketch025w)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude025w = extrude(sketch025w, length = 1)
 
 // Base plane of rack
 const plane003 = {
@@ -522,46 +522,46 @@ const plane003 = {
 
 const sketch005 = startSketchOn(plane003)
   |> startProfileAt([width - 1, 0], %)
-  |> line([-width + 2, 3], %)
-  |> line([0, 1], %)
-  |> line([width - 2, -3], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [-width + 2, 3])
+  |> line(end = [0, 1])
+  |> line(end = [width - 2, -3])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-const extrude005 = extrude(1, sketch005)
+const extrude005 = extrude(sketch005, length = 1)
 
 const sketch006 = startSketchOn(plane003)
   |> startProfileAt([width - 1, 0 + 2.756], %)
-  |> line([-width + 2, 3], %)
-  |> line([0, 1], %)
-  |> line([width - 2, -3], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [-width + 2, 3])
+  |> line(end = [0, 1])
+  |> line(end = [width - 2, -3])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-const extrude006 = extrude(1, sketch006)
+const extrude006 = extrude(sketch006, length = 1)
 
 const sketch007 = startSketchOn(plane003)
   |> startProfileAt([width - 1, depth], %)
-  |> line([-width + 1, -depth + serverDepth + 3.8], %)
-  |> line([1, 0], %)
-  |> line([0, -.75], %)
+  |> line(end = [-width + 1, -depth + serverDepth + 3.8])
+  |> line(end = [1, 0])
+  |> line(end = [0, -.75])
   |> line([
        width - 2,
        depth - serverDepth - 5 + .6
      ], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude007 = extrude(1, sketch007)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude007 = extrude(sketch007, length = 1)
 
 const sketch008 = startSketchOn(plane003)
   |> startProfileAt([width - 1, depth - 2.8], %)
-  |> line([-width + 2, -depth + serverDepth + 4.4], %)
-  |> line([0, -1.32], %)
-  |> line([width - 2, depth - serverDepth - 4.4], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [-width + 2, -depth + serverDepth + 4.4])
+  |> line(end = [0, -1.32])
+  |> line(end = [width - 2, depth - serverDepth - 4.4])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-const extrude008 = extrude(1, sketch008)
+const extrude008 = extrude(sketch008, length = 1)
 
 // Top Plane
 const plane004 = {
@@ -575,45 +575,45 @@ const plane004 = {
 
 const sketch005t = startSketchOn(plane004)
   |> startProfileAt([width - 1, 0], %)
-  |> line([-width + 2, 3], %)
-  |> line([0, 1], %)
-  |> line([width - 2, -3], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [-width + 2, 3])
+  |> line(end = [0, 1])
+  |> line(end = [width - 2, -3])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-const extrude005t = extrude(-1, sketch005t)
+const extrude005t = extrude(sketch005t, length = -1)
 
 const sketch007t = startSketchOn(plane004)
   |> startProfileAt([width - 1, depth], %)
-  |> line([-width + 1, -depth + serverDepth + 3.8], %)
-  |> line([1, 0], %)
-  |> line([0, -.75], %)
+  |> line(end = [-width + 1, -depth + serverDepth + 3.8])
+  |> line(end = [1, 0])
+  |> line(end = [0, -.75])
   |> line([
        width - 2,
        depth - serverDepth - 5 + .6
      ], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude007t = extrude(-1, sketch007t)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude007t = extrude(sketch007t, length = -1)
 
 const sketch008t = startSketchOn(plane004)
   |> startProfileAt([width - 1, 0 + 2.756], %)
-  |> line([-width + 2, 3], %)
-  |> line([0, 1], %)
-  |> line([width - 2, -3], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude008t = extrude(-1, sketch008t)
+  |> line(end = [-width + 2, 3])
+  |> line(end = [0, 1])
+  |> line(end = [width - 2, -3])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude008t = extrude(sketch008t, length = -1)
 
 const sketch009t = startSketchOn(plane004)
   |> startProfileAt([width - 1, depth - 2.8], %)
-  |> line([-width + 2, -depth + serverDepth + 4.4], %)
-  |> line([0, -1.32], %)
-  |> line([width - 2, depth - serverDepth - 4.4], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [-width + 2, -depth + serverDepth + 4.4])
+  |> line(end = [0, -1.32])
+  |> line(end = [width - 2, depth - serverDepth - 4.4])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-const extrude009t = extrude(-1, sketch009t)
+const extrude009t = extrude(sketch009t, length = -1)
 
 // front left vertical rail
 // Define planes so the rail can be moved
@@ -656,9 +656,9 @@ const sketch001fl = startSketchOn(planeXZfl)
        segAng(rectangleSegmentA001fl),
        -segLen(rectangleSegmentA001fl)
      ], %, $rectangleSegmentC001fl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude001fl = extrude(thickness, sketch001fl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude001fl = extrude(sketch001fl, length = thickness)
 
 // First flange
 const sketch002fl = startSketchOn(planeYZfl)
@@ -672,10 +672,10 @@ const sketch002fl = startSketchOn(planeYZfl)
        segAng(rectangleSegmentA002fl),
        -segLen(rectangleSegmentA002fl)
      ], %, $rectangleSegmentC002fl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-const extrude002fl = extrude(thickness, sketch002fl)
+const extrude002fl = extrude(sketch002fl, length = thickness)
 
 // Bend
 const sketch003fl = startSketchOn(planeXYfl)
@@ -692,9 +692,9 @@ const sketch003fl = startSketchOn(planeXYfl)
        radius: bendRad
      }, %)
   |> yLine(-thickness, %)
-  |> close(%)
+  |> close()
 
-const extrude003fl = extrude(railHeight * 1.75, sketch003fl)
+const extrude003fl = extrude(sketch003fl, length = railHeight * 1.75)
 
 // EIA-310-D standard hole pattern
 const sketch004fl = startSketchOn(extrude002fl, 'START')
@@ -708,14 +708,14 @@ const sketch004fl = startSketchOn(extrude002fl, 'START')
        segAng(rectangleSegmentA003fl),
        -segLen(rectangleSegmentA003fl)
      ], %, $rectangleSegmentC003fl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude004fl = extrude(-thickness, sketch004fl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude004fl = extrude(sketch004fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch005fl = startSketchOn(extrude002fl, 'START')
@@ -729,14 +729,14 @@ const sketch005fl = startSketchOn(extrude002fl, 'START')
        segAng(rectangleSegmentA004fl),
        -segLen(rectangleSegmentA004fl)
      ], %, $rectangleSegmentC004fl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude005fl = extrude(-thickness, sketch005fl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude005fl = extrude(sketch005fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch006fl = startSketchOn(extrude002fl, 'START')
@@ -753,14 +753,14 @@ const sketch006fl = startSketchOn(extrude002fl, 'START')
        segAng(rectangleSegmentA005fl),
        -segLen(rectangleSegmentA005fl)
      ], %, $rectangleSegmentC005fl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude006fl = extrude(-thickness, sketch006fl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude006fl = extrude(sketch006fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch007fl = startSketchOn(extrude001fl, 'START')
@@ -774,14 +774,14 @@ const sketch007fl = startSketchOn(extrude001fl, 'START')
        segAng(rectangleSegmentA006fl),
        -segLen(rectangleSegmentA006fl)
      ], %, $rectangleSegmentC006fl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude007fl = extrude(-thickness, sketch007fl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude007fl = extrude(sketch007fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch008fl = startSketchOn(extrude001fl, 'START')
@@ -795,14 +795,14 @@ const sketch008fl = startSketchOn(extrude001fl, 'START')
        segAng(rectangleSegmentA007fl),
        -segLen(rectangleSegmentA007fl)
      ], %, $rectangleSegmentC007fl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude008fl = extrude(-thickness, sketch008fl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude008fl = extrude(sketch008fl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch009fl = startSketchOn(extrude001fl, 'START')
@@ -819,14 +819,14 @@ const sketch009fl = startSketchOn(extrude001fl, 'START')
        segAng(rectangleSegmentA008fl),
        -segLen(rectangleSegmentA008fl)
      ], %, $rectangleSegmentC008fl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude009fl = extrude(-thickness, sketch009fl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude009fl = extrude(sketch009fl, length = -thickness)
 
 // define slots
 const sketch010fl = startSketchOn(extrude001fl, 'START')
@@ -838,13 +838,13 @@ const sketch010fl = startSketchOn(extrude001fl, 'START')
   |> tangentialArcTo([-0.66 - originStart[0],originStart[2] +  .81 + .438 / 2], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: 2,
-       distance: 1.22
-     }, %)
-const extrude010fl = extrude(-thickness, sketch010fl)
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = 2,
+       distance = 1.22
+     )
+const extrude010fl = extrude(sketch010fl, length = -thickness)
 
 // define slots
 const sketch011fl = startSketchOn(extrude001fl, 'START')
@@ -859,9 +859,9 @@ const sketch011fl = startSketchOn(extrude001fl, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> close()
 
-const extrude011fl = extrude(-thickness, sketch011fl)
+const extrude011fl = extrude(sketch011fl, length = -thickness)
 
 // define slots
 const sketch012fl = startSketchOn(extrude001fl, 'START')
@@ -876,13 +876,13 @@ const sketch012fl = startSketchOn(extrude001fl, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, -1],
-       instances: 2,
-       distance: 1.22
-     }, %)
-const extrude012fl = extrude(-thickness, sketch012fl)
+  |> close()
+  |> patternLinear2d(
+       axis = [0, -1],
+       instances = 2,
+       distance = 1.22
+     )
+const extrude012fl = extrude(sketch012fl, length = -thickness)
 
 // FRONT RIGHT VERTICAL RAIL
 // Define planes so the rail can be moved
@@ -933,9 +933,9 @@ const sketch001fr = startSketchOn(planeXZfr)
        segAng(rectangleSegmentA001fr),
        -segLen(rectangleSegmentA001fr)
      ], %, $rectangleSegmentC001fr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude001fr = extrude(thickness, sketch001fr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude001fr = extrude(sketch001fr, length = thickness)
 
 // First flange
 const sketch002fr = startSketchOn(planeYZfr)
@@ -949,10 +949,10 @@ const sketch002fr = startSketchOn(planeYZfr)
        segAng(rectangleSegmentA002fr),
        -segLen(rectangleSegmentA002fr)
      ], %, $rectangleSegmentC002fr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-const extrude002fr = extrude(thickness, sketch002fr)
+const extrude002fr = extrude(sketch002fr, length = thickness)
 
 // Bend
 const sketch003fr = startSketchOn(planeXYfr)
@@ -971,9 +971,9 @@ const sketch003fr = startSketchOn(planeXYfr)
        angleEnd: 0,
        radius: bendRad + thickness
      }, %)
-  |> close(%)
+  |> close()
 
-const extrude003fr = extrude(railHeight * 1.75, sketch003fr)
+const extrude003fr = extrude(sketch003fr, length = railHeight * 1.75)
 
 // EIA-310-D standard hole pattern
 const sketch004fr = startSketchOn(extrude002fr, 'START')
@@ -990,14 +990,14 @@ const sketch004fr = startSketchOn(extrude002fr, 'START')
        segAng(rectangleSegmentA003fr),
        -segLen(rectangleSegmentA003fr)
      ], %, $rectangleSegmentC003fr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude004fr = extrude(-thickness, sketch004fr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude004fr = extrude(sketch004fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch005fr = startSketchOn(extrude002fr, 'START')
@@ -1014,14 +1014,14 @@ const sketch005fr = startSketchOn(extrude002fr, 'START')
        segAng(rectangleSegmentA004fr),
        -segLen(rectangleSegmentA004fr)
      ], %, $rectangleSegmentC004fr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude005fr = extrude(-thickness, sketch005fr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude005fr = extrude(sketch005fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch006fr = startSketchOn(extrude002fr, 'START')
@@ -1038,14 +1038,14 @@ const sketch006fr = startSketchOn(extrude002fr, 'START')
        segAng(rectangleSegmentA005fr),
        -segLen(rectangleSegmentA005fr)
      ], %, $rectangleSegmentC005fr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude006fr = extrude(-thickness, sketch006fr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude006fr = extrude(sketch006fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch007fr = startSketchOn(extrude001fr, 'START')
@@ -1062,14 +1062,14 @@ const sketch007fr = startSketchOn(extrude001fr, 'START')
        segAng(rectangleSegmentA006fr),
        -segLen(rectangleSegmentA006fr)
      ], %, $rectangleSegmentC006fr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude007fr = extrude(-thickness, sketch007fr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude007fr = extrude(sketch007fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch008fr = startSketchOn(extrude001fr, 'START')
@@ -1086,14 +1086,14 @@ const sketch008fr = startSketchOn(extrude001fr, 'START')
        segAng(rectangleSegmentA007fr),
        -segLen(rectangleSegmentA007fr)
      ], %, $rectangleSegmentC007fr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude008fr = extrude(-thickness, sketch008fr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude008fr = extrude(sketch008fr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch009fr = startSketchOn(extrude001fr, 'START')
@@ -1110,14 +1110,14 @@ const sketch009fr = startSketchOn(extrude001fr, 'START')
        segAng(rectangleSegmentA008fr),
        -segLen(rectangleSegmentA008fr)
      ], %, $rectangleSegmentC008fr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude009fr = extrude(-thickness, sketch009fr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude009fr = extrude(sketch009fr, length = -thickness)
 
 // define slots
 const sketch010fr = startSketchOn(extrude001fr, 'START')
@@ -1132,13 +1132,13 @@ const sketch010fr = startSketchOn(extrude001fr, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: 2,
-       distance: 1.22
-     }, %)
-const extrude010fr = extrude(-thickness, sketch010fr)
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = 2,
+       distance = 1.22
+     )
+const extrude010fr = extrude(sketch010fr, length = -thickness)
 
 // define slots
 const sketch011fr = startSketchOn(extrude001fr, 'START')
@@ -1153,9 +1153,9 @@ const sketch011fr = startSketchOn(extrude001fr, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> close()
 
-const extrude011fr = extrude(-thickness, sketch011fr)
+const extrude011fr = extrude(sketch011fr, length = -thickness)
 
 // define slots
 const sketch012fr = startSketchOn(extrude001fr, 'START')
@@ -1170,13 +1170,13 @@ const sketch012fr = startSketchOn(extrude001fr, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, -1],
-       instances: 2,
-       distance: 1.22
-     }, %)
-const extrude012fr = extrude(-thickness, sketch012fr)
+  |> close()
+  |> patternLinear2d(
+       axis = [0, -1],
+       instances = 2,
+       distance = 1.22
+     )
+const extrude012fr = extrude(sketch012fr, length = -thickness)
 
 // RIGHT REAR VERTICAL RAIL
 // Define planes so the rail can be moved
@@ -1227,9 +1227,9 @@ const sketch001rr = startSketchOn(planeXZrr)
        segAng(rectangleSegmentA001rr),
        -segLen(rectangleSegmentA001rr)
      ], %, $rectangleSegmentC001rr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude001rr = extrude(thickness, sketch001rr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude001rr = extrude(sketch001rr, length = thickness)
 
 // First flange
 const sketch002rr = startSketchOn(planeYZrr)
@@ -1243,10 +1243,10 @@ const sketch002rr = startSketchOn(planeYZrr)
        segAng(rectangleSegmentA002rr),
        -segLen(rectangleSegmentA002rr)
      ], %, $rectangleSegmentC002rr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-const extrude002rr = extrude(thickness, sketch002rr)
+const extrude002rr = extrude(sketch002rr, length = thickness)
 
 // Bend
 const sketch003rr = startSketchOn(planeXYrr)
@@ -1265,9 +1265,9 @@ const sketch003rr = startSketchOn(planeXYrr)
        angleEnd: 0,
        radius: bendRad
      }, %)
-  |> close(%)
+  |> close()
 
-const extrude003rr = extrude(railHeight * 1.75, sketch003rr)
+const extrude003rr = extrude(sketch003rr, length = railHeight * 1.75)
 
 // EIA-310-D standard hole pattern
 const sketch004rr = startSketchOn(extrude002rr, 'START')
@@ -1284,14 +1284,14 @@ const sketch004rr = startSketchOn(extrude002rr, 'START')
        segAng(rectangleSegmentA003rr),
        -segLen(rectangleSegmentA003rr)
      ], %, $rectangleSegmentC003rr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude004rr = extrude(-thickness, sketch004rr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude004rr = extrude(sketch004rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch005rr = startSketchOn(extrude002rr, 'START')
@@ -1308,14 +1308,14 @@ const sketch005rr = startSketchOn(extrude002rr, 'START')
        segAng(rectangleSegmentA004rr),
        -segLen(rectangleSegmentA004rr)
      ], %, $rectangleSegmentC004rr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude005rr = extrude(-thickness, sketch005rr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude005rr = extrude(sketch005rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch006rr = startSketchOn(extrude002rr, 'START')
@@ -1332,14 +1332,14 @@ const sketch006rr = startSketchOn(extrude002rr, 'START')
        segAng(rectangleSegmentA005rr),
        -segLen(rectangleSegmentA005rr)
      ], %, $rectangleSegmentC005rr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude006rr = extrude(-thickness, sketch006rr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude006rr = extrude(sketch006rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch007rr = startSketchOn(extrude001rr, 'START')
@@ -1356,14 +1356,14 @@ const sketch007rr = startSketchOn(extrude001rr, 'START')
        segAng(rectangleSegmentA006rr),
        -segLen(rectangleSegmentA006rr)
      ], %, $rectangleSegmentC006rr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude007rr = extrude(-thickness, sketch007rr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude007rr = extrude(sketch007rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch008rr = startSketchOn(extrude001rr, 'START')
@@ -1380,14 +1380,14 @@ const sketch008rr = startSketchOn(extrude001rr, 'START')
        segAng(rectangleSegmentA007rr),
        -segLen(rectangleSegmentA007rr)
      ], %, $rectangleSegmentC007rr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude008rr = extrude(-thickness, sketch008rr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude008rr = extrude(sketch008rr, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch009rr = startSketchOn(extrude001rr, 'START')
@@ -1404,14 +1404,14 @@ const sketch009rr = startSketchOn(extrude001rr, 'START')
        segAng(rectangleSegmentA008rr),
        -segLen(rectangleSegmentA008rr)
      ], %, $rectangleSegmentC008rr)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude009rr = extrude(-thickness, sketch009rr)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude009rr = extrude(sketch009rr, length = -thickness)
 
 // define slots
 const sketch010rr = startSketchOn(extrude001rr, 'START')
@@ -1426,13 +1426,13 @@ const sketch010rr = startSketchOn(extrude001rr, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: 2,
-       distance: 1.22
-     }, %)
-const extrude010rr = extrude(-thickness, sketch010rr)
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = 2,
+       distance = 1.22
+     )
+const extrude010rr = extrude(sketch010rr, length = -thickness)
 
 // define slots
 const sketch011rr = startSketchOn(extrude001rr, 'START')
@@ -1447,9 +1447,9 @@ const sketch011rr = startSketchOn(extrude001rr, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> close()
 
-const extrude011rr = extrude(-thickness, sketch011rr)
+const extrude011rr = extrude(sketch011rr, length = -thickness)
 
 // define slots
 const sketch012rr = startSketchOn(extrude001rr, 'START')
@@ -1464,13 +1464,13 @@ const sketch012rr = startSketchOn(extrude001rr, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, -1],
-       instances: 2,
-       distance: 1.22
-     }, %)
-const extrude012rr = extrude(-thickness, sketch012rr)
+  |> close()
+  |> patternLinear2d(
+       axis = [0, -1],
+       instances = 2,
+       distance = 1.22
+     )
+const extrude012rr = extrude(sketch012rr, length = -thickness)
 
 // REAR LEFT VETCIAL RAIL
 // Define planes so the rail can be moved
@@ -1520,9 +1520,9 @@ const sketch001rl = startSketchOn(planeXZrl)
        segAng(rectangleSegmentA001rl),
        -segLen(rectangleSegmentA001rl)
      ], %, $rectangleSegmentC001rl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude001rl = extrude(thickness, sketch001rl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude001rl = extrude(sketch001rl, length = thickness)
 
 // First flange
 const sketch002rl = startSketchOn(planeYZrl)
@@ -1536,10 +1536,10 @@ const sketch002rl = startSketchOn(planeYZrl)
        segAng(rectangleSegmentA002rl),
        -segLen(rectangleSegmentA002rl)
      ], %, $rectangleSegmentC002rl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 
-const extrude002rl = extrude(thickness, sketch002rl)
+const extrude002rl = extrude(sketch002rl, length = thickness)
 
 // Bend
 const sketch003rl = startSketchOn(planeXYrl)
@@ -1558,9 +1558,9 @@ const sketch003rl = startSketchOn(planeXYrl)
        angleEnd: 90,
        radius: bendRad + thickness
      }, %)
-  |> close(%)
+  |> close()
 
-const extrude003rl = extrude(railHeight * 1.75, sketch003rl)
+const extrude003rl = extrude(sketch003rl, length = railHeight * 1.75)
 
 // EIA-310-D standard hole pattern
 const sketch004rl = startSketchOn(extrude002rl, 'START')
@@ -1577,14 +1577,14 @@ const sketch004rl = startSketchOn(extrude002rl, 'START')
        segAng(rectangleSegmentA003rl),
        -segLen(rectangleSegmentA003rl)
      ], %, $rectangleSegmentC003rl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude004rl = extrude(-thickness, sketch004rl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude004rl = extrude(sketch004rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch005rl = startSketchOn(extrude002rl, 'START')
@@ -1601,14 +1601,14 @@ const sketch005rl = startSketchOn(extrude002rl, 'START')
        segAng(rectangleSegmentA004rl),
        -segLen(rectangleSegmentA004rl)
      ], %, $rectangleSegmentC004rl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude005rl = extrude(-thickness, sketch005rl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     ) 
+const extrude005rl = extrude(sketch005rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch006rl = startSketchOn(extrude002rl, 'START')
@@ -1625,14 +1625,14 @@ const sketch006rl = startSketchOn(extrude002rl, 'START')
        segAng(rectangleSegmentA005rl),
        -segLen(rectangleSegmentA005rl)
      ], %, $rectangleSegmentC005rl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude006rl = extrude(-thickness, sketch006rl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude006rl = extrude(sketch006rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch007rl = startSketchOn(extrude001rl, 'START')
@@ -1649,14 +1649,14 @@ const sketch007rl = startSketchOn(extrude001rl, 'START')
        segAng(rectangleSegmentA006rl),
        -segLen(rectangleSegmentA006rl)
      ], %, $rectangleSegmentC006rl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude007rl = extrude(-thickness, sketch007rl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude007rl = extrude(sketch007rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch008rl = startSketchOn(extrude001rl, 'START')
@@ -1673,14 +1673,14 @@ const sketch008rl = startSketchOn(extrude001rl, 'START')
        segAng(rectangleSegmentA007rl),
        -segLen(rectangleSegmentA007rl)
      ], %, $rectangleSegmentC007rl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude008rl = extrude(-thickness, sketch008rl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude008rl = extrude(sketch008rl, length = -thickness)
 
 // EIA-310-D standard hole pattern
 const sketch009rl = startSketchOn(extrude001rl, 'START')
@@ -1697,14 +1697,14 @@ const sketch009rl = startSketchOn(extrude001rl, 'START')
        segAng(rectangleSegmentA008rl),
        -segLen(rectangleSegmentA008rl)
      ], %, $rectangleSegmentC008rl)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: railHeight,
-       distance: 0.62 + 0.62 + 0.5
-     }, %)
-const extrude009rl = extrude(-thickness, sketch009rl)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = railHeight,
+       distance = 0.62 + 0.62 + 0.5
+     )
+const extrude009rl = extrude(sketch009rl, length = -thickness)
 
 // define slots
 const sketch010rl = startSketchOn(extrude001rl, 'START')
@@ -1719,13 +1719,13 @@ const sketch010rl = startSketchOn(extrude001rl, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, 1],
-       instances: 2,
-       distance: 1.22
-     }, %)
-const extrude010rl = extrude(-thickness, sketch010rl)
+  |> close()
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = 2,
+       distance = 1.22
+     )
+const extrude010rl = extrude(sketch010rl, length = -thickness)
 
 // define slots
 const sketch011rl = startSketchOn(extrude001rl, 'START')
@@ -1740,9 +1740,9 @@ const sketch011rl = startSketchOn(extrude001rl, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> close()
 
-const extrude011rl = extrude(-thickness, sketch011rl)
+const extrude011rl = extrude(sketch011rl, length = -thickness)
 
 // define slots
 const sketch012rl = startSketchOn(extrude001rl, 'START')
@@ -1757,13 +1757,13 @@ const sketch012rl = startSketchOn(extrude001rl, 'START')
      ], %)
   |> xLine(-0.75 + .438, %)
   |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> patternLinear2d({
-       axis: [0, -1],
-       instances: 2,
-       distance: 1.22
-     }, %)
-const extrude012rl = extrude(-thickness, sketch012rl)
+  |> close()
+  |> patternLinear2d(
+       axis = [0, -1],
+       instances = 2,
+       distance = 1.22
+     )
+const extrude012rl = extrude(sketch012rl, length = -thickness)
 
 // GENERATE SERVER MODELS
 // Define planes so the server can be moved
@@ -1802,9 +1802,9 @@ fn streamServer = (serverPos) => {
          segAng(rectangleSegmentA001),
          -segLen(rectangleSegmentA001)
        ], %, $rectangleSegmentC001)
-    |> lineTo([profileStartX(%), profileStartY(%)], %, $seg01)
-    |> close(%)
-  const extrude001s = extrude(7, sketch001s)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  const extrude001s = extrude(sketch001s, length = 7)
 
   const sketch002s = startSketchOn(planeXZs)
     |> startProfileAt([-1, 4.114 + 1 + serverPos * 1.75], %)
@@ -1823,12 +1823,12 @@ fn streamServer = (serverPos) => {
        ], %)
     |> xLine(-0.52, %)
     |> yLine(-0.42, %)
-    |> line([0.34, -0.15], %)
+    |> line(end = [0.34, -0.15])
     |> yLine(-2.97, %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
 
-  const extrude002s = extrude(1.8 / 2, sketch002s)
+  const extrude002s = extrude(sketch002s, length = 1.8 / 2)
 
   const sketch003s = startSketchOn(planeXZs2)
     |> startProfileAt([-1, 4.114 + 1 + serverPos * 1.75], %)
@@ -1847,12 +1847,12 @@ fn streamServer = (serverPos) => {
        ], %)
     |> xLine(-0.52, %)
     |> yLine(-0.42, %)
-    |> line([0.34, -0.15], %)
+    |> line(end = [0.34, -0.15])
     |> yLine(-2.97, %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
 
-  const extrude003s = extrude(1.8 / 2, sketch003s)
+  const extrude003s = extrude(sketch003s, length = 1.8 / 2)
   return extrude003s
 }
 

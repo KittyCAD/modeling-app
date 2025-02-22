@@ -45,10 +45,10 @@ export const lineHighlightField = StateField.define({
 })
 
 const matchDeco = Decoration.mark({
-  class: 'bg-yellow-300/70',
+  class: 'bg-yellow-300/70 dark:bg-blue-800/50',
   attributes: { 'data-testid': 'hover-highlight' },
 })
 const matchDeco2 = Decoration.mark({
-  class: 'bg-yellow-200/40',
+  class: 'bg-yellow-200/40 dark:bg-blue-700/50',
   attributes: { 'data-testid': 'hover-highlight' },
 })

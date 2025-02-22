@@ -28,7 +28,7 @@ import { base64Decode } from 'lang/wasm'
 import { sendTelemetry } from 'lib/textToCad'
 import { Themes } from 'lib/theme'
 import { ActionButton } from './ActionButton'
-import { commandBarMachine } from 'machines/commandBarMachine'
+import { commandBarActor, commandBarMachine } from 'machines/commandBarMachine'
 import { EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { reportRejection } from 'lib/trap'
@@ -43,15 +43,10 @@ export function ToastTextToCadError({
   toastId,
   message,
   prompt,
-  commandBarSend,
 }: {
   toastId: string
   message: string
   prompt: string
-  commandBarSend: (
-    event: EventFrom<typeof commandBarMachine>,
-    data?: unknown
-  ) => void
 }) {
   return (
     <div className="flex flex-col justify-between gap-6">
@@ -81,7 +76,7 @@ export function ToastTextToCadError({
           }}
           name="Edit prompt"
           onClick={() => {
-            commandBarSend({
+            commandBarActor.send({
               type: 'Find and select command',
               data: {
                 groupId: 'modeling',

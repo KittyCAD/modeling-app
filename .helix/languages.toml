@@ -1,0 +1,10 @@
+[language-server.eslint]
+args = ["--stdio"]
+command = "vscode-eslint-language-server"
+
+[[language]]
+name = "typescript"
+auto-format = true
+formatter = { command = "node_modules/.bin/prettier", args = ["--parser", "typescript"] }
+language-servers = [ { name = "eslint", only-features = [ "diagnostics" ] }, "typescript-language-server" ]
+

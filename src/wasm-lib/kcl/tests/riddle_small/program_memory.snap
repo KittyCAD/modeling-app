@@ -1,509 +1,582 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing riddle_small.kcl
-snapshot_kind: text
+description: Variables in memory after executing riddle_small.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "ANSWER": {
-          "type": "Number",
-          "value": 41803.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                9,
-                14,
-                0
-              ]
-            }
-          ]
-        },
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "ox": {
-          "type": "Number",
-          "value": -26.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                96,
-                98,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                9,
-                14,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                73,
-                79,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                49,
-                54,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                58,
-                64,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                110,
-                112,
-                0
-              ]
-            }
-          ]
-        },
-        "oy": {
-          "type": "Number",
-          "value": 34.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                119,
-                121,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                9,
-                14,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                85,
-                90,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                49,
-                54,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                58,
-                64,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                133,
-                135,
-                0
-              ]
-            }
-          ]
-        },
-        "r": {
-          "type": "Solid",
-          "type": "Solid",
+  "ANSWER": {
+    "type": "Number",
+    "value": 41803.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          9,
+          14,
+          0
+        ]
+      }
+    ]
+  },
+  "E": {
+    "type": "Number",
+    "value": 2.718281828459045,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          651,
+          689,
+          2
+        ]
+      }
+    ]
+  },
+  "HALF_TURN": {
+    "type": "Number",
+    "value": 180.0,
+    "ty": {
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          109,
+          115,
+          1
+        ]
+      }
+    ]
+  },
+  "PI": {
+    "type": "Number",
+    "value": 3.141592653589793,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          328,
+          2
+        ]
+      }
+    ]
+  },
+  "QUARTER_TURN": {
+    "type": "Number",
+    "value": 90.0,
+    "ty": {
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          89,
+          1
+        ]
+      }
+    ]
+  },
+  "TAU": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1042,
+          1080,
+          2
+        ]
+      }
+    ]
+  },
+  "THREE_QUARTER_TURN": {
+    "type": "Number",
+    "value": 270.0,
+    "ty": {
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          144,
+          150,
+          1
+        ]
+      }
+    ]
+  },
+  "ZERO": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          60,
+          61,
+          1
+        ]
+      }
+    ]
+  },
+  "cos": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1446,
+          1478,
+          2
+        ]
+      }
+    ]
+  },
+  "ox": {
+    "type": "Number",
+    "value": -26.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          96,
+          98,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          9,
+          14,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          73,
+          79,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          49,
+          54,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          58,
+          64,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          110,
+          112,
+          0
+        ]
+      }
+    ]
+  },
+  "oy": {
+    "type": "Number",
+    "value": 34.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          119,
+          121,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          9,
+          14,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          85,
+          90,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          49,
+          54,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          58,
+          64,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          133,
+          135,
+          0
+        ]
+      }
+    ]
+  },
+  "r": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
           "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "sourceRange": [
+            199,
+            217,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            223,
+            242,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            248,
+            267,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            273,
+            281,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
                 199,
-                214,
+                217,
                 0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
+              ]
             },
-            {
-              "faceId": "[uuid]",
+            "from": [
+              -26.0,
+              34.0
+            ],
+            "tag": null,
+            "to": [
+              -25.0,
+              34.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                220,
-                236,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
+                223,
                 242,
-                258,
                 0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
+              ]
             },
-            {
-              "faceId": "[uuid]",
+            "from": [
+              -25.0,
+              34.0
+            ],
+            "tag": null,
+            "to": [
+              -25.0,
+              33.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                264,
-                272,
+                248,
+                267,
                 0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
+              ]
+            },
+            "from": [
+              -25.0,
+              33.0
+            ],
+            "tag": null,
+            "to": [
+              -26.0,
+              33.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
             }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                273,
+                281,
+                0
+              ]
+            },
+            "from": [
+              -26.0,
+              33.0
+            ],
+            "tag": null,
+            "to": [
+              -26.0,
+              34.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "on": {
+          "type": "plane",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": "XZ",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0
+          },
+          "units": {
+            "type": "Mm"
+          },
+          "__meta": []
+        },
+        "start": {
+          "from": [
+            -26.0,
+            34.0
           ],
-          "sketch": {
-            "type": "Sketch",
+          "to": [
+            -26.0,
+            34.0
+          ],
+          "units": {
+            "type": "Mm"
+          },
+          "tag": null,
+          "__geoMeta": {
             "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    199,
-                    214,
-                    0
-                  ]
-                },
-                "from": [
-                  -26.0,
-                  34.0
-                ],
-                "tag": null,
-                "to": [
-                  -25.0,
-                  34.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    220,
-                    236,
-                    0
-                  ]
-                },
-                "from": [
-                  -25.0,
-                  34.0
-                ],
-                "tag": null,
-                "to": [
-                  -25.0,
-                  33.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    242,
-                    258,
-                    0
-                  ]
-                },
-                "from": [
-                  -25.0,
-                  33.0
-                ],
-                "tag": null,
-                "to": [
-                  -26.0,
-                  33.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    264,
-                    272,
-                    0
-                  ]
-                },
-                "from": [
-                  -26.0,
-                  33.0
-                ],
-                "tag": null,
-                "to": [
-                  -26.0,
-                  34.0
-                ],
-                "type": "ToPoint"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "value": "XZ",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "__meta": []
-            },
-            "start": {
-              "from": [
-                -26.0,
-                34.0
-              ],
-              "to": [
-                -26.0,
-                34.0
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  166,
-                  193,
-                  0
-                ]
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  166,
-                  193,
-                  0
-                ]
-              }
+            "sourceRange": [
+              166,
+              193,
+              0
             ]
-          },
-          "height": 1.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                166,
-                193,
-                0
-              ]
-            }
-          ]
+          }
         },
-        "t": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 64,
-                    "left": {
-                      "end": 54,
-                      "left": {
-                        "end": 46,
-                        "left": {
-                          "end": 42,
-                          "name": "ANSWER",
-                          "start": 36,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "operator": "*",
-                        "right": {
-                          "end": 46,
-                          "name": "s",
-                          "start": 45,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "start": 36,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      "operator": "+",
-                      "right": {
-                        "end": 54,
-                        "raw": "12345",
-                        "start": 49,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 12345.0
-                      },
-                      "start": 36,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    "operator": "%",
-                    "right": {
-                      "end": 64,
-                      "raw": "214748",
-                      "start": 58,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": 214748.0
-                    },
-                    "start": 36,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "end": 64,
-                  "start": 28,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 66,
-              "start": 24
-            },
-            "end": 66,
-            "params": [
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 22,
-                  "name": "s",
-                  "start": 21,
-                  "type": "Identifier"
-                }
-              }
-            ],
-            "start": 20,
-            "type": "FunctionExpression"
-          },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "ANSWER": {
-                    "type": "Number",
-                    "value": 41803.0,
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          9,
-                          14,
-                          0
-                        ]
-                      }
-                    ]
-                  },
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  }
-                },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0,
-            "return": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                20,
-                66,
-                0
-              ]
-            }
-          ]
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
         },
-        "xs": {
-          "type": "Number",
-          "value": 205804.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                73,
-                79,
-                0
-              ]
-            }
-          ]
-        },
-        "ys": {
-          "type": "Number",
-          "value": 71816.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                85,
-                90,
-                0
-              ]
-            }
+        "__meta": [
+          {
+            "sourceRange": [
+              166,
+              193,
+              0
+            ]
+          }
+        ]
+      },
+      "height": 1.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            166,
+            193,
+            0
           ]
         }
-      },
-      "parent": null
+      ]
     }
-  ],
-  "currentEnv": 0,
-  "return": null
+  },
+  "sin": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1844,
+          1876,
+          2
+        ]
+      }
+    ]
+  },
+  "t": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          20,
+          66,
+          0
+        ]
+      }
+    ]
+  },
+  "tan": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          2234,
+          2266,
+          2
+        ]
+      }
+    ]
+  },
+  "xs": {
+    "type": "Number",
+    "value": 205804.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          73,
+          79,
+          0
+        ]
+      }
+    ]
+  },
+  "ys": {
+    "type": "Number",
+    "value": 71816.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          85,
+          90,
+          0
+        ]
+      }
+    ]
+  }
 }

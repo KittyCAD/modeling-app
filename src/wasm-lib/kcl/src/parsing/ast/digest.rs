@@ -1,10 +1,10 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
-use super::types::{DefaultParamVal, ItemVisibility, LabelledExpression, VariableKind};
+use super::types::{DefaultParamVal, ItemVisibility, LabelledExpression, LiteralValue, VariableKind};
 use crate::parsing::ast::types::{
-    ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
-    ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
-    ImportSelector, ImportStatement, KclNone, Literal, LiteralIdentifier, MemberExpression, MemberObject,
+    Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression,
+    CallExpressionKw, ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression,
+    ImportItem, ImportSelector, ImportStatement, KclNone, Literal, LiteralIdentifier, MemberExpression, MemberObject,
     ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
     TagDeclarator, UnaryExpression, VariableDeclaration, VariableDeclarator,
 };
@@ -66,7 +66,8 @@ impl ImportStatement {
             }
         }
         hasher.update(slf.visibility.digestable_id());
-        let path = slf.path.as_bytes();
+        let path = slf.path.to_string();
+        let path = path.as_bytes();
         hasher.update(path.len().to_ne_bytes());
         hasher.update(path);
     });
@@ -78,20 +79,47 @@ impl Program {
         for body_item in slf.body.iter_mut() {
             hasher.update(body_item.compute_digest());
         }
+        for attr in &mut slf.inner_attrs {
+            hasher.update(attr.compute_digest());
+        }
         if let Some(shebang) = &slf.shebang {
             hasher.update(&shebang.inner.content);
         }
     });
 }
 
+impl Annotation {
+    pub fn compute_digest(&mut self) -> Digest {
+        let mut hasher = Sha256::new();
+        if let Some(name) = &mut self.name {
+            hasher.update(name.compute_digest());
+        }
+        if let Some(properties) = &mut self.properties {
+            hasher.update(properties.len().to_ne_bytes());
+            for property in properties.iter_mut() {
+                hasher.update(property.compute_digest());
+            }
+        } else {
+            hasher.update("no_properties");
+        }
+        hasher.finalize().into()
+    }
+}
+
 impl BodyItem {
     pub fn compute_digest(&mut self) -> Digest {
-        match self {
+        let mut hasher = Sha256::new();
+        hasher.update(match self {
             BodyItem::ImportStatement(s) => s.compute_digest(),
             BodyItem::ExpressionStatement(es) => es.compute_digest(),
             BodyItem::VariableDeclaration(vs) => vs.compute_digest(),
             BodyItem::ReturnStatement(rs) => rs.compute_digest(),
+        });
+
+        for a in self.get_attrs_mut() {
+            hasher.update(a.compute_digest());
         }
+        hasher.finalize().into()
     }
 }
 
@@ -277,6 +305,26 @@ impl Literal {
     });
 }
 
+impl LiteralValue {
+    fn digestable_id(&self) -> Vec<u8> {
+        match self {
+            LiteralValue::Number { value, suffix } => {
+                let mut result: Vec<u8> = value.to_ne_bytes().into();
+                result.extend((*suffix as u32).to_ne_bytes());
+                result
+            }
+            LiteralValue::String(st) => st.as_bytes().into(),
+            LiteralValue::Bool(b) => {
+                if *b {
+                    vec![1]
+                } else {
+                    vec![0]
+                }
+            }
+        }
+    }
+}
+
 impl Identifier {
     compute_digest!(|slf, hasher| {
         let name = slf.name.as_bytes();
@@ -438,5 +486,21 @@ mod test {
         let prog3_digest = crate::parsing::top_level_parse(prog3_string).unwrap().compute_digest();
 
         assert_eq!(prog1_digest, prog3_digest);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_annotations_digest() {
+        // Settings annotations should be included in the digest.
+        let prog1_string = r#"@settings(defaultLengthUnit = in)
+startSketchOn('XY')
+"#;
+        let prog1_digest = crate::parsing::top_level_parse(prog1_string).unwrap().compute_digest();
+
+        let prog2_string = r#"@settings(defaultLengthUnit = mm)
+startSketchOn('XY')
+"#;
+        let prog2_digest = crate::parsing::top_level_parse(prog2_string).unwrap().compute_digest();
+
+        assert!(prog1_digest != prog2_digest);
     }
 }

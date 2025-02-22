@@ -1,11 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import {
-  parse,
-  BinaryPart,
-  Expr,
-  ProgramMemory,
-  resultIsOk,
-} from '../lang/wasm'
+import { parse, BinaryPart, Expr, resultIsOk, VariableMap } from '../lang/wasm'
 import {
   createIdentifier,
   createLiteral,
@@ -100,7 +94,7 @@ export function useCalc({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { programMemory } = useKclContext()
+  const { variables } = useKclContext()
   const { context } = useModelingContext()
   const selectionRange =
     context.selectionRanges?.graphSelections[0]?.codeRef?.range
@@ -127,7 +121,7 @@ export function useCalc({
   }, [])
 
   useEffect(() => {
-    if (programMemory.has(newVariableName)) {
+    if (variables[newVariableName]) {
       setIsNewVariableNameUnique(false)
     } else {
       setIsNewVariableNameUnique(true)
@@ -135,14 +129,14 @@ export function useCalc({
   }, [newVariableName])
 
   useEffect(() => {
-    if (!programMemory || !selectionRange) return
+    if (!variables || !selectionRange) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
-      kclManager.programMemory,
+      kclManager.variables,
       selectionRange
     )
     setAvailableVarInfo(varInfo)
-  }, [kclManager.ast, kclManager.programMemory, selectionRange])
+  }, [kclManager.ast, kclManager.variables, selectionRange])
 
   useEffect(() => {
     try {
@@ -150,9 +144,9 @@ export function useCalc({
       const pResult = parse(code)
       if (trap(pResult) || !resultIsOk(pResult)) return
       const ast = pResult.program
-      const _programMem: ProgramMemory = ProgramMemory.empty()
+      const _variables: VariableMap = {}
       for (const { key, value } of availableVarInfo.variables) {
-        const error = _programMem.set(key, {
+        const error = (_variables[key] = {
           type: 'String',
           value,
           __meta: [],
@@ -163,8 +157,8 @@ export function useCalc({
       executeAst({
         ast,
         engineCommandManager,
-        // We make sure to send an empty program memory to denote we mean mock mode.
-        programMemoryOverride: kclManager.programMemory.clone(),
+        isMock: true,
+        variables,
       }).then(({ execState }) => {
         const resultDeclaration = ast.body.find(
           (a) =>
@@ -174,7 +168,7 @@ export function useCalc({
         const init =
           resultDeclaration?.type === 'VariableDeclaration' &&
           resultDeclaration?.declaration.init
-        const result = execState.memory?.get('__result__')?.value
+        const result = execState.variables['__result__']?.value
         setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
         init && setValueNode(init)
       })

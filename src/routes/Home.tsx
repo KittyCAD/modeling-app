@@ -12,11 +12,9 @@ import {
   getSortFunction,
   getSortIcon,
 } from '../lib/sorting'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isDesktop } from 'lib/isDesktop'
 import { kclManager } from 'lib/singletons'
-import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
@@ -24,21 +22,31 @@ import { markOnce } from 'lib/performance'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { useProjectsContext } from 'hooks/useProjectsContext'
-import { useCommandsContext } from 'hooks/useCommandsContext'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
+import { useSettings } from 'machines/appMachine'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const { state, send } = useProjectsContext()
-  const { commandBarSend } = useCommandsContext()
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
 
-  useRefreshSettings(PATHS.HOME + 'SETTINGS')
+  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
+  useCreateFileLinkQuery((argDefaultValues) => {
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Import file from URL',
+        argDefaultValues,
+      },
+    })
+  })
+
   const navigate = useNavigate()
-  const {
-    settings: { context: settings },
-  } = useSettingsAuthContext()
+  const settings = useSettings()
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
@@ -128,7 +136,7 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  commandBarSend({
+                  commandBarActor.send({
                     type: 'Find and select command',
                     data: {
                       groupId: 'projects',
@@ -148,7 +156,7 @@ const Home = () => {
                 }}
                 data-testid="home-new-file"
               >
-                New project
+                Create project
               </ActionButton>
             </div>
             <div className="flex gap-2 items-center">

@@ -25,27 +25,21 @@ filletR = 0.25
 // Sketch the bracket and extrude with fillets
 bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, $outerEdge)
-  |> line([-shelfMountL, 0], %, $seg01)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, $innerEdge)
-  |> line([0, -wallMountL + thickness], %)
+  |> line(end = [0, wallMountL], tag = $outerEdge)
+  |> line(end = [-shelfMountL, 0], tag = $seg01)
+  |> line(end = [0, -thickness])
+  |> line(end = [shelfMountL - thickness, 0], tag = $innerEdge)
+  |> line(end = [0, -wallMountL + thickness])
   |> close(%)
-  |> extrude(width, %)
-  |> fillet({
-       radius = filletR,
-       tags = [getNextAdjacentEdge(innerEdge)]
-     }, %)
-  |> fillet({
-       radius = filletR + thickness,
-       tags = [getNextAdjacentEdge(outerEdge)]
-     }, %)
+  |> extrude(length = width)
+  |> fillet(radius = filletR, tags = [getNextAdjacentEdge(innerEdge)])
+  |> fillet(radius = filletR + thickness, tags = [getNextAdjacentEdge(outerEdge)])
 
 sketch001 = startSketchOn(bracket, seg01)
   |> startProfileAt([4.28, 3.83], %)
-  |> line([2.17, -0.03], %)
-  |> line([-0.07, -1.8], %)
-  |> line([-2.07, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line(end = [2.17, -0.03])
+  |> line(end = [-0.07, -1.8])
+  |> line(end = [-2.07, 0.05])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
-  |> extrude(10, %)
+  |> extrude(length = 10)

@@ -14,7 +14,13 @@ mod test_examples_someFn {
             settings: Default::default(),
             context_type: crate::execution::ContextType::Mock,
         };
-        if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new()).await {
+        if let Err(e) = ctx
+            .run(
+                &program,
+                &mut crate::execution::ExecState::new(&ctx.settings),
+            )
+            .await
+        {
             return Err(miette::Report::new(crate::errors::Report {
                 error: e,
                 filename: format!("{}{}", "someFn", 0usize),
@@ -64,7 +70,7 @@ pub(crate) struct SomeFn {}
 #[doc = "Std lib function: someFn\nDocs"]
 pub(crate) const SomeFn: SomeFn = SomeFn {};
 fn boxed_someFn(
-    exec_state: &mut crate::ExecState,
+    exec_state: &mut crate::execution::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
@@ -105,10 +111,11 @@ impl crate::docs::StdLibFn for SomeFn {
         vec![crate::docs::StdLibFnArg {
             name: "data".to_string(),
             type_: "string".to_string(),
-            schema: generator.root_schema_for::<str>(),
+            schema: crate::docs::cleanup_number_tuples_root(generator.root_schema_for::<str>()),
             required: true,
             label_required: true,
             description: String::new().to_string(),
+            include_in_snippet: true,
         }]
     }
 
@@ -116,7 +123,7 @@ impl crate::docs::StdLibFn for SomeFn {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = generator.root_schema_for::<i32>();
+        let schema = crate::docs::cleanup_number_tuples_root(generator.root_schema_for::<i32>());
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "i32".to_string(),
@@ -124,6 +131,7 @@ impl crate::docs::StdLibFn for SomeFn {
             required: true,
             label_required: true,
             description: String::new(),
+            include_in_snippet: true,
         })
     }
 

@@ -1,0 +1,156 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing import_function_not_sketch.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "end": 68,
+        "path": {
+          "type": "Kcl",
+          "filename": "my_functions.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 44,
+              "name": {
+                "end": 44,
+                "name": "two",
+                "start": 41,
+                "type": "Identifier"
+              },
+              "start": 41,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 34,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "declaration": {
+          "end": 108,
+          "id": {
+            "end": 83,
+            "name": "one",
+            "start": 80,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 106,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "end": 100,
+                        "name": "two",
+                        "start": 97,
+                        "type": "Identifier"
+                      },
+                      "end": 102,
+                      "start": 97,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    },
+                    "operator": "-",
+                    "right": {
+                      "end": 106,
+                      "raw": "1",
+                      "start": 105,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 97,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 106,
+                  "start": 90,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 108,
+              "start": 86
+            },
+            "end": 108,
+            "params": [],
+            "start": 83,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 80,
+          "type": "VariableDeclarator"
+        },
+        "end": 108,
+        "kind": "fn",
+        "start": 70,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      }
+    ],
+    "end": 109,
+    "innerAttrs": [
+      {
+        "end": 33,
+        "name": {
+          "end": 9,
+          "name": "settings",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 32,
+            "key": {
+              "end": 27,
+              "name": "defaultLengthUnit",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "start": 10,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 32,
+              "name": "in",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 70,
+            "start": 68,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

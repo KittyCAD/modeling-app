@@ -65,17 +65,18 @@ mod fs;
 pub mod lint;
 mod log;
 mod lsp;
+mod modules;
 mod parsing;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
 mod source_range;
-mod std;
+pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
 mod thread;
 mod unparser;
-mod walk;
+pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
@@ -83,23 +84,21 @@ pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
 pub use execution::{
-    cache::{CacheInformation, OldAstState},
-    ExecState, ExecutorContext, ExecutorSettings,
+    bust_cache, clear_mem_cache, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
+pub use modules::ModuleId;
 pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
-pub use source_range::{ModuleId, SourceRange};
+pub use source_range::SourceRange;
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    pub use crate::execution::{
-        ArtifactCommand, DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch,
-    };
+    pub use crate::execution::{ArtifactCommand, DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch};
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -118,6 +117,10 @@ pub mod native_engine {
 
 pub mod std_utils {
     pub use crate::std::utils::{get_tangential_arc_to_info, is_points_ccw_wasm, TangentialArcInfoInput};
+}
+
+pub mod pretty {
+    pub use crate::{parsing::token::NumericSuffix, unparser::format_number};
 }
 
 use serde::{Deserialize, Serialize};
@@ -155,6 +158,18 @@ impl Program {
 
     pub fn compute_digest(&mut self) -> parsing::ast::digest::Digest {
         self.ast.compute_digest()
+    }
+
+    /// Get the meta settings for the kcl file from the annotations.
+    pub fn meta_settings(&self) -> Result<Option<crate::MetaSettings>, KclError> {
+        self.ast.meta_settings()
+    }
+
+    /// Change the meta settings for the kcl file.
+    pub fn change_meta_settings(&mut self, settings: crate::MetaSettings) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_meta_settings(settings)?,
+        })
     }
 
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
@@ -219,6 +234,11 @@ fn try_f64_to_i64(f: f64) -> Option<i64> {
     } else {
         None
     }
+}
+
+/// Get the version of the KCL library.
+pub fn version() -> &'static str {
+    env!("CARGO_PKG_VERSION")
 }
 
 #[cfg(test)]

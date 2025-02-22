@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -35,7 +34,10 @@ snapshot_kind: text
                       "start": 26,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 22,
                     "type": "BinaryExpression",
@@ -99,7 +101,10 @@ snapshot_kind: text
                   "start": 45,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
                 }
               }
             ],

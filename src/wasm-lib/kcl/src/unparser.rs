@@ -2,12 +2,14 @@ use std::fmt::Write;
 
 use crate::parsing::{
     ast::types::{
-        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FnArgType, FormatOptions, FunctionExpression,
-        IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-        PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
+        Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
+        CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FnArgType, FormatOptions,
+        FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue,
+        ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
+        VariableKind,
     },
+    token::NumericSuffix,
     PIPE_OPERATOR,
 };
 
@@ -15,53 +17,61 @@ impl Program {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
 
-        let result = self
+        let mut result = self
             .shebang
             .as_ref()
             .map(|sh| format!("{}\n\n", sh.inner.content))
             .unwrap_or_default();
 
+        for attr in &self.inner_attrs {
+            result.push_str(&attr.recast(options, indentation_level));
+        }
+        for start in &self.non_code_meta.start_nodes {
+            result.push_str(&start.recast(options, indentation_level));
+        }
+        let result = result; // Remove mutation.
+
         let result = self
             .body
             .iter()
-            .map(|body_item| match body_item.clone() {
-                BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
-                BodyItem::ExpressionStatement(expression_statement) => {
-                    expression_statement
-                        .expression
-                        .recast(options, indentation_level, ExprContext::Other)
+            .map(|body_item| {
+                let mut result = String::new();
+                for attr in body_item.get_attrs() {
+                    result.push_str(&attr.recast(options, indentation_level));
                 }
-                BodyItem::VariableDeclaration(variable_declaration) => {
-                    variable_declaration.recast(options, indentation_level)
-                }
-                BodyItem::ReturnStatement(return_statement) => {
-                    format!(
-                        "{}return {}",
-                        indentation,
-                        return_statement
-                            .argument
+                result.push_str(&match body_item.clone() {
+                    BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
+                    BodyItem::ExpressionStatement(expression_statement) => {
+                        expression_statement
+                            .expression
                             .recast(options, indentation_level, ExprContext::Other)
-                            .trim_start()
-                    )
-                }
+                    }
+                    BodyItem::VariableDeclaration(variable_declaration) => {
+                        variable_declaration.recast(options, indentation_level)
+                    }
+                    BodyItem::ReturnStatement(return_statement) => {
+                        format!(
+                            "{}return {}",
+                            indentation,
+                            return_statement
+                                .argument
+                                .recast(options, indentation_level, ExprContext::Other)
+                                .trim_start()
+                        )
+                    }
+                });
+                result
             })
             .enumerate()
             .fold(result, |mut output, (index, recast_str)| {
-                let start_string = if index == 0 {
-                    // We need to indent.
-                    if self.non_code_meta.start_nodes.is_empty() {
+                let start_string =
+                    if index == 0 && self.non_code_meta.start_nodes.is_empty() && self.inner_attrs.is_empty() {
+                        // We need to indent.
                         indentation.to_string()
                     } else {
-                        self.non_code_meta
-                            .start_nodes
-                            .iter()
-                            .map(|start| start.recast(options, indentation_level))
-                            .collect()
-                    }
-                } else {
-                    // Do nothing, we already applied the indentation elsewhere.
-                    String::new()
-                };
+                        // Do nothing, we already applied the indentation elsewhere.
+                        String::new()
+                    };
 
                 // determine the value of the end string
                 // basically if we are inside a nested function we want to end with a new line
@@ -115,9 +125,7 @@ impl NonCodeValue {
     fn should_cause_array_newline(&self) -> bool {
         match self {
             Self::InlineComment { .. } => false,
-            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine | Self::Annotation { .. } => {
-                true
-            }
+            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
         }
     }
 }
@@ -158,33 +166,38 @@ impl Node<NonCodeNode> {
                 }
             }
             NonCodeValue::NewLine => "\n\n".to_string(),
-            NonCodeValue::Annotation { name, properties } => {
-                let mut result = "@".to_owned();
-                result.push_str(&name.name);
-                if let Some(properties) = properties {
-                    result.push('(');
-                    result.push_str(
-                        &properties
-                            .iter()
-                            .map(|prop| {
-                                format!(
-                                    "{} = {}",
-                                    prop.key.name,
-                                    prop.value
-                                        .recast(options, indentation_level + 1, ExprContext::Other)
-                                        .trim()
-                                )
-                            })
-                            .collect::<Vec<String>>()
-                            .join(", "),
-                    );
-                    result.push(')');
-                    result.push('\n');
-                }
-
-                result
-            }
         }
+    }
+}
+
+impl Node<Annotation> {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let mut result = "@".to_owned();
+        if let Some(name) = &self.name {
+            result.push_str(&name.name);
+        }
+        if let Some(properties) = &self.properties {
+            result.push('(');
+            result.push_str(
+                &properties
+                    .iter()
+                    .map(|prop| {
+                        format!(
+                            "{} = {}",
+                            prop.key.name,
+                            prop.value
+                                .recast(options, indentation_level + 1, ExprContext::Other)
+                                .trim()
+                        )
+                    })
+                    .collect::<Vec<String>>()
+                    .join(", "),
+            );
+            result.push(')');
+            result.push('\n');
+        }
+
+        result
     }
 }
 
@@ -314,6 +327,19 @@ impl CallExpression {
 }
 
 impl CallExpressionKw {
+    fn recast_args(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Vec<String> {
+        let mut arg_list = if let Some(first_arg) = &self.unlabeled {
+            vec![first_arg.recast(options, indentation_level, ctxt)]
+        } else {
+            Vec::with_capacity(self.arguments.len())
+        };
+        arg_list.extend(
+            self.arguments
+                .iter()
+                .map(|arg| arg.recast(options, indentation_level, ctxt)),
+        );
+        arg_list
+    }
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         let indent = if ctxt == ExprContext::Pipe {
             "".to_string()
@@ -321,18 +347,31 @@ impl CallExpressionKw {
             options.get_indentation(indentation_level)
         };
         let name = &self.callee.name;
-        let mut arg_list = if let Some(first_arg) = &self.unlabeled {
-            vec![first_arg.recast(options, indentation_level, ctxt)]
+        let arg_list = self.recast_args(options, indentation_level, ctxt);
+        let args = arg_list.clone().join(", ");
+        let has_lots_of_args = arg_list.len() >= 4;
+        let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
+        let multiline = has_lots_of_args || some_arg_is_already_multiline;
+        if multiline {
+            let next_indent = indentation_level + 1;
+            let inner_indentation = if ctxt == ExprContext::Pipe {
+                options.get_indentation_offset_pipe(next_indent)
+            } else {
+                options.get_indentation(next_indent)
+            };
+            let arg_list = self.recast_args(options, next_indent, ctxt);
+            let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
+            args.push(',');
+            let args = args;
+            let end_indent = if ctxt == ExprContext::Pipe {
+                options.get_indentation_offset_pipe(indentation_level)
+            } else {
+                options.get_indentation(indentation_level)
+            };
+            format!("{indent}{name}(\n{inner_indentation}{args}\n{end_indent})")
         } else {
-            Vec::new()
-        };
-        arg_list.extend(
-            self.arguments
-                .iter()
-                .map(|arg| arg.recast(options, indentation_level, ctxt)),
-        );
-        let args = arg_list.join(", ");
-        format!("{indent}{name}({args})")
+            format!("{indent}{name}({args})")
+        }
     }
 }
 
@@ -370,14 +409,19 @@ impl VariableDeclaration {
     }
 }
 
+// Used by TS.
+pub fn format_number(value: f64, suffix: NumericSuffix) -> String {
+    format!("{value}{suffix}")
+}
+
 impl Literal {
     fn recast(&self) -> String {
         match self.value {
-            LiteralValue::Number(x) => {
-                if self.raw.contains('.') && x.fract() == 0.0 {
-                    format!("{x:?}")
+            LiteralValue::Number { value, suffix } => {
+                if self.raw.contains('.') && value.fract() == 0.0 {
+                    format!("{value:?}{suffix}")
                 } else {
-                    self.raw.clone()
+                    format!("{}{suffix}", self.raw)
                 }
             }
             LiteralValue::String(ref s) => {
@@ -787,7 +831,39 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{parsing::ast::types::FormatOptions, source_range::ModuleId};
+    use crate::{parsing::ast::types::FormatOptions, ModuleId};
+
+    #[test]
+    fn test_recast_annotations_without_body_items() {
+        let input = r#"@settings(defaultLengthUnit = in)
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_annotations_in_function_body() {
+        let input = r#"fn myFunc() {
+  @meta(yes = true)
+  x = 2
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_annotations_in_function_body_without_items() {
+        let input = r#"fn myFunc() {
+  @meta(yes = true)
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
 
     #[test]
     fn test_recast_if_else_if_same() {
@@ -876,17 +952,17 @@ fn rect(x, y, w, h) {
     |> xLine(w, %)
     |> yLine(h, %)
     |> xLine(-w, %)
-    |> close(%)
+    |> close()
     |> extrude(d, %)
 }
 
 fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
   startSketchOn('XY')
     |> startProfileAt([x1, y1], %)
-    |> lineTo([x2, y2], %)
-    |> lineTo([x3, y3], %)
-    |> lineTo([x4, y4], %)
-    |> close(%)
+    |> line(endAbsolute = [x2, y2])
+    |> line(endAbsolute = [x3, y3])
+    |> line(endAbsolute = [x4, y4])
+    |> close()
     |> extrude(d, %)
 }
 
@@ -950,7 +1026,7 @@ fn o(c_x, c_y) {
          angle_start = 225 - a,
          angle_end = 45 + a
        }, %)
-    |> close(%)
+    |> close()
     |> extrude(d, %)
 
   startSketchOn('XY')
@@ -966,7 +1042,7 @@ fn o(c_x, c_y) {
          angle_start = 45 - a,
          angle_end = 225 + a - 360
        }, %)
-    |> close(%)
+    |> close()
     |> extrude(d, %)
 }
 
@@ -1006,7 +1082,7 @@ insideRevolve = startSketchOn('XZ')
   |> line([overHangLength - thickness, 0], %)
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis: 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
@@ -1021,15 +1097,15 @@ sphere = startSketchOn('XZ')
        angle_end = -180,
        radius = sphereDia / 2 - 0.05
      }, %)
-  |> close(%)
+  |> close()
   |> revolve({ axis: 'x' }, %)
-  |> patternCircular3d({
+  |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
        repetitions = 10,
        arcDegrees = 360,
        rotateDuplicates = true
-     }, %)
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')
@@ -1045,7 +1121,7 @@ outsideRevolve = startSketchOn('XZ')
   |> line([-overHangLength, 0], %)
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis: 'y' }, %)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1073,7 +1149,7 @@ insideRevolve = startSketchOn('XZ')
   |> line([overHangLength - thickness, 0], %)
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis = 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
@@ -1088,15 +1164,15 @@ sphere = startSketchOn('XZ')
        angle_end = -180,
        radius = sphereDia / 2 - 0.05
      }, %)
-  |> close(%)
+  |> close()
   |> revolve({ axis = 'x' }, %)
-  |> patternCircular3d({
+  |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
        repetitions = 10,
        arcDegrees = 360,
-       rotateDuplicates = true
-     }, %)
+       rotateDuplicates = true,
+     )
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn('XZ')
@@ -1112,7 +1188,7 @@ outsideRevolve = startSketchOn('XZ')
   |> line([-overHangLength, 0], %)
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis = 'y' }, %)
 "#
         );
@@ -1239,7 +1315,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#;
 
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -1254,7 +1330,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#
         );
     }
@@ -1270,7 +1346,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#;
 
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -1285,7 +1361,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#
         );
     }
@@ -1300,7 +1376,7 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#;
 
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -1316,9 +1392,21 @@ part001 = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
-  |> close(%)
+  |> close()
 "#
         );
+    }
+
+    #[test]
+    fn test_recast_empty_function_body_with_comments() {
+        let input = r#"fn myFunc() {
+  // Yo yo my comments.
+}
+"#;
+
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
     }
 
     #[test]
@@ -1335,17 +1423,17 @@ hole_diam = 5
 fn rectShape = (pos, w, l) => {
   rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %,$edge1)
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
-    |> close(%, $edge4)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
+    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
+    |> close($edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
 // only used for visualization
 scarlett_body = rectShape([0, 0], width, length)
   |> extrude(depth, %)
-  |> fillet({
+  |> fillet(
        radius = radius,
        tags = [
   edge2,
@@ -1353,7 +1441,7 @@ scarlett_body = rectShape([0, 0], width, length)
   getOppositeEdge(edge2),
   getOppositeEdge(edge4)
 ]
-     }, %)
+   )
   // build the bracket sketch around the body
 fn bracketSketch = (w, d, t) => {
   s = startSketchOn({
@@ -1365,28 +1453,28 @@ fn bracketSketch = (w, d, t) => {
 }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, $edge1)
-    |> lineTo([w / 2 + t, -t], %, $edge2)
-    |> lineTo([w / 2 + t, d + t], %, $edge3)
-    |> lineTo([w / 2, d + t], %, $edge4)
-    |> lineTo([w / 2, 0], %, $edge5)
-    |> lineTo([-w / 2, 0], %, $edge6)
-    |> lineTo([-w / 2, d + t], %, $edge7)
-    |> close(%, $edge8)
+    |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
+    |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
+    |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
+    |> line(endAbsolute = [w / 2, d + t], tag = $edge4)
+    |> line(endAbsolute = [w / 2, 0], tag = $edge5)
+    |> line(endAbsolute = [-w / 2, 0], tag = $edge6)
+    |> line(endAbsolute = [-w / 2, d + t], tag = $edge7)
+    |> close($edge8)
   return s
 }
 // build the body of the bracket
 bracket_body = bracketSketch(width, depth, thk)
   |> extrude(length + 10, %)
-  |> fillet({
+  |> fillet(
        radius = radius,
-       tags: [
+       tags = [
   getNextAdjacentEdge(edge7),
   getNextAdjacentEdge(edge2),
   getNextAdjacentEdge(edge3),
   getNextAdjacentEdge(edge6)
 ]
-     }, %)
+     )
   // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
        plane: {
@@ -1400,7 +1488,7 @@ tabs_r = startSketchOn({
   |> line([10, -5], %)
   |> line([0, -10], %)
   |> line([-10, -5], %)
-  |> close(%)
+  |> close()
   |> hole(circle({
        center = [
          width / 2 + thk + hole_diam,
@@ -1409,11 +1497,11 @@ tabs_r = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
+  |> patternLinear3d(
        axis = [0, -1, 0],
        repetitions = 1,
        distance = length - 10
-     }, %)
+     )
   // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
        plane: {
@@ -1427,7 +1515,7 @@ tabs_l = startSketchOn({
   |> line([-10, -5], %)
   |> line([0, -10], %)
   |> line([10, -5], %)
-  |> close(%)
+  |> close()
   |> hole(circle({
        center = [
          -width / 2 - thk - hole_diam,
@@ -1436,11 +1524,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
-       axis = [0, -1, 0],
-       repetitions = 1,
-       distance = length - 10
-     }, %)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1460,25 +1544,25 @@ hole_diam = 5
 fn rectShape(pos, w, l) {
   rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
-    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
-    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, $edge3)
-    |> close(%, $edge4)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
+    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
+    |> close($edge4)
   return rr
 }
 // build the body of the focusrite scarlett solo gen 4
 // only used for visualization
 scarlett_body = rectShape([0, 0], width, length)
   |> extrude(depth, %)
-  |> fillet({
+  |> fillet(
        radius = radius,
        tags = [
          edge2,
          edge4,
          getOppositeEdge(edge2),
          getOppositeEdge(edge4)
-       ]
-     }, %)
+       ],
+     )
 // build the bracket sketch around the body
 fn bracketSketch(w, d, t) {
   s = startSketchOn({
@@ -1490,28 +1574,28 @@ fn bracketSketch(w, d, t) {
          }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
-    |> lineTo([-w / 2 - t, -t], %, $edge1)
-    |> lineTo([w / 2 + t, -t], %, $edge2)
-    |> lineTo([w / 2 + t, d + t], %, $edge3)
-    |> lineTo([w / 2, d + t], %, $edge4)
-    |> lineTo([w / 2, 0], %, $edge5)
-    |> lineTo([-w / 2, 0], %, $edge6)
-    |> lineTo([-w / 2, d + t], %, $edge7)
-    |> close(%, $edge8)
+    |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
+    |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
+    |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
+    |> line(endAbsolute = [w / 2, d + t], tag = $edge4)
+    |> line(endAbsolute = [w / 2, 0], tag = $edge5)
+    |> line(endAbsolute = [-w / 2, 0], tag = $edge6)
+    |> line(endAbsolute = [-w / 2, d + t], tag = $edge7)
+    |> close($edge8)
   return s
 }
 // build the body of the bracket
 bracket_body = bracketSketch(width, depth, thk)
   |> extrude(length + 10, %)
-  |> fillet({
+  |> fillet(
        radius = radius,
        tags = [
          getNextAdjacentEdge(edge7),
          getNextAdjacentEdge(edge2),
          getNextAdjacentEdge(edge3),
          getNextAdjacentEdge(edge6)
-       ]
-     }, %)
+       ],
+     )
 // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
        plane = {
@@ -1525,7 +1609,7 @@ tabs_r = startSketchOn({
   |> line([10, -5], %)
   |> line([0, -10], %)
   |> line([-10, -5], %)
-  |> close(%)
+  |> close()
   |> hole(circle({
        center = [
          width / 2 + thk + hole_diam,
@@ -1534,11 +1618,7 @@ tabs_r = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
-       axis = [0, -1, 0],
-       repetitions = 1,
-       distance = length - 10
-     }, %)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
        plane = {
@@ -1552,7 +1632,7 @@ tabs_l = startSketchOn({
   |> line([-10, -5], %)
   |> line([0, -10], %)
   |> line([10, -5], %)
-  |> close(%)
+  |> close()
   |> hole(circle({
        center = [
          -width / 2 - thk - hole_diam,
@@ -1561,11 +1641,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
-  |> patternLinear3d({
-       axis = [0, -1, 0],
-       repetitions = 1,
-       distance = length - 10
-     }, %)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 "#
         );
     }
@@ -1578,7 +1654,7 @@ tabs_l = startSketchOn({
   |> line([0, scale], %)
   |> line([scale, 0], %)
   |> line([0, -scale], %)
-  |> close(%)
+  |> close()
   |> extrude(scale, %)
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -1592,7 +1668,7 @@ tabs_l = startSketchOn({
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
-    |> close(%)
+    |> close()
     |> extrude(scale, %)
 }
 "#
@@ -1609,7 +1685,7 @@ tabs_l = startSketchOn({
     |> line([0, scale], %)
     |> line([scale, 0], %) as bar
     |> line([0 as baz, -scale] as qux, %)
-    |> close(%)
+    |> close()
     |> extrude(scale, %)
 }
 
@@ -1825,10 +1901,10 @@ mySk1 = startSketchAt([0, 0])
         let some_program_string = r#"// comment at start
 mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([1, 1], %)
+  |> line(endAbsolute = [1, 1])
   // comment here
-  |> lineTo([0, 1], %, $myTag)
-  |> lineTo([1, 1], %)
+  |> line(endAbsolute = [0, 1], tag = $myTag)
+  |> line(endAbsolute = [1, 1])
   /* and
   here
   */
@@ -1846,10 +1922,10 @@ mySk1 = startSketchOn('XY')
             r#"// comment at start
 mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([1, 1], %)
+  |> line(endAbsolute = [1, 1])
   // comment here
-  |> lineTo([0, 1], %, $myTag)
-  |> lineTo([1, 1], %)
+  |> line(endAbsolute = [0, 1], tag = $myTag)
+  |> line(endAbsolute = [1, 1])
   /* and
   here */
   // a comment between pipe expression statements
@@ -2088,7 +2164,7 @@ firstExtrude = startSketchOn('XY')
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)
-  |> close(%)
+  |> close()
   |> extrude(h, %)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -2105,7 +2181,7 @@ firstExtrude = startSketchOn('XY')
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)
-  |> close(%)
+  |> close()
   |> extrude(h, %)
 "#
         );
@@ -2125,7 +2201,7 @@ firstExtrude = startSketchOn('XY')
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)
-  |> close(%)
+  |> close()
   |> extrude(h, %)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -2145,7 +2221,7 @@ firstExtrude = startSketchOn('XY')
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)
-  |> close(%)
+  |> close()
   |> extrude(h, %)
 "#
         );

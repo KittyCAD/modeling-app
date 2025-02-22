@@ -1,31 +1,49 @@
+use std::fmt;
+
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JValue;
 
 use super::Node;
-use crate::parsing::ast::types::{Expr, Literal};
+use crate::parsing::{
+    ast::types::{Expr, Literal},
+    token::NumericSuffix,
+};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged, rename_all = "snake_case")]
 pub enum LiteralValue {
-    Number(f64),
+    Number { value: f64, suffix: NumericSuffix },
     String(String),
     Bool(bool),
 }
 
 impl LiteralValue {
-    pub fn digestable_id(&self) -> Vec<u8> {
+    pub fn from_f64_no_uom(value: f64) -> Self {
+        LiteralValue::Number {
+            value,
+            suffix: NumericSuffix::None,
+        }
+    }
+}
+
+impl fmt::Display for LiteralValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            LiteralValue::Number(frac) => frac.to_ne_bytes().into(),
-            LiteralValue::String(st) => st.as_bytes().into(),
-            LiteralValue::Bool(b) => {
-                if *b {
-                    vec![1]
+            LiteralValue::Number { value, suffix } => {
+                let int_value = *value as u64;
+                if int_value as f64 == *value {
+                    write!(f, "{int_value}")?;
                 } else {
-                    vec![0]
+                    write!(f, "{value}")?;
                 }
+                if *suffix != NumericSuffix::None {
+                    write!(f, "{suffix}")?;
+                }
+                Ok(())
             }
+            LiteralValue::String(s) => write!(f, "\"{s}\""),
+            LiteralValue::Bool(b) => write!(f, "{b}"),
         }
     }
 }
@@ -36,49 +54,12 @@ impl From<Node<Literal>> for Expr {
     }
 }
 
-impl From<LiteralValue> for JValue {
-    fn from(value: LiteralValue) -> Self {
-        match value {
-            LiteralValue::Number(x) => x.into(),
-            LiteralValue::String(x) => x.into(),
-            LiteralValue::Bool(b) => b.into(),
-        }
-    }
-}
-
-impl From<f64> for LiteralValue {
-    fn from(value: f64) -> Self {
-        Self::Number(value)
-    }
-}
-
-impl From<i64> for LiteralValue {
-    fn from(value: i64) -> Self {
-        Self::Number(value as f64)
-    }
-}
-
 impl From<String> for LiteralValue {
     fn from(value: String) -> Self {
         Self::String(value)
     }
 }
 
-impl From<u32> for LiteralValue {
-    fn from(value: u32) -> Self {
-        Self::Number(value as f64)
-    }
-}
-impl From<u16> for LiteralValue {
-    fn from(value: u16) -> Self {
-        Self::Number(value as f64)
-    }
-}
-impl From<u8> for LiteralValue {
-    fn from(value: u8) -> Self {
-        Self::Number(value as f64)
-    }
-}
 impl From<&'static str> for LiteralValue {
     fn from(value: &'static str) -> Self {
         // TODO: Make this Cow<str>

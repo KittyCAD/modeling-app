@@ -1,33 +1,50 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed tangential_arc.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          143,
-          145,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          147,
-          148,
+          158,
+          160,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

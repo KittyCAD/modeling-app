@@ -29,7 +29,10 @@ expression: actual
             "start": 9,
             "type": "Literal",
             "type": "Literal",
-            "value": 0.0
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
+            }
           },
           "start": 6,
           "type": "MemberExpression",

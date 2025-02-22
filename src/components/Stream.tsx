@@ -1,6 +1,5 @@
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import Loading from './Loading'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
@@ -17,10 +16,11 @@ import {
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { err, reportRejection } from 'lib/trap'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ViewControlContextMenu } from './ViewControlMenu'
+import { useCommandBarState } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 
 enum StreamState {
   Playing = 'playing',
@@ -33,15 +33,15 @@ export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
   const videoWrapperRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const { state, send } = useModelingContext()
-  const { commandBarState } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
-  const IDLE = settings.context.app.streamIdleMode.current
+  const IDLE = settings.app.streamIdleMode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
@@ -301,7 +301,7 @@ export const Stream = () => {
           return
         }
         const path = getArtifactOfTypes(
-          { key: entity_id, types: ['path', 'solid2D', 'segment'] },
+          { key: entity_id, types: ['path', 'solid2d', 'segment', 'helix'] },
           engineCommandManager.artifactGraph
         )
         if (err(path)) {
@@ -335,7 +335,7 @@ export const Stream = () => {
         id="video-stream"
       />
       <ClientSideScene
-        cameraControls={settings.context.modeling.mouseControls.current}
+        cameraControls={settings.modeling.mouseControls.current}
       />
       {(streamState === StreamState.Paused ||
         streamState === StreamState.Resuming) && (

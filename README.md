@@ -101,7 +101,7 @@ This will start the application and hot-reload on changes.
 
 Devtools can be opened with the usual Cmd-Opt-I (Mac) or Ctrl-Shift-I (Linux and Windows).
 
-To build, run `yarn tron:package`.
+To build with electron-builder, run `yarn tronb:package:dev` (or `yarn tronb:package:prod` to point to the .env.production variables)
 
 ## Checking out commits / Bisecting
 

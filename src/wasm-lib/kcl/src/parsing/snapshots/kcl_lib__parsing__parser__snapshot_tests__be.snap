@@ -21,7 +21,10 @@ expression: actual
             "start": 8,
             "type": "Literal",
             "type": "Literal",
-            "value": 3.0
+            "value": {
+              "value": 3.0,
+              "suffix": "None"
+            }
           },
           "operator": "==",
           "right": {
@@ -30,7 +33,10 @@ expression: actual
             "start": 13,
             "type": "Literal",
             "type": "Literal",
-            "value": 3.0
+            "value": {
+              "value": 3.0,
+              "suffix": "None"
+            }
           },
           "start": 8,
           "type": "BinaryExpression",

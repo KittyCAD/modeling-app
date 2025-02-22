@@ -7,8 +7,6 @@ import {
 } from '@codemirror/autocomplete'
 import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
 import { CustomIcon } from 'components/CustomIcon'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
 import { getSystemTheme } from 'lib/theme'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
@@ -20,6 +18,9 @@ import styles from './CommandBarKclInput.module.css'
 import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
 import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
 import { useSelector } from '@xstate/react'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
+import toast from 'react-hot-toast'
 
 const machineContextSelector = (snapshot?: {
   context: Record<string, unknown>
@@ -37,11 +38,11 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commandBarSend, commandBarState } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const argMachineContext = useSelector(
     arg.machineActor,
     machineContextSelector
@@ -82,7 +83,7 @@ function CommandBarKclInput({
       false
   )
   const [canSubmit, setCanSubmit] = useState(true)
-  useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
+  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const editorRef = useRef<HTMLDivElement>(null)
 
   const {
@@ -97,6 +98,7 @@ function CommandBarKclInput({
     value,
     initialVariableName,
   })
+
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
     detail: String(roundOff(v.value as number)),
@@ -115,9 +117,9 @@ function CommandBarKclInput({
           : defaultValue.length,
     },
     theme:
-      settings.context.app.theme.current === 'system'
+      settings.app.theme.current === 'system'
         ? getSystemTheme()
-        : settings.context.app.theme.current,
+        : settings.app.theme.current,
     extensions: [
       varMentionsExtension,
       EditorView.updateListener.of((vu: ViewUpdate) => {
@@ -170,7 +172,15 @@ function CommandBarKclInput({
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
-    if (!canSubmit || valueNode === null) return
+    if (!canSubmit || valueNode === null) {
+      // Gotcha: Our application can attempt to submit a command value before the command bar kcl input is ready. Notify the scene and user.
+      if (!canSubmit) {
+        toast.error('Unable to submit command')
+      } else if (valueNode === null) {
+        toast.error('Unable to submit undefined command value')
+      }
+      return
+    }
 
     onSubmit(
       createNewVariable

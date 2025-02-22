@@ -3,10 +3,11 @@
 use std::path::PathBuf;
 
 use crate::{
+    engine::new_zoo_client,
     errors::ExecErrorWithState,
-    execution::{new_zoo_client, ArtifactCommand, ExecutorContext, ExecutorSettings, Operation, ProgramMemory},
+    execution::{ExecState, ExecutorContext, ExecutorSettings},
     settings::types::UnitLength,
-    ConnectionError, ExecError, KclErrorWithOutputs, Program,
+    ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -21,9 +22,9 @@ pub struct RequestBody {
 pub async fn execute_and_snapshot(
     code: &str,
     units: UnitLength,
-    project_directory: Option<PathBuf>,
+    current_file: Option<PathBuf>,
 ) -> Result<image::DynamicImage, ExecError> {
-    let ctx = new_context(units, true, project_directory).await?;
+    let ctx = new_context(units, true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let res = do_execute_and_snapshot(&ctx, program)
         .await
@@ -38,17 +39,10 @@ pub async fn execute_and_snapshot(
 pub async fn execute_and_snapshot_ast(
     ast: Program,
     units: UnitLength,
-    project_directory: Option<PathBuf>,
-) -> Result<(ProgramMemory, Vec<Operation>, Vec<ArtifactCommand>, image::DynamicImage), ExecErrorWithState> {
-    let ctx = new_context(units, true, project_directory).await?;
-    let res = do_execute_and_snapshot(&ctx, ast).await.map(|(state, snap)| {
-        (
-            state.mod_local.memory,
-            state.mod_local.operations,
-            state.global.artifact_commands,
-            snap,
-        )
-    });
+    current_file: Option<PathBuf>,
+) -> Result<(ExecState, image::DynamicImage), ExecErrorWithState> {
+    let ctx = new_context(units, true, current_file).await?;
+    let res = do_execute_and_snapshot(&ctx, ast).await;
     ctx.close().await;
     res
 }
@@ -56,9 +50,9 @@ pub async fn execute_and_snapshot_ast(
 pub async fn execute_and_snapshot_no_auth(
     code: &str,
     units: UnitLength,
-    project_directory: Option<PathBuf>,
+    current_file: Option<PathBuf>,
 ) -> Result<image::DynamicImage, ExecError> {
-    let ctx = new_context(units, false, project_directory).await?;
+    let ctx = new_context(units, false, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let res = do_execute_and_snapshot(&ctx, program)
         .await
@@ -71,10 +65,21 @@ pub async fn execute_and_snapshot_no_auth(
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
-) -> Result<(crate::execution::ExecState, image::DynamicImage), ExecErrorWithState> {
-    let mut exec_state = Default::default();
+) -> Result<(ExecState, image::DynamicImage), ExecErrorWithState> {
+    let mut exec_state = ExecState::new(&ctx.settings);
+    ctx.run_with_ui_outputs(&program, &mut exec_state)
+        .await
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
+    for e in exec_state.errors() {
+        if e.severity.is_err() {
+            return Err(ExecErrorWithState::new(
+                KclErrorWithOutputs::no_outputs(KclError::Semantic(e.clone().into())).into(),
+                exec_state.clone(),
+            ));
+        }
+    }
     let snapshot_png_bytes = ctx
-        .execute_and_prepare_snapshot(&program, &mut exec_state)
+        .prepare_snapshot()
         .await
         .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?
         .contents
@@ -95,7 +100,7 @@ async fn do_execute_and_snapshot(
 pub async fn new_context(
     units: UnitLength,
     with_auth: bool,
-    project_directory: Option<PathBuf>,
+    current_file: Option<PathBuf>,
 ) -> Result<ExecutorContext, ConnectionError> {
     let mut client = new_zoo_client(if with_auth { None } else { Some("bad_token".to_string()) }, None)
         .map_err(ConnectionError::CouldNotMakeClient)?;
@@ -106,18 +111,20 @@ pub async fn new_context(
         client.set_base_url("https://api.zoo.dev".to_string());
     }
 
-    let ctx = ExecutorContext::new(
-        &client,
-        ExecutorSettings {
-            units,
-            highlight_edges: true,
-            enable_ssao: false,
-            show_grid: false,
-            replay: None,
-            project_directory,
-        },
-    )
-    .await
-    .map_err(ConnectionError::Establishing)?;
+    let mut settings = ExecutorSettings {
+        units,
+        highlight_edges: true,
+        enable_ssao: false,
+        show_grid: false,
+        replay: None,
+        project_directory: None,
+        current_file: None,
+    };
+    if let Some(current_file) = current_file {
+        settings.with_current_file(current_file);
+    }
+    let ctx = ExecutorContext::new(&client, settings)
+        .await
+        .map_err(ConnectionError::Establishing)?;
     Ok(ctx)
 }

@@ -3,13 +3,22 @@ import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
+import {
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_COLOR,
+} from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
-import { loftValidator, revolveAxisValidator } from './validators'
+import {
+  loftValidator,
+  revolveAxisValidator,
+  shellValidator,
+  sweepValidator,
+} from './validators'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -23,6 +32,8 @@ export const EXTRUSION_RESULTS = [
   'intersect',
 ] as const
 
+export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
+
 export type ModelingCommandSchema = {
   'Enter sketch': {}
   Export: {
@@ -33,13 +44,15 @@ export type ModelingCommandSchema = {
     machine: components['schemas']['MachineInfoResponse']
   }
   Extrude: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
   Sweep: {
-    path: Selections
-    profile: Selections
+    target: Selections
+    trajectory: Selections
   }
   Loft: {
     selection: Selections
@@ -51,7 +64,7 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
-    axisOrEdge: string
+    axisOrEdge: 'Axis' | 'Edge'
     axis: string
     edge: Selections
   }
@@ -64,8 +77,18 @@ export type ModelingCommandSchema = {
     length: KclCommandValue
   }
   'Offset plane': {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
     plane: Selections
     distance: KclCommandValue
+  }
+  Helix: {
+    revolutions: KclCommandValue
+    angleStart: KclCommandValue
+    counterClockWise: boolean
+    radius: KclCommandValue
+    axis: string
+    length: KclCommandValue
   }
   'change tool': {
     tool: SketchTool
@@ -88,6 +111,11 @@ export type ModelingCommandSchema = {
   'Prompt-to-edit': {
     prompt: string
     selection: Selections
+  }
+  'Delete selection': {}
+  Appearance: {
+    nodeToEdit?: PathToNode
+    color: string
   }
 }
 
@@ -274,9 +302,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'extrude',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -303,37 +338,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description:
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
-    status: 'development',
-    needsReview: true,
+    needsReview: false,
     args: {
-      profile: {
+      target: {
         inputType: 'selection',
-        selectionTypes: ['solid2D'],
+        selectionTypes: ['solid2d'],
         required: true,
         skip: true,
         multiple: false,
-        // TODO: add dry-run validation
-        warningMessage:
-          'The sweep workflow is new and under tested. Please break it and report issues.',
       },
-      path: {
+      trajectory: {
         inputType: 'selection',
         selectionTypes: ['segment', 'path'],
         required: true,
-        skip: true,
+        skip: false,
         multiple: false,
-        // TODO: add dry-run validation
+        validation: sweepValidator,
       },
     },
   },
   Loft: {
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
-    needsReview: true,
+    needsReview: false,
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D'],
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         skip: false,
@@ -351,29 +382,27 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
-        skip: false,
+        validation: shellValidator,
       },
       thickness: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+        // TODO: add dry-run validation on thickness param
       },
     },
   },
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
-    status: 'development',
     needsReview: true,
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
-        warningMessage:
-          'The revolve workflow is new and under tested. Please break it and report issues.',
       },
       axisOrEdge: {
         inputType: 'options',
@@ -416,6 +445,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Offset a plane.',
     icon: 'plane',
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       plane: {
         inputType: 'selection',
         selectionTypes: ['plane'],
@@ -424,6 +460,53 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
       },
       distance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  Helix: {
+    description: 'Create a helix or spiral in 3D about an axis.',
+    icon: 'helix',
+    status: 'development',
+    needsReview: true,
+    args: {
+      revolutions: {
+        inputType: 'kcl',
+        defaultValue: '1',
+        required: true,
+        warningMessage:
+          'The helix workflow is new and under tested. Please break it and report issues.',
+      },
+      angleStart: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
+      counterClockWise: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'True', isCurrent: false, value: true },
+          { name: 'False', isCurrent: true, value: false },
+        ],
+      },
+      radius: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+      axis: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+          { name: 'Z Axis', isCurrent: false, value: 'Z' },
+        ],
+      },
+      length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
@@ -504,7 +587,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ast: structuredClone(kclManager.ast),
             selectionRanges,
             transformInfos: transforms,
-            programMemory: kclManager.programMemory,
+            memVars: kclManager.variables,
             referenceSegName: '',
           })
           if (err(sketched)) return KCL_DEFAULT_LENGTH
@@ -573,7 +656,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         inputType: 'selection',
         selectionTypes: [
-          'solid2D',
+          'solid2d',
           'segment',
           'sweepEdge',
           'cap',
@@ -589,6 +672,42 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'text',
         required: true,
       },
+    },
+  },
+  Appearance: {
+    description:
+      'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+    icon: 'extrude',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
+      color: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'Red', value: '#FF0000' },
+          { name: 'Green', value: '#00FF00' },
+          { name: 'Blue', value: '#0000FF' },
+          { name: 'Turquoise', value: '#00FFFF' },
+          { name: 'Purple', value: '#FF00FF' },
+          { name: 'Yellow', value: '#FFFF00' },
+          { name: 'Black', value: '#000000' },
+          { name: 'Dark Grey', value: '#080808' },
+          { name: 'Light Grey', value: '#D3D3D3' },
+          { name: 'White', value: '#FFFFFF' },
+          {
+            name: 'Default (clear appearance)',
+            value: COMMAND_APPEARANCE_COLOR_DEFAULT,
+          },
+        ],
+      },
+      // Add more fields
     },
   },
 }

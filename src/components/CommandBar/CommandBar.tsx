@@ -1,6 +1,5 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import { Fragment, useEffect } from 'react'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import CommandBarArgument from './CommandBarArgument'
 import CommandComboBox from '../CommandComboBox'
 import CommandBarReview from './CommandBarReview'
@@ -8,12 +7,13 @@ import { useLocation } from 'react-router-dom'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
-  const { commandBarState, commandBarSend } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
@@ -22,16 +22,17 @@ export const CommandBar = () => {
 
   // Close the command bar when navigating
   useEffect(() => {
-    commandBarSend({ type: 'Close' })
+    if (commandBarState.matches('Closed')) return
+    commandBarActor.send({ type: 'Close' })
   }, [pathname])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
     if (commandBarState.context.commands.length === 0) return
     if (commandBarState.matches('Closed')) {
-      commandBarSend({ type: 'Open' })
+      commandBarActor.send({ type: 'Open' })
     } else {
-      commandBarSend({ type: 'Close' })
+      commandBarActor.send({ type: 'Close' })
     }
   })
 
@@ -51,14 +52,14 @@ export const CommandBar = () => {
           ...entries[entries.length - 1][1],
         }
 
-        commandBarSend({
+        commandBarActor.send({
           type: 'Edit argument',
           data: {
             arg: currentArg,
           },
         })
       } else {
-        commandBarSend({ type: 'Deselect command' })
+        commandBarActor.send({ type: 'Deselect command' })
       }
     } else {
       const entries = Object.entries(selectedCommand?.args || {})
@@ -67,9 +68,9 @@ export const CommandBar = () => {
       )
 
       if (index === 0) {
-        commandBarSend({ type: 'Deselect command' })
+        commandBarActor.send({ type: 'Deselect command' })
       } else {
-        commandBarSend({
+        commandBarActor.send({
           type: 'Change current argument',
           data: {
             arg: { name: entries[index - 1][0], ...entries[index - 1][1] },
@@ -84,19 +85,20 @@ export const CommandBar = () => {
       show={!commandBarState.matches('Closed') || false}
       afterLeave={() => {
         if (selectedCommand?.onCancel) selectedCommand.onCancel()
-        commandBarSend({ type: 'Clear' })
+        commandBarActor.send({ type: 'Clear' })
       }}
       as={Fragment}
     >
       <WrapperComponent
         open={!commandBarState.matches('Closed') || isSelectionArgument}
         onClose={() => {
-          commandBarSend({ type: 'Close' })
+          commandBarActor.send({ type: 'Close' })
         }}
         className={
           'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
           (isSelectionArgument ? 'pointer-events-none' : '')
         }
+        data-testid="command-bar-wrapper"
       >
         <Transition.Child
           enter="duration-100 ease-out"
@@ -121,7 +123,7 @@ export const CommandBar = () => {
               )
             )}
             <button
-              onClick={() => commandBarSend({ type: 'Close' })}
+              onClick={() => commandBarActor.send({ type: 'Close' })}
               className="group block !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent"
             >
               <CustomIcon

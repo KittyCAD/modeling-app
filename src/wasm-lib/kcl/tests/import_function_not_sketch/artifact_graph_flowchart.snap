@@ -1,0 +1,7 @@
+---
+source: kcl/src/simulation_tests.rs
+assertion_line: 189
+description: Artifact graph flowchart import_function_not_sketch.kcl
+extension: md
+snapshot_kind: binary
+---

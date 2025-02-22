@@ -107,16 +107,16 @@ const bracket = startSketchOn('XY')
   |> line([0, -thickness], %)
   |> line([shelfMountL - thickness, 0], %, $innerEdge)
   |> line([0, -wallMountL + thickness], %)
-  |> close(%)
+  |> close()
   |> extrude(width, %)
-  |> fillet({
-       radius: filletR,
-       tags: [getPreviousAdjacentEdge(innerEdge, %)]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [getPreviousAdjacentEdge(outerEdge, %)]
-     }, %)
+  |> fillet(
+       radius = filletR,
+       tags = [getPreviousAdjacentEdge(innerEdge, %)]
+     )
+  |> fillet(
+       radius = filletR + thickness,
+       tags = [getPreviousAdjacentEdge(outerEdge, %)]
+     )
 "
     );
 
@@ -154,16 +154,16 @@ const bracket = startSketchOn('XY')
   |> line([0, -thickness], %)
   |> line([shelfMountL - thickness, 0], %, $innerEdge)
   |> line([0, -wallMountL + thickness], %)
-  |> close(%)
+  |> close()
   |> extrude(width, %)
-  |> fillet({
-       radius: filletR,
-       tags: [getPreviousAdjacentEdge(innerEdge)]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [getPreviousAdjacentEdge(outerEdge)]
-     }, %)
+  |> fillet(
+       radius = filletR,
+       tags = [getPreviousAdjacentEdge(innerEdge)]
+     )
+  |> fillet(
+       radius = filletR + thickness,
+       tags = [getPreviousAdjacentEdge(outerEdge)]
+     )
 "
     );
 }

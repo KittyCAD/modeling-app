@@ -25,6 +25,10 @@ export const projectsMachine = setup({
           type: 'Delete project'
           data: ProjectsCommandSchema['Delete project']
         }
+      | {
+          type: 'Import file from URL'
+          data: ProjectsCommandSchema['Import file from URL']
+        }
       | { type: 'navigate'; data: { name: string } }
       | {
           type: 'xstate.done.actor.read-projects'
@@ -41,6 +45,10 @@ export const projectsMachine = setup({
       | {
           type: 'xstate.done.actor.rename-project'
           output: { message: string; oldName: string; newName: string }
+        }
+      | {
+          type: 'xstate.done.actor.create-file'
+          output: { message: string; projectName: string; fileName: string }
         }
       | { type: 'assign'; data: { [key: string]: any } },
     input: {} as {
@@ -60,6 +68,7 @@ export const projectsMachine = setup({
     toastError: () => {},
     navigateToProject: () => {},
     navigateToProjectIfNeeded: () => {},
+    navigateToFile: () => {},
   },
   actors: {
     readProjects: fromPromise(() => Promise.resolve([] as Project[])),
@@ -90,12 +99,22 @@ export const projectsMachine = setup({
           name: '',
         })
     ),
+    createFile: fromPromise(
+      (_: {
+        input: ProjectsCommandSchema['Import file from URL'] & {
+          projects: Project[]
+        }
+      }) => Promise.resolve({ message: '', projectName: '', fileName: '' })
+    ),
   },
   guards: {
-    'Has at least 1 project': () => false,
+    'Has at least 1 project': ({ event }) => {
+      if (event.type !== 'xstate.done.actor.read-projects') return false
+      return event.output.length ? event.output.length >= 1 : false
+    },
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAHogAsAJgA0IAJ6IAjBIkA2AHQAOCUw0qNkjQE4xYjQF8zMtJhwES5NcmpZSqLBwBOqAFZh8PWAoAJTBcCHcvX39YZjYkEC5efkF40QQFFQBmAHY1Qwz9QwBWU0NMrRl5BGyxBTUVJlVM01rtBXNLEGtsPCIyMEdnVwifPwCKAGEPUJ5sT1H-WKFE4j4BITSMzMzNIsyJDSZMhSYmFWzKxAkTNSYxIuU9zOKT7IsrDB67fsHYEajxiEwv8xjFWMtuKtkhsrpJboZsioincFMdTIjLggVGJ1GImMVMg0JISjEV3l1PrY+g4nH95gDAiFSLgbPSxkt4is1ilQGlrhJ4YjkbU0RoMXJEIYkWoikV8hJinjdOdyd0qfYBrSQdFJtNcLNtTwOZxIdyYQh+YKkSjReKqqYBQoEQpsgiSi9MqrKb0Nb9DYEACJgAA2YANbMW4M5puhqVhAvxQptCnRKkxCleuw0Gm2+2aRVRXpsPp+Woj4wA8hwwKRDcaEjH1nGLXDE9aRSmxWmJVipWocmdsbL8kxC501SWHFMZmQoIaKBABAMyAA3VAAawG+D1swAtOX61zY7zENlEWoMkoatcdPoipjCWIZRIirozsPiYYi19qQNp-rZ3nMAPC8Dw1A4YN9QAM1QDx0DUbcZjAfdInZKMTSSJsT2qc9Lwka8lTvTFTB2WUMiyQwc3yPRv3VH4mRZQDywXJc1FXDcBmmZlMBQhYjXQhtMJ5ERT1wlQr0kQj7kxKiZTxM5s2zbQEVoycBgY9AmNQ-wKGA0DwMgngYLgtQuJZZCDwEo8sJEnD1Dwgjb2kntig0GUkWVfZDEMfFVO+Bwg1DPhSDnZjFwcdjNzUCAQzDCztP4uIMKhGy0jPezxPwySnPvHsTjlPIhyOHRsnwlM-N-NRArDLS+N0kDYIM6DYPgmKgvivjD0bYS+VbBF21RTs7UUUcimfRpXyYRF8LFCrfSBCBaoZFiItINcor1CBeIZLqhPNdKL0yxzs2cqoNDqdpSo0EoSoLOb6NCRaQv9FblzWjjTMe7bQQYBQksElKesUMRjFubRMllCHsm2a5MVldRDBfFpmj0IpxPuhwFqW0F6v0iDmpMzbvuiXbAfNFNQcaI5IaKaH9jETFsUMNRVDxOU5TxBULE6VwYvgeIJ38sAIT25td27KpdzG7yZeho5slHVmMc1IY3HLfnkrNZt2hOW5smRCQM2uhQHkZ6VtkRBFnmu0qFGVv11ZFsnm0kdN8QFJVjlUPZ9co+3-2C0KEqdrXsJMJ8ryc86iUyYiCvxFNzldb3jHtjTsf8EPj1ssQchZlR8jR5EmDRrIGZcuF7maF1aZtslx29IWqtiwPDSz1LxDxepnlOfYDghp03eyOpngzXuYdHNPHozgJ26B9IXR2cTvP0BVkSRXKqgLtyq8OfQcXOwlubMIA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAHogAsAJgA0IAJ6IAjAHYAbADoArBJVMFTCQA4mTAMwmxAXwsy0mHARLkKASXRcATjywAzYgBtsb3cMLABVACUAGWY2JBAuXn5BONEESRl5BAUFFQM1HQUxJSYATmyFAyUTKxsMbDwiMjA1ZGosUlQsDmCAKzB8HlgKcLBcCC7e-sGYoQTiPgEhVIUy9SKSiQ0NEwkclRyMxGKJNRKlMRVDU23zpRqQW3qHJpa2jonUPoGhgGF3UZ42G6nymMzicwWyVAyzKJzECg0OiYGjERhK+kOWUMSlOGiUlTEJlMxRKBnuj3sjXIr1gHy+g2Go3GwPpsDBnG48ySS0QGj0+Q0JTOGkqBg2JhKmNRJy2OyUEn0Kml5LqlMczVatJZUyGI1IuDs2oG7PinMhPIQfKYAqFShF+PFkrkRwkYjU8OUShKKhMKg0pUs1geqoa6ppdJ1FD+AKBk2NrFmZu5KV5-L9tvtYokEsxelRagUCoMiMumyUdpVdlDL01Ee+FAAImAAoC6zwTRDk9DU9b08LRY7MWd1AZcoS-aoLiYFJWnlSNW0jQyAPIcMCkNsdpOLFOWtOC-sO7NOzLbGWFbY6acmFESWdql7R3B8UhQNsUCACZpkABuqAA1s0+D-M+YAALRLluiQ7t2WRMGIbryjeBgGBIEglNsCi5sY6hMOchQqEoCLFCh97VtST4vm+S4UGA7jBO4agcH4z7eKg7joGowExhBcbtgm4LblCIiKPBiHZiKqHoZhuaFhoBbGMYBhiPBCgStUQYUuRzR6gaZDUXxH5fmov4Ac0-z6pgvEgvGsQctBwnLGJahIZJaEYdOmKEfJuQSoRRKSRcZHPNSunoPp750QxTEsTwbEcWoFkGuBkECfZXIwSJcEIS5Ekoe5MnOggXqIaUqFiiUhIInemkhiFzRNi2EU0Z+1KmYBagQM2YCAtZ9JQRljmiTlrn5dJnlFShOLwcpZjKBs+KBrUVb1WojU9c1hlRexMWsexnFdS2KV8QN5q7laNqHlmOaTcpmjoWc8L6HoYrBfOagjGMm02QyrXfqQf4dSBEB9Tqp1dllebichUkeVhRXTiU+QecUKhCps4pvWGn0QN9rJGW1ANmYlTKg98DAKHZpoORanoyqh8oImU3pKJifJ5Ohdr7CYqjIvKWMvDjeORttjHMXtCXA2T0xpdTg20+W9MSIzgorIRXlpr6ORbPs+jwQLFEgVRPj+JQf0mUTHXcaBYG+AE4OZcsxbuts5hbCK+zFmImJgSc5zPV6BQVD6RQG80lERXblCi7tcX7VxRvgVHDtDQgaE4vK2gXKiTA6ItubmJo8IoqOylERUVhBh0XXwHEWn1YmNO7mBKg+2KpzK2IpIBUwBhqUtwYre9tbvEutfpWdsFFnkPpVJnQqz15Ozur36FoypREbGH4Zj438u7tO1qIu5qK5PBGyYjebpEkS44e9oVTbxHr5tnvk9ZeXajTuW+zaHNuzYRUmoeCEp-RKlUHJbeYVhYDDfhDVIxR5IGGnISQk6E+6EkxMUBQX9c66EMMg3Q5Zt7rWNkuOBjsjilDUAqQsZQzzgOkJNUk7o7SmF-tiXOUCmQwMGBQ1OF4TgVGzFUG8yIxQGDZiYPI4oqh+mPsrDSy05xhmfm+KO-CLT+iRucEUuwFQqWzMWXM2YTAuTtL6ZBylkRcMrkAA */
   id: 'Home machine',
 
   initial: 'Reading projects',
@@ -111,6 +130,8 @@ export const projectsMachine = setup({
       })),
       target: '.Reading projects',
     },
+
+    'Import file from URL': '.Creating file',
   },
   states: {
     'Has no projects': {
@@ -155,7 +176,10 @@ export const projectsMachine = setup({
         id: 'create-project',
         src: 'createProject',
         input: ({ event, context }) => {
-          if (event.type !== 'Create project') {
+          if (
+            event.type !== 'Create project' &&
+            event.type !== 'Import file from URL'
+          ) {
             return {
               name: '',
               projects: context.projects,
@@ -270,6 +294,38 @@ export const projectsMachine = setup({
             actions: ['toastError'],
           },
         ],
+      },
+    },
+
+    'Creating file': {
+      invoke: {
+        id: 'create-file',
+        src: 'createFile',
+        input: ({ event, context }) => {
+          if (event.type !== 'Import file from URL') {
+            return {
+              code: '',
+              name: '',
+              method: 'existingProject',
+              projects: context.projects,
+            }
+          }
+          return {
+            code: event.data.code || '',
+            name: event.data.name,
+            method: event.data.method,
+            projectName: event.data.projectName,
+            projects: context.projects,
+          }
+        },
+        onDone: {
+          target: 'Reading projects',
+          actions: ['navigateToFile', 'toastSuccess'],
+        },
+        onError: {
+          target: 'Reading projects',
+          actions: 'toastError',
+        },
       },
     },
   },

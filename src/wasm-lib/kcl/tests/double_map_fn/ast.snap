@@ -34,7 +34,10 @@ description: Result of parsing double_map_fn.kcl
                       "start": 31,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 27,
                     "type": "BinaryExpression",
@@ -91,7 +94,10 @@ description: Result of parsing double_map_fn.kcl
               "start": 45,
               "type": "Literal",
               "type": "Literal",
-              "value": 2.0
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             },
             "endInclusive": true,
             "start": 41,
@@ -101,7 +107,10 @@ description: Result of parsing double_map_fn.kcl
               "start": 42,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.0
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
             },
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"

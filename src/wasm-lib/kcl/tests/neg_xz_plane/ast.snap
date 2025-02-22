@@ -7,7 +7,7 @@ description: Result of parsing neg_xz_plane.kcl
     "body": [
       {
         "declaration": {
-          "end": 150,
+          "end": 174,
           "id": {
             "end": 7,
             "name": "part001",
@@ -48,7 +48,10 @@ description: Result of parsing neg_xz_plane.kcl
                         "start": 52,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 56,
@@ -56,7 +59,10 @@ description: Result of parsing neg_xz_plane.kcl
                         "start": 55,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 57,
@@ -85,156 +91,180 @@ description: Result of parsing neg_xz_plane.kcl
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 78,
-                        "raw": "100",
-                        "start": 75,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 100.0
-                      },
-                      {
-                        "end": 83,
-                        "raw": "100",
-                        "start": 80,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 100.0
-                      }
-                    ],
-                    "end": 84,
-                    "start": 74,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 87,
-                    "start": 86,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 90,
+                          "raw": "100",
+                          "start": 87,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 100.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 95,
+                          "raw": "100",
+                          "start": 92,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 100.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 96,
+                      "start": 86,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 73,
-                  "name": "lineTo",
+                  "end": 71,
+                  "name": "line",
                   "start": 67,
                   "type": "Identifier"
                 },
-                "end": 88,
+                "end": 97,
                 "start": 67,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 105,
-                        "raw": "100",
-                        "start": 102,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 100.0
-                      },
-                      {
-                        "end": 108,
-                        "raw": "0",
-                        "start": 107,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 0.0
-                      }
-                    ],
-                    "end": 109,
-                    "start": 101,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 112,
-                    "start": 111,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 126,
+                          "raw": "100",
+                          "start": 123,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 100.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 129,
+                          "raw": "0",
+                          "start": 128,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 130,
+                      "start": 122,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 100,
-                  "name": "lineTo",
-                  "start": 94,
+                  "end": 107,
+                  "name": "line",
+                  "start": 103,
                   "type": "Identifier"
                 },
-                "end": 113,
-                "start": 94,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 131,
+                "start": 103,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "end": 126,
-                    "start": 125,
+                    "end": 144,
+                    "start": 143,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 124,
+                  "end": 142,
                   "name": "close",
-                  "start": 119,
+                  "start": 137,
                   "type": "Identifier"
                 },
-                "end": 127,
-                "start": 119,
+                "end": 145,
+                "start": 137,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 146,
-                    "left": {
-                      "end": 142,
-                      "raw": "5",
-                      "start": 141,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": 5.0
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
                     },
-                    "operator": "+",
-                    "right": {
-                      "end": 146,
-                      "raw": "7",
-                      "start": 145,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": 7.0
-                    },
-                    "start": 141,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  {
-                    "end": 149,
-                    "start": 148,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "arg": {
+                      "end": 173,
+                      "left": {
+                        "end": 169,
+                        "raw": "5",
+                        "start": 168,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 5.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "operator": "+",
+                      "right": {
+                        "end": 173,
+                        "raw": "7",
+                        "start": 172,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 7.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 168,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 140,
+                  "end": 158,
                   "name": "extrude",
-                  "start": 133,
+                  "start": 151,
                   "type": "Identifier"
                 },
-                "end": 150,
-                "start": 133,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 174,
+                "start": 151,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 150,
+            "end": 174,
             "start": 10,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -242,14 +272,14 @@ description: Result of parsing neg_xz_plane.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 150,
+        "end": 174,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 151,
+    "end": 175,
     "start": 0
   }
 }

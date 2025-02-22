@@ -36,19 +36,19 @@ macro_rules! logln {
 }
 pub(crate) use logln;
 
-#[cfg(not(feature = "disable-println"))]
+#[cfg(all(not(feature = "disable-println"), not(target_arch = "wasm32")))]
 #[inline]
 fn log_inner(msg: String) {
     eprintln!("{msg}");
 }
 
-#[cfg(all(feature = "disable-println", target_arch = "wasm32"))]
+#[cfg(all(not(feature = "disable-println"), target_arch = "wasm32"))]
 #[inline]
 fn log_inner(msg: String) {
     web_sys::console::log_1(&msg.into());
 }
 
-#[cfg(all(feature = "disable-println", not(target_arch = "wasm32")))]
+#[cfg(feature = "disable-println")]
 #[inline]
 fn log_inner(_msg: String) {}
 
@@ -102,7 +102,7 @@ impl<'a> LogPerfStats<'a> {
         }
     }
 
-    /// After `cancel`ing, this object will not log its stats on drop (you can still can `log_now`).
+    /// After `cancel`ing, this object will not log its stats on drop (you can still `log_now`).
     pub fn cancel(&mut self) {
         self.cancelled = true;
     }

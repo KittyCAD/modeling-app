@@ -1,4 +1,4 @@
-import { assign, fromPromise, setup } from 'xstate'
+import { assign, createActor, fromPromise, setup, SnapshotFrom } from 'xstate'
 import {
   Command,
   CommandArgument,
@@ -9,6 +9,8 @@ import { Selections__old } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
+import { useSelector } from '@xstate/react'
+import { authCommands } from 'lib/commandBarConfigs/authCommandConfig'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -79,6 +81,7 @@ export type CommandBarMachineEvent =
 export const commandBarMachine = setup({
   types: {
     context: {} as CommandBarContext,
+    input: {} as { commands: Command[] },
     events: {} as CommandBarMachineEvent,
   },
   actions: {
@@ -119,6 +122,9 @@ export const commandBarMachine = setup({
         selectedCommand?.onSubmit()
       }
     },
+    'Clear selected command': assign({
+      selectedCommand: undefined,
+    }),
     'Set current argument to first non-skippable': assign({
       currentArgument: ({ context, event }) => {
         const { selectedCommand } = context
@@ -243,9 +249,22 @@ export const commandBarMachine = setup({
   },
   guards: {
     'Command needs review': ({ context }) =>
-      context.selectedCommand?.needsReview || false,
-    'Command has no arguments': () => false,
-    'All arguments are skippable': () => false,
+      context.selectedCommand?.needsReview ||
+      ('nodeToEdit' in context.argumentsToSubmit &&
+        context.argumentsToSubmit.nodeToEdit !== undefined) ||
+      false,
+    'Command has no arguments': ({ context }) => {
+      return (
+        !context.selectedCommand?.args ||
+        Object.keys(context.selectedCommand?.args).length === 0
+      )
+    },
+    'All arguments are skippable': ({ context }) => {
+      return Object.values(context.selectedCommand!.args!).every(
+        (argConfig) => argConfig.skip
+      )
+    },
+    'Has selected command': ({ context }) => !!context.selectedCommand,
   },
   actors: {
     'Validate argument': fromPromise(
@@ -394,9 +413,9 @@ export const commandBarMachine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswZJbPltM0U3eXLZAsRFeQcrerUHRbTFvfkmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUilkskqdiUWjWCAcDC0kjUqnElkc6lkoK0JzOT0CnWo1zIAEEIARvn48LA-uwuIC4qAEqIHJjJPJcYtxFoYdJFFjVsZEG5pqCquJxJoGvJxOUCT82sSrj0AEpgdCoABuYC+yog9OYIyZsQmYmhWzMmTqLnU0kyikRGVRbj5lg2SmUam5StpFxIkgAymBXh8HlADQGyKHw58aecGZEzUDWYgchY7CisWoSlpQQ5EVDLJJxKkdIpyypUop-ed2kHCW0Xu9uD1kwDzcCEJCtlUNgWhZZ1OlnaKEBpZJItHVzDZ5xlpPWiZdDc8w22O7JwozosyLUj3KiZZY85YtMUNgx5Ii81JuS5xBtPVCCyuVR0AOJYbgACzAEhI3wUgoAAV3QQZuFgCg-1wGAvjAkgSCgkCSHAyCcG4TtUxZYRED2TQZGSOw80qaQ7ARCc9mmZYSjPPFpDSQUP0DSQf3-QDgNAiCoJggAROBNw+aMkxNf5cMPHJSjPWRdhvZ9LGcF0b0kVQ8ycDRNkvNRWMbdjfwAoCcCjHjMOgyRyQAdywGITPwB42DA7hYzAgAjdAeDQjCoJw-du3TJE6mnWwoT0NIUTUAs71sMtdGsRYCyUtI9OJDijO49DeKw2BJAANSwShOAgX9IzICB+DASQHh1VAAGsqp1Qrit-MBySy8y-LGPCElSeoy2lZJcwcNRfXHQpBWmWQsRsPYdDPZJUu-QyuPssy+Py5qSt4EyyEAkhUCDNhKF-AAzQ70EkJqiu2tqOt88S926w9UhhLlykWXFHXcTJixsd60hHGxNj2Jag01HVODAKzXI8rzE1+R6U38tN8IQJSuR0OZ0gvHQXHGxBPWmUdppUWwFV0MHJAhqGYcpAh1qwrqDx7ZFajUmVpulEbqlqREsfBTQ0jcPM5P5KmaehshNW1PVvOy7Cka7VHeoYDkyjSPQtAvPMqkRQU1BnX1+UydFkQvCWwEhqWAFEIC8xnFd3ZHntZuTDZG4ob1nGxPTUfXrBnS8nDmEpT2ObxTnXVUALeOrgPanycvKyrqpwWqGqurbWsThXjWd5WesQZYtmBkplCceplIncK0SrXYqnccxxcj5s2OQWP4-s3PzJgiqcCqmr6sa7P2x7vi6AcAvJJ7XEy0dUFMWsFxlnKfn+S5CL3E9Jiuapjv3i7qNx+T-bDskY6zourObpz+6cuZgK0Y5Ua0TqEvXDkJR-YnR0s1xjkIMnDln3uuVsHwOxT1NCjIuR5nCSBUExJi1huRqyooUTYpYnzeyUFkKsy4Tg4FQBAOAgg26Nmga7QKohshSBtNYXGDonQumtPYaQfsSjLBHDefepJICUJZtQ4oMx8wXj6jebGt4JwbC2OiVwig9hh2hLpVu0cOhxjbMBBGeABFPwSA3ERRMlhKWCn9WRVQzZQirMo0BAYNzxn4RJGBh5MRbGXsHawGQFBmLrpUasOQorOAjs0OxaUVrGVMvfaCuiVYEV2KWTYg1yxyA0i6ZYaIPSL3lOkS8wSo6hOWpxCJ8te6WRsnZKMjlnIxNgSNIiiTF6vVSdI9JM1taXlxLzTwqiClBnSqtSJScLIFVvjtKANSXquENqoJwtgyZzRFIUQ4MhqgNACdNTQCpLbWyshMnsjpSwjXRJYHecgcmImsLIz0odNAaGqPiHpDYY6HwTlE+ATiqHPwohYewWQshmGhHrCcJz5Bck5toZwGhMheC8EAA */
-  context: {
-    commands: [],
+  /** @xstate-layout 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 */
+  context: ({ input }) => ({
+    commands: input.commands || [],
     selectedCommand: undefined,
     currentArgument: undefined,
     selectionRanges: {
@@ -411,7 +430,7 @@ export const commandBarMachine = setup({
       setCurrentMachine: () => {},
       noMachinesReason: () => undefined,
     },
-  },
+  }),
   id: 'Command Bar',
   initial: 'Closed',
   states: {
@@ -419,14 +438,6 @@ export const commandBarMachine = setup({
       on: {
         Open: {
           target: 'Selecting command',
-        },
-
-        'Find and select command': {
-          target: 'Command selected',
-          actions: [
-            'Find and select command',
-            'Initialize arguments to submit',
-          ],
         },
 
         'Add commands': {
@@ -440,8 +451,6 @@ export const commandBarMachine = setup({
                 ),
             }),
           ],
-
-          reenter: false,
         },
 
         'Remove commands': {
@@ -458,9 +467,12 @@ export const commandBarMachine = setup({
                 ),
             }),
           ],
-
-          reenter: false,
         },
+      },
+
+      always: {
+        target: 'Command selected',
+        guard: 'Has selected command',
       },
     },
 
@@ -478,7 +490,7 @@ export const commandBarMachine = setup({
         {
           target: 'Closed',
           guard: 'Command has no arguments',
-          actions: ['Execute command'],
+          actions: ['Execute command', 'Clear selected command'],
         },
         {
           target: 'Checking Arguments',
@@ -548,7 +560,7 @@ export const commandBarMachine = setup({
       on: {
         'Submit command': {
           target: 'Closed',
-          actions: ['Execute command'],
+          actions: ['Execute command', 'Clear selected command'],
         },
 
         'Add argument': {
@@ -580,7 +592,7 @@ export const commandBarMachine = setup({
           },
           {
             target: 'Closed',
-            actions: 'Execute command',
+            actions: ['Execute command', 'Clear selected command'],
           },
         ],
         onError: [
@@ -600,12 +612,18 @@ export const commandBarMachine = setup({
 
     Close: {
       target: '.Closed',
+      actions: 'Clear selected command',
     },
 
     Clear: {
       target: '#Command Bar',
       reenter: false,
       actions: ['Clear argument data'],
+    },
+
+    'Find and select command': {
+      target: '.Command selected',
+      actions: ['Find and select command', 'Initialize arguments to submit'],
     },
   },
 })
@@ -616,4 +634,17 @@ function sortCommands(a: Command, b: Command) {
   if (b.groupId === 'settings' && !(a.groupId === 'settings')) return -1
   if (a.groupId === 'settings' && !(b.groupId === 'settings')) return 1
   return a.name.localeCompare(b.name)
+}
+
+export const commandBarActor = createActor(commandBarMachine, {
+  input: {
+    commands: [...authCommands],
+  },
+}).start()
+
+/** Basic state snapshot selector */
+const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+  state
+export const useCommandBarState = () => {
+  return useSelector(commandBarActor, cmdBarStateSelector)
 }

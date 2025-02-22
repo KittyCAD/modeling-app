@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Error from executing kw_fn_unlabeled_but_has_label.kcl
-snapshot_kind: text
 ---
 KCL Semantic error
 

@@ -2,27 +2,15 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
-/// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct ModuleId(u32);
+use crate::modules::ModuleId;
 
-impl ModuleId {
-    pub fn from_usize(id: usize) -> Self {
-        Self(u32::try_from(id).expect("module ID should fit in a u32"))
-    }
-
-    pub fn as_usize(&self) -> usize {
-        usize::try_from(self.0).expect("module ID should fit in a usize")
-    }
-
-    /// Top-level file is the one being executed.
-    /// Represented by module ID of 0, i.e. the default value.
-    pub fn is_top_level(&self) -> bool {
-        *self == Self::default()
-    }
-}
-
+/// The first two items are the start and end points (byte offsets from the start of the file).
+/// The third item is whether the source range belongs to the 'main' file, i.e., the file currently
+/// being rendered/displayed in the editor.
+//
+// Don't use a doc comment for the below since the above goes in the website docs.
+// @see isTopLevelModule() in wasm.ts.
+// TODO we need to handle modules better in the frontend.
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[ts(export, type = "[number, number, number]")]
 pub struct SourceRange([usize; 3]);
@@ -58,9 +46,21 @@ impl SourceRange {
         Self::default()
     }
 
+    /// True if this is a source range that doesn't correspond to any source
+    /// code.
+    pub fn is_synthetic(&self) -> bool {
+        self.start() == 0 && self.end() == 0
+    }
+
     /// Get the start of the range.
     pub fn start(&self) -> usize {
         self.0[0]
+    }
+
+    /// Get the start of the range as a zero-length SourceRange, effectively collapse `self` to it's
+    /// start.
+    pub fn start_as_range(&self) -> Self {
+        Self([self.0[0], self.0[0], self.0[2]])
     }
 
     /// Get the end of the range.

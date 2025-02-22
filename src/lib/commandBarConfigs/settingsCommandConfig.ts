@@ -7,20 +7,23 @@ import {
   SettingsPaths,
   SettingsLevel,
   SettingProps,
+  SetEventTypes,
 } from 'lib/settings/settingsTypes'
 import { settingsMachine } from 'machines/settingsMachine'
 import { PathValue } from 'lib/types'
-import { Actor, AnyStateMachine, ContextFrom } from 'xstate'
+import { ActorRefFrom, AnyStateMachine } from 'xstate'
 import { getPropertyByPath } from 'lib/objectPropertyByPath'
 import { buildCommandArgument } from 'lib/createMachineCommand'
 import decamelize from 'decamelize'
 import { isDesktop } from 'lib/isDesktop'
-import { Setting } from 'lib/settings/initialSettings'
+import {
+  createSettings,
+  Setting,
+  SettingsType,
+} from 'lib/settings/initialSettings'
 
 // An array of the paths to all of the settings that have commandConfigs
-export const settingsWithCommandConfigs = (
-  s: ContextFrom<typeof settingsMachine>
-) =>
+export const settingsWithCommandConfigs = (s: SettingsType) =>
   Object.entries(s).flatMap(([categoryName, categorySettings]) =>
     Object.entries(categorySettings)
       .filter(([_, setting]) => setting.commandConfig !== undefined)
@@ -28,7 +31,7 @@ export const settingsWithCommandConfigs = (
   ) as SettingsPaths[]
 
 const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
-  actor: Actor<T>,
+  actor: ActorRefFrom<T>,
   isProjectAvailable: boolean,
   hideOnLevel?: SettingsLevel
 ): CommandArgument<SettingsLevel, T> => ({
@@ -53,23 +56,16 @@ const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
 
 interface CreateSettingsArgs {
   type: SettingsPaths
-  send: Function
-  context: ContextFrom<typeof settingsMachine>
-  actor: Actor<typeof settingsMachine>
-  isProjectAvailable: boolean
+  actor: ActorRefFrom<typeof settingsMachine>
 }
 
 // Takes a Setting with a commandConfig and creates a Command
 // that can be used in the CommandBar component.
-export function createSettingsCommand({
-  type,
-  send,
-  context,
-  actor,
-  isProjectAvailable,
-}: CreateSettingsArgs) {
-  type S = PathValue<typeof context, typeof type>
+export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
+  type S = PathValue<ReturnType<typeof createSettings>, typeof type>
 
+  const context = actor.getSnapshot().context
+  const isProjectAvailable = context.currentProject !== undefined
   const settingConfig = getPropertyByPath(context, type) as SettingProps<
     S['default']
   >
@@ -129,10 +125,18 @@ export function createSettingsCommand({
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      if (data !== undefined && data !== null) {
-        send({ type: `set.${type}`, data })
+      if (
+        data !== undefined &&
+        data !== null &&
+        'value' in data &&
+        'level' in data
+      ) {
+        // TS would not let me get this to type properly
+        const coercedData = data as unknown as SetEventTypes['data']
+        actor.send({ type: `set.${type}`, data: coercedData })
       } else {
-        send({ type })
+        console.error('Invalid data submitted to settings command', data)
+        return new Error('Invalid data submitted to settings command', data)
       }
     },
     args: {

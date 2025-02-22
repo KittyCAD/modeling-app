@@ -1,5 +1,4 @@
 import { useSelector } from '@xstate/react'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandArgument } from 'lib/commandTypes'
 import {
@@ -10,6 +9,7 @@ import {
 import { kclManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { modelingMachine } from 'machines/modelingMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
@@ -17,7 +17,7 @@ import { StateFrom } from 'xstate'
 const semanticEntityNames: {
   [key: string]: Array<Artifact['type'] | 'defaultPlane'>
 } = {
-  face: ['wall', 'cap', 'solid2D'],
+  face: ['wall', 'cap', 'solid2d'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
   point: [],
   plane: ['defaultPlane'],
@@ -49,7 +49,7 @@ function CommandBarSelectionInput({
   onSubmit: (data: unknown) => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const { commandBarState, commandBarSend } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
@@ -145,7 +145,7 @@ function CommandBarSelectionInput({
             if (event.key === 'Backspace') {
               stepBack()
             } else if (event.key === 'Escape') {
-              commandBarSend({ type: 'Close' })
+              commandBarActor.send({ type: 'Close' })
             }
           }}
           onChange={handleChange}

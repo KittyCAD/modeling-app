@@ -6,7 +6,7 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 43,
+        "end": 46,
         "id": {
           "end": 5,
           "name": "myBox",
@@ -39,33 +39,37 @@ expression: actual
             {
               "arguments": [
                 {
-                  "elements": [
-                    {
-                      "end": 35,
-                      "raw": "0",
-                      "start": 34,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": 0.0
-                    },
-                    {
-                      "end": 38,
-                      "name": "l",
-                      "start": 37,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    }
-                  ],
-                  "end": 39,
-                  "start": 33,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                },
-                {
-                  "end": 42,
-                  "start": 41,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "end"
+                  },
+                  "arg": {
+                    "elements": [
+                      {
+                        "end": 41,
+                        "raw": "0",
+                        "start": 40,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 44,
+                        "name": "l",
+                        "start": 43,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "end": 45,
+                    "start": 39,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
                 }
               ],
               "callee": {
@@ -74,13 +78,14 @@ expression: actual
                 "start": 28,
                 "type": "Identifier"
               },
-              "end": 43,
+              "end": 46,
               "start": 28,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             }
           ],
-          "end": 43,
+          "end": 46,
           "start": 8,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -88,13 +93,13 @@ expression: actual
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 43,
+      "end": 46,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 43,
+  "end": 46,
   "start": 0
 }

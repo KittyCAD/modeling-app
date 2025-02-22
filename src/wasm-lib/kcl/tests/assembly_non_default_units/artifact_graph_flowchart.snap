@@ -1,0 +1,6 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph flowchart assembly_non_default_units.kcl
+extension: md
+snapshot_kind: binary
+---

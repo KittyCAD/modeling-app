@@ -12,18 +12,22 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
   CallExpression,
+  CallExpressionKw,
   clearSceneAndBustCache,
   emptyExecState,
   ExecState,
+  getKclVersion,
   initPromise,
+  KclValue,
   parse,
   PathToNode,
   Program,
-  ProgramMemory,
   recast,
   SourceRange,
+  topLevelRange,
+  VariableMap,
 } from 'lang/wasm'
-import { getNodeFromPath } from './queryAst'
+import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
@@ -33,6 +37,7 @@ import {
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -55,10 +60,12 @@ export class KclManager {
       nonCodeNodes: {},
       startNodes: [],
     },
+    innerAttrs: [],
+    outerAttrs: [],
   }
   private _execState: ExecState = emptyExecState()
-  private _programMemory: ProgramMemory = ProgramMemory.empty()
-  lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
+  private _variables: VariableMap = {}
+  lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
   private _logs: string[] = []
   private _errors: KCLError[] = []
@@ -68,12 +75,16 @@ export class KclManager {
   private _wasmInitFailed = true
   private _hasErrors = false
   private _switchedFiles = false
+  private _fileSettings: KclSettingsAnnotation = {}
+  private _kclVersion: string | undefined = undefined
 
   engineCommandManager: EngineCommandManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
-  private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
+  private _variablesCallBack: (arg: {
+    [key in string]?: KclValue | undefined
+  }) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
@@ -92,22 +103,32 @@ export class KclManager {
     this._switchedFiles = switchedFiles
   }
 
-  get programMemory() {
-    return this._programMemory
+  get variables() {
+    return this._variables
   }
   // This is private because callers should be setting the entire execState.
-  private set programMemory(programMemory) {
-    this._programMemory = programMemory
-    this._programMemoryCallBack(programMemory)
+  private set variables(variables) {
+    this._variables = variables
+    this._variablesCallBack(variables)
   }
 
   private set execState(execState) {
     this._execState = execState
-    this.programMemory = execState.memory
+    this.variables = execState.variables
   }
 
   get execState() {
     return this._execState
+  }
+
+  // Get the kcl version from the wasm module
+  // and store it in the singleton
+  // so we don't waste time getting it multiple times
+  get kclVersion() {
+    if (this._kclVersion === undefined) {
+      this._kclVersion = getKclVersion()
+    }
+    return this._kclVersion
   }
 
   get errors() {
@@ -196,7 +217,7 @@ export class KclManager {
   }
 
   registerCallBacks({
-    setProgramMemory,
+    setVariables,
     setAst,
     setLogs,
     setErrors,
@@ -204,7 +225,7 @@ export class KclManager {
     setIsExecuting,
     setWasmInitFailed,
   }: {
-    setProgramMemory: (arg: ProgramMemory) => void
+    setVariables: (arg: VariableMap) => void
     setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
     setErrors: (errors: KCLError[]) => void
@@ -212,7 +233,7 @@ export class KclManager {
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
-    this._programMemoryCallBack = setProgramMemory
+    this._variablesCallBack = setVariables
     this._astCallBack = setAst
     this._logsCallBack = setLogs
     this._kclErrorsCallBack = setErrors
@@ -235,6 +256,8 @@ export class KclManager {
         nonCodeNodes: {},
         startNodes: [],
       },
+      innerAttrs: [],
+      outerAttrs: [],
     }
   }
 
@@ -321,7 +344,9 @@ export class KclManager {
     await this.ensureWasmInit()
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
+      path: codeManager.currentFilePath || undefined,
       engineCommandManager: this.engineCommandManager,
+      isMock: false,
     })
 
     // Program was not interrupted, setup the scene
@@ -365,27 +390,33 @@ export class KclManager {
       await this.disableSketchMode()
     }
 
+    let fileSettings = getSettingsAnnotation(ast)
+    if (err(fileSettings)) {
+      console.error(fileSettings)
+      fileSettings = {}
+    }
+    this.fileSettings = fileSettings
+
     this.logs = logs
     this.errors = errors
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
+    // Add warnings and non-fatal errors
+    this.addDiagnostics(
+      isInterrupted ? [] : complilationErrorsToDiagnostics(execState.errors)
+    )
     this.execState = execState
     if (!errors.length) {
-      this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
     this.ast = { ...ast }
-    // updateArtifactGraph relies on updated executeState/programMemory
-    await this.engineCommandManager.updateArtifactGraph(
-      this.ast,
-      execState.artifactCommands,
-      execState.artifacts
-    )
+    // updateArtifactGraph relies on updated executeState/variables
+    this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
     }
-
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
@@ -414,14 +445,7 @@ export class KclManager {
 
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(
-    ast: Program = this._ast,
-    {
-      updates,
-    }: {
-      updates: 'none' | 'artifactRanges'
-    } = { updates: 'none' }
-  ) {
+  async executeAstMock(ast: Program = this._ast) {
     await this.ensureWasmInit()
 
     const newCode = recast(ast)
@@ -439,45 +463,20 @@ export class KclManager {
     const { logs, errors, execState } = await executeAst({
       ast: newAst,
       engineCommandManager: this.engineCommandManager,
-      // We make sure to send an empty program memory to denote we mean mock mode.
-      programMemoryOverride: ProgramMemory.empty(),
+      isMock: true,
     })
 
     this._logs = logs
     this.addDiagnostics(kclErrorsToDiagnostics(errors))
+    // Add warnings and non-fatal errors
+    this.addDiagnostics(complilationErrorsToDiagnostics(execState.errors))
+
     this._execState = execState
-    this._programMemory = execState.memory
+    this._variables = execState.variables
     if (!errors.length) {
-      this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
-    if (updates !== 'artifactRanges') return
-
-    // TODO the below seems like a work around, I wish there's a comment explaining exactly what
-    // problem this solves, but either way we should strive to remove it.
-    Array.from(this.engineCommandManager.artifactGraph).forEach(
-      ([commandId, artifact]) => {
-        if (!('codeRef' in artifact)) return
-        const _node1 = getNodeFromPath<Node<CallExpression>>(
-          this.ast,
-          artifact.codeRef.pathToNode,
-          'CallExpression'
-        )
-        if (err(_node1)) return
-        const { node } = _node1
-        if (node.type !== 'CallExpression') return
-        const [oldStart, oldEnd] = artifact.codeRef.range
-        if (oldStart === 0 && oldEnd === 0) return
-        if (oldStart === node.start && oldEnd === node.end) return
-        this.engineCommandManager.artifactGraph.set(commandId, {
-          ...artifact,
-          codeRef: {
-            ...artifact.codeRef,
-            range: [node.start, node.end, true],
-          },
-        })
-      }
-    )
   }
   cancelAllExecutions() {
     this._cancelTokens.forEach((_, key) => {
@@ -594,7 +593,7 @@ export class KclManager {
         if (start && end) {
           returnVal.graphSelections.push({
             codeRef: {
-              range: [start, end, true],
+              range: topLevelRange(start, end),
               pathToNode: path,
             },
           })
@@ -698,6 +697,14 @@ export class KclManager {
   // Determines if there is no KCL code which means it is executing a blank KCL file
   _isAstEmpty(ast: Node<Program>) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
+  }
+
+  get fileSettings() {
+    return this._fileSettings
+  }
+
+  set fileSettings(settings: KclSettingsAnnotation) {
+    this._fileSettings = settings
   }
 }
 

@@ -5,31 +5,11 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program,
+    bust_cache, clear_mem_cache, exec::IdGenerator, pretty::NumericSuffix, CoreDump, EngineManager, ModuleId, Point2d,
+    Program,
 };
-use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
-
-lazy_static::lazy_static! {
-    /// A static mutable lock for updating the last successful execution state for the cache.
-    static ref OLD_AST_MEMORY: Arc<RwLock<Option<OldAstState>>> = Default::default();
-}
-
-// Read the old ast memory from the lock, this should never fail since
-// in failure scenarios we should just bust the cache and send back None as the previous
-// state.
-async fn read_old_ast_memory() -> Option<OldAstState> {
-    let lock = OLD_AST_MEMORY.read().await;
-    lock.clone()
-}
-
-async fn bust_cache() {
-    // We don't use the cache in mock mode.
-    let mut current_cache = OLD_AST_MEMORY.write().await;
-    // Set the cache to None.
-    *current_cache = None;
-}
 
 // wasm_bindgen wrapper for clearing the scene and busting the cache.
 #[wasm_bindgen]
@@ -38,8 +18,8 @@ pub async fn clear_scene_and_bust_cache(
 ) -> Result<(), String> {
     console_error_panic_hook::set_once();
 
-    // Bust the cache.
     bust_cache().await;
+    clear_mem_cache().await;
 
     let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
         .await
@@ -56,9 +36,9 @@ pub async fn clear_scene_and_bust_cache(
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn execute(
+pub async fn execute_with_engine(
     program_ast_json: &str,
-    program_memory_override_str: &str,
+    path: Option<String>,
     settings: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     fs_manager: kcl_lib::wasm_engine::FileSystemManager,
@@ -66,71 +46,48 @@ pub async fn execute(
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
-    let program_memory_override: Option<kcl_lib::exec::ProgramMemory> =
-        serde_json::from_str(program_memory_override_str).map_err(|e| e.to_string())?;
-
-    // If we have a program memory override, assume we are in mock mode.
-    // You cannot override the memory in non-mock mode.
-    let is_mock = program_memory_override.is_some();
-
-    let settings: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
-    let ctx = if is_mock {
-        kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?
-    } else {
-        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?
-    };
-
-    let mut exec_state = ExecState::default();
-    let mut old_ast_memory = None;
-
-    // Populate from the old exec state if it exists.
-    if let Some(program_memory_override) = program_memory_override {
-        // We are in mock mode, so don't use any cache.
-        exec_state.mod_local.memory = program_memory_override;
-    } else {
-        // If we are in mock mode, we don't want to use any cache.
-        if let Some(old) = read_old_ast_memory().await {
-            exec_state = old.exec_state.clone();
-            old_ast_memory = Some(old);
-        }
+    let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
+    let mut settings: kcl_lib::ExecutorSettings = config.into();
+    if let Some(path) = path {
+        settings.with_current_file(std::path::PathBuf::from(path));
     }
 
-    if let Err(err) = ctx
-        .run_with_ui_outputs(
-            CacheInformation {
-                old: old_ast_memory,
-                new_ast: program.ast.clone(),
-            },
-            &mut exec_state,
-        )
-        .await
-    {
-        if !is_mock {
-            bust_cache().await;
-        }
+    let ctx = kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?;
+    match ctx.run_with_caching(program).await {
+        // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+        // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+        Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
+        Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
+    }
+}
 
-        // Throw the error.
-        return Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?);
+// wasm_bindgen wrapper for mock execute
+#[wasm_bindgen]
+pub async fn execute_mock(
+    program_ast_json: &str,
+    path: Option<String>,
+    settings: &str,
+    use_prev_memory: bool,
+    variables: &str,
+    fs_manager: kcl_lib::wasm_engine::FileSystemManager,
+) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
+    let variables = serde_json::from_str(variables).map_err(|e| e.to_string())?;
+    let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
+    let mut settings: kcl_lib::ExecutorSettings = config.into();
+    if let Some(path) = path {
+        settings.with_current_file(std::path::PathBuf::from(path));
     }
 
-    if !is_mock {
-        // We don't use the cache in mock mode.
-        let mut current_cache = OLD_AST_MEMORY.write().await;
-
-        // If we aren't in mock mode, save this as the last successful execution to the cache.
-        *current_cache = Some(OldAstState {
-            ast: program.ast.clone(),
-            exec_state: exec_state.clone(),
-            settings: ctx.settings.clone(),
-        });
-        drop(current_cache);
+    let ctx = kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?;
+    match ctx.run_mock(program, use_prev_memory, variables).await {
+        // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+        // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+        Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
+        Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
     }
-
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    // DO NOT USE serde_wasm_bindgen::to_value(&exec_state).map_err(|e| e.to_string())
-    // it will break the frontend.
-    JsValue::from_serde(&exec_state.to_wasm_outcome()).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute
@@ -153,7 +110,6 @@ pub async fn make_default_planes(
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
-    // deserialize the ast from a stringified json
 
     let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
         .await
@@ -163,12 +119,9 @@ pub async fn make_default_planes(
         .await
         .map_err(String::from)?;
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
     JsValue::from_serde(&default_planes).map_err(|e| e.to_string())
 }
 
-// wasm_bindgen wrapper for execute
 #[wasm_bindgen]
 pub async fn modify_ast_for_sketch_wasm(
     manager: kcl_lib::wasm_engine::EngineCommandManager,
@@ -201,8 +154,6 @@ pub async fn modify_ast_for_sketch_wasm(
     .await
     .map_err(String::from)?;
 
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
     JsValue::from_serde(&program).map_err(|e| e.to_string())
 }
 
@@ -243,6 +194,14 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 
     let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
     Ok(JsValue::from_serde(&program.recast())?)
+}
+
+#[wasm_bindgen]
+pub fn format_number(value: f64, suffix_json: &str) -> Result<String, JsError> {
+    console_error_panic_hook::set_once();
+
+    let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
+    Ok(kcl_lib::pretty::format_number(value, suffix))
 }
 
 #[wasm_bindgen]
@@ -369,11 +328,7 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String, baseurl: Strin
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());
 
-    let dev_mode = if baseurl == "https://api.dev.zoo.dev" {
-        true
-    } else {
-        false
-    };
+    let dev_mode = baseurl == "https://api.dev.zoo.dev";
 
     let (service, socket) =
         LspService::build(|client| kcl_lib::CopilotLspBackend::new_wasm(client, fs, zoo_client, dev_mode))
@@ -466,18 +421,6 @@ pub fn get_tangential_arc_to_info(
     }
 }
 
-/// Create the default program memory.
-#[wasm_bindgen]
-pub fn program_memory_init() -> Result<JsValue, String> {
-    console_error_panic_hook::set_once();
-
-    let memory = kcl_lib::exec::ProgramMemory::default();
-
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&memory).map_err(|e| e.to_string())
-}
-
 /// Get a coredump.
 #[wasm_bindgen]
 pub async fn coredump(core_dump_manager: kcl_lib::wasm_engine::CoreDumpManager) -> Result<JsValue, String> {
@@ -508,7 +451,7 @@ pub fn default_app_settings() -> Result<JsValue, String> {
 pub fn parse_app_settings(toml_str: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let settings = kcl_lib::Configuration::backwards_compatible_toml_parse(&toml_str).map_err(|e| e.to_string())?;
+    let settings = kcl_lib::Configuration::backwards_compatible_toml_parse(toml_str).map_err(|e| e.to_string())?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
@@ -533,7 +476,7 @@ pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
     let settings =
-        kcl_lib::ProjectConfiguration::backwards_compatible_toml_parse(&toml_str).map_err(|e| e.to_string())?;
+        kcl_lib::ProjectConfiguration::backwards_compatible_toml_parse(toml_str).map_err(|e| e.to_string())?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
@@ -575,4 +518,62 @@ pub fn base64_decode(input: &str) -> Result<Vec<u8>, JsValue> {
     }
 
     Err(JsValue::from_str("Invalid base64 encoding"))
+}
+
+#[wasm_bindgen]
+pub struct WasmCircleParams {
+    pub center_x: f64,
+    pub center_y: f64,
+    pub radius: f64,
+}
+
+/// Calculate a circle from 3 points.
+#[wasm_bindgen]
+pub fn calculate_circle_from_3_points(ax: f64, ay: f64, bx: f64, by: f64, cx: f64, cy: f64) -> WasmCircleParams {
+    let result = kcl_lib::std::utils::calculate_circle_from_3_points([
+        Point2d { x: ax, y: ay },
+        Point2d { x: bx, y: by },
+        Point2d { x: cx, y: cy },
+    ]);
+
+    WasmCircleParams {
+        center_x: result.center.x,
+        center_y: result.center.y,
+        radius: result.radius,
+    }
+}
+
+/// Takes a parsed KCL program and returns the Meta settings.  If it's not
+/// found, null is returned.
+#[wasm_bindgen]
+pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: Program = serde_json::from_str(program_json).map_err(|e| e.to_string())?;
+    let settings = program.meta_settings().map_err(|e| e.to_string())?;
+
+    JsValue::from_serde(&settings).map_err(|e| e.to_string())
+}
+
+/// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
+#[wasm_bindgen]
+pub fn change_kcl_settings(code: &str, settings_str: &str) -> Result<String, String> {
+    console_error_panic_hook::set_once();
+
+    let settings: kcl_lib::MetaSettings = serde_json::from_str(settings_str).map_err(|e| e.to_string())?;
+    let mut program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
+
+    let new_program = program.change_meta_settings(settings).map_err(|e| e.to_string())?;
+
+    let formatted = new_program.recast();
+
+    Ok(formatted)
+}
+
+/// Get the version of the kcl library.
+#[wasm_bindgen]
+pub fn get_kcl_version() -> String {
+    console_error_panic_hook::set_once();
+
+    kcl_lib::version().to_string()
 }

@@ -1,11 +1,11 @@
 fn box(h, l, w) {
   myBox = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
+    |> line(end = [0, l])
+    |> line(end = [w, 0])
+    |> line(end = [0, -l])
     |> close(%)
-    |> extrude(h, %)
+    |> extrude(length = h)
 
   return myBox
 }
