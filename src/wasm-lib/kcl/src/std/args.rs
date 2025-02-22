@@ -10,8 +10,8 @@ use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::NumericType, ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata,
-        Sketch, SketchSet, SketchSurface, Solid, SolidSet, TagIdentifier,
+        kcl_value::NumericType, ExecState, ExecutorContext, ExtrudeSurface, Geometry, Helix, KclObjectFields, KclValue,
+        Metadata, Sketch, SketchSet, SketchSurface, Solid, SolidSet, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -507,6 +507,11 @@ impl Args {
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
+        FromArgs::from_args(self, 0)
+    }
+
+    pub(crate) fn get_geometry(&self) -> Result<Geometry, KclError>
+where {
         FromArgs::from_args(self, 0)
     }
 
@@ -1583,6 +1588,16 @@ impl<'a> FromKclValue<'a> for SketchSurface {
         match arg {
             KclValue::Plane { value } => Some(Self::Plane(value.clone())),
             KclValue::Face { value } => Some(Self::Face(value.clone())),
+            _ => None,
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for Geometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Sketch { value } => Some(Self::Sketch(value.to_owned())),
+            KclValue::Solid { value } => Some(Self::Solid(value.to_owned())),
             _ => None,
         }
     }
