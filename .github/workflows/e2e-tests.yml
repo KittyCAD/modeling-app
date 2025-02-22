@@ -17,14 +17,11 @@ permissions:
 jobs:
   electron:
     timeout-minutes: 60
-    name: playwright:electron:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
+    name: playwright:electron:${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        # TODO: enable self-hosted-windows-8-cores once available
         os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
-        shardIndex: [1]
-        shardTotal: [1]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/create-github-app-token@v1
@@ -38,23 +35,6 @@ jobs:
       with:
         token: ${{ steps.app-token.outputs.token }}
 
-    - uses: actions/setup-node@v4
-      with:
-        node-version-file: '.nvmrc'
-        cache: 'yarn'
-
-    - uses: KittyCAD/action-install-cli@main
-    - name: Install dependencies
-      shell: bash
-      run: yarn
-
-    - name: Cache Playwright Browsers
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/ms-playwright/
-        key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
-
     - name: Install Playwright Browsers
       shell: bash
       run: yarn playwright install --with-deps
@@ -67,73 +47,10 @@ jobs:
       shell: bash
       run: yarn tronb:vite:dev
 
-    - name: Run ubuntu/chrome snapshots
-      if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
-      shell: bash
-      # TODO: break this in its own job, for now it's not slowing down the overall execution as ubuntu is the quickest,
-      # but we could do better. This forces a large 1/1 shard of all 20 snapshot tests that runs in about 3 minutes.
+    - name: Run playwright/electron flow on ubuntu (with retries)
+      if: startsWith(matrix.os, 'ubuntu')
       run: |
-        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=1/1
-      env:
-        CI: true
-        NODE_ENV: development
-        VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-        VITE_KC_SKIP_AUTH: true
-        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
-
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-report-${{ matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
-        path: playwright-report/
-        include-hidden-files: true
-        retention-days: 30
-        overwrite: true
-
-    - name: Clean up test-results
-      run: rm -r test-results
-
-    - name: check for changes
-      if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 && github.ref != 'refs/heads/main' }}
-      shell: bash
-      id: git-check
-      run: |
-          git add e2e/playwright/snapshot-tests.spec.ts-snapshots
-          if git status | grep -q "Changes to be committed"
-          then echo "modified=true" >> $GITHUB_OUTPUT
-          else echo "modified=false" >> $GITHUB_OUTPUT
-          fi
-
-    - name: Commit changes, if any
-      if: steps.git-check.outputs.modified == 'true'
-      shell: bash
-      run: |
-        git add e2e/playwright/snapshot-tests.spec.ts-snapshots
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-        git fetch origin
-        echo ${{ github.head_ref }}
-        git checkout ${{ github.head_ref }}
-        git commit -m "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
-        git push
-        git push origin ${{ github.head_ref }}
-
-    # only upload artifacts if there's actually changes
-    - uses: actions/upload-artifact@v4
-      if: steps.git-check.outputs.modified == 'true'
-      with:
-        name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
-        path: playwright-report/
-        include-hidden-files: true
-        retention-days: 30
-
-    - name: Run playwright/electron flow (with retries)
-      id: retry
-      shell: bash
-      run: |
-        .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
+        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu --retries 10
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
@@ -142,20 +59,28 @@ jobs:
         VITE_KC_SKIP_AUTH: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
-        path: test-results/
-        include-hidden-files: true
-        retention-days: 30
-        overwrite: true
+    - name: Run playwright/electron flow on windows (with retries)
+      if: startsWith(matrix.os, 'windows')
+      id: retry
+      run: |
+        yarn test:playwright:electron:windows --retries 10
+      env:
+        CI: true
+        FAIL_ON_CONSOLE_ERRORS: true
+        NODE_ENV: development
+        VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        VITE_KC_SKIP_AUTH: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
-        path: playwright-report/
-        include-hidden-files: true
-        retention-days: 30
-        overwrite: true
+    - name: Run playwright/electron flow on macos (with retries)
+      if: startsWith(matrix.os, 'macos')
+      shell: bash
+      run: |
+        yarn test:playwright:electron:macos --retries 10
+      env:
+        CI: true
+        FAIL_ON_CONSOLE_ERRORS: true
+        NODE_ENV: development
+        VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        VITE_KC_SKIP_AUTH: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
