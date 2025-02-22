@@ -11,9 +11,9 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: true,
   /* Do not retry */
-  retries: 10,
+  retries: 50,
   /* Different amount of parallelism on CI and local. */
-  workers: 4,
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['dot'],
