@@ -200,9 +200,11 @@ jobs:
     - name: Run playwright/electron flow (with retries)
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
-      shell: bash
-      run: |
-        .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
+      uses: nick-fields/retry@v3.0.0
+      with:
+        command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
+        timeout_minutes: 30
+        max_attempts: 25
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
