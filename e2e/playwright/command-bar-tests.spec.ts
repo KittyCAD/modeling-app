@@ -254,7 +254,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     await expect(cmdSearchBar).toBeVisible()
 
     // Search for extrude command and choose it
-    await page.getByRole('option', { name: 'Extrude' }).click()
+    await page.getByTestId('cmd-bar-extrude').click()
 
     // Assert that we're on the selection step
     await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
