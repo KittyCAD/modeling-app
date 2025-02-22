@@ -10,12 +10,13 @@ use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::NumericType, ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata,
-        Sketch, SketchSet, SketchSurface, Solid, SolidSet, TagIdentifier,
+        kcl_value::{FunctionSource, NumericType},
+        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
+        SketchSurface, Solid, SolidSet, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
-    std::{shapes::SketchOrSurface, sketch::FaceTag, sweep::SweepPath, FnAsArg},
+    std::{shapes::SketchOrSurface, sketch::FaceTag, sweep::SweepPath},
     ModuleId,
 };
 
@@ -1556,7 +1557,7 @@ impl<'a> FromKclValue<'a> for Box<Solid> {
     }
 }
 
-impl<'a> FromKclValue<'a> for FnAsArg<'a> {
+impl<'a> FromKclValue<'a> for &'a FunctionSource {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.get_function()
     }
