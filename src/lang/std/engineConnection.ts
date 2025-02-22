@@ -240,6 +240,20 @@ export enum EngineConnectionEvents {
   NewTrack = 'new-track', // (track: NewTrackArgs) => void
 }
 
+function toRTCSessionDescriptionInit(
+  desc: Models['RtcSessionDescription_type']
+): RTCSessionDescriptionInit | undefined {
+  if (desc.type === 'unspecified') {
+    console.error('Invalid SDP answer: type is "unspecified".')
+    return undefined
+  }
+  return {
+    sdp: desc.sdp,
+    // Force the type to be one of the valid RTCSdpType values
+    type: desc.type as RTCSdpType,
+  }
+}
+
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
@@ -250,7 +264,7 @@ class EngineConnection extends EventTarget {
   mediaStream?: MediaStream
   idleMode: boolean = false
   promise?: Promise<void>
-  sdpAnswer?: Models['RtcSessionDescription_type']
+  sdpAnswer?: RTCSessionDescriptionInit
   triggeredStart = false
 
   onIceCandidate = function (
@@ -549,6 +563,50 @@ class EngineConnection extends EventTarget {
     this.disconnectAll()
   }
 
+  initiateConnectionExclusive(): boolean {
+    // Only run if:
+    // - A peer connection exists,
+    // - ICE gathering is complete,
+    // - We have an SDP answer,
+    // - And we haven’t already triggered this connection.
+    if (!this.pc || this.triggeredStart || !this.sdpAnswer) {
+      return false
+    }
+    this.triggeredStart = true
+
+    // Transition to the connecting state
+    this.state = {
+      type: EngineConnectionStateType.Connecting,
+      value: { type: ConnectingType.WebRTCConnecting },
+    }
+
+    // Attempt to set the remote description to initiate connection
+    this.pc
+      .setRemoteDescription(this.sdpAnswer)
+      .then(() => {
+        // Update state once the remote description has been set
+        this.state = {
+          type: EngineConnectionStateType.Connecting,
+          value: { type: ConnectingType.SetRemoteDescription },
+        }
+      })
+      .catch((error: Error) => {
+        console.error('Failed to set remote description:', error)
+        this.state = {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Error,
+            value: {
+              error: ConnectionError.LocalDescriptionInvalid,
+              context: error,
+            },
+          },
+        }
+        this.disconnectAll()
+      })
+    return true
+  }
+
   /**
    * Attempts to connect to the Engine over a WebSocket, and
    * establish the WebRTC connections.
@@ -588,38 +646,13 @@ class EngineConnection extends EventTarget {
           },
         }
 
-        const initiateConnectingExclusive = () => {
-          if (that.triggeredStart) return
-          that.triggeredStart = true
-
-          // Start connecting.
-          that.state = {
-            type: EngineConnectionStateType.Connecting,
-            value: {
-              type: ConnectingType.WebRTCConnecting,
-            },
-          }
-
-          // As soon as this is set, RTCPeerConnection tries to
-          // establish a connection.
-          // @ts-expect-error: Have to ignore because dom.ts doesn't have the right type
-          void that.pc?.setRemoteDescription(that.sdpAnswer)
-
-          that.state = {
-            type: EngineConnectionStateType.Connecting,
-            value: {
-              type: ConnectingType.SetRemoteDescription,
-            },
-          }
-        }
-
         this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
           console.log('icecandidate', event.candidate)
 
           // This is null when the ICE gathering state is done.
           // Windows ONLY uses this to signal it's done!
           if (event.candidate === null) {
-            initiateConnectingExclusive()
+            that.initiateConnectionExclusive()
             return
           }
 
@@ -643,7 +676,9 @@ class EngineConnection extends EventTarget {
           // Sometimes the remote end doesn't report the end of candidates.
           // They have 3 seconds to.
           setTimeout(() => {
-            initiateConnectingExclusive()
+            if (that.initiateConnectionExclusive()) {
+              console.warn('connected after 3 second delay')
+            }
           }, 3000)
         }
         this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
@@ -653,7 +688,7 @@ class EngineConnection extends EventTarget {
             console.log('icegatheringstatechange', this.iceGatheringState)
 
             if (this.iceGatheringState !== 'complete') return
-            initiateConnectingExclusive()
+            that.initiateConnectionExclusive()
           }
         )
 
@@ -1192,8 +1227,11 @@ class EngineConnection extends EventTarget {
                 },
               }
 
-              this.sdpAnswer = answer
+              this.sdpAnswer = toRTCSessionDescriptionInit(answer)
 
+              // We might have received this after ice candidates finish
+              // Make sure we attempt to connect when we do.
+              this.initiateConnectionExclusive()
               break
 
             case 'trickle_ice':
