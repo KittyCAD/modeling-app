@@ -393,18 +393,18 @@ const OperationItem = (props: {
       ...(props.item.type === 'StdLibCall'
         ? [
             <ContextMenuItem
-              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
-              onClick={enterAppearanceFlow}
-              data-testid="context-menu-set-appearance"
-            >
-              Set appearance
-            </ContextMenuItem>,
-            <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.prepareToEdit}
               onClick={enterEditFlow}
               hotkey="Double click"
             >
               Edit
+            </ContextMenuItem>,
+            <ContextMenuItem
+              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
+              onClick={enterAppearanceFlow}
+              data-testid="context-menu-set-appearance"
+            >
+              Set appearance
             </ContextMenuItem>,
           ]
         : []),
