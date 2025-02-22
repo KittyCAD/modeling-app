@@ -28,13 +28,12 @@ use crate::{
     settings::types::UnitLength,
     source_range::SourceRange,
     std::StdLib,
-    ExecError, KclErrorWithOutputs,
+    CompilationError, ExecError, KclErrorWithOutputs,
 };
 
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
-pub use exec_ast::FunctionParam;
 pub use geometry::*;
 pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
@@ -70,6 +69,8 @@ pub struct ExecOutcome {
     pub artifact_commands: Vec<ArtifactCommand>,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Non-fatal errors and warnings.
+    pub errors: Vec<CompilationError>,
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -147,7 +148,7 @@ pub struct TagEngineInfo {
     pub surface: Option<ExtrudeSurface>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq)]
 pub enum BodyType {
     Root(bool),
     Block,
@@ -585,6 +586,14 @@ impl ExecutorContext {
                         .await
                         .is_ok()
                     {
+                        // We need to update the old ast state with the new settings!!
+                        cache::write_old_ast(OldAstState {
+                            ast: old_ast,
+                            exec_state: old_state.clone(),
+                            settings: self.settings.clone(),
+                        })
+                        .await;
+
                         return Ok(old_state.to_wasm_outcome());
                     }
                     (true, program.ast)
@@ -641,6 +650,8 @@ impl ExecutorContext {
     ///
     /// You can optionally pass in some initialization memory for partial
     /// execution.
+    ///
+    /// To access non-fatal errors and warnings, extract them from the `ExecState`.
     pub async fn run(
         &self,
         program: &crate::Program,
@@ -825,6 +836,34 @@ mod tests {
     #[track_caller]
     fn mem_get_json(memory: &ProgramMemory, name: &str) -> KclValue {
         memory.get(name, SourceRange::default()).unwrap().to_owned()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_warn() {
+        let text = "@blah";
+        let (_, _, exec_state) = parse_execute(text).await.unwrap();
+        let errs = exec_state.errors();
+        assert_eq!(errs.len(), 1);
+        assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
+        assert!(
+            errs[0].message.contains("Unknown annotation"),
+            "unexpected warning message: {}",
+            errs[0].message
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_warn_on_deprecated() {
+        let text = "p = pi()";
+        let (_, _, exec_state) = parse_execute(text).await.unwrap();
+        let errs = exec_state.errors();
+        assert_eq!(errs.len(), 1);
+        assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
+        assert!(
+            errs[0].message.contains("`pi` is deprecated"),
+            "unexpected warning message: {}",
+            errs[0].message
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1534,10 +1573,7 @@ test([0, 0])
 "#;
         let result = parse_execute(ast).await;
         assert!(result.is_err());
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("Result of user-defined function test is undefined"),);
+        assert!(result.unwrap_err().to_string().contains("undefined"),);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1657,5 +1693,60 @@ let w = f() + f()
         let new_id_generator = cache::read_old_ast().await.unwrap().exec_state.global.id_generator;
 
         assert_eq!(id_generator, new_id_generator);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_changing_a_setting_updates_the_cached_state() {
+        let code = r#"sketch001 = startSketchOn('XZ')
+|> startProfileAt([61.74, 206.13], %)
+|> xLine(305.11, %, $seg01)
+|> yLine(-291.85, %)
+|> xLine(-segLen(seg01), %)
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> close()
+|> extrude(length = 40.14)
+|> shell(
+    thickness = 3.14,
+    faces = [seg01]
+)
+"#;
+
+        let mut ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
+            .await
+            .unwrap();
+        let old_program = crate::Program::parse_no_errs(code).unwrap();
+
+        // Execute the program.
+        ctx.run_with_caching(old_program.clone()).await.unwrap();
+
+        // Get the id_generator from the first execution.
+        let settings_state = cache::read_old_ast().await.unwrap().settings;
+
+        // Ensure the settings are as expected.
+        assert_eq!(settings_state, ctx.settings);
+
+        // Change a setting.
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+
+        // Execute the program.
+        ctx.run_with_caching(old_program.clone()).await.unwrap();
+
+        // Get the id_generator from the first execution.
+        let settings_state = cache::read_old_ast().await.unwrap().settings;
+
+        // Ensure the settings are as expected.
+        assert_eq!(settings_state, ctx.settings);
+
+        // Change a setting.
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+
+        // Execute the program.
+        ctx.run_with_caching(old_program).await.unwrap();
+
+        // Get the id_generator from the first execution.
+        let settings_state = cache::read_old_ast().await.unwrap().settings;
+
+        // Ensure the settings are as expected.
+        assert_eq!(settings_state, ctx.settings);
     }
 }

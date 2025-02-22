@@ -2046,7 +2046,9 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       await test.step('add random new var between profiles', async () => {
         await page.keyboard.type('myVar = 5')
         await page.keyboard.press('Enter')
-        await page.waitForTimeout(600)
+        // If this timeout isn't long enough, the test breaks.
+        // TODO: fix https://github.com/KittyCAD/modeling-app/issues/5437
+        await page.waitForTimeout(3_000)
       })
 
       await sketchIsDrawnProperly()

@@ -19,20 +19,6 @@ use crate::{
     std::Args,
 };
 
-/// Data for fillets.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct FilletData {
-    /// The radius of the fillet.
-    pub radius: f64,
-    /// The tags of the paths you want to fillet.
-    pub tags: Vec<EdgeReference>,
-    /// The tolerance for the fillet.
-    #[serde(default)]
-    pub tolerance: Option<f64>,
-}
-
 /// A tag or a uuid of an edge.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Ord, PartialOrd, Hash)]
 #[ts(export)]
@@ -55,9 +41,12 @@ impl EdgeReference {
 
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid, tag): (FilletData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
-
-    let value = inner_fillet(data, solid, tag, exec_state, args).await?;
+    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let radius = args.get_kw_arg("radius")?;
+    let tolerance = args.get_kw_arg_opt("tolerance")?;
+    let tags = args.get_kw_arg("tags")?;
+    let tag = args.get_kw_arg_opt("tag")?;
+    let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -81,7 +70,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> close(tag = $edge4)
 ///
 /// mountingPlate = extrude(mountingPlateSketch, length = thickness)
-///   |> fillet({
+///   |> fillet(
 ///     radius = filletRadius,
 ///     tags = [
 ///       getNextAdjacentEdge(edge1),
@@ -89,7 +78,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///       getNextAdjacentEdge(edge3),
 ///       getNextAdjacentEdge(edge4)
 ///     ],
-///   }, %)
+///   )
 /// ```
 ///
 /// ```no_run
@@ -106,7 +95,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> close(tag = $edge4)
 ///
 /// mountingPlate = extrude(mountingPlateSketch, length = thickness)
-///   |> fillet({
+///   |> fillet(
 ///     radius = filletRadius,
 ///     tolerance = 0.000001,
 ///     tags = [
@@ -115,24 +104,35 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///       getNextAdjacentEdge(edge3),
 ///       getNextAdjacentEdge(edge4)
 ///     ],
-///   }, %)
+///   )
 /// ```
 #[stdlib {
     name = "fillet",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid = { docs = "The solid whose edges should be filletted" },
+        radius = { docs = "The radius of the fillet" },
+        tags = { docs = "The paths you want to fillet" },
+        tolerance = { docs = "The tolerance for this fillet" },
+        tag = { docs = "Create a new tag which refers to this fillet"},
+    }
 }]
 async fn inner_fillet(
-    data: FilletData,
     solid: Box<Solid>,
+    radius: f64,
+    tags: Vec<EdgeReference>,
+    tolerance: Option<f64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
     // Check if tags contains any duplicate values.
-    let mut tags = data.tags.clone();
-    tags.sort();
-    tags.dedup();
-    if tags.len() != data.tags.len() {
+    let mut unique_tags = tags.clone();
+    unique_tags.sort();
+    unique_tags.dedup();
+    if unique_tags.len() != tags.len() {
         return Err(KclError::Type(KclErrorDetails {
             message: "Duplicate tags are not allowed.".to_string(),
             source_ranges: vec![args.source_range],
@@ -140,7 +140,7 @@ async fn inner_fillet(
     }
 
     let mut solid = solid.clone();
-    for edge_tag in data.tags {
+    for edge_tag in tags {
         let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
 
         let id = exec_state.next_uuid();
@@ -149,8 +149,8 @@ async fn inner_fillet(
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: solid.id,
-                radius: LengthUnit(data.radius),
-                tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                radius: LengthUnit(radius),
+                tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
                 cut_type: CutType::Fillet,
                 // We make this a none so that we can remove it in the future.
                 face_id: None,
@@ -161,7 +161,7 @@ async fn inner_fillet(
         solid.edge_cuts.push(EdgeCut::Fillet {
             id,
             edge_id,
-            radius: data.radius,
+            radius,
             tag: Box::new(tag.clone()),
         });
 
@@ -213,10 +213,10 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
-///   |> fillet({
+///   |> fillet(
 ///     radius = 3,
 ///     tags = [getOppositeEdge(referenceEdge)],
-///   }, %)
+///   )
 /// ```
 #[stdlib {
     name = "getOppositeEdge",
@@ -286,10 +286,10 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
-///   |> fillet({
+///   |> fillet(
 ///     radius = 3,
 ///     tags = [getNextAdjacentEdge(referenceEdge)],
-///   }, %)
+///   )
 /// ```
 #[stdlib {
     name = "getNextAdjacentEdge",
@@ -371,10 +371,10 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
-///   |> fillet({
+///   |> fillet(
 ///     radius = 3,
 ///     tags = [getPreviousAdjacentEdge(referenceEdge)],
-///   }, %)
+///   )
 /// ```
 #[stdlib {
     name = "getPreviousAdjacentEdge",

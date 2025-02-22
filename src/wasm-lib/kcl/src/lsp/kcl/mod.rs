@@ -1373,12 +1373,11 @@ impl LanguageServer for Backend {
             .diagnostics
             .into_iter()
             .filter_map(|diagnostic| {
-                let suggestion = diagnostic
-                    .data
-                    .as_ref()
-                    .and_then(|data| serde_json::from_value::<Suggestion>(data.clone()).ok())?;
+                let (suggestion, range) = diagnostic.data.as_ref().and_then(|data| {
+                    serde_json::from_value::<(Suggestion, tower_lsp::lsp_types::Range)>(data.clone()).ok()
+                })?;
                 let edit = TextEdit {
-                    range: diagnostic.range,
+                    range,
                     new_text: suggestion.insert,
                 };
                 let changes = HashMap::from([(params.text_document.uri.clone(), vec![edit])]);

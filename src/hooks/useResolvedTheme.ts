@@ -1,5 +1,5 @@
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useSettings } from 'machines/appMachine'
 
 /**
  * Resolves the current theme based on the theme setting
@@ -7,10 +7,8 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
  * @returns {Themes.Light | Themes.Dark}
  */
 export function useResolvedTheme() {
-  const {
-    settings: { context },
-  } = useSettingsAuthContext()
-  return context.app.theme.current === Themes.System
+  const settings = useSettings()
+  return settings.app.theme.current === Themes.System
     ? getSystemTheme()
-    : context.app.theme.current
+    : settings.app.theme.current
 }

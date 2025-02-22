@@ -14,7 +14,6 @@ use super::sketch::PlaneData;
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
     let std_plane = args.get_unlabeled_kw_arg("plane")?;
     let offset = args.get_kw_arg("offset")?;
     let plane = inner_offset_plane(std_plane, offset, exec_state).await?;

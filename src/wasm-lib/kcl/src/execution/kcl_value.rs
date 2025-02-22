@@ -4,11 +4,12 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::{memory::EnvironmentRef, MetaSettings};
 use crate::{
     errors::KclErrorDetails,
     execution::{
-        state::MetaSettings, EnvironmentRef, ExecState, ExecutorContext, Face, Helix, ImportedGeometry, Metadata,
-        Plane, Sketch, SketchSet, Solid, SolidSet, TagIdentifier,
+        ExecState, ExecutorContext, Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, SketchSet, Solid, SolidSet,
+        TagIdentifier,
     },
     parsing::{
         ast::types::{
@@ -16,8 +17,8 @@ use crate::{
         },
         token::NumericSuffix,
     },
-    std::{args::Arg, FnAsArg},
-    KclError, ModuleId, SourceRange,
+    std::{args::Arg, StdFnProps},
+    CompilationError, KclError, ModuleId, SourceRange,
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -85,11 +86,7 @@ pub enum KclValue {
     #[ts(skip)]
     Function {
         #[serde(skip)]
-        func: Option<crate::std::StdFn>,
-        #[schemars(skip)]
-        expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        // Invariant: Always Some except for std lib functions
-        memory: Option<EnvironmentRef>,
+        value: FunctionSource,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -109,6 +106,31 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum FunctionSource {
+    #[default]
+    None,
+    Std {
+        func: crate::std::StdFn,
+        props: StdFnProps,
+    },
+    User {
+        ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+        memory: EnvironmentRef,
+    },
+}
+
+impl JsonSchema for FunctionSource {
+    fn schema_name() -> String {
+        "FunctionSource".to_owned()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        // TODO: Actually generate a reasonable schema.
+        gen.subschema_for::<()>()
+    }
 }
 
 impl From<SketchSet> for KclValue {
@@ -229,12 +251,16 @@ impl KclValue {
     }
 
     pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
-        let KclValue::Function { expression, .. } = self else {
+        let KclValue::Function {
+            value: FunctionSource::User { ast, .. },
+            ..
+        } = self
+        else {
             return None;
         };
         // TODO: It would be nice if we could extract the source range starting
         // at the fn, but that's the variable declaration.
-        Some(expression.as_source_range())
+        Some(ast.as_source_range())
     }
 
     pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
@@ -321,7 +347,7 @@ impl KclValue {
     pub(crate) fn map_env_ref(&self, env_map: &HashMap<EnvironmentRef, EnvironmentRef>) -> Self {
         let mut result = self.clone();
         if let KclValue::Function {
-            memory: Some(ref mut memory),
+            value: FunctionSource::User { ref mut memory, .. },
             ..
         } = result
         {
@@ -485,21 +511,11 @@ impl KclValue {
     }
 
     /// If this value is of type function, return it.
-    pub fn get_function(&self) -> Option<FnAsArg<'_>> {
-        let KclValue::Function {
-            func,
-            expression,
-            memory,
-            meta: _,
-        } = &self
-        else {
-            return None;
-        };
-        Some(FnAsArg {
-            func: func.as_ref(),
-            expr: expression.to_owned(),
-            memory: *memory,
-        })
+    pub fn get_function(&self) -> Option<&FunctionSource> {
+        match self {
+            KclValue::Function { value, .. } => Some(value),
+            _ => None,
+        }
     }
 
     /// Get a tag identifier from a memory item.
@@ -555,38 +571,39 @@ impl KclValue {
         ctx: ExecutorContext,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
-        let KclValue::Function {
-            func,
-            expression,
-            memory: closure_memory,
-            ..
-        } = &self
-        else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "not an in-memory function".to_string(),
-                source_ranges: vec![],
-            }));
-        };
-        if let Some(func) = func {
-            exec_state.mut_memory().push_new_env_for_rust_call();
-            let args = crate::std::Args::new(
-                args,
-                source_range,
-                ctx.clone(),
-                exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
-            );
-            let result = func(exec_state, args).await.map(Some);
-            exec_state.mut_memory().pop_env();
-            result
-        } else {
-            crate::execution::exec_ast::call_user_defined_function(
-                args,
-                closure_memory.unwrap(),
-                expression.as_ref(),
-                exec_state,
-                &ctx,
-            )
-            .await
+        match self {
+            KclValue::Function {
+                value: FunctionSource::Std { func, props },
+                ..
+            } => {
+                if props.deprecated {
+                    exec_state.warn(CompilationError::err(
+                        source_range,
+                        format!(
+                            "`{}` is deprecated, see the docs for a recommended replacement",
+                            props.name
+                        ),
+                    ));
+                }
+                exec_state.mut_memory().push_new_env_for_rust_call();
+                let args = crate::std::Args::new(
+                    args,
+                    source_range,
+                    ctx.clone(),
+                    exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+                );
+                let result = func(exec_state, args).await.map(Some);
+                exec_state.mut_memory().pop_env();
+                result
+            }
+            KclValue::Function {
+                value: FunctionSource::User { ast, memory },
+                ..
+            } => crate::execution::exec_ast::call_user_defined_function(args, *memory, ast, exec_state, &ctx).await,
+            _ => Err(KclError::Semantic(KclErrorDetails {
+                message: "cannot call this because it isn't a function".to_string(),
+                source_ranges: vec![source_range],
+            })),
         }
     }
 
@@ -599,29 +616,33 @@ impl KclValue {
         ctx: ExecutorContext,
         callsite: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
-        let KclValue::Function {
-            func,
-            expression,
-            memory: closure_memory,
-            meta: _,
-        } = &self
-        else {
-            return Err(KclError::Semantic(KclErrorDetails {
+        match self {
+            KclValue::Function {
+                value: FunctionSource::Std { func: _, props },
+                ..
+            } => {
+                if props.deprecated {
+                    exec_state.warn(CompilationError::err(
+                        callsite,
+                        format!(
+                            "`{}` is deprecated, see the docs for a recommended replacement",
+                            props.name
+                        ),
+                    ));
+                }
+                todo!("Implement KCL stdlib fns with keyword args");
+            }
+            KclValue::Function {
+                value: FunctionSource::User { ast, memory },
+                ..
+            } => {
+                crate::execution::exec_ast::call_user_defined_function_kw(args.kw_args, *memory, ast, exec_state, &ctx)
+                    .await
+            }
+            _ => Err(KclError::Semantic(KclErrorDetails {
                 message: "cannot call this because it isn't a function".to_string(),
                 source_ranges: vec![callsite],
-            }));
-        };
-        if let Some(_func) = func {
-            todo!("Implement calling KCL stdlib fns that are aliased. Part of https://github.com/KittyCAD/modeling-app/issues/4600");
-        } else {
-            crate::execution::exec_ast::call_user_defined_function_kw(
-                args.kw_args,
-                closure_memory.unwrap(),
-                expression.as_ref(),
-                exec_state,
-                &ctx,
-            )
-            .await
+            })),
         }
     }
 }

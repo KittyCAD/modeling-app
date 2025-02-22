@@ -19,11 +19,11 @@ use crate::{
     },
     parsing::ast::types::TagNode,
     std::{
+        args::{Args, TyF64},
         utils::{
             arc_angles, arc_center_and_end, calculate_circle_center, get_tangential_arc_to_info, get_x_component,
             get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
         },
-        Args,
     },
 };
 
@@ -1009,6 +1009,24 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
+/// ### Sketch on Face Behavior
+///
+/// There are some important behaviors to understand when sketching on a face:
+///
+/// The resulting sketch will _include_ the face and thus Solid
+/// that was sketched on. So say you were to export the resulting Sketch / Solid
+/// from a sketch on a face, you would get both the artifact of the sketch
+/// on the face and the parent face / Solid itself.
+///
+/// This is important to understand because if you were to then sketch on the
+/// resulting Solid, it would again include the face and parent Solid that was
+/// sketched on. This could go on indefinitely.
+///
+/// The point is if you want to export the result of a sketch on a face, you
+/// only need to export the final Solid that was created from the sketch on the
+/// face, since it will include all the parent faces and Solids.
+///
+///
 /// ```no_run
 /// exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
@@ -1388,7 +1406,7 @@ pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<
     let sketch: Sketch = args.get_sketch()?;
     let ty = sketch.units.into();
     let x = inner_profile_start_x(sketch)?;
-    Ok(args.make_user_val_from_f64_with_type(x, ty))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'x'
@@ -1413,7 +1431,7 @@ pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<
     let sketch: Sketch = args.get_sketch()?;
     let ty = sketch.units.into();
     let x = inner_profile_start_y(sketch)?;
-    Ok(args.make_user_val_from_f64_with_type(x, ty))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'y'

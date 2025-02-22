@@ -295,6 +295,7 @@ export interface ExecState {
   artifacts: { [key in ArtifactId]?: RustArtifact }
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
+  errors: CompilationError[]
 }
 
 /**
@@ -308,6 +309,7 @@ export function emptyExecState(): ExecState {
     artifacts: {},
     artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
+    errors: [],
   }
 }
 
@@ -333,6 +335,7 @@ function execStateFromRust(
     artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
+    errors: execOutcome.errors,
   }
 }
 
@@ -343,6 +346,7 @@ function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
     artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph: new Map<ArtifactId, Artifact>(),
+    errors: execOutcome.errors,
   }
 }
 
@@ -459,11 +463,11 @@ export const executeWithEngine = async (
 const jsAppSettings = async () => {
   let jsAppSettings = default_app_settings()
   if (!TEST) {
-    const lastSettingsSnapshot = await import(
-      'components/SettingsAuthProvider'
-    ).then((module) => module.lastSettingsContextSnapshot)
-    if (lastSettingsSnapshot) {
-      jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
+    const settings = await import('machines/appMachine').then((module) =>
+      module.getSettings()
+    )
+    if (settings) {
+      jsAppSettings = getAllCurrentSettings(settings)
     }
   }
   return jsAppSettings

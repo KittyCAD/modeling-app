@@ -1,24 +1,22 @@
 import { Switch } from '@headlessui/react'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { settingsActor, useSettings } from 'machines/appMachine'
 import { useEffect, useState } from 'react'
 
 export function CameraProjectionToggle() {
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const isCameraProjectionPerspective =
-    settings.context.modeling.cameraProjection.current === 'perspective'
+    settings.modeling.cameraProjection.current === 'perspective'
   const [checked, setChecked] = useState(isCameraProjectionPerspective)
 
   useEffect(() => {
-    setChecked(
-      settings.context.modeling.cameraProjection.current === 'perspective'
-    )
-  }, [settings.context.modeling.cameraProjection.current])
+    setChecked(settings.modeling.cameraProjection.current === 'perspective')
+  }, [settings.modeling.cameraProjection.current])
 
   return (
     <Switch
       checked={checked}
       onChange={(newValue) => {
-        settings.send({
+        settingsActor.send({
           type: 'set.modeling.cameraProjection',
           data: {
             level: 'user',

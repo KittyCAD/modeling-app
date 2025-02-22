@@ -503,10 +503,10 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     for arg in internal_fn.args(false) {
         if !arg.is_primitive()? {
             add_to_types(&arg.type_, &arg.schema.schema.into(), &mut types)?;
-            // Add each definition as well.
-            for (name, definition) in &arg.schema.definitions {
-                add_to_types(name, definition, &mut types)?;
-            }
+        }
+        // Add each definition as well.
+        for (name, definition) in &arg.schema.definitions {
+            add_to_types(name, definition, &mut types)?;
         }
     }
 
@@ -514,9 +514,9 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     if let Some(ret) = internal_fn.return_value(false) {
         if !ret.is_primitive()? {
             add_to_types(&ret.type_, &ret.schema.schema.into(), &mut types)?;
-            for (name, definition) in &ret.schema.definitions {
-                add_to_types(name, definition, &mut types)?;
-            }
+        }
+        for (name, definition) in &ret.schema.definitions {
+            add_to_types(name, definition, &mut types)?;
         }
     }
 
@@ -615,7 +615,7 @@ fn add_to_types(
         if let Some(items) = &array.items {
             match items {
                 schemars::schema::SingleOrVec::Single(item) => {
-                    if is_primitive(item)?.is_some() {
+                    if is_primitive(item)?.is_some() && name != "SourceRange" {
                         return Ok(());
                     }
                     return add_to_types(name.trim_start_matches('[').trim_end_matches(']'), item, types);
@@ -627,7 +627,6 @@ fn add_to_types(
                         }
                         add_to_types(name.trim_start_matches('[').trim_end_matches(']'), item, types)?;
                     }
-                    return Ok(());
                 }
             }
         } else {
@@ -819,11 +818,13 @@ fn recurse_and_create_references(
     };
 
     // If we already have a reference add the metadata to the reference if it has none.
-    if o.reference.is_some() {
+    if let Some(reference) = &o.reference {
         let mut obj = o.clone();
+        let reference = reference.trim_start_matches("#/components/schemas/");
         let t = types
-            .get(name)
-            .ok_or_else(|| anyhow::anyhow!("Failed to get type: {}", name))?;
+            .get(reference)
+            .ok_or_else(|| anyhow::anyhow!("Failed to get type: {} {:?}", reference, types.keys()))?;
+
         let schemars::schema::Schema::Object(to) = t else {
             return Err(anyhow::anyhow!(
                 "Failed to get object schema, should have not been a primitive"
@@ -836,6 +837,9 @@ fn recurse_and_create_references(
         } else {
             obj.metadata = to.metadata.clone();
         }
+
+        let obj = cleanup_type_description(&obj)
+            .map_err(|e| anyhow::anyhow!("Failed to cleanup type description for type `{}`: {}", name, e))?;
         return Ok(schemars::schema::Schema::Object(obj));
     }
 
