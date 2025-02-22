@@ -2829,7 +2829,7 @@ extrude001 = extrude(profile001, length = 100)
       await scene.expectPixelColor(initialColor, testPoint, 15)
     })
 
-    async function goThroughFlowAndCheckExecution(
+    async function setApperanceAndCheck(
       option: string,
       hex: string,
       shapeColor: [number, number, number]
@@ -2882,25 +2882,17 @@ extrude001 = extrude(profile001, length = 100)
     }
 
     await test.step(`Go through the Set Appearance flow for all options`, async () => {
-      await goThroughFlowAndCheckExecution('Red', '#FF0000', [180, 30, 30])
-      await goThroughFlowAndCheckExecution('Green', '#00FF00', [80, 180, 50])
-      await goThroughFlowAndCheckExecution('Blue', '#0000FF', [0, 0, 180])
-      await goThroughFlowAndCheckExecution(
-        'Turquoise',
-        '#00FFFF',
-        [80, 190, 190]
-      )
-      await goThroughFlowAndCheckExecution('Purple', '#FF00FF', [180, 30, 180])
-      await goThroughFlowAndCheckExecution('Yellow', '#FFFF00', [190, 190, 60])
-      await goThroughFlowAndCheckExecution('Black', '#000000', [0, 0, 0])
-      await goThroughFlowAndCheckExecution('Dark Grey', '#080808', [10, 10, 10])
-      await goThroughFlowAndCheckExecution(
-        'Light Grey',
-        '#D3D3D3',
-        [190, 190, 190]
-      )
-      await goThroughFlowAndCheckExecution('White', '#FFFFFF', [200, 200, 200])
-      await goThroughFlowAndCheckExecution(
+      await setApperanceAndCheck('Red', '#FF0000', [180, 0, 0])
+      await setApperanceAndCheck('Green', '#00FF00', [0, 180, 0])
+      await setApperanceAndCheck('Blue', '#0000FF', [0, 0, 180])
+      await setApperanceAndCheck('Turquoise', '#00FFFF', [0, 180, 180])
+      await setApperanceAndCheck('Purple', '#FF00FF', [180, 0, 180])
+      await setApperanceAndCheck('Yellow', '#FFFF00', [180, 180, 0])
+      await setApperanceAndCheck('Black', '#000000', [0, 0, 0])
+      await setApperanceAndCheck('Dark Grey', '#080808', [10, 10, 10])
+      await setApperanceAndCheck('Light Grey', '#D3D3D3', [190, 190, 190])
+      await setApperanceAndCheck('White', '#FFFFFF', [200, 200, 200])
+      await setApperanceAndCheck(
         'Default (clear appearance)',
         'default',
         initialColor
