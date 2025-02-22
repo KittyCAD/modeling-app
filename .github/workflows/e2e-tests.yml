@@ -35,8 +35,14 @@ jobs:
       with:
         token: ${{ steps.app-token.outputs.token }}
 
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+
+    - name: Install dependencies
+      run: yarn
+
     - name: Install Playwright Browsers
-      shell: bash
       run: yarn playwright install --with-deps
 
     - name: Build Wasm
@@ -44,7 +50,6 @@ jobs:
       run: yarn build:wasm
 
     - name: build web
-      shell: bash
       run: yarn tronb:vite:dev
 
     - name: Run playwright/electron flow on ubuntu (with retries)
@@ -74,7 +79,6 @@ jobs:
 
     - name: Run playwright/electron flow on macos (with retries)
       if: startsWith(matrix.os, 'macos')
-      shell: bash
       run: |
         yarn test:playwright:electron:macos --retries 10
       env:
