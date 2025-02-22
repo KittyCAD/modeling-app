@@ -25,7 +25,7 @@ patternLinear3d(solid_set: SolidSet, instances: integer, distance: number, axis:
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/Solid) 
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples

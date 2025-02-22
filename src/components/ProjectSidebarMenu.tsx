@@ -18,7 +18,6 @@ import { SnapshotFrom } from 'xstate'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useSelector } from '@xstate/react'
 import { copyFileShareLink } from 'lib/links'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useToken } from 'machines/appMachine'
 
 const ProjectSidebarMenu = ({
@@ -103,7 +102,6 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  useSettingsAuthContext()
   const token = useToken()
   const machineManager = useContext(MachineManagerContext)
   const commands = useSelector(commandBarActor, commandsSelector)

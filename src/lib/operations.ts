@@ -33,6 +33,7 @@ interface StdLibCallInfo {
     | ExecuteCommandEventPayload
     | PrepareToEditCallback
     | PrepareToEditFailurePayload
+  supportsAppearance?: boolean
 }
 
 /**
@@ -204,6 +205,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Extrude',
     icon: 'extrude',
     prepareToEdit: prepareToEditExtrude,
+    supportsAppearance: true,
   },
   fillet: {
     label: 'Fillet',
@@ -228,6 +230,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   loft: {
     label: 'Loft',
     icon: 'loft',
+    supportsAppearance: true,
   },
   offsetPlane: {
     label: 'Offset Plane',
@@ -253,10 +256,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
+    supportsAppearance: true,
   },
   shell: {
     label: 'Shell',
     icon: 'shell',
+    supportsAppearance: true,
   },
   startSketchOn: {
     label: 'Sketch',
@@ -280,6 +285,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   sweep: {
     label: 'Sweep',
     icon: 'sweep',
+    supportsAppearance: true,
   },
 }
 
@@ -430,5 +436,39 @@ export async function enterEditFlow({
 
   return new Error(
     'Feature tree editing not yet supported for this operation. Please edit in the code editor.'
+  )
+}
+
+export async function enterAppearanceFlow({
+  operation,
+  artifact,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  if (operation.type !== 'StdLibCall') {
+    return new Error(
+      'Appearance setting not yet supported for user-defined functions. Please edit in the code editor.'
+    )
+  }
+  const stdLibInfo = stdLibMap[operation.name]
+
+  if (stdLibInfo && stdLibInfo.supportsAppearance) {
+    const argDefaultValues = {
+      nodeToEdit: getNodePathFromSourceRange(
+        kclManager.ast,
+        sourceRangeFromRust(operation.sourceRange)
+      ),
+    }
+    console.log('argDefaultValues', argDefaultValues)
+    return {
+      type: 'Find and select command',
+      data: {
+        name: 'Appearance',
+        groupId: 'modeling',
+        argDefaultValues,
+      },
+    }
+  }
+
+  return new Error(
+    'Appearance setting not yet supported for this operation. Please edit in the code editor.'
   )
 }

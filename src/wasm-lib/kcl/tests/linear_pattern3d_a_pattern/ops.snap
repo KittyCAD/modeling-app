@@ -1,12 +1,15 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed linear_pattern3d_a_pattern.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
         "sourceRange": [
           30,
           34,
@@ -26,6 +29,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           176,
           177,
@@ -40,11 +56,67 @@ snapshot_kind: text
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "axis": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 1.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
         "sourceRange": [
           232,
           241,
@@ -52,6 +124,19 @@ snapshot_kind: text
         ]
       },
       "distance": {
+        "value": {
+          "type": "Number",
+          "value": 6.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           273,
           274,
@@ -59,6 +144,19 @@ snapshot_kind: text
         ]
       },
       "instances": {
+        "value": {
+          "type": "Number",
+          "value": 7.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           257,
           258,
@@ -74,6 +172,12 @@ snapshot_kind: text
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
       "sourceRange": [
         208,
         221,
@@ -84,6 +188,50 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "axis": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            {
+              "type": "Number",
+              "value": 1.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          ]
+        },
         "sourceRange": [
           324,
           333,
@@ -91,6 +239,19 @@ snapshot_kind: text
         ]
       },
       "distance": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           348,
           349,
@@ -98,6 +259,19 @@ snapshot_kind: text
         ]
       },
       "instances": {
+        "value": {
+          "type": "Number",
+          "value": 7.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           365,
           366,
@@ -113,6 +287,32 @@ snapshot_kind: text
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
+      "value": {
+        "type": "Solids",
+        "value": [
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          },
+          {
+            "artifactId": "[uuid]"
+          }
+        ]
+      },
       "sourceRange": [
         307,
         313,

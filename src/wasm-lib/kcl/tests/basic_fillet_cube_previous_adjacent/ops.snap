@@ -7,6 +7,10 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
           24,
           28,
@@ -26,6 +30,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           229,
           231,
@@ -40,21 +57,55 @@ snapshot_kind: text
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          245,
-          320,
+          254,
+          255,
           0
         ]
       },
-      "solid": {
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
         "sourceRange": [
-          322,
-          323,
+          264,
+          297,
           0
         ]
       }
@@ -62,10 +113,22 @@ snapshot_kind: text
     "name": "fillet",
     "sourceRange": [
       238,
-      324,
+      298,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

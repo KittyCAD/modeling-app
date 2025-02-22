@@ -3,103 +3,177 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing add_lots.kcl
 ---
 {
+  "E": {
+    "type": "Number",
+    "value": 2.718281828459045,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          651,
+          689,
+          2
+        ]
+      }
+    ]
+  },
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          109,
+          115,
+          1
+        ]
+      }
+    ]
+  },
+  "PI": {
+    "type": "Number",
+    "value": 3.141592653589793,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          328,
+          2
+        ]
+      }
+    ]
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          89,
+          1
+        ]
+      }
+    ]
+  },
+  "TAU": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1042,
+          1080,
+          2
+        ]
+      }
+    ]
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          144,
+          150,
+          1
+        ]
+      }
+    ]
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          60,
+          61,
+          1
+        ]
+      }
+    ]
+  },
+  "cos": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1446,
+          1478,
+          2
+        ]
+      }
+    ]
   },
   "f": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 24,
-              "left": {
-                "end": 20,
-                "name": "i",
-                "start": 19,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "operator": "*",
-              "right": {
-                "end": 24,
-                "raw": "2",
-                "start": 23,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 2.0,
-                  "suffix": "None"
-                }
-              },
-              "start": 19,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "end": 24,
-            "start": 12,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 26,
-        "start": 8
-      },
-      "end": 26,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 6,
-            "name": "i",
-            "start": 5,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 4,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
           4,
           26,
           0
+        ]
+      }
+    ]
+  },
+  "sin": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1844,
+          1876,
+          2
+        ]
+      }
+    ]
+  },
+  "tan": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          2234,
+          2266,
+          2
         ]
       }
     ]

@@ -19,6 +19,8 @@ import {
   createArrayExpression,
   createIdentifier,
   createPipeExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
 } from '../modifyAst'
 import {
   getNodeFromPath,
@@ -166,13 +168,14 @@ export function modifyAstWithEdgeTreatmentAndTag(
     const firstTag = tagCalls[0] // can be Identifier or CallExpression (for opposite and adjacent edges)
 
     // edge treatment call
-    const edgeTreatmentCall = createCallExpressionStdLib(parameters.type, [
-      createObjectExpression({
-        [parameterName]: parameterValue,
-        tags: createArrayExpression(tagCalls),
-      }),
-      createPipeSubstitution(),
-    ])
+    const edgeTreatmentCall = createCallExpressionStdLibKw(
+      parameters.type,
+      null,
+      [
+        createLabeledArg(parameterName, parameterValue),
+        createLabeledArg('tags', createArrayExpression(tagCalls)),
+      ]
+    )
 
     // Locate the extrude call
     const locatedExtrudeDeclarator = locateExtrudeDeclarator(
@@ -394,10 +397,10 @@ export function getEdgeTagCall(
   return tagCall
 }
 
-function locateExtrudeDeclarator(
+export function locateExtrudeDeclarator(
   node: Program,
   pathToExtrudeNode: PathToNode
-): { extrudeDeclarator: VariableDeclarator } | Error {
+): { extrudeDeclarator: VariableDeclarator; shallowPath: PathToNode } | Error {
   const nodeOfExtrudeCall = getNodeFromPath<VariableDeclaration>(
     node,
     pathToExtrudeNode,
@@ -424,7 +427,7 @@ function locateExtrudeDeclarator(
     return new Error('Extrude must be a PipeExpression or CallExpression')
   }
 
-  return { extrudeDeclarator }
+  return { extrudeDeclarator, shallowPath: nodeOfExtrudeCall.shallowPath }
 }
 
 function getPathToNodeOfEdgeTreatmentLiteral(
@@ -751,6 +754,16 @@ export const isTagUsedInEdgeTreatment = ({
       ) {
         inEdgeTreatment = true
       }
+      if (inEdgeTreatment && node.type === 'CallExpressionKw') {
+        node.arguments.forEach((prop) => {
+          if (
+            prop.label.name === 'tags' &&
+            prop.arg.type === 'ArrayExpression'
+          ) {
+            inObj = true
+          }
+        })
+      }
       if (inEdgeTreatment && node.type === 'ObjectExpression') {
         node.properties.forEach((prop) => {
           if (
@@ -794,6 +807,16 @@ export const isTagUsedInEdgeTreatment = ({
         isEdgeTreatmentType(node.callee.name)
       ) {
         inEdgeTreatment = false
+      }
+      if (inEdgeTreatment && node.type === 'CallExpressionKw') {
+        node.arguments.forEach((prop) => {
+          if (
+            prop.label.name === 'tags' &&
+            prop.arg.type === 'ArrayExpression'
+          ) {
+            inObj = true
+          }
+        })
       }
       if (inEdgeTreatment && node.type === 'ObjectExpression') {
         node.properties.forEach((prop) => {

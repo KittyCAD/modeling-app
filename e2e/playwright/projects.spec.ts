@@ -117,7 +117,7 @@ test(
 test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, editor }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -179,6 +179,11 @@ test(
       await expect(page.getByText('broken-code')).toBeVisible()
 
       await page.getByText('broken-code').click()
+
+      await page.waitForTimeout(2000)
+      await editor.scrollToText(
+        "|> line(end = [0, wallMountL], tag = 'outerEdge')"
+      )
 
       // error in guter
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -419,7 +424,7 @@ test(
 test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, editor }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'broken-code'), { recursive: true })
       await fsp.copyFile(
@@ -429,16 +434,19 @@ test(
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
-
     await expect(page.getByText('broken-code')).toBeVisible()
-
     await page.getByText('broken-code').click()
 
+    // Gotcha: You can not use scene.waitForExecutionDone() since the KCL code is going to fail
     await expect(page.getByTestId('loading')).toBeAttached()
     await expect(page.getByTestId('loading')).not.toBeAttached({
       timeout: 20_000,
     })
 
+    // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
+    await editor.scrollToText(
+      "|> line(end = [0, wallMountL], tag = 'outerEdge')"
+    )
     // error in guter
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 

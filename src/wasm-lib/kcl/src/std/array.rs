@@ -2,26 +2,23 @@ use derive_docs::stdlib;
 
 use super::{
     args::{Arg, FromArgs},
-    Args, FnAsArg,
+    Args,
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, FunctionParam, KclValue},
+    execution::{
+        kcl_value::{FunctionSource, KclValue},
+        ExecState,
+    },
     source_range::SourceRange,
+    ExecutorContext,
 };
 
 /// Apply a function to each element of an array.
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, f): (Vec<KclValue>, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
+    let (array, f): (Vec<KclValue>, &FunctionSource) = FromArgs::from_args(&args, 0)?;
     let meta = vec![args.source_range.into()];
-    let map_fn = FunctionParam {
-        inner: f.func,
-        fn_expr: f.expr,
-        meta: meta.clone(),
-        ctx: args.ctx.clone(),
-        memory: f.memory,
-    };
-    let new_array = inner_map(array, map_fn, exec_state, &args).await?;
+    let new_array = inner_map(array, f, exec_state, &args).await?;
     Ok(KclValue::Array { value: new_array, meta })
 }
 
@@ -60,13 +57,13 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 }]
 async fn inner_map<'a>(
     array: Vec<KclValue>,
-    map_fn: FunctionParam<'a>,
+    map_fn: &'a FunctionSource,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<KclValue>, KclError> {
     let mut new_array = Vec::with_capacity(array.len());
     for elem in array {
-        let new_elem = call_map_closure(elem, &map_fn, args.source_range, exec_state).await?;
+        let new_elem = call_map_closure(elem, map_fn, args.source_range, exec_state, &args.ctx).await?;
         new_array.push(new_elem);
     }
     Ok(new_array)
@@ -74,11 +71,14 @@ async fn inner_map<'a>(
 
 async fn call_map_closure(
     input: KclValue,
-    map_fn: &FunctionParam<'_>,
+    map_fn: &FunctionSource,
     source_range: SourceRange,
     exec_state: &mut ExecState,
+    ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
-    let output = map_fn.call(exec_state, vec![Arg::synthetic(input)]).await?;
+    let output = map_fn
+        .call(exec_state, ctxt, vec![Arg::synthetic(input)], source_range)
+        .await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
@@ -91,15 +91,8 @@ async fn call_map_closure(
 
 /// For each item in an array, update a value.
 pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, start, f): (Vec<KclValue>, KclValue, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
-    let reduce_fn = FunctionParam {
-        inner: f.func,
-        fn_expr: f.expr,
-        meta: vec![args.source_range.into()],
-        ctx: args.ctx.clone(),
-        memory: f.memory,
-    };
-    inner_reduce(array, start, reduce_fn, exec_state, &args).await
+    let (array, start, f): (Vec<KclValue>, KclValue, &FunctionSource) = FromArgs::from_args(&args, 0)?;
+    inner_reduce(array, start, f, exec_state, &args).await
 }
 
 /// Take a starting value. Then, for each element of an array, calculate the next value,
@@ -141,7 +134,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Declare a function that sketches a decagon.
 /// fn decagon(radius) {
 ///   // Each side of the decagon is turned this many degrees from the previous angle.
-///   stepAngle = (1/10) * tau()
+///   stepAngle = (1/10) * TAU
 ///
 ///   // Start the decagon sketch at this point.
 ///   startOfDecagonSketch = startSketchOn('XY')
@@ -164,7 +157,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// /*
 /// The `decagon` above is basically like this pseudo-code:
 /// fn decagon(radius):
-///     stepAngle = (1/10) * tau()
+///     stepAngle = (1/10) * TAU
 ///     plane = startSketchOn('XY')
 ///     startOfDecagonSketch = startProfileAt([(cos(0)*radius), (sin(0) * radius)], plane)
 ///
@@ -187,13 +180,13 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_reduce<'a>(
     array: Vec<KclValue>,
     start: KclValue,
-    reduce_fn: FunctionParam<'a>,
+    reduce_fn: &'a FunctionSource,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<KclValue, KclError> {
     let mut reduced = start;
     for elem in array {
-        reduced = call_reduce_closure(elem, reduced, &reduce_fn, args.source_range, exec_state).await?;
+        reduced = call_reduce_closure(elem, reduced, reduce_fn, args.source_range, exec_state, &args.ctx).await?;
     }
 
     Ok(reduced)
@@ -202,13 +195,14 @@ async fn inner_reduce<'a>(
 async fn call_reduce_closure(
     elem: KclValue,
     start: KclValue,
-    reduce_fn: &FunctionParam<'_>,
+    reduce_fn: &FunctionSource,
     source_range: SourceRange,
     exec_state: &mut ExecState,
+    ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
     let reduce_fn_args = vec![Arg::synthetic(elem), Arg::synthetic(start)];
-    let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args).await?;
+    let transform_fn_return = reduce_fn.call(exec_state, ctxt, reduce_fn_args, source_range).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];

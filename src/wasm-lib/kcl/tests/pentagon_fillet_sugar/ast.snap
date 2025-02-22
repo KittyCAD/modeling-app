@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing pentagon_fillet_sugar.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -840,7 +841,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
       },
       {
         "declaration": {
-          "end": 777,
+          "end": 773,
           "id": {
             "end": 601,
             "name": "plumbus1",
@@ -888,143 +889,121 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               {
                 "arguments": [
                   {
-                    "end": 773,
-                    "properties": [
-                      {
-                        "end": 672,
-                        "key": {
-                          "end": 668,
-                          "name": "radius",
-                          "start": 662,
-                          "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 671,
+                      "raw": "5",
+                      "start": 670,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 5.0,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tags"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "computed": false,
+                          "end": 713,
+                          "object": {
+                            "computed": false,
+                            "end": 705,
+                            "object": {
+                              "end": 700,
+                              "name": "c1",
+                              "start": 698,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "property": {
+                              "end": 705,
+                              "name": "tags",
+                              "start": 701,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "start": 698,
+                            "type": "MemberExpression",
+                            "type": "MemberExpression"
+                          },
+                          "property": {
+                            "end": 713,
+                            "name": "arc_tag",
+                            "start": 706,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 698,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
                         },
-                        "start": 662,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 672,
-                          "raw": "5",
-                          "start": 671,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 5.0,
-                            "suffix": "None"
-                          }
-                        }
-                      },
-                      {
-                        "end": 766,
-                        "key": {
-                          "end": 685,
-                          "name": "tags",
-                          "start": 681,
-                          "type": "Identifier"
-                        },
-                        "start": 681,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
+                        {
+                          "arguments": [
                             {
                               "computed": false,
-                              "end": 714,
+                              "end": 755,
                               "object": {
                                 "computed": false,
-                                "end": 706,
+                                "end": 747,
                                 "object": {
-                                  "end": 701,
+                                  "end": 742,
                                   "name": "c1",
-                                  "start": 699,
+                                  "start": 740,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 706,
+                                  "end": 747,
                                   "name": "tags",
-                                  "start": 702,
+                                  "start": 743,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 699,
+                                "start": 740,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 714,
+                                "end": 755,
                                 "name": "arc_tag",
-                                "start": 707,
+                                "start": 748,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 699,
+                              "start": 740,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
-                            },
-                            {
-                              "arguments": [
-                                {
-                                  "computed": false,
-                                  "end": 756,
-                                  "object": {
-                                    "computed": false,
-                                    "end": 748,
-                                    "object": {
-                                      "end": 743,
-                                      "name": "c1",
-                                      "start": 741,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "end": 748,
-                                      "name": "tags",
-                                      "start": 744,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "start": 741,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "property": {
-                                    "end": 756,
-                                    "name": "arc_tag",
-                                    "start": 749,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 741,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                }
-                              ],
-                              "callee": {
-                                "end": 740,
-                                "name": "getOppositeEdge",
-                                "start": 725,
-                                "type": "Identifier"
-                              },
-                              "end": 757,
-                              "start": 725,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
                             }
                           ],
-                          "end": 766,
-                          "start": 688,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
+                          "callee": {
+                            "end": 739,
+                            "name": "getOppositeEdge",
+                            "start": 724,
+                            "type": "Identifier"
+                          },
+                          "end": 756,
+                          "start": 724,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         }
-                      }
-                    ],
-                    "start": 653,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
-                  },
-                  {
-                    "end": 776,
-                    "start": 775,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                      ],
+                      "end": 765,
+                      "start": 687,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -1033,13 +1012,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 646,
                   "type": "Identifier"
                 },
-                "end": 777,
+                "end": 773,
                 "start": 646,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 777,
+            "end": 773,
             "start": 604,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1047,7 +1027,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
           "start": 593,
           "type": "VariableDeclarator"
         },
-        "end": 777,
+        "end": 773,
         "kind": "const",
         "start": 593,
         "type": "VariableDeclaration",
@@ -1055,19 +1035,19 @@ description: Result of parsing pentagon_fillet_sugar.kcl
       },
       {
         "declaration": {
-          "end": 796,
+          "end": 792,
           "id": {
-            "end": 780,
+            "end": 776,
             "name": "c2",
-            "start": 778,
+            "start": 774,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 792,
+                "end": 788,
                 "raw": "200",
-                "start": 789,
+                "start": 785,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1076,48 +1056,48 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 }
               },
               {
-                "end": 795,
+                "end": 791,
                 "name": "a",
-                "start": 794,
+                "start": 790,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 788,
+              "end": 784,
               "name": "circl",
-              "start": 783,
+              "start": 779,
               "type": "Identifier"
             },
-            "end": 796,
-            "start": 783,
+            "end": 792,
+            "start": 779,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 778,
+          "start": 774,
           "type": "VariableDeclarator"
         },
-        "end": 796,
+        "end": 792,
         "kind": "const",
-        "start": 778,
+        "start": 774,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 981,
+          "end": 973,
           "id": {
-            "end": 805,
+            "end": 801,
             "name": "plumbus0",
-            "start": 797,
+            "start": 793,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 810,
+                "end": 806,
                 "name": "c2",
-                "start": 808,
+                "start": 804,
                 "type": "Identifier",
                 "type": "Identifier"
               },
@@ -1130,22 +1110,22 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 843,
+                      "end": 839,
                       "name": "plumbusLen",
-                      "start": 833,
+                      "start": 829,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 823,
+                  "end": 819,
                   "name": "extrude",
-                  "start": 816,
+                  "start": 812,
                   "type": "Identifier"
                 },
-                "end": 844,
-                "start": 816,
+                "end": 840,
+                "start": 812,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1153,173 +1133,152 @@ description: Result of parsing pentagon_fillet_sugar.kcl
               {
                 "arguments": [
                   {
-                    "end": 977,
-                    "properties": [
-                      {
-                        "end": 876,
-                        "key": {
-                          "end": 872,
-                          "name": "radius",
-                          "start": 866,
-                          "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 871,
+                      "raw": "5",
+                      "start": 870,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 5.0,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tags"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "computed": false,
+                          "end": 913,
+                          "object": {
+                            "computed": false,
+                            "end": 905,
+                            "object": {
+                              "end": 900,
+                              "name": "c2",
+                              "start": 898,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "property": {
+                              "end": 905,
+                              "name": "tags",
+                              "start": 901,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "start": 898,
+                            "type": "MemberExpression",
+                            "type": "MemberExpression"
+                          },
+                          "property": {
+                            "end": 913,
+                            "name": "arc_tag",
+                            "start": 906,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 898,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
                         },
-                        "start": 866,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 876,
-                          "raw": "5",
-                          "start": 875,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 5.0,
-                            "suffix": "None"
-                          }
-                        }
-                      },
-                      {
-                        "end": 970,
-                        "key": {
-                          "end": 889,
-                          "name": "tags",
-                          "start": 885,
-                          "type": "Identifier"
-                        },
-                        "start": 885,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
+                        {
+                          "arguments": [
                             {
                               "computed": false,
-                              "end": 918,
+                              "end": 955,
                               "object": {
                                 "computed": false,
-                                "end": 910,
+                                "end": 947,
                                 "object": {
-                                  "end": 905,
+                                  "end": 942,
                                   "name": "c2",
-                                  "start": 903,
+                                  "start": 940,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 910,
+                                  "end": 947,
                                   "name": "tags",
-                                  "start": 906,
+                                  "start": 943,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 903,
+                                "start": 940,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 918,
+                                "end": 955,
                                 "name": "arc_tag",
-                                "start": 911,
+                                "start": 948,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 903,
+                              "start": 940,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
-                            },
-                            {
-                              "arguments": [
-                                {
-                                  "computed": false,
-                                  "end": 960,
-                                  "object": {
-                                    "computed": false,
-                                    "end": 952,
-                                    "object": {
-                                      "end": 947,
-                                      "name": "c2",
-                                      "start": 945,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "end": 952,
-                                      "name": "tags",
-                                      "start": 948,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "start": 945,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "property": {
-                                    "end": 960,
-                                    "name": "arc_tag",
-                                    "start": 953,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 945,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                }
-                              ],
-                              "callee": {
-                                "end": 944,
-                                "name": "getOppositeEdge",
-                                "start": 929,
-                                "type": "Identifier"
-                              },
-                              "end": 961,
-                              "start": 929,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
                             }
                           ],
-                          "end": 970,
-                          "start": 892,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
+                          "callee": {
+                            "end": 939,
+                            "name": "getOppositeEdge",
+                            "start": 924,
+                            "type": "Identifier"
+                          },
+                          "end": 956,
+                          "start": 924,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         }
-                      }
-                    ],
-                    "start": 857,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
-                  },
-                  {
-                    "end": 980,
-                    "start": 979,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                      ],
+                      "end": 965,
+                      "start": 887,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 856,
+                  "end": 852,
                   "name": "fillet",
-                  "start": 850,
+                  "start": 846,
                   "type": "Identifier"
                 },
-                "end": 981,
-                "start": 850,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 973,
+                "start": 846,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 981,
-            "start": 808,
+            "end": 973,
+            "start": 804,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 797,
+          "start": 793,
           "type": "VariableDeclarator"
         },
-        "end": 981,
+        "end": 973,
         "kind": "const",
-        "start": 797,
+        "start": 793,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 982,
+    "end": 974,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "3": [

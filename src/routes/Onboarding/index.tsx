@@ -5,7 +5,6 @@ import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback, useEffect } from 'react'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import Streaming from './Streaming'
 import CodeEditor from './CodeEditor'
 import ParametricModeling from './ParametricModeling'
@@ -26,9 +25,10 @@ import { reportRejection } from 'lib/trap'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { EngineConnectionStateType } from 'lang/std/engineConnection'
+import { settingsActor, useSettings } from 'machines/appMachine'
+import { useSelector } from '@xstate/react'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { commandBarActor } from 'machines/commandBarMachine'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -112,25 +112,24 @@ export function useDemoCode() {
 
 export function useNextClick(newStatus: string) {
   const filePath = useAbsoluteFilePath()
-  const {
-    settings: { send },
-  } = useSettingsAuthContext()
   const navigate = useNavigate()
 
   return useCallback(() => {
-    send({
+    settingsActor.send({
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: newStatus },
     })
     navigate(filePath + PATHS.ONBOARDING.INDEX.slice(0, -1) + newStatus)
-  }, [filePath, newStatus, send, navigate])
+  }, [filePath, newStatus, settingsActor.send, navigate])
 }
 
 export function useDismiss() {
   const filePath = useAbsoluteFilePath()
-  const {
-    settings: { state, send },
-  } = useSettingsAuthContext()
+  const settings = useSettings()
+  const send = settingsActor.send
+  const isSettingsActorIdle = useSelector(settingsActor, (s) =>
+    s.matches('idle')
+  )
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(() => {
@@ -146,12 +145,17 @@ export function useDismiss() {
    */
   useEffect(() => {
     if (
-      state.context.app.onboardingStatus.user === 'dismissed' &&
-      state.matches('idle')
+      settings.app.onboardingStatus.current === 'dismissed' &&
+      isSettingsActorIdle
     ) {
       navigate(filePath)
     }
-  }, [filePath, navigate, state])
+  }, [
+    filePath,
+    navigate,
+    isSettingsActorIdle,
+    settings.app.onboardingStatus.current,
+  ])
 
   return settingsCallback
 }

@@ -24,7 +24,7 @@ assertEqual(left: number, right: number, epsilon: number, message: string) -> ()
 
 ### Returns
 
-`()` 
+`()`
 
 
 ### Examples

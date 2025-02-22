@@ -39,8 +39,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{EnvironmentRef, ExecState, KclValue},
-    parsing::ast::types::FunctionExpression,
+    execution::{ExecState, KclValue},
 };
 
 pub type StdFn = fn(
@@ -122,9 +121,6 @@ lazy_static! {
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::import::Import),
-        Box::new(crate::std::math::Cos),
-        Box::new(crate::std::math::Sin),
-        Box::new(crate::std::math::Tan),
         Box::new(crate::std::math::Acos),
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),
@@ -169,6 +165,39 @@ pub fn name_in_stdlib(name: &str) -> bool {
 
 pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
     CORE_FNS.iter().find(|f| f.name() == name).cloned()
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct StdFnProps {
+    pub name: String,
+    pub deprecated: bool,
+}
+
+impl StdFnProps {
+    fn default(name: &str) -> Self {
+        Self {
+            name: name.to_owned(),
+            deprecated: false,
+        }
+    }
+}
+
+pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
+    match (path, fn_name) {
+        ("math", "cos") => (
+            |e, a| Box::pin(crate::std::math::cos(e, a)),
+            StdFnProps::default("std::math::cos"),
+        ),
+        ("math", "sin") => (
+            |e, a| Box::pin(crate::std::math::sin(e, a)),
+            StdFnProps::default("std::math::sin"),
+        ),
+        ("math", "tan") => (
+            |e, a| Box::pin(crate::std::math::tan(e, a)),
+            StdFnProps::default("std::math::tan"),
+        ),
+        _ => unreachable!(),
+    }
 }
 
 pub struct StdLib {
@@ -299,11 +328,4 @@ pub enum Primitive {
     String,
     /// A uuid value.
     Uuid,
-}
-
-/// A closure used as an argument to a stdlib function.
-pub struct FnAsArg<'a> {
-    pub func: Option<&'a crate::execution::MemoryFunction>,
-    pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-    pub memory: EnvironmentRef,
 }
