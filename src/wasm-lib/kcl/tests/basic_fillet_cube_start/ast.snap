@@ -1,13 +1,14 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing basic_fillet_cube_start.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
         "declaration": {
-          "end": 260,
+          "end": 253,
           "id": {
             "end": 7,
             "name": "part001",
@@ -335,73 +336,51 @@ description: Result of parsing basic_fillet_cube_start.kcl
               {
                 "arguments": [
                   {
-                    "end": 256,
-                    "properties": [
-                      {
-                        "end": 230,
-                        "key": {
-                          "end": 226,
-                          "name": "radius",
-                          "start": 220,
-                          "type": "Identifier"
-                        },
-                        "start": 220,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 230,
-                          "raw": "2",
-                          "start": 229,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
-                        }
-                      },
-                      {
-                        "end": 254,
-                        "key": {
-                          "end": 236,
-                          "name": "tags",
-                          "start": 232,
-                          "type": "Identifier"
-                        },
-                        "start": 232,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "end": 245,
-                              "name": "thing",
-                              "start": 240,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            {
-                              "end": 253,
-                              "name": "thing2",
-                              "start": 247,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "end": 254,
-                          "start": 239,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 228,
+                      "raw": "2",
+                      "start": 227,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
                       }
-                    ],
-                    "start": 218,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                    }
                   },
                   {
-                    "end": 259,
-                    "start": 258,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tags"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 243,
+                          "name": "thing",
+                          "start": 238,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        {
+                          "end": 251,
+                          "name": "thing2",
+                          "start": 245,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "end": 252,
+                      "start": 237,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -410,13 +389,14 @@ description: Result of parsing basic_fillet_cube_start.kcl
                   "start": 211,
                   "type": "Identifier"
                 },
-                "end": 260,
+                "end": 253,
                 "start": 211,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 260,
+            "end": 253,
             "start": 10,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -424,14 +404,14 @@ description: Result of parsing basic_fillet_cube_start.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 260,
+        "end": 253,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 261,
+    "end": 254,
     "start": 0
   }
 }

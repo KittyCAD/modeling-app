@@ -33,6 +33,7 @@ layout: manual
 
 
 ----
+A unit of length.
 
 **Type:** `object`
 
@@ -140,6 +141,7 @@ layout: manual
 
 
 ----
+A unit of angle.
 
 **Type:** `object`
 
@@ -209,8 +211,8 @@ layout: manual
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Default`|  | No |
-| `len` |[`UnitLen`](/docs/kcl/types/UnitLen)|  | No |
-| `angle` |[`UnitAngle`](/docs/kcl/types/UnitAngle)|  | No |
+| `len` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
+| `angle` |[`UnitAngle`](/docs/kcl/types/UnitAngle)| A unit of angle. | No |
 
 
 ----

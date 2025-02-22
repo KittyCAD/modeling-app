@@ -1,12 +1,15 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_on_face.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
           24,
           28,
@@ -26,6 +29,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           217,
           218,
@@ -40,11 +56,29 @@ snapshot_kind: text
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           245,
           252,
@@ -52,6 +86,11 @@ snapshot_kind: text
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "here",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
           254,
           258,
@@ -71,6 +110,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           403,
           404,
@@ -85,6 +137,18 @@ snapshot_kind: text
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

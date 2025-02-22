@@ -1,6 +1,5 @@
 import { Popover } from '@headlessui/react'
 import Tooltip from './Tooltip'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CustomIcon } from './CustomIcon'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
@@ -9,6 +8,7 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { useLspContext } from './LspProvider'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { reportRejection } from 'lib/trap'
+import { settingsActor } from 'machines/appMachine'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -20,7 +20,6 @@ export function HelpMenu(props: React.PropsWithChildren) {
   const filePath = useAbsoluteFilePath()
   const isInProject = location.pathname.includes(PATHS.FILE)
   const navigate = useNavigate()
-  const { settings } = useSettingsAuthContext()
 
   return (
     <Popover className="relative">
@@ -106,7 +105,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
         <HelpMenuItem
           as="button"
           onClick={() => {
-            settings.send({
+            settingsActor.send({
               type: 'set.app.onboardingStatus',
               data: {
                 value: '',

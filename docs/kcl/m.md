@@ -26,7 +26,7 @@ m() -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

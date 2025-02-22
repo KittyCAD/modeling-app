@@ -19,7 +19,10 @@ use crate::{
 
 impl IntoDiagnostic for CompilationError {
     fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
-        let edit = self.suggestion.as_ref().map(|s| serde_json::to_value(s).unwrap());
+        let edit = self.suggestion.as_ref().map(|s| {
+            let range = s.source_range.to_lsp_range(code);
+            serde_json::to_value((s, range)).unwrap()
+        });
 
         Diagnostic {
             range: self.source_range.to_lsp_range(code),

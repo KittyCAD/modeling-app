@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands basic_fillet_cube_start.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -631,7 +630,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       211,
-      260,
+      253,
       0
     ],
     "command": {
@@ -647,7 +646,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       211,
-      260,
+      253,
       0
     ],
     "command": {
