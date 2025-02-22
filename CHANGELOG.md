@@ -19,6 +19,208 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [v0.44.0] - 2025-02-19
+
+##### Changed
+* Not auto-hiding the menu bar on Windows and Linux, helps with Trackpad Friendly mouse mode
+
+##### Fixed
+* Units not getting set properly with whole module imports. This fixes the loading of samples like the [multi-axis robot arm](https://zoo.dev/docs/kcl-samples/multi-axis-robot)
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.43.0...v0.44.0
+
+## [v0.43.0] - 2025-02-18
+
+##### Changed
+* Breaking: KCL: More stdlib functions now use keyword args. See links for how to migrate to new syntax:
+  * [offsetPlane](https://zoo.dev/docs/kcl/appearance#examples)
+  * [patternTransform](https://zoo.dev/docs/kcl/patternTransform#examples)
+  * [patternTransform2d](https://zoo.dev/docs/kcl/patternTransform2d#examples)
+  * [patternCircular2d](https://zoo.dev/docs/kcl/patternCircular2d#examples)
+  * [patternCircular3d](https://zoo.dev/docs/kcl/patternCircular3d#examples)
+  * [patternLinear2d](https://zoo.dev/docs/kcl/patternLinear2d#examples)
+  * [patternLinear3d](https://zoo.dev/docs/kcl/patternLinear3d#examples)
+
+##### Added
+* Multiple profiles in the same sketch
+* Share link to part through Zoo
+* Support comments in the middle of keyword function calls
+
+##### Fixed
+* Fix formatting to preserve annotations when program is otherwise empty
+* Multi-second blank screen on second instance of the app
+* Fix performance issue when using lots of KCL functions.
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.42.0...v0.43.0
+
+## [v0.42.0] - 2025-02-11
+
+##### Changed
+* Breaking: KCL: [Sweep](https://zoo.dev/docs/kcl/sweep#examples), [Shell](https://zoo.dev/docs/kcl/shell#examples), [Appearance](https://zoo.dev/docs/kcl/appearance#examples) stdlib functions now uses keyword args. See links for how to migrate to new syntax.
+* KCL: Patterns of patterns can use the original sketch/solid as target
+* Onboarding bracket with SSI
+* Update lower-right corner units menu to read and edit inline settings annotations if present 
+* Let users have big editors
+
+##### Added
+* Edit flows for extrude and offset plane operations
+* Back button to the onboarding buttons, move the dismiss button to a little corner `x` button
+
+##### Fixed
+* Use of non-platform agnostic separator
+* Invalidate execution cache when top-level annotations change
+* Resizing view breaking app on high DPI displays
+* Don't close the command palette on backspace
+* Remove noisy log line in linux by @TomPridham
+* Inserting revolve command accounts for axis dependency
+* Shift-Click to Deselect Edges/Faces
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.41.0...v0.42.0
+
+## [v0.41.0] - 2025-02-05
+
+##### Changed
+* Breaking: KCL now uses keyword arguments for `line`, `lineTo`, `extrude`, and `close`.
+  See the instructions below to migrate existing models. 
+
+> **Why are we doing this?** 
+> Because it'll let us evolve the KCL standard library, adding new options to functions without breaking existing code. We don't want to have a painful annual release process where you upgrade all your KCL code from 1.1 to 1.2 and a bunch of things break. In the future, if we want to add a new option, it'll be added as a new optional keyword argument. For example, we will probably let you pass a `diameter` to build a circle, instead of a `radius`. You can then use whichever keyword you want (and it'll give you an error if you use both, or neither).
+> 
+> This also helps us integrate a constraint solver in the future -- you'll be able to pass fewer keyword arguments, and the constraint solver will fill in the missing values for you 🙂 Eventually.
+> 
+> **What is changing?**
+> The first few functions we're changing are `line`, `lineTo`, `extrude` and `close`. Here's a before-and-after example:
+> 
+> `line([3, 4], mySketch, $myTag)`
+> becomes
+> `line(mySketch, end = [3, 4], tag = $myTag)`
+> 
+> Note that the _first_ argument doesn't need a label. Keyword functions may declare _at most one_ argument that doesn't need a label. If used, this has to be the first argument. 
+> 
+> Also, if you use an unlabeled argument in a `|>` you can omit the argument, and it'll be implicitly set to `%`. This means `%` isn't needed most of the time anymore.
+> 
+> **Example**
+> ```
+> box = startSketchOn("XZ")
+>   |> startProfileAt([10, 10], %)
+>   |> line([10, 0], %)
+>   |> line([0, 10], %)
+>   |> line([-10, 0], %, $thirdLineOfBox)
+>   |> close(%)
+>   |> extrude(5, %)
+> ```
+> becomes
+> ```
+> box = startSketchOn("XZ")
+>   |> startProfileAt([10, 10], %)
+>   |> line(end = [10, 0])
+>   |> line(end = [0, 10])
+>   |> line(end = [-10, 0], tag = $thirdLineOfBox)
+>   |> close()
+>   |> extrude(length = 5)
+> ```
+> **Migration**
+> Here is a list of regexes you can use to find-and-replace your old KCL code with the new keyword argument code. You can run this in ZMA's find-and-replace (ctrl+F or cmd+F in the KCL code panel), or in VSCode's global find-and-replace (so you can fix up all your files at once). Note this won't trigger for any multi-line function calls (where you separate each argument with a newline). For those you'll have to fix it up manually, sorry!
+> 
+> ```
+> \bline\(([^=]*), %\)
+> line(end = $1)
+> 
+> \bline\((.*), %, (.*)\)
+> line(end = $1, tag = $2)
+> 
+> \blineTo\((.*), %\)
+> line(endAbsolute = $1)
+> 
+> \blineTo\((.*), %, (.*)\)
+> line(endAbsolute = $1, tag = $2)
+> 
+> \bextrude\((.*), %\)
+> extrude(length = $1)
+> 
+> \bextrude\(([^=]*), ([a-zA-Z0-9]+)\)
+> extrude($2, length = $1)
+> 
+> close\(%, (.*)\)
+> close(tag = $1)
+> 
+> close\(%\)
+> close()
+> ```
+
+##### Added
+* Point-and-click Sweep and Revolve
+* Project thumbnails on the home page
+* Trackball camera setting
+* File tree now lets you duplicate files
+* Dedicated section for construction commands in the toolbar
+
+##### Fixed
+* Highlighted code in the editor is now easier to read in dark mode
+* Artifact graph now survives when there's an execution error 
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.40.0...v0.41.0
+
+## [v0.40.0] - 2025-01-31
+
+##### Added
+* Reason for dry-run validation failure provided in error toasts (Shell and Loft commands)
+
+##### Fixed
+* Units in samples after the removal of `project.toml`
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.39.0...v0.40.0
+
+## [v0.39.0] - 2025-01-31
+
+##### Added
+* Per-file units, use`@settings(defaultLengthUnit = in)` at the top of your files!
+
+##### Fixed
+* Clearing sketch DOM elements after redirecting to the home page
+* Center rectangle now works again, works with new LiteralValue structure
+* Open project command lists project names
+* Imports in projects with subdirectories
+
+##### Deprecated
+* Deprecate `import("file.obj")`. Use `import "file.obj"` instead.
+
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.38.0...v0.39.0
+
+## [v0.38.0] - 2025-01-28
+
+##### Changed
+* Tweaks to clarify tooltips from tool dropdown menus
+
+##### Fixed
+* "No results found" now shown for empty search results in command palette
+* Badge indicator now placed over the respective button in the sidebar
+* Properly setting selection range when KCL editor is not mounted
+* Extra margins removed on some code editor menu items
+* Scene units now set on a module's default units
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.37.0...v0.38.0
+
+## [v0.37.0] - 2025-01-20
+
+##### Changed
+* Uniqueness check to "Create project" command, and more consistent naming across the app
+
+##### Added
+* Return key to go through Onboarding steps
+* 3-point circle interactive sketch tool
+* Orbit in sketch mode via user setting
+* Selection dry-run validation for Shell
+
+
+##### Fixed
+* Show toolbar tooltips on hover only, hide when dropdowns are open
+* Loft command prompt focus
+
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.36.1...v0.37.0
+
 ## [v0.36.1] - 2025-01-16
 
 ##### Fixed
