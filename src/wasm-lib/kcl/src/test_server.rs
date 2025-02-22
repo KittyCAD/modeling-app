@@ -70,11 +70,13 @@ async fn do_execute_and_snapshot(
     ctx.run_with_ui_outputs(&program, &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
-    if !exec_state.errors().is_empty() {
-        return Err(ExecErrorWithState::new(
-            KclErrorWithOutputs::no_outputs(KclError::Semantic(exec_state.errors()[0].clone().into())).into(),
-            exec_state.clone(),
-        ));
+    for e in exec_state.errors() {
+        if e.severity.is_err() {
+            return Err(ExecErrorWithState::new(
+                KclErrorWithOutputs::no_outputs(KclError::Semantic(e.clone().into())).into(),
+                exec_state.clone(),
+            ));
+        }
     }
     let snapshot_png_bytes = ctx
         .prepare_snapshot()

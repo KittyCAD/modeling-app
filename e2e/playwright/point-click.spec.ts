@@ -2796,4 +2796,107 @@ radius = 8.69
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
     })
   })
+
+  test(`Set appearance`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn('XZ')
+profile001 = circle({
+  center = [0, 0],
+  radius = 100
+}, sketch001)
+extrude001 = extrude(profile001, length = 100)
+`
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 500, y: 250 }
+    const initialColor: [number, number, number] = [135, 135, 135]
+
+    await test.step(`Confirm extrude exists with default appearance`, async () => {
+      await toolbar.closePane('code')
+      await scene.expectPixelColor(initialColor, testPoint, 15)
+    })
+
+    async function setApperanceAndCheck(
+      option: string,
+      hex: string,
+      shapeColor: [number, number, number]
+    ) {
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Extrude',
+        0
+      )
+      await operationButton.click({ button: 'right' })
+      const menuButton = page.getByTestId('context-menu-set-appearance')
+      await menuButton.click()
+      await cmdBar.expectState({
+        commandName: 'Appearance',
+        currentArgKey: 'color',
+        currentArgValue: '',
+        headerArguments: {
+          Color: '',
+        },
+        highlightedHeaderArg: 'color',
+        stage: 'arguments',
+      })
+      const item = page.getByText(option, { exact: true })
+      await item.click()
+      await cmdBar.expectState({
+        commandName: 'Appearance',
+        headerArguments: {
+          Color: hex,
+        },
+        stage: 'review',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await scene.expectPixelColor(shapeColor, testPoint, 40)
+      await toolbar.openPane('code')
+      if (hex === 'default') {
+        const anyAppearanceDeclaration = `|> appearance(`
+        await editor.expectEditor.not.toContain(anyAppearanceDeclaration)
+      } else {
+        const declaration = `|> appearance(%, color = '${hex}')`
+        await editor.expectEditor.toContain(declaration)
+        // TODO: fix selection range after appearance update
+        // await editor.expectState({
+        //   diagnostics: [],
+        //   activeLines: [declaration],
+        //   highlightedCode: '',
+        // })
+      }
+      await toolbar.closePane('code')
+    }
+
+    await test.step(`Go through the Set Appearance flow for all options`, async () => {
+      await setApperanceAndCheck('Red', '#FF0000', [180, 0, 0])
+      await setApperanceAndCheck('Green', '#00FF00', [0, 180, 0])
+      await setApperanceAndCheck('Blue', '#0000FF', [0, 0, 180])
+      await setApperanceAndCheck('Turquoise', '#00FFFF', [0, 180, 180])
+      await setApperanceAndCheck('Purple', '#FF00FF', [180, 0, 180])
+      await setApperanceAndCheck('Yellow', '#FFFF00', [180, 180, 0])
+      await setApperanceAndCheck('Black', '#000000', [0, 0, 0])
+      await setApperanceAndCheck('Dark Grey', '#080808', [10, 10, 10])
+      await setApperanceAndCheck('Light Grey', '#D3D3D3', [190, 190, 190])
+      await setApperanceAndCheck('White', '#FFFFFF', [200, 200, 200])
+      await setApperanceAndCheck(
+        'Default (clear appearance)',
+        'default',
+        initialColor
+      )
+    })
+  })
 })
