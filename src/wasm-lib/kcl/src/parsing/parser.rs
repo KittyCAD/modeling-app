@@ -866,7 +866,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
                 sep.into(),
                 "Using `:` to initialize objects is deprecated, prefer using `=`.",
             )
-            .with_suggestion("Replace `:` with `=`", " =", Tag::Deprecated),
+            .with_suggestion("Replace `:` with `=`", " =", None, Tag::Deprecated),
         );
     }
 
@@ -1104,7 +1104,7 @@ fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
                     result.as_source_range().start_as_range(),
                     "Missing `fn` in function declaration",
                 )
-                .with_suggestion("Add `fn`", "fn", Tag::None),
+                .with_suggestion("Add `fn`", "fn", None, Tag::None),
             );
         } else {
             let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
@@ -1161,7 +1161,7 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
         if let Some(arrow) = arrow {
             ParseContext::warn(
                 CompilationError::err(arrow.as_source_range(), "Unnecessary `=>` in function declaration")
-                    .with_suggestion("Remove `=>`", "", Tag::Unnecessary),
+                    .with_suggestion("Remove `=>`", "", None, Tag::Unnecessary),
             );
             true
         } else {
@@ -1997,7 +1997,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             if let Some(t) = eq {
                 ParseContext::warn(
                     CompilationError::err(t.as_source_range(), "Unnecessary `=` in function declaration")
-                        .with_suggestion("Remove `=`", "", Tag::Unnecessary),
+                        .with_suggestion("Remove `=`", "", None, Tag::Unnecessary),
                 );
             }
 
@@ -2022,6 +2022,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                 .parse_next(i);
 
             if let Some((_, tok)) = decl_token {
+                let range_to_remove = SourceRange::new(tok.start, id.start, id.module_id);
                 ParseContext::warn(
                     CompilationError::err(
                         tok.as_source_range(),
@@ -2030,7 +2031,12 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                             tok.value
                         ),
                     )
-                    .with_suggestion(format!("Remove `{}`", tok.value), "", Tag::Deprecated),
+                    .with_suggestion(
+                        format!("Remove `{}`", tok.value),
+                        "",
+                        Some(range_to_remove),
+                        Tag::Deprecated,
+                    ),
                 );
             }
 
@@ -4610,9 +4616,9 @@ var baz = 2
         let replaced = errs[0].apply_suggestion(&replaced).unwrap();
         assert_eq!(
             replaced,
-            r#" foo = 0
- bar = 1
- baz = 2
+            r#"foo = 0
+bar = 1
+baz = 2
 "#
         );
     }
