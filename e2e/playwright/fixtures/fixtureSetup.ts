@@ -59,9 +59,9 @@ export interface Fixtures {
   homePage: HomePageFixture
 }
 export class AuthenticatedTronApp {
-  public readonly _page: Page
   public originalPage: Page
   public page: Page
+  public browserContext: BrowserContext
   public context: BrowserContext
   public readonly testInfo: TestInfo
   public electronApp: ElectronApplication | undefined
@@ -73,10 +73,11 @@ export class AuthenticatedTronApp {
     originalPage: Page,
     testInfo: TestInfo
   ) {
-    this._page = originalPage
     this.page = originalPage
     this.originalPage = originalPage
     this.browserContext = browserContext
+    // Will be overwritten in the initializer
+    this.context = browserContext
     this.testInfo = testInfo
   }
   async initialise(
@@ -88,14 +89,12 @@ export class AuthenticatedTronApp {
     } = { fixtures: {} }
   ) {
     const { electronApp, page, context, dir } = await setupElectron({
-      browserContext: this.browserContext,
       testInfo: this.testInfo,
       folderSetupFn: arg.folderSetupFn,
       cleanProjectDir: arg.cleanProjectDir,
       appSettings: arg.appSettings,
       viewport: this.viewPortSize,
     })
-    this._page = page
     this.page = page
 
     // These assignments "fix" some brokenness in the Playwright Workbench when
