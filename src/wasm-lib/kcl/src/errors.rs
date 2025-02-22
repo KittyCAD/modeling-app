@@ -402,12 +402,15 @@ impl CompilationError {
         self,
         suggestion_title: impl ToString,
         suggestion_insert: impl ToString,
+        // Will use the error source range if none is supplied
+        source_range: Option<SourceRange>,
         tag: Tag,
     ) -> CompilationError {
         CompilationError {
             suggestion: Some(Suggestion {
                 title: suggestion_title.to_string(),
                 insert: suggestion_insert.to_string(),
+                source_range: source_range.unwrap_or(self.source_range),
             }),
             tag,
             ..self
@@ -419,9 +422,9 @@ impl CompilationError {
         let suggestion = self.suggestion.as_ref()?;
         Some(format!(
             "{}{}{}",
-            &src[0..self.source_range.start()],
+            &src[0..suggestion.source_range.start()],
             suggestion.insert,
-            &src[self.source_range.end()..]
+            &src[suggestion.source_range.end()..]
         ))
     }
 }
@@ -465,4 +468,5 @@ pub enum Tag {
 pub struct Suggestion {
     pub title: String,
     pub insert: String,
+    pub source_range: SourceRange,
 }

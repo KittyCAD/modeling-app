@@ -3,37 +3,132 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing pentagon_fillet_sugar.kcl
 ---
 {
+  "E": {
+    "type": "Number",
+    "value": 2.718281828459045,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          651,
+          689,
+          2
+        ]
+      }
+    ]
+  },
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          109,
+          115,
+          1
+        ]
+      }
+    ]
+  },
+  "PI": {
+    "type": "Number",
+    "value": 3.141592653589793,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          328,
+          2
+        ]
+      }
+    ]
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          89,
+          1
+        ]
+      }
+    ]
+  },
+  "TAU": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1042,
+          1080,
+          2
+        ]
+      }
+    ]
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          144,
+          150,
+          1
+        ]
+      }
+    ]
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          60,
+          61,
+          1
+        ]
+      }
+    ]
   },
   "a": {
     "type": "TagIdentifier",
@@ -66,7 +161,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           250.00000000000006,
           433.0127018922193
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -132,7 +230,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           280.0,
           99.99999999999999
         ],
-        "type": "Arc"
+        "type": "Arc",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -192,7 +293,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           -249.99999999999994,
           433.01270189221935
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -252,7 +356,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           0.00000000000011368683772161603,
           0.00000000000005684341886080802
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -316,7 +423,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             -120.0,
             100.0
           ],
-          "type": "Arc"
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -336,7 +446,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             -120.0,
             100.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -440,7 +553,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   250.0,
                   433.0127
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -465,7 +581,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   -250.0,
                   433.0127
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -490,7 +609,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0,
                   0.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               }
             ],
             "on": {
@@ -532,6 +654,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 0.0,
                 0.0
               ],
+              "units": {
+                "type": "Mm"
+              },
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -573,7 +698,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       250.00000000000006,
                       433.0127018922193
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -632,7 +760,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       -249.99999999999994,
                       433.01270189221935
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -691,7 +822,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       0.00000000000011368683772161603,
                       0.00000000000005684341886080802
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -774,6 +908,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           -120.0,
           100.0
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -821,7 +958,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 -120.0,
                 99.99999999999999
               ],
-              "type": "Arc"
+              "type": "Arc",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -902,7 +1042,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             280.0,
             100.0
           ],
-          "type": "Arc"
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -922,7 +1065,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             280.0,
             100.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -1026,7 +1172,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   250.0,
                   433.0127
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -1051,7 +1200,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   -250.0,
                   433.0127
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               {
                 "__geoMeta": {
@@ -1076,7 +1228,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0,
                   0.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               }
             ],
             "on": {
@@ -1118,6 +1273,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 0.0,
                 0.0
               ],
+              "units": {
+                "type": "Mm"
+              },
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1159,7 +1317,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       250.00000000000006,
                       433.0127018922193
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -1218,7 +1379,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       -249.99999999999994,
                       433.01270189221935
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -1277,7 +1441,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       0.00000000000011368683772161603,
                       0.00000000000005684341886080802
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   "surface": {
                     "faceId": "[uuid]",
@@ -1360,6 +1527,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           280.0,
           100.0
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1407,7 +1577,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 280.0,
                 99.99999999999999
               ],
-              "type": "Arc"
+              "type": "Arc",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -1535,217 +1708,24 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
   },
   "circl": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "body": [
-                {
-                  "arguments": [
-                    {
-                      "end": 457,
-                      "name": "p",
-                      "start": 456,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    {
-                      "end": 463,
-                      "name": "face",
-                      "start": 459,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    }
-                  ],
-                  "callee": {
-                    "end": 455,
-                    "name": "startSketchOn",
-                    "start": 442,
-                    "type": "Identifier"
-                  },
-                  "end": 464,
-                  "start": 442,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "elements": [
-                        {
-                          "end": 498,
-                          "left": {
-                            "end": 489,
-                            "name": "x",
-                            "start": 488,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "end": 498,
-                            "name": "radius",
-                            "start": 492,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 488,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        {
-                          "end": 518,
-                          "left": {
-                            "end": 514,
-                            "name": "triangleHeight",
-                            "start": 500,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "/",
-                          "right": {
-                            "end": 518,
-                            "raw": "2",
-                            "start": 517,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 2.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "start": 500,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      ],
-                      "end": 519,
-                      "start": 487,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    {
-                      "end": 522,
-                      "start": 521,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 486,
-                    "name": "startProfileAt",
-                    "start": 472,
-                    "type": "Identifier"
-                  },
-                  "end": 523,
-                  "start": 472,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "end": 539,
-                      "name": "circ",
-                      "start": 535,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    {
-                      "end": 542,
-                      "start": 541,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    },
-                    {
-                      "end": 552,
-                      "start": 544,
-                      "type": "TagDeclarator",
-                      "type": "TagDeclarator",
-                      "value": "arc_tag"
-                    }
-                  ],
-                  "callee": {
-                    "end": 534,
-                    "name": "arc",
-                    "start": 531,
-                    "type": "Identifier"
-                  },
-                  "end": 553,
-                  "start": 531,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "end": 568,
-                      "start": 567,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 566,
-                    "name": "close",
-                    "start": 561,
-                    "type": "Identifier"
-                  },
-                  "end": 569,
-                  "start": 561,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                }
-              ],
-              "end": 569,
-              "start": 442,
-              "type": "PipeExpression",
-              "type": "PipeExpression"
-            },
-            "end": 569,
-            "start": 435,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 571,
-        "start": 431
-      },
-      "end": 571,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 423,
-            "name": "x",
-            "start": 422,
-            "type": "Identifier"
-          }
-        },
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 429,
-            "name": "face",
-            "start": 425,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 421,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
           421,
           571,
           0
+        ]
+      }
+    ]
+  },
+  "cos": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1446,
+          1478,
+          2
         ]
       }
     ]
@@ -1833,7 +1813,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               250.0,
               433.0127
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1858,7 +1841,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               -250.0,
               433.0127
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -1883,7 +1869,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -1925,6 +1914,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1966,7 +1958,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   250.00000000000006,
                   433.0127018922193
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -2025,7 +2020,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   -249.99999999999994,
                   433.01270189221935
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -2084,7 +2082,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.00000000000011368683772161603,
                   0.00000000000005684341886080802
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -2203,7 +2204,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               280.0,
               100.0
             ],
-            "type": "Arc"
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -2223,7 +2227,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               280.0,
               100.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -2327,7 +2334,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     250.0,
                     433.0127
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -2352,7 +2362,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     -250.0,
                     433.0127
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -2377,7 +2390,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     0.0,
                     0.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 }
               ],
               "on": {
@@ -2419,6 +2435,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0,
                   0.0
                 ],
+                "units": {
+                  "type": "Mm"
+                },
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -2460,7 +2479,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         250.00000000000006,
                         433.0127018922193
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -2519,7 +2541,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         -249.99999999999994,
                         433.01270189221935
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -2578,7 +2603,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         0.00000000000011368683772161603,
                         0.00000000000005684341886080802
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -2661,6 +2689,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             280.0,
             100.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2708,7 +2739,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   280.0,
                   99.99999999999999
                 ],
-                "type": "Arc"
+                "type": "Arc",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -2843,7 +2877,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               -120.0,
               100.0
             ],
-            "type": "Arc"
+            "type": "Arc",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -2863,7 +2900,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               -120.0,
               100.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -2967,7 +3007,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     250.0,
                     433.0127
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -2992,7 +3035,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     -250.0,
                     433.0127
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -3017,7 +3063,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     0.0,
                     0.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 }
               ],
               "on": {
@@ -3059,6 +3108,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0,
                   0.0
                 ],
+                "units": {
+                  "type": "Mm"
+                },
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -3100,7 +3152,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         250.00000000000006,
                         433.0127018922193
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -3159,7 +3214,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         -249.99999999999994,
                         433.01270189221935
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -3218,7 +3276,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         0.00000000000011368683772161603,
                         0.00000000000005684341886080802
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -3301,6 +3362,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             -120.0,
             100.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3348,7 +3412,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   -120.0,
                   99.99999999999999
                 ],
-                "type": "Arc"
+                "type": "Arc",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -3466,6 +3533,30 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           47,
           49,
           0
+        ]
+      }
+    ]
+  },
+  "sin": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1844,
+          1876,
+          2
+        ]
+      }
+    ]
+  },
+  "tan": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          2234,
+          2266,
+          2
         ]
       }
     ]

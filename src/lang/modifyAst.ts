@@ -626,7 +626,6 @@ export function sketchOnExtrudedFace(
   } else {
     _tag = createLiteral(info.subType.toUpperCase())
   }
-
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLib('startSketchOn', [

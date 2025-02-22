@@ -7,7 +7,6 @@ import {
 } from '@codemirror/autocomplete'
 import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
 import { CustomIcon } from 'components/CustomIcon'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
 import { getSystemTheme } from 'lib/theme'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
@@ -20,6 +19,7 @@ import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
 import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
 import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 import toast from 'react-hot-toast'
 
 const machineContextSelector = (snapshot?: {
@@ -42,7 +42,7 @@ function CommandBarKclInput({
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const argMachineContext = useSelector(
     arg.machineActor,
     machineContextSelector
@@ -117,9 +117,9 @@ function CommandBarKclInput({
           : defaultValue.length,
     },
     theme:
-      settings.context.app.theme.current === 'system'
+      settings.app.theme.current === 'system'
         ? getSystemTheme()
-        : settings.context.app.theme.current,
+        : settings.app.theme.current,
     extensions: [
       varMentionsExtension,
       EditorView.updateListener.of((vu: ViewUpdate) => {

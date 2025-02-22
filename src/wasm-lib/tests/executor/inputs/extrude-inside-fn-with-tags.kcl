@@ -53,15 +53,15 @@ fn bracketSketch = (w, d, t) => {
 // build the body of the bracket
 const bs = bracketSketch(width, depth, thk)
 const bracketBody = bs
-  |> fillet({
-       radius: radius,
-       tags: [
+  |> fillet(
+       radius = radius,
+       tags = [
          getPreviousAdjacentEdge(bs.sketch.tags.edge7),
          getPreviousAdjacentEdge(bs.sketch.tags.edge2),
          getPreviousAdjacentEdge(bs.sketch.tags.edge3),
          getPreviousAdjacentEdge(bs.sketch.tags.edge6)
        ]
-     }, %)
+     )
 
 
 // sketch on the face

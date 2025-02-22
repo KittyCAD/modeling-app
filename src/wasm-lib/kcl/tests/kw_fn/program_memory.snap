@@ -3,103 +3,135 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing kw_fn.kcl
 ---
 {
+  "E": {
+    "type": "Number",
+    "value": 2.718281828459045,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          651,
+          689,
+          2
+        ]
+      }
+    ]
+  },
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          109,
+          115,
+          1
+        ]
+      }
+    ]
+  },
+  "PI": {
+    "type": "Number",
+    "value": 3.141592653589793,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          328,
+          2
+        ]
+      }
+    ]
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          89,
+          1
+        ]
+      }
+    ]
+  },
+  "TAU": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1042,
+          1080,
+          2
+        ]
+      }
+    ]
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          144,
+          150,
+          1
+        ]
+      }
+    ]
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          60,
+          61,
+          1
+        ]
+      }
+    ]
   },
   "add": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 75,
-              "left": {
-                "end": 67,
-                "name": "x",
-                "start": 66,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "operator": "+",
-              "right": {
-                "end": 75,
-                "name": "delta",
-                "start": 70,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "start": 66,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "end": 75,
-            "start": 59,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 77,
-        "start": 55
-      },
-      "end": 77,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 46,
-            "name": "x",
-            "start": 45,
-            "type": "Identifier"
-          },
-          "labeled": false
-        },
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 53,
-            "name": "delta",
-            "start": 48,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 43,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      2
-    ],
     "__meta": [
       {
         "sourceRange": [
@@ -110,66 +142,20 @@ description: Variables in memory after executing kw_fn.kcl
       }
     ]
   },
+  "cos": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1446,
+          1478,
+          2
+        ]
+      }
+    ]
+  },
   "increment": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 33,
-              "left": {
-                "end": 29,
-                "name": "x",
-                "start": 28,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "operator": "+",
-              "right": {
-                "end": 33,
-                "raw": "1",
-                "start": 32,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
-              },
-              "start": 28,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "end": 33,
-            "start": 21,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 35,
-        "start": 17
-      },
-      "end": 35,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 15,
-            "name": "x",
-            "start": 14,
-            "type": "Identifier"
-          },
-          "labeled": false
-        }
-      ],
-      "start": 12,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
@@ -180,11 +166,41 @@ description: Variables in memory after executing kw_fn.kcl
       }
     ]
   },
+  "sin": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1844,
+          1876,
+          2
+        ]
+      }
+    ]
+  },
+  "tan": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          2234,
+          2266,
+          2
+        ]
+      }
+    ]
+  },
   "three": {
     "type": "Number",
     "value": 3.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
     "__meta": [
       {
@@ -207,7 +223,13 @@ description: Variables in memory after executing kw_fn.kcl
     "type": "Number",
     "value": 2.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
     "__meta": [
       {

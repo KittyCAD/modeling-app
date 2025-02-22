@@ -1,12 +1,15 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed helix_ccw.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
           24,
           28,
@@ -26,6 +29,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           101,
           103,
@@ -40,11 +56,58 @@ snapshot_kind: text
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "angleStart": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "ccw": {
+              "type": "Bool",
+              "value": true
+            },
+            "revolutions": {
+              "type": "Number",
+              "value": 16.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            }
+          }
+        },
         "sourceRange": [
           127,
           201,
@@ -52,6 +115,12 @@ snapshot_kind: text
         ]
       },
       "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
           203,
           204,

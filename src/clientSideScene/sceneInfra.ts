@@ -291,6 +291,7 @@ export class SceneInfra {
     this.labelRenderer.domElement.style.position = 'absolute'
     this.labelRenderer.domElement.style.top = '0px'
     this.labelRenderer.domElement.style.pointerEvents = 'none'
+    this.labelRenderer.domElement.className = 'z-sketchSegmentIndicators'
     window.addEventListener('resize', this.onWindowResize)
 
     this.camControls = new CameraControls(
