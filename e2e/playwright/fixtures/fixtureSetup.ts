@@ -60,6 +60,7 @@ export interface Fixtures {
 }
 export class AuthenticatedTronApp {
   public readonly _page: Page
+  public originalPage: Page
   public page: Page
   public context: BrowserContext
   public readonly testInfo: TestInfo
@@ -67,10 +68,15 @@ export class AuthenticatedTronApp {
   public readonly viewPortSize = { width: 1200, height: 500 }
   public dir: string = ''
 
-  constructor(context: BrowserContext, page: Page, testInfo: TestInfo) {
-    this._page = page
-    this.page = page
-    this.context = context
+  constructor(
+    browserContext: BrowserContext,
+    originalPage: Page,
+    testInfo: TestInfo
+  ) {
+    this._page = originalPage
+    this.page = originalPage
+    this.originalPage = originalPage
+    this.browserContext = browserContext
     this.testInfo = testInfo
   }
   async initialise(
@@ -82,13 +88,22 @@ export class AuthenticatedTronApp {
     } = { fixtures: {} }
   ) {
     const { electronApp, page, context, dir } = await setupElectron({
+      browserContext: this.browserContext,
       testInfo: this.testInfo,
       folderSetupFn: arg.folderSetupFn,
       cleanProjectDir: arg.cleanProjectDir,
       appSettings: arg.appSettings,
+      viewport: this.viewPortSize,
     })
+    this._page = page
     this.page = page
+
+    // These assignments "fix" some brokenness in the Playwright Workbench when
+    // running against electron applications.
+    // The timeline is still broken but failure screenshots work again.
     this.context = context
+    Object.assign(this.browserContext, this.context)
+
     this.electronApp = electronApp
     this.dir = dir
 
