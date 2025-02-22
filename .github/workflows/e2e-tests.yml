@@ -55,7 +55,7 @@ jobs:
     - name: Run playwright/electron flow on ubuntu (with retries)
       if: contains(matrix.os, 'ubuntu')
       run: |
-        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu --retries 20
+        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
@@ -68,7 +68,7 @@ jobs:
       if: contains(matrix.os, 'windows')
       id: retry
       run: |
-        yarn test:playwright:electron:windows --retries 20
+        yarn test:playwright:electron:windows
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
@@ -80,7 +80,7 @@ jobs:
     - name: Run playwright/electron flow on macos (with retries)
       if: contains(matrix.os, 'macos')
       run: |
-        yarn test:playwright:electron:macos --retries 20
+        yarn test:playwright:electron:macos
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
