@@ -17,6 +17,6 @@ Data for polar coordinates.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `angle` |`number`| The angle of the line (in degrees). | No |
-| `length` |`number`| The length of the line. | No |
+| `length` |[`TyF64`](/docs/kcl/types/TyF64)| The length of the line. | No |
 
 

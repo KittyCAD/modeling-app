@@ -342,7 +342,9 @@ fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> PResult<Node<NonCo
             None
         } else {
             let value = match token.token_type {
-                TokenType::Whitespace if token.value.contains("\n\n") => NonCodeValue::NewLine,
+                TokenType::Whitespace if token.value.contains("\n\n") || token.value.contains("\n\r\n") => {
+                    NonCodeValue::NewLine
+                }
                 TokenType::LineComment => NonCodeValue::BlockComment {
                     value: token.value.trim_start_matches("//").trim().to_owned(),
                     style: CommentStyle::Line,
@@ -864,7 +866,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
                 sep.into(),
                 "Using `:` to initialize objects is deprecated, prefer using `=`.",
             )
-            .with_suggestion("Replace `:` with `=`", " =", Tag::Deprecated),
+            .with_suggestion("Replace `:` with `=`", " =", None, Tag::Deprecated),
         );
     }
 
@@ -1102,7 +1104,7 @@ fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
                     result.as_source_range().start_as_range(),
                     "Missing `fn` in function declaration",
                 )
-                .with_suggestion("Add `fn`", "fn", Tag::None),
+                .with_suggestion("Add `fn`", "fn", None, Tag::None),
             );
         } else {
             let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
@@ -1159,7 +1161,7 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
         if let Some(arrow) = arrow {
             ParseContext::warn(
                 CompilationError::err(arrow.as_source_range(), "Unnecessary `=>` in function declaration")
-                    .with_suggestion("Remove `=>`", "", Tag::Unnecessary),
+                    .with_suggestion("Remove `=>`", "", None, Tag::Unnecessary),
             );
             true
         } else {
@@ -1402,7 +1404,7 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
         // if it has an empty line, it should be considered a noncode token, because the user
         // deliberately put an empty line there. We should track this and preserve it.
         if let Ok(ref ws_token) = found_ws {
-            if ws_token.value.contains("\n\n") {
+            if ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n") {
                 things_within_body.push(WithinFunction::NonCode(Node::new(
                     NonCodeNode {
                         value: NonCodeValue::NewLine,
@@ -1735,6 +1737,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
+        // TODO should allow other extensions if there is a format attribute.
         let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
         if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
             ParseContext::warn(CompilationError::err(
@@ -1994,7 +1997,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             if let Some(t) = eq {
                 ParseContext::warn(
                     CompilationError::err(t.as_source_range(), "Unnecessary `=` in function declaration")
-                        .with_suggestion("Remove `=`", "", Tag::Unnecessary),
+                        .with_suggestion("Remove `=`", "", None, Tag::Unnecessary),
                 );
             }
 
@@ -2019,6 +2022,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                 .parse_next(i);
 
             if let Some((_, tok)) = decl_token {
+                let range_to_remove = SourceRange::new(tok.start, id.start, id.module_id);
                 ParseContext::warn(
                     CompilationError::err(
                         tok.as_source_range(),
@@ -2027,7 +2031,12 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                             tok.value
                         ),
                     )
-                    .with_suggestion(format!("Remove `{}`", tok.value), "", Tag::Deprecated),
+                    .with_suggestion(
+                        format!("Remove `{}`", tok.value),
+                        "",
+                        Some(range_to_remove),
+                        Tag::Deprecated,
+                    ),
                 );
             }
 
@@ -4607,9 +4616,9 @@ var baz = 2
         let replaced = errs[0].apply_suggestion(&replaced).unwrap();
         assert_eq!(
             replaced,
-            r#" foo = 0
- bar = 1
- baz = 2
+            r#"foo = 0
+bar = 1
+baz = 2
 "#
         );
     }

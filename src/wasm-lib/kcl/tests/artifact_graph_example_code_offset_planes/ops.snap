@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed artifact_graph_example_code_offset_planes.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "offset": {
+        "value": {
+          "type": "Number",
+          "value": 20.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           44,
           46,
@@ -22,6 +34,10 @@ snapshot_kind: text
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
+      "value": {
+        "type": "String",
+        "value": "XY"
+      },
       "sourceRange": [
         29,
         33,
@@ -32,6 +48,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "offset": {
+        "value": {
+          "type": "Number",
+          "value": -50.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           92,
           95,
@@ -47,6 +76,10 @@ snapshot_kind: text
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
+      "value": {
+        "type": "String",
+        "value": "XZ"
+      },
       "sourceRange": [
         77,
         81,
@@ -57,6 +90,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "offset": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
           141,
           143,
@@ -72,6 +118,10 @@ snapshot_kind: text
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
+      "value": {
+        "type": "String",
+        "value": "YZ"
+      },
       "sourceRange": [
         126,
         130,
@@ -82,6 +132,10 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
           172,
           186,

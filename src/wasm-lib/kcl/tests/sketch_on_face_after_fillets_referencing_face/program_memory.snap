@@ -1,8 +1,26 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing sketch_on_face_after_fillets_referencing_face.kcl
+snapshot_kind: text
 ---
 {
+  "E": {
+    "type": "Number",
+    "value": 2.718281828459045,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          651,
+          689,
+          2
+        ]
+      }
+    ]
+  },
   "FOS": {
     "type": "Number",
     "value": 2.0,
@@ -29,9 +47,19 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     "type": "Number",
     "value": 180.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          109,
+          115,
+          1
+        ]
+      }
+    ]
   },
   "L": {
     "type": "Number",
@@ -85,29 +113,97 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       }
     ]
   },
+  "PI": {
+    "type": "Number",
+    "value": 3.141592653589793,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          328,
+          2
+        ]
+      }
+    ]
+  },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          89,
+          1
+        ]
+      }
+    ]
+  },
+  "TAU": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1042,
+          1080,
+          2
+        ]
+      }
+    ]
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          144,
+          150,
+          1
+        ]
+      }
+    ]
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          60,
+          61,
+          1
+        ]
+      }
+    ]
   },
   "bracket": {
     "type": "Solid",
@@ -225,7 +321,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               0.0,
               6.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -250,7 +349,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               -8.0,
               6.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -270,7 +372,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               -8.0,
               5.6793
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -295,7 +400,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               -0.3207,
               5.6793
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -315,7 +423,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               -0.3207,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -335,7 +446,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -377,6 +491,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -418,7 +535,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                   -0.32071349029490914,
                   5.679286509705091
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -477,7 +597,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                   0.0,
                   6.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -536,7 +659,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                   -8.0,
                   6.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -614,6 +740,18 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       ]
     }
   },
+  "cos": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1446,
+          1478,
+          2
+        ]
+      }
+    ]
+  },
   "filletR": {
     "type": "Number",
     "value": 0.25,
@@ -667,7 +805,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           -0.32071349029490914,
           5.679286509705091
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -727,7 +868,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           0.0,
           6.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -809,7 +953,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           -8.0,
           6.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -882,6 +1029,18 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       }
     ]
   },
+  "sin": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1844,
+          1876,
+          2
+        ]
+      }
+    ]
+  },
   "sketch001": {
     "type": "Solid",
     "value": {
@@ -893,8 +1052,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1620,
-            1645,
+            1568,
+            1593,
             0
           ],
           "tag": null,
@@ -904,8 +1063,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1651,
-            1676,
+            1599,
+            1624,
             0
           ],
           "tag": null,
@@ -915,8 +1074,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1682,
-            1707,
+            1630,
+            1655,
             0
           ],
           "tag": null,
@@ -926,8 +1085,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1713,
-            1769,
+            1661,
+            1717,
             0
           ],
           "tag": null,
@@ -942,8 +1101,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1620,
-                1645,
+                1568,
+                1593,
                 0
               ]
             },
@@ -956,14 +1115,17 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               6.45,
               3.8
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1651,
-                1676,
+                1599,
+                1624,
                 0
               ]
             },
@@ -976,14 +1138,17 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               6.38,
               2.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1682,
-                1707,
+                1630,
+                1655,
                 0
               ]
             },
@@ -996,14 +1161,17 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               4.31,
               2.05
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1713,
-                1769,
+                1661,
+                1717,
                 0
               ]
             },
@@ -1016,14 +1184,17 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               4.28,
               3.83
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1775,
-                1783,
+                1723,
+                1731,
                 0
               ]
             },
@@ -1036,7 +1207,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               4.28,
               3.83
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -1173,7 +1347,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     0.0,
                     6.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -1198,7 +1375,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     -8.0,
                     6.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -1218,7 +1398,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     -8.0,
                     5.6793
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -1243,7 +1426,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     -0.3207,
                     5.6793
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -1263,7 +1449,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     -0.3207,
                     0.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -1283,7 +1472,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     0.0,
                     0.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 }
               ],
               "on": {
@@ -1325,6 +1517,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                   0.0,
                   0.0
                 ],
+                "units": {
+                  "type": "Mm"
+                },
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1366,7 +1561,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                         -0.32071349029490914,
                         5.679286509705091
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -1425,7 +1623,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                         0.0,
                         6.0
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -1484,7 +1685,10 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                         -8.0,
                         6.0
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -1567,8 +1771,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "__meta": [
             {
               "sourceRange": [
-                1548,
-                1577,
+                1496,
+                1525,
                 0
               ]
             }
@@ -1583,12 +1787,15 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             4.28,
             3.83
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1583,
-              1614,
+              1531,
+              1562,
               0
             ]
           }
@@ -1601,8 +1808,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         "__meta": [
           {
             "sourceRange": [
-              1583,
-              1614,
+              1531,
+              1562,
               0
             ]
           }
@@ -1617,13 +1824,25 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "__meta": [
         {
           "sourceRange": [
-            1583,
-            1614,
+            1531,
+            1562,
             0
           ]
         }
       ]
     }
+  },
+  "tan": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          2234,
+          2266,
+          2
+        ]
+      }
+    ]
   },
   "thickness": {
     "type": "Number",

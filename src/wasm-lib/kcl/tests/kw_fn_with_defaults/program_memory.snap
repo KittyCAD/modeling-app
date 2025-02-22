@@ -3,114 +3,147 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing kw_fn_with_defaults.kcl
 ---
 {
+  "E": {
+    "type": "Number",
+    "value": 2.718281828459045,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          651,
+          689,
+          2
+        ]
+      }
+    ]
+  },
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          109,
+          115,
+          1
+        ]
+      }
+    ]
+  },
+  "PI": {
+    "type": "Number",
+    "value": 3.141592653589793,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          328,
+          2
+        ]
+      }
+    ]
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          89,
+          1
+        ]
+      }
+    ]
+  },
+  "TAU": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1042,
+          1080,
+          2
+        ]
+      }
+    ]
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          144,
+          150,
+          1
+        ]
+      }
+    ]
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          60,
+          61,
+          1
+        ]
+      }
+    ]
+  },
+  "cos": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1446,
+          1478,
+          2
+        ]
+      }
+    ]
   },
   "increment": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 43,
-              "left": {
-                "end": 38,
-                "name": "x",
-                "start": 37,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "operator": "+",
-              "right": {
-                "end": 43,
-                "name": "by",
-                "start": 41,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "start": 37,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "end": 43,
-            "start": 30,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 45,
-        "start": 26
-      },
-      "end": 45,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 15,
-            "name": "x",
-            "start": 14,
-            "type": "Identifier"
-          },
-          "labeled": false
-        },
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 19,
-            "name": "by",
-            "start": 17,
-            "type": "Identifier"
-          },
-          "default_value": {
-            "end": 24,
-            "raw": "1",
-            "start": 23,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 1.0,
-              "suffix": "None"
-            }
-          }
-        }
-      ],
-      "start": 12,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
@@ -121,11 +154,41 @@ description: Variables in memory after executing kw_fn_with_defaults.kcl
       }
     ]
   },
+  "sin": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1844,
+          1876,
+          2
+        ]
+      }
+    ]
+  },
+  "tan": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          2234,
+          2266,
+          2
+        ]
+      }
+    ]
+  },
   "twentyOne": {
     "type": "Number",
     "value": 21.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
     "__meta": [
       {
@@ -148,7 +211,13 @@ description: Variables in memory after executing kw_fn_with_defaults.kcl
     "type": "Number",
     "value": 2.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
     "__meta": [
       {

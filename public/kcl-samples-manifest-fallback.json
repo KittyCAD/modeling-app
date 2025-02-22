@@ -1,6 +1,13 @@
 [
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "3d-boaty/main.kcl",
+    "multipleFiles": true,
+    "title": "3D Boaty",
+    "description": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench."
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "80-20-rail/main.kcl",
     "multipleFiles": false,
     "title": "80/20 Rail",
@@ -33,6 +40,13 @@
     "multipleFiles": true,
     "title": "Car Wheel Assembly",
     "description": "A car wheel assembly with a rotor, tire, and lug nuts."
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "color-cube/main.kcl",
+    "multipleFiles": false,
+    "title": "Color Cube",
+    "description": "This is a color cube centered about the origin. It is used to help determine orientation in the scene."
   },
   {
     "file": "main.kcl",

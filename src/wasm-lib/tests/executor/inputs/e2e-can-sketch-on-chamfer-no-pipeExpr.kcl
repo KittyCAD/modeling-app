@@ -12,12 +12,13 @@ const sketch001 = startSketchOn('XZ')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
 const extrude001 = extrude(sketch001, length = 100)
-const chamf = chamfer({
-  length: 30,
-  tags: [
+const chamf = chamfer(
+  extrude001,
+  length = 30,
+  tags = [
     seg01,
     getNextAdjacentEdge(yo),
     getNextAdjacentEdge(seg02),
     getOppositeEdge(seg01)
   ]
-}, extrude001)
+)

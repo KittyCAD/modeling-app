@@ -26,7 +26,7 @@ ft() -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

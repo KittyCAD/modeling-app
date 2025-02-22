@@ -3,37 +3,132 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing fillet-and-shell.kcl
 ---
 {
+  "E": {
+    "type": "Number",
+    "value": 2.718281828459045,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          651,
+          689,
+          2
+        ]
+      }
+    ]
+  },
   "HALF_TURN": {
     "type": "Number",
     "value": 180.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          109,
+          115,
+          1
+        ]
+      }
+    ]
+  },
+  "PI": {
+    "type": "Number",
+    "value": 3.141592653589793,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          328,
+          2
+        ]
+      }
+    ]
   },
   "QUARTER_TURN": {
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          84,
+          89,
+          1
+        ]
+      }
+    ]
+  },
+  "TAU": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1042,
+          1080,
+          2
+        ]
+      }
+    ]
   },
   "THREE_QUARTER_TURN": {
     "type": "Number",
     "value": 270.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Angle",
+      "type": "Degrees"
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          144,
+          150,
+          1
+        ]
+      }
+    ]
   },
   "ZERO": {
     "type": "Number",
     "value": 0.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     },
-    "__meta": []
+    "__meta": [
+      {
+        "sourceRange": [
+          60,
+          61,
+          1
+        ]
+      }
+    ]
   },
   "border": {
     "type": "Number",
@@ -156,7 +251,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
               38.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -181,7 +279,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
               38.0,
               73.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -206,7 +307,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0,
               73.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -231,7 +335,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -273,6 +380,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -314,7 +424,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   38.0,
                   0.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -373,7 +486,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   38.0,
                   73.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -432,7 +548,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   0.0,
                   73.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -491,7 +610,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   0.0,
                   0.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -709,6 +831,18 @@ description: Variables in memory after executing fillet-and-shell.kcl
       }
     ]
   },
+  "cos": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1446,
+          1478,
+          2
+        ]
+      }
+    ]
+  },
   "edge1": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
@@ -740,7 +874,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
           38.0,
           0.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -800,7 +937,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
           38.0,
           73.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -860,7 +1000,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
           0.0,
           73.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -920,7 +1063,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
           0.0,
           0.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -974,381 +1120,11 @@ description: Variables in memory after executing fillet-and-shell.kcl
   },
   "m25Screw": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "declaration": {
-              "end": 1512,
-              "id": {
-                "end": 1311,
-                "name": "screw",
-                "start": 1306,
-                "type": "Identifier"
-              },
-              "init": {
-                "body": [
-                  {
-                    "arguments": [
-                      {
-                        "end": 1332,
-                        "raw": "\"XY\"",
-                        "start": 1328,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": "XY"
-                      }
-                    ],
-                    "callee": {
-                      "end": 1327,
-                      "name": "startSketchOn",
-                      "start": 1314,
-                      "type": "Identifier"
-                    },
-                    "end": 1333,
-                    "start": 1314,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "arguments": [
-                      {
-                        "elements": [
-                          {
-                            "end": 1358,
-                            "raw": "0",
-                            "start": 1357,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "end": 1361,
-                            "raw": "0",
-                            "start": 1360,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          }
-                        ],
-                        "end": 1362,
-                        "start": 1356,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      },
-                      {
-                        "end": 1365,
-                        "start": 1364,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
-                      }
-                    ],
-                    "callee": {
-                      "end": 1355,
-                      "name": "startProfileAt",
-                      "start": 1341,
-                      "type": "Identifier"
-                    },
-                    "end": 1366,
-                    "start": 1341,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "arguments": [
-                      {
-                        "end": 1414,
-                        "properties": [
-                          {
-                            "end": 1398,
-                            "key": {
-                              "end": 1389,
-                              "name": "center",
-                              "start": 1383,
-                              "type": "Identifier"
-                            },
-                            "start": 1383,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "end": 1394,
-                                  "name": "x",
-                                  "start": 1393,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                },
-                                {
-                                  "end": 1397,
-                                  "name": "y",
-                                  "start": 1396,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                }
-                              ],
-                              "end": 1398,
-                              "start": 1392,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            }
-                          },
-                          {
-                            "end": 1412,
-                            "key": {
-                              "end": 1406,
-                              "name": "radius",
-                              "start": 1400,
-                              "type": "Identifier"
-                            },
-                            "start": 1400,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 1412,
-                              "raw": "2.5",
-                              "start": 1409,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 2.5,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
-                        "start": 1381,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      },
-                      {
-                        "end": 1417,
-                        "start": 1416,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
-                      }
-                    ],
-                    "callee": {
-                      "end": 1380,
-                      "name": "circle",
-                      "start": 1374,
-                      "type": "Identifier"
-                    },
-                    "end": 1418,
-                    "start": 1374,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "arguments": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 1472,
-                            "properties": [
-                              {
-                                "end": 1455,
-                                "key": {
-                                  "end": 1446,
-                                  "name": "center",
-                                  "start": 1440,
-                                  "type": "Identifier"
-                                },
-                                "start": 1440,
-                                "type": "ObjectProperty",
-                                "value": {
-                                  "elements": [
-                                    {
-                                      "end": 1451,
-                                      "name": "x",
-                                      "start": 1450,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 1454,
-                                      "name": "y",
-                                      "start": 1453,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    }
-                                  ],
-                                  "end": 1455,
-                                  "start": 1449,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                }
-                              },
-                              {
-                                "end": 1470,
-                                "key": {
-                                  "end": 1463,
-                                  "name": "radius",
-                                  "start": 1457,
-                                  "type": "Identifier"
-                                },
-                                "start": 1457,
-                                "type": "ObjectProperty",
-                                "value": {
-                                  "end": 1470,
-                                  "raw": "1.25",
-                                  "start": 1466,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 1.25,
-                                    "suffix": "None"
-                                  }
-                                }
-                              }
-                            ],
-                            "start": 1438,
-                            "type": "ObjectExpression",
-                            "type": "ObjectExpression"
-                          },
-                          {
-                            "end": 1475,
-                            "start": 1474,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
-                          "end": 1437,
-                          "name": "circle",
-                          "start": 1431,
-                          "type": "Identifier"
-                        },
-                        "end": 1476,
-                        "start": 1431,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "end": 1479,
-                        "start": 1478,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
-                      }
-                    ],
-                    "callee": {
-                      "end": 1430,
-                      "name": "hole",
-                      "start": 1426,
-                      "type": "Identifier"
-                    },
-                    "end": 1480,
-                    "start": 1426,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "type": "Identifier",
-                          "name": "length"
-                        },
-                        "arg": {
-                          "end": 1511,
-                          "name": "height",
-                          "start": 1505,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "end": 1495,
-                      "name": "extrude",
-                      "start": 1488,
-                      "type": "Identifier"
-                    },
-                    "end": 1512,
-                    "start": 1488,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  }
-                ],
-                "end": 1512,
-                "start": 1314,
-                "type": "PipeExpression",
-                "type": "PipeExpression"
-              },
-              "start": 1306,
-              "type": "VariableDeclarator"
-            },
-            "end": 1512,
-            "kind": "const",
-            "start": 1306,
-            "type": "VariableDeclaration",
-            "type": "VariableDeclaration"
-          },
-          {
-            "argument": {
-              "end": 1527,
-              "name": "screw",
-              "start": 1522,
-              "type": "Identifier",
-              "type": "Identifier"
-            },
-            "end": 1527,
-            "start": 1515,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 1529,
-        "start": 1302
-      },
-      "end": 1529,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 1289,
-            "name": "x",
-            "start": 1288,
-            "type": "Identifier"
-          }
-        },
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 1292,
-            "name": "y",
-            "start": 1291,
-            "type": "Identifier"
-          }
-        },
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 1300,
-            "name": "height",
-            "start": 1294,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 1287,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
-          1287,
-          1529,
+          1283,
+          1525,
           0
         ]
       }
@@ -1466,7 +1242,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
             0.0,
             22.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1486,7 +1265,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
             1.0,
             22.0
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1506,7 +1288,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
             1.0,
             10.8
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -1526,7 +1311,10 @@ description: Variables in memory after executing fillet-and-shell.kcl
             0.0,
             10.8
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -1568,6 +1356,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
           0.0,
           10.799999999999999
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1678,6 +1469,30 @@ description: Variables in memory after executing fillet-and-shell.kcl
           77,
           78,
           0
+        ]
+      }
+    ]
+  },
+  "sin": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1844,
+          1876,
+          2
+        ]
+      }
+    ]
+  },
+  "tan": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          2234,
+          2266,
+          2
         ]
       }
     ]

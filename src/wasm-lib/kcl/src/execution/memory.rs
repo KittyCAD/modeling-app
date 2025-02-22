@@ -144,7 +144,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{KclValue, Metadata},
+    execution::KclValue,
     source_range::SourceRange,
 };
 use env::Environment;
@@ -626,16 +626,8 @@ mod env {
     impl Environment {
         /// Create a new root environment (new program or module)
         pub(super) fn new_root() -> Self {
-            const NO_META: Vec<Metadata> = Vec::new();
-
             Self {
-                // Prelude
-                bindings: IndexMap::from([
-                    ("ZERO".to_string(), KclValue::from_number(0.0, NO_META)),
-                    ("QUARTER_TURN".to_string(), KclValue::from_number(90.0, NO_META)),
-                    ("HALF_TURN".to_string(), KclValue::from_number(180.0, NO_META)),
-                    ("THREE_QUARTER_TURN".to_string(), KclValue::from_number(270.0, NO_META)),
-                ]),
+                bindings: IndexMap::new(),
                 snapshots: Vec::new(),
                 parent: None,
             }
@@ -845,7 +837,7 @@ mod env {
 
 #[cfg(test)]
 mod test {
-    use crate::execution::kcl_value::NumericType;
+    use crate::execution::kcl_value::{FunctionSource, NumericType};
 
     use super::*;
 
@@ -1215,9 +1207,10 @@ mod test {
         mem.add(
             "f".to_owned(),
             KclValue::Function {
-                func: None,
-                expression: crate::parsing::ast::types::FunctionExpression::dummy(),
-                memory: sn2,
+                value: FunctionSource::User {
+                    ast: crate::parsing::ast::types::FunctionExpression::dummy(),
+                    memory: sn2,
+                },
                 meta: Vec::new(),
             },
             sr(),
@@ -1228,7 +1221,10 @@ mod test {
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 2);
         match mem.get("f", SourceRange::default()).unwrap() {
-            KclValue::Function { memory, .. } if *memory == sn1 => {}
+            KclValue::Function {
+                value: FunctionSource::User { memory, .. },
+                ..
+            } if memory == &sn1 => {}
             v => panic!("{v:#?}"),
         }
         assert_eq!(mem.environments.len(), 1);
