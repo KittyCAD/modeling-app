@@ -724,6 +724,7 @@ impl RuntimeType {
         use RuntimeType::*;
 
         match (self, sup) {
+            // TODO arrays could be covariant
             (Primitive(t1), Primitive(t2)) | (Array(t1), Array(t2)) => t1 == t2,
             (Tuple(t1), Tuple(t2)) => t1 == t2,
             (Tuple(t1), Array(t2)) => t1.iter().all(|t| t == t2),

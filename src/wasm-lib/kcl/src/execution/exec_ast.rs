@@ -2063,9 +2063,9 @@ p = {
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        let mem = result.2.memory();
+        let mem = result.3.memory();
         assert!(matches!(
-            mem.get("p", SourceRange::default()).unwrap(),
+            mem.get_from("p", result.1, SourceRange::default()).unwrap(),
             KclValue::Plane { .. }
         ));
 
@@ -2101,8 +2101,8 @@ p2 = -p
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        let mem = result.2.memory();
-        match mem.get("p2", SourceRange::default()).unwrap() {
+        let mem = result.3.memory();
+        match mem.get_from("p2", result.1, SourceRange::default()).unwrap() {
             KclValue::Plane { value } => assert_eq!(value.z_axis.z, -1.0),
             _ => unreachable!(),
         }

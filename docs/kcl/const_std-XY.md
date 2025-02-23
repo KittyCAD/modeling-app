@@ -1,5 +1,5 @@
 ---
-title: "std::prelude::YZ"
+title: "std::XY"
 excerpt: ""
 layout: manual
 ---
@@ -9,7 +9,7 @@ layout: manual
 
 
 ```js
-std::prelude::YZ
+std::XY
 ```
 
 
