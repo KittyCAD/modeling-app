@@ -327,6 +327,19 @@ impl CallExpression {
 }
 
 impl CallExpressionKw {
+    fn recast_args(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Vec<String> {
+        let mut arg_list = if let Some(first_arg) = &self.unlabeled {
+            vec![first_arg.recast(options, indentation_level, ctxt)]
+        } else {
+            Vec::with_capacity(self.arguments.len())
+        };
+        arg_list.extend(
+            self.arguments
+                .iter()
+                .map(|arg| arg.recast(options, indentation_level, ctxt)),
+        );
+        arg_list
+    }
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         let indent = if ctxt == ExprContext::Pipe {
             "".to_string()
@@ -334,23 +347,19 @@ impl CallExpressionKw {
             options.get_indentation(indentation_level)
         };
         let name = &self.callee.name;
-        let mut arg_list = if let Some(first_arg) = &self.unlabeled {
-            vec![first_arg.recast(options, indentation_level, ctxt)]
-        } else {
-            Vec::new()
-        };
-        arg_list.extend(
-            self.arguments
-                .iter()
-                .map(|arg| arg.recast(options, indentation_level, ctxt)),
-        );
+        let arg_list = self.recast_args(options, indentation_level, ctxt);
         let args = arg_list.clone().join(", ");
-        if arg_list.len() >= 4 {
+        let has_lots_of_args = arg_list.len() >= 4;
+        let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
+        let multiline = has_lots_of_args || some_arg_is_already_multiline;
+        if multiline {
+            let next_indent = indentation_level + 1;
             let inner_indentation = if ctxt == ExprContext::Pipe {
-                options.get_indentation_offset_pipe(indentation_level + 1)
+                options.get_indentation_offset_pipe(next_indent)
             } else {
-                options.get_indentation(indentation_level + 1)
+                options.get_indentation(next_indent)
             };
+            let arg_list = self.recast_args(options, next_indent, ctxt);
             let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
             args.push(',');
             let args = args;
@@ -1424,7 +1433,7 @@ fn rectShape = (pos, w, l) => {
 // only used for visualization
 scarlett_body = rectShape([0, 0], width, length)
   |> extrude(depth, %)
-  |> fillet({
+  |> fillet(
        radius = radius,
        tags = [
   edge2,
@@ -1432,7 +1441,7 @@ scarlett_body = rectShape([0, 0], width, length)
   getOppositeEdge(edge2),
   getOppositeEdge(edge4)
 ]
-     }, %)
+   )
   // build the bracket sketch around the body
 fn bracketSketch = (w, d, t) => {
   s = startSketchOn({
@@ -1457,15 +1466,15 @@ fn bracketSketch = (w, d, t) => {
 // build the body of the bracket
 bracket_body = bracketSketch(width, depth, thk)
   |> extrude(length + 10, %)
-  |> fillet({
+  |> fillet(
        radius = radius,
-       tags: [
+       tags = [
   getNextAdjacentEdge(edge7),
   getNextAdjacentEdge(edge2),
   getNextAdjacentEdge(edge3),
   getNextAdjacentEdge(edge6)
 ]
-     }, %)
+     )
   // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
        plane: {
@@ -1545,15 +1554,15 @@ fn rectShape(pos, w, l) {
 // only used for visualization
 scarlett_body = rectShape([0, 0], width, length)
   |> extrude(depth, %)
-  |> fillet({
+  |> fillet(
        radius = radius,
        tags = [
          edge2,
          edge4,
          getOppositeEdge(edge2),
          getOppositeEdge(edge4)
-       ]
-     }, %)
+       ],
+     )
 // build the bracket sketch around the body
 fn bracketSketch(w, d, t) {
   s = startSketchOn({
@@ -1578,15 +1587,15 @@ fn bracketSketch(w, d, t) {
 // build the body of the bracket
 bracket_body = bracketSketch(width, depth, thk)
   |> extrude(length + 10, %)
-  |> fillet({
+  |> fillet(
        radius = radius,
        tags = [
          getNextAdjacentEdge(edge7),
          getNextAdjacentEdge(edge2),
          getNextAdjacentEdge(edge3),
          getNextAdjacentEdge(edge6)
-       ]
-     }, %)
+       ],
+     )
 // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
        plane = {

@@ -88,6 +88,7 @@ import {
 import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
 import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
+import { setAppearance } from 'lang/modifyAst/setAppearance'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -314,6 +315,7 @@ export type ModelingMachineEvent =
       type: 'Delete selection'
       data: ModelingCommandSchema['Delete selection']
     }
+  | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | {
       type: 'Add rectangle origin'
       data: [x: number, y: number]
@@ -2165,6 +2167,47 @@ export const modelingMachine = setup({
         })
       }
     ),
+    appearanceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Appearance'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { color, nodeToEdit } = input
+        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
+          return new Error('Appearance is only an edit flow')
+        }
+
+        const result = setAppearance({
+          ast,
+          nodeToEdit,
+          color,
+        })
+
+        if (err(result)) {
+          return err(result)
+        }
+
+        const updateAstResult = await kclManager.updateAst(
+          result.modifiedAst,
+          true,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
   },
   // end actors
 }).createMachine({
@@ -2260,6 +2303,11 @@ export const modelingMachine = setup({
         },
 
         'Prompt-to-edit': 'Applying Prompt-to-edit',
+
+        Appearance: {
+          target: 'Applying appearance',
+          reenter: true,
+        },
       },
 
       entry: 'reset client scene mouse handlers',
@@ -3380,6 +3428,19 @@ export const modelingMachine = setup({
             }
           },
         },
+      },
+    },
+
+    'Applying appearance': {
+      invoke: {
+        src: 'appearanceAstMod',
+        id: 'appearanceAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Appearance') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
       },
     },
   },

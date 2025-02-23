@@ -266,10 +266,10 @@ myRect = rect([20, 0])
 
 myRect
   |> extrude(10, %)
-  |> fillet({
+  |> fillet(
        radius = 0.5,
        tags = [myRect.tags.rectangleSegmentA001]
-     }, %)
+     )
 ```
 
 See how we use the tag `rectangleSegmentA001` in the `fillet` function outside

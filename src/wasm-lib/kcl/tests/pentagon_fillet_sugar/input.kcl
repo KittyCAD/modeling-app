@@ -25,20 +25,20 @@ fn circl(x, face) {
 c1 = circl(-200, c)
 plumbus1 = c1
   |> extrude(length = plumbusLen)
-  |> fillet({
+  |> fillet(
        radius = 5,
        tags = [
          c1.tags.arc_tag,
          getOppositeEdge(c1.tags.arc_tag)
-       ]
-     }, %)
+       ],
+     )
 c2 = circl(200, a)
 plumbus0 = c2
   |> extrude(length = plumbusLen)
-  |> fillet({
+  |> fillet(
        radius = 5,
        tags = [
          c2.tags.arc_tag,
          getOppositeEdge(c2.tags.arc_tag)
-       ]
-     }, %)
+       ],
+     )
