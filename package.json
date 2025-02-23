@@ -34,7 +34,7 @@
     "@ts-stack/markdown": "^1.5.0",
     "@tweenjs/tween.js": "^23.1.1",
     "@xstate/inspect": "^0.8.0",
-    "@xstate/react": "^4.1.1",
+    "@xstate/react": "^5.0.2",
     "bonjour-service": "^1.2.1",
     "chokidar": "^4.0.1",
     "codemirror": "^6.0.1",
