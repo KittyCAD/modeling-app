@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: echo "$(scripts/get-changelog-from-releases.sh)" > CHANGELOG.md
+# Usage: ./scripts/get-closed-issues-since-last-meeting.sh [LAST_MEETING_DATE_ISO_8601]
 
 last_meeting_date=${1:-'2025-02-10'}
 filter="milestone:\"v1 Modeling App Launch\""
