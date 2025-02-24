@@ -198,7 +198,7 @@
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.8.8",
     "setimmediate": "^1.0.5",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^3.4.17",
     "ts-node": "^10.0.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.23.0",
