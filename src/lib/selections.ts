@@ -507,8 +507,11 @@ function findOverlappingArtifactsFromIndex(
   const selectionRange = selection.codeRef.range
   const results: ArtifactEntry[] = []
 
-  // Binary search to find the first range that could overlap
-  // Look for the first range that ends after our selection starts
+  // Binary search to find the last range where range[0] < selectionRange[0]
+  // This search does not take into consideration the end range, so it's possible
+  // the index it finds dose not have any overlap (depending on the end range)
+  // but it's main purpose is to act as a starting point for the linear part of the search
+  // so a tiny loss in efficiency is acceptable to keep the code simple
   let left = 0
   let right = index.length - 1
   let startIndex = 0
@@ -517,12 +520,12 @@ function findOverlappingArtifactsFromIndex(
     const mid = left + Math.floor((right - left) / 2)
     const midRange = index[mid].range
 
-    if (midRange[1] < selectionRange[0]) {
-      // This range ends before our selection starts, look in right half
+    if (midRange[0] < selectionRange[0]) {
+      // This range starts before our selection, look in right half for later ones
+      startIndex = mid
       left = mid + 1
     } else {
-      // This range might overlap, check left half for earlier overlaps
-      startIndex = mid
+      // This range starts at or after our selection, look in left half
       right = mid - 1
     }
   }
