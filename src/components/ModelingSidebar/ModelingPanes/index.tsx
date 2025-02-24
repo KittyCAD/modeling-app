@@ -18,6 +18,7 @@ import { editorManager } from 'lib/singletons'
 import { ContextFrom } from 'xstate'
 import { settingsMachine } from 'machines/settingsMachine'
 import { FeatureTreePane } from './FeatureTreePane'
+import { kclErrorsByFilename } from 'lang/errors'
 
 export type SidebarType =
   | 'code'
@@ -152,6 +153,16 @@ export const sidebarPanes: SidebarPane[] = [
     },
     keybinding: 'Shift + F',
     hide: ({ platform }) => platform === 'web',
+    showBadge: {
+      value: (context) => {
+        const errors = kclErrorsByFilename(context.kclContext.errors)
+        return Object.keys(errors).length
+      },
+      onClick: (e) => {
+        e.preventDefault()
+        /* editorManager.scrollToFirstErrorDiagnosticIfExists() */
+      },
+    },
   },
   {
     id: 'variables',

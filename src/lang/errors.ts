@@ -1,4 +1,7 @@
-import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import {
+  KclError,
+  KclError as RustKclError,
+} from '../wasm-lib/kcl/bindings/KclError'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
 import { posToOffset } from '@kittycad/codemirror-lsp-client'
@@ -333,4 +336,36 @@ export function complilationErrorsToDiagnostics(
         actions,
       }
     })
+}
+
+// Create an array of KCL Errors with a new formatting to
+// easily map SourceRange of an error to the filename to display in the
+// side bar UI. This is to indicate an error in an imported file, it isn't
+// the specific code mirror error interface.
+export function kclErrorsByFilename(errors: KCLError[]): {
+  [key: string]: KCLError
+} {
+  const fileNameToError: { [key: string]: KCLError } = {}
+  errors.forEach((error: KCLError) => {
+    const filenames = error.filenames
+    const sourceRange: SourceRange = error.sourceRange
+    const fileIndex = sourceRange[2]
+    const modulePath: ModulePath | undefined = filenames[fileIndex]
+    let stdOrLocalPath: string = ''
+    // Ignore top level module errors! They are already captured in a different workflow!!
+    if (modulePath && !isTopLevelModule(sourceRange)) {
+      // Do not map errors that are [start,end, 0] aka the topLevelModule, you have the code editor mapping this already
+      if ('Std' in modulePath) {
+        stdOrLocalPath = modulePath.Std
+      } else if ('Local' in modulePath) {
+        stdOrLocalPath = modulePath.Local
+      }
+
+      if (stdOrLocalPath) {
+        fileNameToError[stdOrLocalPath] = error
+      }
+    }
+  })
+
+  return fileNameToError
 }
