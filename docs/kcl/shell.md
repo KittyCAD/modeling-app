@@ -9,7 +9,7 @@ Remove volume from a 3-dimensional shape such that a wall of the
 provided thickness remains, taking volume starting at the provided face, leaving it open in that direction.
 
 ```js
-shell(solid_set: SolidSet, thickness: number, faces: [FaceTag]) -> SolidSet
+shell(solidSet: SolidSet, thickness: number, faces: [FaceTag]) -> SolidSet
 ```
 
 
@@ -17,7 +17,7 @@ shell(solid_set: SolidSet, thickness: number, faces: [FaceTag]) -> SolidSet
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | Which solid (or solids) to shell out | Yes |
+| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | Which solid (or solids) to shell out | Yes |
 | `thickness` | `number` | The thickness of the shell | Yes |
 | `faces` | [`[FaceTag]`](/docs/kcl/types/FaceTag) | The faces you want removed | Yes |
 

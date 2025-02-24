@@ -35,7 +35,7 @@ The transform function returns a transform object. All properties of the object 
    - `rotation.origin` (either "local" i.e. rotate around its own center, "global" i.e. rotate around the scene's center, or a 3D point, defaults to "local")
 
 ```js
-patternTransform(solid_set: SolidSet, instances: integer, transform: FunctionSource, use_original?: bool) -> [Solid]
+patternTransform(solidSet: SolidSet, instances: integer, transform: FunctionSource, useOriginal?: bool) -> [Solid]
 ```
 
 
@@ -43,10 +43,10 @@ patternTransform(solid_set: SolidSet, instances: integer, transform: FunctionSou
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) to duplicate | Yes |
+| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) to duplicate | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `transform` | `FunctionSource` | How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples. | Yes |
-| `use_original` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `useOriginal` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 

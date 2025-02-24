@@ -9,7 +9,7 @@ Construct a circle derived from 3 points.
 
 
 ```js
-circleThreePoint(p1: [number], p2: [number], p3: [number], sketch_surface_or_group: SketchOrSurface, tag?: TagDeclarator) -> Sketch
+circleThreePoint(p1: [number], p2: [number], p3: [number], sketchSurfaceOrGroup: SketchOrSurface, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -20,7 +20,7 @@ circleThreePoint(p1: [number], p2: [number], p3: [number], sketch_surface_or_gro
 | `p1` | `[number]` | 1st point to derive the circle. | Yes |
 | `p2` | `[number]` | 2nd point to derive the circle. | Yes |
 | `p3` | `[number]` | 3rd point to derive the circle. | Yes |
-| `sketch_surface_or_group` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on. | Yes |
+| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Identifier for the circle to reference elsewhere. | No |
 
 ### Returns

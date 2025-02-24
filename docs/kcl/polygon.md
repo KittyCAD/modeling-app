@@ -9,7 +9,7 @@ Create a regular polygon with the specified number of sides that is either inscr
 
 
 ```js
-polygon(data: PolygonData, sketch_surface_or_group: SketchOrSurface, tag?: TagDeclarator) -> Sketch
+polygon(data: PolygonData, sketchSurfaceOrGroup: SketchOrSurface, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -18,7 +18,7 @@ polygon(data: PolygonData, sketch_surface_or_group: SketchOrSurface, tag?: TagDe
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`PolygonData`](/docs/kcl/types/PolygonData) | Data for drawing a polygon | Yes |
-| `sketch_surface_or_group` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
+| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
