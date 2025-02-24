@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing tan_arc_x_line.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -151,7 +152,7 @@ description: Result of parsing tan_arc_x_line.kcl
         "type": "VariableDeclaration"
       },
       {
-        "end": 456,
+        "end": 465,
         "expression": {
           "body": [
             {
@@ -545,36 +546,38 @@ description: Result of parsing tan_arc_x_line.kcl
             {
               "arguments": [
                 {
-                  "end": 452,
-                  "raw": "1",
-                  "start": 451,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 1.0,
-                    "suffix": "None"
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "endAbsolute"
+                  },
+                  "arg": {
+                    "end": 464,
+                    "raw": "1",
+                    "start": 463,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   }
-                },
-                {
-                  "end": 455,
-                  "start": 454,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
                 }
               ],
               "callee": {
-                "end": 450,
-                "name": "xLineTo",
+                "end": 448,
+                "name": "xLine",
                 "start": 443,
                 "type": "Identifier"
               },
-              "end": 456,
+              "end": 465,
               "start": 443,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             }
           ],
-          "end": 456,
+          "end": 465,
           "start": 64,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -584,7 +587,7 @@ description: Result of parsing tan_arc_x_line.kcl
         "type": "ExpressionStatement"
       }
     ],
-    "end": 457,
+    "end": 466,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "4": [

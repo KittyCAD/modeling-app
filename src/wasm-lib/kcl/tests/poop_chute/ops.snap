@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed poop_chute.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -120,8 +121,8 @@ description: Operations executed poop_chute.kcl
           }
         },
         "sourceRange": [
-          822,
-          940,
+          849,
+          967,
           0
         ]
       },
@@ -133,16 +134,16 @@ description: Operations executed poop_chute.kcl
           }
         },
         "sourceRange": [
-          942,
-          951,
+          969,
+          978,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      814,
-      952,
+      841,
+      979,
       0
     ],
     "type": "StdLibCall",
@@ -156,16 +157,16 @@ description: Operations executed poop_chute.kcl
           "value": "-YZ"
         },
         "sourceRange": [
-          980,
-          985,
+          1007,
+          1012,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      966,
-      986,
+      993,
+      1013,
       0
     ],
     "type": "StdLibCall",
@@ -188,16 +189,16 @@ description: Operations executed poop_chute.kcl
           }
         },
         "sourceRange": [
-          1610,
-          1630,
+          1664,
+          1684,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1593,
-      1631,
+      1647,
+      1685,
       0
     ],
     "type": "StdLibCall",

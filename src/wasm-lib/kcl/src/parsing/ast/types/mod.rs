@@ -3581,7 +3581,7 @@ const cylinder = startSketchOn('-XZ')
     fn test_ast_get_non_code_node_inline_comment() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> xLine(5, %) // lin
+  |> xLine(length = 5) // lin
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 

@@ -949,9 +949,9 @@ d = 1
 fn rect(x, y, w, h) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
-    |> xLine(w, %)
+    |> xLine(length = w)
     |> yLine(h, %)
-    |> xLine(-w, %)
+    |> xLine(length = -w)
     |> close()
     |> extrude(d, %)
 }
@@ -972,8 +972,8 @@ fn crosshair(x, y) {
     |> yLine(1, %)
     |> yLine(-2, %)
     |> yLine(1, %)
-    |> xLine(1, %)
-    |> xLine(-2, %)
+    |> xLine(length = 1)
+    |> xLine(length = -2)
 }
 
 fn z(z_x, z_y) {

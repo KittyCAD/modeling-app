@@ -8,12 +8,11 @@ use indexmap::IndexMap;
 use itertools::Itertools;
 use serde_json::json;
 
+use super::kcl_doc::{ConstData, DocData, FnData};
 use crate::{
     docs::{is_primitive, StdLibFn},
     std::StdLib,
 };
-
-use super::kcl_doc::{ConstData, DocData, FnData};
 
 const TYPES_DIR: &str = "../../../docs/kcl/types";
 
