@@ -232,11 +232,15 @@ impl GlobalState {
             root_id,
             ModuleInfo {
                 id: root_id,
-                path: ModulePath::Local{value:root_path.clone()},
+                path: ModulePath::Local {
+                    value: root_path.clone(),
+                },
                 repr: ModuleRepr::Root,
             },
         );
-        global.path_to_source_id.insert(ModulePath::Local{value:root_path}, root_id);
+        global
+            .path_to_source_id
+            .insert(ModulePath::Local { value: root_path }, root_id);
         global
     }
 }
