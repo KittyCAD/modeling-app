@@ -267,7 +267,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
       firstSourceRange(parsed),
       [],
       [],
-      defaultArtifactGraph()
+      defaultArtifactGraph(),
+      {}
     )
   }
 }
@@ -486,7 +487,8 @@ const errFromErrWithOutputs = (e: any): KCLError => {
     firstSourceRange(parsed.error),
     parsed.operations,
     parsed.artifactCommands,
-    rustArtifactGraphToMap(parsed.artifactGraph)
+    rustArtifactGraphToMap(parsed.artifactGraph),
+    parsed.filenames
   )
 }
 
@@ -516,9 +518,8 @@ export const makeDefaultPlanes = async (
   engineCommandManager: EngineCommandManager
 ): Promise<DefaultPlanes> => {
   try {
-    const planes: DefaultPlanes = await make_default_planes(
-      engineCommandManager
-    )
+    const planes: DefaultPlanes =
+      await make_default_planes(engineCommandManager)
     return planes
   } catch (e) {
     // TODO: do something real with the error.
@@ -552,7 +553,8 @@ export const modifyAstForSketch = async (
       firstSourceRange(parsed),
       [],
       [],
-      defaultArtifactGraph()
+      defaultArtifactGraph(),
+      {}
     )
 
     return Promise.reject(kclError)
