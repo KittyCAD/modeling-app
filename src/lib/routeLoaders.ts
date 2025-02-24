@@ -38,11 +38,13 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
   const shouldRedirectToOnboarding =
     notEnRouteToOnboarding && hasValidOnboardingStatus
 
-  if (shouldRedirectToOnboarding) {
-    return redirect(
-      makeUrlPathRelative(PATHS.ONBOARDING.INDEX) + onboardingStatus.slice(1)
-    )
-  }
+  settingsActor.subscribe((state) => {
+    if (shouldRedirectToOnboarding && state.matches('idle')) {
+      return redirect(
+        makeUrlPathRelative(PATHS.ONBOARDING.INDEX) + onboardingStatus.slice(1)
+      )
+    }
+  })
 
   return null
 }
