@@ -292,7 +292,7 @@ const FileTreeItem = ({
         >
           {!isRenaming ? (
             <button
-              className="flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
+              className="relative flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
               style={{ paddingInlineStart: getIndentationCSS(level) }}
               onClick={(e) => {
                 e.currentTarget.focus()
@@ -300,11 +300,31 @@ const FileTreeItem = ({
               }}
               onKeyUp={handleKeyUp}
             >
+              {
+                <p
+                  className={
+                    'absolute m-0 p-0 bottom-3 left-6 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+                  }
+                  title={`Click to view ${1} notification${
+                    Number(1) > 1 ? 's' : ''
+                  }`}
+                >
+                  <span className="sr-only">&nbsp;has&nbsp;</span>
+                  {typeof 1 === 'number' ? (
+                    <span>{1}</span>
+                  ) : (
+                    <span className="sr-only">a</span>
+                  )}
+                  <span className="sr-only">
+                    &nbsp;notification{Number(1) > 1 ? 's' : ''}
+                  </span>
+                </p>
+              }
               <CustomIcon
                 name={fileOrDir.name?.endsWith(FILE_EXT) ? 'kcl' : 'file'}
                 className="inline-block w-3 text-current"
               />
-              {fileOrDir.name}
+              <span className="pl-1">{fileOrDir.name}</span>
             </button>
           ) : (
             <RenameForm

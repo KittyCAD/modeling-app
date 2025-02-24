@@ -160,7 +160,7 @@ export const sidebarPanes: SidebarPane[] = [
       },
       onClick: (e) => {
         e.preventDefault()
-        /* editorManager.scrollToFirstErrorDiagnosticIfExists() */
+        // editorManager.scrollToFirstErrorDiagnosticIfExists()
       },
     },
   },
