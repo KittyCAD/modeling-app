@@ -538,7 +538,16 @@ export const settingsMachine = setup({
         src: 'loadUserSettings',
         onDone: {
           target: 'idle',
-          actions: 'setAllSettings',
+          actions: [
+            'setAllSettings',
+            'setThemeClass',
+            'setEngineTheme',
+            'setClientSideSceneUnits',
+            'setThemeColor',
+            'setClientTheme',
+            'setAllowOrbitInSketchMode',
+            'sendThemeToWatcher',
+          ],
         },
         onError: {
           target: 'idle',
@@ -561,8 +570,14 @@ export const settingsMachine = setup({
           target: 'idle',
           actions: [
             'setAllSettings',
+            'setThemeClass',
+            'setEngineTheme',
+            'setClientSideSceneUnits',
             'setThemeColor',
             'Execute AST',
+            'setClientTheme',
+            'setAllowOrbitInSketchMode',
+            'sendThemeToWatcher',
             sendTo('registerCommands', { type: 'update' }),
           ],
         },
