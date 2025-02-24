@@ -18,13 +18,13 @@ use serde::{Deserialize, Serialize};
 use crate::{
     engine::EngineManager,
     errors::KclError,
-    modules::{ModuleId, ModulePath},
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
         memory::ProgramMemory,
     },
     fs::FileManager,
+    modules::{ModuleId, ModulePath},
     parsing::ast::types::{Expr, Node, NodeRef, Program},
     settings::types::UnitLength,
     source_range::SourceRange,
@@ -75,7 +75,6 @@ pub struct ExecOutcome {
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
-
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -704,17 +703,19 @@ impl ExecutorContext {
         self.execute_and_build_graph(program, exec_state, init_mem)
             .await
             .map_err(|e| {
-
-        let module_id_to_module_path : IndexMap<ModuleId, ModulePath> = exec_state.global.path_to_source_id.iter()
-                        .map(|(k, v)| ((*v), k.clone()))
-                        .collect();
+                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                    .global
+                    .path_to_source_id
+                    .iter()
+                    .map(|(k, v)| ((*v), k.clone()))
+                    .collect();
 
                 KclErrorWithOutputs::new(
                     e,
                     exec_state.mod_local.operations.clone(),
                     exec_state.global.artifact_commands.clone(),
                     exec_state.global.artifact_graph.clone(),
-                    module_id_to_module_path
+                    module_id_to_module_path,
                 )
             })?;
 

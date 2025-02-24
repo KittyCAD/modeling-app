@@ -7,9 +7,9 @@ use indexmap::IndexMap;
 use crate::{
     execution::{ArtifactCommand, ArtifactGraph, Operation},
     lsp::IntoDiagnostic,
+    modules::ModulePath,
     source_range::SourceRange,
     ModuleId,
-    modules::{ModulePath},
 };
 
 /// How did the KCL execution fail
@@ -135,7 +135,7 @@ impl KclErrorWithOutputs {
             operations,
             artifact_commands,
             artifact_graph,
-            filenames
+            filenames,
         }
     }
     pub fn no_outputs(error: KclError) -> Self {
@@ -144,7 +144,7 @@ impl KclErrorWithOutputs {
             operations: Default::default(),
             artifact_commands: Default::default(),
             artifact_graph: Default::default(),
-            filenames: Default::default()
+            filenames: Default::default(),
         }
     }
 }

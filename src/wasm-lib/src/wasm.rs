@@ -57,9 +57,7 @@ pub async fn execute_with_engine(
         // The serde-wasm-bindgen does not work here because of weird HashMap issues.
         // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
         Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
-        Err(err) => {
-            Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?)
-        },
+        Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
     }
 }
 

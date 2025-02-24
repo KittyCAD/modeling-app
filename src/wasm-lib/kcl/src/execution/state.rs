@@ -122,9 +122,12 @@ impl ExecState {
             artifact_commands: self.global.artifact_commands,
             artifact_graph: self.global.artifact_graph,
             errors: self.global.errors,
-            filenames: self.global.path_to_source_id.iter()
-                        .map(|(k, v)| ((*v),k.clone()))
-                        .collect()
+            filenames: self
+                .global
+                .path_to_source_id
+                .iter()
+                .map(|(k, v)| ((*v), k.clone()))
+                .collect(),
         }
     }
 
@@ -142,7 +145,7 @@ impl ExecState {
             artifact_commands: Default::default(),
             artifact_graph: Default::default(),
             errors: self.global.errors,
-            filenames: Default::default()
+            filenames: Default::default(),
         }
     }
 
@@ -171,7 +174,7 @@ impl ExecState {
         self.global.path_to_source_id.get(path).cloned()
     }
 
-    pub(super) fn add_path_to_source_id(&mut self, path: ModulePath, id: ModuleId){
+    pub(super) fn add_path_to_source_id(&mut self, path: ModulePath, id: ModuleId) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
         self.global.path_to_source_id.insert(path.clone(), id);
     }
