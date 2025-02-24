@@ -95,10 +95,10 @@ circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
 
 loft(
   [
-  squareSketch,
-  circleSketch0,
-  circleSketch1
-],
+    squareSketch,
+    circleSketch0,
+    circleSketch1
+  ],
   baseCurveIndex = 0,
   bezApproximateRational = false,
   tolerance = 0.000001,

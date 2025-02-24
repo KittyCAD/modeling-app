@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing sketch_on_face_after_fillets_referencing_face.kcl
+snapshot_kind: text
 ---
 {
   "E": {
@@ -741,31 +742,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
   },
   "cos": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [],
-        "end": 1477,
-        "moduleId": 2,
-        "start": 1477
-      },
-      "end": 1478,
-      "moduleId": 2,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 1450,
-            "moduleId": 2,
-            "name": "num",
-            "start": 1447,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 1446,
-      "type": "FunctionExpression"
-    },
-    "memory": null,
     "__meta": [
       {
         "sourceRange": [
@@ -1055,31 +1031,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
   },
   "sin": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [],
-        "end": 1875,
-        "moduleId": 2,
-        "start": 1875
-      },
-      "end": 1876,
-      "moduleId": 2,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 1848,
-            "moduleId": 2,
-            "name": "num",
-            "start": 1845,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 1844,
-      "type": "FunctionExpression"
-    },
-    "memory": null,
     "__meta": [
       {
         "sourceRange": [
@@ -1101,8 +1052,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1620,
-            1645,
+            1568,
+            1593,
             0
           ],
           "tag": null,
@@ -1112,8 +1063,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1651,
-            1676,
+            1599,
+            1624,
             0
           ],
           "tag": null,
@@ -1123,8 +1074,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1682,
-            1707,
+            1630,
+            1655,
             0
           ],
           "tag": null,
@@ -1134,8 +1085,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1713,
-            1769,
+            1661,
+            1717,
             0
           ],
           "tag": null,
@@ -1150,8 +1101,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1620,
-                1645,
+                1568,
+                1593,
                 0
               ]
             },
@@ -1173,8 +1124,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1651,
-                1676,
+                1599,
+                1624,
                 0
               ]
             },
@@ -1196,8 +1147,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1682,
-                1707,
+                1630,
+                1655,
                 0
               ]
             },
@@ -1219,8 +1170,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1713,
-                1769,
+                1661,
+                1717,
                 0
               ]
             },
@@ -1242,8 +1193,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1775,
-                1783,
+                1723,
+                1731,
                 0
               ]
             },
@@ -1820,8 +1771,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "__meta": [
             {
               "sourceRange": [
-                1548,
-                1577,
+                1496,
+                1525,
                 0
               ]
             }
@@ -1843,8 +1794,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1583,
-              1614,
+              1531,
+              1562,
               0
             ]
           }
@@ -1857,8 +1808,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         "__meta": [
           {
             "sourceRange": [
-              1583,
-              1614,
+              1531,
+              1562,
               0
             ]
           }
@@ -1873,8 +1824,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
       "__meta": [
         {
           "sourceRange": [
-            1583,
-            1614,
+            1531,
+            1562,
             0
           ]
         }
@@ -1883,31 +1834,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
   },
   "tan": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [],
-        "end": 2265,
-        "moduleId": 2,
-        "start": 2265
-      },
-      "end": 2266,
-      "moduleId": 2,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 2238,
-            "moduleId": 2,
-            "name": "num",
-            "start": 2235,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 2234,
-      "type": "FunctionExpression"
-    },
-    "memory": null,
     "__meta": [
       {
         "sourceRange": [

@@ -295,7 +295,6 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Function`|  | No |
-| `memory` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 

@@ -29,16 +29,16 @@ const bracket = startSketchOn('XY')
   |> line(end = [0, -wallMountL + thickness])
   |> close()
   |> extrude(length = width)
-  |> fillet({
-       radius: filletR,
-       tags: [
+  |> fillet(
+       radius = filletR,
+       tags = [
          getPreviousAdjacentEdge('innerEdge', %)
        ]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [
+     )
+  |> fillet(
+       radius = filletR + thickness,
+       tags = [
          getPreviousAdjacentEdge('outerEdge', %)
        ]
-     }, %)
+     )
 

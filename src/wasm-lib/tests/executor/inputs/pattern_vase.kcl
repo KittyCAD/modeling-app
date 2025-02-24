@@ -16,10 +16,10 @@ fn layer = () => {
   return startSketchOn("XY") // or some other plane idk
     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
     |> extrude(length = h)
-    // |> fillet({
-    //        radius: h / 2.01,
-    //        tags: [tag1, getOppositeEdge(tag1)]
-    //    }, %)
+    // |> fillet(
+    //        radius = h / 2.01,
+    //        tags = [tag1, getOppositeEdge(tag1)]
+    //    )
 }
 // The vase is 100 layers tall.
 // The 100 layers are replica of each other, with a slight transformation applied to each.

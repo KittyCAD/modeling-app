@@ -82,7 +82,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('Enter') // submit
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toContainText(
-      `fillet({ radius = ${KCL_DEFAULT_LENGTH}, tags = [seg01] }, %)`
+      `fillet( radius = ${KCL_DEFAULT_LENGTH}, tags = [seg01] )`
     )
   })
 
@@ -219,7 +219,11 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     }
   )
 
-  test('Can extrude from the command bar', async ({ page, homePage }) => {
+  test('Can extrude from the command bar', async ({
+    page,
+    homePage,
+    cmdBar,
+  }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -254,7 +258,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     await expect(cmdSearchBar).toBeVisible()
 
     // Search for extrude command and choose it
-    await page.getByRole('option', { name: 'Extrude' }).click()
+    await cmdBar.cmdOptions.getByText('Extrude').click()
 
     // Assert that we're on the selection step
     await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()

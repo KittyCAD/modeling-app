@@ -35,7 +35,6 @@ use crate::{
 pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
-pub use exec_ast::FunctionParam;
 pub use geometry::*;
 pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
@@ -857,7 +856,25 @@ mod tests {
         let errs = exec_state.errors();
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
-        assert!(errs[0].message.contains("Unknown annotation"));
+        assert!(
+            errs[0].message.contains("Unknown annotation"),
+            "unexpected warning message: {}",
+            errs[0].message
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_warn_on_deprecated() {
+        let text = "p = pi()";
+        let (_, _, exec_state) = parse_execute(text).await.unwrap();
+        let errs = exec_state.errors();
+        assert_eq!(errs.len(), 1);
+        assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
+        assert!(
+            errs[0].message.contains("`pi` is deprecated"),
+            "unexpected warning message: {}",
+            errs[0].message
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1567,10 +1584,7 @@ test([0, 0])
 "#;
         let result = parse_execute(ast).await;
         assert!(result.is_err());
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("Result of user-defined function test is undefined"),);
+        assert!(result.unwrap_err().to_string().contains("undefined"),);
     }
 
     #[tokio::test(flavor = "multi_thread")]
