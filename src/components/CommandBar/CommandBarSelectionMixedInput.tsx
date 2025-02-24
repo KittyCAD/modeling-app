@@ -11,17 +11,6 @@ import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
-interface CommandBarSelectionMixedInputProps {
-  arg: CommandArgument<Selections> & {
-    selectionSource?: {
-      currentSelection?: Selections | null
-      allowSceneSelection?: boolean
-    }
-  }
-  stepBack: () => void
-  onSubmit: (value: Selections | null) => void
-}
-
 export default function CommandBarSelectionMixedInput({
   arg,
   stepBack,
