@@ -22,9 +22,9 @@ echo "### Bugs"
 list_from_ids "$closed_bug_ids"
 echo
 
-closed_enchancement_ids=$(gh issue list --repo $repo --limit $limit --search "type:Enhancement sort:closed-asc closed:>$last_meeting_date $filter" --json number | jq -r '.[].number') 
+closed_enhancement_ids=$(gh issue list --repo $repo --limit $limit --search "type:Enhancement sort:closed-asc closed:>$last_meeting_date $filter" --json number | jq -r '.[].number') 
 echo "### Enhancements"
-list_from_ids "$closed_enchancement_ids"
+list_from_ids "$closed_enhancement_ids"
 echo
 
 closed_other_ids=$(gh issue list --repo $repo --limit $limit --search "no:type sort:closed-asc closed:>$last_meeting_date $filter" --json number | jq -r '.[].number') 
