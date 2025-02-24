@@ -10,7 +10,7 @@ limit=999
 function list_from_ids() {
     for id in $1; do
         title=$(gh issue view $id --repo $repo --json title | jq -r '.title')
-        echo "* [https://github.com/$repo/issues/$id]($title)"
+        echo "* [$title](https://github.com/$repo/issues/$id)"
     done
 }
 
