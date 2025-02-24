@@ -32,18 +32,18 @@ bracket = startSketchOn('XY')
   |> line(end = [0, -wallMountL + thickness])
   |> close()
   |> extrude(length = width)
-  |> fillet({
-       radius: filletR,
-       tags: [
+  |> fillet(
+       radius = filletR,
+       tags = [
          getNextAdjacentEdge(innerEdge)
        ]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [
+     )
+  |> fillet(
+       radius = filletR + thickness,
+       tags = [
          getNextAdjacentEdge(outerEdge)
        ]
-     }, %)
+     )
 
 sketch001 = startSketchOn(bracket, seg01)
   |> startProfileAt([4.28, 3.83], %)

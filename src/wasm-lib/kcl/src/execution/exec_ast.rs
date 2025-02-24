@@ -1,15 +1,14 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
-use schemars::JsonSchema;
 
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
-        cad_op::{OpArg, Operation},
-        kcl_value::NumericType,
+        cad_op::{OpArg, OpKclValue, Operation},
+        kcl_value::{FunctionSource, NumericType},
         memory,
         state::ModuleState,
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, TagEngineInfo, TagIdentifier,
@@ -520,11 +519,10 @@ impl ExecutorContext {
 
                 if rust_impl {
                     if let Some(std_path) = &exec_state.mod_local.settings.std_path {
+                        let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
-                            expression: function_expression.clone(),
+                            value: FunctionSource::Std { func, props },
                             meta: vec![metadata.to_owned()],
-                            func: Some(crate::std::std_fn(std_path, statement_kind.expect_name())),
-                            memory: None,
                         }
                     } else {
                         return Err(KclError::Semantic(KclErrorDetails {
@@ -534,14 +532,15 @@ impl ExecutorContext {
                         }));
                     }
                 } else {
-                    // Cloning memory here is crucial for semantics so that we close
+                    // Snapshotting memory here is crucial for semantics so that we close
                     // over variables.  Variables defined lexically later shouldn't
                     // be available to the function body.
                     KclValue::Function {
-                        expression: function_expression.clone(),
+                        value: FunctionSource::User {
+                            ast: function_expression.clone(),
+                            memory: exec_state.mut_memory().snapshot(),
+                        },
                         meta: vec![metadata.to_owned()],
-                        func: None,
-                        memory: Some(exec_state.mut_memory().snapshot()),
                     }
                 }
             }
@@ -996,16 +995,24 @@ impl Node<CallExpressionKw> {
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
+                if func.deprecated() {
+                    exec_state.warn(CompilationError::err(
+                        self.callee.as_source_range(),
+                        format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
+                    ));
+                }
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = args
                         .kw_args
                         .labeled
                         .iter()
-                        .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .unlabeled_kw_arg_unconverted()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                         is_error: false,
@@ -1046,7 +1053,7 @@ impl Node<CallExpressionKw> {
                     .kw_args
                     .labeled
                     .iter()
-                    .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                     .collect();
                 exec_state
                     .mod_local
@@ -1054,7 +1061,11 @@ impl Node<CallExpressionKw> {
                     .push(Operation::UserDefinedFunctionCall {
                         name: Some(fn_name.clone()),
                         function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                     });
@@ -1114,12 +1125,23 @@ impl Node<CallExpression> {
 
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
+                if func.deprecated() {
+                    exec_state.warn(CompilationError::err(
+                        self.callee.as_source_range(),
+                        format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
+                    ));
+                }
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)
                         .iter()
                         .zip(&fn_args)
-                        .map(|(k, v)| (k.name.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| {
+                            (
+                                k.name.clone(),
+                                OpArg::new(OpKclValue::from(&arg.value), arg.source_range),
+                            )
+                        })
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
@@ -1196,7 +1218,7 @@ impl Node<CallExpression> {
                         source_ranges = meta.iter().map(|m| m.source_range).collect();
                     };
                     KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of user-defined function {} is undefined", fn_name),
+                        message: format!("Result of function {} is undefined", fn_name),
                         source_ranges,
                     })
                 })?;
@@ -1771,45 +1793,39 @@ pub(crate) async fn call_user_defined_function_kw(
     result
 }
 
-/// A function being used as a parameter into a stdlib function.  This is a
-/// closure, plus everything needed to execute it.
-pub struct FunctionParam<'a> {
-    pub inner: Option<&'a crate::std::StdFn>,
-    pub memory: Option<EnvironmentRef>,
-    pub fn_expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-    pub ctx: ExecutorContext,
-}
-
-impl FunctionParam<'_> {
+impl FunctionSource {
     pub async fn call(
         &self,
         exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
         args: Vec<Arg>,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
-        if let Some(inner) = self.inner {
-            let args = crate::std::Args::new(
-                args,
-                source_range,
-                self.ctx.clone(),
-                exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
-            );
+        match self {
+            FunctionSource::Std { func, props } => {
+                if props.deprecated {
+                    exec_state.warn(CompilationError::err(
+                        source_range,
+                        format!(
+                            "`{}` is deprecated, see the docs for a recommended replacement",
+                            props.name
+                        ),
+                    ));
+                }
+                let args = crate::std::Args::new(
+                    args,
+                    source_range,
+                    ctx.clone(),
+                    exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+                );
 
-            inner(exec_state, args).await.map(Some)
-        } else {
-            call_user_defined_function(args, self.memory.unwrap(), self.fn_expr.as_ref(), exec_state, &self.ctx).await
+                func(exec_state, args).await.map(Some)
+            }
+            FunctionSource::User { ast, memory } => {
+                call_user_defined_function(args, *memory, ast, exec_state, ctx).await
+            }
+            FunctionSource::None => unreachable!(),
         }
-    }
-}
-
-impl JsonSchema for FunctionParam<'_> {
-    fn schema_name() -> String {
-        "FunctionParam".to_owned()
-    }
-
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        // TODO: Actually generate a reasonable schema.
-        gen.subschema_for::<()>()
     }
 }
 

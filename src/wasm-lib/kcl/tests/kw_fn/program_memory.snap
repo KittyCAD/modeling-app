@@ -132,69 +132,6 @@ description: Variables in memory after executing kw_fn.kcl
   },
   "add": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 75,
-              "left": {
-                "end": 67,
-                "name": "x",
-                "start": 66,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "operator": "+",
-              "right": {
-                "end": 75,
-                "name": "delta",
-                "start": 70,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "start": 66,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "end": 75,
-            "start": 59,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 77,
-        "start": 55
-      },
-      "end": 77,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 46,
-            "name": "x",
-            "start": 45,
-            "type": "Identifier"
-          },
-          "labeled": false
-        },
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 53,
-            "name": "delta",
-            "start": 48,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 43,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      2
-    ],
     "__meta": [
       {
         "sourceRange": [
@@ -207,31 +144,6 @@ description: Variables in memory after executing kw_fn.kcl
   },
   "cos": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [],
-        "end": 1477,
-        "moduleId": 2,
-        "start": 1477
-      },
-      "end": 1478,
-      "moduleId": 2,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 1450,
-            "moduleId": 2,
-            "name": "num",
-            "start": 1447,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 1446,
-      "type": "FunctionExpression"
-    },
-    "memory": null,
     "__meta": [
       {
         "sourceRange": [
@@ -244,64 +156,6 @@ description: Variables in memory after executing kw_fn.kcl
   },
   "increment": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 33,
-              "left": {
-                "end": 29,
-                "name": "x",
-                "start": 28,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "operator": "+",
-              "right": {
-                "end": 33,
-                "raw": "1",
-                "start": 32,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
-              },
-              "start": 28,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "end": 33,
-            "start": 21,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 35,
-        "start": 17
-      },
-      "end": 35,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 15,
-            "name": "x",
-            "start": 14,
-            "type": "Identifier"
-          },
-          "labeled": false
-        }
-      ],
-      "start": 12,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
@@ -314,31 +168,6 @@ description: Variables in memory after executing kw_fn.kcl
   },
   "sin": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [],
-        "end": 1875,
-        "moduleId": 2,
-        "start": 1875
-      },
-      "end": 1876,
-      "moduleId": 2,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 1848,
-            "moduleId": 2,
-            "name": "num",
-            "start": 1845,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 1844,
-      "type": "FunctionExpression"
-    },
-    "memory": null,
     "__meta": [
       {
         "sourceRange": [
@@ -351,31 +180,6 @@ description: Variables in memory after executing kw_fn.kcl
   },
   "tan": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [],
-        "end": 2265,
-        "moduleId": 2,
-        "start": 2265
-      },
-      "end": 2266,
-      "moduleId": 2,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 2238,
-            "moduleId": 2,
-            "name": "num",
-            "start": 2235,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 2234,
-      "type": "FunctionExpression"
-    },
-    "memory": null,
     "__meta": [
       {
         "sourceRange": [

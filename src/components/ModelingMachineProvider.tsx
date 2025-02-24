@@ -22,7 +22,6 @@ import {
   modelingMachineDefaultContext,
 } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   isCursorInSketchCommandRange,
   updateSketchDetailsNodePaths,
@@ -110,6 +109,7 @@ import { kclEditorActor } from 'machines/kclEditorMachine'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { useSettings } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -131,19 +131,15 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const {
-    settings: {
-      context: {
-        app: { theme, enableSSAO, allowOrbitInSketchMode },
-        modeling: {
-          defaultUnit,
-          cameraProjection,
-          highlightEdges,
-          showScaleGrid,
-          cameraOrbit,
-        },
-      },
+    app: { theme, enableSSAO, allowOrbitInSketchMode },
+    modeling: {
+      defaultUnit,
+      cameraProjection,
+      highlightEdges,
+      showScaleGrid,
+      cameraOrbit,
     },
-  } = useSettingsAuthContext()
+  } = useSettings()
   const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()

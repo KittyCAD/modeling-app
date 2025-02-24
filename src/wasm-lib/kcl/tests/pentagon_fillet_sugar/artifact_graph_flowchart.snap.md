@@ -36,15 +36,15 @@ flowchart LR
   24["Cap End"]
   25["SweepEdge Opposite"]
   26["SweepEdge Adjacent"]
-  27["EdgeCut Fillet<br>[646, 777, 0]"]
-  28["EdgeCut Fillet<br>[646, 777, 0]"]
-  33["Sweep Extrusion<br>[816, 844, 0]"]
+  27["EdgeCut Fillet<br>[646, 773, 0]"]
+  28["EdgeCut Fillet<br>[646, 773, 0]"]
+  33["Sweep Extrusion<br>[812, 840, 0]"]
   34[Wall]
   35["Cap End"]
   36["SweepEdge Opposite"]
   37["SweepEdge Adjacent"]
-  38["EdgeCut Fillet<br>[850, 981, 0]"]
-  39["EdgeCut Fillet<br>[850, 981, 0]"]
+  38["EdgeCut Fillet<br>[846, 973, 0]"]
+  39["EdgeCut Fillet<br>[846, 973, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4

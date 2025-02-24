@@ -82,11 +82,11 @@ helixPath = helix(
   length = 10,
   radius = 5,
   axis = {
-  custom = {
-    axis = [0, 0, 1.0],
-    origin = [0, 0.25, 0]
-  }
-},
+    custom = {
+      axis = [0, 0, 1.0],
+      origin = [0, 0.25, 0]
+    }
+  },
 )
 
 // Create a spring by sweeping around the helix path.

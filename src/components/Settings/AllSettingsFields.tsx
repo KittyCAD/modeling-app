@@ -1,5 +1,4 @@
 import decamelize from 'decamelize'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Setting } from 'lib/settings/initialSettings'
 import { SetEventTypes, SettingsLevel } from 'lib/settings/settingsTypes'
 import {
@@ -25,6 +24,8 @@ import { useLspContext } from 'components/LspProvider'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { settingsActor, useSettings } from 'machines/appMachine'
+import { useSelector } from '@xstate/react'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -40,9 +41,7 @@ export const AllSettingsFields = forwardRef(
     const navigate = useNavigate()
     const { onProjectOpen } = useLspContext()
     const dotDotSlash = useDotDotSlash()
-    const {
-      settings: { send, context, state },
-    } = useSettingsAuthContext()
+    const context = useSettings()
 
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -62,7 +61,7 @@ export const AllSettingsFields = forwardRef(
     }, [location.pathname])
 
     function restartOnboarding() {
-      send({
+      settingsActor.send({
         type: `set.app.onboardingStatus`,
         data: { level: 'user', value: '' },
       })
@@ -72,11 +71,14 @@ export const AllSettingsFields = forwardRef(
      * A "listener" for the XState to return to "idle" state
      * when the user resets the onboarding, using the callback above
      */
+    const isSettingsMachineIdle = useSelector(settingsActor, (s) =>
+      s.matches('idle')
+    )
     useEffect(() => {
       async function navigateToOnboardingStart() {
         if (
-          state.context.app.onboardingStatus.user === '' &&
-          state.matches('idle')
+          context.app.onboardingStatus.current === '' &&
+          isSettingsMachineIdle
         ) {
           if (isFileSettings) {
             // If we're in a project, first navigate to the onboarding start here
@@ -91,7 +93,12 @@ export const AllSettingsFields = forwardRef(
       }
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigateToOnboardingStart()
-    }, [isFileSettings, navigate, state])
+    }, [
+      isFileSettings,
+      navigate,
+      isSettingsMachineIdle,
+      context.app.onboardingStatus.current,
+    ])
 
     return (
       <div className="relative overflow-y-auto">
@@ -142,7 +149,7 @@ export const AllSettingsFields = forwardRef(
                         }
                         parentLevel={setting.getParentLevel(searchParamTab)}
                         onFallback={() =>
-                          send({
+                          settingsActor.send({
                             type: `set.${category}.${settingName}`,
                             data: {
                               level: searchParamTab,
@@ -218,7 +225,7 @@ export const AllSettingsFields = forwardRef(
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  send({
+                  settingsActor.send({
                     type: 'Reset settings',
                     level: searchParamTab,
                   })

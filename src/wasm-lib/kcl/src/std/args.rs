@@ -10,12 +10,13 @@ use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::NumericType, ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata,
-        Sketch, SketchSet, SketchSurface, Solid, SolidSet, TagIdentifier,
+        kcl_value::{FunctionSource, NumericType},
+        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
+        SketchSurface, Solid, SolidSet, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
-    std::{shapes::SketchOrSurface, sketch::FaceTag, sweep::SweepPath, FnAsArg},
+    std::{shapes::SketchOrSurface, sketch::FaceTag, sweep::SweepPath},
     ModuleId,
 };
 
@@ -158,17 +159,23 @@ impl Args {
         })
     }
 
-    /// Get the unlabeled keyword argument. If not set, returns Err.
+    /// Get the unlabeled keyword argument. If not set, returns None.
+    pub(crate) fn unlabeled_kw_arg_unconverted(&self) -> Option<&Arg> {
+        self.kw_args
+            .unlabeled
+            .as_ref()
+            .or(self.args.first())
+            .or(self.pipe_value.as_ref())
+    }
+
+    /// Get the unlabeled keyword argument. If not set, returns Err.  If it
+    /// can't be converted to the given type, returns Err.
     pub(crate) fn get_unlabeled_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
     where
         T: FromKclValue<'a>,
     {
         let arg = self
-            .kw_args
-            .unlabeled
-            .as_ref()
-            .or(self.args.first())
-            .or(self.pipe_value.as_ref())
+            .unlabeled_kw_arg_unconverted()
             .ok_or(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![self.source_range],
                 message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
@@ -505,13 +512,6 @@ impl Args {
     }
 
     pub(crate) fn get_data_and_solid<'a, T>(&'a self) -> Result<(T, Box<Solid>), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_data_and_solid_and_tag<'a, T>(&'a self) -> Result<(T, Box<Solid>, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -985,29 +985,6 @@ impl<'a> FromKclValue<'a> for super::sketch::BezierData {
         let_field_of!(obj, control1);
         let_field_of!(obj, control2);
         Some(Self { to, control1, control2 })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::chamfer::ChamferData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, length);
-        let_field_of!(obj, tags);
-        Some(Self { length, tags })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::fillet::FilletData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, radius);
-        let_field_of!(obj, tolerance?);
-        let_field_of!(obj, tags);
-        Some(Self {
-            radius,
-            tolerance,
-            tags,
-        })
     }
 }
 
@@ -1580,7 +1557,7 @@ impl<'a> FromKclValue<'a> for Box<Solid> {
     }
 }
 
-impl<'a> FromKclValue<'a> for FnAsArg<'a> {
+impl<'a> FromKclValue<'a> for &'a FunctionSource {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.get_function()
     }

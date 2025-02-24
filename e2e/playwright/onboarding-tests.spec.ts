@@ -13,8 +13,8 @@ import {
 import * as TOML from '@iarna/toml'
 import { expectPixelColor } from './fixtures/sceneFixture'
 
-// Because onboarding relies on an app setting we need to set it as incompletel
-// for all these tests.
+// Because our default test settings have the onboardingStatus set to 'dismissed',
+// we must set it to empty for the tests where we want to see the onboarding immediately.
 
 test.describe('Onboarding tests', () => {
   test(
@@ -22,7 +22,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboardingStatus: '',
         },
       },
       cleanProjectDir: true,
@@ -63,7 +63,7 @@ test.describe('Onboarding tests', () => {
       tag: '@electron',
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboardingStatus: '',
         },
       },
       cleanProjectDir: true,
@@ -106,11 +106,6 @@ test.describe('Onboarding tests', () => {
   test(
     'Code resets after confirmation',
     {
-      appSettings: {
-        app: {
-          onboardingStatus: 'incomplete',
-        },
-      },
       cleanProjectDir: true,
     },
     async ({ context, page, homePage }) => {
@@ -158,7 +153,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboardingStatus: '',
         },
       },
     },
@@ -319,7 +314,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboardingStatus: '',
         },
       },
       cleanProjectDir: true,
@@ -392,7 +387,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboardingStatus: '',
         },
       },
       cleanProjectDir: true,

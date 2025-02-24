@@ -13,37 +13,9 @@ import makeUrlPathRelative from './makeUrlPathRelative'
 import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
-import { createSettings } from './settings/initialSettings'
 import { normalizeLineEndings } from 'lib/codeEditor'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
-
-// The root loader simply resolves the settings and any errors that
-// occurred during the settings load
-export const settingsLoader: LoaderFunction = async ({
-  params,
-}): Promise<
-  ReturnType<typeof createSettings> | ReturnType<typeof redirect>
-> => {
-  let { settings, configuration } = await loadAndValidateSettings()
-
-  // I don't love that we have to read the settings again here,
-  // but we need to get the project path to load the project settings
-  if (params.id) {
-    const projectPathData = await getProjectMetaByRouteId(
-      params.id,
-      configuration
-    )
-    if (projectPathData) {
-      const { projectPath } = projectPathData
-      const { settings: s } = await loadAndValidateSettings(
-        projectPath || undefined
-      )
-      return s
-    }
-  }
-
-  return settings
-}
+import { getSettings, settingsActor } from 'machines/appMachine'
 
 export const telemetryLoader: LoaderFunction = async ({
   params,
@@ -53,7 +25,7 @@ export const telemetryLoader: LoaderFunction = async ({
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
-  const { settings } = await loadAndValidateSettings()
+  const settings = getSettings()
   const onboardingStatus: OnboardingStatus =
     settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(
@@ -72,7 +44,7 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
     )
   }
 
-  return settingsLoader(args)
+  return null
 }
 
 export const fileLoader: LoaderFunction = async (
@@ -156,9 +128,17 @@ export const fileLoader: LoaderFunction = async (
       ? await getProjectInfo(projectPath)
       : null
 
+    const project = maybeProjectInfo ?? defaultProjectData
+
+    // Fire off the event to load the project settings
+    settingsActor.send({
+      type: 'load.project',
+      project,
+    })
+
     const projectData: IndexLoaderData = {
       code,
-      project: maybeProjectInfo ?? defaultProjectData,
+      project,
       file: {
         name: currentFileName || '',
         path: currentFilePath || '',
@@ -197,5 +177,8 @@ export const homeLoader: LoaderFunction = async ({
       PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
     )
   }
+  settingsActor.send({
+    type: 'clear.project',
+  })
   return {}
 }

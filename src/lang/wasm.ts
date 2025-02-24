@@ -463,11 +463,11 @@ export const executeWithEngine = async (
 const jsAppSettings = async () => {
   let jsAppSettings = default_app_settings()
   if (!TEST) {
-    const lastSettingsSnapshot = await import(
-      'components/SettingsAuthProvider'
-    ).then((module) => module.lastSettingsContextSnapshot)
-    if (lastSettingsSnapshot) {
-      jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
+    const settings = await import('machines/appMachine').then((module) =>
+      module.getSettings()
+    )
+    if (settings) {
+      jsAppSettings = getAllCurrentSettings(settings)
     }
   }
   return jsAppSettings

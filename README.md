@@ -48,22 +48,49 @@ We recommend downloading the latest application binary from [our Releases page](
 
 ## Running a development build
 
-First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We always use the latest stable version of Rust, so you may need to run `rustup update stable`. Then, run:
+Install a node version manager such as [fnm](https://github.com/Schniz/fnm?tab=readme-ov-#installation).
 
+On Windows, it's also recommended to [upgrade your PowerShell version](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.5#winget), we're using 7.
+
+Then in the repo run the following to install and use the node version specified in `.nvmrc`. You might need to specify your processor architecture with `--arch arm64` or `--arch x64` if it's not autodetected. 
+```
+fnm install --corepack-enabled
+fnm use
+```
+
+Install the NPM dependencies with:
 ```
 yarn install
 ```
 
-followed by:
-
+This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We have package scripts to run rustup, see `package.json` for reference:
 ```
+# macOS/Linux
+yarn install:rust
+yarn install:wasm-pack:sh
+
+# Windows
+yarn install:rust:windows
+yarn install:wasm-pack:cargo
+```
+
+Then to build the WASM layer, run:
+```
+# macOS/Linux
 yarn build:wasm
+
+# Windows
+yarn build:wasm:windows
 ```
 
-or if you have the gh cli installed
+Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `yarn install:tools:windows`.
 
 ```
-./get-latest-wasm-bundle.sh # this will download the latest main wasm bundle
+# macOS/Linux
+yarn fetch:wasm
+
+# Windows
+yarn fetch:wasm:windows
 ```
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
@@ -74,7 +101,7 @@ Finally, to run the web app only, run:
 yarn start
 ```
 
-If you're not an KittyCAD employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
+If you're not a Zoo employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
 
 ### Development environment variables
 
@@ -101,7 +128,7 @@ This will start the application and hot-reload on changes.
 
 Devtools can be opened with the usual Cmd-Opt-I (Mac) or Ctrl-Shift-I (Linux and Windows).
 
-To build with electron-builder, run `yarn tronb:package:dev` (or `yarn tronb:package:prod` to point to the .env.production variables)
+To package the app for your platform with electron-builder, run `yarn tronb:package:dev` (or `yarn tronb:package:prod` to point to the .env.production variables)
 
 ## Checking out commits / Bisecting
 
