@@ -937,11 +937,16 @@ export async function setupElectron({
   testInfo,
   cleanProjectDir = true,
   appSettings,
+  viewport,
 }: {
   testInfo: TestInfo
   folderSetupFn?: (projectDirName: string) => Promise<void>
   cleanProjectDir?: boolean
   appSettings?: Partial<SaveSettingsPayload>
+  viewport: {
+    width: number
+    height: number
+  }
 }): Promise<{
   electronApp: ElectronApplication
   context: BrowserContext
@@ -971,6 +976,14 @@ export async function setupElectron({
     },
     ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
       ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
+      : {}),
+    ...(process.env.PLAYWRIGHT_RECORD_VIDEO
+      ? {
+          recordVideo: {
+            dir: testInfo.snapshotPath(),
+            size: viewport,
+          },
+        }
       : {}),
   }
 
