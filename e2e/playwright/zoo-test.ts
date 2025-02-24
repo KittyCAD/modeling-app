@@ -68,13 +68,6 @@ type PWFunction = (
 
 let firstUrl = ''
 
-// The below error is due to the extreme type spaghetti going on. playwright/
-// types/test.d.ts does not export 2 functions (below is one of them) but tsc
-// is trying to use a interface name it can't see.
-// e2e/playwright/zoo-test.ts:64:14 - error TS4023: Exported variable 'test' has
-// or is using name 'TestFunction' from external module
-// "/home/lee/Code/Zoo/modeling-app/dirty2/node_modules/playwright/types/test"
-// but cannot be named.
 export const test = (
   desc: string,
   objOrFn: PWFunction | TestDetails,
