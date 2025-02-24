@@ -480,6 +480,7 @@ const jsAppSettings = async () => {
 }
 
 const errFromErrWithOutputs = (e: any): KCLError => {
+  console.log(e)
   const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
   return new KCLError(
     parsed.error.kind,
