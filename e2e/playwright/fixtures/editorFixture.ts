@@ -171,4 +171,22 @@ export class EditorFixture {
       { text, placeCursor }
     )
   }
+  async selectText(text: string) {
+    // First make sure the code pane is open
+    const wasPaneOpen = await this.checkIfPaneIsOpen()
+    if (!wasPaneOpen) {
+      await this.openPane()
+    }
+
+    // Use Playwright's built-in text selection on the code content
+    // it seems to only select whole divs, which works out to align with syntaxt highlighting
+    // for code mirror, so you can probably select "sketch002 = startSketchOn('XZ')"
+    // but less so for exactly "sketch002 = startS"
+    await this.codeContent.getByText(text).first().selectText()
+
+    // Reset pane state if needed
+    if (!wasPaneOpen) {
+      await this.closePane()
+    }
+  }
 }
