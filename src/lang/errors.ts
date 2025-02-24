@@ -343,9 +343,9 @@ export function complilationErrorsToDiagnostics(
 // side bar UI. This is to indicate an error in an imported file, it isn't
 // the specific code mirror error interface.
 export function kclErrorsByFilename(errors: KCLError[]): {
-  [key: string]: KCLError
+  [key: string]: KCLError[]
 } {
-  const fileNameToError: { [key: string]: KCLError } = {}
+  const fileNameToError: { [key: string]: KCLError[] } = {}
   errors.forEach((error: KCLError) => {
     const filenames = error.filenames
     const sourceRange: SourceRange = error.sourceRange
@@ -353,7 +353,7 @@ export function kclErrorsByFilename(errors: KCLError[]): {
     const modulePath: ModulePath | undefined = filenames[fileIndex]
     let stdOrLocalPath: string = ''
     // Ignore top level module errors! They are already captured in a different workflow!!
-    if (modulePath && !isTopLevelModule(sourceRange)) {
+    if (modulePath) {
       // Do not map errors that are [start,end, 0] aka the topLevelModule, you have the code editor mapping this already
       if ('Std' in modulePath) {
         stdOrLocalPath = modulePath.Std
@@ -362,7 +362,12 @@ export function kclErrorsByFilename(errors: KCLError[]): {
       }
 
       if (stdOrLocalPath) {
-        fileNameToError[stdOrLocalPath] = error
+        // Build up an array of errors per file name
+        if (stdOrLocalPath in fileNameToError) {
+          fileNameToError[stdOrLocalPath].push(error)
+        } else {
+          fileNameToError[stdOrLocalPath] = [error]
+        }
       }
     }
   })

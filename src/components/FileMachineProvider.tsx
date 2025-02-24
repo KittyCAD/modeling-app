@@ -130,6 +130,8 @@ export const FileMachineProvider = ({
         navigateToFile: ({ context, event }) => {
           if (event.type !== 'xstate.done.actor.create-and-open-file') return
           if (event.output && 'name' in event.output) {
+            // TODO: Technically this is not the same as the FileTree Onclick even if they are in the same page
+            // What is "Open file?"
             commandBarActor.send({ type: 'Close' })
             navigate(
               `..${PATHS.FILE}/${encodeURIComponent(

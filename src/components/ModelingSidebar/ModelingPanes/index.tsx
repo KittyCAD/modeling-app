@@ -155,11 +155,17 @@ export const sidebarPanes: SidebarPane[] = [
     hide: ({ platform }) => platform === 'web',
     showBadge: {
       value: (context) => {
+        console.log('context', context.kclContext)
         const errors = kclErrorsByFilename(context.kclContext.errors)
+        console.log(errors, 'errors')
         return Object.keys(errors).length
       },
       onClick: (e) => {
         e.preventDefault()
+        // If badge is pressed
+        // Open the first error in the array of errors
+        // Then scroll to error
+        // Do you automatically open the project files
         // editorManager.scrollToFirstErrorDiagnosticIfExists()
       },
     },
