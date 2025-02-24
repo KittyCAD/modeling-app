@@ -666,7 +666,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        // allowNoSelection: true,
         selectionSource: {
           allowSceneSelection: true,
           allowCodeSelection: true,

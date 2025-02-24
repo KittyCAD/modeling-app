@@ -200,7 +200,6 @@ async function submitToApi(
   token?: string
 ): Promise<Models['TextToCadIteration_type'] | Error> {
   const url = VITE_KC_API_BASE_URL + '/ml/text-to-cad/iteration'
-  console.log('submitToApi', body)
   const data: Models['TextToCadIteration_type'] | Error =
     await crossPlatformFetch(
       url,
