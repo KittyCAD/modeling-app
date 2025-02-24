@@ -180,6 +180,7 @@ impl ExecState {
     }
 
     pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
+        debug_assert!(self.global.path_to_source_id.contains_key(&path));
         let module_info = ModuleInfo { id, repr, path };
         self.global.module_infos.insert(id, module_info);
     }

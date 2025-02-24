@@ -120,6 +120,7 @@ pub enum ModuleRepr {
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash, ts_rs::TS)]
+#[serde(tag = "type")]
 pub enum ModulePath {
     Local(PathBuf),
     Std(String),

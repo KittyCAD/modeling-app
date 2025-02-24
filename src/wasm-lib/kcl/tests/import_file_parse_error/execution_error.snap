@@ -2,10 +2,10 @@
 source: kcl/src/simulation_tests.rs
 description: Error from executing import_file_parse_error.kcl
 ---
-[31mKCL Syntax error[0m
+KCL Syntax error
 
-  [31m×[0m syntax: Unexpected token: }
+  × syntax: Unexpected token: }
    ╭────
- [2m1[0m │ import hotdog from "parse-failure.kcl"
-   · [35;1m                                ─[0m
+ 1 │ import hotdog from "parse-failure.kcl"
+   ·                                 ─
    ╰────
