@@ -53,6 +53,7 @@ export type ModelingCommandSchema = {
   Sweep: {
     target: Selections
     trajectory: Selections
+    sectional: boolean
   }
   Loft: {
     selection: Selections
@@ -338,7 +339,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description:
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
-    needsReview: false,
+    needsReview: true,
     args: {
       target: {
         inputType: 'selection',
@@ -351,8 +352,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selection',
         selectionTypes: ['segment', 'path'],
         required: true,
-        skip: false,
+        skip: true,
         multiple: false,
+        validation: sweepValidator,
+      },
+      sectional: {
+        inputType: 'options',
+        required: true,
+        skip: true,
+        defaultValue: false,
+        options: [
+          { name: 'True', value: true },
+          { name: 'False', value: false },
+        ],
         validation: sweepValidator,
       },
     },

@@ -1861,7 +1861,7 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         // Extract inputs
         const ast = kclManager.ast
-        const { target, trajectory } = input
+        const { target, trajectory, sectional } = input
 
         // Find the profile declaration
         const targetNodePath = getNodePathFromSourceRange(
@@ -1894,7 +1894,12 @@ export const modelingMachine = setup({
         const trajectoryDeclarator = trajectoryNode.node
 
         // Perform the sweep
-        const sweepRes = addSweep(ast, targetDeclarator, trajectoryDeclarator)
+        const sweepRes = addSweep(
+          ast,
+          targetDeclarator,
+          trajectoryDeclarator,
+          sectional
+        )
         const updateAstResult = await kclManager.updateAst(
           sweepRes.modifiedAst,
           true,

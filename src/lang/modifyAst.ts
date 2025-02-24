@@ -446,7 +446,8 @@ export function loftSketches(
 export function addSweep(
   node: Node<Program>,
   profileDeclarator: VariableDeclarator,
-  pathDeclarator: VariableDeclarator
+  pathDeclarator: VariableDeclarator,
+  sectional: boolean
 ): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
@@ -456,7 +457,10 @@ export function addSweep(
   const sweep = createCallExpressionStdLibKw(
     'sweep',
     createIdentifier(profileDeclarator.id.name),
-    [createLabeledArg('path', createIdentifier(pathDeclarator.id.name))]
+    [
+      createLabeledArg('path', createIdentifier(pathDeclarator.id.name)),
+      createLabeledArg('sectional', createLiteral(sectional)),
+    ]
   )
   const declaration = createVariableDeclaration(name, sweep)
   modifiedAst.body.push(declaration)
