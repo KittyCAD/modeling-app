@@ -1861,9 +1861,31 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         // Extract inputs
         const ast = kclManager.ast
-        const { target, trajectory, sectional } = input
+        const { target, trajectory, sectional, nodeToEdit } = input
+        const isEditing = nodeToEdit !== undefined // && typeof nodeToEdit[1][0] === 'number'
+        let variableName: string | undefined = undefined
 
-        // Find the profile declaration
+        // If this is an edit flow, first we're going to remove the old extrusion
+        if (isEditing) {
+          // Extract the plane name from the node to edit
+          const variableNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+          if (err(variableNode)) {
+            console.error('Error extracting name')
+          } else {
+            variableName = variableNode.node.declaration.id.name
+          }
+
+          // Removing the old extrusion statement
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0] as number, 1)
+          ast.body = newBody
+        }
+
+        // Find the target declaration
         const targetNodePath = getNodePathFromSourceRange(
           ast,
           target.graphSelections[0].codeRef.range
@@ -1878,7 +1900,7 @@ export const modelingMachine = setup({
         }
         const targetDeclarator = targetNode.node
 
-        // Find the path declaration
+        // Find the trajectory (or path) declaration
         const trajectoryNodePath = getNodePathFromSourceRange(
           ast,
           trajectory.graphSelections[0].codeRef.range
@@ -1894,26 +1916,25 @@ export const modelingMachine = setup({
         const trajectoryDeclarator = trajectoryNode.node
 
         // Perform the sweep
-        const sweepRes = addSweep(
+        const result = addSweep(
           ast,
           targetDeclarator,
           trajectoryDeclarator,
-          sectional
+          sectional,
+          variableName
         )
-        const updateAstResult = await kclManager.updateAst(
-          sweepRes.modifiedAst,
+        const updatedAst = await kclManager.updateAst(
+          result.modifiedAst,
           true,
           {
-            focusPath: [sweepRes.pathToNode],
+            focusPath: [result.pathToNode],
           }
         )
 
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
 
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
+        if (updatedAst?.selections) {
+          editorManager.selectRange(updatedAst?.selections)
         }
       }
     ),

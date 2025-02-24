@@ -447,13 +447,15 @@ export function addSweep(
   node: Node<Program>,
   profileDeclarator: VariableDeclarator,
   pathDeclarator: VariableDeclarator,
-  sectional: boolean
+  sectional: boolean,
+  variableName: string | undefined
 ): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
 } {
   const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
   const sweep = createCallExpressionStdLibKw(
     'sweep',
     createIdentifier(profileDeclarator.id.name),

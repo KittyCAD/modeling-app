@@ -51,6 +51,9 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
   }
   Sweep: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // Arguments
     target: Selections
     trajectory: Selections
     sectional: boolean
@@ -341,6 +344,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'sweep',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       target: {
         inputType: 'selection',
         selectionTypes: ['solid2d'],
@@ -350,7 +360,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       trajectory: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'path'],
+        selectionTypes: ['segment'],
         required: true,
         skip: true,
         multiple: false,
@@ -365,7 +375,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'True', value: true },
           { name: 'False', value: false },
         ],
-        validation: sweepValidator,
+        // validation: sweepValidator,
       },
     },
   },
