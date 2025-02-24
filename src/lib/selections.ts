@@ -514,7 +514,7 @@ function findOverlappingArtifactsFromIndex(
   let startIndex = 0
 
   while (left <= right) {
-    const mid = Math.floor((left + right) / 2)
+    const mid = left + Math.floor((right - left) / 2)
     const midRange = index[mid].range
 
     if (midRange[1] < selectionRange[0]) {
