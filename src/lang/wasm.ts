@@ -518,8 +518,9 @@ export const makeDefaultPlanes = async (
   engineCommandManager: EngineCommandManager
 ): Promise<DefaultPlanes> => {
   try {
-    const planes: DefaultPlanes =
-      await make_default_planes(engineCommandManager)
+    const planes: DefaultPlanes = await make_default_planes(
+      engineCommandManager
+    )
     return planes
   } catch (e) {
     // TODO: do something real with the error.
