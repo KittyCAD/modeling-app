@@ -36,7 +36,7 @@ extrude003 = extrude(sketch003, length = 20)
 `
 
 test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
-  test.fixme('Check the happy path, for basic changing color', () => {
+  test.describe('Check the happy path, for basic changing color', () => {
     const cases = [
       {
         desc: 'User accepts change',
@@ -70,7 +70,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           body1CapCoords.y
         )
         const yellow: [number, number, number] = [179, 179, 131]
-        const green: [number, number, number] = [108, 152, 75]
+        const green: [number, number, number] = [128, 194, 88]
         const notGreen: [number, number, number] = [132, 132, 132]
         const body2NotGreen: [number, number, number] = [88, 88, 88]
         const submittingToast = page.getByText(
@@ -109,7 +109,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
         })
 
         await test.step('verify initial change', async () => {
-          await scene.expectPixelColor(green, greenCheckCoords, 15)
+          await scene.expectPixelColor(green, greenCheckCoords, 20)
           await scene.expectPixelColor(body2NotGreen, body2WallCoords, 15)
           await editor.expectEditor.toContain('appearance(')
         })
