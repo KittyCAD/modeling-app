@@ -142,18 +142,9 @@ impl ExecutorContext {
 
                     let source_range = SourceRange::from(import_stmt);
                     let attrs = &import_stmt.outer_attrs;
-                    #[cfg(target_arch = "wasm32")]
-                    web_sys::console::log_1(&format!("modzz maybe{:?}", &import_stmt.path.clone()).into());
-                    let result = self
+                    let module_id = self
                         .open_module(&import_stmt.path, attrs, exec_state, source_range)
-                        .await;
-
-
-                    #[cfg(target_arch = "wasm32")]
-                    web_sys::console::log_1(&format!("exec_state{:?}", exec_state.global.path_to_source_id).into());
-                    println!("{:#?}", exec_state.global.path_to_source_id);
-
-                    let module_id = result?;
+                        .await?;
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
@@ -172,7 +163,7 @@ impl ExecutorContext {
                                         })
                                     })?
                                     .clone();
-                                            // Check that the item is allowed to be imported.
+                                // Check that the item is allowed to be imported.
                                 if !module_exports.contains(&import_item.name.name) {
                                     return Err(KclError::Semantic(KclErrorDetails {
                                         message: format!(
@@ -335,7 +326,8 @@ impl ExecutorContext {
                 }
 
                 let id = exec_state.next_module_id();
-                exec_state.add_path_to_id(resolved_path.clone(), id);
+                // Add file path string to global state even if it fails to import
+                exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 // TODO handle parsing errors properly
                 let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
@@ -350,7 +342,8 @@ impl ExecutorContext {
 
                 let id = exec_state.next_module_id();
                 let path = resolved_path.expect_path();
-                exec_state.add_path_to_id(resolved_path.clone(),id);
+                // Add file path string to global state even if it fails to import
+                exec_state.add_path_to_source_id(resolved_path.clone(),id);
                 let format = super::import::format_from_annotations(attrs, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
                 exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
@@ -362,7 +355,8 @@ impl ExecutorContext {
                 }
 
                 let id = exec_state.next_module_id();
-                exec_state.add_path_to_id(resolved_path.clone(), id);
+                // Add file path string to global state even if it fails to import
+                exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err().unwrap();
                 exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed, None));

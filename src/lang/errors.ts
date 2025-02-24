@@ -256,7 +256,7 @@ export function kclErrorsToDiagnostics(
   errors: KCLError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => true)
+    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .map((err) => {
       return {
         from: err.sourceRange[0],

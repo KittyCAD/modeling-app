@@ -433,7 +433,6 @@ export const executeMock = async (
       JSON.stringify(variables),
       fileSystemManager
     )
-    console.log('EXEC OUTCOME!', execOutcome)
     return mockExecStateFromRust(execOutcome)
   } catch (e: any) {
     return Promise.reject(errFromErrWithOutputs(e))
@@ -459,10 +458,8 @@ export const executeWithEngine = async (
       engineCommandManager,
       fileSystemManager
     )
-    console.log('EXEC OUTCOME!', execOutcome)
     return execStateFromRust(execOutcome, node)
   } catch (e: any) {
-    console.log('[lets get this bread]runtime error?', JSON.parse(e))
     return Promise.reject(errFromErrWithOutputs(e))
   }
 }

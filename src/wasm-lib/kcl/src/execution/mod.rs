@@ -705,7 +705,7 @@ impl ExecutorContext {
             .await
             .map_err(|e| {
 
-        let who_knows : IndexMap<ModuleId, ModulePath> = exec_state.global.path_to_source_id.iter()
+        let module_id_to_module_path : IndexMap<ModuleId, ModulePath> = exec_state.global.path_to_source_id.iter()
                         .map(|(k, v)| (v.clone(), k.clone()))
                         .collect();
 
@@ -714,7 +714,7 @@ impl ExecutorContext {
                     exec_state.mod_local.operations.clone(),
                     exec_state.global.artifact_commands.clone(),
                     exec_state.global.artifact_graph.clone(),
-                    who_knows
+                    module_id_to_module_path
                 )
             })?;
 

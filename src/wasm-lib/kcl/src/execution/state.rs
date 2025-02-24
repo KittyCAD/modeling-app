@@ -111,9 +111,6 @@ impl ExecState {
     pub fn to_wasm_outcome(self) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        let who_knows : IndexMap<ModuleId, ModulePath> = self.global.path_to_source_id.iter()
-                        .map(|(k, v)| (v.clone(), k.clone()))
-                        .collect();
         ExecOutcome {
             variables: self
                 .memory()
@@ -125,7 +122,9 @@ impl ExecState {
             artifact_commands: self.global.artifact_commands,
             artifact_graph: self.global.artifact_graph,
             errors: self.global.errors,
-            filenames: who_knows
+            filenames: self.global.path_to_source_id.iter()
+                        .map(|(k, v)| (v.clone(), k.clone()))
+                        .collect()
         }
     }
 
@@ -172,10 +171,8 @@ impl ExecState {
         self.global.path_to_source_id.get(path).cloned()
     }
 
-    pub(super) fn add_path_to_id(&mut self, path: ModulePath, id: ModuleId){
+    pub(super) fn add_path_to_source_id(&mut self, path: ModulePath, id: ModuleId){
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
-        #[cfg(target_arch = "wasm32")]
-        web_sys::console::log_1(&format!("NICE loading some modddz{:?}", path.clone()).into());
         self.global.path_to_source_id.insert(path.clone(), id);
     }
 
