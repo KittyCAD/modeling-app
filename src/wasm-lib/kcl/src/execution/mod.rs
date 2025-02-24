@@ -706,7 +706,7 @@ impl ExecutorContext {
             .map_err(|e| {
 
         let module_id_to_module_path : IndexMap<ModuleId, ModulePath> = exec_state.global.path_to_source_id.iter()
-                        .map(|(k, v)| (v.clone(), k.clone()))
+                        .map(|(k, v)| ((*v), k.clone()))
                         .collect();
 
                 KclErrorWithOutputs::new(

@@ -123,7 +123,7 @@ impl ExecState {
             artifact_graph: self.global.artifact_graph,
             errors: self.global.errors,
             filenames: self.global.path_to_source_id.iter()
-                        .map(|(k, v)| (v.clone(), k.clone()))
+                        .map(|(k, v)| ((*v),k.clone()))
                         .collect()
         }
     }

@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use indexmap::IndexMap;
 
 use async_recursion::async_recursion;
 use schemars::JsonSchema;
