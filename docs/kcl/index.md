@@ -6,9 +6,15 @@ layout: manual
 
 ## Table of Contents
 
-* [Types](kcl/types)
-* [Modules](kcl/modules)
-* [Known Issues](kcl/KNOWN-ISSUES)
+### Language
+
+* [`Types`](kcl/types)
+* [`Modules`](kcl/modules)
+* [`Settings`](kcl/settings)
+* [`Known Issues`](kcl/known-issues)
+
+### Standard library
+
 * **`std`**
   * [`abs`](kcl/abs)
   * [`acos`](kcl/acos)
