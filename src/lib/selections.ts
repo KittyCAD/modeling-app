@@ -587,7 +587,9 @@ export function getSelectionTypeDisplayText(
 
 export function canSubmitSelectionArg(
   selectionsByType: 'none' | Map<ResolvedSelectionType, number>,
-  argument: CommandArgument<unknown> & { inputType: 'selection' }
+  argument: CommandArgument<unknown> & {
+    inputType: 'selection' | 'selectionMixed'
+  }
 ) {
   return (
     selectionsByType !== 'none' &&

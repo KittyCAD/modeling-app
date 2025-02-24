@@ -43,15 +43,33 @@ export async function submitPromptToEditToQueue({
   projectName,
 }: {
   prompt: string
-  selections: Selections
+  selections: Selections | null
   code: string
   projectName: string
   token?: string
   artifactGraph: ArtifactGraph
 }): Promise<Models['TextToCadIteration_type'] | Error> {
+  // If no selection, use whole file
+  if (selections === null) {
+    const body: Models['TextToCadIterationBody_type'] = {
+      original_source_code: code,
+      prompt,
+      source_ranges: [], // Empty ranges indicates whole file
+      project_name:
+        projectName !== '' && projectName !== 'browser'
+          ? projectName
+          : undefined,
+      kcl_version: kclManager.kclVersion,
+    }
+    return submitToApi(body, token)
+  }
+
+  // Handle manual code selections and artifact selections differently
   const ranges: Models['TextToCadIterationBody_type']['source_ranges'] =
     selections.graphSelections.flatMap((selection) => {
       const artifact = selection.artifact
+
+      // For artifact selections, add context
       const prompts: Models['TextToCadIterationBody_type']['source_ranges'] = []
 
       if (artifact?.type === 'cap') {
@@ -153,8 +171,17 @@ See later source ranges for more context. about the sweep`,
           }
         }
       }
+      if (!artifact) {
+        // manually selected code is more likely to not have an artifact
+        // an example might be highlighting the variable name only in a variable declaration
+        prompts.push({
+          prompt: '',
+          range: convertAppRangeToApiRange(selection.codeRef.range, code),
+        })
+      }
       return prompts
     })
+
   const body: Models['TextToCadIterationBody_type'] = {
     original_source_code: code,
     prompt,
@@ -163,7 +190,17 @@ See later source ranges for more context. about the sweep`,
       projectName !== '' && projectName !== 'browser' ? projectName : undefined,
     kcl_version: kclManager.kclVersion,
   }
+
+  return submitToApi(body, token)
+}
+
+// Helper function to handle API submission
+async function submitToApi(
+  body: Models['TextToCadIterationBody_type'],
+  token?: string
+): Promise<Models['TextToCadIteration_type'] | Error> {
   const url = VITE_KC_API_BASE_URL + '/ml/text-to-cad/iteration'
+  console.log('submitToApi', body)
   const data: Models['TextToCadIteration_type'] | Error =
     await crossPlatformFetch(
       url,

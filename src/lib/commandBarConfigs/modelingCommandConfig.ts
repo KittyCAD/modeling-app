@@ -654,7 +654,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'chat',
     args: {
       selection: {
-        inputType: 'selection',
+        inputType: 'selectionMixed',
         selectionTypes: [
           'solid2d',
           'segment',
@@ -666,6 +666,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
+        // allowNoSelection: true,
+        selectionSource: {
+          allowSceneSelection: true,
+          allowCodeSelection: true,
+        },
         skip: true,
       },
       prompt: {
