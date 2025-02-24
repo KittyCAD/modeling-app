@@ -60,6 +60,7 @@ import { MetaSettings } from 'wasm-lib/kcl/bindings/MetaSettings'
 import { UnitAngle, UnitLength } from 'wasm-lib/kcl/bindings/ModelingCmd'
 import { UnitLen } from 'wasm-lib/kcl/bindings/UnitLen'
 import { UnitAngle as UnitAng } from 'wasm-lib/kcl/bindings/UnitAngle'
+import { ModulePath } from 'wasm-lib/kcl/bindings/ModulePath'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -296,7 +297,7 @@ export interface ExecState {
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   errors: CompilationError[]
-  filenames: String[]
+  filenames: { [x: number]: ModulePath | undefined }
 }
 
 /**
@@ -515,8 +516,9 @@ export const makeDefaultPlanes = async (
   engineCommandManager: EngineCommandManager
 ): Promise<DefaultPlanes> => {
   try {
-    const planes: DefaultPlanes =
-      await make_default_planes(engineCommandManager)
+    const planes: DefaultPlanes = await make_default_planes(
+      engineCommandManager
+    )
     return planes
   } catch (e) {
     // TODO: do something real with the error.
