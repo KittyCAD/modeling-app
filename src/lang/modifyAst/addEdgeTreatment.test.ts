@@ -116,7 +116,11 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     }
     if (!extrudeInSketchPipe) {
       const init = expectedExtrudeNode.init
-      if (init.type !== 'CallExpression' && init.type !== 'PipeExpression') {
+      if (
+        init.type !== 'CallExpression' &&
+        init.type !== 'CallExpressionKw' &&
+        init.type !== 'PipeExpression'
+      ) {
         return new Error(
           'Expected extrude expression is not a CallExpression or PipeExpression'
         )
