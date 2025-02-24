@@ -454,7 +454,9 @@ class EngineConnection extends EventTarget {
     this.tearDown = () => {}
     this.websocket.addEventListener('open', this.onWebSocketOpen)
 
+    // Is this listener ever even used???
     this.websocket?.addEventListener('message', ((event: MessageEvent) => {
+      console.log('ADAM: Received a message')
       const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
       const pending =
         this.engineCommandManager.pendingCommands[message.request_id || '']
@@ -464,6 +466,7 @@ class EngineConnection extends EventTarget {
 
       // If there's no body to the response, we can bail here.
       if (!resp || !resp.type) {
+        console.log('ADAM: Resolved an empty-body promise', message.request_id)
         return
       }
 
@@ -523,6 +526,8 @@ class EngineConnection extends EventTarget {
         )
       }
 
+      // ADAM: Is this where resolved promises go?
+      console.log('ADAM: Resolved some promise', message.request_id)
       pending.resolve([message])
       delete this.engineCommandManager.pendingCommands[message.request_id || '']
     }) as EventListener)
@@ -709,7 +714,7 @@ class EngineConnection extends EventTarget {
 
         this.onIceCandidateError = (_event: Event) => {
           const event = _event as RTCPeerConnectionIceErrorEvent
-          console.warn(
+          console.log(
             `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
           )
         }
@@ -1057,12 +1062,18 @@ class EngineConnection extends EventTarget {
             event.data
           )
 
+          console.log('ADAM: Got msg', message.request_id, 'type', message)
           if (!message.success) {
+            const pending =
+              this.engineCommandManager.pendingCommands[
+                message.request_id || ''
+              ]
             const errorsString = message?.errors
               ?.map((error) => {
                 return `  - ${error.error_code}: ${error.message}`
               })
               .join('\n')
+            pending.reject(errorsString)
             if (message.request_id) {
               const artifactThatFailed =
                 this.engineCommandManager.artifactGraph.get(message.request_id)
@@ -1105,8 +1116,23 @@ class EngineConnection extends EventTarget {
 
           let resp = message.resp
 
+          const pending =
+            this.engineCommandManager.pendingCommands[message.request_id || '']
+          console.log(
+            'ADAM: Successful response to ',
+            message.request_id,
+            pending
+          )
+          if (pending !== undefined) {
+            console.warn('ADAM: Resolving!')
+            pending.resolve([message])
+            pending.promise.then((p) => {
+              console.log('ADAM: Found a promise.then')
+            })
+          }
           // If there's no body to the response, we can bail here.
           if (!resp || !resp.type) {
+            console.log('ADAM: Bailing because empty')
             return
           }
 
@@ -1117,6 +1143,7 @@ class EngineConnection extends EventTarget {
 
             case 'modeling_session_data':
               let api_call_id = resp.data?.session?.api_call_id
+              console.log('ADAM: ')
               console.log(`API Call ID: ${api_call_id}`)
               break
 
@@ -1138,7 +1165,7 @@ class EngineConnection extends EventTarget {
 
               // No ICE servers can be valid in a local dev. env.
               if (ice_servers?.length === 0) {
-                console.warn('No ICE servers')
+                console.log('No ICE servers')
                 this.pc?.setConfiguration({
                   bundlePolicy: 'max-bundle',
                 })
@@ -1448,7 +1475,7 @@ export class EngineCommandManager extends EventTarget {
   height: number = 1337
 
   /**
-   * Export intent traxcks the intent of the export. If it is null there is no
+   * Export intent tracks the intent of the export. If it is null there is no
    * export in progress. Otherwise it is an enum value of the intent.
    * Another export cannot be started if one is already in progress.
    */
@@ -1721,7 +1748,7 @@ export class EngineCommandManager extends EventTarget {
             }
             case ExportIntent.Make: {
               if (!this.machineManager) {
-                console.warn('Some how, no manufacturing machine is selected.')
+                console.log('Some how, no manufacturing machine is selected.')
                 break
               }
 
@@ -1982,7 +2009,9 @@ export class EngineCommandManager extends EventTarget {
   }
   sendSceneCommand(
     command: EngineCommand,
-    forceWebsocket = false
+    forceWebsocket = false,
+    resolveCb?: (value: any | PromiseLike<any>) => void,
+    rejectCb?: (value: any | PromiseLike<any>) => void
   ): Promise<Models['WebSocketResponse_type'] | null> {
     if (this.engineConnection === undefined) {
       return Promise.resolve(null)
@@ -2091,7 +2120,9 @@ export class EngineCommandManager extends EventTarget {
         idToRangeMap: {},
         range: defaultSourceRange(),
       },
-      true // isSceneCommand
+      true, // isSceneCommand
+      resolveCb,
+      rejectCb
     )
       .then(([a]) => a)
       .catch((e) => {
@@ -2149,9 +2180,16 @@ export class EngineCommandManager extends EventTarget {
       range: PendingMessage['range']
       idToRangeMap: PendingMessage['idToRangeMap']
     },
-    isSceneCommand = false
+    isSceneCommand = false,
+    resolveCb?: (value: any | PromiseLike<any>) => void,
+    rejectCb?: (value: any | PromiseLike<any>) => void
   ): Promise<[Models['WebSocketResponse_type']]> {
-    const { promise, resolve, reject } = promiseFactory<any>()
+    const { promise, resolve, reject } = (() => {
+      if (resolveCb === undefined) return promiseFactory<any>()
+      if (rejectCb === undefined) return promiseFactory<any>()
+      return promiseFactoryFor(resolveCb, rejectCb)
+    })()
+    // console.log('ADAM:', resolveCb, promise)
     this.pendingCommands[id] = {
       resolve,
       reject,
@@ -2301,6 +2339,17 @@ export class EngineCommandManager extends EventTarget {
 function promiseFactory<T>() {
   let resolve: (value: T | PromiseLike<T>) => void = () => {}
   let reject: (value: T | PromiseLike<T>) => void = () => {}
+  const promise = new Promise<T>((_resolve, _reject) => {
+    resolve = _resolve
+    reject = _reject
+  })
+  return { promise, resolve, reject }
+}
+
+function promiseFactoryFor<T>(
+  resolve: (value: T | PromiseLike<T>) => void,
+  reject: (value: T | PromiseLike<T>) => void
+) {
   const promise = new Promise<T>((_resolve, _reject) => {
     resolve = _resolve
     reject = _reject

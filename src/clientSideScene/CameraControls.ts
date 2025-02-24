@@ -1335,21 +1335,34 @@ export async function letEngineAnimateAndSyncCamAfter(
   engineCommandManager: EngineCommandManager,
   entityId: string
 ) {
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'enable_sketch_mode',
-      adjust_camera: true,
-      animated: !isReducedMotion(),
-      ortho: true,
-      entity_id: entityId,
+  const enableSketchCmdId = uuidv4()
+  console.warn('ADAM: enableSketchMode promise has ID', enableSketchCmdId)
+  await engineCommandManager.sendSceneCommand(
+    {
+      type: 'modeling_cmd_req',
+      cmd_id: enableSketchCmdId,
+      cmd: {
+        type: 'enable_sketch_mode',
+        adjust_camera: true,
+        animated: !isReducedMotion(),
+        ortho: true,
+        entity_id: entityId,
+      },
     },
-  })
-  // wait 600ms (animation takes 500, + 100 for safety)
-  await new Promise((resolve) =>
-    setTimeout(resolve, isReducedMotion() ? 100 : 600)
+    false,
+    // Callback triggers when the enable_sketch_mode finishes successfully.
+    (_whatever) => {
+      console.error('ADAM: Hello from the resolvedCb')
+      window.alert("G'day ADAM and Frank, enable_sketch_mode is done")
+    },
+    // Callback triggers when the enable_sketch_mode fails.
+    (_whatever) => {
+      console.error('ADAM: Hello from the rejectCb')
+      window.alert("G'day ADAM and Frank, enable_sketch_mode is FUCKING TOAST")
+    }
   )
+  // TODO: Wait for one of the two callbacks above to finish.
+
   await engineCommandManager.sendSceneCommand({
     // CameraControls subscribes to default_camera_get_settings response events
     // firing this at connection ensure the camera's are synced initially
