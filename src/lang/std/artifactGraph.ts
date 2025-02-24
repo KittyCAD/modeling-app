@@ -481,6 +481,13 @@ export function getSweepArtifactFromSelection(
     )
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
+  } else if (selection.artifact?.type === 'cap' || selection.artifact?.type === 'wall') {
+    const _artifact = getArtifactOfTypes(
+      { key: selection.artifact.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(_artifact)) return _artifact
+    sweepArtifact = _artifact
   }
   if (!sweepArtifact) return new Error('No sweep artifact found')
 
