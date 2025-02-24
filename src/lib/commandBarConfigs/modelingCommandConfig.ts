@@ -3,7 +3,11 @@ import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
+import {
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_COLOR,
+} from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
@@ -27,6 +31,8 @@ export const EXTRUSION_RESULTS = [
   'subtract',
   'intersect',
 ] as const
+
+export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
 export type ModelingCommandSchema = {
   'Enter sketch': {}
@@ -107,6 +113,10 @@ export type ModelingCommandSchema = {
     selection: Selections
   }
   'Delete selection': {}
+  Appearance: {
+    nodeToEdit?: PathToNode
+    color: string
+  }
 }
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
@@ -662,6 +672,42 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'text',
         required: true,
       },
+    },
+  },
+  Appearance: {
+    description:
+      'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+    icon: 'extrude',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
+      color: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'Red', value: '#FF0000' },
+          { name: 'Green', value: '#00FF00' },
+          { name: 'Blue', value: '#0000FF' },
+          { name: 'Turquoise', value: '#00FFFF' },
+          { name: 'Purple', value: '#FF00FF' },
+          { name: 'Yellow', value: '#FFFF00' },
+          { name: 'Black', value: '#000000' },
+          { name: 'Dark Grey', value: '#080808' },
+          { name: 'Light Grey', value: '#D3D3D3' },
+          { name: 'White', value: '#FFFFFF' },
+          {
+            name: 'Default (clear appearance)',
+            value: COMMAND_APPEARANCE_COLOR_DEFAULT,
+          },
+        ],
+      },
+      // Add more fields
     },
   },
 }
