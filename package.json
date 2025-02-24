@@ -40,7 +40,7 @@
     "codemirror": "^6.0.1",
     "decamelize": "^6.0.0",
     "diff": "^7.0.0",
-    "electron-updater": "^6.5.0",
+    "electron-updater": "^6.6.0",
     "fuse.js": "^7.0.0",
     "html2canvas-pro": "^1.5.8",
     "isomorphic-fetch": "^3.0.0",
