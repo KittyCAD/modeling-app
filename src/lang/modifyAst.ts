@@ -446,17 +446,23 @@ export function loftSketches(
 export function addSweep(
   node: Node<Program>,
   profileDeclarator: VariableDeclarator,
-  pathDeclarator: VariableDeclarator
+  pathDeclarator: VariableDeclarator,
+  sectional: boolean,
+  variableName: string | undefined
 ): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
 } {
   const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
   const sweep = createCallExpressionStdLibKw(
     'sweep',
     createIdentifier(profileDeclarator.id.name),
-    [createLabeledArg('path', createIdentifier(pathDeclarator.id.name))]
+    [
+      createLabeledArg('path', createIdentifier(pathDeclarator.id.name)),
+      createLabeledArg('sectional', createLiteral(sectional)),
+    ]
   )
   const declaration = createVariableDeclaration(name, sweep)
   modifiedAst.body.push(declaration)

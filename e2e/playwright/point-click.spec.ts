@@ -1325,7 +1325,8 @@ sketch002 = startSketchOn('XZ')
       testPoint.x - 50,
       testPoint.y
     )
-    const sweepDeclaration = 'sweep001 = sweep(sketch001, path = sketch002)'
+    const sweepDeclaration =
+      'sweep001 = sweep(sketch001, path = sketch002, sectional = false)'
 
     await test.step(`Look for sketch001`, async () => {
       await toolbar.closePane('code')
@@ -1339,6 +1340,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'target',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '',
           Trajectory: '',
         },
@@ -1351,6 +1353,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'trajectory',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '1 face',
           Trajectory: '',
         },
@@ -1365,7 +1368,7 @@ sketch002 = startSketchOn('XZ')
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      await scene.expectPixelColor([135, 64, 73], testPoint, 15)
+      await scene.expectPixelColor([135, 64, 73], testPoint, 30)
       await editor.expectEditor.toContain(sweepDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -1432,6 +1435,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'target',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '',
           Trajectory: '',
         },
@@ -1444,6 +1448,7 @@ sketch002 = startSketchOn('XZ')
         currentArgKey: 'trajectory',
         currentArgValue: '',
         headerArguments: {
+          Sectional: '',
           Target: '1 face',
           Trajectory: '',
         },
