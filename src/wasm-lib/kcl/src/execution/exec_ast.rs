@@ -1,14 +1,13 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
-use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
-        cad_op::{OpArg, Operation},
-        kcl_value::NumericType,
+        cad_op::{OpArg, OpKclValue, Operation},
+        kcl_value::{FunctionSource, NumericType},
         memory,
         state::ModuleState,
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, TagEngineInfo, TagIdentifier,
@@ -25,6 +24,7 @@ use crate::{
         args::{Arg, KwArgs},
         FunctionKind,
     },
+    CompilationError,
 };
 
 enum StatementKind<'a> {
@@ -46,13 +46,13 @@ impl ExecutorContext {
     async fn handle_annotations(
         &self,
         annotations: impl Iterator<Item = &Node<Annotation>>,
-        scope: annotations::AnnotationScope,
+        body_type: BodyType,
         exec_state: &mut ExecState,
     ) -> Result<bool, KclError> {
         let mut no_prelude = false;
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
-                if scope == annotations::AnnotationScope::Module {
+                if matches!(body_type, BodyType::Root(_)) {
                     let old_units = exec_state.length_unit();
                     exec_state.mod_local.settings.update_from_annotation(annotation)?;
                     let new_units = exec_state.length_unit();
@@ -62,23 +62,26 @@ impl ExecutorContext {
                             .await?;
                     }
                 } else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: "Settings can only be modified at the top level scope of a file".to_owned(),
-                        source_ranges: vec![annotation.as_source_range()],
-                    }));
+                    exec_state.err(CompilationError::err(
+                        annotation.as_source_range(),
+                        "Settings can only be modified at the top level scope of a file",
+                    ));
                 }
-            }
-            if annotation.name() == Some(annotations::NO_PRELUDE) {
-                if scope == annotations::AnnotationScope::Module {
+            } else if annotation.name() == Some(annotations::NO_PRELUDE) {
+                if matches!(body_type, BodyType::Root(_)) {
                     no_prelude = true;
                 } else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: "Prelude can only be skipped at the top level scope of a file".to_owned(),
-                        source_ranges: vec![annotation.as_source_range()],
-                    }));
+                    exec_state.err(CompilationError::err(
+                        annotation.as_source_range(),
+                        "Prelude can only be skipped at the top level scope of a file",
+                    ));
                 }
+            } else {
+                exec_state.warn(CompilationError::err(
+                    annotation.as_source_range(),
+                    "Unknown annotation",
+                ));
             }
-            // TODO warn on unknown annotations
         }
         Ok(no_prelude)
     }
@@ -91,38 +94,34 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        if let BodyType::Root(init_mem) = body_type {
-            let no_prelude = self
-                .handle_annotations(
-                    program.inner_attrs.iter(),
-                    annotations::AnnotationScope::Module,
+        let no_prelude = self
+            .handle_annotations(program.inner_attrs.iter(), body_type, exec_state)
+            .await?;
+
+        if !no_prelude && body_type == BodyType::Root(true) {
+            // Import std::prelude
+            let prelude_range = SourceRange::from(program).start_as_range();
+            let id = self
+                .open_module(
+                    &ImportPath::Std {
+                        path: vec!["std".to_owned(), "prelude".to_owned()],
+                    },
+                    &[],
                     exec_state,
+                    prelude_range,
                 )
                 .await?;
-
-            if !no_prelude && init_mem {
-                // Import std::prelude
-                let prelude_range = SourceRange::from(program).start_as_range();
-                let id = self
-                    .open_module(
-                        &ImportPath::Std {
-                            path: vec!["std".to_owned(), "prelude".to_owned()],
-                        },
-                        &[],
-                        exec_state,
-                        prelude_range,
-                    )
-                    .await?;
-                let (module_memory, module_exports) =
-                    self.exec_module_for_items(id, exec_state, prelude_range).await.unwrap();
-                for name in module_exports {
-                    let item = exec_state
-                        .memory()
-                        .get_from(&name, module_memory, prelude_range)
-                        .cloned()
-                        .unwrap();
-                    exec_state.mut_memory().add(name, item, prelude_range)?;
-                }
+            let (module_memory, module_exports) = self
+                .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, prelude_range)
+                .await
+                .unwrap();
+            for name in module_exports {
+                let item = exec_state
+                    .memory()
+                    .get_from(&name, module_memory, prelude_range)
+                    .cloned()
+                    .unwrap();
+                exec_state.mut_memory().add(name, item, prelude_range)?;
             }
         }
 
@@ -512,11 +511,10 @@ impl ExecutorContext {
 
                 if rust_impl {
                     if let Some(std_path) = &exec_state.mod_local.settings.std_path {
+                        let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
-                            expression: function_expression.clone(),
+                            value: FunctionSource::Std { func, props },
                             meta: vec![metadata.to_owned()],
-                            func: Some(crate::std::std_fn(std_path, statement_kind.expect_name())),
-                            memory: None,
                         }
                     } else {
                         return Err(KclError::Semantic(KclErrorDetails {
@@ -526,14 +524,15 @@ impl ExecutorContext {
                         }));
                     }
                 } else {
-                    // Cloning memory here is crucial for semantics so that we close
+                    // Snapshotting memory here is crucial for semantics so that we close
                     // over variables.  Variables defined lexically later shouldn't
                     // be available to the function body.
                     KclValue::Function {
-                        expression: function_expression.clone(),
+                        value: FunctionSource::User {
+                            ast: function_expression.clone(),
+                            memory: exec_state.mut_memory().snapshot(),
+                        },
                         meta: vec![metadata.to_owned()],
-                        func: None,
-                        memory: Some(exec_state.mut_memory().snapshot()),
                     }
                 }
             }
@@ -988,16 +987,24 @@ impl Node<CallExpressionKw> {
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
+                if func.deprecated() {
+                    exec_state.warn(CompilationError::err(
+                        self.callee.as_source_range(),
+                        format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
+                    ));
+                }
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = args
                         .kw_args
                         .labeled
                         .iter()
-                        .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .unlabeled_kw_arg_unconverted()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                         is_error: false,
@@ -1038,7 +1045,7 @@ impl Node<CallExpressionKw> {
                     .kw_args
                     .labeled
                     .iter()
-                    .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                     .collect();
                 exec_state
                     .mod_local
@@ -1046,7 +1053,11 @@ impl Node<CallExpressionKw> {
                     .push(Operation::UserDefinedFunctionCall {
                         name: Some(fn_name.clone()),
                         function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                     });
@@ -1106,12 +1117,23 @@ impl Node<CallExpression> {
 
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
+                if func.deprecated() {
+                    exec_state.warn(CompilationError::err(
+                        self.callee.as_source_range(),
+                        format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
+                    ));
+                }
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)
                         .iter()
                         .zip(&fn_args)
-                        .map(|(k, v)| (k.name.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| {
+                            (
+                                k.name.clone(),
+                                OpArg::new(OpKclValue::from(&arg.value), arg.source_range),
+                            )
+                        })
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
@@ -1188,7 +1210,7 @@ impl Node<CallExpression> {
                         source_ranges = meta.iter().map(|m| m.source_range).collect();
                     };
                     KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of user-defined function {} is undefined", fn_name),
+                        message: format!("Result of function {} is undefined", fn_name),
                         source_ranges,
                     })
                 })?;
@@ -1763,45 +1785,39 @@ pub(crate) async fn call_user_defined_function_kw(
     result
 }
 
-/// A function being used as a parameter into a stdlib function.  This is a
-/// closure, plus everything needed to execute it.
-pub struct FunctionParam<'a> {
-    pub inner: Option<&'a crate::std::StdFn>,
-    pub memory: Option<EnvironmentRef>,
-    pub fn_expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-    pub ctx: ExecutorContext,
-}
-
-impl FunctionParam<'_> {
+impl FunctionSource {
     pub async fn call(
         &self,
         exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
         args: Vec<Arg>,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
-        if let Some(inner) = self.inner {
-            let args = crate::std::Args::new(
-                args,
-                source_range,
-                self.ctx.clone(),
-                exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
-            );
+        match self {
+            FunctionSource::Std { func, props } => {
+                if props.deprecated {
+                    exec_state.warn(CompilationError::err(
+                        source_range,
+                        format!(
+                            "`{}` is deprecated, see the docs for a recommended replacement",
+                            props.name
+                        ),
+                    ));
+                }
+                let args = crate::std::Args::new(
+                    args,
+                    source_range,
+                    ctx.clone(),
+                    exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+                );
 
-            inner(exec_state, args).await.map(Some)
-        } else {
-            call_user_defined_function(args, self.memory.unwrap(), self.fn_expr.as_ref(), exec_state, &self.ctx).await
+                func(exec_state, args).await.map(Some)
+            }
+            FunctionSource::User { ast, memory } => {
+                call_user_defined_function(args, *memory, ast, exec_state, ctx).await
+            }
+            FunctionSource::None => unreachable!(),
         }
-    }
-}
-
-impl JsonSchema for FunctionParam<'_> {
-    fn schema_name() -> String {
-        "FunctionParam".to_owned()
-    }
-
-    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        // TODO: Actually generate a reasonable schema.
-        gen.subschema_for::<()>()
     }
 }
 

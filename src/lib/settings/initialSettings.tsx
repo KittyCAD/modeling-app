@@ -554,3 +554,4 @@ export function createSettings() {
 }
 
 export const settings = createSettings()
+export type SettingsType = ReturnType<typeof createSettings>

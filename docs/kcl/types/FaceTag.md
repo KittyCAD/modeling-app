@@ -11,7 +11,6 @@ A tag for a face.
 
 **This schema accepts any of the following:**
 
-A tag for a face.
 
 [`StartOrEnd`](/docs/kcl/types/StartOrEnd)
 

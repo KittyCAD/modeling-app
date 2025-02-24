@@ -107,9 +107,7 @@ export const processMemory = (variables: VariableMap) => {
       }
       //@ts-ignore
     } else if (val.type === 'Function') {
-      processedMemory[key] = `__function(${(val as any)?.expression?.params
-        ?.map?.(({ identifier }: any) => identifier?.name || '')
-        .join(', ')})__`
+      processedMemory[key] = `__function__`
     }
   }
   return processedMemory

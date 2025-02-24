@@ -837,7 +837,7 @@ mod env {
 
 #[cfg(test)]
 mod test {
-    use crate::execution::kcl_value::NumericType;
+    use crate::execution::kcl_value::{FunctionSource, NumericType};
 
     use super::*;
 
@@ -1207,9 +1207,10 @@ mod test {
         mem.add(
             "f".to_owned(),
             KclValue::Function {
-                func: None,
-                expression: crate::parsing::ast::types::FunctionExpression::dummy(),
-                memory: Some(sn2),
+                value: FunctionSource::User {
+                    ast: crate::parsing::ast::types::FunctionExpression::dummy(),
+                    memory: sn2,
+                },
                 meta: Vec::new(),
             },
             sr(),
@@ -1220,7 +1221,10 @@ mod test {
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 2);
         match mem.get("f", SourceRange::default()).unwrap() {
-            KclValue::Function { memory, .. } if memory.unwrap() == sn1 => {}
+            KclValue::Function {
+                value: FunctionSource::User { memory, .. },
+                ..
+            } if memory == &sn1 => {}
             v => panic!("{v:#?}"),
         }
         assert_eq!(mem.environments.len(), 1);

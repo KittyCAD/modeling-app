@@ -132,31 +132,6 @@ description: Variables in memory after executing import_glob.kcl
   },
   "cos": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [],
-        "end": 1477,
-        "moduleId": 2,
-        "start": 1477
-      },
-      "end": 1478,
-      "moduleId": 2,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 1450,
-            "moduleId": 2,
-            "name": "num",
-            "start": 1447,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 1446,
-      "type": "FunctionExpression"
-    },
-    "memory": null,
     "__meta": [
       {
         "sourceRange": [
@@ -169,43 +144,6 @@ description: Variables in memory after executing import_glob.kcl
   },
   "foo": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 47,
-              "moduleId": 3,
-              "raw": "42",
-              "start": 45,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 42.0,
-                "suffix": "None"
-              }
-            },
-            "end": 47,
-            "moduleId": 3,
-            "start": 38,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 49,
-        "moduleId": 3,
-        "start": 34
-      },
-      "end": 49,
-      "moduleId": 3,
-      "params": [],
-      "start": 31,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      3,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
@@ -218,31 +156,6 @@ description: Variables in memory after executing import_glob.kcl
   },
   "sin": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [],
-        "end": 1875,
-        "moduleId": 2,
-        "start": 1875
-      },
-      "end": 1876,
-      "moduleId": 2,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 1848,
-            "moduleId": 2,
-            "name": "num",
-            "start": 1845,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 1844,
-      "type": "FunctionExpression"
-    },
-    "memory": null,
     "__meta": [
       {
         "sourceRange": [
@@ -255,31 +168,6 @@ description: Variables in memory after executing import_glob.kcl
   },
   "tan": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [],
-        "end": 2265,
-        "moduleId": 2,
-        "start": 2265
-      },
-      "end": 2266,
-      "moduleId": 2,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 2238,
-            "moduleId": 2,
-            "name": "num",
-            "start": 2235,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 2234,
-      "type": "FunctionExpression"
-    },
-    "memory": null,
     "__meta": [
       {
         "sourceRange": [
