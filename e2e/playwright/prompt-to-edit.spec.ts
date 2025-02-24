@@ -254,4 +254,91 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       await expect(successToast).not.toBeVisible()
     })
   })
+
+  test('multiple body selections', async ({
+    context,
+    homePage,
+    cmdBar,
+    editor,
+    page,
+    scene,
+  }) => {
+    const body1CapCoords = { x: 571, y: 351 }
+    const body2WallCoords = { x: 620, y: 152 }
+    const [clickBody1Cap] = scene.makeMouseHelpers(
+      body1CapCoords.x,
+      body1CapCoords.y
+    )
+    const [clickBody2Cap] = scene.makeMouseHelpers(
+      body2WallCoords.x,
+      body2WallCoords.y
+    )
+    const grey: [number, number, number] = [132, 132, 132]
+
+    await context.addInitScript((file) => {
+      localStorage.setItem('persistCode', file)
+    }, file)
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
+    const successToast = page.getByText('Prompt to edit successful')
+    const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
+
+    await test.step('select multiple bodies and fire prompt', async () => {
+      // Initial color check
+      await scene.expectPixelColor(grey, body1CapCoords, 15)
+
+      // Open command bar first (without selection)
+      await cmdBar.openCmdBar('promptToEdit')
+
+      // Select first body
+      await page.waitForTimeout(100)
+      await clickBody1Cap()
+
+      // Hold shift and select second body
+      await editor.expectState({
+        highlightedCode: '',
+        activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
+        diagnostics: [],
+      })
+      await page.keyboard.down('Shift')
+      await page.waitForTimeout(100)
+      await clickBody2Cap()
+      await editor.expectState({
+        highlightedCode:
+          'line(end=[121.13,56.63],tag=$seg02)extrude(profile001,length=200)',
+        activeLines: [
+          '|>line(end=[121.13,56.63],tag=$seg02)',
+          '|>startProfileAt([-73.64,-42.89],%)',
+        ],
+        diagnostics: [],
+      })
+      await page.keyboard.up('Shift')
+      await page.waitForTimeout(100)
+      await cmdBar.progressCmdBar()
+
+      // Enter prompt and submit
+      await page
+        .getByTestId('cmd-bar-arg-value')
+        .fill('make these neon green please, use #39FF14')
+      await page.waitForTimeout(100)
+      await cmdBar.progressCmdBar()
+
+      // Wait for API response
+      await expect(submittingToast).toBeVisible()
+      await expect(submittingToast).not.toBeVisible({
+        timeout: 2 * 60_000,
+      })
+      await expect(successToast).toBeVisible()
+    })
+
+    await test.step('verify code changed', async () => {
+      await editor.expectEditor.toContain('appearance(')
+
+      // Accept changes
+      await acceptBtn.click()
+      await expect(successToast).not.toBeVisible()
+    })
+  })
 })
