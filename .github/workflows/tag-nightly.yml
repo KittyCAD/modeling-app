@@ -1,11 +1,13 @@
 name: tag-nightly
 
+permissions:
+  contents: write
 on:
   schedule:
     - cron: '0 4 * * *'
   # Daily at 04:00 AM UTC
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
-
+  
 jobs:
   tag-nightly:
     runs-on: ubuntu-22.04
