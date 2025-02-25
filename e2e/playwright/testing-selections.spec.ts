@@ -158,7 +158,9 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
 
       // check the same selection again by putting cursor in code first then selecting axis
       await test.step(`Same selection but code selection then axis`, async () => {
-        await page.getByText(`  |> xLine(length = ${commonPoints.num2 * -1})`).click()
+        await page
+          .getByText(`  |> xLine(length = ${commonPoints.num2 * -1})`)
+          .click()
         await page.keyboard.down('Shift')
         await constrainButton.click()
         await expect(absXButton).toBeDisabled()
@@ -182,7 +184,9 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
         process.platform === 'linux' ? 'Control' : 'Meta'
       )
       await page.waitForTimeout(100)
-      await page.getByText(`  |> xLine(length = ${commonPoints.num2 * -1})`).click()
+      await page
+        .getByText(`  |> xLine(length = ${commonPoints.num2 * -1})`)
+        .click()
 
       await expect(page.locator('.cm-cursor')).toHaveCount(2)
       await page.waitForTimeout(500)
