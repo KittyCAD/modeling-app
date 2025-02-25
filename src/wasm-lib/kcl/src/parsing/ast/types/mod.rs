@@ -3585,7 +3585,7 @@ const cylinder = startSketchOn('-XZ')
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        let value = program.get_non_code_meta_for_position(86);
+        let value = program.get_non_code_meta_for_position(92);
 
         assert!(value.is_some());
     }
