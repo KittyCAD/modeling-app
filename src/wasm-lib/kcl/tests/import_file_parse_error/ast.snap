@@ -1,0 +1,39 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing import_file_parse_error.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "end": 38,
+        "path": {
+          "type": "Kcl",
+          "filename": "parse-failure.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 13,
+              "name": {
+                "end": 13,
+                "name": "hotdog",
+                "start": 7,
+                "type": "Identifier"
+              },
+              "start": 7,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      }
+    ],
+    "end": 39,
+    "start": 0
+  }
+}

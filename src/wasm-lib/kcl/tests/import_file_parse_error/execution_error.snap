@@ -1,0 +1,11 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing import_file_parse_error.kcl
+---
+KCL Syntax error
+
+  × syntax: Unexpected token: }
+   ╭────
+ 1 │ import hotdog from "parse-failure.kcl"
+   ·                                 ─
+   ╰────

@@ -1,0 +1,39 @@
+name: tag-nightly
+
+permissions:
+  contents: write
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  # Daily at 04:00 AM UTC
+  # Will checkout the last commit from the default branch (main as of 2023-10-04)
+  
+jobs:
+  tag-nightly:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - run: yarn install
+
+      - name: Push tag
+        run: |
+          VERSION_NO_V=$(date +'%-y.%-m.%-d')
+          TAG="nightly-v$VERSION_NO_V"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git tag $TAG
+          git push origin tag $TAG

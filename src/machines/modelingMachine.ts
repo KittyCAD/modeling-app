@@ -1801,7 +1801,31 @@ export const modelingMachine = setup({
           radius,
           axis,
           length,
+          nodeToEdit,
         } = input
+
+        let opInsertIndex: number | undefined = undefined
+        let opVariableName: string | undefined = undefined
+
+        // If this is an edit flow, first we're going to remove the old one
+        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+          // Extract the old name from the node to edit
+          const oldNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+          if (err(oldNode)) {
+            console.error('Error extracting plane name')
+          } else {
+            opVariableName = oldNode.node.declaration.id.name
+          }
+
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0], 1)
+          ast.body = newBody
+          opInsertIndex = nodeToEdit[1][0]
+        }
 
         for (const variable of [revolutions, angleStart, radius, length]) {
           // Insert the variable if it exists
@@ -1833,6 +1857,8 @@ export const modelingMachine = setup({
           radius: valueOrVariable(radius),
           axis,
           length: valueOrVariable(length),
+          insertIndex: opInsertIndex,
+          variableName: opVariableName,
         })
 
         const updateAstResult = await kclManager.updateAst(

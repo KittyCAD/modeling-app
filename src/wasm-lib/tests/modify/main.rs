@@ -11,8 +11,8 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, Modu
     let program = Program::parse_no_errs(code)?;
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
     let mut exec_state = ExecState::new(&ctx.settings);
-    ctx.run(&program, &mut exec_state).await?;
-    let outcome = exec_state.to_wasm_outcome();
+    let result = ctx.run(&program, &mut exec_state).await?;
+    let outcome = exec_state.to_wasm_outcome(result.0);
 
     // We need to get the sketch ID.
     let KclValue::Sketch { value: sketch } = outcome.variables.get(name).unwrap() else {
