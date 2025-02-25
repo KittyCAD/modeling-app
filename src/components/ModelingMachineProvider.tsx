@@ -110,6 +110,7 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useSettings } from 'machines/appMachine'
+import { isDesktop } from 'lib/isDesktop'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -1717,8 +1718,12 @@ export const ModelingMachineProvider = ({
     previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
   }, [allowOrbitInSketchMode])
 
-  // Allow using the delete key to delete solids
-  useHotkeys(['backspace', 'delete', 'del'], () => {
+  // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
+  const deleteKeys =
+    isDesktop() && window.electron.os.isMac
+      ? ['backspace', 'delete', 'del']
+      : ['delete', 'del']
+  useHotkeys(deleteKeys, () => {
     modelingSend({ type: 'Delete selection' })
   })
 
