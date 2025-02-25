@@ -23,9 +23,9 @@ description: Operations executed exhaust-manifold.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sin",
     "functionSourceRange": [
-      1844,
-      1876,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -42,9 +42,9 @@ description: Operations executed exhaust-manifold.kcl
     "type": "UserDefinedFunctionCall",
     "name": "cos",
     "functionSourceRange": [
-      1446,
-      1478,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -271,7 +271,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -367,9 +367,9 @@ description: Operations executed exhaust-manifold.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sin",
     "functionSourceRange": [
-      1844,
-      1876,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -386,9 +386,9 @@ description: Operations executed exhaust-manifold.kcl
     "type": "UserDefinedFunctionCall",
     "name": "cos",
     "functionSourceRange": [
-      1446,
-      1478,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -615,7 +615,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -711,9 +711,9 @@ description: Operations executed exhaust-manifold.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sin",
     "functionSourceRange": [
-      1844,
-      1876,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -730,9 +730,9 @@ description: Operations executed exhaust-manifold.kcl
     "type": "UserDefinedFunctionCall",
     "name": "cos",
     "functionSourceRange": [
-      1446,
-      1478,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -959,7 +959,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1055,9 +1055,9 @@ description: Operations executed exhaust-manifold.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sin",
     "functionSourceRange": [
-      1844,
-      1876,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -1074,9 +1074,9 @@ description: Operations executed exhaust-manifold.kcl
     "type": "UserDefinedFunctionCall",
     "name": "cos",
     "functionSourceRange": [
-      1446,
-      1478,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -1303,7 +1303,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1404,7 +1404,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1442,7 +1442,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1480,7 +1480,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1518,7 +1518,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1556,7 +1556,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1594,7 +1594,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1632,7 +1632,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1670,7 +1670,7 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

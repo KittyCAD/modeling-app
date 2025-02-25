@@ -28,7 +28,7 @@ description: Operations executed pipe-with-bend.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

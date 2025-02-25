@@ -44,7 +44,7 @@ description: Operations executed washer.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

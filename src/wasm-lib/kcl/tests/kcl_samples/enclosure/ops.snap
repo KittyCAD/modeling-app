@@ -419,7 +419,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -725,7 +725,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1031,7 +1031,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1337,7 +1337,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1445,7 +1445,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1483,7 +1483,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1521,7 +1521,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1559,7 +1559,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1743,7 +1743,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1781,7 +1781,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1819,7 +1819,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1857,7 +1857,7 @@ description: Operations executed enclosure.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

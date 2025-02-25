@@ -44,7 +44,7 @@ description: Operations executed hex-nut.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

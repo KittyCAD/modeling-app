@@ -538,7 +538,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -992,7 +992,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

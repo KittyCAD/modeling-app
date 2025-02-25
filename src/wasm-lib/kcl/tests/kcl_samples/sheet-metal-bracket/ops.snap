@@ -575,7 +575,7 @@ description: Operations executed sheet-metal-bracket.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -613,7 +613,7 @@ description: Operations executed sheet-metal-bracket.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -782,7 +782,7 @@ description: Operations executed sheet-metal-bracket.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -820,7 +820,7 @@ description: Operations executed sheet-metal-bracket.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

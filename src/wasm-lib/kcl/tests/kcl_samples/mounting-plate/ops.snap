@@ -47,7 +47,7 @@ description: Operations executed mounting-plate.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -85,7 +85,7 @@ description: Operations executed mounting-plate.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -123,7 +123,7 @@ description: Operations executed mounting-plate.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -161,7 +161,7 @@ description: Operations executed mounting-plate.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -199,7 +199,7 @@ description: Operations executed mounting-plate.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

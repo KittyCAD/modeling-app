@@ -204,7 +204,7 @@ description: Operations executed ball-bearing.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -552,9 +552,9 @@ description: Operations executed ball-bearing.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sin",
     "functionSourceRange": [
-      1844,
-      1876,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -1234,7 +1234,7 @@ description: Operations executed ball-bearing.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

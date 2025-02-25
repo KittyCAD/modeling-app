@@ -44,7 +44,7 @@ description: Operations executed 80-20-rail.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

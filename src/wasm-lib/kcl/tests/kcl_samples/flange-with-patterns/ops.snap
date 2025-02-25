@@ -51,7 +51,7 @@ description: Operations executed flange-with-patterns.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketches",
           "value": [
@@ -100,7 +100,7 @@ description: Operations executed flange-with-patterns.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -387,7 +387,7 @@ description: Operations executed flange-with-patterns.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -492,7 +492,7 @@ description: Operations executed flange-with-patterns.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {

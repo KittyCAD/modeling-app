@@ -115,7 +115,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketches",
           "value": [
@@ -173,7 +173,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -278,7 +278,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketches",
           "value": [
@@ -336,7 +336,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -639,7 +639,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -919,9 +919,9 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "cos",
     "functionSourceRange": [
-      1446,
-      1478,
-      2
+      0,
+      0,
+      0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
@@ -2086,7 +2086,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -2569,7 +2569,7 @@ description: Operations executed pipe-flange-assembly.kcl
   },
   {
     "labeledArgs": {
-      "hole_sketch": {
+      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
