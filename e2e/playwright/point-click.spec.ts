@@ -2729,9 +2729,13 @@ segAng(rectangleSegmentA002),
       await page.getByText(codeToSelecton).click()
       await toolbar.revolveButton.click()
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(100)
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(100)
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(100)
       await cmdBar.progressCmdBar()
+      await scene.waitForExecutionDone()
 
       const newCodeToFind = `revolve001 = revolve({ angle = 360, axis = 'X' }, sketch002)`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
@@ -2833,6 +2837,11 @@ radius = 8.69
       const lineCodeToSelection = `|> xLine(2.6, %)`
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(100)
+      await cmdBar.progressCmdBar()
+      await page.waitForTimeout(100)
+      await cmdBar.progressCmdBar()
+      await scene.waitForExecutionDone()
 
       const newCodeToFind = `revolve001 = revolve({ angle = 360, axis = seg01 }, sketch003)`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
