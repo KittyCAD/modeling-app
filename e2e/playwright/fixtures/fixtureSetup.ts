@@ -103,7 +103,7 @@ export class AuthenticatedTronApp {
     // The timeline is still broken but failure screenshots work again.
     this.context = context
     // TODO: try to get this to work again for screenshots, but it messed with test ends when enabled
-    Object.assign(this.browserContext, this.context)
+    // Object.assign(this.browserContext, this.context)
 
     this.electronApp = electronApp
     this.dir = dir
