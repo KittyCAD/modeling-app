@@ -223,7 +223,7 @@ impl Args {
         exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
     ) -> Result<&'e crate::execution::TagEngineInfo, KclError> {
-        if let KclValue::TagIdentifier(t) = exec_state.memory().get_from_call_stack(&tag.value, self.source_range)? {
+        if let KclValue::TagIdentifier(t) = exec_state.stack().get_from_call_stack(&tag.value, self.source_range)? {
             Ok(t.info.as_ref().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Tag `{}` does not have engine info", tag.value),
@@ -289,7 +289,7 @@ impl Args {
                 // Find all the solids on the same shared sketch.
                 ids.extend(
                     exec_state
-                        .memory()
+                        .stack()
                         .walk_call_stack()
                         .filter(|v| matches!(v, KclValue::Solid { value } if value.sketch.id == sketch_id))
                         .flat_map(|v| match v {

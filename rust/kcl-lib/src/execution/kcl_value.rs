@@ -631,7 +631,7 @@ impl KclValue {
                         ),
                     ));
                 }
-                exec_state.mut_memory().push_new_env_for_rust_call();
+                exec_state.mut_stack().push_new_env_for_rust_call();
                 let args = crate::std::Args::new(
                     args,
                     source_range,
@@ -639,7 +639,7 @@ impl KclValue {
                     exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
                 );
                 let result = func(exec_state, args).await.map(Some);
-                exec_state.mut_memory().pop_env();
+                exec_state.mut_stack().pop_env();
                 result
             }
             KclValue::Function {
