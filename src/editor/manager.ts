@@ -374,6 +374,7 @@ export default class EditorManager {
       selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
       ast: kclManager.ast,
+      artifactGraph: engineCommandManager.artifactGraph,
     })
 
     if (!eventInfo) {

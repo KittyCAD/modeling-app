@@ -94,6 +94,8 @@ test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
     await bakeInRetries(async () => {
       await page.mouse.move(700, 200)
       await page.mouse.down({ button: 'right' })
+      await page.waitForTimeout(100)
+
       const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
       expect(appLogoBBox).not.toBeNull()
       if (!appLogoBBox) throw new Error('app logo not found')
@@ -101,7 +103,9 @@ test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
         appLogoBBox.x + appLogoBBox.width / 2,
         appLogoBBox.y + appLogoBBox.height / 2
       )
+      await page.waitForTimeout(100)
       await page.mouse.move(600, 303)
+      await page.waitForTimeout(100)
       await page.mouse.up({ button: 'right' })
     }, [4, -10.5, -120])
 
