@@ -309,7 +309,7 @@ const FileTreeItem = ({
               {hasRuntimeError && (
                 <p
                   className={
-                    'absolute m-0 p-0 bottom-3 left-6 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-red-600 rounded-full border border-red-300 dark:border-red-800 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+                    'absolute m-0 p-0 bottom-3 left-6 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
                   }
                   title={`Click to view notifications`}
                 >
