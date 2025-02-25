@@ -657,7 +657,7 @@ pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> 
 ///     angle = angleToMatchLengthY(seg01, 15, %),
 ///     length = 5,
 ///     }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///  
 /// extrusion = extrude(sketch001, length = 5)

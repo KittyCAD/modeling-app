@@ -51,8 +51,8 @@ objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
 part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> yLineTo(1, %)
-  |> xLine(3.84, %) // selection-range-7ish-before-this
+  |> yLine(endAbsolute = 1)
+  |> xLine(length = 3.84) // selection-range-7ish-before-this
 
 variableBelowShouldNotBeIncluded = 3
 `
@@ -690,11 +690,11 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
   it('should parse the code', () => {
     const openSketch = `sketch001 = startSketchOn('XZ')
 |> startProfileAt([0.02, 0.22], %)
-|> xLine(0.39, %)
+|> xLine(length = 0.39)
 |> line([0.02, -0.17], %)
-|> yLine(-0.15, %)
+|> yLine(length = -0.15)
 |> line([-0.21, -0.02], %)
-|> xLine(-0.15, %)
+|> xLine(length = -0.15)
 |> line([-0.02, 0.21], %)
 |> line([-0.08, 0.05], %)`
     const ast = assertParse(openSketch)
@@ -704,11 +704,11 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
   it('should find the location to add new lineTo', () => {
     const openSketch = `sketch001 = startSketchOn('XZ')
 |> startProfileAt([0.02, 0.22], %)
-|> xLine(0.39, %)
+|> xLine(length = 0.39)
 |> line([0.02, -0.17], %)
-|> yLine(-0.15, %)
+|> yLine(length = -0.15)
 |> line([-0.21, -0.02], %)
-|> xLine(-0.15, %)
+|> xLine(length = -0.15)
 |> line([-0.02, 0.21], %)
 |> line([-0.08, 0.05], %)`
     const ast = assertParse(openSketch)
@@ -744,11 +744,11 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     const recasted = recast(modifiedAst)
     const expectedCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0.02, 0.22], %)
-  |> xLine(0.39, %)
+  |> xLine(length = 0.39)
   |> line([0.02, -0.17], %)
-  |> yLine(-0.15, %)
+  |> yLine(length = -0.15)
   |> line([-0.21, -0.02], %)
-  |> xLine(-0.15, %)
+  |> xLine(length = -0.15)
   |> line([-0.02, 0.21], %)
   |> line([-0.08, 0.05], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -758,11 +758,11 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
   it('it should find the location to add close', () => {
     const openSketch = `sketch001 = startSketchOn('XZ')
 |> startProfileAt([0.02, 0.22], %)
-|> xLine(0.39, %)
+|> xLine(length = 0.39)
 |> line([0.02, -0.17], %)
-|> yLine(-0.15, %)
+|> yLine(length = -0.15)
 |> line([-0.21, -0.02], %)
-|> xLine(-0.15, %)
+|> xLine(length = -0.15)
 |> line([-0.02, 0.21], %)
 |> line([-0.08, 0.05], %)
 |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -784,11 +784,11 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     const recasted = recast(modifiedAst)
     const expectedCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0.02, 0.22], %)
-  |> xLine(0.39, %)
+  |> xLine(length = 0.39)
   |> line([0.02, -0.17], %)
-  |> yLine(-0.15, %)
+  |> yLine(length = -0.15)
   |> line([-0.21, -0.02], %)
-  |> xLine(-0.15, %)
+  |> xLine(length = -0.15)
   |> line([-0.02, 0.21], %)
   |> line([-0.08, 0.05], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)

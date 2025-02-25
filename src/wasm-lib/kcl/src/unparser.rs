@@ -950,7 +950,7 @@ fn rect(x, y, w, h) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
     |> xLine(length = w)
-    |> yLine(h, %)
+    |> yLine(length = h)
     |> xLine(length = -w)
     |> close()
     |> extrude(d, %)
@@ -969,9 +969,9 @@ fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
 fn crosshair(x, y) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
-    |> yLine(1, %)
-    |> yLine(-2, %)
-    |> yLine(1, %)
+    |> yLine(length = 1)
+    |> yLine(length = -2)
+    |> yLine(length = 1)
     |> xLine(length = 1)
     |> xLine(length = -2)
 }

@@ -26,7 +26,7 @@ fn caster = (originStart) => {
   const sketch001c = startSketchOn(plane001c)
     |> startProfileAt([0, 0], %)
     |> xLine(length = 3.543)
-    |> yLine(3.543, %)
+    |> yLine(length = 3.543)
     |> xLine(length = -3.543)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
@@ -119,12 +119,12 @@ const extrude001l = extrude(sketch001l, length = 1)
 
 const sketch002l = startSketchOn(plane001)
   |> startProfileAt([serverDepth + .8, 0], %)
-  |> yLine(railHeight * 1.75 + 2, %)
+  |> yLine(length = railHeight * 1.75 + 2)
   |> angledLineToX({
        angle: -135,
        to: serverDepth - 1 + .8
      }, %)
-  |> yLine(-railHeight * 1.75, %)
+  |> yLine(length = -railHeight * 1.75)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude002l = extrude(sketch002l, length = 1)
@@ -146,12 +146,12 @@ const extrude003l = extrude(sketch003l, length = 1)
 
 const sketch004l = startSketchOn(plane001)
   |> startProfileAt([0, 0], %)
-  |> yLine(railHeight * 1.75 + 2, %)
+  |> yLine(length = railHeight * 1.75 + 2)
   |> angledLineToY({
        angle: 135,
        to: railHeight * 1.75 + 2 - 1
      }, %)
-  |> yLine(-railHeight * 1.75, %)
+  |> yLine(length = -railHeight * 1.75)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude004l = extrude(sketch004l, length = 1)
@@ -222,9 +222,9 @@ const extrude001w = extrude(sketch001w, length = 1)
 
 const sketch002w = startSketchOn(plane002)
   |> startProfileAt([depth, 0], %)
-  |> yLine(railHeight * 1.75 + 2, %)
+  |> yLine(length = railHeight * 1.75 + 2)
   |> angledLineToX({ angle: -135, to: depth - 1 }, %)
-  |> yLine(-railHeight * 1.75, %)
+  |> yLine(length = -railHeight * 1.75)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude002w = extrude(sketch002w, length = 1)
@@ -243,12 +243,12 @@ const extrude003w = extrude(sketch003w, length = 1)
 
 const sketch004w = startSketchOn(plane002)
   |> startProfileAt([0, 0], %)
-  |> yLine(railHeight * 1.75 + 2, %)
+  |> yLine(length = railHeight * 1.75 + 2)
   |> angledLineToY({
        angle: 135,
        to: railHeight * 1.75 + 2 - 1
      }, %)
-  |> yLine(-railHeight * 1.75, %)
+  |> yLine(length = -railHeight * 1.75)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude004w = extrude(sketch004w, length = 1)
@@ -268,7 +268,7 @@ const sketch006w = startSketchOn(plane002)
        40.6 - (35.5 * sin(23 * pi() / 180)) + 1.75 / 2
      ], %)
   |> angledLineToX({ angle: -23 + 90, to: depth - 1 }, %)
-  |> yLine(2.56, %)
+  |> yLine(length = 2.56)
   |> angledLineThatIntersects({
        angle: -23 + 90 + 180,
        intersectTag: lineToIntersect,
@@ -357,7 +357,7 @@ const sketch013w = startSketchOn(plane002)
      ], %)
   |> angledLine({ angle: -23, length: 1 }, %)
   |> angledLineToX({ angle: -23 + 90, to: 1 }, %)
-  |> yLine(2.56, %)
+  |> yLine(length = 2.56)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 const extrude013w = extrude(sketch013w, length = 1)
@@ -462,7 +462,7 @@ const extrude020w = extrude(sketch020w, length = 1)
 const sketch021w = startSketchOn(plane002)
   |> startProfileAt([1, 21.9], %)
   |> angledLineToX({ angle: -23, to: depth - 1 }, %)
-  |> yLine(-1.1, %)
+  |> yLine(length = -1.1)
   |> angledLineToX({ angle: -23, to: 1 }, %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -691,7 +691,7 @@ const sketch003fl = startSketchOn(planeXYfl)
        angleEnd: 270,
        radius: bendRad
      }, %)
-  |> yLine(-thickness, %)
+  |> yLine(length = -thickness)
   |> close()
 
 const extrude003fl = extrude(sketch003fl, length = railHeight * 1.75)
@@ -965,7 +965,7 @@ const sketch003fr = startSketchOn(planeXYfr)
        angleEnd: -90,
        radius: bendRad
      }, %)
-  |> yLine(-thickness, %)
+  |> yLine(length = -thickness)
   |> arc({
        angleStart: -90,
        angleEnd: 0,
@@ -1259,7 +1259,7 @@ const sketch003rr = startSketchOn(planeXYrr)
        angleEnd: 90,
        radius: bendRad+thickness
      }, %)
-  |> yLine(-thickness, %)
+  |> yLine(length = -thickness)
     |> arc({
        angleStart: 90,
        angleEnd: 0,
@@ -1808,23 +1808,23 @@ fn streamServer = (serverPos) => {
 
   const sketch002s = startSketchOn(planeXZs)
     |> startProfileAt([-1, 4.114 + 1 + serverPos * 1.75], %)
-    |> yLine(6.98, %)
+    |> yLine(length = 6.98)
     |> xLine(length = 0.2)
-    |> yLine(-0.36, %)
+    |> yLine(length = -0.36)
     |> xLine(length = 0.5)
     |> tangentialArcTo([
          0.3,
          17.15 + 4.114 + 1 + serverPos * 1.75 - 11.114
        ], %)
-    |> yLine(-1.77, %)
+    |> yLine(length = -1.77)
     |> tangentialArcTo([
          -0.13,
          14.89 + 4.114 + 1 + serverPos * 1.75 - 11.114
        ], %)
     |> xLine(length = -0.52)
-    |> yLine(-0.42, %)
+    |> yLine(length = -0.42)
     |> line(end = [0.34, -0.15])
-    |> yLine(-2.97, %)
+    |> yLine(length = -2.97)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 
@@ -1832,23 +1832,23 @@ fn streamServer = (serverPos) => {
 
   const sketch003s = startSketchOn(planeXZs2)
     |> startProfileAt([-1, 4.114 + 1 + serverPos * 1.75], %)
-    |> yLine(6.98, %)
+    |> yLine(length = 6.98)
     |> xLine(length = 0.2)
-    |> yLine(-0.36, %)
+    |> yLine(length = -0.36)
     |> xLine(length = 0.5)
     |> tangentialArcTo([
          0.3,
          17.15 + 4.114 + 1 + serverPos * 1.75 - 11.114
        ], %)
-    |> yLine(-1.77, %)
+    |> yLine(length = -1.77)
     |> tangentialArcTo([
          -0.13,
          14.89 + 4.114 + 1 + serverPos * 1.75 - 11.114
        ], %)
     |> xLine(length = -0.52)
-    |> yLine(-0.42, %)
+    |> yLine(length = -0.42)
     |> line(end = [0.34, -0.15])
-    |> yLine(-2.97, %)
+    |> yLine(length = -2.97)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 

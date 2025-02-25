@@ -817,7 +817,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
         |> startProfileAt([3.14, 12], %)
-        |> xLine(5, %) // lin`)
+        |> xLine(length = 5) // lin`)
 
       // expect there to be no KCL errors
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
@@ -890,7 +890,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
         |> startProfileAt([3.14, 12], %)
-        |> xLine(5, %) // lin`)
+        |> xLine(length = 5) // lin`)
     })
   })
   test('Can undo a click and point extrude with ctrl+z', async ({

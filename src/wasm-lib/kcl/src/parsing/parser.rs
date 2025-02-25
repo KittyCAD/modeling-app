@@ -4202,7 +4202,7 @@ e
 ///     angle = 30,
 ///     length = 3 / cos(toRadians(30)),
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
 ///  
 /// example = extrude(5, exampleSketch)

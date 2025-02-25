@@ -17,14 +17,14 @@ const sketch001 = startSketchOn('XZ')
        angleStart: 90,
        radius: radius - templateGap
      }, %)
-  |> yLineTo(-templateGap * 2 - (templateDiameter / 2), %, $seg05)
+  |> yLine(endAbsolute = -templateGap * 2 - (templateDiameter / 2), tag = $seg05)
   |> xLineTo(endAbsolute = slateWidthHalf + templateThickness, tag = $seg04)
-  |> yLine(-length002, %, $seg03)
+  |> yLine(length = -length002, tag = $seg03)
   |> xLineTo(endAbsolute = 0, tag = $seg02)
-  |> xLine(length = -segLen(seg02), %)
-  |> yLine(segLen(seg03, %), %)
-  |> xLine(length = segLen(seg04), %)
-  |> yLine(segLen(seg05, %), %)
+  |> xLine(length = length = -segLen(seg02))
+  |> yLine(length = segLen(seg03, %))
+  |> xLine(length = length = segLen(seg04))
+  |> yLine(length = segLen(seg05, %))
   |> arc({
        angleEnd: 90,
        angleStart: 180,
