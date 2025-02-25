@@ -133,7 +133,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   useEffect(() => {
     const panesToReset: SidebarType[] = []
 
-    console.log('sidebar', sidebarPanes)
     sidebarPanes.forEach((pane) => {
       if (
         pane.hide === true ||
