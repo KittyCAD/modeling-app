@@ -1,8 +1,13 @@
 import { expect } from 'vitest'
-import { assertParse, initPromise, ArtifactGraph } from 'lang/wasm'
+import { assertParse, initPromise, ArtifactGraph, SourceRange } from 'lang/wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { codeToIdSelections, Selection } from './selections'
-import { buildArtifactIndex } from './artifactIndex'
+import {
+  codeToIdSelections,
+  Selection,
+  findLastRangeStartingBefore,
+} from './selections'
+import { buildArtifactIndex, ArtifactIndex } from './artifactIndex'
+import { Artifact } from 'lang/std/artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -1229,4 +1234,65 @@ profile004 = circle({
       }
     }
   )
+})
+
+describe('findLastRangeStartingBefore', () => {
+  test('finds last range starting before target even if no overlap', () => {
+    const mockIndex = [
+      {
+        range: [1, 2, 0] as SourceRange,
+        entry: { id: '1', artifact: { id: '1', type: 'segment' } as Artifact },
+      },
+      {
+        range: [35, 43, 0] as SourceRange,
+        entry: { id: '2', artifact: { id: '2', type: 'segment' } as Artifact },
+      },
+      {
+        range: [46, 70, 0] as SourceRange,
+        entry: { id: '3', artifact: { id: '3', type: 'segment' } as Artifact },
+      },
+    ] as ArtifactIndex
+
+    const result = findLastRangeStartingBefore(mockIndex, 45)
+    expect(result).toBe(1) // Should return index 1 ([35, 43])
+  })
+
+  test('handles empty index', () => {
+    const result = findLastRangeStartingBefore([] as ArtifactIndex, 45)
+    // fine to return 0 in this case because the linear search section will sort out the lack of overlap
+    expect(result).toBe(0)
+  })
+
+  test('handles target before all ranges', () => {
+    const mockIndex = [
+      {
+        range: [10, 20, 0] as SourceRange,
+        entry: { id: '1', artifact: { id: '1', type: 'segment' } as Artifact },
+      },
+      {
+        range: [30, 40, 0] as SourceRange,
+        entry: { id: '2', artifact: { id: '2', type: 'segment' } as Artifact },
+      },
+    ] as ArtifactIndex
+
+    const result = findLastRangeStartingBefore(mockIndex, 5)
+    // fine to return 0 in this case because the linear search section will sort out the lack of overlap
+    expect(result).toBe(0)
+  })
+
+  test('handles target after all ranges', () => {
+    const mockIndex = [
+      {
+        range: [10, 20, 0] as SourceRange,
+        entry: { id: '1', artifact: { id: '1', type: 'segment' } as Artifact },
+      },
+      {
+        range: [30, 40, 0] as SourceRange,
+        entry: { id: '2', artifact: { id: '2', type: 'segment' } as Artifact },
+      },
+    ] as ArtifactIndex
+
+    const result = findLastRangeStartingBefore(mockIndex, 50)
+    expect(result).toBe(1)
+  })
 })

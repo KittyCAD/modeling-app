@@ -495,6 +495,38 @@ export function canSubmitSelectionArg(
   )
 }
 
+/**
+ * Find the index of the last range where range[0] < targetStart
+ * This is used as a starting point for linear search of overlapping ranges
+ * @param index The sorted array of ranges to search through
+ * @param targetStart The start position to compare against
+ * @returns The index of the last range where range[0] < targetStart
+ */
+export function findLastRangeStartingBefore(
+  index: ArtifactIndex,
+  targetStart: number
+): number {
+  let left = 0
+  let right = index.length - 1
+  let lastValidIndex = 0
+
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2)
+    const midRange = index[mid].range
+
+    if (midRange[0] < targetStart) {
+      // This range starts before our selection, look in right half for later ones
+      lastValidIndex = mid
+      left = mid + 1
+    } else {
+      // This range starts at or after our selection, look in left half
+      right = mid - 1
+    }
+  }
+
+  return lastValidIndex
+}
+
 function findOverlappingArtifactsFromIndex(
   selection: Selection,
   index: ArtifactIndex
@@ -512,23 +544,7 @@ function findOverlappingArtifactsFromIndex(
   // the index it finds dose not have any overlap (depending on the end range)
   // but it's main purpose is to act as a starting point for the linear part of the search
   // so a tiny loss in efficiency is acceptable to keep the code simple
-  let left = 0
-  let right = index.length - 1
-  let startIndex = 0
-
-  while (left <= right) {
-    const mid = left + Math.floor((right - left) / 2)
-    const midRange = index[mid].range
-
-    if (midRange[0] < selectionRange[0]) {
-      // This range starts before our selection, look in right half for later ones
-      startIndex = mid
-      left = mid + 1
-    } else {
-      // This range starts at or after our selection, look in left half
-      right = mid - 1
-    }
-  }
+  const startIndex = findLastRangeStartingBefore(index, selectionRange[0])
 
   // Check all potential overlaps from the found position
   for (let i = startIndex; i < index.length; i++) {
