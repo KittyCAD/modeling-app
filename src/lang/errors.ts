@@ -13,6 +13,7 @@ import {
   SourceRange,
 } from 'lang/wasm'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { ModulePath } from 'wasm-lib/kcl/bindings/ModulePath'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
@@ -22,6 +23,7 @@ export class KCLError extends Error {
   operations: Operation[]
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
+  filenames: { [x: number]: ModulePath | undefined }
 
   constructor(
     kind: ExtractKind<RustKclError> | 'name',
@@ -29,7 +31,8 @@ export class KCLError extends Error {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super()
     this.kind = kind
@@ -38,6 +41,7 @@ export class KCLError extends Error {
     this.operations = operations
     this.artifactCommands = artifactCommands
     this.artifactGraph = artifactGraph
+    this.filenames = filenames
     Object.setPrototypeOf(this, KCLError.prototype)
   }
 }
@@ -48,7 +52,8 @@ export class KCLLexicalError extends KCLError {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'lexical',
@@ -56,7 +61,8 @@ export class KCLLexicalError extends KCLError {
       sourceRange,
       operations,
       artifactCommands,
-      artifactGraph
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
@@ -68,7 +74,8 @@ export class KCLInternalError extends KCLError {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'internal',
@@ -76,7 +83,8 @@ export class KCLInternalError extends KCLError {
       sourceRange,
       operations,
       artifactCommands,
-      artifactGraph
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
@@ -88,7 +96,8 @@ export class KCLSyntaxError extends KCLError {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'syntax',
@@ -96,7 +105,8 @@ export class KCLSyntaxError extends KCLError {
       sourceRange,
       operations,
       artifactCommands,
-      artifactGraph
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
@@ -108,7 +118,8 @@ export class KCLSemanticError extends KCLError {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'semantic',
@@ -116,7 +127,8 @@ export class KCLSemanticError extends KCLError {
       sourceRange,
       operations,
       artifactCommands,
-      artifactGraph
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLSemanticError.prototype)
   }
@@ -128,9 +140,18 @@ export class KCLTypeError extends KCLError {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
-    super('type', msg, sourceRange, operations, artifactCommands, artifactGraph)
+    super(
+      'type',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames
+    )
     Object.setPrototypeOf(this, KCLTypeError.prototype)
   }
 }
@@ -141,7 +162,8 @@ export class KCLUnimplementedError extends KCLError {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'unimplemented',
@@ -149,7 +171,8 @@ export class KCLUnimplementedError extends KCLError {
       sourceRange,
       operations,
       artifactCommands,
-      artifactGraph
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
   }
@@ -161,7 +184,8 @@ export class KCLUnexpectedError extends KCLError {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'unexpected',
@@ -169,7 +193,8 @@ export class KCLUnexpectedError extends KCLError {
       sourceRange,
       operations,
       artifactCommands,
-      artifactGraph
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLUnexpectedError.prototype)
   }
@@ -181,7 +206,8 @@ export class KCLValueAlreadyDefined extends KCLError {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'name',
@@ -189,7 +215,8 @@ export class KCLValueAlreadyDefined extends KCLError {
       sourceRange,
       operations,
       artifactCommands,
-      artifactGraph
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLValueAlreadyDefined.prototype)
   }
@@ -201,7 +228,8 @@ export class KCLUndefinedValueError extends KCLError {
     sourceRange: SourceRange,
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
-    artifactGraph: ArtifactGraph
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'name',
@@ -209,7 +237,8 @@ export class KCLUndefinedValueError extends KCLError {
       sourceRange,
       operations,
       artifactCommands,
-      artifactGraph
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLUndefinedValueError.prototype)
   }
@@ -232,7 +261,8 @@ export function lspDiagnosticsToKclErrors(
           [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
           [],
           [],
-          defaultArtifactGraph()
+          defaultArtifactGraph(),
+          {}
         )
     )
     .sort((a, b) => {
