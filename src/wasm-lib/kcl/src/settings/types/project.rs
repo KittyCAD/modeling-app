@@ -224,8 +224,8 @@ color = 1567.4"#;
                                 eye_offset: 1236.4015,
                                 fov_y: 45.0,
                                 is_ortho: false,
-                                ortho_eye_offset: 45.0,
-                                ortho_scale: 45.0,
+                                ortho_scale_enabled: false,
+                                ortho_scale_factor: 45.0,
                                 pivot_position: [-100.0, 100.0, 100.0],
                                 pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
                                 world_coord_system: String::from("RightHandedUpZ")
@@ -235,8 +235,8 @@ color = 1567.4"#;
                                 eye_offset: 1236.4015,
                                 fov_y: 45.0,
                                 is_ortho: false,
-                                ortho_eye_offset: 45.0,
-                                ortho_scale: 45.0,
+                                ortho_scale_enabled: false,
+                                ortho_scale_factor: 45.0,
                                 pivot_position: [-100.0, 100.0, 100.0],
                                 pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
                                 world_coord_system: String::from("RightHandedUpZ")
@@ -267,8 +267,8 @@ name = "Hello"
 eye_offset = 1236.4015
 fov_y = 45.0
 is_ortho = false
-ortho_eye_offset = 45.0
-ortho_scale = 45.0
+ortho_scale_enabled = false
+ortho_scale_factor = 45.0
 pivot_position = [-100.0, 100.0, 100.0]
 pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
 world_coord_system = RightHandedUpZ
@@ -278,8 +278,8 @@ name = Goodbye
 eye_offset = 1236.4015
 fov_y = 45.0
 is_ortho = false
-ortho_eye_offset = 45.0
-ortho_scale = 45.0
+ortho_scale_enabled = false
+ortho_scale_factor = 45.0
 pivot_position = [-100.0, 100.0, 100.0]
 pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
 world_coord_system = RightHandedUpZ

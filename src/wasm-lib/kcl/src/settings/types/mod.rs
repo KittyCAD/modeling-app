@@ -301,11 +301,11 @@ pub struct NamedView {
     #[serde(default, alias = "isOrtho")]
     pub is_ortho: bool,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "orthoEyeOffset")]
-    pub ortho_eye_offset: f64,
+    #[serde(default, alias = "orthoScaleEnabled")]
+    pub ortho_scale_enabled: bool,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "orthoScale", skip_serializing_if = "is_default")]
-    pub ortho_scale: f64,
+    #[serde(default, alias = "orthoScaleFactor", skip_serializing_if = "is_default")]
+    pub ortho_scale_factor: f64,
     /// The default unit to use in modeling dimensions.
     #[serde(default, alias = "pivotPosition", skip_serializing_if = "is_default")]
     pub pivot_position: [f64; 3],

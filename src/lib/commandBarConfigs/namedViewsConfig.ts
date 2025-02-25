@@ -5,11 +5,9 @@ import { engineCommandManager, sceneInfra } from 'lib/singletons'
 import { convertThreeCamValuesToEngineCam } from 'clientSideScene/CameraControls'
 import { uuidv4 } from 'lib/utils'
 import { Vector3, Quaternion } from 'three'
-export function createNamedViewsCommand({
-  settingsState,
-  settingsSend,
-  settingsActor,
-}) {
+import { settingsActor } from 'machines/appMachine'
+
+export function createNamedViewsCommand() {
   const createNamedViewCommand: Command = {
     name: 'Create named view',
     displayName: `Create named view`,
@@ -33,7 +31,7 @@ export function createNamedViewsCommand({
       }
 
       const requestedNamedViews = [...namedViews, requestedView]
-      settingsSend({
+      settingsActor.send({
         type: `set.modeling.namedViews`,
         data: {
           level: 'project',
@@ -73,7 +71,7 @@ export function createNamedViewsCommand({
       )
       if (indexToDelete >= 0) {
         namedViews.splice(indexToDelete, 1)
-        settingsSend({
+        settingsActor.send({
           type: `set.modeling.namedViews`,
           data: {
             level: 'project',
@@ -122,7 +120,7 @@ export function createNamedViewsCommand({
       if (viewToLoad) {
         const cameraViewData = { ...viewToLoad }
         delete cameraViewData.name
-        console.log(cameraViewData)
+        console.log(cameraViewData, 'gonna load')
         await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),

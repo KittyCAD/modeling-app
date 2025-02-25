@@ -153,6 +153,7 @@ export const settingsMachine = setup({
           type: 'Add commands',
           data: { commands: commands },
         })
+
       const removeCommands = () =>
         commandBarActor.send({
           type: 'Remove commands',

@@ -32,6 +32,7 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { settingsActor, useSettings } from 'machines/appMachine'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 import { useToken } from 'machines/appMachine'
+import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -57,6 +58,24 @@ export const FileMachineProvider = ({
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
+
+  useEffect(() => {
+    const {
+      createNamedViewCommand,
+      deleteNamedViewCommand,
+      loadNamedViewCommand,
+    } = createNamedViewsCommand()
+    commandBarActor.send({
+      type: 'Add commands',
+      data: {
+        commands: [
+          createNamedViewCommand,
+          deleteNamedViewCommand,
+          loadNamedViewCommand,
+        ],
+      },
+    })
+  }, [])
 
   // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
   // This will register the commands to route to Telemetry, Home, and Settings.
