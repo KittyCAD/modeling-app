@@ -110,6 +110,7 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useSettings } from 'machines/appMachine'
+import { isDesktop } from 'lib/isDesktop'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -802,7 +803,7 @@ export const ModelingMachineProvider = ({
               engineCommandManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
-            // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plan
+            // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
             // but still works if the user selected a plane/face by defaulting to the first path
             const mainPath =
               artifact?.type === 'segment' || artifact?.type === 'solid2d'
@@ -1717,8 +1718,12 @@ export const ModelingMachineProvider = ({
     previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
   }, [allowOrbitInSketchMode])
 
-  // Allow using the delete key to delete solids
-  useHotkeys(['backspace', 'delete', 'del'], () => {
+  // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
+  const deleteKeys =
+    isDesktop() && window.electron.os.isMac
+      ? ['backspace', 'delete', 'del']
+      : ['delete', 'del']
+  useHotkeys(deleteKeys, () => {
     modelingSend({ type: 'Delete selection' })
   })
 

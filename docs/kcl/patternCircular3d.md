@@ -9,7 +9,7 @@ Repeat a 3-dimensional solid some number of times along a partial or
 complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orentation of the solid with respect to the center of the circle is maintained.
 
 ```js
-patternCircular3d(solid_set: SolidSet, instances: integer, axis: [number], center: [number], arc_degrees: number, rotate_duplicates: bool, use_original?: bool) -> [Solid]
+patternCircular3d(solidSet: SolidSet, instances: integer, axis: [number], center: [number], arcDegrees: number, rotateDuplicates: bool, useOriginal?: bool) -> [Solid]
 ```
 
 
@@ -17,13 +17,13 @@ patternCircular3d(solid_set: SolidSet, instances: integer, axis: [number], cente
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | Which solid(s) to pattern | Yes |
+| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | Which solid(s) to pattern | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `axis` | `[number]` | The axis around which to make the pattern. This is a 3D vector | Yes |
 | `center` | `[number]` | The center about which to make the pattern. This is a 3D vector. | Yes |
-| `arc_degrees` | `number` | The arc angle (in degrees) to place the repetitions. Must be greater than 0. | Yes |
-| `rotate_duplicates` | `bool` | Whether or not to rotate the duplicates as they are copied. | Yes |
-| `use_original` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `arcDegrees` | `number` | The arc angle (in degrees) to place the repetitions. Must be greater than 0. | Yes |
+| `rotateDuplicates` | `bool` | Whether or not to rotate the duplicates as they are copied. | Yes |
+| `useOriginal` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 

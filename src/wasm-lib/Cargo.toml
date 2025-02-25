@@ -80,7 +80,7 @@ members = [
 [workspace.dependencies]
 http = "1"
 kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.97", features = [
+kittycad-modeling-cmds = { version = "0.2.99", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -103,3 +103,7 @@ path = "tests/modify/main.rs"
 #[patch.crates-io]
 #kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
 #kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
+
+# Local development only. Placeholder to speed up development cycle
+#[package.metadata.wasm-pack.profile.release]
+#wasm-opt = false
