@@ -23,6 +23,8 @@ import { FileEntry } from 'lib/project'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { normalizeLineEndings } from 'lib/codeEditor'
 import { reportRejection } from 'lib/trap'
+import { useKclContext } from 'lang/KclProvider'
+import { kclErrorsByFilename, KCLError } from 'lang/errors'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -158,6 +160,7 @@ const FileTreeItem = ({
   level = 0,
   treeSelection,
   setTreeSelection,
+  runtimeErrors,
 }: {
   parentDir: FileEntry | undefined
   project?: IndexLoaderData['project']
@@ -177,6 +180,7 @@ const FileTreeItem = ({
   level?: number
   treeSelection: FileEntry | undefined
   setTreeSelection: Dispatch<React.SetStateAction<FileEntry | undefined>>
+  runtimeErrors: { [key: string]: KCLError[] }
 }) => {
   const { send: fileSend, context: fileContext } = useFileContext()
   const { onFileOpen, onFileClose } = useLspContext()
@@ -185,6 +189,8 @@ const FileTreeItem = ({
   const isCurrentFile = fileOrDir.path === currentFile?.path
   const isFileOrDirHighlighted = treeSelection?.path === fileOrDir?.path
   const itemRef = useRef(null)
+
+  const hasRuntimeError = runtimeErrors[fileOrDir.path]?.length || 0
 
   // Since every file or directory gets its own FileTreeItem, we can do this.
   // Because subtrees only render when they are opened, that means this
@@ -300,26 +306,16 @@ const FileTreeItem = ({
               }}
               onKeyUp={handleKeyUp}
             >
-              {
+              {hasRuntimeError > 0 && (
                 <p
                   className={
-                    'absolute m-0 p-0 bottom-3 left-6 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+                    'absolute m-0 p-0 bottom-3 left-6 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-red-600 rounded-full border border-red-300 dark:border-red-800 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
                   }
-                  title={`Click to view ${1} notification${
-                    Number(1) > 1 ? 's' : ''
-                  }`}
+                  title={`Click to view notifications`}
                 >
-                  <span className="sr-only">&nbsp;has&nbsp;</span>
-                  {typeof 1 === 'number' ? (
-                    <span>{1}</span>
-                  ) : (
-                    <span className="sr-only">a</span>
-                  )}
-                  <span className="sr-only">
-                    &nbsp;notification{Number(1) > 1 ? 's' : ''}
-                  </span>
+                  <span>x</span>
                 </p>
-              }
+              )}
               <CustomIcon
                 name={fileOrDir.name?.endsWith(FILE_EXT) ? 'kcl' : 'file'}
                 className="inline-block w-3 text-current"
@@ -680,6 +676,8 @@ export const FileTreeInner = ({
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
+  const { errors } = useKclContext()
+  const runtimeErrors = kclErrorsByFilename(errors)
 
   const [lastDirectoryClicked, setLastDirectoryClicked] = useState<
     FileEntry | undefined
@@ -789,6 +787,7 @@ export const FileTreeInner = ({
                 key={fileOrDir.path}
                 treeSelection={treeSelection}
                 setTreeSelection={setTreeSelection}
+                runtimeErrors={runtimeErrors}
               />
             )
           )}

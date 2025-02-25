@@ -351,16 +351,9 @@ export function kclErrorsByFilename(errors: KCLError[]): {
     const sourceRange: SourceRange = error.sourceRange
     const fileIndex = sourceRange[2]
     const modulePath: ModulePath | undefined = filenames[fileIndex]
-    let stdOrLocalPath: string = ''
     // Ignore top level module errors! They are already captured in a different workflow!!
     if (modulePath) {
-      // Do not map errors that are [start,end, 0] aka the topLevelModule, you have the code editor mapping this already
-      if ('Std' in modulePath) {
-        stdOrLocalPath = modulePath.Std
-      } else if ('Local' in modulePath) {
-        stdOrLocalPath = modulePath.Local
-      }
-
+      let stdOrLocalPath = modulePath.value
       if (stdOrLocalPath) {
         // Build up an array of errors per file name
         if (stdOrLocalPath in fileNameToError) {

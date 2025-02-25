@@ -31,8 +31,9 @@ export type SidebarType =
   | 'variables'
 
 export interface BadgeInfo {
-  value: (props: PaneCallbackProps) => boolean | number
+  value: (props: PaneCallbackProps) => boolean | number | string
   onClick?: MouseEventHandler<any>
+  className?: string
 }
 
 /**
@@ -155,10 +156,9 @@ export const sidebarPanes: SidebarPane[] = [
     hide: ({ platform }) => platform === 'web',
     showBadge: {
       value: (context) => {
-        console.log('context', context.kclContext)
+        // Only compute runtime errors! Compilation errors are not tracked here.
         const errors = kclErrorsByFilename(context.kclContext.errors)
-        console.log(errors, 'errors')
-        return Object.keys(errors).length
+        return Object.keys(errors).length > 0 ? 'x' : ''
       },
       onClick: (e) => {
         e.preventDefault()
@@ -168,6 +168,8 @@ export const sidebarPanes: SidebarPane[] = [
         // Do you automatically open the project files
         // editorManager.scrollToFirstErrorDiagnosticIfExists()
       },
+      className:
+        'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-red-600 rounded-full border border-red-300 dark:border-red-800 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200',
     },
   },
   {
