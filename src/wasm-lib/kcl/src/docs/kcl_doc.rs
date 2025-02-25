@@ -359,6 +359,7 @@ impl FnData {
         }
     }
 
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
             return "loft([${0:sketch000}, ${1:sketch001}])${}".to_owned();
