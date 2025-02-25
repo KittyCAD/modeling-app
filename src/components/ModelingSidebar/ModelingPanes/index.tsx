@@ -171,7 +171,7 @@ export const sidebarPanes: SidebarPane[] = [
       },
       className:
         'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-red-600 rounded-full border border-red-300 dark:border-red-800 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200',
-      title: 'Click to view notifications',
+      title: 'Project files have runtime errors',
     },
   },
   {

@@ -430,6 +430,7 @@ const FileTreeItem = ({
                         key={level + '-' + child.path}
                         treeSelection={treeSelection}
                         setTreeSelection={setTreeSelection}
+                        runtimeErrors={runtimeErrors}
                       />
                     )
                   )}

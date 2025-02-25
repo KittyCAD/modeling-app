@@ -113,20 +113,17 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   )
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
-    return filteredPanes.reduce(
-      (acc, pane) => {
-        if (pane.showBadge) {
-          acc[pane.id] = {
-            value: pane.showBadge.value(paneCallbackProps),
-            onClick: pane.showBadge.onClick,
-            className: pane.showBadge.className,
-            title: pane.showBadge.title,
-          }
+    return filteredPanes.reduce((acc, pane) => {
+      if (pane.showBadge) {
+        acc[pane.id] = {
+          value: pane.showBadge.value(paneCallbackProps),
+          onClick: pane.showBadge.onClick,
+          className: pane.showBadge.className,
+          title: pane.showBadge.title,
         }
-        return acc
-      },
-      {} as Record<SidebarType, BadgeInfoComputed>
-    )
+      }
+      return acc
+    }, {} as Record<SidebarType, BadgeInfoComputed>)
   }, [paneCallbackProps])
 
   // Clear any hidden panes from the `openPanes` array
