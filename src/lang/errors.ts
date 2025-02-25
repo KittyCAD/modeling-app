@@ -351,7 +351,6 @@ export function kclErrorsByFilename(errors: KCLError[]): {
     const sourceRange: SourceRange = error.sourceRange
     const fileIndex = sourceRange[2]
     const modulePath: ModulePath | undefined = filenames[fileIndex]
-    // Ignore top level module errors! They are already captured in a different workflow!!
     if (modulePath) {
       let stdOrLocalPath = modulePath.value
       if (stdOrLocalPath) {
