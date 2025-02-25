@@ -86,9 +86,7 @@ export class ToolbarFixture {
 
   exitSketch = async () => {
     await this.exitSketchBtn.click()
-    await expect(
-      this.page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+    await expect(this.page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
     await expect(
       this.page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
