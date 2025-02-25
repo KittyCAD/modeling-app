@@ -51,6 +51,7 @@ import {
   ARG_END_ABSOLUTE,
   getConstraintInfoKw,
   isAbsoluteLine,
+  ARG_LENGTH,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
@@ -1635,7 +1636,16 @@ function getTransformMapPathKw(
     return false
   }
   const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
-  const nameAbsolute = name === 'line' ? 'lineTo' : name
+  const nameAbsolute = (() => {
+    switch (name) {
+      case 'line':
+        return 'lineTo'
+      case 'xLine':
+        return 'xLineTo'
+      default:
+        return name
+    }
+  })()
   if (!toolTips.includes(name)) {
     return false
   }
@@ -2154,7 +2164,10 @@ export function getConstraintLevelFromSourceRange(
         case 'CallExpression':
           return getFirstArg(nodeMeta.node)
         case 'CallExpressionKw':
-          const arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], nodeMeta.node)
+          const arg = findKwArgAny(
+            [ARG_END, ARG_END_ABSOLUTE, ARG_LENGTH],
+            nodeMeta.node
+          )
           if (arg === undefined) {
             return new Error('unexpected call expression: ' + name)
           }

@@ -157,10 +157,14 @@ Search the keyword arguments from a call for an argument with one of these label
 export function findKwArgAnyIndex(
   labels: string[],
   call: CallExpressionKw
-): number | undefined {
-  return call.arguments.findIndex((arg) => {
+): { expr: Expr; argIndex: number } | undefined {
+  const argIndex = call.arguments.findIndex((arg) => {
     return labels.includes(arg.label.name)
   })
+  if (argIndex < 0) {
+    return undefined
+  }
+  return { expr: call.arguments[argIndex].arg, argIndex }
 }
 
 export function isAbsolute(call: CallExpressionKw): boolean {
