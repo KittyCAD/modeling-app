@@ -30,6 +30,7 @@ interface BadgeInfoComputed {
   value: number | boolean | string
   onClick?: MouseEventHandler<any>
   className?: string
+  title?: string
 }
 
 function getPlatformString(): 'web' | 'desktop' {
@@ -119,6 +120,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
             value: pane.showBadge.value(paneCallbackProps),
             onClick: pane.showBadge.onClick,
             className: pane.showBadge.className,
+            title: pane.showBadge.title,
           }
         }
         return acc
@@ -352,9 +354,13 @@ function ModelingPaneButton({
               : 'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
           }
           onClick={showBadge.onClick}
-          title={`Click to view ${showBadge.value} notification${
-            Number(showBadge.value) > 1 ? 's' : ''
-          }`}
+          title={
+            showBadge.title
+              ? showBadge.title
+              : `Click to view ${showBadge.value} notification${
+                  Number(showBadge.value) > 1 ? 's' : ''
+                }`
+          }
         >
           <span className="sr-only">&nbsp;has&nbsp;</span>
           {typeof showBadge.value === 'number' ||
