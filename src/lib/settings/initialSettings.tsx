@@ -90,8 +90,8 @@ export class Setting<T = unknown> {
     return this._project !== undefined
       ? this._project
       : this._user !== undefined
-        ? this._user
-        : this._default
+      ? this._user
+      : this._default
   }
   /**
    * @param {SettingsLevel} level - The level to get the fallback for

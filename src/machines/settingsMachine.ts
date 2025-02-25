@@ -206,7 +206,7 @@ export const settingsMachine = setup({
       if (!('data' in event)) return
       const eventParts = event.type.replace(/^set./, '').split('.') as [
         keyof typeof settings,
-        string,
+        string
       ]
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
       const message =
