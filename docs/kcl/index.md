@@ -111,7 +111,6 @@ layout: manual
   * [`toDegrees`](kcl/toDegrees)
   * [`toRadians`](kcl/toRadians)
   * [`xLine`](kcl/xLine)
-  * [`xLineTo`](kcl/xLineTo)
   * [`yLine`](kcl/yLine)
   * [`yLineTo`](kcl/yLineTo)
   * [`yd`](kcl/yd)
