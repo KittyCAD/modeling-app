@@ -180,7 +180,7 @@ const FileTreeItem = ({
   level?: number
   treeSelection: FileEntry | undefined
   setTreeSelection: Dispatch<React.SetStateAction<FileEntry | undefined>>
-  runtimeErrors: { [key: string]: KCLError[] }
+  runtimeErrors: Map<string, KCLError[]>
 }) => {
   const { send: fileSend, context: fileContext } = useFileContext()
   const { onFileOpen, onFileClose } = useLspContext()
@@ -190,7 +190,7 @@ const FileTreeItem = ({
   const isFileOrDirHighlighted = treeSelection?.path === fileOrDir?.path
   const itemRef = useRef(null)
 
-  const hasRuntimeError = runtimeErrors[fileOrDir.path]?.length || 0
+  const hasRuntimeError = runtimeErrors.has(fileOrDir.path)
 
   // Since every file or directory gets its own FileTreeItem, we can do this.
   // Because subtrees only render when they are opened, that means this
@@ -306,7 +306,7 @@ const FileTreeItem = ({
               }}
               onKeyUp={handleKeyUp}
             >
-              {hasRuntimeError > 0 && (
+              {hasRuntimeError && (
                 <p
                   className={
                     'absolute m-0 p-0 bottom-3 left-6 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-red-600 rounded-full border border-red-300 dark:border-red-800 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'

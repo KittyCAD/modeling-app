@@ -159,7 +159,7 @@ export const sidebarPanes: SidebarPane[] = [
       value: (context) => {
         // Only compute runtime errors! Compilation errors are not tracked here.
         const errors = kclErrorsByFilename(context.kclContext.errors)
-        return Object.keys(errors).length > 0 ? 'x' : ''
+        return errors.size > 0 ? 'x' : ''
       },
       onClick: (e) => {
         e.preventDefault()

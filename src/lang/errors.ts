@@ -342,10 +342,10 @@ export function complilationErrorsToDiagnostics(
 // easily map SourceRange of an error to the filename to display in the
 // side bar UI. This is to indicate an error in an imported file, it isn't
 // the specific code mirror error interface.
-export function kclErrorsByFilename(errors: KCLError[]): {
-  [key: string]: KCLError[]
-} {
-  const fileNameToError: { [key: string]: KCLError[] } = {}
+export function kclErrorsByFilename(
+  errors: KCLError[]
+): Map<string, KCLError[]> {
+  const fileNameToError: Map<string, KCLError[]> = new Map()
   errors.forEach((error: KCLError) => {
     const filenames = error.filenames
     const sourceRange: SourceRange = error.sourceRange
@@ -355,10 +355,12 @@ export function kclErrorsByFilename(errors: KCLError[]): {
       let stdOrLocalPath = modulePath.value
       if (stdOrLocalPath) {
         // Build up an array of errors per file name
-        if (stdOrLocalPath in fileNameToError) {
-          fileNameToError[stdOrLocalPath].push(error)
+        const value = fileNameToError.get(stdOrLocalPath)
+        if (!value) {
+          fileNameToError.set(stdOrLocalPath, [error])
         } else {
-          fileNameToError[stdOrLocalPath] = [error]
+          value.push(error)
+          fileNameToError.set(stdOrLocalPath, [error])
         }
       }
     }
