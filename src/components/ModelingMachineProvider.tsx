@@ -802,7 +802,7 @@ export const ModelingMachineProvider = ({
               engineCommandManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
-            // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plan
+            // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
             // but still works if the user selected a plane/face by defaulting to the first path
             const mainPath =
               artifact?.type === 'segment' || artifact?.type === 'solid2d'

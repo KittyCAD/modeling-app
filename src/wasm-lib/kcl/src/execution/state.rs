@@ -17,6 +17,8 @@ use crate::{
     CompilationError,
 };
 
+use super::EnvironmentRef;
+
 /// State for executing a program.
 #[derive(Debug, Clone)]
 pub struct ExecState {
@@ -108,13 +110,13 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub fn to_wasm_outcome(self) -> ExecOutcome {
+    pub fn to_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
             variables: self
                 .memory()
-                .find_all_in_current_env(|_| true)
+                .find_all_in_env(main_ref, |_| true)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: self.mod_local.operations,
@@ -131,13 +133,13 @@ impl ExecState {
         }
     }
 
-    pub fn to_mock_wasm_outcome(self) -> ExecOutcome {
+    pub fn to_mock_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
             variables: self
                 .memory()
-                .find_all_in_current_env(|_| true)
+                .find_all_in_env(main_ref, |_| true)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: Default::default(),
