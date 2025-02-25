@@ -21,7 +21,7 @@ type Graph = Vec<Dependency>;
 /// This will (currently) return a list of lists of IDs that can be safely
 /// run concurrently. Each "stage" is blocking in this model, which will
 /// change in the future. Don't use this function widely, yet.
-pub(crate) fn import_graph<'a>(progs: HashMap<String, NodeRef<'a, Program>>) -> Result<Vec<Vec<String>>> {
+pub fn import_graph<'a>(progs: HashMap<String, NodeRef<'a, Program>>) -> Result<Vec<Vec<String>>> {
     let mut graph = Graph::new();
 
     for (name, program) in progs.iter() {
