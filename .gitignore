@@ -25,6 +25,7 @@ yarn-error.log*
 
 .idea
 .vscode
+.helix
 src/wasm-lib/.idea
 src/wasm-lib/.vscode
 
@@ -40,11 +41,14 @@ e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
 e2e/playwright/temp2.png
 e2e/playwright/temp3.png
+# this will be overridden for specific directories
+e2e/playwright/**/*.png
 # exports from snapshot-tests.spec.ts "exports of each format should work"
 e2e/playwright/export-snapshots/*
 !e2e/playwright/export-snapshots/*.png
+!e2e/playwright/snapshot-tests.spec.ts-snapshots/*.png
 
-
+/kcl-samples
 /test-results/
 /playwright-report/
 /blob-report/

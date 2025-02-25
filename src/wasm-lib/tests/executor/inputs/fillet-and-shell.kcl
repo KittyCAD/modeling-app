@@ -38,24 +38,24 @@ const miniHdmiHole = startSketchAt([
        1,
        border + miniHdmiDistance - (miniHdmiWidth / 2)
      ], %)
-  |> close(%)
+  |> close()
 
 const case = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([caseWidth, 0], %, $edge1)
-  |> lineTo([caseWidth, caseLength], %, $edge2)
-  |> lineTo([0, caseLength], %, $edge3)
-  |> close(%, $edge4)
-  |> extrude(caseHeight, %)
-  |> fillet({
-    radius: 1,
-    tags: [
+  |> line(endAbsolute = [caseWidth, 0], $edge1)
+  |> line(endAbsolute = [caseWidth, caseLength], $edge2)
+  |> line(endAbsolute = [0, caseLength], $edge3)
+  |> close(tag = $edge4)
+  |> extrude(length = caseHeight)
+  |> fillet(
+    radius = 1,
+    tags = [
     getNextAdjacentEdge(edge1),
     getNextAdjacentEdge(edge2),
     getNextAdjacentEdge(edge3),
     getNextAdjacentEdge(edge4)
     ],
-  }, %)
+  )
 
 
 fn m25Screw = (x, y, height) => {
@@ -63,7 +63,7 @@ fn m25Screw = (x, y, height) => {
     |> startProfileAt([0, 0], %)
     |> circle({ center: [x, y], radius: 2.5 }, %)
     |> hole(circle({ center: [x, y], radius: 1.25 }, %), %)
-    |> extrude(height, %)
+    |> extrude(length = height)
   return screw
 }
 
@@ -75,7 +75,7 @@ m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLengt
 
 m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), screwHeight)
 
-shell({
-  faces: ['end'],
-  thickness: caseThickness
-}, case)
+shell(
+  faces = ['end'],
+  thickness = caseThickness
+)

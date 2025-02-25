@@ -1,12 +1,15 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_on_face.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
         "sourceRange": [
           24,
           28,
@@ -26,50 +29,79 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          193,
-          194,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          196,
-          197,
+          217,
+          218,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      185,
-      198,
+      200,
+      219,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          224,
-          231,
+          245,
+          252,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "here",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
-          233,
-          237,
+          254,
+          258,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      210,
-      238,
+      231,
+      259,
       0
     ],
     "type": "StdLibCall",
@@ -78,27 +110,45 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          364,
-          365,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          367,
-          368,
+          403,
+          404,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      356,
-      369,
+      386,
+      405,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

@@ -1,9 +1,8 @@
-import { ArtifactGraph } from 'lang/std/artifactGraph'
 import { Selections } from 'lib/selections'
 import { Expr } from 'wasm-lib/kcl/bindings/Expr'
 import { Program } from 'wasm-lib/kcl/bindings/Program'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { PathToNode, VariableDeclarator } from 'lang/wasm'
+import { ArtifactGraph, PathToNode, VariableDeclarator } from 'lang/wasm'
 import {
   getPathToExtrudeForSegmentSelection,
   mutateAstWithTagForSketchSegment,
@@ -18,19 +17,32 @@ import {
   createObjectExpression,
   createArrayExpression,
   createVariableDeclaration,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
 } from 'lang/modifyAst'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
+import { KclManager } from 'lang/KclSingleton'
+import { EngineCommandManager } from 'lang/std/engineConnection'
+import EditorManager from 'editor/manager'
+import CodeManager from 'lang/codeManager'
 
 export function addShell({
   node,
   selection,
   artifactGraph,
   thickness,
+  dependencies,
 }: {
   node: Node<Program>
   selection: Selections
   artifactGraph: ArtifactGraph
   thickness: Expr
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
 
@@ -43,7 +55,8 @@ export function addShell({
     const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
       graphSelection,
-      artifactGraph
+      artifactGraph,
+      dependencies
     )
     if (err(extrudeLookupResult)) {
       return new Error("Couldn't find extrude")
@@ -64,7 +77,10 @@ export function addShell({
     if (err(extrudeNode) || err(segmentNode)) {
       return new Error("Couldn't find extrude")
     }
-    if (extrudeNode.node.init.type === 'CallExpression') {
+    if (
+      extrudeNode.node.init.type === 'CallExpression' ||
+      extrudeNode.node.init.type === 'CallExpressionKw'
+    ) {
       pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
     } else if (segmentNode.node.init.type === 'PipeExpression') {
       pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode
@@ -107,13 +123,14 @@ export function addShell({
   }
 
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
-  const shell = createCallExpressionStdLib('shell', [
-    createObjectExpression({
-      faces: createArrayExpression(expressions),
-      thickness,
-    }),
+  const shell = createCallExpressionStdLibKw(
+    'shell',
     createIdentifier(extrudeNode.node.id.name),
-  ])
+    [
+      createLabeledArg('faces', createArrayExpression(expressions)),
+      createLabeledArg('thickness', thickness),
+    ]
+  )
   const declaration = createVariableDeclaration(name, shell)
 
   // TODO: check if we should append at the end like here or right after the extrude
@@ -123,8 +140,7 @@ export function addShell({
     [modifiedAst.body.length - 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['unlabeled', 'CallExpressionKw'],
   ]
   return {
     modifiedAst,

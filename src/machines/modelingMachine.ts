@@ -1,6 +1,5 @@
 import {
   PathToNode,
-  ProgramMemory,
   VariableDeclaration,
   VariableDeclarator,
   parse,
@@ -16,10 +15,8 @@ import {
 } from 'lib/selections'
 import { assign, fromPromise, fromCallback, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import {
-  isNodeSafeToReplacePath,
-  getNodePathFromSourceRange,
-} from 'lang/queryAst'
+import { isNodeSafeToReplacePath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   kclManager,
   sceneInfra,
@@ -44,9 +41,9 @@ import {
 } from 'components/Toolbar/EqualLength'
 import { revolveSketch } from 'lang/modifyAst/addRevolve'
 import {
+  addHelix,
   addOffsetPlane,
   addSweep,
-  deleteFromSelection,
   extrudeSketch,
   loftSketches,
 } from 'lang/modifyAst'
@@ -72,18 +69,26 @@ import {
 } from 'components/Toolbar/SetAbsDistance'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, reportRejection, trap } from 'lib/trap'
-import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr } from 'lib/planes'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
-import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
 import { ToolbarModeName } from 'lib/toolbar'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
-import { Vector3 } from 'three'
+import { Mesh, Vector3 } from 'three'
 import { MachineManager } from 'components/MachineManagerProvider'
 import { addShell } from 'lang/modifyAst/addShell'
 import { KclCommandValue } from 'lib/commandTypes'
+import { ModelingMachineContext } from 'components/ModelingMachineProvider'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from 'lang/modifyAst/deleteSelection'
+import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
+import { createProfileStartHandle } from 'clientSideScene/segments'
+import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
+import { setAppearance } from 'lang/modifyAst/setAppearance'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -104,7 +109,9 @@ export type SetSelections =
   | {
       selectionType: 'completeSelection'
       selection: Selections
-      updatedPathToNode?: PathToNode
+      updatedSketchEntryNodePath?: PathToNode
+      updatedSketchNodePaths?: PathToNode[]
+      updatedPlaneNodePath?: PathToNode
     }
   | {
       selectionType: 'mirrorCodeMirrorSelections'
@@ -129,12 +136,26 @@ export type MouseState =
     }
 
 export interface SketchDetails {
-  sketchPathToNode: PathToNode
+  sketchEntryNodePath: PathToNode
+  sketchNodePaths: PathToNode[]
+  planeNodePath: PathToNode
   zAxis: [number, number, number]
   yAxis: [number, number, number]
   origin: [number, number, number]
   // face id or plane id, both are strings
   animateTargetId?: string
+  // this is the expression that was added when as sketch tool was used but not completed
+  // i.e first click for the center of the circle, but not the second click for the radius
+  // we added a circle to editor, but they bailed out early so we should remove it, set to -1 to ignore
+  expressionIndexToDelete?: number
+}
+
+export interface SketchDetailsUpdate {
+  updatedEntryNodePath: PathToNode
+  updatedSketchNodePaths: PathToNode[]
+  updatedPlaneNodePath?: PathToNode
+  // see comment in SketchDetails
+  expressionIndexToDelete: number
 }
 
 export interface SegmentOverlay {
@@ -143,10 +164,12 @@ export interface SegmentOverlay {
   group: any
   pathToNode: PathToNode
   visible: boolean
+  hasThreeDotMenu: boolean
+  filterValue?: string
 }
 
 export interface SegmentOverlays {
-  [pathToNodeString: string]: SegmentOverlay
+  [pathToNodeString: string]: SegmentOverlay[]
 }
 
 export interface EdgeCutInfo {
@@ -197,7 +220,7 @@ export type SegmentOverlayPayload =
   | {
       type: 'set-one'
       pathToNodeString: string
-      seg: SegmentOverlay
+      seg: SegmentOverlay[]
     }
   | {
       type: 'delete-one'
@@ -205,7 +228,7 @@ export type SegmentOverlayPayload =
     }
   | { type: 'clear' }
   | {
-      type: 'set-many'
+      type: 'add-many'
       overlays: SegmentOverlays
     }
 
@@ -220,7 +243,8 @@ export type SketchTool =
   | 'rectangle'
   | 'center rectangle'
   | 'circle'
-  | 'circle3Points'
+  | 'circleThreePoint'
+  | 'circleThreePointNeo'
   | 'none'
 
 export type ModelingMachineEvent =
@@ -246,7 +270,14 @@ export type ModelingMachineEvent =
   | { type: 'Toggle gui mode' }
   | { type: 'Cancel'; cleanup?: () => void }
   | { type: 'CancelSketch' }
-  | { type: 'Add start point' }
+  | {
+      type: 'Add start point' | 'Continue existing profile'
+      data: {
+        sketchNodePaths: PathToNode[]
+        sketchEntryNodePath: PathToNode
+      }
+    }
+  | { type: 'Close sketch' }
   | { type: 'Make segment horizontal' }
   | { type: 'Make segment vertical' }
   | { type: 'Constrain horizontal distance' }
@@ -277,8 +308,14 @@ export type ModelingMachineEvent =
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
+  | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
+  | {
+      type: 'Delete selection'
+      data: ModelingCommandSchema['Delete selection']
+    }
+  | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | {
       type: 'Add rectangle origin'
       data: [x: number, y: number]
@@ -292,11 +329,32 @@ export type ModelingMachineEvent =
       data: [x: number, y: number]
     }
   | {
+      type: 'Add first point'
+      data: [x: number, y: number]
+    }
+  | {
+      type: 'Add second point'
+      data: {
+        p1: [x: number, y: number]
+        p2: [x: number, y: number]
+      }
+    }
+  | {
       type: 'xstate.done.actor.animate-to-face'
       output: SketchDetails
     }
   | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
   | { type: `xstate.done.actor.do-constrain${string}`; output: SetSelections }
+  | {
+      type:
+        | 'xstate.done.actor.set-up-draft-circle'
+        | 'xstate.done.actor.set-up-draft-rectangle'
+        | 'xstate.done.actor.set-up-draft-center-rectangle'
+        | 'xstate.done.actor.set-up-draft-circle-three-point'
+        | 'xstate.done.actor.split-sketch-pipe-if-needed'
+        | 'xstate.done.actor.actor-circle-three-point'
+      output: SketchDetailsUpdate
+    }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set context'; data: Partial<Store> }
   | {
@@ -326,9 +384,9 @@ export type ModelingMachineEvent =
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
+  | { type: 'Finish circle three point' }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
-  | { type: 'stop-internal' }
 
 export type MoveDesc = { line: number; snippet: string }
 
@@ -379,7 +437,9 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
     graphSelections: [],
   },
   sketchDetails: {
-    sketchPathToNode: [],
+    sketchEntryNodePath: [],
+    planeNodePath: [],
+    sketchNodePaths: [],
     zAxis: [0, 0, 1],
     yAxis: [0, 1, 0],
     origin: [0, 0, 0],
@@ -405,27 +465,8 @@ export const modelingMachine = setup({
     'Selection is on face': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
-    'has made first point': ({ context }) => {
-      if (!context.sketchDetails?.sketchPathToNode) return false
-      const variableDeclaration = getNodeFromPath<VariableDeclarator>(
-        kclManager.ast,
-        context.sketchDetails.sketchPathToNode,
-        'VariableDeclarator'
-      )
-      if (err(variableDeclaration)) return false
-      if (variableDeclaration.node.type !== 'VariableDeclarator') return false
-      const pipeExpression = variableDeclaration.node.init
-      if (pipeExpression.type !== 'PipeExpression') return false
-      const hasStartSketchOn = pipeExpression.body.some(
-        (item) =>
-          item.type === 'CallExpression' && item.callee.name === 'startSketchOn'
-      )
-      return hasStartSketchOn && pipeExpression.body.length > 1
-    },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
-    'is editing 3-point circle': ({ context: { sketchDetails } }) =>
-      isEditing3PointCircle({ sketchDetails }),
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
       const info = horzVertInfo(selectionRanges, 'horizontal')
       if (trap(info)) return false
@@ -569,22 +610,28 @@ export const modelingMachine = setup({
       currentTool === 'tangentialArc' &&
       isEditingExistingSketch({ sketchDetails }),
 
-    'next is rectangle': ({ context: { sketchDetails, currentTool } }) =>
-      currentTool === 'rectangle' &&
-      canRectangleOrCircleTool({ sketchDetails }),
-    'next is center rectangle': ({ context: { sketchDetails, currentTool } }) =>
-      currentTool === 'center rectangle' &&
-      canRectangleOrCircleTool({ sketchDetails }),
-    'next is circle': ({ context: { sketchDetails, currentTool } }) =>
-      currentTool === 'circle' && canRectangleOrCircleTool({ sketchDetails }),
-    'next is circle 3 point': ({ context: { sketchDetails, currentTool } }) =>
-      currentTool === 'circle3Points' &&
-      canRectangleOrCircleTool({ sketchDetails }),
+    'next is rectangle': ({ context: { currentTool } }) =>
+      currentTool === 'rectangle',
+    'next is center rectangle': ({ context: { currentTool } }) =>
+      currentTool === 'center rectangle',
+    'next is circle': ({ context: { currentTool } }) =>
+      currentTool === 'circle',
+    'next is circle three point': ({ context: { currentTool } }) =>
+      currentTool === 'circleThreePoint',
+    'next is circle three point neo': ({ context: { currentTool } }) =>
+      currentTool === 'circleThreePointNeo',
     'next is line': ({ context }) => context.currentTool === 'line',
     'next is none': ({ context }) => context.currentTool === 'none',
   },
   // end guards
   actions: {
+    toastError: ({ event }) => {
+      if ('output' in event && event.output instanceof Error) {
+        toast.error(event.output.message)
+      } else if ('data' in event && event.data instanceof Error) {
+        toast.error(event.data.message)
+      }
+    },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
         'data' in event && event.data && 'tool' in event.data
@@ -598,11 +645,11 @@ export const modelingMachine = setup({
     'enter modeling mode': assign({ currentMode: 'modeling' }),
     'set sketchMetadata from pathToNode': assign(
       ({ context: { sketchDetails } }) => {
-        if (!sketchDetails?.sketchPathToNode || !sketchDetails) return {}
+        if (!sketchDetails?.sketchEntryNodePath || !sketchDetails) return {}
         return {
           sketchDetails: {
             ...sketchDetails,
-            sketchPathToNode: sketchDetails.sketchPathToNode,
+            sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           },
         }
       }
@@ -639,56 +686,6 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'AST extrude': ({ context: { store }, event }) => {
-      if (event.type !== 'Extrude') return
-      ;(async () => {
-        if (!event.data) return
-        const { selection, distance } = event.data
-        let ast = kclManager.ast
-        if (
-          'variableName' in distance &&
-          distance.variableName &&
-          distance.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(
-            distance.insertIndex,
-            0,
-            distance.variableDeclarationAst
-          )
-          ast.body = newBody
-        }
-        const pathToNode = getNodePathFromSourceRange(
-          ast,
-          selection.graphSelections[0]?.codeRef.range
-        )
-        const extrudeSketchRes = extrudeSketch(
-          ast,
-          pathToNode,
-          false,
-          'variableName' in distance
-            ? distance.variableIdentifierAst
-            : distance.valueAst
-        )
-        if (trap(extrudeSketchRes)) return
-        const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
-
-        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: [pathToExtrudeArg],
-          zoomToFit: true,
-          zoomOnRangeAndType: {
-            range: selection.graphSelections[0]?.codeRef.range,
-            type: 'path',
-          },
-        })
-
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-        if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
-        }
-      })().catch(reportRejection)
-    },
     'AST revolve': ({ context: { store }, event }) => {
       if (event.type !== 'Revolve') return
       ;(async () => {
@@ -714,13 +711,14 @@ export const modelingMachine = setup({
         const revolveSketchRes = revolveSketch(
           ast,
           pathToNode,
-          false,
           'variableName' in angle
             ? angle.variableIdentifierAst
             : angle.valueAst,
           axisOrEdge,
           axis,
-          edge
+          edge,
+          engineCommandManager.artifactGraph,
+          selection.graphSelections[0]?.artifact
         )
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
@@ -741,38 +739,6 @@ export const modelingMachine = setup({
         }
       })().catch(reportRejection)
     },
-    'AST delete selection': ({ context: { selectionRanges } }) => {
-      ;(async () => {
-        const errorMessage =
-          'Unable to delete selection. Please edit manually in code pane.'
-        let ast = kclManager.ast
-
-        const modifiedAst = await deleteFromSelection(
-          ast,
-          selectionRanges.graphSelections[0],
-          kclManager.programMemory,
-          getFaceDetails
-        )
-        if (err(modifiedAst)) {
-          toast.error(errorMessage)
-          return
-        }
-
-        const testExecute = await executeAst({
-          ast: modifiedAst,
-          engineCommandManager,
-          // We make sure to send an empty program memory to denote we mean mock mode.
-          programMemoryOverride: ProgramMemory.empty(),
-        })
-        if (testExecute.errors.length) {
-          toast.error(errorMessage)
-          return
-        }
-
-        await kclManager.updateAst(modifiedAst, true)
-        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
-      })().catch(reportRejection)
-    },
     'set selection filter to curves only': () => {
       ;(async () => {
         await engineCommandManager.sendSceneCommand({
@@ -791,11 +757,12 @@ export const modelingMachine = setup({
       if (!sketchDetails) return
       ;(async () => {
         if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
-          await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          sceneEntitiesManager.tearDownSketch({ removeAxis: false })
         }
         sceneInfra.resetMouseListeners()
         await sceneEntitiesManager.setupSketch({
-          sketchPathToNode: sketchDetails?.sketchPathToNode || [],
+          sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
+          sketchNodePaths: sketchDetails.sketchNodePaths,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
@@ -803,28 +770,33 @@ export const modelingMachine = setup({
           selectionRanges,
         })
         sceneInfra.resetMouseListeners()
+
         sceneEntitiesManager.setupSketchIdleCallbacks({
-          pathToNode: sketchDetails?.sketchPathToNode || [],
+          sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
+          sketchNodePaths: sketchDetails.sketchNodePaths,
+          planeNodePath: sketchDetails.planeNodePath,
         })
       })().catch(reportRejection)
     },
     'tear down client sketch': () => {
       if (sceneEntitiesManager.activeSegments) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         sceneEntitiesManager.tearDownSketch({ removeAxis: false })
       }
     },
     'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
-    'set up draft line': ({ context: { sketchDetails } }) => {
-      if (!sketchDetails) return
+    'set up draft line': assign(({ context: { sketchDetails }, event }) => {
+      if (!sketchDetails) return {}
+      if (event.type !== 'Add start point') return {}
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager
         .setupDraftSegment(
-          sketchDetails.sketchPathToNode,
+          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin,
@@ -833,14 +805,24 @@ export const modelingMachine = setup({
         .then(() => {
           return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
         })
-    },
-    'set up draft arc': ({ context: { sketchDetails } }) => {
-      if (!sketchDetails) return
+      return {
+        sketchDetails: {
+          ...sketchDetails,
+          sketchEntryNodePath: event.data.sketchEntryNodePath,
+          sketchNodePaths: event.data.sketchNodePaths,
+        },
+      }
+    }),
+    'set up draft arc': assign(({ context: { sketchDetails }, event }) => {
+      if (!sketchDetails) return {}
+      if (event.type !== 'Continue existing profile') return {}
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager
         .setupDraftSegment(
-          sketchDetails.sketchPathToNode,
+          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin,
@@ -849,12 +831,32 @@ export const modelingMachine = setup({
         .then(() => {
           return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
         })
-    },
+      return {
+        sketchDetails: {
+          ...sketchDetails,
+          sketchEntryNodePath: event.data.sketchEntryNodePath,
+          sketchNodePaths: event.data.sketchNodePaths,
+        },
+      }
+    }),
     'listen for rectangle origin': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
-      sceneEntitiesManager.setupNoPointsListener({
-        sketchDetails,
-        afterClick: (args) => {
+      const quaternion = quaternionFromUpNForward(
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.zAxis)
+      )
+
+      // Position the click raycast plane
+      if (sceneEntitiesManager.intersectionPlane) {
+        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+          quaternion
+        )
+        sceneEntitiesManager.intersectionPlane.position.copy(
+          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+        )
+      }
+      sceneInfra.setCallbacks({
+        onClick: (args) => {
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
             sceneInfra.modelingSend({
@@ -870,10 +872,22 @@ export const modelingMachine = setup({
 
     'listen for center rectangle origin': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
-      // setupNoPointsListener has the code for startProfileAt onClick
-      sceneEntitiesManager.setupNoPointsListener({
-        sketchDetails,
-        afterClick: (args) => {
+      const quaternion = quaternionFromUpNForward(
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.zAxis)
+      )
+
+      // Position the click raycast plane
+      if (sceneEntitiesManager.intersectionPlane) {
+        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+          quaternion
+        )
+        sceneEntitiesManager.intersectionPlane.position.copy(
+          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+        )
+      }
+      sceneInfra.setCallbacks({
+        onClick: (args) => {
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
             sceneInfra.modelingSend({
@@ -908,7 +922,7 @@ export const modelingMachine = setup({
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const { intersectionPoint } = args
-          if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode)
+          if (!intersectionPoint?.twoD || !sketchDetails?.sketchEntryNodePath)
             return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
@@ -922,81 +936,171 @@ export const modelingMachine = setup({
         },
       })
     },
-    'set up draft rectangle': ({ context: { sketchDetails }, event }) => {
-      if (event.type !== 'Add rectangle origin') return
-      if (!sketchDetails || !event.data) return
+    'listen for circle first point': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+      const quaternion = quaternionFromUpNForward(
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.zAxis)
+      )
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager
-        .setupDraftRectangle(
-          sketchDetails.sketchPathToNode,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          event.data
+      // Position the click raycast plane
+      if (sceneEntitiesManager.intersectionPlane) {
+        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+          quaternion
         )
-        .then(() => {
-          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-        })
+        sceneEntitiesManager.intersectionPlane.position.copy(
+          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+        )
+      }
+      sceneInfra.setCallbacks({
+        onClick: (args) => {
+          if (!args) return
+          if (args.mouseEvent.which !== 1) return
+          const { intersectionPoint } = args
+          if (!intersectionPoint?.twoD || !sketchDetails?.sketchEntryNodePath)
+            return
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            sceneInfra.modelingSend({
+              type: 'Add first point',
+              data: [twoD.x, twoD.y],
+            })
+          } else {
+            console.error('No intersection point found')
+          }
+        },
+      })
     },
-    'set up draft center rectangle': ({
+    'listen for circle second point': ({
       context: { sketchDetails },
       event,
     }) => {
-      if (event.type !== 'Add center rectangle origin') return
-      if (!sketchDetails || !event.data) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setupDraftCenterRectangle(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        event.data
-      )
-    },
-    'set up draft circle': ({ context: { sketchDetails }, event }) => {
-      if (event.type !== 'Add circle origin') return
-      if (!sketchDetails || !event.data) return
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager
-        .setupDraftCircle(
-          sketchDetails.sketchPathToNode,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          event.data
-        )
-        .then(() => {
-          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-        })
-    },
-    'set up draft line without teardown': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
+      if (event.type !== 'Add first point') return
+      const quaternion = quaternionFromUpNForward(
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.zAxis)
+      )
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager
-        .setupDraftSegment(
-          sketchDetails.sketchPathToNode,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          'line',
-          false
+      // Position the click raycast plane
+      if (sceneEntitiesManager.intersectionPlane) {
+        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+          quaternion
         )
-        .then(() => {
-          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-        })
+        sceneEntitiesManager.intersectionPlane.position.copy(
+          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+        )
+      }
+
+      const dummy = new Mesh()
+      dummy.position.set(0, 0, 0)
+      const scale = sceneInfra.getClientSceneScaleFactor(dummy)
+      const position = new Vector3(event.data[0], event.data[1], 0)
+      position.applyQuaternion(quaternion)
+      const draftPoint = createProfileStartHandle({
+        isDraft: true,
+        from: event.data,
+        scale,
+        theme: sceneInfra._theme,
+      })
+      draftPoint.position.copy(position)
+      sceneInfra.scene.add(draftPoint)
+
+      sceneInfra.setCallbacks({
+        onClick: (args) => {
+          if (!args) return
+          if (args.mouseEvent.which !== 1) return
+          const { intersectionPoint } = args
+          if (!intersectionPoint?.twoD || !sketchDetails?.sketchEntryNodePath)
+            return
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            sceneInfra.modelingSend({
+              type: 'Add second point',
+              data: {
+                p1: event.data,
+                p2: [twoD.x, twoD.y],
+              },
+            })
+          } else {
+            console.error('No intersection point found')
+          }
+        },
+      })
     },
+    'update sketchDetails': assign(({ event, context }) => {
+      if (
+        event.type !== 'xstate.done.actor.actor-circle-three-point' &&
+        event.type !== 'xstate.done.actor.set-up-draft-circle' &&
+        event.type !== 'xstate.done.actor.set-up-draft-circle-three-point' &&
+        event.type !== 'xstate.done.actor.set-up-draft-rectangle' &&
+        event.type !== 'xstate.done.actor.set-up-draft-center-rectangle' &&
+        event.type !== 'xstate.done.actor.split-sketch-pipe-if-needed'
+      )
+        return {}
+      if (!context.sketchDetails) return {}
+      if (event.output.expressionIndexToDelete >= 0) {
+        const _ast = structuredClone(kclManager.ast)
+        _ast.body.splice(event.output.expressionIndexToDelete, 1)
+      }
+      return {
+        sketchDetails: {
+          ...context.sketchDetails,
+          planeNodePath:
+            event.output.updatedPlaneNodePath ||
+            context.sketchDetails?.planeNodePath ||
+            [],
+          sketchEntryNodePath: event.output.updatedEntryNodePath,
+          sketchNodePaths: event.output.updatedSketchNodePaths,
+          expressionIndexToDelete: event.output.expressionIndexToDelete,
+        },
+      }
+    }),
+    're-eval nodePaths': assign(({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return {}
+      const planeArtifact = [
+        ...engineCommandManager.artifactGraph.values(),
+      ].find(
+        (artifact) =>
+          artifact.type === 'plane' &&
+          JSON.stringify(artifact.codeRef.pathToNode) ===
+            JSON.stringify(sketchDetails.planeNodePath)
+      )
+      if (planeArtifact?.type !== 'plane') return {}
+      const newPaths = getPathsFromPlaneArtifact(
+        planeArtifact,
+        engineCommandManager.artifactGraph,
+        kclManager.ast
+      )
+      return {
+        sketchDetails: {
+          ...sketchDetails,
+          sketchNodePaths: newPaths,
+          sketchEntryNodePath: newPaths[0],
+        },
+        selectionRanges: {
+          otherSelections: [],
+          graphSelections: [],
+        },
+      }
+    }),
     'show default planes': () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       kclManager.showPlanes()
     },
-    'setup noPoints onClick listener': ({ context: { sketchDetails } }) => {
+    'setup noPoints onClick listener': ({
+      context: { sketchDetails, currentTool },
+    }) => {
       if (!sketchDetails) return
       sceneEntitiesManager.setupNoPointsListener({
         sketchDetails,
-        afterClick: () => sceneInfra.modelingSend({ type: 'Add start point' }),
+        currentTool,
+        afterClick: (_, data) =>
+          sceneInfra.modelingSend(
+            currentTool === 'tangentialArc'
+              ? { type: 'Continue existing profile', data }
+              : { type: 'Add start point', data }
+          ),
       })
     },
     'add axis n grid': ({ context: { sketchDetails } }) => {
@@ -1005,7 +1109,7 @@ export const modelingMachine = setup({
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.createSketchAxis(
-        sketchDetails.sketchPathToNode || [],
+        sketchDetails.sketchEntryNodePath || [],
         sketchDetails.zAxis,
         sketchDetails.yAxis,
         sketchDetails.origin
@@ -1067,6 +1171,21 @@ export const modelingMachine = setup({
         return result
       },
     }),
+    'remove draft point': () => {
+      const draftPoint = sceneInfra.scene.getObjectByName(DRAFT_POINT)
+      if (draftPoint) {
+        sceneInfra.scene.remove(draftPoint)
+      }
+    },
+    'reset deleteIndex': assign(({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return {}
+      return {
+        sketchDetails: {
+          ...sketchDetails,
+          expressionIndexToDelete: -1,
+        },
+      }
+    }),
     Make: () => {},
     'enable copilot': () => {},
     'disable copilot': () => {},
@@ -1099,6 +1218,8 @@ export const modelingMachine = setup({
         if (!sketchDetails) return
         let updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           pathToNodeMap[0],
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           constraint.modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1129,13 +1250,15 @@ export const modelingMachine = setup({
           selectionRanges,
           'horizontal',
           kclManager.ast,
-          kclManager.programMemory
+          kclManager.variables
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode,
+          sketchDetails.sketchEntryNodePath,
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1164,13 +1287,15 @@ export const modelingMachine = setup({
           selectionRanges,
           'vertical',
           kclManager.ast,
-          kclManager.programMemory
+          kclManager.variables
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode || [],
+          sketchDetails.sketchEntryNodePath || [],
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1203,7 +1328,9 @@ export const modelingMachine = setup({
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
+          sketchDetails?.sketchEntryNodePath || [],
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1237,7 +1364,9 @@ export const modelingMachine = setup({
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
+          sketchDetails?.sketchEntryNodePath || [],
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1271,7 +1400,9 @@ export const modelingMachine = setup({
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
+          sketchDetails?.sketchEntryNodePath || [],
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1305,7 +1436,9 @@ export const modelingMachine = setup({
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
+          sketchDetails?.sketchEntryNodePath || [],
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1346,7 +1479,9 @@ export const modelingMachine = setup({
         if (err(recastAst) || !resultIsOk(recastAst)) return
 
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
+          sketchDetails?.sketchEntryNodePath || [],
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           recastAst.program,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1380,7 +1515,9 @@ export const modelingMachine = setup({
         const { modifiedAst, pathToNodeMap } = constraint
         if (!sketchDetails) return
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails?.sketchPathToNode || [],
+          sketchDetails?.sketchEntryNodePath || [],
+          sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1442,24 +1579,12 @@ export const modelingMachine = setup({
     ),
     'animate-to-face': fromPromise(
       async (_: { input?: ExtrudeFacePlane | DefaultPlane | OffsetPlane }) => {
-        return {} as
-          | undefined
-          | {
-              sketchPathToNode: PathToNode
-              zAxis: [number, number, number]
-              yAxis: [number, number, number]
-              origin: [number, number, number]
-            }
+        return {} as ModelingMachineContext['sketchDetails']
       }
     ),
     'animate-to-sketch': fromPromise(
       async (_: { input: Pick<ModelingMachineContext, 'selectionRanges'> }) => {
-        return {} as {
-          sketchPathToNode: PathToNode
-          zAxis: [number, number, number]
-          yAxis: [number, number, number]
-          origin: [number, number, number]
-        }
+        return {} as ModelingMachineContext['sketchDetails']
       }
     ),
     'Get horizontal info': fromPromise(
@@ -1493,6 +1618,88 @@ export const modelingMachine = setup({
         return {} as SetSelections
       }
     ),
+    extrudeAstMod: fromPromise<
+      unknown,
+      ModelingCommandSchema['Extrude'] | undefined
+    >(async ({ input }) => {
+      if (!input) return new Error('No input provided')
+      const { selection, distance, nodeToEdit } = input
+      const isEditing =
+        nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number'
+      let ast = structuredClone(kclManager.ast)
+      let extrudeName: string | undefined = undefined
+
+      // If this is an edit flow, first we're going to remove the old extrusion
+      if (isEditing) {
+        // Extract the plane name from the node to edit
+        const extrudeNameNode = getNodeFromPath<VariableDeclaration>(
+          ast,
+          nodeToEdit,
+          'VariableDeclaration'
+        )
+        if (err(extrudeNameNode)) {
+          console.error('Error extracting plane name')
+        } else {
+          extrudeName = extrudeNameNode.node.declaration.id.name
+        }
+
+        // Removing the old extrusion statement
+        const newBody = [...ast.body]
+        newBody.splice(nodeToEdit[1][0] as number, 1)
+        ast.body = newBody
+      }
+
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        selection.graphSelections[0]?.codeRef.range
+      )
+      // Add an extrude statement to the AST
+      const extrudeSketchRes = extrudeSketch({
+        node: ast,
+        pathToNode,
+        artifact: selection.graphSelections[0].artifact,
+        artifactGraph: engineCommandManager.artifactGraph,
+        distance:
+          'variableName' in distance
+            ? distance.variableIdentifierAst
+            : distance.valueAst,
+        extrudeName,
+      })
+      if (err(extrudeSketchRes)) return extrudeSketchRes
+      const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
+
+      // Insert the distance variable if the user has provided a variable name
+      if (
+        'variableName' in distance &&
+        distance.variableName &&
+        typeof pathToExtrudeArg[1][0] === 'number'
+      ) {
+        const insertIndex = Math.min(
+          pathToExtrudeArg[1][0],
+          distance.insertIndex
+        )
+        const newBody = [...modifiedAst.body]
+        newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
+        modifiedAst.body = newBody
+        // Since we inserted a new variable, we need to update the path to the extrude argument
+        pathToExtrudeArg[1][0]++
+      }
+
+      const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+        focusPath: [pathToExtrudeArg],
+        zoomToFit: true,
+        zoomOnRangeAndType: {
+          range: selection.graphSelections[0]?.codeRef.range,
+          type: 'path',
+        },
+      })
+
+      await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
+      if (updatedAst?.selections) {
+        editorManager.selectRange(updatedAst?.selections)
+      }
+    }),
     offsetPlaneAstMod: fromPromise(
       async ({
         input,
@@ -1502,30 +1709,37 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         // Extract inputs
         const ast = kclManager.ast
-        const { plane: selection, distance } = input
+        const { plane: selection, distance, nodeToEdit } = input
+
+        let insertIndex: number | undefined = undefined
+        let planeName: string | undefined = undefined
+
+        // If this is an edit flow, first we're going to remove the old plane
+        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+          // Extract the plane name from the node to edit
+          const planeNameNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+          if (err(planeNameNode)) {
+            console.error('Error extracting plane name')
+          } else {
+            planeName = planeNameNode.node.declaration.id.name
+          }
+
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0], 1)
+          ast.body = newBody
+          insertIndex = nodeToEdit[1][0]
+        }
 
         // Extract the default plane from selection
         const plane = selection.otherSelections[0]
         if (!(plane && plane instanceof Object && 'name' in plane))
           return trap('No plane selected')
 
-        // Insert the distance variable if it exists
-        if (
-          'variableName' in distance &&
-          distance.variableName &&
-          distance.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(
-            distance.insertIndex,
-            0,
-            distance.variableDeclarationAst
-          )
-          ast.body = newBody
-        }
-
         // Get the default plane name from the selection
-
         const offsetPlaneResult = addOffsetPlane({
           node: ast,
           defaultPlane: plane.name,
@@ -1533,13 +1747,125 @@ export const modelingMachine = setup({
             'variableName' in distance
               ? distance.variableIdentifierAst
               : distance.valueAst,
+          insertIndex,
+          planeName,
         })
+
+        // Insert the distance variable if the user has provided a variable name
+        if (
+          'variableName' in distance &&
+          distance.variableName &&
+          typeof offsetPlaneResult.pathToNode[1][0] === 'number'
+        ) {
+          const insertIndex = Math.min(
+            offsetPlaneResult.pathToNode[1][0],
+            distance.insertIndex
+          )
+          const newBody = [...offsetPlaneResult.modifiedAst.body]
+          newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
+          offsetPlaneResult.modifiedAst.body = newBody
+          // Since we inserted a new variable, we need to update the path to the extrude argument
+          offsetPlaneResult.pathToNode[1][0]++
+        }
 
         const updateAstResult = await kclManager.updateAst(
           offsetPlaneResult.modifiedAst,
           true,
           {
             focusPath: [offsetPlaneResult.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
+    helixAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Helix'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const {
+          revolutions,
+          angleStart,
+          counterClockWise,
+          radius,
+          axis,
+          length,
+          nodeToEdit,
+        } = input
+
+        let opInsertIndex: number | undefined = undefined
+        let opVariableName: string | undefined = undefined
+
+        // If this is an edit flow, first we're going to remove the old one
+        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+          // Extract the old name from the node to edit
+          const oldNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+          if (err(oldNode)) {
+            console.error('Error extracting plane name')
+          } else {
+            opVariableName = oldNode.node.declaration.id.name
+          }
+
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0], 1)
+          ast.body = newBody
+          opInsertIndex = nodeToEdit[1][0]
+        }
+
+        for (const variable of [revolutions, angleStart, radius, length]) {
+          // Insert the variable if it exists
+          if (
+            'variableName' in variable &&
+            variable.variableName &&
+            variable.insertIndex !== undefined
+          ) {
+            const newBody = [...ast.body]
+            newBody.splice(
+              variable.insertIndex,
+              0,
+              variable.variableDeclarationAst
+            )
+            ast.body = newBody
+          }
+        }
+
+        const valueOrVariable = (variable: KclCommandValue) =>
+          'variableName' in variable
+            ? variable.variableIdentifierAst
+            : variable.valueAst
+
+        const result = addHelix({
+          node: ast,
+          revolutions: valueOrVariable(revolutions),
+          angleStart: valueOrVariable(angleStart),
+          counterClockWise,
+          radius: valueOrVariable(radius),
+          axis,
+          length: valueOrVariable(length),
+          insertIndex: opInsertIndex,
+          variableName: opVariableName,
+        })
+
+        const updateAstResult = await kclManager.updateAst(
+          result.modifiedAst,
+          true,
+          {
+            focusPath: [result.pathToNode],
           }
         )
 
@@ -1561,40 +1887,40 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         // Extract inputs
         const ast = kclManager.ast
-        const { profile, path } = input
+        const { target, trajectory } = input
 
         // Find the profile declaration
-        const profileNodePath = getNodePathFromSourceRange(
+        const targetNodePath = getNodePathFromSourceRange(
           ast,
-          profile.graphSelections[0].codeRef.range
+          target.graphSelections[0].codeRef.range
         )
-        const profileNode = getNodeFromPath<VariableDeclarator>(
+        const targetNode = getNodeFromPath<VariableDeclarator>(
           ast,
-          profileNodePath,
+          targetNodePath,
           'VariableDeclarator'
         )
-        if (err(profileNode)) {
+        if (err(targetNode)) {
           return new Error("Couldn't parse profile selection")
         }
-        const profileDeclarator = profileNode.node
+        const targetDeclarator = targetNode.node
 
         // Find the path declaration
-        const pathNodePath = getNodePathFromSourceRange(
+        const trajectoryNodePath = getNodePathFromSourceRange(
           ast,
-          path.graphSelections[0].codeRef.range
+          trajectory.graphSelections[0].codeRef.range
         )
-        const pathNode = getNodeFromPath<VariableDeclarator>(
+        const trajectoryNode = getNodeFromPath<VariableDeclarator>(
           ast,
-          pathNodePath,
+          trajectoryNodePath,
           'VariableDeclarator'
         )
-        if (err(pathNode)) {
+        if (err(trajectoryNode)) {
           return new Error("Couldn't parse path selection")
         }
-        const pathDeclarator = pathNode.node
+        const trajectoryDeclarator = trajectoryNode.node
 
         // Perform the sweep
-        const sweepRes = addSweep(ast, profileDeclarator, pathDeclarator)
+        const sweepRes = addSweep(ast, targetDeclarator, trajectoryDeclarator)
         const updateAstResult = await kclManager.updateAst(
           sweepRes.modifiedAst,
           true,
@@ -1669,6 +1995,12 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness } = input
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
 
         // Insert the thickness variable if it exists
         if (
@@ -1694,6 +2026,7 @@ export const modelingMachine = setup({
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
+          dependencies,
         })
         if (err(shellResult)) {
           return err(shellResult)
@@ -1733,14 +2066,69 @@ export const modelingMachine = setup({
           type: EdgeTreatmentType.Fillet,
           radius,
         }
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
 
         // Apply fillet to selection
         const filletResult = await applyEdgeTreatmentToSelection(
           ast,
           selection,
-          parameters
+          parameters,
+          dependencies
         )
         if (err(filletResult)) return filletResult
+      }
+    ),
+    'set-up-draft-circle': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-circle-three-point': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: { p1: [x: number, y: number]; p2: [x: number, y: number] }
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-rectangle': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'set-up-draft-center-rectangle': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
+          data: [x: number, y: number]
+        }
+      }) => {
+        return {} as SketchDetailsUpdate
+      }
+    ),
+    'setup-client-side-sketch-segments': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
+      }) => {
+        return undefined
+      }
+    ),
+    'split-sketch-pipe-if-needed': fromPromise(
+      async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
+        return {} as SketchDetailsUpdate
       }
     ),
     chamferAstMod: fromPromise(
@@ -1760,50 +2148,103 @@ export const modelingMachine = setup({
           type: EdgeTreatmentType.Chamfer,
           length,
         }
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
 
         // Apply chamfer to selection
         const chamferResult = await applyEdgeTreatmentToSelection(
           ast,
           selection,
-          parameters
+          parameters,
+          dependencies
         )
         if (err(chamferResult)) return chamferResult
       }
     ),
     'submit-prompt-edit': fromPromise(
-      async ({ input }: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {
-        console.log('doing thing', input)
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Prompt-to-edit']
+      }) => {}
+    ),
+    deleteSelectionAstMod: fromPromise(
+      ({
+        input: { selectionRanges },
+      }: {
+        input: { selectionRanges: Selections }
+      }) => {
+        return new Promise((resolve, reject) => {
+          if (!selectionRanges) {
+            reject(new Error(deletionErrorMessage))
+          }
+
+          const selection = selectionRanges.graphSelections[0]
+          if (!selectionRanges) {
+            reject(new Error(deletionErrorMessage))
+          }
+
+          deleteSelectionPromise(selection)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              resolve(result)
+            })
+            .catch(reject)
+        })
       }
     ),
-    // lee: I REALLY wanted to inline this at the location of the actor invocation
-    // but the type checker loses it's fricking mind because the `actors` prop
-    // this exists on now doesn't have the correct type if I do that. *agh*.
-    actorCircle3Point: fromCallback<
-      { type: '' }, // Not used. We receive() no events in this actor.
-      SketchDetails | undefined,
-      // Doesn't type-check anything for some reason.
-      { type: 'stop-internal' } // The 1 event we sendBack().
-    >(function ({ sendBack, receive, input: sketchDetails }) {
-      // In the wild event we have no sketch details, return immediately,
-      // destroying the actor and going back to idle state.
-      if (!sketchDetails) return
+    appearanceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Appearance'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { color, nodeToEdit } = input
+        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
+          return new Error('Appearance is only an edit flow')
+        }
 
-      const cleanupFn = sceneEntitiesManager.entryDraftCircle3Point(
-        // I make it clear that the stop is coming from an internal call
-        () => sendBack({ type: 'stop-internal' }),
-        sketchDetails.sketchPathToNode,
-        new Vector3(...sketchDetails.zAxis),
-        new Vector3(...sketchDetails.yAxis),
-        new Vector3(...sketchDetails.origin)
-      )
+        const result = setAppearance({
+          ast,
+          nodeToEdit,
+          color,
+        })
 
-      // When the state is exited (by anything, even itself), this is run!
-      return cleanupFn
-    }),
+        if (err(result)) {
+          return err(result)
+        }
+
+        const updateAstResult = await kclManager.updateAst(
+          result.modifiedAst,
+          true,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
   },
   // end actors
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANhoBWAHQAOAMwB2KQEY5AFgCcGqWqkAaEAE9Ew0RLEqa64TIBMKmTUXCAvk71oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEE1OWEJazVbYRVrRWsxZV0DRC0JGhpZCrkFNRo1ZRc3dCw8Ql8AgFtUAFcgwPYSdjAI3hiOLnjQRMEpKRp02alzOUV5cTU9QwQZMXmxWvMxaxkNGXlGkHcWr3b-cm4hvnYRqLG43mmpKwkVI9m1I4qYSZTZGWwSeyKRTqOTlOTWCwXK6eNp+fy+KAdMC4AIAeQAbmAAE6YEj6WAvZiscbcD5CTJpE5yE71WRiMTA0EIdSSZTsqRHDliWaKJHNFHEbFDIl3EhYokkfzcQLBUITSnRanvKJbQQc6zSKz1GjCOS7FSzPSJGRfRQSRRaOqwxQ0M1qMUeVoSbAQTBgAgAURxxMCAGs-OQABYat4TOlJfJ29QyYQuh22TJiLnwtQSBQKKTVL4qPJiD3XKDe33+oPSsMR6OKSJU2JxhJCazghTWYRSXIpWbCI5c4x29kFRy-OTaerllFVv2Bp5E7oYGNattTIRieF54Q937lNQls5cvlSCEcuqzGid11l1yXcVen2LgBKYHxqEwhPXrdp7ZJDuY7WH2cwWioCgyGeAoXrsag7AhSw2DIc4vtWBAADKoAAZs89CjBuAFbggoFyPaWi5KmUImq6XJ6r8EgMksyg7LI2hofgC7+t4kZYJgf40pM-CIGRFGZI4UIuqIcj0fsMhMT2LHMsKJxSJxlavv6ABi2CYH6+HNpq-7CdMO4KceN7GMy5SdmeKjmHm+SujIeQ2scGncUuLBEoZhEmfGeqqBCijmT2xwIbeZ5DheCJaNOCI2BooqPsi6GLsgJDhoJ2okUFki-BaKRHKI7LQcUCChUCEimkC9jZGI8iqJ5WkEAAIsEQwqn6arhARrxEaZ27MtILqusYrkOhYZ4AheOQIakCJ1BkqGpc+XGtQAKmATyCOwqCCEQACCbU5ZuIlAcFNRKCcDkyDkZ73fMWiZsKHIOSWLUYbiOE4UEARMKSuDDP1LZCYFO6SDQ9g7nYWg2NkXIIvu0iyOYFQCoo9SrU0nobRhAAKRKoB0TDsHtB2QBwZ3ERdYkOhJ1HSXRFUiCWim9iWKnsepa145p1YSJGPpgATQNwAQR2+dgOEkKE-hQAqTCRv4LBMN0pJDBANNDUkpU1RarqQRYfbwmeJoqBCvYKNCjWprYX1+hIsCRqgADuYtkBLUucLL8uKyQyv+GApOcJAOsQ9oeaw9Y1R5KaUUVXkDo1RYAKZD21Qpp53jhuwUbEGQlCYLnDYR4BAKW8YXOFqFtcbEnnYKfuLlWEcPaNTnecFx1BlgCqmJSuXJG22U2SFrHtR3uVurHJIoH7NDaimvCZFdw2BD3BgwcQBw-gQN0RKtPW+fRqDxng4BUkWdbrniNJKhcikBr2xo0NKBauTr6fEil6fACSGFMrhgHliHE-hCTS3ICQAS59Yy00SC6fYeYTg7lkFjXYO57LsmkA4AE4h0G1F5rjCsv9u6RjIQ2QBGUsr9yCIPcBrsj4AC8HgwOHhdF0dh7RDjOLDPsQJHpmDKJBfcxgP5iO-lGShACMJEG4LAdgCo8D+CYdgVhOIYH72wIoouIMjLwN1i6Tspg37mGNkyLMFVbA2lMDHdkdQjjQykRQv+UZqH+nkbgRRyjcAQOJJwaBmBtG6IoPo-yl8R7Q3IvBYUnZUgchnqJVyaRbypmvLHU0OMnz8xkdItxkYPHEAUUokgKijoACFvD+AABocMQeICyx5bDsmsisJGGhyK-ELOIcaNpXQuLyYUuRJTfH+EqdUgAmvUxASCFLTn+K5CcOwuSuVcukWOoihz1AKNktKXEClDKKV4nxZS-FkCgH6GZlUpJMUOPsXIKYdyyWsWYXMqRemgVdAiOQgyCnHNGWc-wfp8DsDPgYwa8YaKSAzmcFIK8kJI1HOkFY90MgAlsCoP55CAXeNKSopgxJCW4F3uQDWJAZS71CZQa5nSyhXjsNEuFj9rECnIp2dMsdVACgfCQ+chz-kjLxWMtRGiBj6X0P4GB2AoC4GuS6dZJYjihW0BjKxWxQrCjzCkaoXLpywl+XzUhAqcVCtOSoyBgSYGYEldK2V8qLDkRnOk0KDpmQNw1eIso9R4TyDOLdQ1fKvQmqoWa-FfjYC4EDv4fatSHVKGkAiRqy9VgrAUEjColt4RukcPqYhOTjXkKOWGsZkbo2xumXAyFV8Kh2isPYC08h8hgSRljeYvShx1FNLXQNBb+VFsFYuE54bg4AEduhaJBVAMFDqUaulddDZYNgWUat1UxGwnYCgmnhc4I1-aGzFqHYCglFLrXUCrQFGtAJTCyHuoOSC8EZq1HtFCY8dQbSWCxXu4NA7TVHuFUCokIdUCEjuMenEFIL2RM4Q4cijhWTAixlYF5GrCwKQKLMQqaMkLYtDe+MAggdohG6EMeVT0fhpwdKFV0JphDmyWGUVBux7qrFabh2Ri4t79ypgEA+R98AnyjPKqElsl49NvOaPI5sUw1RsMyKwdg027qDQc39eHPHgf8G7DgKso1YggBAmB3RwkDUvSPUQls7bqGhDZjQ1guRmHmMvD9y950IRSipysIaOP+ijBc-u+1vzXM7OCDMSxIK-FUmeB0kgrC5Ght8+EVhBlHTdmUgIoq2HBKpQMMJ-g8A4VQAQCA3AwDelwF+cMEgYDk0y5ozAggCuoGCy5Mo0NoTRLMByJGQIDQ7Ai32JD2QUtpb3nV8VITcuUHy7gQrBBiTEyJBIQGgxCtEg6NVvwghxswMa7N5rUHcp01a6aETWM5ipCWD18EZh8j5HMCkpYI30v+KgVonLeiZtzZK8DcrlWys1cEJa7AQS9uFZa3MGqx4zBjUzqFJGCMIRxzjmyacvK+0-oPall7wOgmTc+01+bRJFvLc1mtjbgPce7aaxDu0KZbBaCUKsLGSNQJV1NEcVQNpgQ7me3vCZtSvtFZ+2VvA-3NvkxIAAI1gIIPgYODsQrM8dgUIU0OgUdG9VZ5Qq45BY42xdvb9leaLdj-nVTBeE4W6gJbK32Dk4l4IaXsv5c08O+dRIcUYW1FTDkHsaT1WiVmoacQNt2ShWG9+1TWPRsBAF5MoXxXSt-dQFVwHzvBD6AVxDy29QGdDnHo1VZNE2tVESfdX3fO48W4T1b4nNvSerZtxTrbGes9u6V9Bz3FRJDCjsKaWo6ZoarORqYFYwobLKGnHs9aJuY8vYuX6RPIuU9p9b-gP02f3cINEj36QaCYqVwyEULY+QNA-GXeFE0sd0fG6GRIM3ARF-9zryTu3Dv08b4Ix3iJR3u+FnSFEFgjNGQ3ECRnZFzFTDeUaiPHuhSyYEBklSnTBTAwAzwHYCT1+zF1TzKyOm8E2kEHuDQNwEEGQPBV-w9131kCYi0DyENmXiUED1ImzVMCHFsFsGTgwXgMQOBWxGnRViIPNRxCJzfzJ2bwf3wMIPA1IL4JnW311jiirh3AxjmFQUUCRVV0nBLF+B7AdBn1yUOUf1ViJWxFJXJUpR0Smxf320wNFwqxwMd0JSJGJTMNJCJEEA+zCS307z-133WQKEwUFCUFTCSVIi+HIjQxOEnFOFjir2MOcNMJB3MPxzy1fwb3f3EMBycJcKSLcI8MsL0W8IoJ31Ina1MGo3ZGbUklCNAixmkGZCiOyBiKN1n3v0wjwAC1QG-E3kjH8xjS6NgR8MoNIjkyYmMH3AQnMEyGXifjnT7HSTsDqlAkGXaOBn6O-AkH-lwA4AIBa3EAhAxQtBzGZBP0QF9TzHMGLAxixg4ijznx-lWM6I2K2J2KoCbGKIUIcAUhOESgH0ZzsgqkqFMDOFg0cTNGcTuLaI6PWMwAkAADlUB-ACZUB0DYBJYIADNdFfJVYUScRgsSw7RfVbZbpzQ6MKpYRUllAYozBgQLMVjoTAtYSESkTcT2A0TSAwlBiPioVUwYlaC8gbIzgzRsxuFNAoRZA4sDVBkXiMDrkFAoYchFjbATQRQzwb8xiAQJxpJx9pTtjZT3jTMu8SgEQfhREdhM4LRHp7oFhs0oRUhB9BlNp-McRsAtEKVyB+iei+jGTrk0VyIEk5hagzQ1hQiEp0h2tqgKh4kPMMdo8f5ugSVESsT2AClcRcBbDV9cDJCEyStBBkzUy5V5CoUUwxxCx4RbYBQNAV0ziCgeEsM0FIJjxBkPxQhn8YSvT8AniuTDTfCwjcgx92Q0cslnNzZvhlB1BQJJzWQWiDCi0WzctLkuyH9Y9j4ggiCDN7giRgYiQCBdJtiXZ-AgNWyv9fToRRMTiOQ3RUh1CKpahJARQLAzgBRPpITDl5y2zGTlz0tj4bcZU8B0SDMjyFyl9fyoA8BTzjh7R5MdUIplARTm4ex9x4p5pZhmyQhgKly9ydE+IDN3yv9diiyr4chCTHBexCxOczZbyUgfhwTUxewe9fhBkiApQQw8LFz2y-NOyYSOFdRVgFIvhaT9wH1hQyTEhIsmIMUqhzBjgHImKWKZQ2Kl9PzH9j5Nztzdy8BsK7h5LDz0Ln9fTIQDjcghRdVaMzwCgs0W5UhIRshljXyi1mLgwFK9Kv8YSvzxgBNQL-yjoMTtKnLdLjz2KvLCyhiSikp5454Uk7Nqh7JjA9wfkrAHBbL8079DlHK6xFLMLNKXZIB-B0rWKXLFyCLQqFDsg61QI31VBoZ8gzwDVcF51mNMllNYz7jpFyA-QyBAhNZ-RhNqDHBOxaCOR3NTibkcFdhVDG07BtBmrUqHLuBgcBNY09Ncr8QjN-QV9sCqsSBFFh1fE4S5RIAAA1NalrbhayTsByXNaSkfVMKHAUe6ZNRqawJi+agJY+Jag6gzVazAYzEQ9IsQ9bCQba9gXas5fa-TY6n6kzMGXspNXMRdP3fIDkTVVZaSiEDIR87ndMOIwQkdIDLoUDXG3xNkjMzasrXMoms5QQfGkDAjSm9A06g0fBfqnQ48KTJOcIwA5kFYBCTFW4zze-Iw+mvxHbCVUm+wqrCm6Q0Wm1FrWEe0O2Wod+SiR6BycM0QKoM-aoHGzTKnMWjaiW8mg6YWoHN6oJWWwikiH5CIoqOYR1HYFZJOS6xSC0aETZGknW4g1RX8sVa1W1HAWVcW8XKW4g7bH2rLG1J3AOkK7kwCZGO0b5fIfcKImEcy2shyAvM-DOW8T2oQ17K1CVKVaOoOhwkOoQ02t7CVKOmVGOns4YhEbhBwCoY8KwaiFIaKaqL4I4KeAcZeW-Voww2PVAvOstJgfo2pEuyW426Q0eimOXFrYEe0TID6aEPsWwDNaoGqGxCk+KVYXOkdUe8eyZSeo2qQ0O2e-aTPOWqGUCUQaEG0Y8VtXsRNYi4M44FSfesZMAcdSdWQyME+iQMu8NQjH+hrMghe+YV2z+PilMByWqrVNgsqd6YESCT+oFJgU9fSLAABoB3xQQDBhULB7smG+u10LpNuZnPPLBJOVVFBdzLIB5Gagehy3orizaAY4q2Oq23rC-EsJKu09mjVUsdIBCfYC7TdDyeyg9IgVhmAfwdh7ot4kq+MHsGTXNU0fIAsROIR-IERxCcRu7fQwtaR2R-uBRzAXY6wZRuOnpMfJYI4NSfsaLXRlaMRxOjDJi0x+RjhqgGQaxkiOFXMKEYwa-N6ZkZx+eUR1VVeBxzxvo8x3YlQfxumVQiEX4eqWEWoBCMkoRvsaOVFHmtBZqKRn+GR+JnxsQZJz3VJh6jJuod9HJ2ZZUjZE0ayrGDdJh2c6R7AIkdqrsjsuRn0y2i6cSjQJxQsaS+6aspIKjQ0QS2wM0ESpinpvptylSzyo+MC9MnyjclZkCzZ8C4Z60PfcPLnD6R0FDXfKON1CY2OUKKCZZ3ppSgY9yzgATN8EgXeXoDS-cgQvZ6Gi+Xs+wBCdIRq1YTRpgu8b3DINg50VjR51Zz8rCnKgzIgf5zhuukopOu0H1MZyCPQk0Wq10eq8faq1ITp4x0+fwXAREv2HiVUXjMAWWDWAGcWa5QQDBOxEI5eIEZVaZxCrmnYccXIWObOSEsgbADoQYd6xElbYGABiVqVoYOeul65C0NIY0XFtmgEGo00Pcbm0sO+SPAWxV6Vxa2V8WP623AGjbU15Vy+1Vo5pp+ebIIsd+DIURVZaihTYi7QO5nsTyO1mV4OPgSw1c8hBV7YpVgjS+2AchNVr4JiF0WaNMDkWkkcOdQ4PICTL5fu3JI6BAm1H836f6VWS1g28XXCP6PwT2YGI6RRdweVHBCqoV3mnYbIflnQsofVO81pl8gWgtxA4t6t1lr2K1xve3cQqt-6WtsAet9gRtp1m5RkLW34dJNBGo+CUxVQd1FMDnTyQdotgTTAXCDAithwk9vCedxdqpjsTegcNkEVoSyFk0e82DYwY8acDQCl+cQ9-QY+S9jA63a1pvQGwD699AdlrlJiAsc0+OFpVtcEUQBqD6L95eA9wt-9gTHK-SABnDzACD7WJdwQcKNreJf1591taggk2zRs79jDod7DviXD4Didh3fDwjqDudW8WOCjhD6xdg9IOuD1uj9DyEv94+ImEmMmOenjPD7oKXDoDgfB4mUOQjXePyTF3WDl3cB+DIZGBJaEBHBwMoJNeDUTn9r0CTgTKTtTy+uT1jjIwG2ABTpT8mJgVTmTnjdl5QA0PTzIVpocIz6xRCRNJxVDjQMTx8GljAeAKIY3Lhi6QQWEKGBCRxo8AheiHMdIGEewYy6oC0R2MARL6YIccid9dL+p4ULkWg+0CqkLEqEUIroWEWWduLkhkokQOob1OFPsDL6rpOV9eo5iYEWok4Zrl2d2NrkroQc0vMF6B7SoL982Fxxg28FIV0CeFxGb7kYlsZuKKqmS6ZwQGECSrGdQZSZCdjdxasHbgR-fHIOoALghRpyqY4NIbIJZDkFiF0FK5h+fMbcO+rFI6bJrO71uiSyMyYgRD1USRY6QSCTdHm7tSzuM6RIwvWkH6wwrcH3YPMRwVQLmKk9ugTzIUwXQ19+DPvOIgXGpIXcH26o0SszpHcGY6xFICyCfGiauAvGnmvenrTnk26nvFmk4btS57YF0f0zZeYicsVgWwehfVysHwXq+auCiFeB7dGEapGunTRuYGKdrbgm1Xg0FAQ8DdgXHi8VzGFrDdJpFacPRvPHML4c4Ep9Hoe7IxIslNwrHgXjroxfcSQB2iKCwCwB6VlULXIBQR7luIx-dB4hkgYu72uWTBwaoxY00EcFOFByM1piTPNyl6RR4tymUu7+oSAyEDPivCX5kdneYhg6HWS93ihEvz8ml9bGBHbzsOKxddYcfO217rnCSpnCUuTAZFviQNvl55k5E1E7vjlaQNSfMG0cfGriweb+wdyfpNjSfsv1XkiMCcM4yoEE4iXvISCqylMc0juePzHH+J0zsl0t03p-onbqZgqMrzQeoVMEarJDZd7u02OBIZBkOZJMgMF8gFk7u3Sb1Byn3CooRMDmWYGMRcwyR2mMZWagekyowlu+UEERp2BbrcoqoI4brhFjhzAhXIf3Lpj-GwHKUVy2HEINwA3I25ty3fdBPgI9a1RGC0zexqaQ4LHA7ar6NCoFWeYbF1mUAJUAc2EiGIVGrvelEFx45RFa+Z1RChVVUDH4qBRfChLQJebIscK-gTKmwJwTPxwiBqY4MPlvKOQcguyHYGkiiJyV-KOg78N320BwYe8V+aiKET4ovwu0eQbQOmH2AOCMqhVUQbCXEFgYtyxId-tDF5DuCW4ng8ytCHip9IkqOQTQQn2kT5VnKIgpcuEOCrRCdg9oOIfHVWAd1cw92PPPYFgzpD7+mQnSk4NhJ6DcqWQgwSEOK4H8LoW-WIQKA8FQgvBeAndtymPyopBkfTTqrAG6p3d+q3qZ+PmDLLTRBuJoH4M+wcB3gUgX6BXnNQqxvVzW1LT6oZihrg9dGOwFYP8ATgZAJeCMA0DyjLLftbwM5LQa82Hp41gMhNC3u10BbDFJIBodJuIDuhnYmCMWAqAhAYIiZMMaDFRDLS2AB8eSeQH4DATMB2ARM9mJOGcB+E2Bdg26PihgP+4-whautM2n7XB5wjfhiIyaBHw1QOR5gKSZMDCCREQiRaQPcVCbztTSDq05mEkTASVoYYYqScZNDVBsi7IsRhfDIRQnxFe09aLI6OsSJ+FcjygPI1INFEKF1BxyF2ZjAyMCBRox6saGpEcOD7KEYhCMc0hmiHD74e8IIqqjULR5iih6wtTUeWkRKTI9Rl4WEIaNUbDhrEygZ6E9E1J54xOmwgHgEDtHf0J0wSMgjKPhHAt5Rbqc-u6nXQDVokPqDIBqIIZnpMARw+ZE3SWDQwnyhYGaM-T7qWRKg8MOJmw2T4dDPcDkJ1OMRWhTEYW0WVXK42iYSM7+1oiQGiyeZdlcBm9fvNzQBC+djA+Y0TDsFzT9jryz1Sfh2MRYvM8hUgtgbo17HyAxxiFDNNc0LC3Nx8DzScf8zWb0CJBHzL5h8JkE2MFxKYPsQUCSyvcm4L8cCLC3T47AEWoQiQE0NRb-N5xBUM8UuIvEriQuerViJCCUhNEXE1LWlnLHaEwjAIJHI4DVCHBHE-cS8UIicH4q8Ik0-YOzCKK9BBtdhcrcCZ8JKIAFk6+4e+r2Hpy6tgRPxdQH3VUCo9KwWEiQbGh2hhtsO5CHbo72nCRZxENgFiK917BpA7wbkZYH0IY5HsJB07NEDhJ24kd1AczdiLmnGixwespo0qOLxWjaBWxlYazhIMA6SSyuPXSrneRGr6N98E+L9qIEyTCSsOEg-DjpJ3B6S-W-XQyQoHmCap+sqYAEMlnE6YdJOnncmPZw042TyuaXeyVV0Mkpp4RjaOgsC15guAgAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANhoBWAHQAOAMwB2KQEY5AFgCcGqWqkAaEAE9Ew0RLEqa64TIBMKmTUXCAvk71oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEE1OWEJazVbYRVrRWsxZV0DRC0JGhpZCrkFNRo1ZRc3dCw8Ql8AgFtUAFcgwPYSdjAI3hiOLnjQRMEpKRp02alzOUV5cTU9QwQZMXmxWvMxaxkNGXlGkHcWr3b-cm4hvnYRqLG43mmpKwkVI9m1I4qYSZTZGWwSeyKRTqOTlOTWCwXK6eNp+fy+KAdMC4AIAeQAbmAAE6YEj6WAvZiscbcD5CTJpE5yE71WRiMTA0EIdSSZTsqRHDliWaKJHNFHEbFDIl3EhYokkfzcQLBUITSnRanvKJbQQc6zSKz1GjCOS7FSzPSJGRfRQSRRaOqwxQ0M1qMUeVoSbAQTBgAgAURxxMCAGs-OQABYat4TOlJfJ29QyYQuh22TJiLnwtQSBQKKTVL4qPJiD3XKDe33+oPSsMR6OKSJU2JxhJCazghTWYRSXIpWbCI5c4x29kFRy-OTaerllFVv2Bp5E7oYGNattTIT7KQSYQIjR5IEpDbFBDWVIGmQO1KmsQpuden2LgBKYHxqEwhPXrdp7aSHK5ioJa7Bodg7JyZ58pI8jwkC96dkoziuJc4pPtWPgAO5gGATA-jSkz8NuagqNIKTiIo+zZL2chcvk+Q-OYJF5PYczWI++ALv6AAyqAAGbPPQowbn+W4AUsebwjQNgqKkLoCnRuQGlCXzsvUahnEsHGVs+-reJGWCYPh2piXqsz2uUjhWDYjgOHRULzKoGQKJOORAtpXEEAAYtgmB+oJzaar+hHTMKcjSDIvwposk50eYpFWBYsJLDQGSIihyLoYuRCRnKfHEsZm5EUkoh2qIDhmHMDq9iodFWKRmgWgCuwmhyHm6UuLBEgFwnBfGerwuk1haPuFT5BY1hcpR7JlKkXxWAU+SpO1GHICQ4aFaJxUDTIEK9nkwJLPuGlTcBu1mIm1QaWcyFNJ6nEdQAIsEQwqn6arhEJrwiSF24rHmxz2KIWhmsBU0CpIzk9mcFqzAoK2LgAKmATyCOwqCCEQACCj2bb9AGqHmWhKCcZ05FNkXzFombChywElgj-q4nxfFBAETCkrgwxfS2BH9ampEChVQ55C64hTRoBozlC9jTtUzKMwQAASLR8Hj-XCrudiFqlvy7PeWZnsNpTSbUxjXiDKiKwACkSqAdEw7BoxjkAcOr-4iOCJEnBew1mj2ih0fYkgafRvyKCROQyIzEiRj6YDW5zcAEFj3XYHxJChP4UAKkwkb+CwTDdKSQwQO7pmiJI2RzKosIWr7U0mqR0UuVFqa2DHsCRqgmGJ2Qyep5wGdZznJB5-4YAO5wkDl9tO55mITnVAdsKTVBuS7qIPKZD21QPhlaGcd44bsFGxBkJQmDHw2s+JC6kUQj2GQ7OUkVTVC4X3sC0JnJVskedfU+kYCDPX8mAFUmIpS30QNCSQTdCwXlqJ2aSXJBDHEhgKWoJxTTwj9gAk+Z97gYAnhADg-gIDdCJK0esQDoEIChBpPMDhtAWjqKBNeWw5i5iODaGo2h9wZHwQ2CQgCowAElVrrXAUESBOJ-CEjTuQEgRkeZBT5v+GWQEHDAmvKbZktEoKRVzCsJQw0OTZFFAfe6lZRGRhEQQyMEjFxrXDBArEcju5UIAF4PGUXQqEnZpAXl+OIGwKxarr1khINQVg5hAmon2IRQD7ENicf6Ig3BYDsAVHgfwnjsA+JxMo8h2AskX25oFWMW074ugNAHaa+QLRDmEEHGwPxmSiCMcEpJUYUlALScQTJ2SSC5IUZwJRmASllIoBU3q6ixJQmUPaFYwJYSpmkoHI2B5ok5D9koCoDIel2NsQMjJuAsk5NwP4LGAAhbw-gAAa-jVi7WaSmaSi0Th0S0HaeQsNg4xPKGWKxFY+m9JORhM5FyRlXNufcgAms8s4Px1mug0hyFBZ57AMR-kOIEUcVhHLBY4yFQzLn+DIFAP0zz6h7lSqaFkpjF5xTsHuW8NcDgXiJRC7KZKYX+D9Pgdg0ZVFVPxipSQwpgJmHZJ2VMRQtj5BmjeI4TojpWxBfOWxxLTl8tyUwYkBrcCkPIMXEgMpSHTMoP410aQTGUW7A6V0ETFVmjtKsOYcJhTOrkNyhxurznDNyfkwpAw-L6ApTgKAuBnlQlmsyWWQ4dgyFOkcPMqwAS2oYX61JpLA3krGdgCZmAI3KOwNG55F49wFDghpeqHCYH6jKGihwKyBY5v6Xm6FuTYC4DHv4dGjznmph+H2PFJwlACgVTAgce47CpBiaTDQt1ULWOJTqrtQarm9v7YOxFoqfrxihCOjIBQrAOvEHUOiFRdoxN7MNAELp6garuqC7VPL0l6quWAAAjt0YpgqoDCueSWPMN1Ez0XKC6mBxg0hLBSvYWoEcV2ZSPg4jdvL838qYOa5RfoVGVMPRovk6RfhAhTOofs4MJKpSUA6TIyhKJSA7eIzd5KiST1QISO4X72AUgPX1DRdQ4PXkhHXF0hstjKFND8F+xx4krGvCxklr4wCCBRiEboQx-H3lIvi-s+RZhmK5Oi+0CCFqURhr6zVXp33+owkQ8BrsAgUKofgGhUYaW7WdCwrh7CuQ63tJ2aE8tUz0eUwG7tVzMIcHzn2rEEB5HKO6LM76gmFlHkYhUJjEcmRcmvKkaQJZOzhwFNZ19Wr0MfoIFGSl4D0afjoT2X4KKNJNI0qoaDCBpykQUDwoGF4KJEqxphEZAQQ2+MmZagYMz-B4D4qgAgEBuBgG9LgD84YJAwCdhNopmBBDzdQE1yiBpjCCgKPsTIXX0FpEGwyBExsX2rrfehkbY28moG8ZNqZM3KBzdwAtggxI7ZEgkBzQYC2iQdC234QQu2w0HYB0dgT8ziq5HvBCM4+RTRDmOEOIODofhhWkjaWJzGbNoeEW9shhaJk-fKf9wHy2uZrY26t7bghafKMRwt47JgIJDkXoWDNknECdgROka67IrLTg0sN0bNPiTjOKdNhnh2gdEhB2DkukPocc65-tw7fO7S6y3vsIXBjFWFFMLIWEF0I7TXl+9uFjzGeLeZ6tvAbOYdOxIAAI1gIIPgPPkeEfS2jyc0S5hLFSMyI4xhvnaFMLTCO8TGlPdQzY17CuAgu4eW7jXWvwfsF1z7wQ-vA-B6NyjkyEehzVt9khiwJEWlGwFAaaod5Uw2nkChw+Weqc5+uXc-w8KC8e9Z6gTbHOK+CH0CHvnpFF5AgcEYmyKasWv2icoUJqZjBKCd2Ql3Y-1fA8+9riHn29ew9n-P6vYfUeJFyPXrI9dez7lmBvrYuj5gWk738dQDQQ-AISlP0cfFbSfafG-fAP0BfGvIqJ-RwSVCObQE0acYmOKRhSKL4CwejHkYAilGA8BU-TXc-YvUvGfIguAh-WvRA4waJTsFIHYcwWQBSI2KKUwa8BlYaECDPfvddLGJgDmCNQDYVHjLDPAdgJbCAr3KfVbLGbwRGQQe4CQ3AQQUQkVGghAsXRwV5T5AEZiHkOqXIUdaEBEE4e8H2YbIQktAVbEIDfOFQqLKQs-UHcgq-CQBQpQpwrddQ+w4DeA6pHQ7ICECOcwzWEsU8RVReXMCodYcaEiaSAgg1IkI1E1M1C1UpX7YgpHaQlnWQqAp2FItIotDIwQVXGZaguZWgnQuNZQFYWECaY6L-MXOSImAEYEayE7YFCrWzbPd7Yo7EdI0kTIq1HIwHVwi-EvDwjnQY41UokY8orI8pKotLR-Wo91ZeRonIZouiRTdowCLowUIlbiPAerVAT8GrXKfAc4xrQI-GH2MqKoYaSKDpS3GBZkXcM9MwWSReG6aOCnAfZJU4rmAdC4zACQMRXADgFOCARLMpbqAuVASQuhWGSGJ+WweTWEFo+hVYBKU0TsFMQXTBE4s4sEz8SE6EqQ0gGZAjao7Q88OmCEZYX4Y4RgiwRuKJK7aEEsbISmAE3oynYEskhrCE3AK-ZRYgTAVgaRBxVE6PIaMWX4EiXYNgqTa8JMTre9Nhc0Uk0E0UiQHyaEruAuO2PiXyf0CfAo1bNmboJgZQnAKUQQNgDAZ0hxZ0sAWRPjOQVE2WaQAsedKyXIKaDIO0QsFyE0RjAEcnQUoE3pEE24iEo00pfOJgM0i0wvMgnXDw20+08gR0nEZ0+ON0hsD0r02AH0+4+MYCBQe0XsH4jogJEM9QaQFqKcWSBEJIwE9dKEmEuhLBOdAUScIceWLrD+O0eEWmJyW1CoIlXsqQqgJsekoIhAOte0Y9M0V0X+JQEMqtb+E0YLTsHo57SrYRRGOrHEbAYpc1cgMEq4urckuktYmo7keSSXWQGcW8AERuCXHsJQMwGJAoGJSxWM9dc8m4y868okW89GSkmEs5TgXAFLCePgLI6hNM-iC01E7+d8+o1KaSOwKaUQU7AoVKViAUGwGMk8vos8i8zgKCmC1ACQcUqHSUogaUvoWAOUqs-8WSPIZtDrGWZvKIj4r4IaZfa8a6MIolcCmASCyZG8sEw0vAFM00zCxcK09bOQiQXMh07AJ0l0tTLi0smRdxPjYQVEhEO0ZBMwVIZUxwIipPFMFMZDYUVYNqbs7VWSqUK8hS6CpS5Mk0jC80xcSY9wqHHSvwO0vSgy4s4yoBMssy2ACynisSUrInKwGoRwQkqaO3PaauFYAoXk48zPddboY1VAfoc1dgWxXEXAPIz3LSzbLwwQcq5bZ0gYbqWqmNVK4qdMXaRwFvYCPIQqzZKTBwXcFISiUWedBBIlN8UIUAxM+8m4x8uhFMWEe0KVJuMwaacGaoIna8cwHRbE+akIGbKlRMzwnPahIIFQxLe4IkLmIkbyFSk0jjRaog1E7QKWEiWQM7Y2MaxAUTcKT-HfEaOVPvNdbVBai6sAg06nRCqAJUKhKAPAWExLD6uG8BT7ctPAb6vsaQI8QcTEqEb5HICELc5QWSdSKi0qmG86pax85S40gyRLWGpahqyAm0qKvMgsp2QykshK0yqUfjLQlcnIJQMoQsIxIXZyfLE0WIi0VPfYe+GJM6z6y65mkgOE6hCABUASfwLGzmzS73NmVq+0-WkgASQQY2r63qxIdQFssi4OJYXIaEBWoER+RwDNSI+dDW7G7W3W9zK2w2u2y6zMtw7MiK826K0Op2cO6lB2xAOwBwPaJYeSMweQBtc8WocKAkjQUJLBLs0C7VIgKUEMDmogx8lamANa5O88YXdIV0ZQeQOYIXVvKTZiMzeEdy6EKdIlcu4MGUKurWhGm69zR656161mu4CumURO1LXmF83YewUwbQHktAgoRSWQIrJ2vILhIFQe+e-wUe+G8E66sbahXGtG+qrGOEue4eo2xm6um+-Ghu3YaEQ0dBFKZDa7A5Lat0OwdkOy4+p+s+q6wKtm-wIeusCBrm60yK9gaK-M-SwswW+KqMRK0W6wSy-6Z9BQYEGJPWVpO1KDfsHINSPg6G9DWByul+sei+nWxLeOx+usRehBpqnmp2OOg2p2SgYe22hhpO8W-GT+vTbE1iU0DreycyV0DIUcZ0aoMBuB4Rq65h8hPhthkMDhsK6O6HWOy2vh5Q+eoRzWkR5c-GHILAy7ayYUSueyJZcxZW+wKDZaTy9DfMsAMgQIEuf0fxJ+IJYCU2EsFkES+hZvH4Um4aaTB0Qe7gQtdzQdeLSAJLTAFLTh73EgLJKFLdAAOTlEgAADVksl61EXylJdobBrpMgHByhp1thpo9wQtSxOw3VytqKhTekzlEnkbknCnEt8RSnI6pjS9sn2BcnLkCmEsSn0mymxV4xchkUnUSIW9ccgbthjhdxwlxAjhMhVAGgPHB93sfD2NONuNTmYU+NMntL2rLm8AhGuhCRlDeNjtAl24Lx4Q-kr0oI2iHRmDDxzFZwjnklEbxCosPsvs9sS0bnNs7mv04dcbQ08N9BjsWz-y4k+wboOT14bQgsN5TQ6hkMBTOm4y7EwX7mrkDcYXTbbmMZKXOclci0UXjtF5TAHI-qLZOwKYdgis6gd5F5Uh7wCDKXIWClJtbCy1o1YXVt4XVDEWoWw0S1y8o0erRHFnoRHJIp5BakXKFBToWsUxglxA+w7AAQRWv15EmXi1S1VWZWJA5WotGXFEUWVXy01XLGNX3nmRygSIEQwp3j6EzBHIlAgQ+w6MmMLXVDAg+0mAwTHl7XHXfCd17T0Yg80XdwBQ9YtAbBgQc6I5-pg3KoC7KKo2IWU3434VE36WEWU3nY59WWEo87sr5MKhr19w8xzALCLt9gzgy2t0J4-0AN-DgFaW4Wa35Xf1-19sNC0X5gf4qJ6gFAZIiK00OQZbKIaboR+3yUcMFQ-IsBq2Xn5W928NqAG70dwpSx9w5ZF58h9qEp2R1ALB1BYFqGXthEcoHzEZwS5tWYCB1rCxcx5pIixp8UQzdhGJScNkz06b+Cy7ri66f3Pw-3YAAOlznyGTeFgPjBQPTXsgKYKgoOcDrxYPB7EPwFkPJl040OqBrB1X-xsPDQLFah8OxyiTiPOlprexyPv3f2aOAOZAGOxImOQOI4wOCOoI3JOOYPHA4OaHP2KP-AqPUOAOVBhPipRPcPxO2PTpCazoSPuP5OP3kkv3VqVOBOqAxANPrQgPmO8PX8ppg2ZPSO5P33TzTOlOLP-2qBhAbPga7OxPWPHOoJ54DOuPYP3OaLTPsBoLz7LjatVrRSmtP90gn1bQrtUxwYolCxHR98A5zgQXunYuvHmbEbr7Ub0b76HqSuwC36PXMOVyWo0hzceR4QLF8t55n538hZgIBRB7aurryv3MXwdbsBegZ7VLyBBu6FdhBps6H1F4+ScSbQKabQ1JkMlBQGiu7EiBBvmaoHUm9u4vLSZCuGkGUH+aizXTMHIxsGcRYAVA8HwpQ5F1LI5Z8s2QwMdxpwlVVAoaTPiuTug7SEQ6tHpuTv7XDHyjjGIevHZuTQqnmI2zZJCKsVkomFYRtBa5UpKIBvgeDTmG9bwfBuRnwqDHYdeHrb+GZuG7wIl8OWLBhR8gVvLs8w61nUtzxBePzOL7YAOYOAkaPNUzsADUoeBeBb3SmBRe1N05BAuZIAZ4G76M9gOln3QJmQc6P9xK27zClgUgeekO+eJehfbuC4Zeyf9GdKJehasHpeDUDs+J5ecIMAy5lfIpJVmoWf6gv4uR9gr32QmfDMM0QLSX10zOjeKTczhf-BIca6x3uHLu0GBa4r3SRaHuZB1rSP7Q7AdiI4Chf4TMOQomC-W6TQLAAePPumvO+feaY+4-RTLfL8Y7eaYr0HU+TLPSkrM+L2hXQjmQooSwvgGnCWfhF0mluxWp8fSvhUONwEWBJCa7Eu67ku6emfolY9Ls9lO6U7pPiLEpKGLDp-4bIw5+kTF-x6r73NzSiQslz+cQMbY-Yu7+F+cRvrxAbcLw8gUgAL72zwchCYduC0PEidrH96sp-HCPfwCCX9xg7mO6twESyv8pC1XFUPdSgHykxKNoUJP+WEw4lwIBodutkEGzEx3QO3CQMdxn4QD5+yJORIT2DrI1WGcPE-mfyQFQ9KeRjansoUG5owqBggJAd9WvBkRLYJWP5FyHpjzBz0RrWCPfDAEDoqBUAsrhPT6ZxwiQiAmgVISgZ3B9us-SAfwLp7Ew6Ul6cQObA0BiChQnBVZmcDkyyCdB1Ai-hfUO41cCe8g1gQnwu581k+13Iymny76i0xAz3OdE3GVriBgy--ddmUH3DyAIIlMEqvBwcT+BxSsfTOHpFVAuYwAGcYuOzCTh0JBA+fZPN3mIbrNrs9BXeDsHHBKQOkHkMgNgA6CDBqEg6cHFzHtbVDahQwetsPHmZEY0qYlY0EuzAj58cSu8PMAyhWAs8XQ2QKodCVaH1DKqjQ-0Ho2b7Q4WhgwNTGmw6EBNIY2QIsNJD7AkRUg+WFIHuEig5AI4fYUYZXy9DLCheg6FGGhTgEOJmhUwlYfW1u7yk0gvQtysLE6IjgO2FgCiA9j+Dc9uyVwmYShTuHI1buTfaYhFSuGrCMYrwi9hYGbRPozs9jPIAFhbL0wsglcdbuxG7KCFhC1CFGNklXCnd8i53YkSuAwBYwsk7gVEvMARDrIrAmVa6IGy-6kRbAo1GwNojMAeQCRJaIkcuFJFQjS8lI0kTSPYB0i1+zdJkc5WnBnA2Re8MoAUFYJ9geRUXTiPyP0DX0WYbMAuEnHtb8RWYfgPuFzAlFSj-O2wEOKsB2HUQkMO-ehORFMC3hSwufHsHyJsLaj3MRovUXMJFEeEfRJopOOaPQDrUWu+vSiFUDqCLBr0LoPaGsCTRHkFY+Iz0dQgMg4A+A9rdMdgD4Ahi3eloyDqHETDt5YYoQxVIWEZByomeAiKIR6MJHuZsxmYhYdCOhyNi8xCPaJDYGLGAgjMGzZ+LyEbyMjCSyY0ClqNurYRcIUPCcUwHbF09JUx4bBKWBtEOiMwA1WSEK3CT-ANRlYMcXAOnH+iY6042cZaK9obwkIIQlYLRjoj3gtYXBEsOYDMJ2A6xAo9zNKQEj2s3x7AY8Z63-D7B0gH+dceyCTSDCd8ZQJqAOGyyO4Ux9Y5Gp+IPHQ5Px34xrvjHrzXRKMhYe8OcMUhf1dYd7fuuMNiFrpdxEI9MZgCh6kSkJy9BksX0WDPoSwdQCoMyiNgmhdwLocwL7H+bujoJL4kiYZHgk6UKJtI0MQ3RHTMjgkBYTXuiKNgBJOCwMAOIfw6alViJT-A9lITcEhV-IlE8ptRJe4HAYiow+wCWCDg0Y5u0kYLKsFNDPivRyNDSX4H4m2SvxQk-MT+LEjCg9wkQ44VCAAH452Ca9Z+PRiXEnArJ1CWrB0HygvU3BoU8KVpIWaMdJqQ4YsPROyCZBBhYWf8Ygn2TLo8Ro41MZPVyhhTiQ-EqKcSBildDNOuYTKqoEYkVB8U7IOqGYDS4HhMwYSRSfwWUm2x7Yjsets5ih7dA-cHQDgHwLthTx1MpCHqMhPjC8sNk56UcPeABA7Ad6dqeDKGVEDJQSWSk3KcjQ6kjS02PU5saXlgB9SBpRRYaV1OczrVJA2JVUmmDeIriuxDBAipRSaSWSLg4pDAPACiCZ4XJ20PKnUDOA-VfWJrVBPdNkgFYdwSqV4ozG+nTARyZQGpmqIYnCgAstKe8SsAkwvJ+u3ZXSLHHjimi4A0MoQKIFiLwzOytQJGVBAYT+kGQXwTICTFIGgVsZXcHuHjI+lUSVyggHYB3mphdtKgsuH8hgkjHORXQc1HbgTO6wnBokezQqtJDxSi56E7wg8oASajlB0opdKrPZj9Biylx7LKwJyKD4J4KZa9NSFYOMAJoCC8OFXMsVmyHYtZKyatD9VCZf82RlFYYfyVXjExtxAhIfAbnpzWykctstem3SnQdFjg+raSWJWAiIQQkraYzlX3JZD488buW2aBkhApBZIao2SCuK+Cg1VA-wZvPWU9naowWx+JORNI0RVTO28IaoCVmhCmgFaadPksYER62APKas45mQiZo2yy5CyVQLtHgyLBJ0mcllJDEiL2Nisc3awsITsJCpHCvGAOZvBrksQNIeJa8cyDS6AzFMN6Quf0TIRzFhi5qX2X9i7lszxUv0yzDeIzB9iTE9oeQDEg3h+t1pcQ4RAmUfJizKGwHAMjq2MBliYESUdpAOH-LozWpCnYUvqQvrzk35JYJMHegyAQyme78CWdkFSihyGU0kYBYDzsQvyDSLFWoZgDFm7BAkhmeoJRQH6BtVgdRHYPsxAhbNCJGCiQFgocFvVUy6ZTWd3OKiBkx+9ZSiBYhWAUwLQQWAGmaCBjoK45cFdgGLPzCSznIkYlMDKnfi-DKMWCbHqshkp0VfKFKfyujDfmWYho4gTOfZQdHQgk8oMg5MCCbg7BVFEFein5UYpiK35R1ZPDgV2YpArATnAUO5JCGqoa0yjMgd5XkoaLbFOC5RG-IMHURHAsIbsGHKkyd4jhlGV0B8lzmWK5K1igJQFSYVqUQqYAexWnXmlhtuw4EXKmmkLqr4d45EWOdF16RtVKqCJGqg4jqpiylIDUA2DvjAiuKoIcIe0BvUloxMbAAdJmqKTfmAxpaA-AEN2BSB1RCwROPEoJRkFkCIGigq-hCJCAICeMT1YkG-OshDQ982sIXF1iOoSDakd2YwNoD6XV0YBQverhspNBE5BsdQY4DsL2KExYklgEWN-AuFdM7E8yg0o4NPpqM35YUMzFuRZIBI5ZXY6BaIGyB-ELA5Sj5RIC+VMN6Bmjans-XMZZK2Fjtb1MMLIq58eScsh9LmBPDHVcOQilRvQ1RWvz0VKdQktvnTlENIVcssIhINzbOR6gYWemWHzLon14VFJYbsjSnrrLKV3IDHg+LQLyBLCbIi8GkHozkQ9YUc0lSPTUYLLYByNS5YKvIxJguxfFCakYWYmugiaKQaoPI07LbzP2XKxVd8qYVHczVqK-5SRGrRph+ETPZ2QUB+BOo9Y6KQsPKt+Xkq6BLDcHifUXq2rH20Yl4gtBzpLNm4jGaGDsFNZEovGPjWAH4y1mIRTAzSbvBVFyCBtM0nS9lPRgJLZSOVtDBJkyySaVUUmgzUprbI-7MJ7AYqoxVEuBrcLJI-rf3ldhEUVL45JzS1hxiebgJKWfGLWXm3XJnoGMGKb8r80xFpgV8G9EnDu35QWzw0g6zIMOsGro4su68HsMyWznZy9YqUOdaMmtYosl1ykbjqOvXXqkH4bJU0P3VaiqzC17cgIKKwXWStVWx64dQiAtDOVw4p0ZFMKFKVpQ8SJq0FkPlFbUtbW7rN9VCFVSfr6oHIJzhkGbS-dK4prOXGQIpaWsK2g6B5FWrgQO5-mjGMyRLD-Gx40FWAm9u2thXobo2mGyqvChw1lA8NsgAjTYHba9YCFceVQBdneVktL6ZCUVlO2HYzzINJ2aFV+u3pQRNl8GX4P9WOA7x91VyU9gezwWCqd8VTc9NoC24Chew4MDtr2L-LQgAkj8kBdXz44ocaOYsnVrmCUh3s4YYRLrACAaiXz1Ah9I4DYPBKDKENr3RKK2nGVYoayY-e8OX2XaEk3NPKpQSjTxqERYpaVYEHAkFzasJwroTrg-HvRRQY19QUPvTVobaCL6vK0+mN16Bvz-uRMGuO3WlwNM26fczkdeAPB3sjNdCigfFyTKWrEsjWtFSfOrJ4o4ZwMQeWxM+7uLJySkQuvNG43h8ctFJInmD2RVMD2t2kiWgtB+AhMboiRDZrIskD-UNIcMWWGaEN6Ud3NKm02WUCWijL4MB9fLG0i+ZxFMSAsVQLtuU7G8cA7AU3vEPt6zbotfVQqkdpiK7LTEDTQAhv2DikzXIo2hDqZohLR8zeDffbR1v-DBZuE1UholJrwHLrme1MMoQUJsEuD1BFKmHWlUYKBDsgwQo4BsxYKfxwlx2iaKsEx0sDsd5y6hDfxf7qD-lEkfujKmqijgxBwWCEKwVdBzc5U1O3QbTty3hb4BxqKAf8sKxfDQ41jQNnYAjjRIgUsgJqIVzbkxdnBNO+wRNsRWMDtBWOyQv8vBAFtagLCIxOOq2CRzM2+knrBOjx5kC2tcgjXbQOF2LK5BsXNQfrrVX7gORy6YamaCYnm7zEqa+5W02nUC67BTuikj8pm0O7BdHu3HewsBCdLQ25QZ-CRDEFbDR0MTLHjJFoVxyEhlVDoWLLQRpozsf+XZKbBW6MJVI3I4nRoEzCTCahdQ0tfqP7hizJlkQ-cLihk2pTJAyYK7MumXyjaQRze24VkluoOIJFxiFUuYlkA8EHKZ4d-LopYjLAZYwU9zGKIwBF65dRNfcIK1po-E9ieLReAhFShZ0QIa+lVbqLRBzCt9DU4-ZFF30cgpJXdYEKOiQT1wWIo25SY2K30mESwNQd-JmrBht4X8jZDelNUXgX7Ag043-XpiHBMFCwYbMwCuM-o7Jss+wZWq3LD7KTPxW+pERvXbiQqWIapHQmaDIhirfW9REcdgc2mBBSJeBhqD1mnACJ9kxwa9GQeAo+0EEnzT2cpIcl4HdodTA5mcHCWDCfYN8-aJ1gZD1b5wyk4qUSC30Px9YuBXTFHDqhxpnNTclfE-CgPbSupu0saVvpbJUQGUkK+UWYB3oGg7AF4HPX8g1QuAgAA */
   id: 'Modeling',
 
   context: ({ input }) => ({
@@ -1823,9 +2264,8 @@ export const modelingMachine = setup({
         ],
 
         Extrude: {
-          target: 'idle',
-          actions: ['AST extrude'],
-          reenter: false,
+          target: 'Applying extrude',
+          reenter: true,
         },
 
         Revolve: {
@@ -1874,10 +2314,9 @@ export const modelingMachine = setup({
         },
 
         'Delete selection': {
-          target: 'idle',
+          target: 'Applying Delete selection',
           guard: 'has valid selection for deletion',
-          actions: ['AST delete selection'],
-          reenter: false,
+          reenter: true,
         },
 
         'Text-to-CAD': {
@@ -1891,7 +2330,17 @@ export const modelingMachine = setup({
           reenter: true,
         },
 
+        Helix: {
+          target: 'Applying helix',
+          reenter: true,
+        },
+
         'Prompt-to-edit': 'Applying Prompt-to-edit',
+
+        Appearance: {
+          target: 'Applying appearance',
+          reenter: true,
+        },
       },
 
       entry: 'reset client scene mouse handlers',
@@ -2022,6 +2471,7 @@ export const modelingMachine = setup({
 
             'change tool': {
               target: 'Change Tool',
+              reenter: true,
             },
           },
 
@@ -2150,28 +2600,37 @@ export const modelingMachine = setup({
 
           states: {
             Init: {
-              always: [
-                {
-                  target: 'normal',
-                  guard: 'has made first point',
-                  actions: 'set up draft line',
-                },
-                'No Points',
-              ],
-            },
-
-            normal: {},
-
-            'No Points': {
               entry: 'setup noPoints onClick listener',
 
               on: {
                 'Add start point': {
                   target: 'normal',
-                  actions: 'set up draft line without teardown',
+                  actions: 'set up draft line',
                 },
 
                 Cancel: '#Modeling.Sketch.undo startSketchOn',
+              },
+            },
+
+            normal: {
+              on: {
+                'Close sketch': {
+                  target: 'Finish profile',
+                  reenter: true,
+                },
+              },
+            },
+
+            'Finish profile': {
+              invoke: {
+                src: 'setup-client-side-sketch-segments',
+                id: 'setup-client-side-sketch-segments7',
+                onDone: 'Init',
+                onError: 'Init',
+                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                  sketchDetails,
+                  selectionRanges,
+                }),
               },
             },
           },
@@ -2181,6 +2640,7 @@ export const modelingMachine = setup({
           on: {
             'change tool': {
               target: 'Change Tool',
+              reenter: true,
             },
           },
         },
@@ -2191,22 +2651,54 @@ export const modelingMachine = setup({
               target: 'SketchIdle',
               guard: 'is editing existing sketch',
             },
-            {
-              target: 'circle3PointToolSelect',
-              guard: 'is editing 3-point circle',
-            },
             'Line tool',
           ],
         },
 
         'Tangential arc to': {
-          entry: 'set up draft arc',
-
           on: {
             'change tool': {
               target: 'Change Tool',
+              reenter: true,
             },
           },
+
+          states: {
+            Init: {
+              on: {
+                'Continue existing profile': {
+                  target: 'normal',
+                  actions: 'set up draft arc',
+                },
+              },
+
+              entry: 'setup noPoints onClick listener',
+            },
+
+            normal: {
+              on: {
+                'Close sketch': {
+                  target: 'Finish profile',
+                  reenter: true,
+                },
+              },
+            },
+
+            'Finish profile': {
+              invoke: {
+                src: 'setup-client-side-sketch-segments',
+                id: 'setup-client-side-sketch-segments6',
+                onDone: 'Init',
+                onError: 'Init',
+                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                  sketchDetails,
+                  selectionRanges,
+                }),
+              },
+            },
+          },
+
+          initial: 'Init',
         },
 
         'undo startSketchOn': {
@@ -2222,26 +2714,60 @@ export const modelingMachine = setup({
         },
 
         'Rectangle tool': {
-          entry: ['listen for rectangle origin'],
-
           states: {
             'Awaiting second corner': {
               on: {
-                'Finish rectangle': 'Finished Rectangle',
+                'Finish rectangle': {
+                  target: 'Finished Rectangle',
+                  actions: 'reset deleteIndex',
+                },
               },
             },
 
             'Awaiting origin': {
               on: {
                 'Add rectangle origin': {
-                  target: 'Awaiting second corner',
-                  actions: 'set up draft rectangle',
+                  target: 'adding draft rectangle',
+                  reenter: true,
                 },
               },
+
+              entry: 'listen for rectangle origin',
             },
 
             'Finished Rectangle': {
-              always: '#Modeling.Sketch.SketchIdle',
+              invoke: {
+                src: 'setup-client-side-sketch-segments',
+                id: 'setup-client-side-sketch-segments',
+                onDone: 'Awaiting origin',
+                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                  sketchDetails,
+                  selectionRanges,
+                }),
+              },
+            },
+
+            'adding draft rectangle': {
+              invoke: {
+                src: 'set-up-draft-rectangle',
+                id: 'set-up-draft-rectangle',
+                onDone: {
+                  target: 'Awaiting second corner',
+                  actions: 'update sketchDetails',
+                },
+                onError: 'Awaiting origin',
+                input: ({ context: { sketchDetails }, event }) => {
+                  if (event.type !== 'Add rectangle origin')
+                    return {
+                      sketchDetails,
+                      data: [0, 0],
+                    }
+                  return {
+                    sketchDetails,
+                    data: event.data,
+                  }
+                },
+              },
             },
           },
 
@@ -2250,32 +2776,66 @@ export const modelingMachine = setup({
           on: {
             'change tool': {
               target: 'Change Tool',
+              reenter: true,
             },
           },
         },
 
         'Center Rectangle tool': {
-          entry: ['listen for center rectangle origin'],
-
           states: {
             'Awaiting corner': {
               on: {
-                'Finish center rectangle': 'Finished Center Rectangle',
+                'Finish center rectangle': {
+                  target: 'Finished Center Rectangle',
+                  actions: 'reset deleteIndex',
+                },
               },
             },
 
             'Awaiting origin': {
               on: {
                 'Add center rectangle origin': {
-                  target: 'Awaiting corner',
-                  // TODO
-                  actions: 'set up draft center rectangle',
+                  target: 'add draft center rectangle',
+                  reenter: true,
                 },
               },
+
+              entry: 'listen for center rectangle origin',
             },
 
             'Finished Center Rectangle': {
-              always: '#Modeling.Sketch.SketchIdle',
+              invoke: {
+                src: 'setup-client-side-sketch-segments',
+                id: 'setup-client-side-sketch-segments2',
+                onDone: 'Awaiting origin',
+                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                  sketchDetails,
+                  selectionRanges,
+                }),
+              },
+            },
+
+            'add draft center rectangle': {
+              invoke: {
+                src: 'set-up-draft-center-rectangle',
+                id: 'set-up-draft-center-rectangle',
+                onDone: {
+                  target: 'Awaiting corner',
+                  actions: 'update sketchDetails',
+                },
+                onError: 'Awaiting origin',
+                input: ({ context: { sketchDetails }, event }) => {
+                  if (event.type !== 'Add center rectangle origin')
+                    return {
+                      sketchDetails,
+                      data: [0, 0],
+                    }
+                  return {
+                    sketchDetails,
+                    data: event.data,
+                  }
+                },
+              },
             },
           },
 
@@ -2284,12 +2844,14 @@ export const modelingMachine = setup({
           on: {
             'change tool': {
               target: 'Change Tool',
+              reenter: true,
             },
           },
         },
 
         'clean slate': {
           always: 'SketchIdle',
+          entry: 're-eval nodePaths',
         },
 
         'Converting to named value': {
@@ -2459,7 +3021,7 @@ export const modelingMachine = setup({
           },
         },
 
-        'Change Tool': {
+        'Change Tool ifs': {
           always: [
             {
               target: 'SketchIdle',
@@ -2486,59 +3048,186 @@ export const modelingMachine = setup({
               guard: 'next is center rectangle',
             },
             {
-              target: 'circle3PointToolSelect',
+              target: 'Circle three point tool',
+              guard: 'next is circle three point neo',
               reenter: true,
-              guard: 'next is circle 3 point',
             },
           ],
-
-          entry: ['assign tool in context', 'reset selections'],
         },
+
         'Circle tool': {
           on: {
-            'change tool': 'Change Tool',
+            'change tool': {
+              target: 'Change Tool',
+              reenter: true,
+            },
           },
 
           states: {
             'Awaiting origin': {
               on: {
                 'Add circle origin': {
-                  target: 'Awaiting Radius',
-                  actions: 'set up draft circle',
+                  target: 'adding draft circle',
+                  reenter: true,
                 },
               },
+
+              entry: 'listen for circle origin',
             },
 
             'Awaiting Radius': {
               on: {
-                'Finish circle': 'Finished Circle',
+                'Finish circle': {
+                  target: 'Finished Circle',
+                  actions: 'reset deleteIndex',
+                },
               },
             },
 
             'Finished Circle': {
-              always: '#Modeling.Sketch.SketchIdle',
+              invoke: {
+                src: 'setup-client-side-sketch-segments',
+                id: 'setup-client-side-sketch-segments4',
+                onDone: 'Awaiting origin',
+                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                  sketchDetails,
+                  selectionRanges,
+                }),
+              },
+            },
+
+            'adding draft circle': {
+              invoke: {
+                src: 'set-up-draft-circle',
+                id: 'set-up-draft-circle',
+                onDone: {
+                  target: 'Awaiting Radius',
+                  actions: 'update sketchDetails',
+                },
+                onError: 'Awaiting origin',
+                input: ({ context: { sketchDetails }, event }) => {
+                  if (event.type !== 'Add circle origin')
+                    return {
+                      sketchDetails,
+                      data: [0, 0],
+                    }
+                  return {
+                    sketchDetails,
+                    data: event.data,
+                  }
+                },
+              },
             },
           },
 
           initial: 'Awaiting origin',
-          entry: 'listen for circle origin',
         },
-        circle3PointToolSelect: {
-          invoke: {
-            id: 'actor-circle-3-point',
-            input: function ({ context }) {
-              if (!context.sketchDetails) return
-              return context.sketchDetails
+
+        'Change Tool': {
+          states: {
+            'splitting sketch pipe': {
+              invoke: {
+                src: 'split-sketch-pipe-if-needed',
+                id: 'split-sketch-pipe-if-needed',
+                onDone: {
+                  target: 'setup sketch for tool',
+                  actions: 'update sketchDetails',
+                },
+                onError: '#Modeling.Sketch.SketchIdle',
+                input: ({ context: { sketchDetails } }) => ({
+                  sketchDetails,
+                }),
+              },
             },
-            src: 'actorCircle3Point',
+
+            'setup sketch for tool': {
+              invoke: {
+                src: 'setup-client-side-sketch-segments',
+                id: 'setup-client-side-sketch-segments',
+                onDone: '#Modeling.Sketch.Change Tool ifs',
+                onError: '#Modeling.Sketch.SketchIdle',
+                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                  sketchDetails,
+                  selectionRanges,
+                }),
+              },
+            },
           },
-          on: {
-            // We still need this action to trigger (legacy code support)
-            'change tool': 'Change Tool',
-            // On stop event, transition to our usual SketchIdle state
-            'stop-internal': {
-              target: '#Modeling.Sketch.SketchIdle',
+
+          initial: 'splitting sketch pipe',
+          entry: ['assign tool in context', 'reset selections'],
+        },
+
+        'Circle three point tool': {
+          states: {
+            'Awaiting first point': {
+              on: {
+                'Add first point': 'Awaiting second point',
+              },
+
+              entry: 'listen for circle first point',
             },
+
+            'Awaiting second point': {
+              on: {
+                'Add second point': {
+                  target: 'adding draft circle three point',
+                  actions: 'remove draft point',
+                },
+              },
+
+              entry: 'listen for circle second point',
+            },
+
+            'adding draft circle three point': {
+              invoke: {
+                src: 'set-up-draft-circle-three-point',
+                id: 'set-up-draft-circle-three-point',
+                onDone: {
+                  target: 'Awaiting third point',
+                  actions: 'update sketchDetails',
+                },
+                input: ({ context: { sketchDetails }, event }) => {
+                  if (event.type !== 'Add second point')
+                    return {
+                      sketchDetails,
+                      data: { p1: [0, 0], p2: [0, 0] },
+                    }
+                  return {
+                    sketchDetails,
+                    data: event.data,
+                  }
+                },
+              },
+            },
+
+            'Awaiting third point': {
+              on: {
+                'Finish circle three point': {
+                  target: 'Finished circle three point',
+                  actions: 'reset deleteIndex',
+                },
+              },
+            },
+
+            'Finished circle three point': {
+              invoke: {
+                src: 'setup-client-side-sketch-segments',
+                id: 'setup-client-side-sketch-segments5',
+                onDone: 'Awaiting first point',
+                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                  sketchDetails,
+                  selectionRanges,
+                }),
+              },
+            },
+          },
+
+          initial: 'Awaiting first point',
+          exit: 'remove draft point',
+
+          on: {
+            'change tool': 'Change Tool',
           },
         },
       },
@@ -2550,7 +3239,7 @@ export const modelingMachine = setup({
 
         'Delete segment': {
           reenter: false,
-          actions: ['Delete segment', 'Set sketchDetails'],
+          actions: ['Delete segment', 'Set sketchDetails', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
       },
@@ -2607,10 +3296,12 @@ export const modelingMachine = setup({
       invoke: {
         src: 'animate-to-sketch',
         id: 'animate-to-sketch',
+
         input: ({ context }) => ({
           selectionRanges: context.selectionRanges,
           sketchDetails: context.sketchDetails,
         }),
+
         onDone: {
           target: 'Sketch',
           actions: [
@@ -2618,6 +3309,24 @@ export const modelingMachine = setup({
             'set new sketch metadata',
             'enter sketching mode',
           ],
+        },
+
+        onError: 'idle',
+      },
+    },
+
+    'Applying extrude': {
+      invoke: {
+        src: 'extrudeAstMod',
+        id: 'extrudeAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Extrude') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
         },
       },
     },
@@ -2628,6 +3337,19 @@ export const modelingMachine = setup({
         id: 'offsetPlaneAstMod',
         input: ({ event }) => {
           if (event.type !== 'Offset plane') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying helix': {
+      invoke: {
+        src: 'helixAstMod',
+        id: 'helixAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Helix') return undefined
           return event.data
         },
         onDone: ['idle'],
@@ -2719,6 +3441,41 @@ export const modelingMachine = setup({
         onError: 'idle',
       },
     },
+
+    'Applying Delete selection': {
+      invoke: {
+        src: 'deleteSelectionAstMod',
+        id: 'deleteSelectionAstMod',
+
+        input: ({ event, context }) => {
+          return { selectionRanges: context.selectionRanges }
+        },
+
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          reenter: true,
+          actions: ({ event }) => {
+            if ('error' in event && err(event.error)) {
+              toast.error(event.error.message)
+            }
+          },
+        },
+      },
+    },
+
+    'Applying appearance': {
+      invoke: {
+        src: 'appearanceAstMod',
+        id: 'appearanceAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Appearance') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
   },
 
   initial: 'idle',
@@ -2766,62 +3523,53 @@ export function isEditingExistingSketch({
 }): boolean {
   // should check that the variable declaration is a pipeExpression
   // and that the pipeExpression contains a "startProfileAt" callExpression
-  if (!sketchDetails?.sketchPathToNode) return false
+  if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
-    sketchDetails.sketchPathToNode,
+    sketchDetails.sketchEntryNodePath,
     'VariableDeclarator'
   )
-  if (err(variableDeclaration)) return false
+  if (variableDeclaration instanceof Error) return false
   if (variableDeclaration.node.type !== 'VariableDeclarator') return false
-  const pipeExpression = variableDeclaration.node.init
-  if (pipeExpression.type !== 'PipeExpression') return false
-  const hasStartProfileAt = pipeExpression.body.some(
+  const maybePipeExpression = variableDeclaration.node.init
+  if (
+    maybePipeExpression.type === 'CallExpression' &&
+    (maybePipeExpression.callee.name === 'startProfileAt' ||
+      maybePipeExpression.callee.name === 'circle' ||
+      maybePipeExpression.callee.name === 'circleThreePoint')
+  )
+    return true
+  if (
+    maybePipeExpression.type === 'CallExpressionKw' &&
+    (maybePipeExpression.callee.name === 'startProfileAt' ||
+      maybePipeExpression.callee.name === 'circleThreePoint')
+  )
+    return true
+  if (maybePipeExpression.type !== 'PipeExpression') return false
+  const hasStartProfileAt = maybePipeExpression.body.some(
     (item) =>
       item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
   )
-  const hasCircle = pipeExpression.body.some(
-    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
-  )
-  return (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle
-}
-export function isEditing3PointCircle({
-  sketchDetails,
-}: {
-  sketchDetails: SketchDetails | null
-}): boolean {
-  if (!sketchDetails?.sketchPathToNode) return false
-  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
-    kclManager.ast,
-    sketchDetails.sketchPathToNode,
-    'VariableDeclarator'
-  )
-  if (err(variableDeclaration)) return false
-  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
-  const pipeExpression = variableDeclaration.node.init
-  if (pipeExpression.type !== 'PipeExpression') return false
-  const hasStartProfileAt = pipeExpression.body.some(
-    (item) =>
-      item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
-  )
-  const hasCircle3Point = pipeExpression.body.some(
-    (item) =>
-      item.type === 'CallExpressionKw' &&
-      item.callee.name === 'circleThreePoint'
-  )
-  return (
-    (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle3Point
-  )
+  const hasCircle =
+    maybePipeExpression.body.some(
+      (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+    ) ||
+    maybePipeExpression.body.some(
+      (item) =>
+        item.type === 'CallExpressionKw' &&
+        item.callee.name === 'circleThreePoint'
+    )
+  return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
 }
 export function pipeHasCircle({
   sketchDetails,
 }: {
   sketchDetails: SketchDetails | null
 }): boolean {
-  if (!sketchDetails?.sketchPathToNode) return false
+  if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
-    sketchDetails.sketchPathToNode,
+    sketchDetails.sketchEntryNodePath,
     'VariableDeclarator'
   )
   if (err(variableDeclaration)) return false
@@ -2830,27 +3578,6 @@ export function pipeHasCircle({
   if (pipeExpression.type !== 'PipeExpression') return false
   const hasCircle = pipeExpression.body.some(
     (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
-  )
-  return hasCircle
-}
-export function pipeHasCircleThreePoint({
-  sketchDetails,
-}: {
-  sketchDetails: SketchDetails | null
-}): boolean {
-  if (!sketchDetails?.sketchPathToNode) return false
-  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
-    kclManager.ast,
-    sketchDetails.sketchPathToNode,
-    'VariableDeclarator'
-  )
-  if (err(variableDeclaration)) return false
-  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
-  const pipeExpression = variableDeclaration.node.init
-  if (pipeExpression.type !== 'PipeExpression') return false
-  const hasCircle = pipeExpression.body.some(
-    (item) =>
-      item.type === 'CallExpression' && item.callee.name === 'circleThreePoint'
   )
   return hasCircle
 }
@@ -2862,7 +3589,7 @@ export function canRectangleOrCircleTool({
 }): boolean {
   const node = getNodeFromPath<VariableDeclaration>(
     kclManager.ast,
-    sketchDetails?.sketchPathToNode || [],
+    sketchDetails?.sketchEntryNodePath || [],
     'VariableDeclaration'
   )
   // This should not be returning false, and it should be caught
@@ -2879,7 +3606,7 @@ export function isClosedSketch({
 }): boolean {
   const node = getNodeFromPath<VariableDeclaration>(
     kclManager.ast,
-    sketchDetails?.sketchPathToNode || [],
+    sketchDetails?.sketchEntryNodePath || [],
     'VariableDeclaration'
   )
   // This should not be returning false, and it should be caught

@@ -76,7 +76,10 @@ description: Result of parsing boolean_logical_or.kcl
                     "start": 45,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 45,
                   "type": "ExpressionStatement",
@@ -97,7 +100,10 @@ description: Result of parsing boolean_logical_or.kcl
                     "start": 32,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 32,
                   "type": "ExpressionStatement",
@@ -139,7 +145,10 @@ description: Result of parsing boolean_logical_or.kcl
                 "start": 61,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               },
               "start": 56,
               "type": "BinaryExpression",
@@ -240,7 +249,10 @@ description: Result of parsing boolean_logical_or.kcl
                     "start": 171,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 171,
                   "type": "ExpressionStatement",
@@ -261,7 +273,10 @@ description: Result of parsing boolean_logical_or.kcl
                     "start": 158,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 158,
                   "type": "ExpressionStatement",
@@ -303,7 +318,10 @@ description: Result of parsing boolean_logical_or.kcl
                 "start": 187,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               },
               "start": 182,
               "type": "BinaryExpression",
@@ -404,7 +422,10 @@ description: Result of parsing boolean_logical_or.kcl
                     "start": 297,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 297,
                   "type": "ExpressionStatement",
@@ -425,7 +446,10 @@ description: Result of parsing boolean_logical_or.kcl
                     "start": 284,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 284,
                   "type": "ExpressionStatement",
@@ -467,7 +491,10 @@ description: Result of parsing boolean_logical_or.kcl
                 "start": 313,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               },
               "start": 308,
               "type": "BinaryExpression",
@@ -568,7 +595,10 @@ description: Result of parsing boolean_logical_or.kcl
                     "start": 427,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 427,
                   "type": "ExpressionStatement",
@@ -589,7 +619,10 @@ description: Result of parsing boolean_logical_or.kcl
                     "start": 414,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 414,
                   "type": "ExpressionStatement",
@@ -631,7 +664,10 @@ description: Result of parsing boolean_logical_or.kcl
                 "start": 443,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2.0
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               },
               "start": 438,
               "type": "BinaryExpression",

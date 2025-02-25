@@ -13,83 +13,66 @@ use crate::{
     std::{axis_or_reference::Axis3dOrEdgeReference, Args},
 };
 
-/// Data for a helix.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-pub struct HelixData {
-    /// Number of revolutions.
-    pub revolutions: f64,
-    /// Start angle (in degrees).
-    #[serde(rename = "angleStart")]
-    pub angle_start: f64,
-    /// Is the helix rotation counter clockwise?
-    /// The default is `false`.
-    #[serde(default)]
-    pub ccw: bool,
-    /// Length of the helix. This is not necessary if the helix is created around an edge. If not
-    /// given the length of the edge is used.
-    pub length: Option<f64>,
-    /// Radius of the helix.
-    pub radius: f64,
-    /// Axis to use as mirror.
-    pub axis: Axis3dOrEdgeReference,
-}
-
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let data: HelixData = args.get_data()?;
+    let angle_start = args.get_kw_arg("angleStart")?;
+    let revolutions = args.get_kw_arg("revolutions")?;
+    let ccw = args.get_kw_arg_opt("ccw")?;
+    let radius = args.get_kw_arg("radius")?;
+    let axis = args.get_kw_arg("axis")?;
+    let length = args.get_kw_arg_opt("length")?;
 
-    let helix = inner_helix(data, exec_state, args).await?;
-    Ok(KclValue::Helix(helix))
+    let value = inner_helix(revolutions, angle_start, ccw, radius, axis, length, exec_state, args).await?;
+    Ok(KclValue::Helix { value })
 }
 
 /// Create a helix.
 ///
 /// ```no_run
 /// // Create a helix around the Z axis.
-/// helixPath = helix({
+/// helixPath = helix(
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 5,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Z',
-///  })
+///  )
 ///
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('YZ')
-///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> circle({ center = [0, 0], radius = 0.5 }, %)
+///     |> sweep(path = helixPath)
 /// ```
 ///
 /// ```no_run
 /// // Create a helix around an edge.
 /// helper001 = startSketchOn('XZ')
 ///  |> startProfileAt([0, 0], %)
-///  |> line([0, 10], %, $edge001)
+///  |> line(end = [0, 10], tag = $edge001)
 ///
-/// helixPath = helix({
+/// helixPath = helix(
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 5,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = edge001,
-///  })
+///  )
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
-///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> circle({ center = [0, 0], radius = 0.5 }, %)
+///     |> sweep(path = helixPath)
 /// ```
 ///
 /// ```no_run
 /// // Create a helix around a custom axis.
-/// helixPath = helix({
+/// helixPath = helix(
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 5,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = {
@@ -98,38 +81,60 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///             origin = [0, 0.25, 0]
 ///             }
 ///         }
-///  })
+///  )
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
 ///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> sweep(path = helixPath)
 /// ```
 #[stdlib {
     name = "helix",
+    keywords = true,
+    unlabeled_first = false,
+    args = {
+        revolutions = { docs = "Number of revolutions."},
+        angle_start = { docs = "Start angle (in degrees)."},
+        ccw = { docs = "Is the helix rotation counter clockwise? The default is `false`.", include_in_snippet = false},
+        radius = { docs = "Radius of the helix."},
+        axis = { docs = "Axis to use for the helix."},
+        length = { docs = "Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.", include_in_snippet = true},
+    },
     feature_tree_operation = true,
 }]
-async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) -> Result<Box<HelixValue>, KclError> {
+#[allow(clippy::too_many_arguments)]
+async fn inner_helix(
+    revolutions: f64,
+    angle_start: f64,
+    ccw: Option<bool>,
+    radius: f64,
+    axis: Axis3dOrEdgeReference,
+    length: Option<f64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<HelixValue>, KclError> {
     let id = exec_state.next_uuid();
 
     let helix_result = Box::new(HelixValue {
         value: id,
-        revolutions: data.revolutions,
-        angle_start: data.angle_start,
-        ccw: data.ccw,
+        artifact_id: id.into(),
+        revolutions,
+        angle_start,
+        ccw: ccw.unwrap_or(false),
+        units: exec_state.length_unit(),
         meta: vec![args.source_range.into()],
     });
 
-    if args.ctx.is_mock() {
+    if args.ctx.no_engine_commands().await {
         return Ok(helix_result);
     }
 
-    match data.axis {
+    match axis {
         Axis3dOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
 
             // Make sure they gave us a length.
-            let Some(length) = data.length else {
+            let Some(length) = length else {
                 return Err(KclError::Semantic(crate::errors::KclErrorDetails {
                     message: "Length is required when creating a helix around an axis.".to_string(),
                     source_ranges: vec![args.source_range],
@@ -137,13 +142,13 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             };
 
             args.batch_modeling_cmd(
-                exec_state.next_uuid(),
+                id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
-                    radius: data.radius,
-                    is_clockwise: !data.ccw,
+                    radius: LengthUnit(radius),
+                    is_clockwise: !helix_result.ccw,
                     length: LengthUnit(length),
-                    revolutions: data.revolutions,
-                    start_angle: Angle::from_degrees(data.angle_start),
+                    revolutions,
+                    start_angle: Angle::from_degrees(angle_start),
                     axis,
                     center: origin,
                 }),
@@ -154,13 +159,13 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
             args.batch_modeling_cmd(
-                exec_state.next_uuid(),
+                id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
-                    radius: data.radius,
-                    is_clockwise: !data.ccw,
-                    length: data.length.map(LengthUnit),
-                    revolutions: data.revolutions,
-                    start_angle: Angle::from_degrees(data.angle_start),
+                    radius: LengthUnit(radius),
+                    is_clockwise: !helix_result.ccw,
+                    length: length.map(LengthUnit),
+                    revolutions,
+                    start_angle: Angle::from_degrees(angle_start),
                     edge_id,
                 }),
             )
@@ -193,8 +198,8 @@ pub struct HelixRevolutionsData {
 pub async fn helix_revolutions(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid): (HelixRevolutionsData, Box<Solid>) = args.get_data_and_solid()?;
 
-    let solid = inner_helix_revolutions(data, solid, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_helix_revolutions(data, solid, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Create a helix on a cylinder.
@@ -202,7 +207,7 @@ pub async fn helix_revolutions(exec_state: &mut ExecState, args: Args) -> Result
 /// ```no_run
 /// part001 = startSketchOn('XY')
 ///   |> circle({ center: [5, 5], radius: 10 }, %)
-///   |> extrude(10, %)
+///   |> extrude(length = 10)
 ///   |> helixRevolutions({
 ///     angleStart = 0,
 ///     ccw = true,

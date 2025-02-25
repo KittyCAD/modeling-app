@@ -14,6 +14,7 @@ import {
 } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { oneDark } from '@codemirror/theme-one-dark'
+import { isArray } from 'lib/utils'
 
 //reference: https://github.com/sachinraja/rodemirror/blob/main/src/use-first-render.ts
 const useFirstRender = () => {
@@ -86,6 +87,18 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
   return <div ref={editor}></div>
 })
 
+/**
+ * The extensions type is quite weird.  We need a special helper to preserve the
+ * readonly array type.
+ *
+ * @see https://github.com/microsoft/TypeScript/issues/17002
+ */
+function isExtensionArray(
+  extensions: Extension
+): extensions is readonly Extension[] {
+  return isArray(extensions)
+}
+
 export function useCodeMirror(props: UseCodeMirror) {
   const {
     onCreateEditor,
@@ -103,7 +116,7 @@ export function useCodeMirror(props: UseCodeMirror) {
   const isFirstRender = useFirstRender()
 
   const targetExtensions = useMemo(() => {
-    let exts = Array.isArray(extensions) ? extensions : []
+    let exts = isExtensionArray(extensions) ? extensions : []
     if (theme === 'dark') {
       exts = [...exts, oneDark]
     } else if (theme === 'light') {

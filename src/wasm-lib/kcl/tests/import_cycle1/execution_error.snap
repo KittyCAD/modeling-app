@@ -6,9 +6,10 @@ KCL ImportCycle error
 
   × import cycle: circular import of modules is not allowed: tests/
   │ import_cycle1/import_cycle2.kcl -> tests/import_cycle1/import_cycle3.kcl
-  │ -> tests/import_cycle1/input.kcl -> tests/import_cycle1/import_cycle2.kcl
-   ╭─[1:1]
- 1 │ import two from "import_cycle2.kcl"
+  │ -> tests/import_cycle1/input.kcl
+   ╭─[2:1]
+ 1 │ @settings(defaultLengthUnit = in)
+ 2 │ import two from "import_cycle2.kcl"
    · ───────────────────────────────────
- 2 │ 
+ 3 │ 
    ╰────

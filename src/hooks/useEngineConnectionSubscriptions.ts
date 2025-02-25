@@ -16,9 +16,11 @@ import {
   SegmentArtifact,
 } from 'lang/std/artifactGraph'
 import { err, reportRejection } from 'lib/trap'
-import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { CallExpression, defaultSourceRange } from 'lang/wasm'
+import { getFaceDetails } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr } from 'lib/planes'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { CallExpression, CallExpressionKw, defaultSourceRange } from 'lang/wasm'
 import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
 
 export function useEngineConnectionSubscriptions() {
@@ -239,14 +241,23 @@ export function useEngineConnectionSubscriptions() {
                   }
                 }
                 if (!chamferInfo) return null
-                const segmentCallExpr = getNodeFromPath<CallExpression>(
+                const segmentCallExpr = getNodeFromPath<
+                  CallExpression | CallExpressionKw
+                >(
                   kclManager.ast,
                   chamferInfo?.segment.codeRef.pathToNode || [],
-                  'CallExpression'
+                  ['CallExpression', 'CallExpressionKw']
                 )
                 if (err(segmentCallExpr)) return null
-                if (segmentCallExpr.node.type !== 'CallExpression') return null
-                const sketchNodeArgs = segmentCallExpr.node.arguments
+                if (
+                  segmentCallExpr.node.type !== 'CallExpression' &&
+                  segmentCallExpr.node.type !== 'CallExpressionKw'
+                )
+                  return null
+                const sketchNodeArgs =
+                  segmentCallExpr.node.type == 'CallExpression'
+                    ? segmentCallExpr.node.arguments
+                    : segmentCallExpr.node.arguments.map((la) => la.arg)
                 const tagDeclarator = sketchNodeArgs.find(
                   ({ type }) => type === 'TagDeclarator'
                 )

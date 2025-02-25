@@ -4,8 +4,6 @@ use anyhow::Result;
 use derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -16,23 +14,15 @@ use crate::{
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
-/// Data for chamfers.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct ChamferData {
-    /// The length of the chamfer.
-    pub length: f64,
-    /// The tags of the paths you want to chamfer.
-    pub tags: Vec<EdgeReference>,
-}
-
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid, tag): (ChamferData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
+    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let length = args.get_kw_arg("length")?;
+    let tags = args.get_kw_arg("tags")?;
+    let tag = args.get_kw_arg_opt("tag")?;
 
-    let solid = inner_chamfer(data, solid, tag, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_chamfer(solid, length, tags, tag, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Cut a straight transitional edge along a tagged path.
@@ -50,13 +40,13 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
-///   |> lineTo([width/2, -length/2], %, $edge1)
-///   |> lineTo([width/2, length/2], %, $edge2)
-///   |> lineTo([-width/2, length/2], %, $edge3)
-///   |> close(%, $edge4)
+///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
+///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
+///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
+///   |> close(tag = $edge4)
 ///
-/// mountingPlate = extrude(thickness, mountingPlateSketch)
-///   |> chamfer({
+/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
+///   |> chamfer(
 ///     length = chamferLength,
 ///     tags = [
 ///       getNextAdjacentEdge(edge1),
@@ -64,7 +54,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///       getNextAdjacentEdge(edge3),
 ///       getNextAdjacentEdge(edge4)
 ///     ],
-///   }, %)
+///   )
 /// ```
 ///
 /// ```no_run
@@ -72,46 +62,57 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// fn cube(pos, scale) {
 /// sg = startSketchOn('XY')
 ///     |> startProfileAt(pos, %)
-///     |> line([0, scale], %)
-///     |> line([scale, 0], %)
-///     |> line([0, -scale], %)
+///     |> line(end = [0, scale])
+///     |> line(end = [scale, 0])
+///     |> line(end = [0, -scale])
 ///
 ///     return sg
 /// }
 ///
 /// part001 = cube([0,0], 20)
-///     |> close(%, $line1)
-///     |> extrude(20, %)
-///     |> chamfer({
+///     |> close(tag = $line1)
+///     |> extrude(length = 20)
+///     // We tag the chamfer to reference it later.
+///     |> chamfer(
 ///         length = 10,
-///         tags = [getOppositeEdge(line1)]
-///     }, %, $chamfer1) // We tag the chamfer to reference it later.
+///         tags = [getOppositeEdge(line1)],
+///         tag = $chamfer1,
+///     )  
 ///
 /// sketch001 = startSketchOn(part001, chamfer1)
 ///     |> startProfileAt([10, 10], %)
-///     |> line([2, 0], %)
-///     |> line([0, 2], %)
-///     |> line([-2, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
-///     |> extrude(10, %)
+///     |> line(end = [2, 0])
+///     |> line(end = [0, 2])
+///     |> line(end = [-2, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///     |> extrude(length = 10)
 /// ```
 #[stdlib {
     name = "chamfer",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        solid = { docs = "The solid whose edges should be chamfered" },
+        length = { docs = "The length of the chamfer" },
+        tags = { docs = "The paths you want to chamfer" },
+        tag = { docs = "Create a new tag which refers to this chamfer"},
+    }
 }]
 async fn inner_chamfer(
-    data: ChamferData,
     solid: Box<Solid>,
+    length: f64,
+    tags: Vec<EdgeReference>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
     // Check if tags contains any duplicate values.
-    let mut tags = data.tags.clone();
+    let mut tags = tags.clone();
     tags.sort();
     tags.dedup();
-    if tags.len() != data.tags.len() {
+    if tags.len() != tags.len() {
         return Err(KclError::Type(KclErrorDetails {
             message: "Duplicate tags are not allowed.".to_string(),
             source_ranges: vec![args.source_range],
@@ -120,7 +121,7 @@ async fn inner_chamfer(
 
     // If you try and tag multiple edges with a tagged chamfer, we want to return an
     // error to the user that they can only tag one edge at a time.
-    if tag.is_some() && data.tags.len() > 1 {
+    if tag.is_some() && tags.len() > 1 {
         return Err(KclError::Type(KclErrorDetails {
             message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag.".to_string(),
             source_ranges: vec![args.source_range],
@@ -128,25 +129,23 @@ async fn inner_chamfer(
     }
 
     let mut solid = solid.clone();
-    for edge_tag in data.tags {
+    for edge_tag in tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
             EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
         };
 
-        let id = exec_state.global.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: solid.id,
-                radius: LengthUnit(data.length),
+                radius: LengthUnit(length),
                 tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
                 cut_type: CutType::Chamfer,
-                // We pass in the command id as the face id.
-                // So the resulting face of the fillet will be the same.
-                // This is because that's how most other endpoints work.
-                face_id: Some(id),
+                // We make this a none so that we can remove it in the future.
+                face_id: None,
             }),
         )
         .await?;
@@ -154,7 +153,7 @@ async fn inner_chamfer(
         solid.edge_cuts.push(EdgeCut::Chamfer {
             id,
             edge_id,
-            length: data.length,
+            length,
             tag: Box::new(tag.clone()),
         });
 

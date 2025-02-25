@@ -39,8 +39,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{ExecState, KclValue, ProgramMemory},
-    parsing::ast::types::FunctionExpression,
+    execution::{ExecState, KclValue},
 };
 
 pub type StdFn = fn(
@@ -72,7 +71,6 @@ lazy_static! {
         Box::new(crate::std::shapes::Circle),
         Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
-        Box::new(crate::std::sketch::LineTo),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLineTo),
         Box::new(crate::std::sketch::XLine),
@@ -123,9 +121,6 @@ lazy_static! {
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::import::Import),
-        Box::new(crate::std::math::Cos),
-        Box::new(crate::std::math::Sin),
-        Box::new(crate::std::math::Tan),
         Box::new(crate::std::math::Acos),
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),
@@ -170,6 +165,39 @@ pub fn name_in_stdlib(name: &str) -> bool {
 
 pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
     CORE_FNS.iter().find(|f| f.name() == name).cloned()
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct StdFnProps {
+    pub name: String,
+    pub deprecated: bool,
+}
+
+impl StdFnProps {
+    fn default(name: &str) -> Self {
+        Self {
+            name: name.to_owned(),
+            deprecated: false,
+        }
+    }
+}
+
+pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
+    match (path, fn_name) {
+        ("math", "cos") => (
+            |e, a| Box::pin(crate::std::math::cos(e, a)),
+            StdFnProps::default("std::math::cos"),
+        ),
+        ("math", "sin") => (
+            |e, a| Box::pin(crate::std::math::sin(e, a)),
+            StdFnProps::default("std::math::sin"),
+        ),
+        ("math", "tan") => (
+            |e, a| Box::pin(crate::std::math::tan(e, a)),
+            StdFnProps::default("std::math::tan"),
+        ),
+        _ => unreachable!(),
+    }
 }
 
 pub struct StdLib {
@@ -229,9 +257,9 @@ pub enum FunctionKind {
 
 /// Compute the length of the given leg.
 pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
+    let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;
     let result = inner_leg_length(hypotenuse, leg);
-    Ok(KclValue::from_number(result, vec![args.into()]))
+    Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
 }
 
 /// Compute the length of the given leg.
@@ -249,9 +277,9 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 
 /// Compute the angle of the given leg for x.
 pub async fn leg_angle_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
+    let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_x(hypotenuse, leg);
-    Ok(KclValue::from_number(result, vec![args.into()]))
+    Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
 }
 
 /// Compute the angle of the given leg for x.
@@ -269,9 +297,9 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
 
 /// Compute the angle of the given leg for y.
 pub async fn leg_angle_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
+    let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_y(hypotenuse, leg);
-    Ok(KclValue::from_number(result, vec![args.into()]))
+    Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
 }
 
 /// Compute the angle of the given leg for y.
@@ -300,11 +328,4 @@ pub enum Primitive {
     String,
     /// A uuid value.
     Uuid,
-}
-
-/// A closure used as an argument to a stdlib function.
-pub struct FnAsArg<'a> {
-    pub func: Option<&'a crate::execution::MemoryFunction>,
-    pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-    pub memory: Box<ProgramMemory>,
 }

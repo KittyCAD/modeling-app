@@ -1,0 +1,228 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Variables in memory after executing helix_simple.kcl
+---
+{
+  "edge001": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "edge001",
+    "info": {
+      "type": "TagEngineInfo",
+      "id": "[uuid]",
+      "sketch": "[uuid]",
+      "path": {
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            102,
+            137,
+            0
+          ]
+        },
+        "from": [
+          0.0,
+          0.0
+        ],
+        "tag": {
+          "end": 136,
+          "start": 128,
+          "type": "TagDeclarator",
+          "value": "edge001"
+        },
+        "to": [
+          0.0,
+          10.0
+        ],
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "surface": null
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          128,
+          136,
+          0
+        ]
+      }
+    ]
+  },
+  "helixPath": {
+    "type": "Helix",
+    "value": {
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
+      "revolutions": 5.0,
+      "angleStart": 0.0,
+      "ccw": true,
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            151,
+            257,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "helper001": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              102,
+              137,
+              0
+            ]
+          },
+          "from": [
+            0.0,
+            0.0
+          ],
+          "tag": {
+            "end": 136,
+            "start": 128,
+            "type": "TagDeclarator",
+            "value": "edge001"
+          },
+          "to": [
+            0.0,
+            10.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "on": {
+        "type": "plane",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "XZ",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "units": {
+          "type": "Mm"
+        },
+        "__meta": []
+      },
+      "start": {
+        "from": [
+          0.0,
+          0.0
+        ],
+        "to": [
+          0.0,
+          0.0
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            71,
+            96,
+            0
+          ]
+        }
+      },
+      "tags": {
+        "edge001": {
+          "type": "TagIdentifier",
+          "value": "edge001",
+          "info": {
+            "type": "TagEngineInfo",
+            "id": "[uuid]",
+            "sketch": "[uuid]",
+            "path": {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  102,
+                  137,
+                  0
+                ]
+              },
+              "from": [
+                0.0,
+                0.0
+              ],
+              "tag": {
+                "end": 136,
+                "start": 128,
+                "type": "TagDeclarator",
+                "value": "edge001"
+              },
+              "to": [
+                0.0,
+                10.0
+              ],
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
+            },
+            "surface": null
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                128,
+                136,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            71,
+            96,
+            0
+          ]
+        }
+      ]
+    }
+  }
+}

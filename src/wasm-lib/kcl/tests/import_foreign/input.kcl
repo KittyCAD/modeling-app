@@ -1,0 +1,3 @@
+import "../inputs/cube.gltf" as cube
+
+model = cube

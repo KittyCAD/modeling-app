@@ -633,6 +633,7 @@ test.describe('Testing settings', () => {
             `Set default unit to "${unitOfMeasure}" as a user default`
           )
           await expect(toastMessage).toBeVisible()
+          await expect(toastMessage).not.toBeVisible()
         })
       }
       await changeUnitOfMeasureInUserTab('in')
@@ -714,12 +715,12 @@ test.describe('Testing settings', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
-    |> line([5, 0], %)
-    |> line([0, 5], %)
-    |> line([-5, 0], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude001 = extrude(5, sketch001)
+    |> line(end = [5, 0])
+    |> line(end = [0, 5])
+    |> line(end = [-5, 0])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude001 = extrude(sketch001, length = 5)
   `
       )
     })
@@ -896,4 +897,125 @@ test.describe('Testing settings', () => {
       })
     }
   )
+
+  test(`Change inline units setting`, async ({
+    page,
+    homePage,
+    context,
+    editor,
+  }) => {
+    const initialInlineUnits = 'yd'
+    const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
+    const inlineSettingsString = (s: string) =>
+      `@settings(defaultLengthUnit = ${s})`
+    const unitsIndicator = page.getByRole('button', {
+      name: 'Current units are:',
+    })
+    const unitsChangeButton = (name: string) =>
+      page.getByRole('button', { name, exact: true })
+
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = join(dir, 'project-000')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('cube.kcl'),
+        join(bracketDir, 'main.kcl')
+      )
+    })
+
+    await test.step(`Initial units from settings`, async () => {
+      await homePage.openProject('project-000')
+      await expect(unitsIndicator).toHaveText('Current units are: in')
+    })
+
+    await test.step(`Manually write inline settings`, async () => {
+      await editor.openPane()
+      await editor.replaceCode(
+        `fn cube`,
+        `${inlineSettingsString(initialInlineUnits)}
+fn cube`
+      )
+      await expect(unitsIndicator).toContainText(initialInlineUnits)
+    })
+
+    await test.step(`Change units setting via lower-right control`, async () => {
+      await unitsIndicator.click()
+      await unitsChangeButton(editedInlineUnits.long).click()
+      await expect(
+        page.getByText(`Updated per-file units to ${editedInlineUnits.short}`)
+      ).toBeVisible()
+    })
+  })
+
+  /**
+   * This test assumes that the default value of the "highlight edges" setting is "on".
+   */
+  test(`Toggle stream settings multiple times`, async ({
+    page,
+    scene,
+    homePage,
+    context,
+    toolbar,
+    cmdBar,
+  }, testInfo) => {
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = join(dir, 'project-000')
+      await fsp.mkdir(projectDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('cube.kcl'),
+        join(projectDir, 'main.kcl')
+      )
+    })
+
+    await test.step(`First snapshot`, async () => {
+      await homePage.openProject('project-000')
+      await toolbar.closePane('code')
+      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
+      await scene.clickNoWhere()
+    })
+
+    const toast = (value: boolean) =>
+      page.getByText(
+        `Set highlight edges to "${String(value)}" as a user default`
+      )
+    const initialPath = testInfo.snapshotPath('toggle-settings-initial.png')
+    const initialScreenshot = await scene.streamWrapper.screenshot({
+      path: initialPath,
+      mask: [page.getByTestId('model-state-indicator')],
+    })
+
+    await test.step(`Toggle highlightEdges off`, async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Settings · modeling · highlight edges')
+      await cmdBar.selectOption({ name: 'off' }).click()
+      const falseToast = toast(false)
+      await expect(falseToast).toBeVisible()
+      await falseToast.waitFor({ state: 'detached' })
+    })
+
+    await expect(scene.streamWrapper).not.toHaveScreenshot(
+      'toggle-settings-initial.png',
+      {
+        maxDiffPixels: 15,
+        mask: [page.getByTestId('model-state-indicator')],
+      }
+    )
+
+    await test.step(`Toggle highlightEdges on`, async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Settings · modeling · highlight edges')
+      await cmdBar.selectOption({ name: 'on' }).click()
+      const trueToast = toast(true)
+      await expect(trueToast).toBeVisible()
+      await trueToast.waitFor({ state: 'detached' })
+    })
+
+    await expect(scene.streamWrapper).toHaveScreenshot(
+      'toggle-settings-initial.png',
+      {
+        maxDiffPixels: 15,
+        mask: [page.getByTestId('model-state-indicator')],
+      }
+    )
+  })
 })

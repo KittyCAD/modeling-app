@@ -4,18 +4,21 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::{memory::EnvironmentRef, MetaSettings};
 use crate::{
     errors::KclErrorDetails,
-    exec::{ProgramMemory, Sketch},
     execution::{
-        Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier,
+        ExecState, ExecutorContext, Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, SketchSet, Solid, SolidSet,
+        TagIdentifier,
     },
     parsing::{
-        ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
+        ast::types::{
+            DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
+        },
         token::NumericSuffix,
     },
-    std::{args::Arg, FnAsArg},
-    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
+    std::{args::Arg, StdFnProps},
+    CompilationError, KclError, ModuleId, SourceRange,
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -37,11 +40,7 @@ pub enum KclValue {
     },
     Number {
         value: f64,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    Int {
-        value: i64,
+        ty: NumericType,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -62,31 +61,32 @@ pub enum KclValue {
     },
     TagIdentifier(Box<TagIdentifier>),
     TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
-    Plane(Box<Plane>),
-    Face(Box<Face>),
+    Plane {
+        value: Box<Plane>,
+    },
+    Face {
+        value: Box<Face>,
+    },
     Sketch {
         value: Box<Sketch>,
     },
     Sketches {
         value: Vec<Box<Sketch>>,
     },
-    Solid(Box<Solid>),
+    Solid {
+        value: Box<Solid>,
+    },
     Solids {
         value: Vec<Box<Solid>>,
     },
-    Helix(Box<Helix>),
+    Helix {
+        value: Box<Helix>,
+    },
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     Function {
-        /// Adam Chalmers speculation:
-        /// Reference to a KCL stdlib function (written in Rust).
-        /// Some if the KCL value is an alias of a stdlib function,
-        /// None if it's a KCL function written/declared in KCL.
         #[serde(skip)]
-        func: Option<MemoryFunction>,
-        #[schemars(skip)]
-        expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        memory: Box<ProgramMemory>,
+        value: FunctionSource,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -100,6 +100,37 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+    // Only used for memory management. Should never be visible outside of the memory module.
+    Tombstone {
+        value: (),
+        #[serde(rename = "__meta")]
+        meta: Vec<Metadata>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum FunctionSource {
+    #[default]
+    None,
+    Std {
+        func: crate::std::StdFn,
+        props: StdFnProps,
+    },
+    User {
+        ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+        memory: EnvironmentRef,
+    },
+}
+
+impl JsonSchema for FunctionSource {
+    fn schema_name() -> String {
+        "FunctionSource".to_owned()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        // TODO: Actually generate a reasonable schema.
+        gen.subschema_for::<()>()
+    }
 }
 
 impl From<SketchSet> for KclValue {
@@ -120,7 +151,7 @@ impl From<Vec<Box<Sketch>>> for KclValue {
 impl From<SolidSet> for KclValue {
     fn from(eg: SolidSet) -> Self {
         match eg {
-            SolidSet::Solid(eg) => KclValue::Solid(eg),
+            SolidSet::Solid(eg) => KclValue::Solid { value: eg },
             SolidSet::Solids(egs) => KclValue::Solids { value: egs },
         }
     }
@@ -129,7 +160,7 @@ impl From<SolidSet> for KclValue {
 impl From<Vec<Box<Solid>>> for KclValue {
     fn from(eg: Vec<Box<Solid>>) -> Self {
         if eg.len() == 1 {
-            KclValue::Solid(eg[0].clone())
+            KclValue::Solid { value: eg[0].clone() }
         } else {
             KclValue::Solids { value: eg }
         }
@@ -140,24 +171,24 @@ impl From<KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
-            KclValue::Solid(e) => to_vec_sr(&e.meta),
+            KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::Helix(e) => to_vec_sr(&e.meta),
+            KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
-            KclValue::Plane(p) => to_vec_sr(&p.meta),
-            KclValue::Face(f) => to_vec_sr(&f.meta),
+            KclValue::Plane { value } => to_vec_sr(&value.meta),
+            KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
-            KclValue::Int { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
             KclValue::Array { meta, .. } => to_vec_sr(&meta),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
             KclValue::Module { meta, .. } => to_vec_sr(&meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
+            KclValue::Tombstone { .. } => unreachable!("Tombstone SourceRange"),
         }
     }
 }
@@ -171,24 +202,24 @@ impl From<&KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
-            KclValue::Solid(e) => to_vec_sr(&e.meta),
+            KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::Helix(x) => to_vec_sr(&x.meta),
+            KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
-            KclValue::Plane(p) => to_vec_sr(&p.meta),
-            KclValue::Face(f) => to_vec_sr(&f.meta),
+            KclValue::Plane { value } => to_vec_sr(&value.meta),
+            KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
-            KclValue::Int { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Array { meta, .. } => to_vec_sr(meta),
             KclValue::Object { meta, .. } => to_vec_sr(meta),
             KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
+            KclValue::Tombstone { .. } => unreachable!("Tombstone &SourceRange"),
         }
     }
 }
@@ -198,39 +229,43 @@ impl KclValue {
         match self {
             KclValue::Uuid { value: _, meta } => meta.clone(),
             KclValue::Bool { value: _, meta } => meta.clone(),
-            KclValue::Number { value: _, meta } => meta.clone(),
-            KclValue::Int { value: _, meta } => meta.clone(),
+            KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
             KclValue::Array { value: _, meta } => meta.clone(),
             KclValue::Object { value: _, meta } => meta.clone(),
             KclValue::TagIdentifier(x) => x.meta.clone(),
             KclValue::TagDeclarator(x) => vec![x.metadata()],
-            KclValue::Plane(x) => x.meta.clone(),
-            KclValue::Face(x) => x.meta.clone(),
+            KclValue::Plane { value } => value.meta.clone(),
+            KclValue::Face { value } => value.meta.clone(),
             KclValue::Sketch { value } => value.meta.clone(),
             KclValue::Sketches { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
-            KclValue::Solid(x) => x.meta.clone(),
+            KclValue::Solid { value } => value.meta.clone(),
             KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
-            KclValue::Helix(x) => x.meta.clone(),
+            KclValue::Helix { value } => value.meta.clone(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
+            KclValue::Tombstone { .. } => unreachable!("Tombstone Metadata"),
         }
     }
 
     pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
-        let KclValue::Function { expression, .. } = self else {
+        let KclValue::Function {
+            value: FunctionSource::User { ast, .. },
+            ..
+        } = self
+        else {
             return None;
         };
         // TODO: It would be nice if we could extract the source range starting
         // at the fn, but that's the variable declaration.
-        Some(expression.as_source_range())
+        Some(ast.as_source_range())
     }
 
     pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
-            KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
+            KclValue::Solid { value } => Ok(SolidSet::Solid(value.clone())),
             KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
             KclValue::Array { value, .. } => {
                 let solids: Vec<_> = value
@@ -266,50 +301,89 @@ impl KclValue {
             KclValue::Uuid { .. } => "Unique ID (uuid)",
             KclValue::TagDeclarator(_) => "TagDeclarator",
             KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::Solid(_) => "Solid",
+            KclValue::Solid { .. } => "Solid",
             KclValue::Solids { .. } => "Solids",
             KclValue::Sketch { .. } => "Sketch",
             KclValue::Sketches { .. } => "Sketches",
-            KclValue::Helix(_) => "Helix",
+            KclValue::Helix { .. } => "Helix",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
             KclValue::Function { .. } => "Function",
-            KclValue::Plane(_) => "Plane",
-            KclValue::Face(_) => "Face",
+            KclValue::Plane { .. } => "Plane",
+            KclValue::Face { .. } => "Face",
             KclValue::Bool { .. } => "boolean (true/false value)",
             KclValue::Number { .. } => "number",
-            KclValue::Int { .. } => "integer",
             KclValue::String { .. } => "string (text)",
             KclValue::Array { .. } => "array (list)",
             KclValue::Object { .. } => "object",
             KclValue::Module { .. } => "module",
             KclValue::KclNone { .. } => "None",
+            KclValue::Tombstone { .. } => "TOMBSTONE",
         }
     }
 
-    pub(crate) fn from_literal(literal: LiteralValue, meta: Vec<Metadata>) -> Self {
-        match literal {
-            LiteralValue::Number(value) => KclValue::Number { value, meta },
+    pub(crate) fn from_literal(literal: Node<Literal>, settings: &MetaSettings) -> Self {
+        let meta = vec![literal.metadata()];
+        match literal.inner.value {
+            LiteralValue::Number { value, suffix } => KclValue::Number {
+                value,
+                meta,
+                ty: NumericType::from_parsed(suffix, settings),
+            },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }
     }
 
+    pub(crate) fn from_default_param(param: DefaultParamVal, settings: &MetaSettings) -> Self {
+        match param {
+            DefaultParamVal::Literal(lit) => Self::from_literal(lit, settings),
+            DefaultParamVal::KclNone(none) => KclValue::KclNone {
+                value: none,
+                meta: Default::default(),
+            },
+        }
+    }
+
+    pub(crate) fn map_env_ref(&self, env_map: &HashMap<EnvironmentRef, EnvironmentRef>) -> Self {
+        let mut result = self.clone();
+        if let KclValue::Function {
+            value: FunctionSource::User { ref mut memory, .. },
+            ..
+        } = result
+        {
+            if let Some(new) = env_map.get(memory) {
+                *memory = *new;
+            }
+        }
+        result
+    }
+
     /// Put the number into a KCL value.
     pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
-        Self::Number { value: f, meta }
+        Self::Number {
+            value: f,
+            meta,
+            ty: NumericType::Unknown,
+        }
+    }
+
+    pub const fn from_number_with_type(f: f64, ty: NumericType, meta: Vec<Metadata>) -> Self {
+        Self::Number { value: f, meta, ty }
     }
 
     /// Put the point into a KCL value.
-    pub fn from_point2d(p: [f64; 2], meta: Vec<Metadata>) -> Self {
+    pub fn from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
         Self::Array {
             value: vec![
                 Self::Number {
                     value: p[0],
                     meta: meta.clone(),
+                    ty: ty.clone(),
                 },
                 Self::Number {
                     value: p[1],
                     meta: meta.clone(),
+                    ty,
                 },
             ],
             meta,
@@ -318,7 +392,6 @@ impl KclValue {
 
     pub(crate) fn as_usize(&self) -> Option<usize> {
         match self {
-            KclValue::Int { value, .. } if *value > 0 => Some(*value as usize),
             KclValue::Number { value, .. } => crate::try_f64_to_usize(*value),
             _ => None,
         }
@@ -326,7 +399,6 @@ impl KclValue {
 
     pub fn as_int(&self) -> Option<i64> {
         match self {
-            KclValue::Int { value, .. } => Some(*value),
             KclValue::Number { value, .. } => crate::try_f64_to_i64(*value),
             _ => None,
         }
@@ -383,7 +455,7 @@ impl KclValue {
     }
 
     pub fn as_plane(&self) -> Option<&Plane> {
-        if let KclValue::Plane(value) = &self {
+        if let KclValue::Plane { value } = &self {
             Some(value)
         } else {
             None
@@ -391,7 +463,15 @@ impl KclValue {
     }
 
     pub fn as_solid(&self) -> Option<&Solid> {
-        if let KclValue::Solid(value) = &self {
+        if let KclValue::Solid { value } = &self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_sketch(&self) -> Option<&Sketch> {
+        if let KclValue::Sketch { value } = self {
             Some(value)
         } else {
             None
@@ -399,10 +479,8 @@ impl KclValue {
     }
 
     pub fn as_f64(&self) -> Option<f64> {
-        if let KclValue::Number { value, meta: _ } = &self {
+        if let KclValue::Number { value, .. } = &self {
             Some(*value)
-        } else if let KclValue::Int { value, meta: _ } = &self {
-            Some(*value as f64)
         } else {
             None
         }
@@ -433,21 +511,11 @@ impl KclValue {
     }
 
     /// If this value is of type function, return it.
-    pub fn get_function(&self) -> Option<FnAsArg<'_>> {
-        let KclValue::Function {
-            func,
-            expression,
-            memory,
-            meta: _,
-        } = &self
-        else {
-            return None;
-        };
-        Some(FnAsArg {
-            func: func.as_ref(),
-            expr: expression.to_owned(),
-            memory: memory.to_owned(),
-        })
+    pub fn get_function(&self) -> Option<&FunctionSource> {
+        match self {
+            KclValue::Function { value, .. } => Some(value),
+            _ => None,
+        }
     }
 
     /// Get a tag identifier from a memory item.
@@ -501,38 +569,41 @@ impl KclValue {
         args: Vec<Arg>,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
+        source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
-        let KclValue::Function {
-            func,
-            expression,
-            memory: closure_memory,
-            meta,
-        } = &self
-        else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "not a in memory function".to_string(),
-                source_ranges: vec![],
-            }));
-        };
-        if let Some(func) = func {
-            func(
-                args,
-                closure_memory.as_ref().clone(),
-                expression.clone(),
-                meta.clone(),
-                exec_state,
-                ctx,
-            )
-            .await
-        } else {
-            crate::execution::call_user_defined_function(
-                args,
-                closure_memory.as_ref(),
-                expression.as_ref(),
-                exec_state,
-                &ctx,
-            )
-            .await
+        match self {
+            KclValue::Function {
+                value: FunctionSource::Std { func, props },
+                ..
+            } => {
+                if props.deprecated {
+                    exec_state.warn(CompilationError::err(
+                        source_range,
+                        format!(
+                            "`{}` is deprecated, see the docs for a recommended replacement",
+                            props.name
+                        ),
+                    ));
+                }
+                exec_state.mut_memory().push_new_env_for_rust_call();
+                let args = crate::std::Args::new(
+                    args,
+                    source_range,
+                    ctx.clone(),
+                    exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+                );
+                let result = func(exec_state, args).await.map(Some);
+                exec_state.mut_memory().pop_env();
+                result
+            }
+            KclValue::Function {
+                value: FunctionSource::User { ast, memory },
+                ..
+            } => crate::execution::exec_ast::call_user_defined_function(args, *memory, ast, exec_state, &ctx).await,
+            _ => Err(KclError::Semantic(KclErrorDetails {
+                message: "cannot call this because it isn't a function".to_string(),
+                source_ranges: vec![source_range],
+            })),
         }
     }
 
@@ -545,44 +616,171 @@ impl KclValue {
         ctx: ExecutorContext,
         callsite: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
-        let KclValue::Function {
-            func,
-            expression,
-            memory: closure_memory,
-            meta: _,
-        } = &self
-        else {
-            return Err(KclError::Semantic(KclErrorDetails {
+        match self {
+            KclValue::Function {
+                value: FunctionSource::Std { func: _, props },
+                ..
+            } => {
+                if props.deprecated {
+                    exec_state.warn(CompilationError::err(
+                        callsite,
+                        format!(
+                            "`{}` is deprecated, see the docs for a recommended replacement",
+                            props.name
+                        ),
+                    ));
+                }
+                todo!("Implement KCL stdlib fns with keyword args");
+            }
+            KclValue::Function {
+                value: FunctionSource::User { ast, memory },
+                ..
+            } => {
+                crate::execution::exec_ast::call_user_defined_function_kw(args.kw_args, *memory, ast, exec_state, &ctx)
+                    .await
+            }
+            _ => Err(KclError::Semantic(KclErrorDetails {
                 message: "cannot call this because it isn't a function".to_string(),
                 source_ranges: vec![callsite],
-            }));
-        };
-        if let Some(_func) = func {
-            todo!("Implement calling KCL stdlib fns that are aliased. Part of https://github.com/KittyCAD/modeling-app/issues/4600");
-        } else {
-            crate::execution::call_user_defined_function_kw(
-                args.kw_args,
-                closure_memory.as_ref(),
-                expression.as_ref(),
-                exec_state,
-                &ctx,
-            )
-            .await
+            })),
         }
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum NumericType {
+    // Specified by the user (directly or indirectly)
+    Known(UnitType),
+    // Unspecified, using defaults
+    Default { len: UnitLen, angle: UnitAngle },
+    // Exceeded the ability of the type system to track.
+    Unknown,
+    // Type info has been explicitly cast away.
+    Any,
+}
+
+impl NumericType {
+    pub fn count() -> Self {
+        NumericType::Known(UnitType::Count)
+    }
+
+    /// Combine two types when we expect them to be equal.
+    pub fn combine_eq(self, other: &NumericType) -> NumericType {
+        if &self == other {
+            self
+        } else {
+            NumericType::Unknown
+        }
+    }
+
+    /// Combine n types when we expect them to be equal.
+    ///
+    /// Precondition: tys.len() > 0
+    pub fn combine_n_eq(tys: &[NumericType]) -> NumericType {
+        let ty0 = tys[0].clone();
+        for t in &tys[1..] {
+            if t != &ty0 {
+                return NumericType::Unknown;
+            }
+        }
+        ty0
+    }
+
+    /// Combine two types in addition-like operations.
+    pub fn combine_add(a: NumericType, b: NumericType) -> NumericType {
+        if a == b {
+            return a;
+        }
+        NumericType::Unknown
+    }
+
+    /// Combine two types in multiplication-like operations.
+    pub fn combine_mul(a: NumericType, b: NumericType) -> NumericType {
+        if a == NumericType::count() {
+            return b;
+        }
+        if b == NumericType::count() {
+            return a;
+        }
+        NumericType::Unknown
+    }
+
+    /// Combine two types in division-like operations.
+    pub fn combine_div(a: NumericType, b: NumericType) -> NumericType {
+        if b == NumericType::count() {
+            return a;
+        }
+        NumericType::Unknown
+    }
+
+    pub fn from_parsed(suffix: NumericSuffix, settings: &super::MetaSettings) -> Self {
+        match suffix {
+            NumericSuffix::None => NumericType::Default {
+                len: settings.default_length_units,
+                angle: settings.default_angle_units,
+            },
+            NumericSuffix::Count => NumericType::Known(UnitType::Count),
+            NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLen::Mm)),
+            NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLen::Cm)),
+            NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLen::M)),
+            NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLen::Inches)),
+            NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLen::Feet)),
+            NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLen::Yards)),
+            NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
+            NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
+        }
+    }
+}
+
+impl From<UnitLen> for NumericType {
+    fn from(value: UnitLen) -> Self {
+        NumericType::Known(UnitType::Length(value))
+    }
+}
+
+impl From<UnitAngle> for NumericType {
+    fn from(value: UnitAngle) -> Self {
+        NumericType::Known(UnitType::Angle(value))
+    }
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum UnitType {
+    Count,
+    Length(UnitLen),
+    Angle(UnitAngle),
+}
+
 // TODO called UnitLen so as not to clash with UnitLength in settings)
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+/// A unit of length.
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitLen {
+    #[default]
     Mm,
     Cm,
     M,
     Inches,
     Feet,
     Yards,
+}
+
+impl std::fmt::Display for UnitLen {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UnitLen::Mm => write!(f, "mm"),
+            UnitLen::Cm => write!(f, "cm"),
+            UnitLen::M => write!(f, "m"),
+            UnitLen::Inches => write!(f, "in"),
+            UnitLen::Feet => write!(f, "ft"),
+            UnitLen::Yards => write!(f, "yd"),
+        }
+    }
 }
 
 impl TryFrom<NumericSuffix> for UnitLen {
@@ -614,6 +812,33 @@ impl From<crate::UnitLength> for UnitLen {
     }
 }
 
+impl From<UnitLen> for crate::UnitLength {
+    fn from(unit: UnitLen) -> Self {
+        match unit {
+            UnitLen::Cm => crate::UnitLength::Cm,
+            UnitLen::Feet => crate::UnitLength::Ft,
+            UnitLen::Inches => crate::UnitLength::In,
+            UnitLen::M => crate::UnitLength::M,
+            UnitLen::Mm => crate::UnitLength::Mm,
+            UnitLen::Yards => crate::UnitLength::Yd,
+        }
+    }
+}
+
+impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
+    fn from(unit: UnitLen) -> Self {
+        match unit {
+            UnitLen::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
+            UnitLen::Feet => kittycad_modeling_cmds::units::UnitLength::Feet,
+            UnitLen::Inches => kittycad_modeling_cmds::units::UnitLength::Inches,
+            UnitLen::M => kittycad_modeling_cmds::units::UnitLength::Meters,
+            UnitLen::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
+            UnitLen::Yards => kittycad_modeling_cmds::units::UnitLength::Yards,
+        }
+    }
+}
+
+/// A unit of angle.
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -621,6 +846,15 @@ pub enum UnitAngle {
     #[default]
     Degrees,
     Radians,
+}
+
+impl std::fmt::Display for UnitAngle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UnitAngle::Degrees => write!(f, "deg"),
+            UnitAngle::Radians => write!(f, "rad"),
+        }
+    }
 }
 
 impl TryFrom<NumericSuffix> for UnitAngle {

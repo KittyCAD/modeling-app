@@ -15,19 +15,24 @@ export class ToolbarFixture {
   extrudeButton!: Locator
   loftButton!: Locator
   sweepButton!: Locator
+  filletButton!: Locator
   chamferButton!: Locator
   shellButton!: Locator
+  revolveButton!: Locator
   offsetPlaneButton!: Locator
+  helixButton!: Locator
   startSketchBtn!: Locator
   lineBtn!: Locator
+  tangentialArcBtn!: Locator
+  circleBtn!: Locator
   rectangleBtn!: Locator
+  lengthConstraintBtn!: Locator
   exitSketchBtn!: Locator
   editSketchBtn!: Locator
   fileTreeBtn!: Locator
   createFileBtn!: Locator
   fileCreateToast!: Locator
   filePane!: Locator
-  exeIndicator!: Locator
   treeInputField!: Locator
   /** The sidebar button for the Feature Tree pane */
   featureTreeId = 'feature-tree' as const
@@ -43,12 +48,18 @@ export class ToolbarFixture {
     this.extrudeButton = page.getByTestId('extrude')
     this.loftButton = page.getByTestId('loft')
     this.sweepButton = page.getByTestId('sweep')
+    this.filletButton = page.getByTestId('fillet3d')
     this.chamferButton = page.getByTestId('chamfer3d')
     this.shellButton = page.getByTestId('shell')
+    this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
+    this.helixButton = page.getByTestId('helix')
     this.startSketchBtn = page.getByTestId('sketch')
     this.lineBtn = page.getByTestId('line')
+    this.tangentialArcBtn = page.getByTestId('tangential-arc')
+    this.circleBtn = page.getByTestId('circle-center')
     this.rectangleBtn = page.getByTestId('corner-rectangle')
+    this.lengthConstraintBtn = page.getByTestId('constraint-length')
     this.exitSketchBtn = page.getByTestId('sketch-exit')
     this.editSketchBtn = page.getByText('Edit Sketch')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
@@ -58,7 +69,14 @@ export class ToolbarFixture {
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
     this.fileCreateToast = page.getByText('Successfully created')
-    this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
+  }
+
+  get logoLink() {
+    return this.page.getByTestId('app-logo')
+  }
+
+  get exeIndicator() {
+    return this.page.getByTestId('model-state-indicator-receive-reliable')
   }
 
   startSketchPlaneSelection = async () =>
@@ -107,6 +125,25 @@ export class ToolbarFixture {
       await expect(this.exeIndicator).toBeVisible({ timeout: 15_000 })
     }
   }
+  selectCenterRectangle = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Corner rectangle:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-center-rectangle')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-center-rectangle').click()
+  }
+
+  selectCircleThreePoint = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Center circle:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-circle-three-points')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-circle-three-points').click()
+  }
 
   async closePane(paneId: SidebarType) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
@@ -129,7 +166,8 @@ export class ToolbarFixture {
   }
 
   /**
-   * Get a specific operation button from the Feature Tree pane
+   * Get a specific operation button from the Feature Tree pane.
+   * Index is 0-based.
    */
   async getFeatureTreeOperation(operationName: string, operationIndex: number) {
     await this.openFeatureTreePane()

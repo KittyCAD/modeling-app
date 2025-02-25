@@ -8,11 +8,11 @@ fn p = (xs, ys) => {
   let oy = 35 - (m(ys) % 70)
   const r = startSketchOn('XZ')
   |> startProfileAt([ox, oy], %)
-  |> line([1, 0], %)
-  |> line([0, -1], %)
-  |> line([-1, 0], %)
-  |> close(%)
-  |> extrude(1, %)
+  |> line(end = [1, 0])
+  |> line(end = [0, -1])
+  |> line(end = [-1, 0])
+  |> close()
+  |> extrude(length = 1)
   return r
 }
 p(177533, 177533)

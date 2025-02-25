@@ -129,6 +129,7 @@ includeSettings = false
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
                         camera_projection: Default::default(),
+                        camera_orbit: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,

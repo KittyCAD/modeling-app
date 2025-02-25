@@ -9,15 +9,15 @@ const sketch001 = startSketchOn('XZ')
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $yo)
-  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
-  |> close(%)
-const extrude001 = extrude(100, sketch001)
-  |> chamfer({
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+const extrude001 = extrude(sketch001, length = 100)
+  |> chamfer(
        length = 30,
        tags = [
          seg01,
          getNextAdjacentEdge(yo),
          getNextAdjacentEdge(seg02),
          getOppositeEdge(seg01)
-       ]
-     }, %)
+       ],
+     )

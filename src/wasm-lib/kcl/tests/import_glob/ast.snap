@@ -7,7 +7,10 @@ description: Result of parsing import_glob.kcl
     "body": [
       {
         "end": 35,
-        "path": "export_constant.kcl",
+        "path": {
+          "type": "Kcl",
+          "filename": "export_constant.kcl"
+        },
         "selector": {
           "end": 8,
           "start": 7,

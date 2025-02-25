@@ -1,33 +1,66 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed import_whole.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
-      "data": {
+      "faces": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "String",
+              "value": "end"
+            }
+          ]
+        },
         "sourceRange": [
-          55,
-          92,
+          97,
+          104,
           0
         ]
       },
-      "solid_set": {
+      "thickness": {
+        "value": {
+          "type": "Number",
+          "value": 0.25,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          94,
-          95,
+          118,
+          122,
           0
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      49,
-      96,
+      83,
+      123,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   }
 ]

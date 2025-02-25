@@ -23,7 +23,10 @@ expression: actual
                   "start": 10,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
                 }
               ],
               "callee": {
@@ -45,7 +48,10 @@ expression: actual
                   "start": 18,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 {
                   "end": 22,

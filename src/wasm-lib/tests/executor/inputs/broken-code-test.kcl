@@ -1,11 +1,9 @@
 // Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
-
 // Define our bracket feet lengths
 const shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
 const wallMountL = 6 // the length of the bracket
-
 
 // Define constants required to calculate the thickness needed to support 300 lbs
 const sigmaAllow = 35000 // psi
@@ -15,46 +13,32 @@ const L = 12 // inches
 const M = L * p / 2 // Moment experienced at fixed end of bracket
 const FOS = 2 // Factor of safety of 2 to be conservative
 
-
 // Calculate the thickness off the bending stress and factor of safety
 const thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
 
 // 0.25 inch fillet radius
 const filletR = 0.25
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Sketch the bracket and extrude with fillets
 const bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, 'outerEdge')
-  |> line([-shelfMountL, 0], %)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, 'innerEdge')
-  |> line([0, -wallMountL + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
-  |> fillet({
-       radius: filletR,
-       tags: [
+  |> line(end = [0, wallMountL], tag = 'outerEdge')
+  |> line(end = [-shelfMountL, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [shelfMountL - thickness, 0], tag = 'innerEdge')
+  |> line(end = [0, -wallMountL + thickness])
+  |> close()
+  |> extrude(length = width)
+  |> fillet(
+       radius = filletR,
+       tags = [
          getPreviousAdjacentEdge('innerEdge', %)
        ]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [
+     )
+  |> fillet(
+       radius = filletR + thickness,
+       tags = [
          getPreviousAdjacentEdge('outerEdge', %)
        ]
-     }, %)
+     )
 

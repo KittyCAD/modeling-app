@@ -1,195 +1,262 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
-description: Program memory after executing computed_var.kcl
-snapshot_kind: text
+description: Variables in memory after executing computed_var.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "arr": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    44,
-                    45,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    47,
-                    48,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    50,
-                    51,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 10.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    53,
-                    55,
-                    0
-                  ]
-                }
-              ]
-            }
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                43,
-                56,
-                0
-              ]
-            }
-          ]
-        },
-        "i": {
-          "type": "Number",
-          "value": 3.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                61,
-                62,
-                0
-              ]
-            }
-          ]
-        },
-        "obj": {
-          "type": "Object",
-          "value": {
-            "bar": {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    150,
-                    151,
-                    0
-                  ]
-                }
-              ]
-            },
-            "foo": {
-              "type": "Number",
-              "value": 1.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    141,
-                    142,
-                    0
-                  ]
-                }
-              ]
-            }
+  "arr": {
+    "type": "Array",
+    "value": [
+      {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
           },
-          "__meta": [
-            {
-              "sourceRange": [
-                133,
-                153,
-                0
-              ]
-            }
-          ]
+          "angle": {
+            "type": "Degrees"
+          }
         },
-        "one": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                141,
-                142,
-                0
-              ]
-            }
-          ]
-        },
-        "p": {
-          "type": "String",
-          "value": "foo",
-          "__meta": [
-            {
-              "sourceRange": [
-                121,
-                126,
-                0
-              ]
-            }
-          ]
-        },
-        "ten": {
-          "type": "Number",
-          "value": 10.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                53,
-                55,
-                0
-              ]
-            }
-          ]
-        }
+        "__meta": [
+          {
+            "sourceRange": [
+              44,
+              45,
+              0
+            ]
+          }
+        ]
       },
-      "parent": null
-    }
-  ],
-  "currentEnv": 0,
-  "return": null
+      {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              47,
+              48,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              50,
+              51,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 10.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              53,
+              55,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          43,
+          56,
+          0
+        ]
+      }
+    ]
+  },
+  "i": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          61,
+          62,
+          0
+        ]
+      }
+    ]
+  },
+  "obj": {
+    "type": "Object",
+    "value": {
+      "bar": {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              150,
+              151,
+              0
+            ]
+          }
+        ]
+      },
+      "foo": {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              141,
+              142,
+              0
+            ]
+          }
+        ]
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          133,
+          153,
+          0
+        ]
+      }
+    ]
+  },
+  "one": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          141,
+          142,
+          0
+        ]
+      }
+    ]
+  },
+  "p": {
+    "type": "String",
+    "value": "foo",
+    "__meta": [
+      {
+        "sourceRange": [
+          121,
+          126,
+          0
+        ]
+      }
+    ]
+  },
+  "ten": {
+    "type": "Number",
+    "value": 10.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          53,
+          55,
+          0
+        ]
+      }
+    ]
+  },
+  "x": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          247,
+          258,
+          0
+        ]
+      }
+    ]
+  }
 }

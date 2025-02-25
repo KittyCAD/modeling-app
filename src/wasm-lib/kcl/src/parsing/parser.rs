@@ -1,7 +1,7 @@
 // TODO optimise size of CompilationError
 #![allow(clippy::result_large_err)]
 
-use std::{cell::RefCell, collections::HashMap, str::FromStr};
+use std::{cell::RefCell, collections::BTreeMap};
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, separated_pair, terminated},
@@ -12,19 +12,22 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
-use super::{ast::types::LabelledExpression, token::NumericSuffix};
+use super::{
+    ast::types::{ImportPath, LabelledExpression},
+    token::NumericSuffix,
+};
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
     parsing::{
         ast::types::{
-            ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
-            CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
-            FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector,
-            ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
-            MemberObject, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
-            Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator,
-            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
+            BoxNode, CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr,
+            ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
+            ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue,
+            MemberExpression, MemberObject, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
+            ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang,
+            TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -281,10 +284,10 @@ fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     alt((non_code_node_leading_whitespace, non_code_node_no_leading_whitespace)).parse_next(i)
 }
 
-fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
+fn annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
     let at = at_sign.parse_next(i)?;
-    let name = binding_name.parse_next(i)?;
-    let mut end = name.end;
+    let name = opt(binding_name).parse_next(i)?;
+    let mut end = name.as_ref().map(|n| n.end).unwrap_or(at.end);
 
     let properties = if peek(open_paren).parse_next(i).is_ok() {
         open_paren(i)?;
@@ -305,6 +308,7 @@ fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
                     value,
                     digest: None,
                 },
+                outer_attrs: Vec::new(),
             }),
             comma_sep,
         )
@@ -317,50 +321,54 @@ fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
         None
     };
 
-    let value = NonCodeValue::Annotation { name, properties };
-    Ok(Node::new(
-        NonCodeNode { value, digest: None },
-        at.start,
-        end,
-        at.module_id,
-    ))
+    if name.is_none() && properties.is_none() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(at.as_source_range(), format!("Unexpected token: {}", at.value)).into(),
+        ));
+    }
+
+    let value = Annotation {
+        name,
+        properties,
+        digest: None,
+    };
+    Ok(Node::new(value, at.start, end, at.module_id))
 }
 
 // Matches remaining three cases of NonCodeValue
 fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
-    alt((
-        annotation,
-        any.verify_map(|token: Token| {
-            if token.is_code_token() {
-                None
-            } else {
-                let value = match token.token_type {
-                    TokenType::Whitespace if token.value.contains("\n\n") => NonCodeValue::NewLine,
-                    TokenType::LineComment => NonCodeValue::BlockComment {
-                        value: token.value.trim_start_matches("//").trim().to_owned(),
-                        style: CommentStyle::Line,
-                    },
-                    TokenType::BlockComment => NonCodeValue::BlockComment {
-                        style: CommentStyle::Block,
-                        value: token
-                            .value
-                            .trim_start_matches("/*")
-                            .trim_end_matches("*/")
-                            .trim()
-                            .to_owned(),
-                    },
-                    _ => return None,
-                };
-                Some(Node::new(
-                    NonCodeNode { value, digest: None },
-                    token.start,
-                    token.end,
-                    token.module_id,
-                ))
-            }
-        })
-        .context(expected("Non-code token (comments or whitespace)")),
-    ))
+    any.verify_map(|token: Token| {
+        if token.is_code_token() {
+            None
+        } else {
+            let value = match token.token_type {
+                TokenType::Whitespace if token.value.contains("\n\n") || token.value.contains("\n\r\n") => {
+                    NonCodeValue::NewLine
+                }
+                TokenType::LineComment => NonCodeValue::BlockComment {
+                    value: token.value.trim_start_matches("//").trim().to_owned(),
+                    style: CommentStyle::Line,
+                },
+                TokenType::BlockComment => NonCodeValue::BlockComment {
+                    style: CommentStyle::Block,
+                    value: token
+                        .value
+                        .trim_start_matches("/*")
+                        .trim_end_matches("*/")
+                        .trim()
+                        .to_owned(),
+                },
+                _ => return None,
+            };
+            Some(Node::new(
+                NonCodeNode { value, digest: None },
+                token.start,
+                token.end,
+                token.module_id,
+            ))
+        }
+    })
+    .context(expected("Non-code token (comments or whitespace)"))
     .parse_next(i)
 }
 
@@ -417,6 +425,7 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
             non_code_meta,
             digest: None,
         },
+        outer_attrs: Vec::new(),
     })
 }
 
@@ -483,18 +492,24 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                let x: f64 = token.numeric_value().ok_or_else(|| {
+                let value: f64 = token.numeric_value().ok_or_else(|| {
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
                 if token.numeric_suffix().is_some() {
-                    ParseContext::err(CompilationError::err(
+                    ParseContext::warn(CompilationError::err(
                         (&token).into(),
                         "Unit of Measure suffixes are experimental and currently do nothing.",
                     ));
                 }
 
-                Ok((LiteralValue::Number(x), token))
+                Ok((
+                    LiteralValue::Number {
+                        value,
+                        suffix: token.numeric_suffix(),
+                    },
+                    token,
+                ))
             }
             _ => Err(CompilationError::fatal(token.as_source_range(), "invalid literal")),
         })
@@ -746,8 +761,8 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
         .end;
 
     // Sort the array's elements (i.e. expression nodes) from the noncode nodes.
-    let (elements, non_code_nodes): (Vec<_>, HashMap<usize, _>) = elements.into_iter().enumerate().fold(
-        (Vec::new(), HashMap::new()),
+    let (elements, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = elements.into_iter().enumerate().fold(
+        (Vec::new(), BTreeMap::new()),
         |(mut elements, mut non_code_nodes), (i, e)| {
             match e {
                 NonCodeOr::NonCode(x) => {
@@ -813,6 +828,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectPr
             key,
             digest: None,
         },
+        outer_attrs: Vec::new(),
     })
 }
 
@@ -841,16 +857,17 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
             value: expr,
             digest: None,
         },
+        outer_attrs: Vec::new(),
     };
 
     if sep.token_type == TokenType::Colon {
-        ParseContext::warn(CompilationError::with_suggestion(
-            sep.into(),
-            Some(result.as_source_range()),
-            "Using `:` to initialize objects is deprecated, prefer using `=`.",
-            Some(("Replace `:` with `=`", " =")),
-            Tag::Deprecated,
-        ));
+        ParseContext::warn(
+            CompilationError::err(
+                sep.into(),
+                "Using `:` to initialize objects is deprecated, prefer using `=`.",
+            )
+            .with_suggestion("Replace `:` with `=`", " =", None, Tag::Deprecated),
+        );
     }
 
     Ok(result)
@@ -863,6 +880,17 @@ fn property_separator(i: &mut TokenSlice) -> PResult<()> {
         comma_sep,
         // But, if the array is ending, no need for a comma.
         peek(preceded(opt(whitespace), close_brace)).void(),
+    ))
+    .parse_next(i)
+}
+
+/// Match something that separates the labeled arguments of a fn call.
+fn labeled_arg_separator(i: &mut TokenSlice) -> PResult<()> {
+    alt((
+        // Normally you need a comma.
+        comma_sep,
+        // But, if the argument list is ending, no need for a comma.
+        peek(preceded(opt(whitespace), close_paren)).void(),
     ))
     .parse_next(i)
 }
@@ -889,8 +917,8 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
     .parse_next(i)?;
 
     // Sort the object's properties from the noncode nodes.
-    let (properties, non_code_nodes): (Vec<_>, HashMap<usize, _>) = properties.into_iter().enumerate().fold(
-        (Vec::new(), HashMap::new()),
+    let (properties, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = properties.into_iter().enumerate().fold(
+        (Vec::new(), BTreeMap::new()),
         |(mut properties, mut non_code_nodes), (i, e)| {
             match e {
                 NonCodeOr::NonCode(x) => {
@@ -1069,9 +1097,19 @@ fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
     let (result, has_arrow) = function_decl.parse_next(i)?;
-    if fn_tok.is_none() && !has_arrow {
-        let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
-        return Err(ErrMode::Cut(err.into()));
+    if fn_tok.is_none() {
+        if has_arrow {
+            ParseContext::warn(
+                CompilationError::err(
+                    result.as_source_range().start_as_range(),
+                    "Missing `fn` in function declaration",
+                )
+                .with_suggestion("Add `fn`", "fn", None, Tag::None),
+            );
+        } else {
+            let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
+            return Err(ErrMode::Cut(err.into()));
+        }
     }
     Ok(Expr::FunctionExpression(Box::new(result)))
 }
@@ -1098,9 +1136,15 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
     // Optional return type.
     let return_type = opt(return_type).parse_next(i)?;
     ignore_whitespace(i);
-    open_brace(i)?;
-    let body = function_body(i)?;
-    let end = close_brace(i)?.end;
+    let brace = open_brace(i)?;
+    let close: Option<(Vec<Vec<Token>>, Token)> = opt((repeat(0.., whitespace), close_brace)).parse_next(i)?;
+    let (body, end) = match close {
+        Some((_, end)) => (
+            Node::new(Program::default(), brace.end, brace.end, brace.module_id),
+            end.end,
+        ),
+        None => (function_body(i)?, close_brace(i)?.end),
+    };
     let result = Node::new(
         FunctionExpression {
             params,
@@ -1113,18 +1157,16 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
         open.module_id,
     );
 
-    let has_arrow = if let Some(arrow) = arrow {
-        ParseContext::warn(CompilationError::with_suggestion(
-            arrow.as_source_range(),
-            Some(result.as_source_range()),
-            "Unnecessary `=>` in function declaration",
-            Some(("Remove `=>`", "")),
-            Tag::Unnecessary,
-        ));
-        true
-    } else {
-        false
-    };
+    let has_arrow =
+        if let Some(arrow) = arrow {
+            ParseContext::warn(
+                CompilationError::err(arrow.as_source_range(), "Unnecessary `=>` in function declaration")
+                    .with_suggestion("Remove `=>`", "", None, Tag::Unnecessary),
+            );
+            true
+        } else {
+            false
+        };
 
     Ok((result, has_arrow))
 }
@@ -1234,7 +1276,6 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
                     x @ NonCodeValue::InlineComment { .. } => x,
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
-                    x @ NonCodeValue::Annotation { .. } => x,
                 };
                 Node::new(
                     NonCodeNode { value, ..nc.inner },
@@ -1255,7 +1296,6 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
                     x @ NonCodeValue::InlineComment { .. } => x,
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
-                    x @ NonCodeValue::Annotation { .. } => x,
                 };
                 Node::new(NonCodeNode { value, ..nc.inner }, nc.start, nc.end, nc.module_id)
             }
@@ -1271,6 +1311,7 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
 #[derive(Debug)]
 #[allow(clippy::large_enum_variant)]
 enum WithinFunction {
+    Annotation(Node<Annotation>),
     BodyItem((BodyItem, Option<Node<NonCodeNode>>)),
     NonCode(Node<NonCodeNode>),
 }
@@ -1295,8 +1336,11 @@ fn body_items_within_function(i: &mut TokenSlice) -> PResult<WithinFunction> {
             (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         Token { ref value, .. } if value == "return" =>
             (return_stmt.map(BodyItem::ReturnStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
-        token if !token.is_code_token() || token.token_type == TokenType::At => {
+        token if !token.is_code_token() => {
             non_code_node.map(WithinFunction::NonCode)
+        },
+        token if token.token_type == TokenType::At => {
+            annotation.map(WithinFunction::Annotation)
         },
         _ =>
             alt((
@@ -1360,7 +1404,7 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
         // if it has an empty line, it should be considered a noncode token, because the user
         // deliberately put an empty line there. We should track this and preserve it.
         if let Ok(ref ws_token) = found_ws {
-            if ws_token.value.contains("\n\n") {
+            if ws_token.value.contains("\n\n") || ws_token.value.contains("\n\r\n") {
                 things_within_body.push(WithinFunction::NonCode(Node::new(
                     NonCodeNode {
                         value: NonCodeValue::NewLine,
@@ -1404,16 +1448,32 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
     }
 
     let mut body = Vec::new();
+    let mut inner_attrs = Vec::new();
+    let mut pending_attrs = Vec::new();
     let mut non_code_meta = NonCodeMeta::default();
     let mut end = 0;
     let mut start = leading_whitespace_start;
     for thing_in_body in things_within_body {
         match thing_in_body {
-            WithinFunction::BodyItem((b, maybe_noncode)) => {
+            WithinFunction::Annotation(attr) => {
+                if start.is_none() {
+                    start = Some((attr.start, attr.module_id))
+                }
+                if attr.is_inner() {
+                    inner_attrs.push(attr);
+                } else {
+                    pending_attrs.push(attr);
+                }
+            }
+            WithinFunction::BodyItem((mut b, maybe_noncode)) => {
                 if start.is_none() {
                     start = Some((b.start(), b.module_id()));
                 }
                 end = b.end();
+                if !pending_attrs.is_empty() {
+                    b.set_attrs(pending_attrs);
+                    pending_attrs = Vec::new();
+                }
                 body.push(b);
                 if let Some(nc) = maybe_noncode {
                     end = nc.end;
@@ -1433,9 +1493,26 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
             }
         }
     }
+
     let start = start.expect(
         "the `things_within_body` vec should have looped at least once, and each loop overwrites `start` if it is None",
     );
+
+    if !pending_attrs.is_empty() {
+        for a in pending_attrs {
+            ParseContext::err(CompilationError::err(
+                a.as_source_range(),
+                "Attribute is not attached to any item",
+            ));
+        }
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(start.0, end, start.1),
+                "Block contains un-attached attributes",
+            )
+            .into(),
+        ));
+    }
     // Safe to unwrap `body.first()` because `body` is `separated1` therefore guaranteed
     // to have len >= 1.
     let end_ws = opt(whitespace)
@@ -1449,6 +1526,7 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
         Program {
             body,
             non_code_meta,
+            inner_attrs,
             shebang: None,
             digest: None,
         },
@@ -1531,33 +1609,11 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     };
 
     let mut end: usize = path.end;
-    let path_string = match path.inner.value {
-        LiteralValue::String(s) => s,
-        _ => unreachable!(),
-    };
-    if path_string.is_empty() {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                SourceRange::new(path.start, path.end, path.module_id),
-                "import path cannot be empty",
-            )
-            .into(),
-        ));
-    }
-    if path_string
-        .chars()
-        .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
-    {
-        return Err(ErrMode::Cut(
-            CompilationError::fatal(
-                SourceRange::new(path.start, path.end, path.module_id),
-                "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
-            )
-            .into(),
-        ));
-    }
 
-    if let ImportSelector::None { alias: ref mut a } = selector {
+    if let ImportSelector::None {
+        alias: ref mut selector_alias,
+    } = selector
+    {
         if let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
             identifier.context(expected("an identifier to alias the import")),
@@ -1565,41 +1621,142 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         .parse_next(i)?
         {
             end = alias.end;
-            *a = Some(alias);
+            *selector_alias = Some(alias);
         }
 
         ParseContext::warn(CompilationError::err(
             SourceRange::new(start, path.end, path.module_id),
             "Importing a whole module is experimental, likely to be buggy, and likely to change",
         ));
+    }
 
-        if a.is_none()
-            && (!path_string.ends_with(".kcl")
-                || path_string.starts_with("_")
-                || path_string.contains('-')
-                || path_string[0..path_string.len() - 4].contains('.'))
-        {
-            return Err(ErrMode::Cut(
-                CompilationError::fatal(
-                    SourceRange::new(path.start, path.end, path.module_id),
-                    "import path is not a valid identifier and must be aliased.".to_owned(),
-                )
-                .into(),
-            ));
-        }
+    let path_string = match path.inner.value {
+        LiteralValue::String(s) => s,
+        _ => unreachable!(),
+    };
+    let path = validate_path_string(
+        path_string,
+        selector.exposes_imported_name(),
+        SourceRange::new(path.start, path.end, path.module_id),
+    )?;
+
+    if matches!(path, ImportPath::Foreign { .. }) && selector.imports_items() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(start, end, module_id),
+                "individual items can only be imported from KCL files",
+            )
+            .into(),
+        ));
+    } else if matches!(path, ImportPath::Std { .. }) && matches!(selector, ImportSelector::None { .. }) {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(start, end, module_id),
+                "the standard library cannot be imported as a part",
+            )
+            .into(),
+        ));
     }
 
     Ok(Node::boxed(
         ImportStatement {
             selector,
             visibility,
-            path: path_string,
+            path,
             digest: None,
         },
         start,
         end,
         module_id,
     ))
+}
+
+const FOREIGN_IMPORT_EXTENSIONS: [&str; 8] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "step", "stl"];
+
+/// Validates the path string in an `import` statement.
+///
+/// `var_name` is `true` if the path will be used as a variable name.
+fn validate_path_string(path_string: String, var_name: bool, path_range: SourceRange) -> PResult<ImportPath> {
+    if path_string.is_empty() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "import path cannot be empty").into(),
+        ));
+    }
+
+    if var_name
+        && (path_string.starts_with("_")
+            || path_string.contains('-')
+            || path_string.chars().filter(|c| *c == '.').count() > 1)
+    {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
+        ));
+    }
+
+    let path = if path_string.ends_with(".kcl") {
+        if path_string
+            .chars()
+            .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
+        {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
+                )
+                .into(),
+            ));
+        }
+
+        ImportPath::Kcl { filename: path_string }
+    } else if path_string.starts_with("std::") {
+        ParseContext::warn(CompilationError::err(
+            path_range,
+            "explicit imports from the standard library are experimental, likely to be buggy, and likely to change.",
+        ));
+
+        let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
+
+        for s in &segments {
+            if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
+                return Err(ErrMode::Cut(
+                    CompilationError::fatal(path_range, "invalid path in import statement.").into(),
+                ));
+            }
+        }
+
+        // For now we only support importing from singly-nested modules inside std.
+        if segments.len() != 2 {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    format!("Invalid import path for import from std: {}.", path_string),
+                )
+                .into(),
+            ));
+        }
+
+        ImportPath::Std { path: segments }
+    } else if path_string.contains('.') {
+        // TODO should allow other extensions if there is a format attribute.
+        let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
+        if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
+            ParseContext::warn(CompilationError::err(
+                path_range,
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+            ))
+        }
+        ImportPath::Foreign { path: path_string }
+    } else {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                path_range,
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+            )
+            .into(),
+        ));
+    };
+
+    Ok(path)
 }
 
 fn import_item(i: &mut TokenSlice) -> PResult<Node<ImportItem>> {
@@ -1669,6 +1826,7 @@ fn return_stmt(i: &mut TokenSlice) -> PResult<Node<ReturnStatement>> {
         end: argument.end(),
         module_id: ret.module_id,
         inner: ReturnStatement { argument, digest: None },
+        outer_attrs: Vec::new(),
     })
 }
 
@@ -1825,67 +1983,66 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
 
     ignore_whitespace(i);
 
-    let val = if kind == VariableKind::Fn {
-        let eq = opt(equals).parse_next(i)?;
-        ignore_whitespace(i);
+    let val =
+        if kind == VariableKind::Fn {
+            let eq = opt(equals).parse_next(i)?;
+            ignore_whitespace(i);
 
-        let val = function_decl
-            .map(|t| Box::new(t.0))
-            .map(Expr::FunctionExpression)
-            .context(expected("a KCL function expression, like () { return 1 }"))
-            .parse_next(i);
+            let val = function_decl
+                .map(|t| Box::new(t.0))
+                .map(Expr::FunctionExpression)
+                .context(expected("a KCL function expression, like () { return 1 }"))
+                .parse_next(i);
 
-        if let Some(t) = eq {
-            let ctxt_end = val.as_ref().map(|e| e.end()).unwrap_or(t.end);
-            ParseContext::warn(CompilationError::with_suggestion(
-                t.as_source_range(),
-                Some(SourceRange::new(id.start, ctxt_end, id.module_id)),
-                "Unnecessary `=` in function declaration",
-                Some(("Remove `=`", "")),
-                Tag::Unnecessary,
-            ));
+            if let Some(t) = eq {
+                ParseContext::warn(
+                    CompilationError::err(t.as_source_range(), "Unnecessary `=` in function declaration")
+                        .with_suggestion("Remove `=`", "", None, Tag::Unnecessary),
+                );
+            }
+
+            val
+        } else {
+            equals(i)?;
+            ignore_whitespace(i);
+
+            let val = expression
+                .try_map(|val| {
+                    // Function bodies can be used if and only if declaring a function.
+                    // Check the 'if' direction:
+                    if matches!(val, Expr::FunctionExpression(_)) {
+                        return Err(CompilationError::fatal(
+                            SourceRange::new(start, dec_end, id.module_id),
+                            format!("Expected a `fn` variable kind, found: `{}`", kind),
+                        ));
+                    }
+                    Ok(val)
+                })
+                .context(expected("a KCL value, which is being bound to a variable"))
+                .parse_next(i);
+
+            if let Some((_, tok)) = decl_token {
+                let range_to_remove = SourceRange::new(tok.start, id.start, id.module_id);
+                ParseContext::warn(
+                    CompilationError::err(
+                        tok.as_source_range(),
+                        format!(
+                            "Using `{}` to declare constants is deprecated; no keyword is required",
+                            tok.value
+                        ),
+                    )
+                    .with_suggestion(
+                        format!("Remove `{}`", tok.value),
+                        "",
+                        Some(range_to_remove),
+                        Tag::Deprecated,
+                    ),
+                );
+            }
+
+            val
         }
-
-        val
-    } else {
-        equals(i)?;
-        ignore_whitespace(i);
-
-        let val = expression
-            .try_map(|val| {
-                // Function bodies can be used if and only if declaring a function.
-                // Check the 'if' direction:
-                if matches!(val, Expr::FunctionExpression(_)) {
-                    return Err(CompilationError::fatal(
-                        SourceRange::new(start, dec_end, id.module_id),
-                        format!("Expected a `fn` variable kind, found: `{}`", kind),
-                    ));
-                }
-                Ok(val)
-            })
-            .context(expected("a KCL value, which is being bound to a variable"))
-            .parse_next(i);
-
-        if let Some((_, tok)) = decl_token {
-            ParseContext::warn(CompilationError::with_suggestion(
-                tok.as_source_range(),
-                Some(SourceRange::new(
-                    id.start,
-                    val.as_ref().map(|e| e.end()).unwrap_or(dec_end),
-                    id.module_id,
-                )),
-                format!(
-                    "Using `{}` to declare constants is deprecated; no keyword is required",
-                    tok.value
-                ),
-                Some((format!("Remove `{}`", tok.value), "")),
-                Tag::Deprecated,
-            ));
-        }
-
-        val
-    }
-    .map_err(|e| e.cut())?;
+        .map_err(|e| e.cut())?;
 
     let end = val.end();
     Ok(Box::new(Node {
@@ -1902,11 +2059,13 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                     init: val,
                     digest: None,
                 },
+                outer_attrs: Vec::new(),
             },
             visibility,
             kind,
             digest: None,
         },
+        outer_attrs: Vec::new(),
     }))
 }
 
@@ -2112,6 +2271,7 @@ fn unary_expression(i: &mut TokenSlice) -> PResult<Node<UnaryExpression>> {
             argument,
             digest: None,
         },
+        outer_attrs: Vec::new(),
     })
 }
 
@@ -2192,6 +2352,7 @@ fn expression_stmt(i: &mut TokenSlice) -> PResult<Node<ExpressionStatement>> {
             expression: val,
             digest: None,
         },
+        outer_attrs: Vec::new(),
     })
 }
 
@@ -2355,14 +2516,6 @@ fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
     .parse_next(i)
 }
 
-/// Arguments are passed into a function,
-/// preceded by the name of the parameter (the label).
-fn labeled_arguments(i: &mut TokenSlice) -> PResult<Vec<LabeledArg>> {
-    separated(0.., labeled_argument, comma_sep)
-        .context(expected("function arguments"))
-        .parse_next(i)
-}
-
 /// A type of a function argument.
 /// This can be:
 /// - a primitive type, e.g. 'number' or 'string' or 'bool'
@@ -2374,11 +2527,19 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
         (open_brace, parameters, close_brace).map(|(_, params, _)| Ok(FnArgType::Object { properties: params })),
         // Array types
-        (one_of(TokenType::Type), open_bracket, close_bracket).map(|(token, _, _)| {
-            FnArgPrimitive::from_str(&token.value)
-                .map(FnArgType::Array)
-                .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
-        }),
+        (
+            one_of(TokenType::Type),
+            opt(delimited(open_paren, uom_for_type, close_paren)),
+            open_bracket,
+            close_bracket,
+        )
+            .map(|(token, uom, _, _)| {
+                FnArgPrimitive::from_str(&token.value, uom)
+                    .map(FnArgType::Array)
+                    .ok_or_else(|| {
+                        CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
+                    })
+            }),
         // Primitive types
         (
             one_of(TokenType::Type),
@@ -2386,14 +2547,16 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
         )
             .map(|(token, suffix)| {
                 if suffix.is_some() {
-                    ParseContext::err(CompilationError::err(
+                    ParseContext::warn(CompilationError::err(
                         (&token).into(),
                         "Unit of Measure types are experimental and currently do nothing.",
                     ));
                 }
-                FnArgPrimitive::from_str(&token.value)
+                FnArgPrimitive::from_str(&token.value, suffix)
                     .map(FnArgType::Primitive)
-                    .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
+                    .ok_or_else(|| {
+                        CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
+                    })
             }),
     ))
     .parse_next(i)?
@@ -2428,7 +2591,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
         arg_name,
         type_,
         default_value: match (question_mark.is_some(), default_literal) {
-            (true, Some(lit)) => Some(DefaultParamVal::Literal(lit.inner)),
+            (true, Some(lit)) => Some(DefaultParamVal::Literal(*lit)),
             (true, None) => Some(DefaultParamVal::none()),
             (false, None) => None,
             (false, Some(lit)) => {
@@ -2457,8 +2620,7 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                  type_,
                  default_value,
              }| {
-                let identifier =
-                    Node::<Identifier>::try_from(arg_name).and_then(Node::<Identifier>::into_valid_binding_name)?;
+                let identifier = Node::<Identifier>::try_from(arg_name)?;
 
                 Ok(Parameter {
                     identifier,
@@ -2505,30 +2667,27 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError>
     Ok(())
 }
 
-impl Node<Identifier> {
-    fn into_valid_binding_name(self) -> Result<Node<Identifier>, CompilationError> {
-        // Make sure they are not assigning a variable to a stdlib function.
-        if crate::std::name_in_stdlib(&self.name) {
-            return Err(CompilationError::fatal(
-                SourceRange::from(&self),
-                format!("Cannot assign a variable to a reserved keyword: {}", self.name),
-            ));
-        }
-        Ok(self)
-    }
-}
-
 /// Introduce a new name, which binds some value.
 fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     identifier
         .context(expected("an identifier, which will be the name of some value"))
-        .try_map(Node::<Identifier>::into_valid_binding_name)
-        .context(expected("an identifier, which will be the name of some value"))
         .parse_next(i)
 }
 
-fn typecheck_all(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
-    // Type check the arguments.
+/// Typecheck the arguments in a keyword fn call.
+fn typecheck_all_kw(std_fn: Box<dyn StdLibFn>, args: &[&LabeledArg]) -> PResult<()> {
+    for arg in args {
+        let label = &arg.label;
+        let expr = &arg.arg;
+        if let Some(spec_arg) = std_fn.args(false).iter().find(|spec_arg| spec_arg.name == label.name) {
+            typecheck(spec_arg, &expr)?;
+        }
+    }
+    Ok(())
+}
+
+/// Type check the arguments in a positional fn call.
+fn typecheck_all_positional(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
     for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
         let Some(arg) = &args.get(i) else {
             // The executor checks the number of arguments, so we don't need to check it here.
@@ -2555,7 +2714,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(*arg),
-                        format!("Expected a tag declarator like `$name`, found {:?}", e),
+                        format!(
+                            "Expected a tag declarator like `$name`, found {}",
+                            e.human_friendly_type()
+                        ),
                     )
                     .into(),
                 ));
@@ -2568,7 +2730,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(*arg),
-                        format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                        format!(
+                            "Expected a tag identifier like `tagName`, found {}",
+                            e.human_friendly_type()
+                        ),
                     )
                     .into(),
                 ));
@@ -2606,7 +2771,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
 
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         let just_args: Vec<_> = args.iter().collect();
-        typecheck_all(std_fn, &just_args)?;
+        typecheck_all_positional(std_fn, &just_args)?;
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
@@ -2619,6 +2784,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
             arguments: args,
             digest: None,
         },
+        outer_attrs: Vec::new(),
     })
 }
 
@@ -2629,11 +2795,40 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     ignore_whitespace(i);
 
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
-    let args = labeled_arguments(i)?;
+    let args: Vec<_> = repeat(
+        0..,
+        alt((
+            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(labeled_argument, labeled_arg_separator).map(NonCodeOr::Code),
+        )),
+    )
+    .parse_next(i)?;
+    let (args, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = args.into_iter().enumerate().fold(
+        (Vec::new(), BTreeMap::new()),
+        |(mut args, mut non_code_nodes), (i, e)| {
+            match e {
+                NonCodeOr::NonCode(x) => {
+                    non_code_nodes.insert(i, vec![x]);
+                }
+                NonCodeOr::Code(x) => {
+                    args.push(x);
+                }
+            }
+            (args, non_code_nodes)
+        },
+    );
+    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
+        let just_args: Vec<_> = args.iter().collect();
+        typecheck_all_kw(std_fn, &just_args)?;
+    }
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
 
+    let non_code_meta = NonCodeMeta {
+        non_code_nodes,
+        ..Default::default()
+    };
     Ok(Node {
         start: fn_name.start,
         end,
@@ -2643,7 +2838,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
             unlabeled: initial_unlabeled_arg,
             arguments: args,
             digest: None,
+            non_code_meta,
         },
+        outer_attrs: Vec::new(),
     })
 }
 
@@ -2856,7 +3053,10 @@ mySk1 = startSketchAt([0, 0])"#;
                                 ReturnStatement {
                                     argument: Expr::Literal(Box::new(Node::new(
                                         Literal {
-                                            value: 2u32.into(),
+                                            value: LiteralValue::Number {
+                                                value: 2.0,
+                                                suffix: NumericSuffix::None
+                                            },
                                             raw: "2".to_owned(),
                                             digest: None,
                                         },
@@ -2883,6 +3083,7 @@ mySk1 = startSketchAt([0, 0])"#;
                                 )],
                                 digest: None,
                             },
+                            inner_attrs: Vec::new(),
                             shebang: None,
                             digest: None,
                         },
@@ -3057,7 +3258,15 @@ mySk1 = startSketchAt([0, 0])"#;
         match &rhs.right {
             BinaryPart::Literal(lit) => {
                 assert!(lit.start == 9 && lit.end == 10);
-                assert!(lit.value == 3u32.into() && &lit.raw == "3" && lit.digest.is_none());
+                assert!(
+                    lit.value
+                        == LiteralValue::Number {
+                            value: 3.0,
+                            suffix: NumericSuffix::None
+                        }
+                        && &lit.raw == "3"
+                        && lit.digest.is_none()
+                );
             }
             _ => panic!(),
         }
@@ -3128,11 +3337,23 @@ mySk1 = startSketchAt([0, 0])"#;
             let BinaryPart::Literal(left) = actual.inner.left else {
                 panic!("should be expression");
             };
-            assert_eq!(left.value, 1u32.into());
+            assert_eq!(
+                left.value,
+                LiteralValue::Number {
+                    value: 1.0,
+                    suffix: NumericSuffix::None
+                }
+            );
             let BinaryPart::Literal(right) = actual.inner.right else {
                 panic!("should be expression");
             };
-            assert_eq!(right.value, 2u32.into());
+            assert_eq!(
+                right.value,
+                LiteralValue::Number {
+                    value: 2.0,
+                    suffix: NumericSuffix::None
+                }
+            );
         }
     }
 
@@ -3355,7 +3576,7 @@ mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn pipes_on_pipes_minimal() {
         let test_program = r#"startSketchAt([0, 0])
-        |> lineTo([0, -0], %) // MoveRelative
+        |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
@@ -3449,7 +3670,10 @@ mySk1 = startSketchAt([0, 0])"#;
                 operator: BinaryOperator::Add,
                 left: BinaryPart::Literal(Box::new(Node::new(
                     Literal {
-                        value: 5u32.into(),
+                        value: LiteralValue::Number {
+                            value: 5.0,
+                            suffix: NumericSuffix::None,
+                        },
                         raw: "5".to_owned(),
                         digest: None,
                     },
@@ -3498,7 +3722,10 @@ mySk1 = startSketchAt([0, 0])"#;
                             BinaryExpression {
                                 left: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
-                                        value: 5u32.into(),
+                                        value: LiteralValue::Number {
+                                            value: 5.0,
+                                            suffix: NumericSuffix::None,
+                                        },
                                         raw: "5".to_string(),
                                         digest: None,
                                     },
@@ -3509,7 +3736,10 @@ mySk1 = startSketchAt([0, 0])"#;
                                 operator: BinaryOperator::Add,
                                 right: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
-                                        value: 6u32.into(),
+                                        value: LiteralValue::Number {
+                                            value: 6.0,
+                                            suffix: NumericSuffix::None,
+                                        },
                                         raw: "6".to_string(),
                                         digest: None,
                                     },
@@ -3531,6 +3761,7 @@ mySk1 = startSketchAt([0, 0])"#;
                 ))],
                 shebang: None,
                 non_code_meta: NonCodeMeta::default(),
+                inner_attrs: Vec::new(),
                 digest: None,
             },
             0,
@@ -3572,7 +3803,11 @@ mySk1 = startSketchAt([0, 0])"#;
     fn assert_err(p: &str, msg: &str, src_expected: [usize; 2]) {
         let result = crate::parsing::top_level_parse(p);
         let err = result.unwrap_errs().next().unwrap();
-        assert_eq!(err.message, msg);
+        assert!(
+            err.message.starts_with(msg),
+            "Found `{}`, expected `{msg}`",
+            err.message
+        );
         let src_actual = [err.source_range.start(), err.source_range.end()];
         assert_eq!(
             src_expected,
@@ -3691,8 +3926,8 @@ firstExtrude = startSketchOn('XY')
   |> line([0, 8], %)
   |> line([20, 0], %)
   |> line([0, -8], %)
-  |> close(%)
-  |> extrude(2, %)
+  |> close()
+  |> extrude(length=2)
 
 secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
@@ -3902,17 +4137,6 @@ e
     }
 
     #[test]
-    fn test_error_stdlib_in_fn_name() {
-        assert_err(
-            r#"fn cos = () => {
-            return 1
-        }"#,
-            "Cannot assign a variable to a reserved keyword: cos",
-            [3, 6],
-        );
-    }
-
-    #[test]
     fn test_error_keyword_in_fn_args() {
         assert_err(
             r#"fn thing = (let) => {
@@ -3924,21 +4148,10 @@ e
     }
 
     #[test]
-    fn test_error_stdlib_in_fn_args() {
-        assert_err(
-            r#"fn thing = (cos) => {
-    return 1
-}"#,
-            "Cannot assign a variable to a reserved keyword: cos",
-            [12, 15],
-        )
-    }
-
-    #[test]
     fn bad_imports() {
         assert_err(
             r#"import cube from "../cube.kcl""#,
-            "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
+            "import path may only contain alphanumeric characters, underscore, hyphen, and period. KCL files in other directories are not yet supported.",
             [17, 30],
         );
         assert_err(
@@ -3946,17 +4159,21 @@ e
             "as is not the 'from' keyword",
             [9, 11],
         );
-        assert_err(r#"import a from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
-        assert_err(r#"import * from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
+        assert_err(
+            r#"import a from "dsfs" as b"#,
+            "unsupported import path format",
+            [14, 20],
+        );
+        assert_err(
+            r#"import * from "dsfs" as b"#,
+            "unsupported import path format",
+            [14, 20],
+        );
         assert_err(r#"import a from b"#, "invalid string literal", [14, 15]);
         assert_err(r#"import * "dsfs""#, "\"dsfs\" is not the 'from' keyword", [9, 15]);
         assert_err(r#"import from "dsfs""#, "\"dsfs\" is not the 'from' keyword", [12, 18]);
         assert_err(r#"import "dsfs.kcl" as *"#, "Unexpected token: as", [18, 20]);
-        assert_err(
-            r#"import "dsfs""#,
-            "import path is not a valid identifier and must be aliased.",
-            [7, 13],
-        );
+        assert_err(r#"import "dsfs""#, "unsupported import path format", [7, 13]);
         assert_err(
             r#"import "foo.bar.kcl""#,
             "import path is not a valid identifier and must be aliased.",
@@ -3975,10 +4192,43 @@ e
     }
 
     #[test]
+    fn std_fn_decl() {
+        let code = r#"/// Compute the cosine of a number (in radians).
+///
+/// ```
+/// exampleSketch = startSketchOn("XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle = 30,
+///     length = 3 / cos(toRadians(30)),
+///   }, %)
+///   |> yLineTo(0, %)
+///   |> close(%)
+///  
+/// example = extrude(5, exampleSketch)
+/// ```
+@(impl = std_rust)
+export fn cos(num: number(rad)): number(_) {}"#;
+        let _ast = crate::parsing::top_level_parse(code).unwrap();
+    }
+
+    #[test]
     fn warn_import() {
         let some_program_string = r#"import "foo.kcl""#;
         let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.obj""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.sldprt""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.bad""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2, "{errs:#?}");
     }
 
     #[test]
@@ -4168,22 +4418,14 @@ let other_thing = 2 * cos(3)"#;
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
+    |> close()
+    |> extrude(length=h)
 
   return myBox
 }
 let myBox = box([0,0], -3, -16, -10)
 "#;
         crate::parsing::top_level_parse(some_program_string).unwrap();
-    }
-
-    #[test]
-    fn arg_labels() {
-        let input = r#"length: 3"#;
-        let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lex(input, module_id).unwrap();
-        super::labeled_arguments(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -4345,6 +4587,20 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
     return 0
 }"#
         );
+
+        let some_program_string = r#"myMap = map([0..5], (n) => {
+    return n * 2
+})"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2);
+        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
+        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
+        assert_eq!(
+            replaced,
+            r#"myMap = map([0..5], fn(n)  {
+    return n * 2
+})"#
+        );
     }
 
     #[test]
@@ -4360,9 +4616,9 @@ var baz = 2
         let replaced = errs[0].apply_suggestion(&replaced).unwrap();
         assert_eq!(
             replaced,
-            r#" foo = 0
- bar = 1
- baz = 2
+            r#"foo = 0
+bar = 1
+baz = 2
 "#
         );
     }
@@ -4432,6 +4688,7 @@ mod snapshot_tests {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();
+                println!("{}", $test_kcl_program);
                 let tokens = crate::parsing::token::lex($test_kcl_program, module_id).unwrap();
                 print_tokens(tokens.as_slice());
                 ParseContext::init();
@@ -4455,7 +4712,7 @@ mod snapshot_tests {
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
-    |> extrude(10, %)
+    |> extrude(length=10)
 "#
     );
     snapshot_test!(b, "myVar = min(5 , -legLen(5, 4))"); // Space before comma
@@ -4520,7 +4777,7 @@ mod snapshot_tests {
     snapshot_test!(y, "sg = startSketchAt(pos)");
     snapshot_test!(z, "sg = startSketchAt(pos) |> line([0, -scale], %)");
     snapshot_test!(aa, r#"sg = -scale"#);
-    snapshot_test!(ab, "lineTo({ to: [0, -1] })");
+    snapshot_test!(ab, "line(endAbsolute = [0, -1])");
     snapshot_test!(ac, "myArray = [0..10]");
     snapshot_test!(
         ad,
@@ -4540,20 +4797,19 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"mySketch = startSketchAt([0,0])
-        |> lineTo([0, 1], %, $myPath)
-        |> lineTo([1, 1], %)
-        |> lineTo([1, 0], %, $rightPath)
-        |> close(%)"#
+        |> line(endAbsolute = [0, 1], tag = $myPath)
+        |> line(endAbsolute = [1, 1])
+        |> line(endAbsolute = [1, 0], tag = $rightPath)
+        |> close()"#
     );
-    snapshot_test!(ag, "mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)");
+    snapshot_test!(
+        ag,
+        "mySketch = startSketchAt([0,0]) |> line(endAbsolute = [1, 1]) |> close()"
+    );
     snapshot_test!(ah, "myBox = startSketchAt(p)");
     snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
-    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line([0, l], %)"#);
-    snapshot_test!(ak, "lineTo({ to: [0, 1] })");
-    snapshot_test!(al, "lineTo({ to: [0, 1], from: [3, 3] })");
-    snapshot_test!(am, "lineTo({to:[0, 1]})");
-    snapshot_test!(an, "lineTo({ to: [0, 1], from: [3, 3]})");
-    snapshot_test!(ao, "lineTo({ to: [0, 1],from: [3, 3] })");
+    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line(end = [0, l])"#);
+    snapshot_test!(ak, "line(endAbsolute = [0, 1])");
     snapshot_test!(ap, "mySketch = startSketchAt([0,0])");
     snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);
@@ -4653,6 +4909,22 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         r#"fn foo(x?: number = 2) { return 1 }"#
     );
     snapshot_test!(kw_function_call_in_pipe, r#"val = 1 |> f(arg = x)"#);
+    snapshot_test!(
+        kw_function_call_multiline,
+        r#"val = f(
+             arg = x,
+             foo = x,
+             bar = x,
+           )"#
+    );
+    snapshot_test!(
+        kw_function_call_multiline_with_comments,
+        r#"val = f(
+             arg = x,
+             // foo = x,
+             bar = x,
+           )"#
+    );
 }
 
 #[allow(unused)]

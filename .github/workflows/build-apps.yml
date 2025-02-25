@@ -7,14 +7,11 @@ on:
       - main
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-  schedule:
-    - cron: '0 4 * * *'
-  # Daily at 04:00 AM UTC
-  # Will checkout the last commit from the default branch (main as of 2023-10-04)
+      - 'nightly-v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  IS_RELEASE: ${{ github.ref_type == 'tag' }}
-  IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
+  IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+  IS_NIGHTLY: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'nightly-v') }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -44,12 +41,19 @@ jobs:
           workspaces: './src/wasm-lib'
 
       # TODO: see if we can fetch from main instead if no diff at src/wasm-lib
+      - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+        with:
+          tool: wasm-pack
+
       - name: Run build:wasm
         run: "yarn build:wasm"
 
       - name: Set nightly version, product name, release notes, and icons
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        run: yarn files:flip-to-nightly
+        run: |
+          export VERSION=${GITHUB_REF_NAME#nightly-v}
+          yarn files:set-version
+          yarn files:flip-to-nightly
 
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -126,9 +130,13 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn' # Set this to npm, yarn or pnpm.
 
-      - run: yarn install
-
-      - run: yarn tronb:vite
+      - name: yarn install
+        # Windows is picky sometimes and fails on fetch. Step takes about ~30s
+        uses: nick-fields/retry@v3.0.1
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          command: yarn install
 
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
@@ -159,8 +167,8 @@ jobs:
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
-        # this is just not doing any codesign or release yml generation
-        run: yarn electron-builder --config
+        # this is just not doing any codesign or release yml generation, and points to dev infra
+        run: yarn tronb:package:dev
 
       - name: Build the app (release)
         if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
@@ -175,11 +183,11 @@ jobs:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
-        uses: nick-fields/retry@v3.0.0
+        uses: nick-fields/retry@v3.0.1
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn electron-builder --config --publish always
+          command: yarn tronb:package:prod
 
       - name: List artifacts in out/
         run: ls -R out
@@ -236,11 +244,11 @@ jobs:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
-        uses: nick-fields/retry@v3.0.0
+        uses: nick-fields/retry@v3.0.1
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn electron-builder --config --publish always
+          command: yarn tronb:package:prod
 
       - uses: actions/upload-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -265,7 +273,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    if: ${{ github.ref_type == 'tag' || github.event_name == 'schedule' }}
+    if: ${{ github.ref_type == 'tag' }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
@@ -322,8 +330,8 @@ jobs:
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
-          WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-          URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+          WEBSITE_DIR: ${{ env.IS_NIGHTLY == 'true' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
+          URL_CODED_NAME: ${{ env.IS_NIGHTLY == 'true' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
           jq --null-input \
@@ -384,19 +392,19 @@ jobs:
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: 'google-github-actions/auth@v2.1.7'
+        uses: 'google-github-actions/auth@v2.1.8'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: google-github-actions/setup-gcloud@v2.1.2
+        uses: google-github-actions/setup-gcloud@v2.1.4
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 
       - name: Upload nightly files to public bucket
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: google-github-actions/upload-cloud-storage@v2.2.1
+        uses: google-github-actions/upload-cloud-storage@v2.2.2
         with:
           path: out
           glob: '*'
@@ -406,14 +414,3 @@ jobs:
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: yarn files:invalidate-bucket:nightly
-
-      - name: Tag nightly commit
-        if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { VERSION } = process.env          
-            const { owner, repo } = context.repo
-            const { sha } = context
-            const ref = `refs/tags/nightly-${VERSION}`
-            github.rest.git.createRef({ owner, repo, sha, ref })

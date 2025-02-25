@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
-import { PathToNode, Program, Expr } from '../../lang/wasm'
+import { PathToNode, Program, Expr, topLevelRange } from '../../lang/wasm'
 import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
@@ -28,7 +28,7 @@ export function removeConstrainingValuesInfo({
   | Error {
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
-    if (err(tmp)) return tmp
+    if (tmp instanceof Error) return tmp
     return tmp.node
   })
   const _err1 = _nodes.find(err)
@@ -41,7 +41,7 @@ export function removeConstrainingValuesInfo({
         graphSelections: nodes.map(
           (node): Selection => ({
             codeRef: codeRefFromRange(
-              [node.start, node.end, true],
+              topLevelRange(node.start, node.end),
               kclManager.ast
             ),
           })
@@ -50,7 +50,7 @@ export function removeConstrainingValuesInfo({
     : selectionRanges
   const isAllTooltips = nodes.every(
     (node) =>
-      node?.type === 'CallExpression' &&
+      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
       toolTips.includes(node.callee.name as any)
   )
 
@@ -88,7 +88,7 @@ export function applyRemoveConstrainingValues({
     ast: kclManager.ast,
     selectionRanges: updatedSelectionRanges,
     transformInfos: transforms,
-    programMemory: kclManager.programMemory,
+    memVars: kclManager.variables,
     referenceSegName: '',
   })
 }

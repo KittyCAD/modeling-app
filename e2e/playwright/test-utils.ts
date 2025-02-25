@@ -552,6 +552,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
       })
     },
 
+    cloneFile: async (name: string) => {
+      return test?.step(`Cloning file '${name}'`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+          .click({ button: 'right' })
+        await page.getByTestId('context-menu-clone').click()
+      })
+    },
+
     selectFile: async (name: string) => {
       return test?.step(`Select ${name}`, async () => {
         await page
@@ -927,11 +937,16 @@ export async function setupElectron({
   testInfo,
   cleanProjectDir = true,
   appSettings,
+  viewport,
 }: {
   testInfo: TestInfo
   folderSetupFn?: (projectDirName: string) => Promise<void>
   cleanProjectDir?: boolean
   appSettings?: Partial<SaveSettingsPayload>
+  viewport: {
+    width: number
+    height: number
+  }
 }): Promise<{
   electronApp: ElectronApplication
   context: BrowserContext
@@ -961,6 +976,14 @@ export async function setupElectron({
     },
     ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
       ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
+      : {}),
+    ...(process.env.PLAYWRIGHT_RECORD_VIDEO
+      ? {
+          recordVideo: {
+            dir: testInfo.snapshotPath(),
+            size: viewport,
+          },
+        }
       : {}),
   }
 
@@ -1078,7 +1101,7 @@ export async function createProject({
   returnHome?: boolean
 }) {
   await test.step(`Create project and navigate to it`, async () => {
-    await page.getByRole('button', { name: 'New project' }).click()
+    await page.getByRole('button', { name: 'Create project' }).click()
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 

@@ -29,6 +29,13 @@
         {
           "name": "isNaN",
           "message": "Use Number.isNaN() instead."
+        },
+      ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          "selector": "CallExpression[callee.object.name='Array'][callee.property.name='isArray']",
+          "message": "Use isArray() in lib/utils.ts instead of Array.isArray()."
         }
       ],
       "semi": [

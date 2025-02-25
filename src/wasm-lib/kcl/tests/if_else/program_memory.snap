@@ -1,76 +1,72 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
-description: Program memory after executing if_else.kcl
-snapshot_kind: text
+description: Variables in memory after executing if_else.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "a": {
-          "type": "Number",
-          "value": 3.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                64,
-                65,
-                0
-              ]
-            }
-          ]
-        },
-        "b": {
-          "type": "Number",
-          "value": 4.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                199,
-                200,
-                0
-              ]
-            }
-          ]
-        },
-        "c": {
-          "type": "Number",
-          "value": 5.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                332,
-                333,
-                0
-              ]
-            }
-          ]
-        }
+  "a": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
       },
-      "parent": null
-    }
-  ],
-  "currentEnv": 0,
-  "return": null
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          64,
+          65,
+          0
+        ]
+      }
+    ]
+  },
+  "b": {
+    "type": "Number",
+    "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          199,
+          200,
+          0
+        ]
+      }
+    ]
+  },
+  "c": {
+    "type": "Number",
+    "value": 5.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          332,
+          333,
+          0
+        ]
+      }
+    ]
+  }
 }

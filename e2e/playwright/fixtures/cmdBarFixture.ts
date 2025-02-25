@@ -4,7 +4,6 @@ import { expect } from '@playwright/test'
 type CmdBarSerialised =
   | {
       stage: 'commandBarClosed'
-      // TODO no more properties needed but needs to be implemented in _serialiseCmdBar
     }
   | {
       stage: 'pickCommand'
@@ -27,16 +26,26 @@ type CmdBarSerialised =
 export class CmdBarFixture {
   public page: Page
   cmdBarOpenBtn!: Locator
+  cmdBarElement!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = page.getByTestId('command-bar-open-button')
+    this.cmdBarElement = page.getByTestId('command-bar')
   }
+
+  get currentArgumentInput() {
+    return this.page.getByTestId('cmd-bar-arg-value')
+  }
+
   reConstruct = (page: Page) => {
     this.page = page
   }
 
   private _serialiseCmdBar = async (): Promise<CmdBarSerialised> => {
+    if (!(await this.page.getByTestId('command-bar-wrapper').isVisible())) {
+      return { stage: 'commandBarClosed' }
+    }
     const reviewForm = this.page.locator('#review-form')
     const getHeaderArgs = async () => {
       const inputs = await this.page.getByTestId('cmd-bar-input-tab').all()
@@ -103,6 +112,9 @@ export class CmdBarFixture {
    * and assumes we are past the `pickCommand` step.
    */
   progressCmdBar = async (shouldFuzzProgressMethod = true) => {
+    // FIXME: Progressing the command bar is a race condition. We have an async useEffect that reports the final state via useCalculateKclExpression. If this does not run quickly enough, it will not "fail" the continue because you can press continue if the state is not ready. E2E tests do not know this.
+    // Wait 1250ms to assume the await executeAst of the KCL input field is finished
+    await this.page.waitForTimeout(1250)
     if (shouldFuzzProgressMethod || Math.random() > 0.5) {
       const arrowButton = this.page.getByRole('button', {
         name: 'arrow right Continue',
@@ -117,6 +129,23 @@ export class CmdBarFixture {
     } else {
       await this.page.keyboard.press('Enter')
     }
+  }
+
+  // Added data-testid to the command bar buttons
+  // command-bar-continue are the buttons to go to the next step
+  // does not include the submit which is the final button press
+  // aka the right arrow button
+  continue = async () => {
+    const continueButton = this.page.getByTestId('command-bar-continue')
+    await continueButton.click()
+  }
+
+  // Added data-testid to the command bar buttons
+  // command-bar-submit is the button for the final step to submit
+  // the command bar flow aka the checkmark button.
+  submit = async () => {
+    const submitButton = this.page.getByTestId('command-bar-submit')
+    await submitButton.click()
   }
 
   openCmdBar = async (selectCmd?: 'promptToEdit') => {
@@ -134,5 +163,28 @@ export class CmdBarFixture {
       await promptEditCommand.first().scrollIntoViewIfNeeded()
       await promptEditCommand.first().click()
     }
+  }
+
+  get cmdSearchInput() {
+    return this.page.getByTestId('cmd-bar-search')
+  }
+
+  get argumentInput() {
+    return this.page.getByTestId('cmd-bar-arg-value')
+  }
+
+  get cmdOptions() {
+    return this.page.getByTestId('cmd-bar-option')
+  }
+
+  chooseCommand = async (commandName: string) => {
+    await this.cmdOptions.getByText(commandName).click()
+  }
+
+  /**
+   * Select an option from the command bar
+   */
+  selectOption = (options: Parameters<typeof this.page.getByRole>[1]) => {
+    return this.page.getByRole('option', options)
   }
 }

@@ -18,6 +18,7 @@ import { editorManager } from 'lib/singletons'
 import { ContextFrom } from 'xstate'
 import { settingsMachine } from 'machines/settingsMachine'
 import { FeatureTreePane } from './FeatureTreePane'
+import { kclErrorsByFilename } from 'lang/errors'
 
 export type SidebarType =
   | 'code'
@@ -30,8 +31,10 @@ export type SidebarType =
   | 'variables'
 
 export interface BadgeInfo {
-  value: (props: PaneCallbackProps) => boolean | number
+  value: (props: PaneCallbackProps) => boolean | number | string
   onClick?: MouseEventHandler<any>
+  className?: string
+  title?: string
 }
 
 /**
@@ -122,7 +125,8 @@ export const sidebarPanes: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
-      const { createFile, createFolder, newTreeEntry } = useFileTreeOperations()
+      const { createFile, createFolder, cloneFileOrDir, newTreeEntry } =
+        useFileTreeOperations()
 
       return (
         <>
@@ -143,6 +147,7 @@ export const sidebarPanes: SidebarPane[] = [
             onCreateFolder={(name: string) =>
               createFolder({ dryRun: false, name })
             }
+            onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
             newTreeEntry={newTreeEntry}
           />
         </>
@@ -150,6 +155,25 @@ export const sidebarPanes: SidebarPane[] = [
     },
     keybinding: 'Shift + F',
     hide: ({ platform }) => platform === 'web',
+    showBadge: {
+      value: (context) => {
+        // Only compute runtime errors! Compilation errors are not tracked here.
+        const errors = kclErrorsByFilename(context.kclContext.errors)
+        return errors.size > 0 ? 'x' : ''
+      },
+      onClick: (e) => {
+        e.preventDefault()
+        // TODO: When we have generic file open
+        // If badge is pressed
+        // Open the first error in the array of errors
+        // Then scroll to error
+        // Do you automatically open the project files
+        // editorManager.scrollToFirstErrorDiagnosticIfExists()
+      },
+      className:
+        'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-red-600 rounded-full border border-red-300 dark:border-red-800 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200',
+      title: 'Project files have runtime errors',
+    },
   },
   {
     id: 'variables',

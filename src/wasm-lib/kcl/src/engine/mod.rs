@@ -8,14 +8,12 @@ pub mod conn_mock;
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
 
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, sync::Arc};
 
 use indexmap::IndexMap;
 use kcmc::{
     each_cmd as mcmd,
+    id::ModelingCmdId,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     shared::Color,
@@ -28,6 +26,7 @@ use kcmc::{
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use tokio::sync::RwLock;
 use uuid::Uuid;
 
 use crate::{
@@ -62,25 +61,38 @@ impl ExecutionKind {
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>;
+    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>;
 
     /// Get the batch of end commands to be sent to the engine.
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
+    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
 
-    /// Take the artifact commands generated up to this point and clear them.
-    fn take_artifact_commands(&self) -> Vec<ArtifactCommand>;
+    /// Get the command responses from the engine.
+    fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
+
+    /// Get the artifact commands that have accumulated so far.
+    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
 
     /// Clear all artifact commands that have accumulated so far.
-    fn clear_artifact_commands(&self) {
-        self.take_artifact_commands();
+    async fn clear_artifact_commands(&self) {
+        self.artifact_commands().write().await.clear();
+    }
+
+    /// Take the artifact commands that have accumulated so far and clear them.
+    async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
+        std::mem::take(&mut *self.artifact_commands().write().await)
+    }
+
+    /// Take the responses that have accumulated so far and clear them.
+    async fn take_responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
+        std::mem::take(&mut *self.responses().write().await)
     }
 
     /// Get the current execution kind.
-    fn execution_kind(&self) -> ExecutionKind;
+    async fn execution_kind(&self) -> ExecutionKind;
 
     /// Replace the current execution kind with a new value and return the
     /// existing value.
-    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
+    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
 
     /// Get the default planes.
     async fn default_planes(
@@ -124,7 +136,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Ensure artifact commands are cleared so that we don't accumulate them
         // across runs.
-        self.clear_artifact_commands();
+        self.clear_artifact_commands().await;
 
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
@@ -145,6 +157,27 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
+        Ok(())
+    }
+
+    async fn handle_artifact_command(
+        &self,
+        cmd: &ModelingCmd,
+        cmd_id: ModelingCmdId,
+        id_to_source_range: &HashMap<Uuid, SourceRange>,
+    ) -> Result<(), KclError> {
+        let cmd_id = *cmd_id.as_ref();
+        let range = id_to_source_range
+            .get(&cmd_id)
+            .copied()
+            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
+
+        // Add artifact command.
+        self.artifact_commands().write().await.push(ArtifactCommand {
+            cmd_id,
+            range,
+            command: cmd.clone(),
+        });
         Ok(())
     }
 
@@ -194,17 +227,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        let execution_kind = self.execution_kind();
-        if execution_kind.is_isolated() {
-            return Err(KclError::Semantic(KclErrorDetails { message: "Cannot send modeling commands while importing. Wrap your code in a function if you want to import the file.".to_owned(), source_ranges: vec![source_range] }));
+        // In isolated mode, we don't send the command to the engine.
+        if self.execution_kind().await.is_isolated() {
+            return Ok(());
         }
+
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
         });
 
         // Add cmd to the batch.
-        self.batch().lock().unwrap().push((req, source_range));
+        self.batch().write().await.push((req, source_range));
 
         Ok(())
     }
@@ -218,13 +252,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        // In isolated mode, we don't send the command to the engine.
+        if self.execution_kind().await.is_isolated() {
+            return Ok(());
+        }
+
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
         });
 
         // Add cmd to the batch end.
-        self.batch_end().lock().unwrap().insert(id, (req, source_range));
+        self.batch_end().write().await.insert(id, (req, source_range));
         Ok(())
     }
 
@@ -250,11 +289,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
-            let mut requests = self.batch().lock().unwrap().clone();
-            requests.extend(self.batch_end().lock().unwrap().values().cloned());
+            let mut requests = self.batch().read().await.clone();
+            requests.extend(self.batch_end().read().await.values().cloned());
             requests
         } else {
-            self.batch().lock().unwrap().clone()
+            self.batch().read().await.clone()
         };
 
         // Return early if we have no commands to send.
@@ -305,10 +344,27 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }
         }
 
+        // Do the artifact commands.
+        for (req, _) in all_requests.iter() {
+            match &req {
+                WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
+                    for request in requests {
+                        self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
+                            .await?;
+                    }
+                }
+                WebSocketRequest::ModelingCmdReq(request) => {
+                    self.handle_artifact_command(&request.cmd, request.cmd_id, &id_to_source_range)
+                        .await?;
+                }
+                _ => {}
+            }
+        }
+
         // Throw away the old batch queue.
-        self.batch().lock().unwrap().clear();
+        self.batch().write().await.clear();
         if batch_end {
-            self.batch_end().lock().unwrap().clear();
+            self.batch_end().write().await.clear();
         }
 
         // We pop off the responses to cleanup our mappings.
@@ -597,7 +653,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     /// Get session data, if it has been received.
     /// Returns None if the server never sent it.
-    fn get_session_data(&self) -> Option<ModelingSessionData> {
+    async fn get_session_data(&self) -> Option<ModelingSessionData> {
         None
     }
 
@@ -621,4 +677,69 @@ pub enum PlaneName {
     Yz,
     /// The opposite side of the YZ plane.
     NegYz,
+}
+
+/// Create a new zoo api client.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> anyhow::Result<kittycad::Client> {
+    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let http_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60));
+    let ws_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
+        .tcp_keepalive(std::time::Duration::from_secs(600))
+        .http1_only();
+
+    let zoo_token_env = std::env::var("ZOO_API_TOKEN");
+
+    let token = if let Some(token) = token {
+        token
+    } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
+        if let Ok(zoo_token) = zoo_token_env {
+            if zoo_token != token {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                    token,
+                    zoo_token
+                ));
+            }
+        }
+        token
+    } else if let Ok(token) = zoo_token_env {
+        token
+    } else {
+        return Err(anyhow::anyhow!(
+            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+        ));
+    };
+
+    // Create the client.
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set an engine address if it's set.
+    let kittycad_host_env = std::env::var("KITTYCAD_HOST");
+    if let Some(addr) = engine_addr {
+        client.set_base_url(addr);
+    } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if let Ok(kittycad_host) = kittycad_host_env {
+            if kittycad_host != addr {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                    kittycad_host,
+                    addr
+                ));
+            }
+        }
+        client.set_base_url(addr);
+    } else if let Ok(addr) = kittycad_host_env {
+        client.set_base_url(addr);
+    }
+
+    Ok(client)
 }

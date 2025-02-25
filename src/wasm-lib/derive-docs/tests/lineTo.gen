@@ -17,7 +17,10 @@ mod test_examples_line_to {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(program.into(), &mut crate::ExecState::new(&ctx.settings))
+            .run(
+                &program,
+                &mut crate::execution::ExecState::new(&ctx.settings),
+            )
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -74,7 +77,10 @@ mod test_examples_line_to {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(program.into(), &mut crate::ExecState::new(&ctx.settings))
+            .run(
+                &program,
+                &mut crate::execution::ExecState::new(&ctx.settings),
+            )
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -126,7 +132,7 @@ pub(crate) struct LineTo {}
 #[doc = "Std lib function: lineTo\nThis is some function.\nIt does shit."]
 pub(crate) const LineTo: LineTo = LineTo {};
 fn boxed_line_to(
-    exec_state: &mut crate::ExecState,
+    exec_state: &mut crate::execution::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
@@ -168,18 +174,24 @@ impl crate::docs::StdLibFn for LineTo {
             crate::docs::StdLibFnArg {
                 name: "data".to_string(),
                 type_: "LineToData".to_string(),
-                schema: generator.root_schema_for::<LineToData>(),
+                schema: crate::docs::cleanup_number_tuples_root(
+                    generator.root_schema_for::<LineToData>(),
+                ),
                 required: true,
                 label_required: true,
                 description: String::new().to_string(),
+                include_in_snippet: true,
             },
             crate::docs::StdLibFnArg {
                 name: "sketch".to_string(),
                 type_: "Sketch".to_string(),
-                schema: generator.root_schema_for::<Sketch>(),
+                schema: crate::docs::cleanup_number_tuples_root(
+                    generator.root_schema_for::<Sketch>(),
+                ),
                 required: true,
                 label_required: true,
                 description: "the sketch you're adding the line to".to_string(),
+                include_in_snippet: true,
             },
         ]
     }
@@ -188,7 +200,7 @@ impl crate::docs::StdLibFn for LineTo {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = generator.root_schema_for::<Sketch>();
+        let schema = crate::docs::cleanup_number_tuples_root(generator.root_schema_for::<Sketch>());
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "Sketch".to_string(),
@@ -196,6 +208,7 @@ impl crate::docs::StdLibFn for LineTo {
             required: true,
             label_required: true,
             description: String::new(),
+            include_in_snippet: true,
         })
     }
 

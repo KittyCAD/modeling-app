@@ -1,167 +1,174 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing boolean_logical_or.kcl
+description: Variables in memory after executing boolean_logical_or.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "a": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                32,
-                33,
-                0
-              ]
-            }
-          ]
-        },
-        "aa": {
-          "type": "Bool",
-          "value": true,
-          "__meta": [
-            {
-              "sourceRange": [
-                5,
-                9,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                12,
-                17,
-                0
-              ]
-            }
-          ]
-        },
-        "b": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                158,
-                159,
-                0
-              ]
-            }
-          ]
-        },
-        "bb": {
-          "type": "Bool",
-          "value": true,
-          "__meta": [
-            {
-              "sourceRange": [
-                131,
-                136,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                139,
-                143,
-                0
-              ]
-            }
-          ]
-        },
-        "c": {
-          "type": "Number",
-          "value": 1.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                284,
-                285,
-                0
-              ]
-            }
-          ]
-        },
-        "cc": {
-          "type": "Bool",
-          "value": true,
-          "__meta": [
-            {
-              "sourceRange": [
-                258,
-                262,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                265,
-                269,
-                0
-              ]
-            }
-          ]
-        },
-        "d": {
-          "type": "Number",
-          "value": 2.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                427,
-                428,
-                0
-              ]
-            }
-          ]
-        },
-        "dd": {
-          "type": "Bool",
-          "value": false,
-          "__meta": [
-            {
-              "sourceRange": [
-                386,
-                391,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                394,
-                399,
-                0
-              ]
-            }
-          ]
-        }
+  "a": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
       },
-      "parent": null
-    }
-  ],
-  "currentEnv": 0,
-  "return": null
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          32,
+          33,
+          0
+        ]
+      }
+    ]
+  },
+  "aa": {
+    "type": "Bool",
+    "value": true,
+    "__meta": [
+      {
+        "sourceRange": [
+          5,
+          9,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          12,
+          17,
+          0
+        ]
+      }
+    ]
+  },
+  "b": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          158,
+          159,
+          0
+        ]
+      }
+    ]
+  },
+  "bb": {
+    "type": "Bool",
+    "value": true,
+    "__meta": [
+      {
+        "sourceRange": [
+          131,
+          136,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          139,
+          143,
+          0
+        ]
+      }
+    ]
+  },
+  "c": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          284,
+          285,
+          0
+        ]
+      }
+    ]
+  },
+  "cc": {
+    "type": "Bool",
+    "value": true,
+    "__meta": [
+      {
+        "sourceRange": [
+          258,
+          262,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          265,
+          269,
+          0
+        ]
+      }
+    ]
+  },
+  "d": {
+    "type": "Number",
+    "value": 2.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          427,
+          428,
+          0
+        ]
+      }
+    ]
+  },
+  "dd": {
+    "type": "Bool",
+    "value": false,
+    "__meta": [
+      {
+        "sourceRange": [
+          386,
+          391,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          394,
+          399,
+          0
+        ]
+      }
+    ]
+  }
 }

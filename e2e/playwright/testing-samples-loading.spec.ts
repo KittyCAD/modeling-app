@@ -69,7 +69,6 @@ test.describe('Testing in-app sample loading', () => {
       await confirmButton.click()
 
       await editor.expectEditor.toContain('// ' + newSample.title)
-      await expect(unitsToast('in')).toBeVisible()
     })
   })
 
@@ -158,7 +157,6 @@ test.describe('Testing in-app sample loading', () => {
         await editor.expectEditor.toContain('// ' + sampleOne.title)
         await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
-        await expect(unitsToast('in')).toBeVisible()
       })
 
       await test.step(`Now overwrite the current file`, async () => {
@@ -188,7 +186,6 @@ test.describe('Testing in-app sample loading', () => {
         await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
         await expect(newlyCreatedFile(sampleTwo.file)).not.toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
-        await expect(unitsToast('mm')).toBeVisible()
       })
     }
   )

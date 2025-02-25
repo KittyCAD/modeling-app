@@ -7,6 +7,10 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
         "sourceRange": [
           26,
           30,
@@ -26,142 +30,283 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 100.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          447,
-          450,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          452,
-          461,
+          482,
+          485,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      439,
-      462,
+      454,
+      486,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        462,
+        471,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
-      "data": {
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 20.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          475,
-          506,
+          508,
+          510,
           0
         ]
       },
-      "solid": {
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "TagIdentifier",
+              "value": "seg01",
+              "artifact_id": "[uuid]"
+            }
+          ]
+        },
         "sourceRange": [
-          508,
-          509,
+          519,
+          526,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      468,
-      510,
+      492,
+      527,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
-      "data": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 50.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          524,
-          591,
+          550,
+          552,
           0
         ]
       },
-      "solid": {
+      "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "seg03"
+        },
         "sourceRange": [
           593,
-          594,
+          599,
           0
         ]
       },
-      "tag": {
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
         "sourceRange": [
-          596,
-          602,
+          561,
+          585,
           0
         ]
       }
     },
     "name": "chamfer",
     "sourceRange": [
-      516,
-      603,
+      533,
+      600,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
-      "data": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 50.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          617,
-          648,
-          0
-        ]
-      },
-      "solid": {
-        "sourceRange": [
-          650,
-          651,
+          623,
+          625,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagDeclarator",
+          "name": "seg04"
+        },
         "sourceRange": [
-          653,
-          659,
+          649,
+          655,
+          0
+        ]
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "TagIdentifier",
+              "value": "seg02",
+              "artifact_id": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": [
+          634,
+          641,
           0
         ]
       }
     },
     "name": "chamfer",
     "sourceRange": [
-      609,
-      660,
+      606,
+      656,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          688,
-          698,
+          684,
+          694,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg04",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
-          700,
-          705,
+          696,
+          701,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      674,
-      706,
+      670,
+      702,
       0
     ],
     "type": "StdLibCall",
@@ -170,24 +315,35 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
         "sourceRange": [
-          1127,
-          1137,
+          1132,
+          1142,
           0
         ]
       },
       "tag": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "seg03",
+          "artifact_id": "[uuid]"
+        },
         "sourceRange": [
-          1139,
           1144,
+          1149,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1113,
-      1145,
+      1118,
+      1150,
       0
     ],
     "type": "StdLibCall",
@@ -196,27 +352,45 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 50.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
         "sourceRange": [
-          1563,
-          1565,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          1567,
-          1576,
+          1597,
+          1599,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1555,
-      1577,
+      1569,
+      1600,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        1577,
+        1586,
+        0
+      ]
+    }
   }
 ]

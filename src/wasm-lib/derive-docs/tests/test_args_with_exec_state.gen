@@ -15,7 +15,10 @@ mod test_examples_some_function {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(program.into(), &mut crate::ExecState::new(&ctx.settings))
+            .run(
+                &program,
+                &mut crate::execution::ExecState::new(&ctx.settings),
+            )
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
@@ -67,7 +70,7 @@ pub(crate) struct SomeFunction {}
 #[doc = "Std lib function: someFunction\nDocs"]
 pub(crate) const SomeFunction: SomeFunction = SomeFunction {};
 fn boxed_some_function(
-    exec_state: &mut crate::ExecState,
+    exec_state: &mut crate::execution::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
@@ -112,7 +115,7 @@ impl crate::docs::StdLibFn for SomeFunction {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = generator.root_schema_for::<i32>();
+        let schema = crate::docs::cleanup_number_tuples_root(generator.root_schema_for::<i32>());
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "i32".to_string(),
@@ -120,6 +123,7 @@ impl crate::docs::StdLibFn for SomeFunction {
             required: true,
             label_required: true,
             description: String::new(),
+            include_in_snippet: true,
         })
     }
 

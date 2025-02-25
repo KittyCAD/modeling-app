@@ -1,0 +1,35 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Variables in memory after executing import_foreign.kcl
+---
+{
+  "cube": {
+    "type": "Module",
+    "value": 3,
+    "__meta": [
+      {
+        "sourceRange": [
+          0,
+          36,
+          0
+        ]
+      }
+    ]
+  },
+  "model": {
+    "type": "ImportedGeometry",
+    "id": "[uuid]",
+    "value": [
+      "cube.gltf"
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          0,
+          36,
+          0
+        ]
+      }
+    ]
+  }
+}

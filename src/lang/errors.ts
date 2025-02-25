@@ -1,12 +1,22 @@
-import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import {
+  KclError,
+  KclError as RustKclError,
+} from '../wasm-lib/kcl/bindings/KclError'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
 import { posToOffset } from '@kittycad/codemirror-lsp-client'
 import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
 import { Text } from '@codemirror/state'
 import { EditorView } from 'codemirror'
-import { ArtifactCommand, SourceRange } from 'lang/wasm'
+import {
+  ArtifactCommand,
+  ArtifactGraph,
+  defaultArtifactGraph,
+  isTopLevelModule,
+  SourceRange,
+} from 'lang/wasm'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { ModulePath } from 'wasm-lib/kcl/bindings/ModulePath'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
@@ -15,13 +25,17 @@ export class KCLError extends Error {
   msg: string
   operations: Operation[]
   artifactCommands: ArtifactCommand[]
+  artifactGraph: ArtifactGraph
+  filenames: { [x: number]: ModulePath | undefined }
 
   constructor(
     kind: ExtractKind<RustKclError> | 'name',
     msg: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super()
     this.kind = kind
@@ -29,6 +43,8 @@ export class KCLError extends Error {
     this.sourceRange = sourceRange
     this.operations = operations
     this.artifactCommands = artifactCommands
+    this.artifactGraph = artifactGraph
+    this.filenames = filenames
     Object.setPrototypeOf(this, KCLError.prototype)
   }
 }
@@ -38,9 +54,19 @@ export class KCLLexicalError extends KCLError {
     msg: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
-    super('lexical', msg, sourceRange, operations, artifactCommands)
+    super(
+      'lexical',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames
+    )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
@@ -50,9 +76,19 @@ export class KCLInternalError extends KCLError {
     msg: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
-    super('internal', msg, sourceRange, operations, artifactCommands)
+    super(
+      'internal',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames
+    )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
@@ -62,9 +98,19 @@ export class KCLSyntaxError extends KCLError {
     msg: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
-    super('syntax', msg, sourceRange, operations, artifactCommands)
+    super(
+      'syntax',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames
+    )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
@@ -74,9 +120,19 @@ export class KCLSemanticError extends KCLError {
     msg: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
-    super('semantic', msg, sourceRange, operations, artifactCommands)
+    super(
+      'semantic',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames
+    )
     Object.setPrototypeOf(this, KCLSemanticError.prototype)
   }
 }
@@ -86,9 +142,19 @@ export class KCLTypeError extends KCLError {
     msg: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
-    super('type', msg, sourceRange, operations, artifactCommands)
+    super(
+      'type',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames
+    )
     Object.setPrototypeOf(this, KCLTypeError.prototype)
   }
 }
@@ -98,9 +164,19 @@ export class KCLUnimplementedError extends KCLError {
     msg: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
-    super('unimplemented', msg, sourceRange, operations, artifactCommands)
+    super(
+      'unimplemented',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames
+    )
     Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
   }
 }
@@ -110,9 +186,19 @@ export class KCLUnexpectedError extends KCLError {
     msg: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
-    super('unexpected', msg, sourceRange, operations, artifactCommands)
+    super(
+      'unexpected',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph,
+      filenames
+    )
     Object.setPrototypeOf(this, KCLUnexpectedError.prototype)
   }
 }
@@ -122,14 +208,18 @@ export class KCLValueAlreadyDefined extends KCLError {
     key: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'name',
       `Key ${key} was already defined elsewhere`,
       sourceRange,
       operations,
-      artifactCommands
+      artifactCommands,
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLValueAlreadyDefined.prototype)
   }
@@ -140,14 +230,18 @@ export class KCLUndefinedValueError extends KCLError {
     key: string,
     sourceRange: SourceRange,
     operations: Operation[],
-    artifactCommands: ArtifactCommand[]
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph,
+    filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
       'name',
       `Key ${key} has not been defined`,
       sourceRange,
       operations,
-      artifactCommands
+      artifactCommands,
+      artifactGraph,
+      filenames
     )
     Object.setPrototypeOf(this, KCLUndefinedValueError.prototype)
   }
@@ -167,9 +261,11 @@ export function lspDiagnosticsToKclErrors(
         new KCLError(
           'unexpected',
           message,
-          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, true],
+          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
           [],
-          []
+          [],
+          defaultArtifactGraph(),
+          {}
         )
     )
     .sort((a, b) => {
@@ -193,7 +289,7 @@ export function kclErrorsToDiagnostics(
   errors: KCLError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => err.sourceRange[2])
+    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .map((err) => {
       return {
         from: err.sourceRange[0],
@@ -208,7 +304,7 @@ export function complilationErrorsToDiagnostics(
   errors: CompilationError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => err.sourceRange[2] === 0)
+    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .map((err) => {
       let severity: any = 'error'
       if (err.severity === 'Warning') {
@@ -222,7 +318,11 @@ export function complilationErrorsToDiagnostics(
             name: suggestion.title,
             apply: (view: EditorView, from: number, to: number) => {
               view.dispatch({
-                changes: { from, to, insert: suggestion.insert },
+                changes: {
+                  from: suggestion.source_range[0],
+                  to: suggestion.source_range[1],
+                  insert: suggestion.insert,
+                },
               })
             },
           },
@@ -236,4 +336,35 @@ export function complilationErrorsToDiagnostics(
         actions,
       }
     })
+}
+
+// Create an array of KCL Errors with a new formatting to
+// easily map SourceRange of an error to the filename to display in the
+// side bar UI. This is to indicate an error in an imported file, it isn't
+// the specific code mirror error interface.
+export function kclErrorsByFilename(
+  errors: KCLError[]
+): Map<string, KCLError[]> {
+  const fileNameToError: Map<string, KCLError[]> = new Map()
+  errors.forEach((error: KCLError) => {
+    const filenames = error.filenames
+    const sourceRange: SourceRange = error.sourceRange
+    const fileIndex = sourceRange[2]
+    const modulePath: ModulePath | undefined = filenames[fileIndex]
+    if (modulePath) {
+      let stdOrLocalPath = modulePath.value
+      if (stdOrLocalPath) {
+        // Build up an array of errors per file name
+        const value = fileNameToError.get(stdOrLocalPath)
+        if (!value) {
+          fileNameToError.set(stdOrLocalPath, [error])
+        } else {
+          value.push(error)
+          fileNameToError.set(stdOrLocalPath, [error])
+        }
+      }
+    }
+  })
+
+  return fileNameToError
 }

@@ -10,10 +10,10 @@ use crate::{
 
 /// Converts a number to integer.
 pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let num = args.get_number()?;
-    let converted = inner_int(num)?;
+    let num = args.get_number_with_type()?;
+    let converted = inner_int(num.n)?;
 
-    Ok(args.make_user_val_from_f64(converted))
+    Ok(args.make_user_val_from_f64_with_type(num.map(converted)))
 }
 
 /// Convert a number to an integer.
@@ -26,10 +26,10 @@ pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// // Draw n cylinders.
 /// startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
-///   |> extrude(5, %)
-///   |> patternTransform(n, fn(id) {
+///   |> extrude(length = 5)
+///   |> patternTransform(instances = n, transform = fn(id) {
 ///   return { translate = [4 * id, 0, 0] }
-/// }, %)
+/// })
 /// ```
 #[stdlib {
     name = "int",

@@ -1,194 +1,207 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
-description: Program memory after executing array_range_negative_expr.kcl
-snapshot_kind: text
+description: Variables in memory after executing array_range_negative_expr.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
+  "xs": {
+    "type": "Array",
+    "value": [
+      {
+        "type": "Number",
+        "value": -5.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
         },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "xs": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Int",
-              "value": -5,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": -4,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": -3,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": -2,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": -1,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": 0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": 1,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": 2,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": 3,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": 4,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Int",
-              "value": 5,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    5,
-                    19,
-                    0
-                  ]
-                }
-              ]
-            }
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                5,
-                19,
-                0
-              ]
-            }
-          ]
-        }
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
       },
-      "parent": null
-    }
-  ],
-  "currentEnv": 0,
-  "return": null
+      {
+        "type": "Number",
+        "value": -4.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": -3.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": -2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": -1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 0.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 4.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 5.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              5,
+              19,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          5,
+          19,
+          0
+        ]
+      }
+    ]
+  }
 }

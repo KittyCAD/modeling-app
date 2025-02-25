@@ -3,9 +3,8 @@ name = "wasm-lib"
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
-rust-version = "1.73"
+rust-version = "1.83"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 crate-type = ["cdylib"]
 
@@ -16,7 +15,7 @@ gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
 kittycad.workspace = true
 lazy_static = "1.5.0"
-serde_json = "1.0.135"
+serde_json = "1.0.138"
 tokio = { version = "1.41.1", features = ["sync"] }
 toml = "0.8.19"
 uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
@@ -34,9 +33,14 @@ tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8"
 uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
 
+[features]
+dhat-heap = ["kcl-lib/dhat-heap"]
+
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
+# Enable the feature in a transitive dependency.
+getrandom = { version = "0.2", features = ["js"] }
 js-sys = "0.3.72"
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen-futures = { version = "0.4.44", features = ["futures-core-03-stream"] }
@@ -76,7 +80,7 @@ members = [
 [workspace.dependencies]
 http = "1"
 kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.89", features = [
+kittycad-modeling-cmds = { version = "0.2.99", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -99,3 +103,7 @@ path = "tests/modify/main.rs"
 #[patch.crates-io]
 #kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
 #kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
+
+# Local development only. Placeholder to speed up development cycle
+#[package.metadata.wasm-pack.profile.release]
+#wasm-opt = false

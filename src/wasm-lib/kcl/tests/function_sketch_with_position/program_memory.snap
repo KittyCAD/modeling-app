@@ -1,616 +1,251 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing function_sketch_with_position.kcl
+description: Variables in memory after executing function_sketch_with_position.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "box": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "declaration": {
-                    "end": 185,
-                    "id": {
-                      "end": 28,
-                      "name": "myBox",
-                      "start": 23,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "body": [
-                        {
-                          "arguments": [
-                            {
-                              "end": 49,
-                              "raw": "'XY'",
-                              "start": 45,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": "XY"
-                            }
-                          ],
-                          "callee": {
-                            "end": 44,
-                            "name": "startSketchOn",
-                            "start": 31,
-                            "type": "Identifier"
-                          },
-                          "end": 50,
-                          "start": 31,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "end": 74,
-                              "name": "p",
-                              "start": 73,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            {
-                              "end": 77,
-                              "start": 76,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 72,
-                            "name": "startProfileAt",
-                            "start": 58,
-                            "type": "Identifier"
-                          },
-                          "end": 78,
-                          "start": 58,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "elements": [
-                                {
-                                  "end": 93,
-                                  "raw": "0",
-                                  "start": 92,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": 0.0
-                                },
-                                {
-                                  "end": 96,
-                                  "name": "l",
-                                  "start": 95,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                }
-                              ],
-                              "end": 97,
-                              "start": 91,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "end": 100,
-                              "start": 99,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 90,
-                            "name": "line",
-                            "start": 86,
-                            "type": "Identifier"
-                          },
-                          "end": 101,
-                          "start": 86,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "elements": [
-                                {
-                                  "end": 116,
-                                  "name": "w",
-                                  "start": 115,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                },
-                                {
-                                  "end": 119,
-                                  "raw": "0",
-                                  "start": 118,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": 0.0
-                                }
-                              ],
-                              "end": 120,
-                              "start": 114,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "end": 123,
-                              "start": 122,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 113,
-                            "name": "line",
-                            "start": 109,
-                            "type": "Identifier"
-                          },
-                          "end": 124,
-                          "start": 109,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "elements": [
-                                {
-                                  "end": 139,
-                                  "raw": "0",
-                                  "start": 138,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": 0.0
-                                },
-                                {
-                                  "argument": {
-                                    "end": 143,
-                                    "name": "l",
-                                    "start": 142,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "end": 143,
-                                  "operator": "-",
-                                  "start": 141,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
-                                }
-                              ],
-                              "end": 144,
-                              "start": 137,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "end": 147,
-                              "start": 146,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 136,
-                            "name": "line",
-                            "start": 132,
-                            "type": "Identifier"
-                          },
-                          "end": 148,
-                          "start": 132,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "end": 163,
-                              "start": 162,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 161,
-                            "name": "close",
-                            "start": 156,
-                            "type": "Identifier"
-                          },
-                          "end": 164,
-                          "start": 156,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "end": 181,
-                              "name": "h",
-                              "start": 180,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            {
-                              "end": 184,
-                              "start": 183,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 179,
-                            "name": "extrude",
-                            "start": 172,
-                            "type": "Identifier"
-                          },
-                          "end": 185,
-                          "start": 172,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        }
-                      ],
-                      "end": 185,
-                      "start": 31,
-                      "type": "PipeExpression",
-                      "type": "PipeExpression"
-                    },
-                    "start": 23,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 185,
-                  "kind": "const",
-                  "start": 23,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                },
-                {
-                  "argument": {
-                    "end": 201,
-                    "name": "myBox",
-                    "start": 196,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "end": 201,
-                  "start": 189,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 203,
-              "nonCodeMeta": {
-                "nonCodeNodes": {
-                  "0": [
-                    {
-                      "end": 189,
-                      "start": 185,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLine"
-                      }
-                    }
-                  ]
-                },
-                "startNodes": []
-              },
-              "start": 19
-            },
-            "end": 203,
-            "params": [
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 8,
-                  "name": "p",
-                  "start": 7,
-                  "type": "Identifier"
-                }
-              },
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 11,
-                  "name": "h",
-                  "start": 10,
-                  "type": "Identifier"
-                }
-              },
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 14,
-                  "name": "l",
-                  "start": 13,
-                  "type": "Identifier"
-                }
-              },
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 17,
-                  "name": "w",
-                  "start": 16,
-                  "type": "Identifier"
-                }
-              }
-            ],
-            "start": 6,
-            "type": "FunctionExpression"
-          },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  }
-                },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0,
-            "return": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                6,
-                203,
-                0
-              ]
-            }
-          ]
-        },
-        "thing": {
-          "type": "Solid",
-          "type": "Solid",
+  "box": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          6,
+          218,
+          0
+        ]
+      }
+    ]
+  },
+  "thing": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
           "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "sourceRange": [
+            86,
+            104,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            112,
+            130,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            138,
+            157,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            165,
+            173,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
                 86,
-                101,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                109,
-                124,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                132,
-                148,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                156,
-                164,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    86,
-                    101,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  6.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    109,
-                    124,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  6.0
-                ],
-                "tag": null,
-                "to": [
-                  10.0,
-                  6.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    132,
-                    148,
-                    0
-                  ]
-                },
-                "from": [
-                  10.0,
-                  6.0
-                ],
-                "tag": null,
-                "to": [
-                  10.0,
-                  0.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    156,
-                    164,
-                    0
-                  ]
-                },
-                "from": [
-                  10.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "value": "XY",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "__meta": []
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  58,
-                  78,
-                  0
-                ]
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  58,
-                  78,
-                  0
-                ]
-              }
-            ]
-          },
-          "height": 3.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                58,
-                78,
+                104,
                 0
               ]
+            },
+            "from": [
+              0.0,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              6.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
             }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                112,
+                130,
+                0
+              ]
+            },
+            "from": [
+              0.0,
+              6.0
+            ],
+            "tag": null,
+            "to": [
+              10.0,
+              6.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                138,
+                157,
+                0
+              ]
+            },
+            "from": [
+              10.0,
+              6.0
+            ],
+            "tag": null,
+            "to": [
+              10.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                165,
+                173,
+                0
+              ]
+            },
+            "from": [
+              10.0,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "on": {
+          "type": "plane",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": "XY",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+          },
+          "units": {
+            "type": "Mm"
+          },
+          "__meta": []
+        },
+        "start": {
+          "from": [
+            0.0,
+            0.0
+          ],
+          "to": [
+            0.0,
+            0.0
+          ],
+          "units": {
+            "type": "Mm"
+          },
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              58,
+              78,
+              0
+            ]
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              58,
+              78,
+              0
+            ]
+          }
+        ]
+      },
+      "height": 3.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            58,
+            78,
+            0
           ]
         }
-      },
-      "parent": null
+      ]
     }
-  ],
-  "currentEnv": 0,
-  "return": null
+  }
 }

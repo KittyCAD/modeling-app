@@ -1,18 +1,12 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::{
-    id::ModelingCmdId,
-    websocket::{ModelingBatch, WebSocketRequest, WebSocketResponse},
-    ModelingCmd,
-};
+use kcmc::websocket::{WebSocketRequest, WebSocketResponse};
 use kittycad_modeling_cmds as kcmc;
+use tokio::sync::RwLock;
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
@@ -50,10 +44,11 @@ extern "C" {
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
-    batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
-    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
-    artifact_commands: Arc<Mutex<Vec<ArtifactCommand>>>,
-    execution_kind: Arc<Mutex<ExecutionKind>>,
+    batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
+    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
+    artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
+    execution_kind: Arc<RwLock<ExecutionKind>>,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -62,62 +57,104 @@ unsafe impl Sync for EngineConnection {}
 
 impl EngineConnection {
     pub async fn new(manager: EngineCommandManager) -> Result<EngineConnection, JsValue> {
+        #[allow(clippy::arc_with_non_send_sync)]
         Ok(EngineConnection {
             manager: Arc::new(manager),
-            batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(IndexMap::new())),
-            artifact_commands: Arc::new(Mutex::new(Vec::new())),
+            batch: Arc::new(RwLock::new(Vec::new())),
+            batch_end: Arc::new(RwLock::new(IndexMap::new())),
+            responses: Arc::new(RwLock::new(IndexMap::new())),
+            artifact_commands: Arc::new(RwLock::new(Vec::new())),
             execution_kind: Default::default(),
         })
     }
-}
 
-impl EngineConnection {
-    fn handle_command(
+    async fn do_send_modeling_cmd(
         &self,
-        cmd: &ModelingCmd,
-        cmd_id: ModelingCmdId,
-        id_to_source_range: &HashMap<Uuid, SourceRange>,
-    ) -> Result<(), KclError> {
-        let cmd_id = *cmd_id.as_ref();
-        let range = id_to_source_range
-            .get(&cmd_id)
-            .copied()
-            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
+    ) -> Result<WebSocketResponse, KclError> {
+        let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize source range: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+        let cmd_str = serde_json::to_string(&cmd).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize modeling command: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+        let id_to_source_range_str = serde_json::to_string(&id_to_source_range).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize id to source range: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
 
-        // Add artifact command.
-        let mut artifact_commands = self.artifact_commands.lock().unwrap();
-        artifact_commands.push(ArtifactCommand {
-            cmd_id,
-            range,
-            command: cmd.clone(),
-        });
-        Ok(())
+        let promise = self
+            .manager
+            .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
+            .map_err(|e| {
+                KclError::Engine(KclErrorDetails {
+                    message: e.to_string().into(),
+                    source_ranges: vec![source_range],
+                })
+            })?;
+
+        let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to wait for promise from engine: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        // Parse the value as a string.
+        let s = value.as_string().ok_or_else(|| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to get string from response from engine: `{:?}`", value),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        let ws_result: WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to deserialize response from engine: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        Ok(ws_result)
     }
 }
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>> {
+    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
+    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
     }
 
-    fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
-        let mut artifact_commands = self.artifact_commands.lock().unwrap();
-        std::mem::take(&mut *artifact_commands)
+    fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
+        self.responses.clone()
     }
 
-    fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.lock().unwrap();
+    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
+        self.artifact_commands.clone()
+    }
+
+    async fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.read().await;
         *guard
     }
 
-    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.lock().unwrap();
+    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.write().await;
         let original = *guard;
         *guard = execution_kind;
         original
@@ -202,68 +239,18 @@ impl crate::engine::EngineManager for EngineConnection {
         cmd: WebSocketRequest,
         id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
-        match &cmd {
-            WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
-                for request in requests {
-                    self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
-                }
-            }
-            WebSocketRequest::ModelingCmdReq(request) => {
-                self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
-            }
-            _ => {}
+        let ws_result = self
+            .do_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
+            .await?;
+
+        // In isolated mode, we don't save the response.
+        if self.execution_kind().await.is_isolated() {
+            return Ok(ws_result);
         }
 
-        let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize source range: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
-        let cmd_str = serde_json::to_string(&cmd).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize modeling command: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
-        let id_to_source_range_str = serde_json::to_string(&id_to_source_range).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize id to source range: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
-
-        let promise = self
-            .manager
-            .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
-            .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: e.to_string().into(),
-                    source_ranges: vec![source_range],
-                })
-            })?;
-
-        let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to wait for promise from engine: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
-
-        // Parse the value as a string.
-        let s = value.as_string().ok_or_else(|| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to get string from response from engine: `{:?}`", value),
-                source_ranges: vec![source_range],
-            })
-        })?;
-
-        let ws_result: WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to deserialize response from engine: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
+        let mut responses = self.responses.write().await;
+        responses.insert(id, ws_result.clone());
+        drop(responses);
 
         Ok(ws_result)
     }

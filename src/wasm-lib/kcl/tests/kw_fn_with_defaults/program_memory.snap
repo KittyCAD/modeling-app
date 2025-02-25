@@ -1,177 +1,76 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Program memory after executing kw_fn_with_defaults.kcl
-snapshot_kind: text
+description: Variables in memory after executing kw_fn_with_defaults.kcl
 ---
 {
-  "environments": [
-    {
-      "bindings": {
-        "HALF_TURN": {
-          "type": "Number",
-          "value": 180.0,
-          "__meta": []
-        },
-        "QUARTER_TURN": {
-          "type": "Number",
-          "value": 90.0,
-          "__meta": []
-        },
-        "THREE_QUARTER_TURN": {
-          "type": "Number",
-          "value": 270.0,
-          "__meta": []
-        },
-        "ZERO": {
-          "type": "Number",
-          "value": 0.0,
-          "__meta": []
-        },
-        "increment": {
-          "type": "Function",
-          "expression": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 43,
-                    "left": {
-                      "end": 38,
-                      "name": "x",
-                      "start": 37,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    "operator": "+",
-                    "right": {
-                      "end": 43,
-                      "name": "by",
-                      "start": 41,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    "start": 37,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "end": 43,
-                  "start": 30,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 45,
-              "start": 26
-            },
-            "end": 45,
-            "params": [
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 15,
-                  "name": "x",
-                  "start": 14,
-                  "type": "Identifier"
-                },
-                "labeled": false
-              },
-              {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 19,
-                  "name": "by",
-                  "start": 17,
-                  "type": "Identifier"
-                },
-                "default_value": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 1.0,
-                  "raw": "1"
-                }
-              }
-            ],
-            "start": 12,
-            "type": "FunctionExpression"
-          },
-          "memory": {
-            "environments": [
-              {
-                "bindings": {
-                  "HALF_TURN": {
-                    "type": "Number",
-                    "value": 180.0,
-                    "__meta": []
-                  },
-                  "QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 90.0,
-                    "__meta": []
-                  },
-                  "THREE_QUARTER_TURN": {
-                    "type": "Number",
-                    "value": 270.0,
-                    "__meta": []
-                  },
-                  "ZERO": {
-                    "type": "Number",
-                    "value": 0.0,
-                    "__meta": []
-                  }
-                },
-                "parent": null
-              }
-            ],
-            "currentEnv": 0,
-            "return": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                12,
-                45,
-                0
-              ]
-            }
-          ]
-        },
-        "twentyOne": {
-          "type": "Number",
-          "value": 21.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                88,
-                89,
-                0
-              ]
-            },
-            {
-              "sourceRange": [
-                96,
-                98,
-                0
-              ]
-            }
-          ]
-        },
-        "two": {
-          "type": "Number",
-          "value": 2.0,
-          "__meta": [
-            {
-              "sourceRange": [
-                63,
-                64,
-                0
-              ]
-            }
-          ]
-        }
+  "increment": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          12,
+          45,
+          0
+        ]
+      }
+    ]
+  },
+  "twentyOne": {
+    "type": "Number",
+    "value": 21.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
       },
-      "parent": null
-    }
-  ],
-  "currentEnv": 0,
-  "return": null
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          88,
+          89,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          96,
+          98,
+          0
+        ]
+      }
+    ]
+  },
+  "two": {
+    "type": "Number",
+    "value": 2.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          63,
+          64,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          23,
+          24,
+          0
+        ]
+      }
+    ]
+  }
 }

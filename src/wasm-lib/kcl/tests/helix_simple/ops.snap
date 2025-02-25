@@ -1,0 +1,144 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed helix_simple.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
+        "sourceRange": [
+          60,
+          64,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      46,
+      65,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "angleStart": {
+        "value": {
+          "type": "Number",
+          "value": 0.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          173,
+          174,
+          0
+        ]
+      },
+      "axis": {
+        "value": {
+          "type": "TagIdentifier",
+          "value": "edge001",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          247,
+          254,
+          0
+        ]
+      },
+      "ccw": {
+        "value": {
+          "type": "Bool",
+          "value": true
+        },
+        "sourceRange": [
+          184,
+          188,
+          0
+        ]
+      },
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          220,
+          222,
+          0
+        ]
+      },
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          235,
+          236,
+          0
+        ]
+      },
+      "revolutions": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          206,
+          207,
+          0
+        ]
+      }
+    },
+    "name": "helix",
+    "sourceRange": [
+      151,
+      257,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

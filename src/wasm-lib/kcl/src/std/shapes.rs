@@ -62,19 +62,19 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// exampleSketch = startSketchOn("-XZ")
 ///   |> circle({ center = [0, 0], radius = 10 }, %)
 ///
-/// example = extrude(5, exampleSketch)
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([-15, 0], %)
-///   |> line([30, 0], %)
-///   |> line([0, 30], %)
-///   |> line([-30, 0], %)
-///   |> close(%)
+///   |> line(end = [30, 0])
+///   |> line(end = [0, 30])
+///   |> line(end = [-30, 0])
+///   |> close()
 ///   |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
 ///
-/// example = extrude(5, exampleSketch)
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 #[stdlib {
     name = "circle",
@@ -90,6 +90,7 @@ async fn inner_circle(
         SketchOrSurface::SketchSurface(surface) => surface,
         SketchOrSurface::Sketch(group) => group.on,
     };
+    let units = sketch_surface.units();
     let sketch = crate::std::sketch::inner_start_profile_at(
         [data.center[0] + data.radius, data.center[1]],
         sketch_surface,
@@ -125,6 +126,7 @@ async fn inner_circle(
             from,
             to: from,
             tag: tag.clone(),
+            units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -154,7 +156,7 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     let p2 = args.get_kw_arg("p2")?;
     let p3 = args.get_kw_arg("p3")?;
     let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
-    let tag = args.get_kw_arg_opt("tag");
+    let tag = args.get_kw_arg_opt("tag")?;
 
     let sketch = inner_circle_three_point(p1, p2, p3, sketch_surface_or_group, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -167,21 +169,23 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 /// ```no_run
 /// exampleSketch = startSketchOn("XY")
 ///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
-///
-/// example = extrude(5, exampleSketch)
+///   |> extrude(length = 5)
 /// ```
 #[stdlib {
     name = "circleThreePoint",
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        p1 = "1st point to derive the circle.",
-        p2 = "2nd point to derive the circle.",
-        p3 = "3rd point to derive the circle.",
-        sketch_surface_or_group = "Plane or surface to sketch on.",
-        tag = "Identifier for the circle to reference elsewhere.",
+    args = {
+        p1 = {docs = "1st point to derive the circle."},
+        p2 = {docs = "2nd point to derive the circle."},
+        p3 = {docs = "3rd point to derive the circle."},
+        sketch_surface_or_group = {docs = "Plane or surface to sketch on."},
+        tag = {docs = "Identifier for the circle to reference elsewhere."},
     }
 }]
+
+// Similar to inner_circle, but needs to retain 3-point information in the
+// path so it can be used for other features, otherwise it's lost.
 async fn inner_circle_three_point(
     p1: [f64; 2],
     p2: [f64; 2],
@@ -192,18 +196,70 @@ async fn inner_circle_three_point(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let center = calculate_circle_center(p1, p2, p3);
-    inner_circle(
-        CircleData {
-            center,
-            // It can be the distance to any of the 3 points - they all lay on the circumference.
-            radius: distance(center.into(), p2.into()),
-        },
-        sketch_surface_or_group,
-        tag,
+    // It can be the distance to any of the 3 points - they all lay on the circumference.
+    let radius = distance(center.into(), p2.into());
+
+    let sketch_surface = match sketch_surface_or_group {
+        SketchOrSurface::SketchSurface(surface) => surface,
+        SketchOrSurface::Sketch(group) => group.on,
+    };
+    let sketch = crate::std::sketch::inner_start_profile_at(
+        [center[0] + radius, center[1]],
+        sketch_surface,
+        None,
         exec_state,
-        args,
+        args.clone(),
     )
-    .await
+    .await?;
+
+    let from = [center[0] + radius, center[1]];
+    let angle_start = Angle::zero();
+    let angle_end = Angle::turn();
+
+    let id = exec_state.next_uuid();
+
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::Arc {
+                start: angle_start,
+                end: angle_end,
+                center: KPoint2d::from(center).map(LengthUnit),
+                radius: radius.into(),
+                relative: false,
+            },
+        }),
+    )
+    .await?;
+
+    let current_path = Path::CircleThreePoint {
+        base: BasePath {
+            from,
+            to: from,
+            tag: tag.clone(),
+            units: sketch.units,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+        p1,
+        p2,
+        p3,
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+        .await?;
+
+    Ok(new_sketch)
 }
 
 /// Type of the polygon
@@ -262,7 +318,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     inscribed = true,
 ///   }, %)
 ///
-/// example = extrude(5, hex)
+/// example = extrude(hex, length = 5)
 /// ```
 ///
 /// ```no_run
@@ -274,7 +330,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     center = [10, 10],
 ///     inscribed = false,
 ///   }, %)
-/// example = extrude(5, square)
+/// example = extrude(square, length = 5)
 /// ```
 #[stdlib {
     name = "polygon",
@@ -349,6 +405,7 @@ async fn inner_polygon(
                 from: from.into(),
                 to: *vertex,
                 tag: tag.clone(),
+                units: sketch.units,
                 geo_meta: GeoMeta {
                     id,
                     metadata: args.source_range.into(),
@@ -384,6 +441,7 @@ async fn inner_polygon(
             from: from.into(),
             to: vertices[0],
             tag: tag.clone(),
+            units: sketch.units,
             geo_meta: GeoMeta {
                 id: close_id,
                 metadata: args.source_range.into(),

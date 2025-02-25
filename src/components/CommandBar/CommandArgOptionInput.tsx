@@ -1,8 +1,8 @@
 import { Combobox } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
 import Fuse from 'fuse.js'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CommandArgument, CommandArgumentOption } from 'lib/commandTypes'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnyStateMachine, StateFrom } from 'xstate'
 
@@ -23,7 +23,7 @@ function CommandArgOptionInput({
   placeholder?: string
 }) {
   const actorContext = useSelector(arg.machineActor, contextSelector)
-  const { commandBarSend, commandBarState } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const resolvedOptions = useMemo(
     () =>
       typeof arg.options === 'function'
@@ -129,11 +129,13 @@ function CommandArgOptionInput({
           <label
             htmlFor="option-input"
             className="capitalize px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80"
+            data-testid="cmd-bar-arg-name"
           >
             {argName}
           </label>
           <Combobox.Input
             id="option-input"
+            data-testid="cmd-bar-arg-value"
             ref={inputRef}
             onChange={(event) =>
               !event.target.disabled && setQuery(event.target.value)
@@ -141,7 +143,7 @@ function CommandArgOptionInput({
             className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
             onKeyDown={(event) => {
               if (event.metaKey && event.key === 'k')
-                commandBarSend({ type: 'Close' })
+                commandBarActor.send({ type: 'Close' })
               if (event.key === 'Backspace' && !event.currentTarget.value) {
                 stepBack()
               }

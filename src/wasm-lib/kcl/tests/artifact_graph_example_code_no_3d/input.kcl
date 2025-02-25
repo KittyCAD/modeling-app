@@ -1,0 +1,18 @@
+sketch003 = startSketchOn('YZ')
+  |> startProfileAt([5.82, 0], %)
+  |> angledLine([180, 11.54], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       8.21
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+sketch004 = startSketchOn('-XZ')
+  |> startProfileAt([0, 14.36], %)
+  |> line(end = [15.49, 0.05])
+  |> tangentialArcTo([0, 0], %)
+  |> tangentialArcTo([-6.8, 8.17], %)

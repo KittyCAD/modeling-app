@@ -126,7 +126,13 @@ impl From<BinaryOperator> for BinaryExpressionToken {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{parsing::ast::types::Literal, source_range::ModuleId};
+    use crate::{
+        parsing::{
+            ast::types::{Literal, LiteralValue},
+            token::NumericSuffix,
+        },
+        ModuleId,
+    };
 
     #[test]
     fn parse_and_evaluate() {
@@ -134,7 +140,10 @@ mod tests {
         fn lit(n: u8) -> BinaryPart {
             BinaryPart::Literal(Box::new(Node::new(
                 Literal {
-                    value: n.into(),
+                    value: LiteralValue::Number {
+                        value: n as f64,
+                        suffix: NumericSuffix::None,
+                    },
                     raw: n.to_string(),
                     digest: None,
                 },
