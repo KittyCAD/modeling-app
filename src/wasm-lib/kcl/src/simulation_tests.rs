@@ -1018,6 +1018,27 @@ mod sketch_on_face {
         super::execute(TEST_NAME, true).await
     }
 }
+mod revolve_about_edge {
+    const TEST_NAME: &str = "revolve_about_edge";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod poop_chute {
     const TEST_NAME: &str = "poop_chute";
 
