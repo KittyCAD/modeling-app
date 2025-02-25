@@ -1,3 +1,4 @@
+#!/bin/bash
 # Requires access to an environment variable GH_TOKEN
 # If you are in the path of the git repository the gh release list will automatically point to that git repo
 # aka cd /some/path/modeling-app

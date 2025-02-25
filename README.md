@@ -163,10 +163,10 @@ https://github.com/KittyCAD/modeling-app/issues/new
 
 #### 2. Push a new tag
 
-Create a new tag and push it to the repo. The `semantic-release.sh` script will automatically bump the minor part, which we use the most. For instance going from `v0.27.0` to `v0.28.0`.
+Create a new tag and push it to the repo. The `scripts/get-semantic-release-tag.sh` script will automatically bump the minor part, which we use the most. For instance going from `v0.27.0` to `v0.28.0`.
 
 ```
-VERSION=$(./scripts/semantic-release.sh)
+VERSION=$(./scripts/scripts/get-semantic-release-tag.sh)
 git tag $VERSION
 git push origin --tags
 ```
