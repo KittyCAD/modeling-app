@@ -74,18 +74,15 @@ fn myFn(x) {
 
 As you can see above `myFn` just returns whatever it is given.
 
-KCL's early drafts used positional arguments, but we now use keyword arguments. If you declare a
-function like this:
+KCL's early drafts used positional arguments, but we now use keyword arguments:
 
 ```
+// If you declare a function like this
 fn add(left, right) {
   return left + right
 }
-```
 
-You can call it like this:
-
-```
+// You can call it like this:
 total = add(left = 1, right = 2)
 ```
 
@@ -111,14 +108,14 @@ three = add(1, delta = 2)
 
 It can be hard to read repeated function calls, because of all the nested brackets.
 
-```
+```norun
 i = 1
 x = h(g(f(i)))
 ```
 
 You can make this easier to read by breaking it into many declarations, but that is a bit annoying.
 
-```
+```norun
 i  = 1
 x0 = f(i)
 x1 = g(x0)
@@ -133,12 +130,12 @@ the `%` in the right-hand side.
 So, this means `x |> f(%) |> g(%)` is shorthand for `g(f(x))`. The code example above, with its
 somewhat-clunky `x0` and `x1` constants could be rewritten as
 
-```
+```norun
 i = 1
 x = i
-|> f(%)
-|> g(%)
-|> h(%)
+  |> f(%)
+  |> g(%)
+  |> h(%)
 ```
 
 This helps keep your code neat and avoid unnecessary declarations.
@@ -147,12 +144,12 @@ This helps keep your code neat and avoid unnecessary declarations.
 
 Say you have a long pipeline of sketch functions, like this:
 
-```
-startSketch()
-|> line(%, end = [3, 4])
-|> line(%, end = [10, 10])
-|> line(%, end = [-13, -14])
-|> close(%)
+```norun
+startSketchOn('XZ')
+  |> line(%, end = [3, 4])
+  |> line(%, end = [10, 10])
+  |> line(%, end = [-13, -14])
+  |> close(%)
 ```
 
 In this example, each function call outputs a sketch, and it gets put into the next function call via
@@ -162,12 +159,12 @@ If a function call uses an unlabeled first parameter, it will default to `%` if 
 means that `|> line(%, end = [3, 4])` and `|> line(end = [3, 4])` are equivalent! So the above
 could be rewritten as 
 
-```
-startSketch()
-|> line(end = [3, 4])
-|> line(end = [10, 10])
-|> line(end = [-13, -14])
-|> close()
+```norun
+startSketchOn('XZ')
+ |> line(end = [3, 4])
+ |> line(end = [10, 10])
+ |> line(end = [-13, -14])
+ |> close()
 ```
 
 Note that we are still in the process of migrating KCL's standard library to use keyword arguments. So some
@@ -184,7 +181,7 @@ Tags are used to give a name (tag) to a specific path.
 The syntax for declaring a tag is `$myTag` you would use it in the following
 way:
 
-```
+```norun
 startSketchOn('XZ')
   |> startProfileAt(origin, %)
   |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
@@ -216,7 +213,7 @@ use the tag `rectangleSegmentA001` in any function or expression in the file.
 
 However if the code was written like this:
 
-```
+```norun
 fn rect(origin) {
   return startSketchOn('XZ')
     |> startProfileAt(origin, %)
@@ -244,7 +241,7 @@ However you likely want to use those tags somewhere outside the `rect` function.
 Tags are accessible through the sketch group they are declared in.
 For example the following code works.
 
-```
+```norun
 fn rect(origin) {
   return startSketchOn('XZ')
     |> startProfileAt(origin, %)

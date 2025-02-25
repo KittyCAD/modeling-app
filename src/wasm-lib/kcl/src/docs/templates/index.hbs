@@ -6,9 +6,14 @@ layout: manual
 
 ## Table of Contents
 
-* [Types](kcl/types)
-* [Modules](kcl/modules)
-* [Known Issues](kcl/KNOWN-ISSUES)
+### Language
+
+{{#each lang_topics}}
+* [`{{name}}`](kcl/{{file_name}})
+{{/each}}
+
+### Standard library
+
 {{#each modules}}
 * **`{{name}}`**
 {{#each functions}}
