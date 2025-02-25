@@ -1,0 +1,731 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing washer.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 576,
+          "id": {
+            "end": 568,
+            "name": "innerDiameter",
+            "start": 555,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 576,
+            "raw": "0.203",
+            "start": 571,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.203,
+              "suffix": "None"
+            }
+          },
+          "start": 555,
+          "type": "VariableDeclarator"
+        },
+        "end": 576,
+        "kind": "const",
+        "start": 555,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 598,
+          "id": {
+            "end": 590,
+            "name": "outerDiameter",
+            "start": 577,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 598,
+            "raw": "0.438",
+            "start": 593,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.438,
+              "suffix": "None"
+            }
+          },
+          "start": 577,
+          "type": "VariableDeclarator"
+        },
+        "end": 598,
+        "kind": "const",
+        "start": 577,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 619,
+          "id": {
+            "end": 611,
+            "name": "thicknessMax",
+            "start": 599,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 619,
+            "raw": "0.038",
+            "start": 614,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.038,
+              "suffix": "None"
+            }
+          },
+          "start": 599,
+          "type": "VariableDeclarator"
+        },
+        "end": 619,
+        "kind": "const",
+        "start": 599,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 640,
+          "id": {
+            "end": 632,
+            "name": "thicknessMin",
+            "start": 620,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 640,
+            "raw": "0.024",
+            "start": 635,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.024,
+              "suffix": "None"
+            }
+          },
+          "start": 620,
+          "type": "VariableDeclarator"
+        },
+        "end": 640,
+        "kind": "const",
+        "start": 620,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1067,
+          "id": {
+            "end": 711,
+            "name": "washer",
+            "start": 705,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "declaration": {
+                    "end": 1001,
+                    "id": {
+                      "end": 797,
+                      "name": "washerSketch",
+                      "start": 785,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 819,
+                              "name": "plane",
+                              "start": 814,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 813,
+                            "name": "startSketchOn",
+                            "start": 800,
+                            "type": "Identifier"
+                          },
+                          "end": 820,
+                          "start": 800,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 902,
+                              "properties": [
+                                {
+                                  "end": 861,
+                                  "key": {
+                                    "end": 852,
+                                    "name": "center",
+                                    "start": 846,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 846,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "elements": [
+                                      {
+                                        "end": 857,
+                                        "raw": "0",
+                                        "start": 856,
+                                        "type": "Literal",
+                                        "type": "Literal",
+                                        "value": {
+                                          "value": 0.0,
+                                          "suffix": "None"
+                                        }
+                                      },
+                                      {
+                                        "end": 860,
+                                        "raw": "0",
+                                        "start": 859,
+                                        "type": "Literal",
+                                        "type": "Literal",
+                                        "value": {
+                                          "value": 0.0,
+                                          "suffix": "None"
+                                        }
+                                      }
+                                    ],
+                                    "end": 861,
+                                    "start": 855,
+                                    "type": "ArrayExpression",
+                                    "type": "ArrayExpression"
+                                  }
+                                },
+                                {
+                                  "end": 893,
+                                  "key": {
+                                    "end": 878,
+                                    "name": "radius",
+                                    "start": 872,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 872,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 893,
+                                    "left": {
+                                      "end": 889,
+                                      "name": "outerDia",
+                                      "start": 881,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "/",
+                                    "right": {
+                                      "end": 893,
+                                      "raw": "2",
+                                      "start": 892,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 2.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 881,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                }
+                              ],
+                              "start": 835,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 905,
+                              "start": 904,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 834,
+                            "name": "circle",
+                            "start": 828,
+                            "type": "Identifier"
+                          },
+                          "end": 906,
+                          "start": 828,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "arguments": [
+                                {
+                                  "end": 993,
+                                  "properties": [
+                                    {
+                                      "end": 952,
+                                      "key": {
+                                        "end": 943,
+                                        "name": "center",
+                                        "start": 937,
+                                        "type": "Identifier"
+                                      },
+                                      "start": 937,
+                                      "type": "ObjectProperty",
+                                      "value": {
+                                        "elements": [
+                                          {
+                                            "end": 948,
+                                            "raw": "0",
+                                            "start": 947,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
+                                          },
+                                          {
+                                            "end": 951,
+                                            "raw": "0",
+                                            "start": 950,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
+                                          }
+                                        ],
+                                        "end": 952,
+                                        "start": 946,
+                                        "type": "ArrayExpression",
+                                        "type": "ArrayExpression"
+                                      }
+                                    },
+                                    {
+                                      "end": 984,
+                                      "key": {
+                                        "end": 969,
+                                        "name": "radius",
+                                        "start": 963,
+                                        "type": "Identifier"
+                                      },
+                                      "start": 963,
+                                      "type": "ObjectProperty",
+                                      "value": {
+                                        "end": 984,
+                                        "left": {
+                                          "end": 980,
+                                          "name": "innerDia",
+                                          "start": 972,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "operator": "/",
+                                        "right": {
+                                          "end": 984,
+                                          "raw": "2",
+                                          "start": 983,
+                                          "type": "Literal",
+                                          "type": "Literal",
+                                          "value": {
+                                            "value": 2.0,
+                                            "suffix": "None"
+                                          }
+                                        },
+                                        "start": 972,
+                                        "type": "BinaryExpression",
+                                        "type": "BinaryExpression"
+                                      }
+                                    }
+                                  ],
+                                  "start": 926,
+                                  "type": "ObjectExpression",
+                                  "type": "ObjectExpression"
+                                },
+                                {
+                                  "end": 996,
+                                  "start": 995,
+                                  "type": "PipeSubstitution",
+                                  "type": "PipeSubstitution"
+                                }
+                              ],
+                              "callee": {
+                                "end": 925,
+                                "name": "circle",
+                                "start": 919,
+                                "type": "Identifier"
+                              },
+                              "end": 997,
+                              "start": 919,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            {
+                              "end": 1000,
+                              "start": 999,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 918,
+                            "name": "hole",
+                            "start": 914,
+                            "type": "Identifier"
+                          },
+                          "end": 1001,
+                          "start": 914,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1001,
+                      "start": 800,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "start": 785,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1001,
+                  "kind": "const",
+                  "start": 785,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "declaration": {
+                    "end": 1049,
+                    "id": {
+                      "end": 1011,
+                      "name": "washer",
+                      "start": 1005,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "type": "Identifier",
+                            "name": "length"
+                          },
+                          "arg": {
+                            "end": 1048,
+                            "name": "thk",
+                            "start": 1045,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "end": 1021,
+                        "name": "extrude",
+                        "start": 1014,
+                        "type": "Identifier"
+                      },
+                      "end": 1049,
+                      "start": 1014,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "end": 1034,
+                        "name": "washerSketch",
+                        "start": 1022,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    },
+                    "start": 1005,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1049,
+                  "kind": "const",
+                  "start": 1005,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "end": 1065,
+                    "name": "washer",
+                    "start": 1059,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "end": 1065,
+                  "start": 1052,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 1067,
+              "nonCodeMeta": {
+                "nonCodeNodes": {
+                  "0": [
+                    {
+                      "end": 1005,
+                      "start": 1001,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ]
+                },
+                "startNodes": [
+                  {
+                    "end": 783,
+                    "start": 745,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "Define the sketch of the washer",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "start": 745
+            },
+            "end": 1067,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 717,
+                  "name": "plane",
+                  "start": 712,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 727,
+                  "name": "innerDia",
+                  "start": 719,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 737,
+                  "name": "outerDia",
+                  "start": 729,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 742,
+                  "name": "thk",
+                  "start": 739,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 711,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 705,
+          "type": "VariableDeclarator"
+        },
+        "end": 1067,
+        "kind": "fn",
+        "start": 702,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 1125,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1080,
+              "raw": "'XY'",
+              "start": 1076,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "XY"
+            },
+            {
+              "end": 1095,
+              "name": "innerDiameter",
+              "start": 1082,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 1110,
+              "name": "outerDiameter",
+              "start": 1097,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 1124,
+              "name": "thicknessMax",
+              "start": 1112,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 1075,
+            "name": "washer",
+            "start": 1069,
+            "type": "Identifier"
+          },
+          "end": 1125,
+          "start": 1069,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1069,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 1126,
+    "innerAttrs": [
+      {
+        "end": 518,
+        "name": {
+          "end": 494,
+          "name": "settings",
+          "start": 486,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 517,
+            "key": {
+              "end": 512,
+              "name": "defaultLengthUnit",
+              "start": 495,
+              "type": "Identifier"
+            },
+            "start": 495,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 517,
+              "name": "in",
+              "start": 515,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 485,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "3": [
+          {
+            "end": 701,
+            "start": 640,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Write a function that defines the washer and extrude it.",
+              "style": "line"
+            }
+          }
+        ],
+        "4": [
+          {
+            "end": 1069,
+            "start": 1067,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 9,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Washer",
+            "style": "line"
+          }
+        },
+        {
+          "end": 470,
+          "start": 10,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "A small, typically disk-shaped component with a hole in the middle, used in a wide range of applications, primarily in conjunction with fasteners like bolts and screws. Washers distribute the load of a fastener across a broader area. This is especially important when the fastening surface is soft or uneven, as it helps to prevent damage to the surface and ensures the load is evenly distributed, reducing the risk of the fastener becoming loose over time.",
+            "style": "line"
+          }
+        },
+        {
+          "end": 472,
+          "start": 470,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 484,
+          "start": 472,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set units",
+            "style": "line"
+          }
+        },
+        {
+          "end": 520,
+          "start": 518,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 554,
+          "start": 520,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Define constants in inches (in)",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

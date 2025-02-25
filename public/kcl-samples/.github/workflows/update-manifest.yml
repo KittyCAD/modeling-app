@@ -1,0 +1,48 @@
+name: Generate Manifest
+
+permissions:
+    contents: write
+    pull-requests: write
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual triggering from the Actions tab
+
+jobs:
+  generate-manifest:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+
+      # Run the script to generate the manifest.json
+      - name: Run manifest generation script
+        run: node generate-manifest.js
+
+      # Check if the manifest.json has changed
+      - name: Check for changes
+        id: check-for-changes
+        run: |
+          git diff --exit-code ./manifest.json || echo "changed=changes detected" >> "$GITHUB_OUTPUT"
+
+      # Stage and commit the changes if any were made
+      - name: Commit and push changes
+        if: ${{ success() && (steps.check-for-changes.outputs.changed == 'changes detected') }}
+        run: |
+          git add ./manifest.json
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin
+          echo ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          git commit -m "Update manifest.json"
+          git push origin ${{ github.head_ref }}

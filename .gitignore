@@ -48,7 +48,9 @@ e2e/playwright/export-snapshots/*
 !e2e/playwright/export-snapshots/*.png
 !e2e/playwright/snapshot-tests.spec.ts-snapshots/*.png
 
-/kcl-samples
+/public/kcl-samples.zip
+/public/kcl-samples/screenshots
+/public/kcl-samples/step
 /test-results/
 /playwright-report/
 /blob-report/
