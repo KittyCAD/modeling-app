@@ -101,10 +101,7 @@ export function useSetupEngineManager(
         streamRef?.current?.offsetWidth ?? 0,
         streamRef?.current?.offsetHeight ?? 0
       )
-      engineCommandManager.handleResize({
-        streamWidth: width,
-        streamHeight: height,
-      })
+      engineCommandManager.handleResize(engineCommandManager.streamDimensions)
     }, 500)
 
     const onOnline = () => {
