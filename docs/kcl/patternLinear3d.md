@@ -9,7 +9,7 @@ Repeat a 3-dimensional solid along a linear path, with a dynamic amount
 of distance between each repetition, some specified number of times.
 
 ```js
-patternLinear3d(solid_set: SolidSet, instances: integer, distance: number, axis: [number], use_original?: bool) -> [Solid]
+patternLinear3d(solidSet: SolidSet, instances: integer, distance: number, axis: [number], useOriginal?: bool) -> [Solid]
 ```
 
 
@@ -17,11 +17,11 @@ patternLinear3d(solid_set: SolidSet, instances: integer, distance: number, axis:
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) to duplicate | Yes |
+| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) to duplicate | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `distance` | `number` | Distance between each repetition. Also known as 'spacing'. | Yes |
 | `axis` | `[number]` | The axis of the pattern. A 2D vector. | Yes |
-| `use_original` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `useOriginal` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 
