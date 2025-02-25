@@ -163,6 +163,7 @@ export const sidebarPanes: SidebarPane[] = [
       },
       onClick: (e) => {
         e.preventDefault()
+        // TODO: When we have generic file open
         // If badge is pressed
         // Open the first error in the array of errors
         // Then scroll to error
