@@ -60,6 +60,7 @@ import { MetaSettings } from 'wasm-lib/kcl/bindings/MetaSettings'
 import { UnitAngle, UnitLength } from 'wasm-lib/kcl/bindings/ModelingCmd'
 import { UnitLen } from 'wasm-lib/kcl/bindings/UnitLen'
 import { UnitAngle as UnitAng } from 'wasm-lib/kcl/bindings/UnitAngle'
+import { ModulePath } from 'wasm-lib/kcl/bindings/ModulePath'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -266,7 +267,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
       firstSourceRange(parsed),
       [],
       [],
-      defaultArtifactGraph()
+      defaultArtifactGraph(),
+      {}
     )
   }
 }
@@ -296,6 +298,7 @@ export interface ExecState {
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   errors: CompilationError[]
+  filenames: { [x: number]: ModulePath | undefined }
 }
 
 /**
@@ -310,6 +313,7 @@ export function emptyExecState(): ExecState {
     artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
     errors: [],
+    filenames: [],
   }
 }
 
@@ -336,6 +340,7 @@ function execStateFromRust(
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
     errors: execOutcome.errors,
+    filenames: execOutcome.filenames,
   }
 }
 
@@ -347,6 +352,7 @@ function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph: new Map<ArtifactId, Artifact>(),
     errors: execOutcome.errors,
+    filenames: execOutcome.filenames,
   }
 }
 
@@ -474,7 +480,7 @@ const jsAppSettings = async () => {
 }
 
 const errFromErrWithOutputs = (e: any): KCLError => {
-  console.log('execute error', e)
+  console.log(e)
   const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
   return new KCLError(
     parsed.error.kind,
@@ -482,7 +488,8 @@ const errFromErrWithOutputs = (e: any): KCLError => {
     firstSourceRange(parsed.error),
     parsed.operations,
     parsed.artifactCommands,
-    rustArtifactGraphToMap(parsed.artifactGraph)
+    rustArtifactGraphToMap(parsed.artifactGraph),
+    parsed.filenames
   )
 }
 
@@ -548,7 +555,8 @@ export const modifyAstForSketch = async (
       firstSourceRange(parsed),
       [],
       [],
-      defaultArtifactGraph()
+      defaultArtifactGraph(),
+      {}
     )
 
     return Promise.reject(kclError)

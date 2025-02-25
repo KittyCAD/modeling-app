@@ -15,7 +15,7 @@ pub(super) const SIGNIFICANT_ATTRS: [&str; 2] = [SETTINGS, NO_PRELUDE];
 pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
-pub(super) const NO_PRELUDE: &str = "no_prelude";
+pub(super) const NO_PRELUDE: &str = "no_std";
 
 pub(super) const IMPORT_FORMAT: &str = "format";
 pub(super) const IMPORT_FORMAT_VALUES: [&str; 9] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "stp", "step", "stl"];

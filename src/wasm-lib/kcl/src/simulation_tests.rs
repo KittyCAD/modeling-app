@@ -135,7 +135,7 @@ async fn execute_test(test: &Test, render_to_png: bool) {
     )
     .await;
     match exec_res {
-        Ok((exec_state, png)) => {
+        Ok((exec_state, env_ref, png)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
                 panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl/{}", fail_path.to_string_lossy())
@@ -143,7 +143,7 @@ async fn execute_test(test: &Test, render_to_png: bool) {
             if render_to_png {
                 twenty_twenty::assert_image(test.output_dir.join("rendered_model.png"), &png, 0.99);
             }
-            let outcome = exec_state.to_wasm_outcome();
+            let outcome = exec_state.to_wasm_outcome(env_ref);
             assert_common_snapshots(
                 test,
                 outcome.operations,
@@ -2025,7 +2025,29 @@ mod helix_simple {
     /// Test parsing KCL.
     #[test]
     fn parse() {
-        super::parse(TEST_NAME)
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod import_file_parse_error {
+    const TEST_NAME: &str = "import_file_parse_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
     }
 
     /// Test that parsing and unparsing KCL produces the original KCL input.

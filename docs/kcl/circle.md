@@ -9,7 +9,7 @@ Construct a 2-dimensional circle, of the specified radius, centered at
 the provided (x, y) origin point.
 
 ```js
-circle(data: CircleData, sketch_surface_or_group: SketchOrSurface, tag?: TagDeclarator) -> Sketch
+circle(data: CircleData, sketchSurfaceOrGroup: SketchOrSurface, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -18,7 +18,7 @@ circle(data: CircleData, sketch_surface_or_group: SketchOrSurface, tag?: TagDecl
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`CircleData`](/docs/kcl/types/CircleData) | Data for drawing an circle | Yes |
-| `sketch_surface_or_group` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
+| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
