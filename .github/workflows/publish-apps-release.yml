@@ -21,6 +21,8 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
+      - run: corepack enable
+
       - name: Find tag workflow id
         id: tag_workflow_id
         env:

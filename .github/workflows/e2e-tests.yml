@@ -58,6 +58,7 @@ jobs:
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
+    - run: corepack enable
     - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
       shell: bash

@@ -21,6 +21,8 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
+      - run: corepack enable
+
       - run: yarn install
         working-directory: packages/codemirror-lang-kcl
 

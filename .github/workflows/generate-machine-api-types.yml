@@ -22,6 +22,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
+      - run: corepack enable
       - run: yarn install
       - run: yarn generate:machine-api
       - run: yarn fmt
