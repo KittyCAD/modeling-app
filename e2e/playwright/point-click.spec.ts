@@ -1125,7 +1125,49 @@ openSketch = startSketchOn('XY')
       await scene.expectPixelColor([250, 250, 250], testPoint, 15)
     })
 
-    await test.step('Delete offset plane via feature tree selection', async () => {
+    await test.step(`Edit helix through the feature tree`, async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
+      await operationButton.dblclick()
+      const initialInput = '5'
+      const newInput = '50'
+      await cmdBar.expectState({
+        commandName: 'Helix',
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: initialInput,
+        headerArguments: {
+          AngleStart: '360',
+          Axis: 'X',
+          CounterClockWise: '',
+          Length: initialInput,
+          Radius: '5',
+          Revolutions: '1',
+        },
+        highlightedHeaderArg: 'length',
+      })
+      await expect(cmdBar.currentArgumentInput).toBeVisible()
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill(newInput)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          AngleStart: '360',
+          Axis: 'X',
+          CounterClockWise: '',
+          Length: newInput,
+          Radius: '5',
+          Revolutions: '1',
+        },
+        commandName: 'Helix',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closeFeatureTreePane()
+      await editor.openPane()
+      await editor.expectEditor.toContain('length = ' + newInput)
+    })
+
+    await test.step('Delete helix via feature tree selection', async () => {
       await editor.closePane()
       const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
       await operationButton.click({ button: 'left' })
