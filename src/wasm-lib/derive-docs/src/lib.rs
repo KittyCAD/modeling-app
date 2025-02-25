@@ -9,7 +9,7 @@ mod unbox;
 use std::collections::HashMap;
 
 use convert_case::Casing;
-use inflector::Inflector;
+use inflector::{cases::camelcase::to_camel_case, Inflector};
 use once_cell::sync::Lazy;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use regex::Regex;
@@ -326,13 +326,14 @@ fn do_stdlib_inner(
         };
         let include_in_snippet = required || arg_meta.map(|arg| arg.include_in_snippet).unwrap_or_default();
         let label_required = !(i == 0 && metadata.unlabeled_first);
+        let camel_case_arg_name = to_camel_case(&arg_name);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
                 #docs_crate::cleanup_number_tuples_root(generator.root_schema_for::<#ty_ident>())
             };
             arg_types.push(quote! {
                 #docs_crate::StdLibFnArg {
-                    name: #arg_name.to_string(),
+                    name: #camel_case_arg_name.to_string(),
                     type_: #ty_string.to_string(),
                     schema: #schema,
                     required: #required,

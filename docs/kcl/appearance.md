@@ -9,7 +9,7 @@ Set the appearance of a solid. This only works on solids, not sketches or indivi
 This will work on any solid, including extruded solids, revolved solids, and shelled solids.
 
 ```js
-appearance(solid_set: SolidSet, color: String, metalness?: number, roughness?: number) -> SolidSet
+appearance(solidSet: SolidSet, color: String, metalness?: number, roughness?: number) -> SolidSet
 ```
 
 
@@ -17,7 +17,7 @@ appearance(solid_set: SolidSet, color: String, metalness?: number, roughness?: n
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) whose appearance is being set | Yes |
+| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) whose appearance is being set | Yes |
 | `color` | `String` | Color of the new material, a hex string like '#ff0000' | Yes |
 | `metalness` | `number` | Metalness of the new material, a percentage like 95.7. | No |
 | `roughness` | `number` | Roughness of the new material, a percentage like 95.7. | No |
