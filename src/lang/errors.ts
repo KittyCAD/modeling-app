@@ -1,4 +1,7 @@
-import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import {
+  KclError,
+  KclError as RustKclError,
+} from '../wasm-lib/kcl/bindings/KclError'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
 import { posToOffset } from '@kittycad/codemirror-lsp-client'
@@ -333,4 +336,35 @@ export function complilationErrorsToDiagnostics(
         actions,
       }
     })
+}
+
+// Create an array of KCL Errors with a new formatting to
+// easily map SourceRange of an error to the filename to display in the
+// side bar UI. This is to indicate an error in an imported file, it isn't
+// the specific code mirror error interface.
+export function kclErrorsByFilename(
+  errors: KCLError[]
+): Map<string, KCLError[]> {
+  const fileNameToError: Map<string, KCLError[]> = new Map()
+  errors.forEach((error: KCLError) => {
+    const filenames = error.filenames
+    const sourceRange: SourceRange = error.sourceRange
+    const fileIndex = sourceRange[2]
+    const modulePath: ModulePath | undefined = filenames[fileIndex]
+    if (modulePath) {
+      let stdOrLocalPath = modulePath.value
+      if (stdOrLocalPath) {
+        // Build up an array of errors per file name
+        const value = fileNameToError.get(stdOrLocalPath)
+        if (!value) {
+          fileNameToError.set(stdOrLocalPath, [error])
+        } else {
+          value.push(error)
+          fileNameToError.set(stdOrLocalPath, [error])
+        }
+      }
+    }
+  })
+
+  return fileNameToError
 }
