@@ -305,7 +305,6 @@ function ModelingPaneButton({
     scopes: ['modeling'],
   })
 
-  console.log('class', showBadge?.className)
   return (
     <div id={paneConfig.id + '-button-holder'} className="relative">
       <button
