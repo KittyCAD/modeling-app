@@ -473,6 +473,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
         })
     }
 
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn to_autocomplete_snippet(&self) -> Result<String> {
         if self.name() == "loft" {
             return Ok("loft([${0:sketch000}, ${1:sketch001}])${}".to_string());
@@ -926,6 +927,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_line() {
         let line_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Line);
         let snippet = line_fn.to_autocomplete_snippet().unwrap();
@@ -933,6 +935,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_extrude() {
         let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
         let snippet = extrude_fn.to_autocomplete_snippet().unwrap();
@@ -940,6 +943,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_fillet() {
         let fillet_fn: Box<dyn StdLibFn> = Box::new(crate::std::fillet::Fillet);
         let snippet = fillet_fn.to_autocomplete_snippet().unwrap();
@@ -957,6 +961,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_pattern_circular_3d() {
         // We test this one specifically because it has ints and floats and strings.
         let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternCircular3D);
@@ -980,6 +985,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_circle() {
         let circle_fn: Box<dyn StdLibFn> = Box::new(crate::std::shapes::Circle);
         let snippet = circle_fn.to_autocomplete_snippet().unwrap();
@@ -993,6 +999,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_arc() {
         let arc_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Arc);
         let snippet = arc_fn.to_autocomplete_snippet().unwrap();
@@ -1014,6 +1021,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_pattern_linear_2d() {
         let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternLinear2D);
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
@@ -1034,6 +1042,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_loft() {
         let loft_fn: Box<dyn StdLibFn> = Box::new(crate::std::loft::Loft);
         let snippet = loft_fn.to_autocomplete_snippet().unwrap();
@@ -1041,6 +1050,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_sweep() {
         let sweep_fn: Box<dyn StdLibFn> = Box::new(crate::std::sweep::Sweep);
         let snippet = sweep_fn.to_autocomplete_snippet().unwrap();
@@ -1048,6 +1058,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_hole() {
         let hole_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Hole);
         let snippet = hole_fn.to_autocomplete_snippet().unwrap();
@@ -1055,6 +1066,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_helix() {
         let helix_fn: Box<dyn StdLibFn> = Box::new(crate::std::helix::Helix);
         let snippet = helix_fn.to_autocomplete_snippet().unwrap();
@@ -1065,6 +1077,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_helix_revolutions() {
         let helix_fn: Box<dyn StdLibFn> = Box::new(crate::std::helix::HelixRevolutions);
         let snippet = helix_fn.to_autocomplete_snippet().unwrap();
