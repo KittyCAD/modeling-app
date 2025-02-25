@@ -20,11 +20,11 @@ jobs:
     runs-on: 'ubuntu-22.04'
     steps:
       - uses: actions/checkout@v4
+      - run: corepack enable
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: corepack enable
       - run: yarn install
       - run: yarn fmt-check
 
@@ -33,11 +33,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - run: corepack enable
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: corepack enable
       - run: yarn install
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:
@@ -49,11 +49,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - run: corepack enable
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: corepack enable
       - run: yarn install
       - uses: Swatinem/rust-cache@v2
         with:
@@ -70,11 +70,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - run: corepack enable
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: corepack enable
       - run: yarn install
       - run: yarn lint
 
@@ -96,12 +96,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - run: corepack enable
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-
-      - run: corepack enable
       - run: yarn install
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:
@@ -126,12 +126,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - run: corepack enable
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-
-      - run: corepack enable
       - run: yarn install
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:

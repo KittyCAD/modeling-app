@@ -54,11 +54,11 @@ jobs:
     - uses: actions/checkout@v4
       with:
         token: ${{ steps.app-token.outputs.token }}
+    - run: corepack enable
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
-    - run: corepack enable
     - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
       shell: bash

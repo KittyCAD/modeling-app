@@ -23,11 +23,11 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
 
+      - run: corepack enable
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-
-      - run: corepack enable
 
       - run: yarn install
 
