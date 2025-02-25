@@ -522,6 +522,10 @@ pub(super) fn build_artifact_graph(
         }
     }
 
+    for exec_artifact in exec_artifacts.values() {
+        merge_artifact_into_map(&mut map, exec_artifact.clone());
+    }
+
     Ok(ArtifactGraph { map })
 }
 
