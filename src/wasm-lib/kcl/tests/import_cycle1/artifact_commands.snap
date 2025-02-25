@@ -280,17 +280,5 @@ description: Artifact commands import_cycle1.kcl
       "object_id": "[uuid]",
       "hidden": true
     }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      33,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
   }
 ]
