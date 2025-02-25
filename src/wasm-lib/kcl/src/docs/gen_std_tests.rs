@@ -457,7 +457,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("const", &data)?;
-    expectorate::assert_contents(format!("../../../docs/kcl/const_{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
 }

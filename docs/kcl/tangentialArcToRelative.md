@@ -29,7 +29,7 @@ tangentialArcToRelative(delta: [number], sketch: Sketch, tag?: TagDeclarator) ->
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 45, length = 10 }, %)
   |> tangentialArcToRelative([0, -10], %)

@@ -29,7 +29,7 @@ angledLineToY(data: AngledLineToData, sketch: Sketch, tag?: TagDeclarator) -> Sk
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle = 60, to = 20 }, %)
   |> line(end = [-20, 0])

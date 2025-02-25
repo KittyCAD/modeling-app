@@ -110,7 +110,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Extend the current sketch with a new straight line.
 ///
 /// ```no_run
-/// triangle = startSketchOn("XZ")
+/// triangle = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   // The 'end' argument means it ends at exactly [10, 0].
 ///   // This is an absolute measurement, it is NOT relative to
@@ -121,7 +121,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> close()
 ///   |> extrude(length = 5)
 ///
-/// box = startSketchOn("XZ")
+/// box = startSketchOn(XZ)
 ///   |> startProfileAt([10, 10], %)
 ///   // The 'to' argument means move the pen this much.
 ///   // So, [10, 0] is a relative distance away from the current point.
@@ -275,7 +275,7 @@ pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// then xLineTo(4) draws a line from (1, 1) to (4, 1)
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLineTo(15, %)
 ///   |> angledLine({
@@ -330,7 +330,7 @@ pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// then yLineTo(4) draws a line from (1, 1) to (1, 4)
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -376,7 +376,7 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// from the current position along the 'x' axis.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLine(15, %)
 ///   |> angledLine({
@@ -426,7 +426,7 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// from the current position along the 'y' axis.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLine(15, %)
 ///   |> angledLine({
@@ -487,7 +487,7 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// measure of some angle and distance.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLineTo(15, %)
 ///   |> angledLine({
@@ -575,7 +575,7 @@ pub async fn angled_line_of_x_length(exec_state: &mut ExecState, args: Args) -> 
 /// along some angle (in degrees) for some relative length in the 'x' dimension.
 ///
 /// ```no_run
-/// sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineOfXLength({ angle = 45, length = 10 }, %, $edge1)
 ///   |> angledLineOfXLength({ angle = -15, length = 20 }, %, $edge2)
@@ -646,7 +646,7 @@ pub async fn angled_line_to_x(exec_state: &mut ExecState, args: Args) -> Result<
 /// in the 'x' dimension.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineToX({ angle = 30, to = 10 }, %)
 ///   |> line(end = [0, 10])
@@ -710,7 +710,7 @@ pub async fn angled_line_of_y_length(exec_state: &mut ExecState, args: Args) -> 
 /// along some angle (in degrees) for some relative length in the 'y' dimension.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> angledLineOfYLength({ angle = 45, length = 10 }, %)
@@ -772,7 +772,7 @@ pub async fn angled_line_to_y(exec_state: &mut ExecState, args: Args) -> Result<
 /// in the 'y' dimension.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineToY({ angle = 60, to = 20 }, %)
 ///   |> line(end = [-20, 0])
@@ -850,7 +850,7 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 /// segment.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(endAbsolute = [5, 10])
 ///   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)
@@ -952,6 +952,7 @@ async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args:
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
+#[allow(clippy::large_enum_variant)]
 pub enum SketchData {
     PlaneOrientation(PlaneData),
     Plane(Box<Plane>),
@@ -962,6 +963,7 @@ pub enum SketchData {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
+#[allow(clippy::large_enum_variant)]
 pub enum PlaneData {
     /// The XY plane.
     #[serde(rename = "XY", alias = "xy")]
@@ -984,16 +986,16 @@ pub enum PlaneData {
     /// A defined plane.
     Plane {
         /// Origin of the plane.
-        origin: Box<Point3d>,
+        origin: Point3d,
         /// What should the plane’s X axis be?
         #[serde(rename = "xAxis")]
-        x_axis: Box<Point3d>,
+        x_axis: Point3d,
         /// What should the plane’s Y axis be?
         #[serde(rename = "yAxis")]
-        y_axis: Box<Point3d>,
+        y_axis: Point3d,
         /// The z-axis (normal).
         #[serde(rename = "zAxis")]
-        z_axis: Box<Point3d>,
+        z_axis: Point3d,
     },
 }
 
@@ -1028,7 +1030,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn("XY")
+/// exampleSketch = startSketchOn(XY)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
@@ -1057,7 +1059,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn("XY")
+/// exampleSketch = startSketchOn(XY)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10], tag = $sketchingFace)
@@ -1086,7 +1088,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XY')
+/// exampleSketch = startSketchOn(XY)
 ///   |> startProfileAt([4, 12], %)
 ///   |> line(end = [2, 0])
 ///   |> line(end = [0, -6])
@@ -1142,15 +1144,20 @@ async fn inner_start_sketch_on(
             Ok(SketchSurface::Plane(plane))
         }
         SketchData::Plane(plane) => {
-            // Create artifact used only by the UI, not the engine.
-            let id = exec_state.next_uuid();
-            exec_state.add_artifact(Artifact::StartSketchOnPlane {
-                id: ArtifactId::from(id),
-                plane_id: plane.id,
-                source_range: args.source_range,
-            });
+            if plane.value == crate::exec::PlaneType::Uninit {
+                let plane = make_sketch_plane_from_orientation(plane.into_plane_data(), exec_state, args).await?;
+                Ok(SketchSurface::Plane(plane))
+            } else {
+                // Create artifact used only by the UI, not the engine.
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnPlane {
+                    id: ArtifactId::from(id),
+                    plane_id: plane.id,
+                    source_range: args.source_range,
+                });
 
-            Ok(SketchSurface::Plane(plane))
+                Ok(SketchSurface::Plane(plane))
+            }
         }
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
@@ -1238,10 +1245,10 @@ async fn make_sketch_plane_from_orientation(
                 plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
                     clobber,
-                    origin: (*origin).into(),
+                    origin: origin.into(),
                     size,
-                    x_axis: (*x_axis).into(),
-                    y_axis: (*y_axis).into(),
+                    x_axis: x_axis.into(),
+                    y_axis: y_axis.into(),
                     hide,
                 }),
             )
@@ -1266,7 +1273,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 /// Start a new profile at a given point.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
@@ -1277,7 +1284,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 /// ```
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn(-XZ)
 ///   |> startProfileAt([10, 10], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
@@ -1288,7 +1295,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 /// ```
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn(-XZ)
 ///   |> startProfileAt([-10, 23], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
@@ -1314,7 +1321,7 @@ pub(crate) async fn inner_start_profile_at(
             args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
                 .await?;
         }
-        SketchSurface::Plane(plane) if plane.is_custom() => {
+        SketchSurface::Plane(plane) if !plane.is_standard() => {
             // Hide whatever plane we are sketching on.
             // This is especially helpful for offset planes, which would be visible otherwise.
             args.batch_end_cmd(
@@ -1413,7 +1420,7 @@ pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<
 /// value.
 ///
 /// ```no_run
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine([-26.6, 50], %)
 ///  |> angledLine([90, 50], %)
@@ -1438,7 +1445,7 @@ pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<
 /// value.
 ///
 /// ```no_run
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine({ angle = -60, length = 14 }, %)
 ///  |> angledLineToY({ angle = 30, to = profileStartY(%) }, %)
@@ -1462,7 +1469,7 @@ pub async fn profile_start(_exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// value.
 ///
 /// ```no_run
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine({ angle = 120, length = 50 }, %, $seg01)
 ///  |> angledLine({ angle = segAng(seg01) + 120, length = 50 }, %)
@@ -1491,7 +1498,7 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 ///
 /// ```no_run
-/// startSketchOn('XZ')
+/// startSketchOn(XZ)
 ///    |> startProfileAt([0, 0], %)
 ///    |> line(end = [10, 10])
 ///    |> line(end = [10, 0])
@@ -1500,7 +1507,7 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn(-XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
@@ -1625,7 +1632,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// for to construct your shape, you're likely looking for tangentialArc.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
 ///   |> arc({
@@ -1733,7 +1740,7 @@ pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// the start and end.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> arcTo({
 ///         end = [10,0],
@@ -1870,7 +1877,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// degrees along the imaginary circle.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 60,
@@ -2004,7 +2011,7 @@ pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) 
 /// coordinates.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 60,
@@ -2071,7 +2078,7 @@ async fn inner_tangential_arc_to(
 /// distance away.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 45,
@@ -2178,7 +2185,7 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// shape.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [0, 10])
 ///   |> bezierCurve({
@@ -2259,7 +2266,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XY')
+/// exampleSketch = startSketchOn(XY)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [5, 0])
@@ -2273,7 +2280,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///
 /// ```no_run
 /// fn squareHoleSketch() {
-///   squareSketch = startSketchOn('-XZ')
+///   squareSketch = startSketchOn(-XZ)
 ///     |> startProfileAt([-1, -1], %)
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, 2])
@@ -2282,7 +2289,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   return squareSketch
 /// }
 ///
-/// exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn(-XZ)
 ///     |> circle({ center = [0, 0], radius = 3 }, %)
 ///     |> hole(squareHoleSketch(), %)
 /// example = extrude(exampleSketch, length = 1)

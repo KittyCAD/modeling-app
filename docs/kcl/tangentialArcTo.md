@@ -29,7 +29,7 @@ tangentialArcTo(to: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 60, length = 10 }, %)
   |> tangentialArcTo([15, 15], %)

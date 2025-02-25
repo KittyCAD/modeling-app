@@ -54,9 +54,10 @@ lazy_static! {
         set.insert("string", TokenType::Type);
         set.insert("number", TokenType::Type);
         set.insert("bool", TokenType::Type);
-        set.insert("sketch", TokenType::Type);
-        set.insert("sketch_surface", TokenType::Type);
-        set.insert("solid", TokenType::Type);
+        set.insert("Sketch", TokenType::Type);
+        set.insert("SketchSurface", TokenType::Type);
+        set.insert("Solid", TokenType::Type);
+        set.insert("Plane", TokenType::Type);
 
         set
     };

@@ -3,11 +3,10 @@ use std::fmt::Write;
 use crate::parsing::{
     ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FnArgType, FormatOptions,
-        FunctionExpression, IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue,
-        ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
-        VariableKind,
+        CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
+        IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
+        LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
+        PipeExpression, Program, TagDeclarator, Type, UnaryExpression, VariableDeclaration, VariableKind,
     },
     token::NumericSuffix,
     PIPE_OPERATOR,
@@ -281,6 +280,12 @@ impl Expr {
                 result += &e.label.name;
                 result
             }
+            Expr::AscribedExpression(e) => {
+                let mut result = e.expr.recast(options, indentation_level, ctxt);
+                result += ": ";
+                result += &e.ty.recast(options, indentation_level);
+                result
+            }
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
@@ -511,23 +516,10 @@ impl ArrayExpression {
 
 /// An expression is syntactically trivial: i.e., a literal, identifier, or similar.
 fn expr_is_trivial(expr: &Expr) -> bool {
-    match expr {
-        Expr::Literal(_) | Expr::Identifier(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_) => {
-            true
-        }
-        Expr::BinaryExpression(_)
-        | Expr::FunctionExpression(_)
-        | Expr::CallExpression(_)
-        | Expr::CallExpressionKw(_)
-        | Expr::PipeExpression(_)
-        | Expr::ArrayExpression(_)
-        | Expr::ArrayRangeExpression(_)
-        | Expr::ObjectExpression(_)
-        | Expr::MemberExpression(_)
-        | Expr::UnaryExpression(_)
-        | Expr::IfExpression(_)
-        | Expr::LabelledExpression(_) => false,
-    }
+    matches!(
+        expr,
+        Expr::Literal(_) | Expr::Identifier(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_)
+    )
 }
 
 impl ArrayRangeExpression {
@@ -801,12 +793,12 @@ impl Parameter {
     }
 }
 
-impl FnArgType {
+impl Type {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match self {
-            FnArgType::Primitive(t) => t.to_string(),
-            FnArgType::Array(t) => format!("{t}[]"),
-            FnArgType::Object { properties } => {
+            Type::Primitive(t) => t.to_string(),
+            Type::Array(t) => format!("{t}[]"),
+            Type::Object { properties } => {
                 let mut result = "{".to_owned();
                 for p in properties {
                     result += " ";
@@ -2227,8 +2219,8 @@ firstExtrude = startSketchOn('XY')
         );
     }
 
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_recast_math_start_negative() {
+    #[test]
+    fn test_recast_math_start_negative() {
         let some_program_string = r#"myVar = -5 + 6"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -2236,8 +2228,8 @@ firstExtrude = startSketchOn('XY')
         assert_eq!(recasted.trim(), some_program_string);
     }
 
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_recast_math_negate_parens() {
+    #[test]
+    fn test_recast_math_negate_parens() {
         let some_program_string = r#"wallMountL = 3.82
 thickness = 0.5
 
@@ -2253,12 +2245,12 @@ startSketchOn('XY')
         assert_eq!(recasted.trim(), some_program_string);
     }
 
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_recast_math_nested_parens() {
+    #[test]
+    fn test_recast_math_nested_parens() {
         let some_program_string = r#"distance = 5
-p = 3
-FOS = 2
-sigmaAllow = 8
+p = 3: Plane
+FOS = { a = 3, b = 42 }: Sketch
+sigmaAllow = 8: number(mm)
 width = 20
 thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -2267,8 +2259,8 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         assert_eq!(recasted.trim(), some_program_string);
     }
 
-    #[tokio::test(flavor = "multi_thread")]
-    async fn no_vardec_keyword() {
+    #[test]
+    fn no_vardec_keyword() {
         let some_program_string = r#"distance = 5"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -2358,7 +2350,7 @@ sketch002 = startSketchOn({
 
     #[test]
     fn unparse_fn_unnamed() {
-        let input = r#"squares_out = reduce(arr, 0, fn(i, squares) {
+        let input = r#"squares_out = reduce(arr, 0: number, fn(i, squares) {
   return 1
 })
 "#;
