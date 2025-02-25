@@ -191,6 +191,114 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Helix',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall' || !operation.labeledArgs) {
+    return baseCommand
+  }
+
+  // TODO: find a way to loop over the arguments while keeping it safe
+  // revolutions kcl arg
+  if (
+    !('revolutions' in operation.labeledArgs) ||
+    !operation.labeledArgs.revolutions
+  )
+    return baseCommand
+  const revolutions = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.revolutions.sourceRange[0],
+      operation.labeledArgs.revolutions.sourceRange[1]
+    ),
+    {}
+  )
+  if (err(revolutions) || 'errors' in revolutions) return baseCommand
+
+  // angleStart kcl arg
+  if (
+    !('angleStart' in operation.labeledArgs) ||
+    !operation.labeledArgs.angleStart
+  )
+    return baseCommand
+  const angleStart = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.angleStart.sourceRange[0],
+      operation.labeledArgs.angleStart.sourceRange[1]
+    ),
+    {}
+  )
+  if (err(angleStart) || 'errors' in angleStart) return baseCommand
+
+  // counterClockWise options boolean arg
+  if (
+    !('counterClockWise' in operation.labeledArgs) ||
+    !operation.labeledArgs.counterClockWise
+  )
+    return baseCommand
+  const counterClockWise =
+    codeManager.code.slice(
+      operation.labeledArgs.counterClockWise.sourceRange[0],
+      operation.labeledArgs.counterClockWise.sourceRange[1]
+    ) === 'true'
+
+  // radius kcl arg
+  if (!('radius' in operation.labeledArgs) || !operation.labeledArgs.radius)
+    return baseCommand
+  const radius = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.radius.sourceRange[0],
+      operation.labeledArgs.radius.sourceRange[1]
+    ),
+    {}
+  )
+  if (err(radius) || 'errors' in radius) return baseCommand
+
+  // axis options string arg
+  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis)
+    return baseCommand
+  const axis = codeManager.code
+    .slice(
+      operation.labeledArgs.axis.sourceRange[0],
+      operation.labeledArgs.axis.sourceRange[1]
+    )
+    .replaceAll("'", '') // TODO: fix this crap
+
+  // length kcl arg
+  if (!('length' in operation.labeledArgs) || !operation.labeledArgs.length)
+    return baseCommand
+  const length = await stringToKclExpression(
+    codeManager.code.slice(
+      operation.labeledArgs.length.sourceRange[0],
+      operation.labeledArgs.length.sourceRange[1]
+    ),
+    {}
+  )
+  if (err(length) || 'errors' in length) return baseCommand
+
+  // Assemble the default argument values for the Offset Plane command,
+  // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Helix'] = {
+    revolutions,
+    angleStart,
+    counterClockWise,
+    radius,
+    axis,
+    length,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -214,6 +322,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   helix: {
     label: 'Helix',
     icon: 'helix',
+    prepareToEdit: prepareToEditHelix,
   },
   hole: {
     label: 'Hole',

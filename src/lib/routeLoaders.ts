@@ -23,32 +23,6 @@ export const telemetryLoader: LoaderFunction = async ({
   return null
 }
 
-// Redirect users to the appropriate onboarding page if they haven't completed it
-export const onboardingRedirectLoader: ActionFunction = async (args) => {
-  const settings = getSettings()
-  const onboardingStatus: OnboardingStatus =
-    settings.app.onboardingStatus.current || ''
-  const notEnRouteToOnboarding = !args.request.url.includes(
-    PATHS.ONBOARDING.INDEX
-  )
-  // '' is the initial state, 'completed' and 'dismissed' are the final states
-  const hasValidOnboardingStatus =
-    onboardingStatus.length === 0 ||
-    !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed')
-  const shouldRedirectToOnboarding =
-    notEnRouteToOnboarding && hasValidOnboardingStatus
-
-  settingsActor.subscribe((state) => {
-    if (shouldRedirectToOnboarding && state.matches('idle')) {
-      return redirect(
-        makeUrlPathRelative(PATHS.ONBOARDING.INDEX) + onboardingStatus.slice(1)
-      )
-    }
-  })
-
-  return null
-}
-
 export const fileLoader: LoaderFunction = async (
   routerData
 ): Promise<FileLoaderData | Response> => {

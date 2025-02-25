@@ -89,6 +89,9 @@ jobs:
       continue-on-error: true
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
+    - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+      with:
+        tool: wasm-pack
     - name: Cache Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: Swatinem/rust-cache@v2

@@ -133,9 +133,11 @@ function DisplayObj({
       }}
       onClick={(e) => {
         const range = topLevelRange(obj?.start || 0, obj.end || 0)
-        const idInfo = codeToIdSelections([
-          { codeRef: codeRefFromRange(range, kclManager.ast) },
-        ])[0]
+        const idInfo = codeToIdSelections(
+          [{ codeRef: codeRefFromRange(range, kclManager.ast) }],
+          engineCommandManager.artifactGraph,
+          engineCommandManager.artifactIndex
+        )[0]
         const artifact = engineCommandManager.artifactGraph.get(
           idInfo?.id || ''
         )

@@ -37,6 +37,9 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+        with:
+          tool: wasm-pack
       - run: yarn build:wasm
 
   yarn-tsc:
@@ -53,6 +56,9 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
+      - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+        with:
+          tool: wasm-pack
       - run: yarn build:wasm
       - run: yarn tsc
 
@@ -92,6 +98,9 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
+      - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+        with:
+          tool: wasm-pack
       - run: yarn build:wasm
 
       - run: yarn simpleserver:bg
@@ -118,6 +127,9 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
+      - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+        with:
+          tool: wasm-pack
       - run: yarn build:wasm
 
       - run: yarn simpleserver:bg

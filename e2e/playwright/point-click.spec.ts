@@ -1064,7 +1064,7 @@ openSketch = startSketchOn('XY')
         0
       )
       await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
       await scene.expectPixelColor([50, 51, 96], testPoint, 15)
     })
   })
@@ -1125,11 +1125,53 @@ openSketch = startSketchOn('XY')
       await scene.expectPixelColor([250, 250, 250], testPoint, 15)
     })
 
-    await test.step('Delete offset plane via feature tree selection', async () => {
+    await test.step(`Edit helix through the feature tree`, async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
+      await operationButton.dblclick()
+      const initialInput = '5'
+      const newInput = '50'
+      await cmdBar.expectState({
+        commandName: 'Helix',
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: initialInput,
+        headerArguments: {
+          AngleStart: '360',
+          Axis: 'X',
+          CounterClockWise: '',
+          Length: initialInput,
+          Radius: '5',
+          Revolutions: '1',
+        },
+        highlightedHeaderArg: 'length',
+      })
+      await expect(cmdBar.currentArgumentInput).toBeVisible()
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill(newInput)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          AngleStart: '360',
+          Axis: 'X',
+          CounterClockWise: '',
+          Length: newInput,
+          Radius: '5',
+          Revolutions: '1',
+        },
+        commandName: 'Helix',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closeFeatureTreePane()
+      await editor.openPane()
+      await editor.expectEditor.toContain('length = ' + newInput)
+    })
+
+    await test.step('Delete helix via feature tree selection', async () => {
       await editor.closePane()
       const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
       await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
       // Red plane is back
       await scene.expectPixelColor([96, 52, 52], testPoint, 15)
     })
@@ -1221,7 +1263,7 @@ openSketch = startSketchOn('XY')
         await editor.closePane()
         const operationButton = await toolbar.getFeatureTreeOperation('Loft', 0)
         await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Backspace')
+        await page.keyboard.press('Delete')
         await scene.expectPixelColor([254, 254, 254], testPoint, 15)
       })
     })
@@ -1264,7 +1306,7 @@ loft001 = loft([sketch001, sketch002])
       await expect(page.locator('.cm-activeLine')).toHaveText(`
       |> circle({ center = [0, 0], radius = 30 }, %)
     `)
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
       // Check for sketch 1
       await scene.expectPixelColor([254, 254, 254], testPoint, 15)
     })
@@ -1275,7 +1317,7 @@ loft001 = loft([sketch001, sketch002])
       await expect(page.locator('.cm-activeLine')).toHaveText(`
       |> circle({ center = [0, 0], radius = 20 }, %)
     `)
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
       // Check for plane001
       await scene.expectPixelColor([228, 228, 228], testPoint, 15)
     })
@@ -1286,7 +1328,7 @@ loft001 = loft([sketch001, sketch002])
       await expect(page.locator('.cm-activeLine')).toHaveText(`
       plane001 = offsetPlane('XZ', offset = 50)
     `)
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
       // Check for sketch 1
       await scene.expectPixelColor([254, 254, 254], testPoint, 15)
     })
@@ -1380,7 +1422,7 @@ sketch002 = startSketchOn('XZ')
       await page.waitForTimeout(500)
       const operationButton = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
       await page.waitForTimeout(500)
       await toolbar.closePane('feature-tree')
       await scene.expectPixelColor([53, 53, 53], testPoint, 15)
@@ -1686,7 +1728,7 @@ extrude001 = extrude(sketch001, length = -12)
           1
         )
         await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Backspace')
+        await page.keyboard.press('Delete')
         await page.waitForTimeout(500)
         await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
         await editor.expectEditor.not.toContain(secondFilletDeclaration)
@@ -1788,7 +1830,7 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
             0
           )
           await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Backspace')
+          await page.keyboard.press('Delete')
           await page.waitForTimeout(500)
         })
         await test.step('Verify piped fillet is deleted but other fillets are not (in the editor)', async () => {
@@ -1818,7 +1860,7 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
             1
           )
           await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Backspace')
+          await page.keyboard.press('Delete')
           await page.waitForTimeout(500)
         })
         await test.step('Verify non-piped fillet is deleted but other two fillets are not (in the editor)', async () => {
@@ -2057,7 +2099,7 @@ extrude001 = extrude(sketch001, length = -12)
         1
       )
       await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
       await page.waitForTimeout(500)
       await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
       await scene.expectPixelColor(chamferColor, firstEdgeLocation, 15) // stayed
@@ -2160,7 +2202,7 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
             0
           )
           await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Backspace')
+          await page.keyboard.press('Delete')
           await page.waitForTimeout(500)
         })
         await test.step('Verify piped chamfer is deleted but other chamfers are not (in the editor)', async () => {
@@ -2192,7 +2234,7 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
             1
           )
           await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Backspace')
+          await page.keyboard.press('Delete')
           await page.waitForTimeout(500)
         })
         await test.step('Verify non-piped chamfer is deleted but other two chamfers are not (in the editor)', async () => {
@@ -2396,7 +2438,7 @@ extrude001 = extrude(sketch001, length = 40)
       await editor.closePane()
       const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
       await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
       await scene.expectPixelColor([99, 99, 99], testPoint, 15)
     })
   })
@@ -2535,7 +2577,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
       const deleteOperation = async (operationButton: Locator) => {
         if (shouldUseKeyboard) {
           await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Backspace')
+          await page.keyboard.press('Delete')
         } else {
           await operationButton.click({ button: 'right' })
           const editButton = page.getByTestId('context-menu-delete')
