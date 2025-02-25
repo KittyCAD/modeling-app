@@ -121,8 +121,8 @@ snapshot_kind: text
           }
         },
         "sourceRange": [
-          849,
-          967,
+          885,
+          1003,
           0
         ]
       },
@@ -134,16 +134,16 @@ snapshot_kind: text
           }
         },
         "sourceRange": [
-          969,
-          978,
+          1005,
+          1014,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      841,
-      979,
+      877,
+      1015,
       0
     ],
     "type": "StdLibCall",
@@ -157,16 +157,16 @@ snapshot_kind: text
           "value": "-YZ"
         },
         "sourceRange": [
-          1007,
-          1012,
+          1043,
+          1048,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      993,
-      1013,
+      1029,
+      1049,
       0
     ],
     "type": "StdLibCall",
@@ -189,16 +189,16 @@ snapshot_kind: text
           }
         },
         "sourceRange": [
-          1664,
-          1684,
+          1736,
+          1756,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1647,
-      1685,
+      1719,
+      1757,
       0
     ],
     "type": "StdLibCall",
