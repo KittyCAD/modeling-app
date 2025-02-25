@@ -15,7 +15,7 @@ For formats lacking unit data (such as STL, OBJ, or PLY files), the default unit
 Note: The import command currently only works when using the native Modeling App.
 
 ```js
-import(file_path: String, options?: ImportFormat) -> ImportedGeometry
+import(filePath: String, options?: ImportFormat) -> ImportedGeometry
 ```
 
 
@@ -23,7 +23,7 @@ import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `file_path` | `String` |  | Yes |
+| `filePath` | `String` |  | Yes |
 | `options` | [`ImportFormat`](/docs/kcl/types/ImportFormat) | Import format specifier | No |
 
 ### Returns

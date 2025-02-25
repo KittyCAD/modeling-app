@@ -9,7 +9,7 @@ Create a 3D surface or solid by interpolating between two or more sketches.
 The sketches need to closed and on the same plane.
 
 ```js
-loft(sketches: [Sketch], v_degree: NonZeroU32, bez_approximate_rational: bool, base_curve_index?: integer, tolerance?: number) -> Solid
+loft(sketches: [Sketch], vDegree: NonZeroU32, bezApproximateRational: bool, baseCurveIndex?: integer, tolerance?: number) -> Solid
 ```
 
 
@@ -18,9 +18,9 @@ loft(sketches: [Sketch], v_degree: NonZeroU32, bez_approximate_rational: bool, b
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) | Which sketches to loft. Must include at least 2 sketches. | Yes |
-| `v_degree` | `NonZeroU32` | Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction. This defaults to 2, if not specified. | Yes |
-| `bez_approximate_rational` | `bool` | Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary. | Yes |
-| `base_curve_index` | `integer` | This can be set to override the automatically determined topological base curve, which is usually the first section encountered. | No |
+| `vDegree` | `NonZeroU32` | Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction. This defaults to 2, if not specified. | Yes |
+| `bezApproximateRational` | `bool` | Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary. | Yes |
+| `baseCurveIndex` | `integer` | This can be set to override the automatically determined topological base curve, which is usually the first section encountered. | No |
 | `tolerance` | `number` | Tolerance for the loft operation. | No |
 
 ### Returns
