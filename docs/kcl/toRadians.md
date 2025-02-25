@@ -37,7 +37,7 @@ exampleSketch = startSketchOn("XZ")
        angle = 50,
        length = 70 * cos(toRadians(45))
      }, %)
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 example = extrude(exampleSketch, length = 5)

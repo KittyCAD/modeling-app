@@ -12,7 +12,7 @@ redo-kcl-stdlib-docs-no-imgs:
 # Generate the stdlib image artifacts
 # Then run the stdlib docs generation
 redo-kcl-stdlib-docs:
-    TWENTY_TWENTY=overwrite {{cnr}} -p kcl-lib --no-fail-fast -- kcl_test_example_x_line
+    TWENTY_TWENTY=overwrite {{cnr}} -p kcl-lib --no-fail-fast -- kcl_test_example
     EXPECTORATE=overwrite {{cnr}} -p kcl-lib --no-fail-fast -- docs::gen_std_tests::test_generate_stdlib
 
 # Copy a test KCL file from executor tests into a new simulation test.

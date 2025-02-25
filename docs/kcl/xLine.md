@@ -9,7 +9,7 @@ Draw a line from current point, along the X axis. You can either specify
 this line's length, or which X it should end at.
 
 ```js
-xLine(sketch: Sketch, length?: number, end_absolute?: number, tag?: TagDeclarator) -> Sketch
+xLine(sketch: Sketch, length?: number, endAbsolute?: number, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ xLine(sketch: Sketch, length?: number, end_absolute?: number, tag?: TagDeclarato
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
 | `length` | `number` | How far away along the X axis should this line go? Incompatible with `endAbsolute`. | No |
-| `end_absolute` | `number` | Which absolute X value should this line go to? Incompatible with `length`. | No |
+| `endAbsolute` | `number` | Which absolute X value should this line go to? Incompatible with `length`. | No |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
