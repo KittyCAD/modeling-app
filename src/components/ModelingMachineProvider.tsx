@@ -665,6 +665,13 @@ export const ModelingMachineProvider = ({
           if (event.data?.forceNewSketch) return false
           if (artifactIsPlaneWithPaths(selectionRanges)) {
             return true
+          } else if (selectionRanges.graphSelections[0]?.artifact) {
+            // See if the selection is "close enough" to be coerced to the plane later
+            const maybePlane = getPlaneFromArtifact(
+              selectionRanges.graphSelections[0].artifact,
+              engineCommandManager.artifactGraph
+            )
+            return !err(maybePlane)
           }
           if (
             isCursorInFunctionDefinition(
