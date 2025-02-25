@@ -29,6 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          cache: 'yarn'
 
       - run: yarn install
 
@@ -123,9 +124,11 @@ jobs:
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
 
-      - uses: actions/setup-node@v4
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - name: yarn install
         # Windows is picky sometimes and fails on fetch. Step takes about ~30s
