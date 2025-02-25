@@ -293,6 +293,13 @@ export class KclManager {
       return null
     }
 
+    // GOTCHA:
+    // When we safeParse this is tied to execution because they clicked a new file to load
+    // Clear all previous errors and logs because they are old since they executed a new file
+    // If we decouple safeParse from execution we need to move this application logic.
+    this._kclErrorsCallBack([])
+    this._logsCallBack([])
+
     this.addDiagnostics(complilationErrorsToDiagnostics(result.errors))
     this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
     if (result.errors.length > 0) {

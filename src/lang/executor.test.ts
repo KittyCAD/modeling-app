@@ -511,7 +511,8 @@ const theExtrude = startSketchOn('XY')
         topLevelRange(129, 135),
         [],
         [],
-        defaultArtifactGraph()
+        defaultArtifactGraph(),
+        {}
       )
     )
   })
