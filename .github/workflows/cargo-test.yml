@@ -11,12 +11,36 @@ concurrency:
   cancel-in-progress: true
 name: cargo test of wasm-lib
 jobs:
+  path-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      only-kcl-samples: ${{ steps.filter.outputs.only-kcl-samples }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: filter
+        name: Check for path changes
+        uses: dorny/paths-filter@v3
+        with:
+          # Don't combine this with other path checks since this requires
+          # everything to match.
+          predicate-quantifier: every
+          filters: |
+            only-kcl-samples:
+              - 'public/kcl-samples/**'
+              - '!src/wasm-lib/**'
+      - name: Display significant changes
+        run: |
+          echo "Only kcl-samples changes: ${{ steps.filter.outputs.only-kcl-samples }}"
+
   cargotest:
     name: cargo test
     runs-on: ubuntu-latest-8-cores
     strategy:
       matrix:
         dir: ['src/wasm-lib']
+    needs: path-changes
     steps:
       - uses: actions/checkout@v4
       - name: Install latest rust
@@ -42,7 +66,17 @@ jobs:
       - uses: taiki-e/install-action@nextest
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
+      - name: cargo test only kcl-samples
+        if: needs.path-changes.outputs.only-kcl-samples == 'true'
+        shell: bash
+        run: |-
+          cd "${{ matrix.dir }}"
+          cargo nextest run --workspace --test-threads=1 --retries=2 --no-fail-fast -P ci 2>&1 simulation_tests::kcl_samples | tee /tmp/github-actions.log
+        env:
+          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
+          RUST_MIN_STACK: 10485760000
       - name: cargo test
+        if: needs.path-changes.outputs.only-kcl-samples == 'false'
         shell: bash
         run: |-
           cd "${{ matrix.dir }}"
@@ -51,6 +85,7 @@ jobs:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_MIN_STACK: 10485760000
       - name: Upload to codecov.io
+        if: needs.path-changes.outputs.only-kcl-samples == 'false'
         uses: codecov/codecov-action@v5
         with:
           token: ${{secrets.CODECOV_TOKEN}}
