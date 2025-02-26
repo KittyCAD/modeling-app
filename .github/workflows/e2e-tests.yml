@@ -54,7 +54,7 @@ jobs:
     - name: Install Git and add to PATH windows
       if: runner.os == 'Windows'
       run: |
-        choco install git -y
+        winget install --id Git.Git -e --silent
         echo "C:\Program Files\Git\cmd" >> $env:GITHUB_PATH
       shell: powershell
     - uses: actions/checkout@v4
