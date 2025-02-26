@@ -69,6 +69,7 @@
     "yargs": "^17.7.2"
   },
   "scripts": {
+    "preinstall": "corepack enable",
     "install:rust": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
     "install:rust:windows": "winget install Microsoft.VisualStudio.2022.Community --silent --override \"--wait --quiet --add ProductLang En-us --add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended\" && winget install Rustlang.Rustup",
     "install:wasm-pack:sh": ". $HOME/.cargo/env && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y",
@@ -77,7 +78,7 @@
     "start": "vite --port=3000 --host=0.0.0.0",
     "start:prod": "vite preview --port=3000",
     "serve": "vite serve --port=3000",
-    "build": "corepack enable && yarn install:rust && . $HOME/.cargo/env && yarn install:wasm-pack:sh && yarn build:wasm && vite build",
+    "build": "yarn install:rust && . $HOME/.cargo/env && yarn install:wasm-pack:sh && yarn build:wasm && vite build",
     "build:local": "vite build",
     "build:both": "vite build",
     "build:both:local": "yarn build:wasm && vite build",

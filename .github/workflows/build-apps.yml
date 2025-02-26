@@ -127,7 +127,7 @@ jobs:
           cp prepared-files/assets/icon.png assets/icon.png
 
       - name: Get exact Node.js version
-        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
+        run: echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
         shell: bash
 
       - name: Clear hosted tool cache on Windows
