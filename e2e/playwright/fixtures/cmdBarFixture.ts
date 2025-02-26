@@ -1,5 +1,7 @@
-import type { Page, Locator } from '@playwright/test'
+import type { Page, Locator, Route, Request } from '@playwright/test'
 import { expect } from '@playwright/test'
+import * as fs from 'fs'
+import * as path from 'path'
 
 type CmdBarSerialised =
   | {
@@ -186,5 +188,41 @@ export class CmdBarFixture {
    */
   selectOption = (options: Parameters<typeof this.page.getByRole>[1]) => {
     return this.page.getByRole('option', options)
+  }
+
+  /**
+   * Start monitoring requests to the text-to-cad API endpoint
+   * and save the request bodies to a file.
+   * 
+   * The monitoring will automatically stop when the test ends.
+   * 
+   * @param outputPath Optional custom path for the output file
+   */
+  async monitorTextToCadRequests(outputPath = 'promptToEdit.snap.json') {
+    // Create a handler function that saves request bodies to a file
+    const requestHandler = (route: Route, request: Request) => {
+      try {
+        const requestBody = request.postDataJSON()
+        
+        // Ensure directory exists
+        const dir = path.dirname(outputPath)
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true })
+        }
+        
+        // Write the request body to the file
+        fs.writeFileSync(outputPath, JSON.stringify(requestBody, null, 2))
+      } catch (error) {
+        console.error('Error processing text-to-cad request:', error)
+      }
+      
+      // Use void to explicitly mark the promise as ignored
+      void route.continue()
+    }
+
+    // Start monitoring requests
+    await this.page.route('**/ml/text-to-cad/iteration', requestHandler)
+    
+    console.log(`Monitoring text-to-cad API requests. Output will be saved to: ${outputPath}`)
   }
 }
