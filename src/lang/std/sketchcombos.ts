@@ -51,6 +51,7 @@ import {
   ARG_END_ABSOLUTE,
   getConstraintInfoKw,
   isAbsoluteLine,
+  ARG_LENGTH,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
@@ -138,7 +139,7 @@ function createCallWrapper(
     }
     if (tooltip === 'lineTo') {
       const labeledArgs = [
-        createLabeledArg('endAbsolute', createArrayExpression(val)),
+        createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(val)),
       ]
       if (tag) {
         labeledArgs.push(createLabeledArg(ARG_TAG, tag))
@@ -146,6 +147,41 @@ function createCallWrapper(
       return {
         callExp: createCallExpressionStdLibKw(
           'line',
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+          labeledArgs
+        ),
+        valueUsedInTransform,
+      }
+    }
+  } else {
+    // This else branch type narrows 'val' to a scalar.
+    if (
+      'xLine' === tooltip ||
+      'yLine' === tooltip ||
+      'xLineTo' === tooltip ||
+      'yLineTo' === tooltip
+    ) {
+      const [isAbsolute, callee] = (() => {
+        switch (tooltip) {
+          case 'xLine':
+            return [false, 'xLine']
+          case 'yLine':
+            return [false, 'yLine']
+          case 'xLineTo':
+            return [true, 'xLine']
+          case 'yLineTo':
+            return [true, 'yLine']
+        }
+      })()
+      const labeledArgs = [
+        createLabeledArg(isAbsolute ? ARG_END_ABSOLUTE : ARG_LENGTH, val),
+      ]
+      if (tag) {
+        labeledArgs.push(createLabeledArg(ARG_TAG, tag))
+      }
+      return {
+        callExp: createCallExpressionStdLibKw(
+          callee,
           null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
           labeledArgs
         ),
@@ -1635,7 +1671,18 @@ function getTransformMapPathKw(
     return false
   }
   const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
-  const nameAbsolute = name === 'line' ? 'lineTo' : name
+  const nameAbsolute = (() => {
+    switch (name) {
+      case 'line':
+        return 'lineTo'
+      case 'xLine':
+        return 'xLineTo'
+      case 'yLine':
+        return 'yLineTo'
+      default:
+        return name
+    }
+  })()
   if (!toolTips.includes(name)) {
     return false
   }
@@ -2154,7 +2201,10 @@ export function getConstraintLevelFromSourceRange(
         case 'CallExpression':
           return getFirstArg(nodeMeta.node)
         case 'CallExpressionKw':
-          const arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], nodeMeta.node)
+          const arg = findKwArgAny(
+            [ARG_END, ARG_END_ABSOLUTE, ARG_LENGTH],
+            nodeMeta.node
+          )
           if (arg === undefined) {
             return new Error('unexpected call expression: ' + name)
           }

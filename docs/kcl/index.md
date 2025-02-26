@@ -111,9 +111,7 @@ layout: manual
   * [`toDegrees`](kcl/toDegrees)
   * [`toRadians`](kcl/toRadians)
   * [`xLine`](kcl/xLine)
-  * [`xLineTo`](kcl/xLineTo)
   * [`yLine`](kcl/yLine)
-  * [`yLineTo`](kcl/yLineTo)
   * [`yd`](kcl/yd)
 * **`std::math`**
   * [`E`](kcl/const_std-math-E)

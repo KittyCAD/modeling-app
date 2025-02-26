@@ -95,7 +95,6 @@ pub const NEW_TAG_KW: &str = "tag";
 
 /// Draw a line to a point.
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // let (to, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
     let sketch = args.get_unlabeled_kw_arg("sketch")?;
     let end = args.get_kw_arg_opt("end")?;
     let end_absolute = args.get_kw_arg_opt("endAbsolute")?;
@@ -260,152 +259,87 @@ async fn straight_line(
     Ok(new_sketch)
 }
 
-/// Draw a line to a point on the x-axis.
-pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
-
-    let new_sketch = inner_x_line_to(to, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(new_sketch),
-    })
-}
-
-/// Draw a line parallel to the X axis, that ends at the given X.
-/// E.g. if the previous line ended at (1, 1),
-/// then xLineTo(4) draws a line from (1, 1) to (4, 1)
-///
-/// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
-///   |> xLineTo(15, %)
-///   |> angledLine({
-///     angle = 80,
-///     length = 15,
-///   }, %)
-///   |> line(end = [8, -10])
-///   |> xLineTo(40, %)
-///   |> angledLine({
-///     angle = 135,
-///     length = 30,
-///   }, %)
-///   |> xLineTo(10, %)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "xLineTo",
-}]
-async fn inner_x_line_to(
-    to: f64,
-    sketch: Sketch,
-    tag: Option<TagNode>,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
-
-    let new_sketch = straight_line(
-        StraightLineParams::absolute([to, from.y], sketch, tag),
-        exec_state,
-        args,
-    )
-    .await?;
-
-    Ok(new_sketch)
-}
-
-/// Draw a line to a point on the y-axis.
-pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
-
-    let new_sketch = inner_y_line_to(to, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(new_sketch),
-    })
-}
-
-/// Draw a line parallel to the Y axis, that ends at the given Y.
-/// E.g. if the previous line ended at (1, 1),
-/// then yLineTo(4) draws a line from (1, 1) to (1, 4)
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 50,
-///     length = 45,
-///   }, %)
-///   |> yLineTo(0, %)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "yLineTo",
-}]
-async fn inner_y_line_to(
-    to: f64,
-    sketch: Sketch,
-    tag: Option<TagNode>,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
-
-    let new_sketch = straight_line(
-        StraightLineParams::absolute([from.x, to], sketch, tag),
-        exec_state,
-        args,
-    )
-    .await?;
-    Ok(new_sketch)
-}
-
 /// Draw a line on the x-axis.
 pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
+    let sketch = args.get_unlabeled_kw_arg("sketch")?;
+    let length = args.get_kw_arg_opt("length")?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_x_line(length, sketch, tag, exec_state, args).await?;
+    let new_sketch = inner_x_line(sketch, length, end_absolute, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
 }
 
-/// Draw a line relative to the current origin to a specified distance away
-/// from the current position along the 'x' axis.
+/// Draw a line from current point, along the X axis. You can either specify
+/// this line's length, or which X it should end at.
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> xLine(15, %)
+///   |> xLine(length = 15)
 ///   |> angledLine({
 ///     angle = 80,
 ///     length = 15,
 ///   }, %)
 ///   |> line(end = [8, -10])
-///   |> xLine(10, %)
+///   |> xLine(length = 10)
 ///   |> angledLine({
 ///     angle = 120,
 ///     length = 30,
 ///   }, %)
-///   |> xLine(-15, %)
+///   |> xLine(length = -15)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 10)
+/// ```
+/// ```no_run
+/// exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> xLine(endAbsolute = 15)
+///   |> angledLine({
+///     angle = 80,
+///     length = 15,
+///   }, %)
+///   |> line(end = [8, -10])
+///   |> xLine(length = 40)
+///   |> angledLine({
+///     angle = 135,
+///     length = 30,
+///   }, %)
+///   |> xLine(length = 10)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
 #[stdlib {
     name = "xLine",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?"},
+        length = { docs = "How far away along the X axis should this line go? Incompatible with `endAbsolute`.", include_in_snippet = true},
+        end_absolute = { docs = "Which absolute X value should this line go to? Incompatible with `length`."},
+        tag = { docs = "Create a new tag which refers to this line"},
+    }
 }]
 async fn inner_x_line(
-    length: f64,
     sketch: Sketch,
+    length: Option<f64>,
+    end_absolute: Option<f64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    let from = sketch.current_pen_position()?;
     straight_line(
-        StraightLineParams::relative([length, 0.0], sketch, tag),
+        StraightLineParams {
+            sketch,
+            end_absolute: end_absolute.map(|x| [x, from.y]),
+            end: length.map(|x| [x, 0.0]),
+            tag,
+        },
         exec_state,
         args,
     )
@@ -414,9 +348,12 @@ async fn inner_x_line(
 
 /// Draw a line on the y-axis.
 pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
+    let sketch = args.get_unlabeled_kw_arg("sketch")?;
+    let length = args.get_kw_arg_opt("length")?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_y_line(length, sketch, tag, exec_state, args).await?;
+    let new_sketch = inner_y_line(sketch, length, end_absolute, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -428,29 +365,56 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> yLine(15, %)
+///   |> yLine(length = 15)
 ///   |> angledLine({
 ///     angle = 30,
 ///     length = 15,
 ///   }, %)
 ///   |> line(end = [8, -10])
-///   |> yLine(-5, %)
+///   |> yLine(length = -5)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
+/// ```no_run
+/// exampleSketch = startSketchOn("XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle = 50,
+///     length = 45,
+///   }, %)
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
 #[stdlib {
     name = "yLine",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?"},
+        length = { docs = "How far away along the Y axis should this line go? Incompatible with `endAbsolute`.", include_in_snippet = true},
+        end_absolute = { docs = "Which absolute Y value should this line go to? Incompatible with `length`."},
+        tag = { docs = "Create a new tag which refers to this line"},
+    }
 }]
 async fn inner_y_line(
-    length: f64,
     sketch: Sketch,
+    length: Option<f64>,
+    end_absolute: Option<f64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    let from = sketch.current_pen_position()?;
     straight_line(
-        StraightLineParams::relative([0.0, length], sketch, tag),
+        StraightLineParams {
+            sketch,
+            end_absolute: end_absolute.map(|y| [from.x, y]),
+            end: length.map(|y| [0.0, y]),
+            tag,
+        },
         exec_state,
         args,
     )
@@ -489,13 +453,13 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> yLineTo(15, %)
+///   |> yLine(endAbsolute = 15)
 ///   |> angledLine({
 ///     angle = 30,
 ///     length = 15,
 ///   }, %)
 ///   |> line(end = [8, -10])
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 10)
@@ -1120,9 +1084,9 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///     })
 ///  |> startProfileAt([0, 0], %)
 ///  |> line(end = [100.0, 0])
-///  |> yLine(-100.0, %)
-///  |> xLine(-100.0, %)
-///  |> yLine(100.0, %)
+///  |> yLine(length = -100.0)
+///  |> xLine(length = -100.0)
+///  |> yLine(length = 100.0)
 ///  |> close()
 ///  |> extrude(length = 3.14)
 /// ```

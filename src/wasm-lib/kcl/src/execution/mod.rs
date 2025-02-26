@@ -3,8 +3,16 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use cache::OldAstState;
+pub use cache::{bust_cache, clear_mem_cache};
+pub use cad_op::Operation;
+pub use geometry::*;
+pub(crate) use import::{
+    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
+};
 use indexmap::IndexMap;
+pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -12,8 +20,10 @@ use kcmc::{
     ImageFormat, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
+pub use memory::EnvironmentRef;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+pub use state::{ExecState, IdGenerator, MetaSettings};
 
 use crate::{
     engine::EngineManager,
@@ -30,17 +40,6 @@ use crate::{
     std::StdLib,
     CompilationError, ExecError, ExecutionKind, KclErrorWithOutputs,
 };
-
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
-pub use cache::{bust_cache, clear_mem_cache};
-pub use cad_op::Operation;
-pub use geometry::*;
-pub(crate) use import::{
-    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
-};
-pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
-pub use memory::EnvironmentRef;
-pub use state::{ExecState, IdGenerator, MetaSettings};
 
 pub(crate) mod annotations;
 mod artifact;
@@ -999,8 +998,8 @@ const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> yLineTo(1, %)
-  |> xLine(3.84, %) // selection-range-7ish-before-this
+  |> yLine(endAbsolute = 1)
+  |> xLine(length = 3.84) // selection-range-7ish-before-this
 
 const variableBelowShouldNotBeIncluded = 3
 "#;
@@ -1734,9 +1733,9 @@ let w = f() + f()
     async fn kcl_test_ids_stable_between_executions() {
         let code = r#"sketch001 = startSketchOn('XZ')
 |> startProfileAt([61.74, 206.13], %)
-|> xLine(305.11, %, $seg01)
-|> yLine(-291.85, %)
-|> xLine(-segLen(seg01), %)
+|> xLine(length = 305.11, tag = $seg01)
+|> yLine(length = -291.85)
+|> xLine(length = -segLen(seg01))
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
@@ -1759,9 +1758,9 @@ let w = f() + f()
 
         let code = r#"sketch001 = startSketchOn('XZ')
 |> startProfileAt([62.74, 206.13], %)
-|> xLine(305.11, %, $seg01)
-|> yLine(-291.85, %)
-|> xLine(-segLen(seg01), %)
+|> xLine(length = 305.11, tag = $seg01)
+|> yLine(length = -291.85)
+|> xLine(length = -segLen(seg01))
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
@@ -1785,9 +1784,9 @@ let w = f() + f()
     async fn kcl_test_changing_a_setting_updates_the_cached_state() {
         let code = r#"sketch001 = startSketchOn('XZ')
 |> startProfileAt([61.74, 206.13], %)
-|> xLine(305.11, %, $seg01)
-|> yLine(-291.85, %)
-|> xLine(-segLen(seg01), %)
+|> xLine(length = 305.11, tag = $seg01)
+|> yLine(length = -291.85)
+|> xLine(length = -segLen(seg01))
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)

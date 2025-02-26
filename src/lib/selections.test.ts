@@ -16,9 +16,9 @@ beforeAll(async () => {
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn('XZ')
 profile001 = startProfileAt([105.55, 105.55], sketch001)
-  |> xLine(332.55, %, $seg01)
-  |> yLine(-310.12, %, $seg02)
-  |> xLine(-373.65, %)
+  |> xLine(length = 332.55, tag = $seg01)
+  |> yLine(length = -310.12, tag = $seg02)
+  |> xLine(length = -373.65)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 500)
@@ -1126,7 +1126,7 @@ profile004 = circle({
     [
       'segment 2',
       {
-        snippet: 'yLine(-310.12, %, $seg02)',
+        snippet: 'yLine(length = -310.12, tag = $seg02)',
         artifactDetails: {
           type: 'segment',
           range: [149, 149, 0],

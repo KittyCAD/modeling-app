@@ -1,9 +1,9 @@
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([-4.35, -12.26], %)
-  |> yLine(10.2, %)
+  |> yLine(length = 10.2)
   |> line(end = [0.54, -0.03])
   |> tangentialArcTo([20.4, 14.61], %)
-  |> yLine(-26.76, %)
+  |> yLine(length = -26.76)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
 

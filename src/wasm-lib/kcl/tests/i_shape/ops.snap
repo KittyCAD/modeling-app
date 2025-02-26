@@ -14,8 +14,8 @@ snapshot_kind: text
           }
         },
         "sourceRange": [
-          2351,
-          2356,
+          2441,
+          2446,
           0
         ]
       },
@@ -27,16 +27,16 @@ snapshot_kind: text
           }
         },
         "sourceRange": [
-          2358,
-          2359,
+          2448,
+          2449,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2346,
-      2360,
+      2436,
+      2450,
       0
     ],
     "type": "StdLibCall",
@@ -59,16 +59,16 @@ snapshot_kind: text
           }
         },
         "sourceRange": [
-          2383,
-          2386,
+          2473,
+          2476,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2366,
-      2387,
+      2456,
+      2477,
       0
     ],
     "type": "StdLibCall",

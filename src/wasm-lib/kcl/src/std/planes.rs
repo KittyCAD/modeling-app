@@ -4,13 +4,12 @@ use derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Color, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
+use super::sketch::PlaneData;
 use crate::{
     errors::KclError,
     execution::{ExecState, KclValue, Plane, PlaneType},
     std::Args,
 };
-
-use super::sketch::PlaneData;
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

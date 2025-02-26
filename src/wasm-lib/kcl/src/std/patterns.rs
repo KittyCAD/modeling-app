@@ -657,9 +657,8 @@ impl GeometryTrait for Box<Solid> {
 
 #[cfg(test)]
 mod tests {
-    use crate::execution::kcl_value::NumericType;
-
     use super::*;
+    use crate::execution::kcl_value::NumericType;
 
     #[test]
     fn test_array_to_point3d() {
