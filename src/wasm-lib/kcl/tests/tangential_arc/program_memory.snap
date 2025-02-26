@@ -3,38 +3,6 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing tangential_arc.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "boxSketch": {
     "type": "Solid",
     "value": {
@@ -98,7 +66,10 @@ description: Variables in memory after executing tangential_arc.kcl
               0.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -123,7 +94,10 @@ description: Variables in memory after executing tangential_arc.kcl
               -5.0,
               15.0
             ],
-            "type": "TangentialArc"
+            "type": "TangentialArc",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -143,7 +117,10 @@ description: Variables in memory after executing tangential_arc.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -185,6 +162,9 @@ description: Variables in memory after executing tangential_arc.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

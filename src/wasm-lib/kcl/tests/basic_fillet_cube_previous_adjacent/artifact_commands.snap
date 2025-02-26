@@ -630,8 +630,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      281,
-      312,
+      265,
+      296,
       0
     ],
     "command": {
@@ -645,7 +645,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       238,
-      324,
+      298,
       0
     ],
     "command": {

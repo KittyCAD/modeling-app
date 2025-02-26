@@ -3,97 +3,8 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing double_map_fn.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "increment": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 32,
-              "left": {
-                "end": 28,
-                "name": "i",
-                "start": 27,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "operator": "+",
-              "right": {
-                "end": 32,
-                "raw": "1",
-                "start": 31,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
-              },
-              "start": 27,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "end": 32,
-            "start": 20,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 34,
-        "start": 16
-      },
-      "end": 34,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 14,
-            "name": "i",
-            "start": 13,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 12,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
@@ -111,7 +22,8 @@ description: Variables in memory after executing double_map_fn.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -127,7 +39,8 @@ description: Variables in memory after executing double_map_fn.kcl
         "type": "Number",
         "value": 1.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {
@@ -143,7 +56,8 @@ description: Variables in memory after executing double_map_fn.kcl
         "type": "Number",
         "value": 2.0,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         },
         "__meta": [
           {

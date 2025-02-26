@@ -1,41 +1,8 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing artifact_graph_example_code_offset_planes.kcl
-snapshot_kind: text
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "offsetPlane001": {
     "type": "Plane",
     "value": {
@@ -156,7 +123,10 @@ snapshot_kind: text
             6.78,
             15.01
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -198,6 +168,9 @@ snapshot_kind: text
           0.0,
           0.0
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",

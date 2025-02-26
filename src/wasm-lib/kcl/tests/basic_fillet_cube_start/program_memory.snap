@@ -3,38 +3,6 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing basic_fillet_cube_start.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "part001": {
     "type": "Solid",
     "value": {
@@ -124,7 +92,10 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
               0.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -144,7 +115,10 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
               10.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -169,7 +143,10 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
               10.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -189,7 +166,10 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -231,6 +211,9 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -272,7 +255,10 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
                   0.0,
                   10.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -331,7 +317,10 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
                   10.0,
                   0.0
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -440,7 +429,10 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
           0.0,
           10.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -500,7 +492,10 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
           10.0,
           0.0
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",

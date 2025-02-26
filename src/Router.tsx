@@ -24,14 +24,7 @@ import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import FileMachineProvider from 'components/FileMachineProvider'
 import { MachineManagerProvider } from 'components/MachineManagerProvider'
 import { PATHS } from 'lib/paths'
-import {
-  fileLoader,
-  homeLoader,
-  onboardingRedirectLoader,
-  settingsLoader,
-  telemetryLoader,
-} from 'lib/routeLoaders'
-import SettingsAuthProvider from 'components/SettingsAuthProvider'
+import { fileLoader, homeLoader, telemetryLoader } from 'lib/routeLoaders'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { ASK_TO_OPEN_QUERY_PARAM, BROWSER_PROJECT_NAME } from 'lib/constants'
@@ -45,34 +38,28 @@ import { AppStateProvider } from 'AppState'
 import { reportRejection } from 'lib/trap'
 import { RouteProvider } from 'components/RouteProvider'
 import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
-import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
 import { useToken } from 'machines/appMachine'
+import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
 const router = createRouter([
   {
-    loader: settingsLoader,
     id: PATHS.INDEX,
-    // TODO: Re-evaluate if this is true
-    /* Make sure auth is the outermost provider or else we will have
-     * inefficient re-renders, use the react profiler to see. */
     element: (
       <OpenInDesktopAppHandler>
         <RouteProvider>
-          <SettingsAuthProvider>
-            <LspProvider>
-              <ProjectsContextProvider>
-                <KclContextProvider>
-                  <AppStateProvider>
-                    <MachineManagerProvider>
-                      <Outlet />
-                    </MachineManagerProvider>
-                  </AppStateProvider>
-                </KclContextProvider>
-              </ProjectsContextProvider>
-            </LspProvider>
-          </SettingsAuthProvider>
+          <LspProvider>
+            <ProjectsContextProvider>
+              <KclContextProvider>
+                <AppStateProvider>
+                  <MachineManagerProvider>
+                    <Outlet />
+                  </MachineManagerProvider>
+                </AppStateProvider>
+              </KclContextProvider>
+            </ProjectsContextProvider>
+          </LspProvider>
         </RouteProvider>
       </OpenInDesktopAppHandler>
     ),
@@ -120,13 +107,7 @@ const router = createRouter([
         children: [
           {
             id: PATHS.FILE + 'SETTINGS',
-            loader: settingsLoader,
             children: [
-              {
-                loader: onboardingRedirectLoader,
-                index: true,
-                element: <></>,
-              },
               {
                 path: makeUrlPathRelative(PATHS.SETTINGS),
                 element: <Settings />,
@@ -166,11 +147,9 @@ const router = createRouter([
             index: true,
             element: <></>,
             id: PATHS.HOME + 'SETTINGS',
-            loader: settingsLoader,
           },
           {
             path: makeUrlPathRelative(PATHS.SETTINGS),
-            loader: settingsLoader,
             element: <Settings />,
           },
           {

@@ -60,6 +60,7 @@ import { MetaSettings } from 'wasm-lib/kcl/bindings/MetaSettings'
 import { UnitAngle, UnitLength } from 'wasm-lib/kcl/bindings/ModelingCmd'
 import { UnitLen } from 'wasm-lib/kcl/bindings/UnitLen'
 import { UnitAngle as UnitAng } from 'wasm-lib/kcl/bindings/UnitAngle'
+import { ModulePath } from 'wasm-lib/kcl/bindings/ModulePath'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -266,7 +267,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
       firstSourceRange(parsed),
       [],
       [],
-      defaultArtifactGraph()
+      defaultArtifactGraph(),
+      {}
     )
   }
 }
@@ -295,6 +297,8 @@ export interface ExecState {
   artifacts: { [key in ArtifactId]?: RustArtifact }
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
+  errors: CompilationError[]
+  filenames: { [x: number]: ModulePath | undefined }
 }
 
 /**
@@ -308,6 +312,8 @@ export function emptyExecState(): ExecState {
     artifacts: {},
     artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
+    errors: [],
+    filenames: [],
   }
 }
 
@@ -333,6 +339,8 @@ function execStateFromRust(
     artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
+    errors: execOutcome.errors,
+    filenames: execOutcome.filenames,
   }
 }
 
@@ -343,6 +351,8 @@ function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
     artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph: new Map<ArtifactId, Artifact>(),
+    errors: execOutcome.errors,
+    filenames: execOutcome.filenames,
   }
 }
 
@@ -459,18 +469,18 @@ export const executeWithEngine = async (
 const jsAppSettings = async () => {
   let jsAppSettings = default_app_settings()
   if (!TEST) {
-    const lastSettingsSnapshot = await import(
-      'components/SettingsAuthProvider'
-    ).then((module) => module.lastSettingsContextSnapshot)
-    if (lastSettingsSnapshot) {
-      jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
+    const settings = await import('machines/appMachine').then((module) =>
+      module.getSettings()
+    )
+    if (settings) {
+      jsAppSettings = getAllCurrentSettings(settings)
     }
   }
   return jsAppSettings
 }
 
 const errFromErrWithOutputs = (e: any): KCLError => {
-  console.log('execute error', e)
+  console.log(e)
   const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
   return new KCLError(
     parsed.error.kind,
@@ -478,7 +488,8 @@ const errFromErrWithOutputs = (e: any): KCLError => {
     firstSourceRange(parsed.error),
     parsed.operations,
     parsed.artifactCommands,
-    rustArtifactGraphToMap(parsed.artifactGraph)
+    rustArtifactGraphToMap(parsed.artifactGraph),
+    parsed.filenames
   )
 }
 
@@ -544,7 +555,8 @@ export const modifyAstForSketch = async (
       firstSourceRange(parsed),
       [],
       [],
-      defaultArtifactGraph()
+      defaultArtifactGraph(),
+      {}
     )
 
     return Promise.reject(kclError)

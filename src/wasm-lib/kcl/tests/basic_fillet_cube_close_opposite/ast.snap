@@ -1,13 +1,14 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing basic_fillet_cube_close_opposite.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
         "declaration": {
-          "end": 309,
+          "end": 283,
           "id": {
             "end": 7,
             "name": "part001",
@@ -344,87 +345,65 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
               {
                 "arguments": [
                   {
-                    "end": 305,
-                    "properties": [
-                      {
-                        "end": 249,
-                        "key": {
-                          "end": 245,
-                          "name": "radius",
-                          "start": 239,
-                          "type": "Identifier"
-                        },
-                        "start": 239,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 249,
-                          "raw": "2",
-                          "start": 248,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
-                        }
-                      },
-                      {
-                        "end": 298,
-                        "key": {
-                          "end": 262,
-                          "name": "tags",
-                          "start": 258,
-                          "type": "Identifier"
-                        },
-                        "start": 258,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "end": 272,
-                              "name": "thing3",
-                              "start": 266,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            {
-                              "arguments": [
-                                {
-                                  "end": 296,
-                                  "name": "thing3",
-                                  "start": 290,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                }
-                              ],
-                              "callee": {
-                                "end": 289,
-                                "name": "getOppositeEdge",
-                                "start": 274,
-                                "type": "Identifier"
-                              },
-                              "end": 297,
-                              "start": 274,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
-                            }
-                          ],
-                          "end": 298,
-                          "start": 265,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 240,
+                      "raw": "2",
+                      "start": 239,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
                       }
-                    ],
-                    "start": 230,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                    }
                   },
                   {
-                    "end": 308,
-                    "start": 307,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tags"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 256,
+                          "name": "thing3",
+                          "start": 250,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 280,
+                              "name": "thing3",
+                              "start": 274,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 273,
+                            "name": "getOppositeEdge",
+                            "start": 258,
+                            "type": "Identifier"
+                          },
+                          "end": 281,
+                          "start": 258,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 282,
+                      "start": 249,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -433,13 +412,14 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   "start": 223,
                   "type": "Identifier"
                 },
-                "end": 309,
+                "end": 283,
                 "start": 223,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 309,
+            "end": 283,
             "start": 10,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -447,14 +427,14 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 309,
+        "end": 283,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 310,
+    "end": 284,
     "start": 0
   }
 }

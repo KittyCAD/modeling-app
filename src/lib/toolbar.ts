@@ -312,7 +312,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'sparkles',
           status: 'available',
-          title: 'Text-to-CAD',
+          title: 'Create with AI',
           description: 'Generate geometry from a text prompt.',
           links: [
             {
@@ -330,7 +330,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'sparkles',
           status: 'available',
-          title: 'Prompt-to-Edit',
+          title: 'Edit with AI',
           description: 'Edit geometry based on a text prompt.',
           links: [],
         },
@@ -375,14 +375,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         icon: 'line',
         status: 'available',
-        disabled: (state) =>
-          state.matches('Sketch no face') ||
-          state.matches({
-            Sketch: { 'Rectangle tool': 'Awaiting second corner' },
-          }) ||
-          state.matches({
-            Sketch: { 'Circle tool': 'Awaiting Radius' },
-          }),
+        disabled: (state) => state.matches('Sketch no face'),
         title: 'Line',
         hotkey: (state) =>
           state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',

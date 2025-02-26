@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::{coord::System, format::InputFormat, units::UnitLength};
+use kcmc::{coord::System, format::InputFormat3d, units::UnitLength};
 use kittycad_modeling_cmds as kcmc;
 
 use crate::{
@@ -64,26 +64,26 @@ pub enum ImportFormat {
     },
 }
 
-impl From<ImportFormat> for InputFormat {
+impl From<ImportFormat> for InputFormat3d {
     fn from(format: ImportFormat) -> Self {
         match format {
-            ImportFormat::Fbx {} => InputFormat::Fbx(Default::default()),
-            ImportFormat::Gltf {} => InputFormat::Gltf(Default::default()),
-            ImportFormat::Obj { coords, units } => InputFormat::Obj(kcmc::format::obj::import::Options {
+            ImportFormat::Fbx {} => InputFormat3d::Fbx(Default::default()),
+            ImportFormat::Gltf {} => InputFormat3d::Gltf(Default::default()),
+            ImportFormat::Obj { coords, units } => InputFormat3d::Obj(kcmc::format::obj::import::Options {
                 coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
                 units,
             }),
-            ImportFormat::Ply { coords, units } => InputFormat::Ply(kcmc::format::ply::import::Options {
+            ImportFormat::Ply { coords, units } => InputFormat3d::Ply(kcmc::format::ply::import::Options {
                 coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
                 units,
             }),
-            ImportFormat::Sldprt {} => InputFormat::Sldprt(kcmc::format::sldprt::import::Options {
+            ImportFormat::Sldprt {} => InputFormat3d::Sldprt(kcmc::format::sldprt::import::Options {
                 split_closed_faces: false,
             }),
-            ImportFormat::Step {} => InputFormat::Step(kcmc::format::step::import::Options {
+            ImportFormat::Step {} => InputFormat3d::Step(kcmc::format::step::import::Options {
                 split_closed_faces: false,
             }),
-            ImportFormat::Stl { coords, units } => InputFormat::Stl(kcmc::format::stl::import::Options {
+            ImportFormat::Stl { coords, units } => InputFormat3d::Stl(kcmc::format::stl::import::Options {
                 coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
                 units,
             }),
@@ -165,7 +165,7 @@ async fn inner_import(
         }));
     }
 
-    let format = options.map(InputFormat::from);
+    let format = options.map(InputFormat3d::from);
     send_import_to_engine(
         import_foreign(
             std::path::Path::new(&file_path),

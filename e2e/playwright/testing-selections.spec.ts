@@ -382,7 +382,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
       '|> line(end = [0, -pipeLength])'
     )
     await u.clearCommandLogs()
-    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Delete')
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
 
@@ -439,7 +439,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
       '|> startProfileAt([23.24, 136.52], %)'
     )
     await u.clearCommandLogs()
-    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Delete')
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(`sketch005 = startSketchOn({`)
@@ -453,7 +453,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
       '  |> line(end = [20.91, -28.61])'
     )
     await u.clearCommandLogs()
-    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Delete')
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(codeToBeDeletedSnippet)
@@ -518,7 +518,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
         '|> line(end = [170.36, -121.61], tag = $seg01)'
       )
       await u.clearCommandLogs()
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
 
       await expect(page.getByText('Unable to delete selection')).toBeVisible()
     }
@@ -764,18 +764,18 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
     |> close()
   extrude001 = extrude(sketch001, length = 100)
-    |> chamfer({
+    |> chamfer(
      length = 30,
      tags = [
        seg01,
        getNextAdjacentEdge(yo),
        getNextAdjacentEdge(seg02),
        getOppositeEdge(seg01)
-     ]
-   }, %)
+     ],
+   )
   `)
     await expect(
-      page.getByTestId('model-state-indicator-execution-done')
+      page.getByTestId('model-state-indicator-receive-reliable')
     ).toBeVisible()
 
     await u.openAndClearDebugPanel()
@@ -810,15 +810,15 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await checkCodeAtHoverPosition(
       'oppositeChamfer',
       oppositeChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
-      '}, %)'
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      '   )'
     )
 
     await checkCodeAtHoverPosition(
       'baseChamfer',
       baseChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
-      '}, %)'
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      '   )'
     )
 
     await u.openAndClearDebugPanel()
@@ -848,15 +848,15 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await checkCodeAtHoverPosition(
       'adjacentChamfer1',
       adjacentChamfer1,
-      `line(endAbsolute=[profileStartX(%),profileStartY(%)],tag=$seg02)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
-      '}, %)'
+      `line(endAbsolute=[profileStartX(%),profileStartY(%)],tag=$seg02)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      '   )'
     )
 
     await checkCodeAtHoverPosition(
       'adjacentChamfer2',
       adjacentChamfer2,
-      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
-      '}, %)'
+      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer(length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)],)`,
+      '   )'
     )
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({

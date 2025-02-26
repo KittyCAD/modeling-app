@@ -3,38 +3,6 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing import_whole.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "bar": {
     "type": "Solid",
     "value": {
@@ -48,7 +16,7 @@ description: Variables in memory after executing import_whole.kcl
           "sourceRange": [
             61,
             104,
-            1
+            3
           ],
           "tag": null,
           "type": "extrudeArc"
@@ -64,7 +32,7 @@ description: Variables in memory after executing import_whole.kcl
               "sourceRange": [
                 61,
                 104,
-                1
+                3
               ]
             },
             "ccw": true,
@@ -82,7 +50,10 @@ description: Variables in memory after executing import_whole.kcl
               15.0,
               5.0
             ],
-            "type": "Circle"
+            "type": "Circle",
+            "units": {
+              "type": "Inches"
+            }
           }
         ],
         "on": {
@@ -124,13 +95,16 @@ description: Variables in memory after executing import_whole.kcl
             15.0,
             5.0
           ],
+          "units": {
+            "type": "Inches"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
               61,
               104,
-              1
+              3
             ]
           }
         },
@@ -144,7 +118,7 @@ description: Variables in memory after executing import_whole.kcl
             "sourceRange": [
               61,
               104,
-              1
+              3
             ]
           }
         ]
@@ -160,7 +134,7 @@ description: Variables in memory after executing import_whole.kcl
           "sourceRange": [
             61,
             104,
-            1
+            3
           ]
         }
       ]
@@ -168,7 +142,7 @@ description: Variables in memory after executing import_whole.kcl
   },
   "foo": {
     "type": "Module",
-    "value": 1,
+    "value": 3,
     "__meta": [
       {
         "sourceRange": [

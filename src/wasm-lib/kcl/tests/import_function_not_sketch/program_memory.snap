@@ -3,93 +3,8 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing import_function_not_sketch.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "one": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 106,
-              "left": {
-                "arguments": [],
-                "callee": {
-                  "end": 100,
-                  "name": "two",
-                  "start": 97,
-                  "type": "Identifier"
-                },
-                "end": 102,
-                "start": 97,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              "operator": "-",
-              "right": {
-                "end": 106,
-                "raw": "1",
-                "start": 105,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
-              },
-              "start": 97,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "end": 106,
-            "start": 90,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 108,
-        "start": 86
-      },
-      "end": 108,
-      "params": [],
-      "start": 83,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
@@ -102,49 +17,12 @@ description: Variables in memory after executing import_function_not_sketch.kcl
   },
   "two": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 388,
-              "moduleId": 1,
-              "raw": "5",
-              "start": 387,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 5.0,
-                "suffix": "None"
-              }
-            },
-            "end": 388,
-            "moduleId": 1,
-            "start": 380,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 390,
-        "moduleId": 1,
-        "start": 378
-      },
-      "end": 390,
-      "moduleId": 1,
-      "params": [],
-      "start": 372,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      1,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
           372,
           390,
-          1
+          3
         ]
       }
     ]

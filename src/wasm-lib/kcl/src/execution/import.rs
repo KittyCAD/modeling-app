@@ -4,7 +4,7 @@ use anyhow::Result;
 use kcmc::{
     coord::{System, KITTYCAD},
     each_cmd as mcmd,
-    format::InputFormat,
+    format::InputFormat3d,
     ok_response::OkModelingCmdResponse,
     shared::FileImportFormat,
     units::UnitLength,
@@ -32,7 +32,7 @@ pub const ZOO_COORD_SYSTEM: System = *KITTYCAD;
 
 pub async fn import_foreign(
     file_path: &Path,
-    format: Option<InputFormat>,
+    format: Option<InputFormat3d>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
     source_range: SourceRange,
@@ -98,7 +98,7 @@ pub async fn import_foreign(
 
     // In the case of a gltf importing a bin file we need to handle that! and figure out where the
     // file is relative to our current file.
-    if let InputFormat::Gltf(..) = format {
+    if let InputFormat3d::Gltf(..) = format {
         // Check if the file is a binary gltf file, in that case we don't need to import the bin
         // file.
         if !file_contents.starts_with(b"glTF") {
@@ -158,7 +158,7 @@ pub(super) fn format_from_annotations(
     annotations: &[Node<Annotation>],
     path: &Path,
     import_source_range: SourceRange,
-) -> Result<Option<InputFormat>, KclError> {
+) -> Result<Option<InputFormat3d>, KclError> {
     if annotations.is_empty() {
         return Ok(None);
     }
@@ -220,7 +220,7 @@ pub(super) fn format_from_annotations(
     Ok(Some(result))
 }
 
-fn set_coords(fmt: &mut InputFormat, coords_str: &str, source_range: SourceRange) -> Result<(), KclError> {
+fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRange) -> Result<(), KclError> {
     let mut coords = None;
     for (name, val) in annotations::IMPORT_COORDS_VALUES {
         if coords_str == name {
@@ -243,9 +243,9 @@ fn set_coords(fmt: &mut InputFormat, coords_str: &str, source_range: SourceRange
     };
 
     match fmt {
-        InputFormat::Obj(opts) => opts.coords = coords,
-        InputFormat::Ply(opts) => opts.coords = coords,
-        InputFormat::Stl(opts) => opts.coords = coords,
+        InputFormat3d::Obj(opts) => opts.coords = coords,
+        InputFormat3d::Ply(opts) => opts.coords = coords,
+        InputFormat3d::Stl(opts) => opts.coords = coords,
         _ => {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
@@ -260,13 +260,13 @@ fn set_coords(fmt: &mut InputFormat, coords_str: &str, source_range: SourceRange
     Ok(())
 }
 
-fn set_length_unit(fmt: &mut InputFormat, units_str: &str, source_range: SourceRange) -> Result<(), KclError> {
+fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: SourceRange) -> Result<(), KclError> {
     let units = UnitLen::from_str(units_str, source_range)?;
 
     match fmt {
-        InputFormat::Obj(opts) => opts.units = units.into(),
-        InputFormat::Ply(opts) => opts.units = units.into(),
-        InputFormat::Stl(opts) => opts.units = units.into(),
+        InputFormat3d::Obj(opts) => opts.units = units.into(),
+        InputFormat3d::Ply(opts) => opts.units = units.into(),
+        InputFormat3d::Stl(opts) => opts.units = units.into(),
         _ => {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
@@ -289,7 +289,7 @@ pub struct PreImportedGeometry {
 }
 
 pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) -> Result<ImportedGeometry, KclError> {
-    if ctxt.no_engine_commands() {
+    if ctxt.no_engine_commands().await {
         return Ok(ImportedGeometry {
             id: pre.id,
             value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
@@ -320,7 +320,7 @@ pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) ->
 }
 
 /// Get the source format from the extension.
-fn get_import_format_from_extension(ext: &str) -> Result<InputFormat> {
+fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
     let format = match FileImportFormat::from_str(ext) {
         Ok(format) => format,
         Err(_) => {
@@ -343,44 +343,44 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat> {
     // * Up: +Z
     // * Handedness: Right
     match format {
-        FileImportFormat::Step => Ok(InputFormat::Step(kcmc::format::step::import::Options {
+        FileImportFormat::Step => Ok(InputFormat3d::Step(kcmc::format::step::import::Options {
             split_closed_faces: false,
         })),
-        FileImportFormat::Stl => Ok(InputFormat::Stl(kcmc::format::stl::import::Options {
+        FileImportFormat::Stl => Ok(InputFormat3d::Stl(kcmc::format::stl::import::Options {
             coords: ZOO_COORD_SYSTEM,
             units: ul,
         })),
-        FileImportFormat::Obj => Ok(InputFormat::Obj(kcmc::format::obj::import::Options {
+        FileImportFormat::Obj => Ok(InputFormat3d::Obj(kcmc::format::obj::import::Options {
             coords: ZOO_COORD_SYSTEM,
             units: ul,
         })),
-        FileImportFormat::Gltf => Ok(InputFormat::Gltf(kcmc::format::gltf::import::Options {})),
-        FileImportFormat::Ply => Ok(InputFormat::Ply(kcmc::format::ply::import::Options {
+        FileImportFormat::Gltf => Ok(InputFormat3d::Gltf(kcmc::format::gltf::import::Options {})),
+        FileImportFormat::Ply => Ok(InputFormat3d::Ply(kcmc::format::ply::import::Options {
             coords: ZOO_COORD_SYSTEM,
             units: ul,
         })),
-        FileImportFormat::Fbx => Ok(InputFormat::Fbx(kcmc::format::fbx::import::Options {})),
-        FileImportFormat::Sldprt => Ok(InputFormat::Sldprt(kcmc::format::sldprt::import::Options {
+        FileImportFormat::Fbx => Ok(InputFormat3d::Fbx(kcmc::format::fbx::import::Options {})),
+        FileImportFormat::Sldprt => Ok(InputFormat3d::Sldprt(kcmc::format::sldprt::import::Options {
             split_closed_faces: false,
         })),
     }
 }
 
-fn validate_extension_format(ext: InputFormat, given: InputFormat) -> Result<()> {
-    if let InputFormat::Stl(_) = ext {
-        if let InputFormat::Stl(_) = given {
+fn validate_extension_format(ext: InputFormat3d, given: InputFormat3d) -> Result<()> {
+    if let InputFormat3d::Stl(_) = ext {
+        if let InputFormat3d::Stl(_) = given {
             return Ok(());
         }
     }
 
-    if let InputFormat::Obj(_) = ext {
-        if let InputFormat::Obj(_) = given {
+    if let InputFormat3d::Obj(_) = ext {
+        if let InputFormat3d::Obj(_) = given {
             return Ok(());
         }
     }
 
-    if let InputFormat::Ply(_) = ext {
-        if let InputFormat::Ply(_) = given {
+    if let InputFormat3d::Ply(_) = ext {
+        if let InputFormat3d::Ply(_) = given {
             return Ok(());
         }
     }
@@ -396,15 +396,15 @@ fn validate_extension_format(ext: InputFormat, given: InputFormat) -> Result<()>
     )
 }
 
-fn get_name_of_format(type_: InputFormat) -> &'static str {
+fn get_name_of_format(type_: InputFormat3d) -> &'static str {
     match type_ {
-        InputFormat::Fbx(_) => "fbx",
-        InputFormat::Gltf(_) => "gltf",
-        InputFormat::Obj(_) => "obj",
-        InputFormat::Ply(_) => "ply",
-        InputFormat::Sldprt(_) => "sldprt",
-        InputFormat::Step(_) => "step",
-        InputFormat::Stl(_) => "stl",
+        InputFormat3d::Fbx(_) => "fbx",
+        InputFormat3d::Gltf(_) => "gltf",
+        InputFormat3d::Obj(_) => "obj",
+        InputFormat3d::Ply(_) => "ply",
+        InputFormat3d::Sldprt(_) => "sldprt",
+        InputFormat3d::Step(_) => "step",
+        InputFormat3d::Stl(_) => "stl",
     }
 }
 
@@ -430,7 +430,7 @@ mod test {
             .unwrap();
         assert_eq!(
             fmt,
-            InputFormat::Gltf(kittycad_modeling_cmds::format::gltf::import::Options {})
+            InputFormat3d::Gltf(kittycad_modeling_cmds::format::gltf::import::Options {})
         );
 
         // format, no options
@@ -442,7 +442,7 @@ mod test {
             .unwrap();
         assert_eq!(
             fmt,
-            InputFormat::Gltf(kittycad_modeling_cmds::format::gltf::import::Options {})
+            InputFormat3d::Gltf(kittycad_modeling_cmds::format::gltf::import::Options {})
         );
 
         // format, no extension (wouldn't parse but might some day)
@@ -451,7 +451,7 @@ mod test {
             .unwrap();
         assert_eq!(
             fmt,
-            InputFormat::Gltf(kittycad_modeling_cmds::format::gltf::import::Options {})
+            InputFormat3d::Gltf(kittycad_modeling_cmds::format::gltf::import::Options {})
         );
 
         // format, options
@@ -463,7 +463,7 @@ mod test {
             .unwrap();
         assert_eq!(
             fmt,
-            InputFormat::Obj(kittycad_modeling_cmds::format::obj::import::Options {
+            InputFormat3d::Obj(kittycad_modeling_cmds::format::obj::import::Options {
                 coords: *kittycad_modeling_cmds::coord::VULKAN,
                 units: kittycad_modeling_cmds::units::UnitLength::Feet,
             })
@@ -478,7 +478,7 @@ mod test {
             .unwrap();
         assert_eq!(
             fmt,
-            InputFormat::Obj(kittycad_modeling_cmds::format::obj::import::Options {
+            InputFormat3d::Obj(kittycad_modeling_cmds::format::obj::import::Options {
                 coords: *kittycad_modeling_cmds::coord::VULKAN,
                 units: kittycad_modeling_cmds::units::UnitLength::Feet,
             })

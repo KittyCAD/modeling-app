@@ -3,38 +3,6 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing ssi_pattern.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "extrude001": {
     "type": "Solid",
     "value": {
@@ -125,7 +93,10 @@ description: Variables in memory after executing ssi_pattern.kcl
               -4.35,
               -2.06
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -145,7 +116,10 @@ description: Variables in memory after executing ssi_pattern.kcl
               -3.81,
               -2.09
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -170,7 +144,10 @@ description: Variables in memory after executing ssi_pattern.kcl
               20.4,
               14.61
             ],
-            "type": "TangentialArcTo"
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -190,7 +167,10 @@ description: Variables in memory after executing ssi_pattern.kcl
               20.4,
               -12.15
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -215,7 +195,10 @@ description: Variables in memory after executing ssi_pattern.kcl
               -4.35,
               -12.26
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -235,7 +218,10 @@ description: Variables in memory after executing ssi_pattern.kcl
               -4.35,
               -12.26
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -277,6 +263,9 @@ description: Variables in memory after executing ssi_pattern.kcl
             -4.35,
             -12.26
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -318,7 +307,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                   -4.35,
                   -12.26
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -411,7 +403,10 @@ description: Variables in memory after executing ssi_pattern.kcl
           -4.35,
           -12.26
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -464,7 +459,10 @@ description: Variables in memory after executing ssi_pattern.kcl
             -4.35,
             -2.06
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -484,7 +482,10 @@ description: Variables in memory after executing ssi_pattern.kcl
             -3.81,
             -2.09
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -509,7 +510,10 @@ description: Variables in memory after executing ssi_pattern.kcl
             20.4,
             14.61
           ],
-          "type": "TangentialArcTo"
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -529,7 +533,10 @@ description: Variables in memory after executing ssi_pattern.kcl
             20.4,
             -12.15
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -554,7 +561,10 @@ description: Variables in memory after executing ssi_pattern.kcl
             -4.35,
             -12.26
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         },
         {
           "__geoMeta": {
@@ -574,7 +584,10 @@ description: Variables in memory after executing ssi_pattern.kcl
             -4.35,
             -12.26
           ],
-          "type": "ToPoint"
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
         }
       ],
       "on": {
@@ -616,6 +629,9 @@ description: Variables in memory after executing ssi_pattern.kcl
           -4.35,
           -12.26
         ],
+        "units": {
+          "type": "Mm"
+        },
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -657,7 +673,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -4.35,
                 -12.26
               ],
-              "type": "ToPoint"
+              "type": "ToPoint",
+              "units": {
+                "type": "Mm"
+              }
             },
             "surface": {
               "faceId": "[uuid]",
@@ -751,7 +770,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -862,7 +884,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -882,7 +907,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -907,7 +935,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -927,7 +958,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -952,7 +986,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -972,7 +1009,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -1014,6 +1054,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -1055,7 +1098,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -1138,6 +1184,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -1224,7 +1273,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -1335,7 +1387,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1355,7 +1410,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1380,7 +1438,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1400,7 +1461,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1425,7 +1489,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1445,7 +1512,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -1487,6 +1557,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -1528,7 +1601,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -1611,6 +1687,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -1697,7 +1776,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -1808,7 +1890,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1828,7 +1913,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1853,7 +1941,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1873,7 +1964,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1898,7 +1992,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -1918,7 +2015,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -1960,6 +2060,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -2001,7 +2104,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -2084,6 +2190,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -2170,7 +2279,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -2281,7 +2393,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2301,7 +2416,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2326,7 +2444,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2346,7 +2467,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2371,7 +2495,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2391,7 +2518,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -2433,6 +2563,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -2474,7 +2607,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -2557,6 +2693,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -2643,7 +2782,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -2754,7 +2896,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2774,7 +2919,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2799,7 +2947,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2819,7 +2970,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2844,7 +2998,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -2864,7 +3021,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -2906,6 +3066,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -2947,7 +3110,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -3030,6 +3196,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3116,7 +3285,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -3227,7 +3399,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3247,7 +3422,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3272,7 +3450,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3292,7 +3473,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3317,7 +3501,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3337,7 +3524,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -3379,6 +3569,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -3420,7 +3613,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -3503,6 +3699,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3589,7 +3788,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -3700,7 +3902,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3720,7 +3925,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3745,7 +3953,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3765,7 +3976,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3790,7 +4004,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -3810,7 +4027,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -3852,6 +4072,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -3893,7 +4116,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -3976,6 +4202,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -4062,7 +4291,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -4173,7 +4405,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4193,7 +4428,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4218,7 +4456,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4238,7 +4479,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4263,7 +4507,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4283,7 +4530,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -4325,6 +4575,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -4366,7 +4619,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -4449,6 +4705,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -4535,7 +4794,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -4646,7 +4908,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4666,7 +4931,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4691,7 +4959,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4711,7 +4982,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4736,7 +5010,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -4756,7 +5033,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -4798,6 +5078,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -4839,7 +5122,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -4922,6 +5208,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5008,7 +5297,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -5119,7 +5411,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5139,7 +5434,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5164,7 +5462,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5184,7 +5485,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5209,7 +5513,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5229,7 +5536,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -5271,6 +5581,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -5312,7 +5625,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -5395,6 +5711,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5481,7 +5800,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -5592,7 +5914,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5612,7 +5937,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5637,7 +5965,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5657,7 +5988,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5682,7 +6016,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -5702,7 +6039,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -5744,6 +6084,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -5785,7 +6128,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -5868,6 +6214,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5954,7 +6303,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -6065,7 +6417,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6085,7 +6440,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6110,7 +6468,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6130,7 +6491,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6155,7 +6519,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6175,7 +6542,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -6217,6 +6587,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -6258,7 +6631,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -6341,6 +6717,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -6427,7 +6806,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -6538,7 +6920,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6558,7 +6943,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6583,7 +6971,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6603,7 +6994,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6628,7 +7022,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -6648,7 +7045,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -6690,6 +7090,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -6731,7 +7134,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -6814,6 +7220,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -6900,7 +7309,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -7011,7 +7423,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7031,7 +7446,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7056,7 +7474,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7076,7 +7497,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7101,7 +7525,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7121,7 +7548,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -7163,6 +7593,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -7204,7 +7637,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -7287,6 +7723,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -7373,7 +7812,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -7484,7 +7926,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7504,7 +7949,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7529,7 +7977,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7549,7 +8000,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7574,7 +8028,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7594,7 +8051,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -7636,6 +8096,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -7677,7 +8140,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -7760,6 +8226,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -7846,7 +8315,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -7957,7 +8429,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -7977,7 +8452,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8002,7 +8480,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8022,7 +8503,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8047,7 +8531,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8067,7 +8554,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -8109,6 +8599,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -8150,7 +8643,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -8233,6 +8729,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -8319,7 +8818,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -8430,7 +8932,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8450,7 +8955,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8475,7 +8983,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8495,7 +9006,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8520,7 +9034,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8540,7 +9057,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -8582,6 +9102,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -8623,7 +9146,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -8706,6 +9232,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -8792,7 +9321,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -8903,7 +9435,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8923,7 +9458,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8948,7 +9486,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8968,7 +9509,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -8993,7 +9537,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9013,7 +9560,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -9055,6 +9605,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -9096,7 +9649,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -9179,6 +9735,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -9265,7 +9824,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -9376,7 +9938,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9396,7 +9961,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9421,7 +9989,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9441,7 +10012,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9466,7 +10040,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9486,7 +10063,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -9528,6 +10108,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -9569,7 +10152,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -9652,6 +10238,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -9738,7 +10327,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -9849,7 +10441,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9869,7 +10464,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9894,7 +10492,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9914,7 +10515,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9939,7 +10543,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -9959,7 +10566,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -10001,6 +10611,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -10042,7 +10655,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -10125,6 +10741,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -10211,7 +10830,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -10322,7 +10944,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10342,7 +10967,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10367,7 +10995,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10387,7 +11018,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10412,7 +11046,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10432,7 +11069,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -10474,6 +11114,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -10515,7 +11158,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -10598,6 +11244,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -10684,7 +11333,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -10795,7 +11447,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10815,7 +11470,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10840,7 +11498,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10860,7 +11521,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10885,7 +11549,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -10905,7 +11572,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -10947,6 +11617,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -10988,7 +11661,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -11071,6 +11747,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -11157,7 +11836,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -11268,7 +11950,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11288,7 +11973,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11313,7 +12001,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11333,7 +12024,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11358,7 +12052,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11378,7 +12075,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -11420,6 +12120,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -11461,7 +12164,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -11544,6 +12250,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -11630,7 +12339,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -11741,7 +12453,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11761,7 +12476,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11786,7 +12504,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11806,7 +12527,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11831,7 +12555,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -11851,7 +12578,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -11893,6 +12623,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -11934,7 +12667,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -12017,6 +12753,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -12103,7 +12842,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -12214,7 +12956,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12234,7 +12979,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12259,7 +13007,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12279,7 +13030,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12304,7 +13058,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12324,7 +13081,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -12366,6 +13126,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -12407,7 +13170,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -12490,6 +13256,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -12576,7 +13345,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -12687,7 +13459,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12707,7 +13482,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12732,7 +13510,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12752,7 +13533,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12777,7 +13561,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -12797,7 +13584,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -12839,6 +13629,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -12880,7 +13673,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -12963,6 +13759,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -13049,7 +13848,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -13160,7 +13962,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13180,7 +13985,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13205,7 +14013,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13225,7 +14036,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13250,7 +14064,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13270,7 +14087,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -13312,6 +14132,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -13353,7 +14176,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -13436,6 +14262,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -13522,7 +14351,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -13633,7 +14465,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13653,7 +14488,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13678,7 +14516,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13698,7 +14539,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13723,7 +14567,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -13743,7 +14590,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -13785,6 +14635,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -13826,7 +14679,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -13909,6 +14765,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -13995,7 +14854,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -14106,7 +14968,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14126,7 +14991,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14151,7 +15019,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14171,7 +15042,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14196,7 +15070,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14216,7 +15093,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -14258,6 +15138,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -14299,7 +15182,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -14382,6 +15268,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -14468,7 +15357,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                 -0.68,
                 47.7
               ],
-              "type": "Circle"
+              "type": "Circle",
+              "units": {
+                "type": "Mm"
+              }
             }
           ],
           "on": {
@@ -14579,7 +15471,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -2.06
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14599,7 +15494,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -3.81,
                       -2.09
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14624,7 +15522,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       14.61
                     ],
-                    "type": "TangentialArcTo"
+                    "type": "TangentialArcTo",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14644,7 +15545,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       20.4,
                       -12.15
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14669,7 +15573,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   },
                   {
                     "__geoMeta": {
@@ -14689,7 +15596,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                       -4.35,
                       -12.26
                     ],
-                    "type": "ToPoint"
+                    "type": "ToPoint",
+                    "units": {
+                      "type": "Mm"
+                    }
                   }
                 ],
                 "on": {
@@ -14731,6 +15641,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     -4.35,
                     -12.26
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
@@ -14772,7 +15685,10 @@ description: Variables in memory after executing ssi_pattern.kcl
                           -4.35,
                           -12.26
                         ],
-                        "type": "ToPoint"
+                        "type": "ToPoint",
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "surface": {
                         "faceId": "[uuid]",
@@ -14855,6 +15771,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -0.6800000000000002,
               47.7
             ],
+            "units": {
+              "type": "Mm"
+            },
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",

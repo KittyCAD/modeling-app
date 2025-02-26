@@ -116,7 +116,11 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     }
     if (!extrudeInSketchPipe) {
       const init = expectedExtrudeNode.init
-      if (init.type !== 'CallExpression' && init.type !== 'PipeExpression') {
+      if (
+        init.type !== 'CallExpression' &&
+        init.type !== 'CallExpressionKw' &&
+        init.type !== 'PipeExpression'
+      ) {
         return new Error(
           'Expected extrude expression is not a CallExpression or PipeExpression'
         )
@@ -129,25 +133,33 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   // ast
   const ast = assertParse(code)
 
-  // selection
+  // range
   const segmentRange = topLevelRange(
     code.indexOf(selectedSegmentSnippet),
     code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length
   )
-  const selection: Selection = {
-    codeRef: codeRefFromRange(segmentRange, ast),
-  }
 
   // executeAst and artifactGraph
   await kclManager.executeAst({ ast })
   const artifactGraph = engineCommandManager.artifactGraph
 
+  // find artifact
+  const maybeArtifact = [...artifactGraph].find(([, artifact]) => {
+    if (!('codeRef' in artifact && artifact.codeRef)) return false
+    return isOverlap(artifact.codeRef.range, segmentRange)
+  })
+
+  // build selection
+  const selection: Selection = {
+    codeRef: codeRefFromRange(segmentRange, ast),
+    artifact: maybeArtifact ? maybeArtifact[1] : undefined,
+  }
+
   // get extrude expression
   const pathResult = getPathToExtrudeForSegmentSelection(
     ast,
     selection,
-    artifactGraph,
-    dependencies
+    artifactGraph
   )
   if (err(pathResult)) return pathResult
   const { pathToExtrudeNode } = pathResult
@@ -228,6 +240,56 @@ extrude002 = extrude(sketch002, length = -15)
 extrude003 = extrude(sketch003, length = -15)`
     const selectedSegmentSnippet = `line(end = [20, 0])`
     const expectedExtrudeSnippet = `extrude002 = extrude(sketch002, length = -15)`
+    await runGetPathToExtrudeForSegmentSelectionTest(
+      code,
+      selectedSegmentSnippet,
+      expectedExtrudeSnippet
+    )
+  })
+  it('should return the correct paths for a (piped) extrude based on the other body (face)', async () => {
+    const code = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-25, -25], %)
+  |> yLine(50, %)
+  |> xLine(50, %)
+  |> yLine(-50, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 50)
+sketch002 = startSketchOn(sketch001, 'END')
+  |> startProfileAt([-15, -15], %)
+  |> yLine(30, %)
+  |> xLine(30, %)
+  |> yLine(-30, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 30)`
+    const selectedSegmentSnippet = `xLine(30, %)`
+    const expectedExtrudeSnippet = `extrude(length = 30)`
+    await runGetPathToExtrudeForSegmentSelectionTest(
+      code,
+      selectedSegmentSnippet,
+      expectedExtrudeSnippet
+    )
+  })
+  it('should return the correct paths for a (non-piped) extrude based on the other body (face)', async () => {
+    const code = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-25, -25], %)
+  |> yLine(50, %)
+  |> xLine(50, %)
+  |> yLine(-50, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 50)
+sketch002 = startSketchOn(extrude001, 'END')
+  |> startProfileAt([-15, -15], %)
+  |> yLine(30, %)
+  |> xLine(30, %)
+  |> yLine(-30, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(sketch002, length = 30)`
+    const selectedSegmentSnippet = `xLine(30, %)`
+    const expectedExtrudeSnippet = `extrude002 = extrude(sketch002, length = 30)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
       selectedSegmentSnippet,
@@ -412,7 +474,7 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -439,7 +501,7 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -466,7 +528,7 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -493,7 +555,7 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg02] }, %)`
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg02])`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -511,7 +573,7 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> fillet({ radius = 5, tags = [seg01] }, %)`
+  |> fillet( radius = 5, tags = [seg01] )`
         const segmentSnippets = ['line(end = [-20, 0])']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
@@ -521,8 +583,8 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> fillet({ radius = 5, tags = [seg01] }, %)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg02] }, %)`
+  |> fillet(radius = 5, tags = [seg01])
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg02])`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -540,7 +602,7 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> chamfer({ length = 5, tags = [seg01] }, %)`
+  |> chamfer(length = 5, tags = [seg01])`
         const segmentSnippets = ['line(end = [-20, 0])']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
@@ -550,8 +612,8 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> chamfer({ length = 5, tags = [seg01] }, %)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg02] }, %)`
+  |> chamfer(length = 5, tags = [seg01])
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg02])`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -578,7 +640,7 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01, seg02] }, %)`
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01, seg02])`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -617,7 +679,7 @@ extrude002 = extrude(sketch002, length = -25)` // <--- body 2
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01, seg02] }, %)
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01, seg02])
 sketch002 = startSketchOn('XY')
   |> startProfileAt([30, 10], %)
   |> line(end = [15, 0])
@@ -626,7 +688,7 @@ sketch002 = startSketchOn('XY')
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(sketch002, length = -25)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg03] }, %)` // <-- able to add a new one
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg03])` // <-- able to add a new one
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
@@ -647,8 +709,8 @@ extrude002 = extrude(sketch002, length = -25)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
-        const edgeTreatmentSnippet = `${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
+        const edgeTreatmentSnippet = `${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line(end = [20, 0])
@@ -673,8 +735,8 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-fillet001 = ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, extrude001)`
-        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, extrude001)`
+fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
+        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line(end = [20, 0])
@@ -700,8 +762,8 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-fillet001 = ${edgeTreatmentType}({ ${parameterName} = 3, tags = [getOppositeEdge(seg01)] }, extrude001)`
-        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}({ ${parameterName} = 3, tags = [getOppositeEdge(seg01)] }, extrude001)`
+fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [getOppositeEdge(seg01)])`
+        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [getOppositeEdge(seg01)])`
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line(end = [20, 0])
@@ -726,8 +788,8 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-fillet001 = ${edgeTreatmentType}({ ${parameterName} = 3, tags = [getNextAdjacentEdge(seg01)] }, extrude001)`
-        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}({ ${parameterName} = 3, tags = [getNextAdjacentEdge(seg01)] }, extrude001)`
+fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [getNextAdjacentEdge(seg01)])`
+        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [getNextAdjacentEdge(seg01)])`
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line(end = [20, 0])
@@ -753,11 +815,11 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)
-  |> fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, %)
-fillet001 = ${edgeTreatmentType}({ ${parameterName} = 6, tags = [seg02] }, extrude001)
-chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001)`
-        const edgeTreatmentSnippet = `${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
+  |> fillet(radius = 5, tags = [getOppositeEdge(seg02)])
+fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
+chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
+        const edgeTreatmentSnippet = `${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line(end = [20, 0], tag = $seg01)
@@ -766,15 +828,9 @@ chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> fillet({
-       radius = 5,
-       tags = [getOppositeEdge(seg02)]
-     }, %)
-fillet001 = ${edgeTreatmentType}({ ${parameterName} = 6, tags = [seg02] }, extrude001)
-chamfer001 = chamfer({
-  length = 5,
-  tags = [getOppositeEdge(seg01)]
-}, extrude001)`
+  |> fillet(radius = 5, tags = [getOppositeEdge(seg02)])
+fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
+chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
 
         await runDeleteEdgeTreatmentTest(
           code,
@@ -791,11 +847,11 @@ chamfer001 = chamfer({
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)
-  |> fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, %)
-fillet001 = ${edgeTreatmentType}({ ${parameterName} = 6, tags = [seg02] }, extrude001)
-chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001)`
-        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}({ ${parameterName} = 6, tags = [seg02] }, extrude001)`
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
+  |> fillet( radius = 5, tags = [getOppositeEdge(seg02)] )
+fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
+chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
+        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])`
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line(end = [20, 0], tag = $seg01)
@@ -804,15 +860,9 @@ chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)
-  |> fillet({
-       radius = 5,
-       tags = [getOppositeEdge(seg02)]
-     }, %)
-chamfer001 = chamfer({
-  length = 5,
-  tags = [getOppositeEdge(seg01)]
-}, extrude001)`
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
+  |> fillet(radius = 5, tags = [getOppositeEdge(seg02)])
+chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
 
         await runDeleteEdgeTreatmentTest(
           code,
@@ -832,14 +882,14 @@ describe('Testing isTagUsedInEdgeTreatment', () => {
   |> line(end = [-6.37, 3.88], tag = $seg02)
   |> close()
 extrude001 = extrude(sketch001, length = -5)
-  |> fillet({
+  |> fillet(
        radius = 1.11,
        tags = [
          getOppositeEdge(seg01),
          seg01,
          getPreviousAdjacentEdge(seg02)
        ]
-     }, %)
+     )
 `
   it('should correctly identify getOppositeEdge and baseEdge edges', () => {
     const ast = assertParse(code)

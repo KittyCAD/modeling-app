@@ -1,4 +1,3 @@
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
 import {
   MouseEventHandler,
@@ -21,14 +20,17 @@ import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
 }
 
 interface BadgeInfoComputed {
-  value: number | boolean
+  value: number | boolean | string
   onClick?: MouseEventHandler<any>
+  className?: string
+  title?: string
 }
 
 function getPlatformString(): 'web' | 'desktop' {
@@ -38,23 +40,23 @@ function getPlatformString(): 'web' | 'desktop' {
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const machineManager = useContext(MachineManagerContext)
   const kclContext = useKclContext()
-  const { settings } = useSettingsAuthContext()
-  const onboardingStatus = settings.context.app.onboardingStatus
+  const settings = useSettings()
+  const onboardingStatus = settings.app.onboardingStatus
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
     onboardingStatus.current === onboardingPaths.CAMERA ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
-  const showDebugPanel = settings.context.modeling.showDebugPanel
+  const showDebugPanel = settings.modeling.showDebugPanel
 
   const paneCallbackProps = useMemo(
     () => ({
       kclContext,
-      settings: settings.context,
+      settings,
       platform: getPlatformString(),
     }),
-    [kclContext.diagnostics, settings.context]
+    [kclContext.diagnostics, settings]
   )
 
   const sidebarActions: SidebarAction[] = [
@@ -116,6 +118,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         acc[pane.id] = {
           value: pane.showBadge.value(paneCallbackProps),
           onClick: pane.showBadge.onClick,
+          className: pane.showBadge.className,
+          title: pane.showBadge.title,
         }
       }
       return acc
@@ -125,6 +129,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   // Clear any hidden panes from the `openPanes` array
   useEffect(() => {
     const panesToReset: SidebarType[] = []
+
     sidebarPanes.forEach((pane) => {
       if (
         pane.hide === true ||
@@ -144,7 +149,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         },
       })
     }
-  }, [settings.context])
+  }, [settings.modeling.showDebugPanel])
 
   const togglePane = useCallback(
     (newPane: SidebarType) => {
@@ -339,22 +344,31 @@ function ModelingPaneButton({
         <p
           id={`${paneConfig.id}-badge`}
           className={
-            'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+            showBadge.className
+              ? showBadge.className
+              : 'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
           }
           onClick={showBadge.onClick}
-          title={`Click to view ${showBadge.value} notification${
-            Number(showBadge.value) > 1 ? 's' : ''
-          }`}
+          title={
+            showBadge.title
+              ? showBadge.title
+              : `Click to view ${showBadge.value} notification${
+                  Number(showBadge.value) > 1 ? 's' : ''
+                }`
+          }
         >
           <span className="sr-only">&nbsp;has&nbsp;</span>
-          {typeof showBadge.value === 'number' ? (
+          {typeof showBadge.value === 'number' ||
+          typeof showBadge.value === 'string' ? (
             <span>{showBadge.value}</span>
           ) : (
             <span className="sr-only">a</span>
           )}
-          <span className="sr-only">
-            &nbsp;notification{Number(showBadge.value) > 1 ? 's' : ''}
-          </span>
+          {typeof showBadge.value === 'number' && (
+            <span className="sr-only">
+              &nbsp;notification{Number(showBadge.value) > 1 ? 's' : ''}
+            </span>
+          )}
         </p>
       )}
     </div>

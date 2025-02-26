@@ -44,7 +44,6 @@ import {
   addHelix,
   addOffsetPlane,
   addSweep,
-  deleteFromSelection,
   extrudeSketch,
   loftSketches,
 } from 'lang/modifyAst'
@@ -70,12 +69,10 @@ import {
 } from 'components/Toolbar/SetAbsDistance'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, reportRejection, trap } from 'lib/trap'
-import { getFaceDetails } from 'clientSideScene/sceneEntities'
 import { DefaultPlaneStr } from 'lib/planes'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
-import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
 import { ToolbarModeName } from 'lib/toolbar'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
@@ -83,9 +80,15 @@ import { Mesh, Vector3 } from 'three'
 import { MachineManager } from 'components/MachineManagerProvider'
 import { addShell } from 'lang/modifyAst/addShell'
 import { KclCommandValue } from 'lib/commandTypes'
+import { ModelingMachineContext } from 'components/ModelingMachineProvider'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from 'lang/modifyAst/deleteSelection'
 import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
 import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
+import { setAppearance } from 'lang/modifyAst/setAppearance'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -308,6 +311,11 @@ export type ModelingMachineEvent =
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
+  | {
+      type: 'Delete selection'
+      data: ModelingCommandSchema['Delete selection']
+    }
+  | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | {
       type: 'Add rectangle origin'
       data: [x: number, y: number]
@@ -729,38 +737,6 @@ export const modelingMachine = setup({
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
-      })().catch(reportRejection)
-    },
-    'AST delete selection': ({ context: { selectionRanges } }) => {
-      ;(async () => {
-        const errorMessage =
-          'Unable to delete selection. Please edit manually in code pane.'
-        let ast = kclManager.ast
-
-        const modifiedAst = await deleteFromSelection(
-          ast,
-          selectionRanges.graphSelections[0],
-          kclManager.variables,
-          engineCommandManager.artifactGraph,
-          getFaceDetails
-        )
-        if (err(modifiedAst)) {
-          toast.error(errorMessage)
-          return
-        }
-
-        const testExecute = await executeAst({
-          ast: modifiedAst,
-          engineCommandManager,
-          isMock: true,
-        })
-        if (testExecute.errors.length) {
-          toast.error(errorMessage)
-          return
-        }
-
-        await kclManager.updateAst(modifiedAst, true)
-        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       })().catch(reportRejection)
     },
     'set selection filter to curves only': () => {
@@ -1825,7 +1801,31 @@ export const modelingMachine = setup({
           radius,
           axis,
           length,
+          nodeToEdit,
         } = input
+
+        let opInsertIndex: number | undefined = undefined
+        let opVariableName: string | undefined = undefined
+
+        // If this is an edit flow, first we're going to remove the old one
+        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+          // Extract the old name from the node to edit
+          const oldNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+          if (err(oldNode)) {
+            console.error('Error extracting plane name')
+          } else {
+            opVariableName = oldNode.node.declaration.id.name
+          }
+
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0], 1)
+          ast.body = newBody
+          opInsertIndex = nodeToEdit[1][0]
+        }
 
         for (const variable of [revolutions, angleStart, radius, length]) {
           // Insert the variable if it exists
@@ -1857,6 +1857,8 @@ export const modelingMachine = setup({
           radius: valueOrVariable(radius),
           axis,
           length: valueOrVariable(length),
+          insertIndex: opInsertIndex,
+          variableName: opVariableName,
         })
 
         const updateAstResult = await kclManager.updateAst(
@@ -1993,12 +1995,6 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness } = input
-        const dependencies = {
-          kclManager,
-          engineCommandManager,
-          editorManager,
-          codeManager,
-        }
 
         // Insert the thickness variable if it exists
         if (
@@ -2024,7 +2020,6 @@ export const modelingMachine = setup({
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
-          dependencies,
         })
         if (err(shellResult)) {
           return err(shellResult)
@@ -2170,6 +2165,75 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['Prompt-to-edit']
       }) => {}
     ),
+    deleteSelectionAstMod: fromPromise(
+      ({
+        input: { selectionRanges },
+      }: {
+        input: { selectionRanges: Selections }
+      }) => {
+        return new Promise((resolve, reject) => {
+          if (!selectionRanges) {
+            reject(new Error(deletionErrorMessage))
+          }
+
+          const selection = selectionRanges.graphSelections[0]
+          if (!selectionRanges) {
+            reject(new Error(deletionErrorMessage))
+          }
+
+          deleteSelectionPromise(selection)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              resolve(result)
+            })
+            .catch(reject)
+        })
+      }
+    ),
+    appearanceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Appearance'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { color, nodeToEdit } = input
+        if (!(nodeToEdit && typeof nodeToEdit[1][0] === 'number')) {
+          return new Error('Appearance is only an edit flow')
+        }
+
+        const result = setAppearance({
+          ast,
+          nodeToEdit,
+          color,
+        })
+
+        if (err(result)) {
+          return err(result)
+        }
+
+        const updateAstResult = await kclManager.updateAst(
+          result.modifiedAst,
+          true,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
   },
   // end actors
 }).createMachine({
@@ -2243,10 +2307,9 @@ export const modelingMachine = setup({
         },
 
         'Delete selection': {
-          target: 'idle',
+          target: 'Applying Delete selection',
           guard: 'has valid selection for deletion',
-          actions: ['AST delete selection'],
-          reenter: false,
+          reenter: true,
         },
 
         'Text-to-CAD': {
@@ -2266,6 +2329,11 @@ export const modelingMachine = setup({
         },
 
         'Prompt-to-edit': 'Applying Prompt-to-edit',
+
+        Appearance: {
+          target: 'Applying appearance',
+          reenter: true,
+        },
       },
 
       entry: 'reset client scene mouse handlers',
@@ -3364,6 +3432,41 @@ export const modelingMachine = setup({
 
         onDone: 'idle',
         onError: 'idle',
+      },
+    },
+
+    'Applying Delete selection': {
+      invoke: {
+        src: 'deleteSelectionAstMod',
+        id: 'deleteSelectionAstMod',
+
+        input: ({ event, context }) => {
+          return { selectionRanges: context.selectionRanges }
+        },
+
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          reenter: true,
+          actions: ({ event }) => {
+            if ('error' in event && err(event.error)) {
+              toast.error(event.error.message)
+            }
+          },
+        },
+      },
+    },
+
+    'Applying appearance': {
+      invoke: {
+        src: 'appearanceAstMod',
+        id: 'appearanceAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Appearance') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
       },
     },
   },

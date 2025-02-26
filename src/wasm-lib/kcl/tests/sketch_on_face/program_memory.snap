@@ -3,38 +3,6 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing sketch_on_face.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "here": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
@@ -66,7 +34,10 @@ description: Variables in memory after executing sketch_on_face.kcl
           39.86,
           15.100000000000001
         ],
-        "type": "ToPoint"
+        "type": "ToPoint",
+        "units": {
+          "type": "Mm"
+        }
       },
       "surface": {
         "faceId": "[uuid]",
@@ -179,7 +150,10 @@ description: Variables in memory after executing sketch_on_face.kcl
               39.86,
               15.1
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -199,7 +173,10 @@ description: Variables in memory after executing sketch_on_face.kcl
               35.74,
               -7.71
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -219,7 +196,10 @@ description: Variables in memory after executing sketch_on_face.kcl
               2.5,
               6.84
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -239,7 +219,10 @@ description: Variables in memory after executing sketch_on_face.kcl
               11.19,
               28.35
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -281,6 +264,9 @@ description: Variables in memory after executing sketch_on_face.kcl
             11.19,
             28.35
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -322,7 +308,10 @@ description: Variables in memory after executing sketch_on_face.kcl
                   39.86,
                   15.100000000000001
                 ],
-                "type": "ToPoint"
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
               },
               "surface": {
                 "faceId": "[uuid]",
@@ -458,7 +447,10 @@ description: Variables in memory after executing sketch_on_face.kcl
               0.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -478,7 +470,10 @@ description: Variables in memory after executing sketch_on_face.kcl
               10.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -498,7 +493,10 @@ description: Variables in memory after executing sketch_on_face.kcl
               10.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -518,7 +516,10 @@ description: Variables in memory after executing sketch_on_face.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -623,7 +624,10 @@ description: Variables in memory after executing sketch_on_face.kcl
                     39.86,
                     15.1
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -643,7 +647,10 @@ description: Variables in memory after executing sketch_on_face.kcl
                     35.74,
                     -7.71
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -663,7 +670,10 @@ description: Variables in memory after executing sketch_on_face.kcl
                     2.5,
                     6.84
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -683,7 +693,10 @@ description: Variables in memory after executing sketch_on_face.kcl
                     11.19,
                     28.35
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 }
               ],
               "on": {
@@ -725,6 +738,9 @@ description: Variables in memory after executing sketch_on_face.kcl
                   11.19,
                   28.35
                 ],
+                "units": {
+                  "type": "Mm"
+                },
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -766,7 +782,10 @@ description: Variables in memory after executing sketch_on_face.kcl
                         39.86,
                         15.100000000000001
                       ],
-                      "type": "ToPoint"
+                      "type": "ToPoint",
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "surface": {
                       "faceId": "[uuid]",
@@ -849,6 +868,9 @@ description: Variables in memory after executing sketch_on_face.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

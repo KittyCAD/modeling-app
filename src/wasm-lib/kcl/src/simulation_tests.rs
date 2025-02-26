@@ -93,7 +93,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
     )
     .await;
     match exec_res {
-        Ok((exec_state, png)) => {
+        Ok((exec_state, env_ref, png)) => {
             let fail_path_str = format!("tests/{test_name}/execution_error.snap");
             let fail_path = Path::new(&fail_path_str);
             if std::fs::exists(fail_path).unwrap() {
@@ -102,7 +102,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
-            let outcome = exec_state.to_wasm_outcome();
+            let outcome = exec_state.to_wasm_outcome(env_ref);
             assert_common_snapshots(
                 test_name,
                 outcome.operations,
@@ -171,7 +171,12 @@ fn assert_common_snapshots(
     artifact_graph: ArtifactGraph,
 ) {
     assert_snapshot(test_name, "Operations executed", || {
-        insta::assert_json_snapshot!("ops", operations);
+        insta::assert_json_snapshot!("ops", operations, {
+            "[].unlabeledArg.*.value.**[].from[]" => rounded_redaction(4),
+            "[].unlabeledArg.*.value.**[].to[]" => rounded_redaction(4),
+            "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
+            "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
+        });
     });
     assert_snapshot(test_name, "Artifact commands", || {
         insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
@@ -949,6 +954,28 @@ mod import_foreign {
         super::execute(TEST_NAME, false).await
     }
 }
+mod assembly_non_default_units {
+    const TEST_NAME: &str = "assembly_non_default_units";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
 mod array_elem_push_fail {
     const TEST_NAME: &str = "array_elem_push_fail";
 
@@ -972,6 +999,27 @@ mod array_elem_push_fail {
 }
 mod sketch_on_face {
     const TEST_NAME: &str = "sketch_on_face";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod revolve_about_edge {
+    const TEST_NAME: &str = "revolve_about_edge";
 
     /// Test parsing KCL.
     #[test]
@@ -1963,7 +2011,29 @@ mod helix_simple {
     /// Test parsing KCL.
     #[test]
     fn parse() {
-        super::parse(TEST_NAME)
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod import_file_parse_error {
+    const TEST_NAME: &str = "import_file_parse_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
     }
 
     /// Test that parsing and unparsing KCL produces the original KCL input.

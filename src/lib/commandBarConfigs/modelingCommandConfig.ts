@@ -3,7 +3,11 @@ import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
+import {
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_COLOR,
+} from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
@@ -27,6 +31,8 @@ export const EXTRUSION_RESULTS = [
   'subtract',
   'intersect',
 ] as const
+
+export const COMMAND_APPEARANCE_COLOR_DEFAULT = 'default'
 
 export type ModelingCommandSchema = {
   'Enter sketch': {}
@@ -80,6 +86,9 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
   }
   Helix: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     revolutions: KclCommandValue
     angleStart: KclCommandValue
     counterClockWise: boolean
@@ -108,6 +117,11 @@ export type ModelingCommandSchema = {
   'Prompt-to-edit': {
     prompt: string
     selection: Selections
+  }
+  'Delete selection': {}
+  Appearance: {
+    nodeToEdit?: PathToNode
+    color: string
   }
 }
 
@@ -472,6 +486,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     status: 'development',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       revolutions: {
         inputType: 'kcl',
         defaultValue: '1',
@@ -487,9 +508,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       counterClockWise: {
         inputType: 'options',
         required: true,
+        defaultValue: false,
         options: [
-          { name: 'True', isCurrent: false, value: true },
-          { name: 'False', isCurrent: true, value: false },
+          { name: 'False', value: false },
+          { name: 'True', value: true },
         ],
       },
       radius: {
@@ -500,10 +522,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       axis: {
         inputType: 'options',
         required: true,
+        defaultValue: 'X',
         options: [
-          { name: 'X Axis', isCurrent: true, value: 'X' },
-          { name: 'Y Axis', isCurrent: false, value: 'Y' },
-          { name: 'Z Axis', isCurrent: false, value: 'Z' },
+          { name: 'X Axis', value: 'X' },
+          { name: 'Y Axis', value: 'Y' },
+          { name: 'Z Axis', value: 'Z' },
         ],
       },
       length: {
@@ -654,7 +677,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'chat',
     args: {
       selection: {
-        inputType: 'selection',
+        inputType: 'selectionMixed',
         selectionTypes: [
           'solid2d',
           'segment',
@@ -666,12 +689,52 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
+        selectionSource: {
+          allowSceneSelection: true,
+          allowCodeSelection: true,
+        },
         skip: true,
       },
       prompt: {
         inputType: 'text',
         required: true,
       },
+    },
+  },
+  Appearance: {
+    description:
+      'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+    icon: 'extrude',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
+      color: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'Red', value: '#FF0000' },
+          { name: 'Green', value: '#00FF00' },
+          { name: 'Blue', value: '#0000FF' },
+          { name: 'Turquoise', value: '#00FFFF' },
+          { name: 'Purple', value: '#FF00FF' },
+          { name: 'Yellow', value: '#FFFF00' },
+          { name: 'Black', value: '#000000' },
+          { name: 'Dark Grey', value: '#080808' },
+          { name: 'Light Grey', value: '#D3D3D3' },
+          { name: 'White', value: '#FFFFFF' },
+          {
+            name: 'Default (clear appearance)',
+            value: COMMAND_APPEARANCE_COLOR_DEFAULT,
+          },
+        ],
+      },
+      // Add more fields
     },
   },
 }

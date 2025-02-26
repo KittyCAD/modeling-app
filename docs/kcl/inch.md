@@ -26,7 +26,7 @@ inch() -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

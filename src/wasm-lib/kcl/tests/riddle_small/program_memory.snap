@@ -25,38 +25,6 @@ description: Variables in memory after executing riddle_small.kcl
       }
     ]
   },
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "ox": {
     "type": "Number",
     "value": -26.0,
@@ -233,7 +201,10 @@ description: Variables in memory after executing riddle_small.kcl
               -25.0,
               34.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -253,7 +224,10 @@ description: Variables in memory after executing riddle_small.kcl
               -25.0,
               33.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -273,7 +247,10 @@ description: Variables in memory after executing riddle_small.kcl
               -26.0,
               33.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -293,7 +270,10 @@ description: Variables in memory after executing riddle_small.kcl
               -26.0,
               34.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -335,6 +315,9 @@ description: Variables in memory after executing riddle_small.kcl
             -26.0,
             34.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -379,95 +362,6 @@ description: Variables in memory after executing riddle_small.kcl
   },
   "t": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 64,
-              "left": {
-                "end": 54,
-                "left": {
-                  "end": 46,
-                  "left": {
-                    "end": 42,
-                    "name": "ANSWER",
-                    "start": 36,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "operator": "*",
-                  "right": {
-                    "end": 46,
-                    "name": "s",
-                    "start": 45,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "start": 36,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "operator": "+",
-                "right": {
-                  "end": 54,
-                  "raw": "12345",
-                  "start": 49,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 12345.0,
-                    "suffix": "None"
-                  }
-                },
-                "start": 36,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "operator": "%",
-              "right": {
-                "end": 64,
-                "raw": "214748",
-                "start": 58,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 214748.0,
-                  "suffix": "None"
-                }
-              },
-              "start": 36,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            "end": 64,
-            "start": 28,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 66,
-        "start": 24
-      },
-      "end": 66,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 22,
-            "name": "s",
-            "start": 21,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 20,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [

@@ -626,7 +626,6 @@ export function sketchOnExtrudedFace(
   } else {
     _tag = createLiteral(info.subType.toUpperCase())
   }
-
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLib('startSketchOn', [
@@ -718,6 +717,8 @@ export function addHelix({
   radius,
   axis,
   length,
+  insertIndex,
+  variableName,
 }: {
   node: Node<Program>
   revolutions: Expr
@@ -726,9 +727,12 @@ export function addHelix({
   radius: Expr
   axis: string
   length: Expr
+  insertIndex?: number
+  variableName?: string
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
   const variable = createVariableDeclaration(
     name,
     createCallExpressionStdLibKw(
@@ -745,12 +749,20 @@ export function addHelix({
     )
   )
 
-  // TODO: figure out smart insertion than just appending at the end
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length
+      : 0
+
+  modifiedAst.body.length
+    ? modifiedAst.body.splice(insertAt, 0, variable)
+    : modifiedAst.body.push(variable)
   const argIndex = 0
-  modifiedAst.body.push(variable)
   const pathToNode: PathToNode = [
     ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
+    [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpressionKw'],

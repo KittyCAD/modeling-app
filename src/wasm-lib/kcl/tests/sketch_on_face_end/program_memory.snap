@@ -3,329 +3,8 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing sketch_on_face_end.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "cube": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "declaration": {
-              "end": 169,
-              "id": {
-                "end": 26,
-                "name": "sg",
-                "start": 24,
-                "type": "Identifier"
-              },
-              "init": {
-                "body": [
-                  {
-                    "arguments": [
-                      {
-                        "end": 47,
-                        "raw": "'XY'",
-                        "start": 43,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": "XY"
-                      }
-                    ],
-                    "callee": {
-                      "end": 42,
-                      "name": "startSketchOn",
-                      "start": 29,
-                      "type": "Identifier"
-                    },
-                    "end": 48,
-                    "start": 29,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "arguments": [
-                      {
-                        "end": 74,
-                        "name": "pos",
-                        "start": 71,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      },
-                      {
-                        "end": 77,
-                        "start": 76,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
-                      }
-                    ],
-                    "callee": {
-                      "end": 70,
-                      "name": "startProfileAt",
-                      "start": 56,
-                      "type": "Identifier"
-                    },
-                    "end": 78,
-                    "start": 56,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "type": "Identifier",
-                          "name": "end"
-                        },
-                        "arg": {
-                          "elements": [
-                            {
-                              "end": 99,
-                              "raw": "0",
-                              "start": 98,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            },
-                            {
-                              "end": 106,
-                              "name": "scale",
-                              "start": 101,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "end": 107,
-                          "start": 97,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "end": 90,
-                      "name": "line",
-                      "start": 86,
-                      "type": "Identifier"
-                    },
-                    "end": 108,
-                    "start": 86,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  },
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "type": "Identifier",
-                          "name": "end"
-                        },
-                        "arg": {
-                          "elements": [
-                            {
-                              "end": 133,
-                              "name": "scale",
-                              "start": 128,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            {
-                              "end": 136,
-                              "raw": "0",
-                              "start": 135,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          ],
-                          "end": 137,
-                          "start": 127,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "end": 120,
-                      "name": "line",
-                      "start": 116,
-                      "type": "Identifier"
-                    },
-                    "end": 138,
-                    "start": 116,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  },
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "type": "Identifier",
-                          "name": "end"
-                        },
-                        "arg": {
-                          "elements": [
-                            {
-                              "end": 159,
-                              "raw": "0",
-                              "start": 158,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            },
-                            {
-                              "argument": {
-                                "end": 167,
-                                "name": "scale",
-                                "start": 162,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "end": 167,
-                              "operator": "-",
-                              "start": 161,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            }
-                          ],
-                          "end": 168,
-                          "start": 157,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "end": 150,
-                      "name": "line",
-                      "start": 146,
-                      "type": "Identifier"
-                    },
-                    "end": 169,
-                    "start": 146,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  }
-                ],
-                "end": 169,
-                "start": 29,
-                "type": "PipeExpression",
-                "type": "PipeExpression"
-              },
-              "start": 24,
-              "type": "VariableDeclarator"
-            },
-            "end": 169,
-            "kind": "const",
-            "start": 24,
-            "type": "VariableDeclaration",
-            "type": "VariableDeclaration"
-          },
-          {
-            "argument": {
-              "end": 182,
-              "name": "sg",
-              "start": 180,
-              "type": "Identifier",
-              "type": "Identifier"
-            },
-            "end": 182,
-            "start": 173,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 184,
-        "nonCodeMeta": {
-          "nonCodeNodes": {
-            "0": [
-              {
-                "end": 173,
-                "start": 169,
-                "type": "NonCodeNode",
-                "value": {
-                  "type": "newLine"
-                }
-              }
-            ]
-          },
-          "startNodes": []
-        },
-        "start": 20
-      },
-      "end": 184,
-      "params": [
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 11,
-            "name": "pos",
-            "start": 8,
-            "type": "Identifier"
-          }
-        },
-        {
-          "type": "Parameter",
-          "identifier": {
-            "end": 18,
-            "name": "scale",
-            "start": 13,
-            "type": "Identifier"
-          }
-        }
-      ],
-      "start": 7,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      0,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
@@ -410,7 +89,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
               0.0,
               20.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -430,7 +112,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
               20.0,
               20.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -450,7 +135,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
               20.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -470,7 +158,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -512,6 +203,9 @@ description: Variables in memory after executing sketch_on_face_end.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -628,7 +322,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
               0.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -648,7 +345,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
               10.0,
               10.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -668,7 +368,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
               10.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           },
           {
             "__geoMeta": {
@@ -688,7 +391,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
               0.0,
               0.0
             ],
-            "type": "ToPoint"
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -783,7 +489,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
                     0.0,
                     20.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -803,7 +512,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
                     20.0,
                     20.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -823,7 +535,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
                     20.0,
                     0.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 {
                   "__geoMeta": {
@@ -843,7 +558,10 @@ description: Variables in memory after executing sketch_on_face_end.kcl
                     0.0,
                     0.0
                   ],
-                  "type": "ToPoint"
+                  "type": "ToPoint",
+                  "units": {
+                    "type": "Mm"
+                  }
                 }
               ],
               "on": {
@@ -885,6 +603,9 @@ description: Variables in memory after executing sketch_on_face_end.kcl
                   0.0,
                   0.0
                 ],
+                "units": {
+                  "type": "Mm"
+                },
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -948,6 +669,9 @@ description: Variables in memory after executing sketch_on_face_end.kcl
             0.0,
             0.0
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

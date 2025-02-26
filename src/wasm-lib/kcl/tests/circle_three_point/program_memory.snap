@@ -3,38 +3,6 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing circle_three_point.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "sketch001": {
     "type": "Solid",
     "value": {
@@ -88,7 +56,10 @@ description: Variables in memory after executing circle_three_point.kcl
               30.0059,
               19.75
             ],
-            "type": "CircleThreePoint"
+            "type": "CircleThreePoint",
+            "units": {
+              "type": "Mm"
+            }
           }
         ],
         "on": {
@@ -130,6 +101,9 @@ description: Variables in memory after executing circle_three_point.kcl
             30.00594901040716,
             19.749999999999996
           ],
+          "units": {
+            "type": "Mm"
+          },
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",

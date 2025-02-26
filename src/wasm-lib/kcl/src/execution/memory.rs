@@ -144,7 +144,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{KclValue, Metadata},
+    execution::KclValue,
     source_range::SourceRange,
 };
 use env::Environment;
@@ -161,6 +161,8 @@ pub(crate) struct ProgramMemory {
     environments: Vec<Environment>,
     /// Invariant: current_env.1.is_none()
     current_env: EnvironmentRef,
+    /// Memory for the std prelude.
+    std: Option<EnvironmentRef>,
     /// Invariant: forall er in call_stack: er.1.is_none()
     call_stack: Vec<EnvironmentRef>,
     /// Statistics about the memory, should not be used for anything other than meta-info.
@@ -195,11 +197,29 @@ impl ProgramMemory {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
-            environments: vec![Environment::new_root()],
-            current_env: EnvironmentRef::root(),
+            environments: vec![],
+            current_env: EnvironmentRef::dummy(),
+            std: None,
             call_stack: Vec::new(),
             stats: MemoryStats::default(),
         }
+    }
+
+    /// Set the env var used for the standard library prelude.
+    pub fn set_std(&mut self, std: EnvironmentRef) {
+        self.std = Some(std);
+    }
+
+    /// Whether this memory still needs to be initialised with its standard library prelude.
+    pub fn requires_std(&self) -> bool {
+        self.std.is_none()
+    }
+
+    #[cfg(test)]
+    /// If you're using ProgramMemory directly for testing it must be initialized first.
+    pub fn init_for_tests(&mut self) {
+        self.push_new_root_env(false);
+        self.std = Some(self.current_env);
     }
 
     /// Push a new (standard KCL) stack frame on to the call stack.
@@ -207,10 +227,11 @@ impl ProgramMemory {
     /// `parent` is the environment where the function being called is declared (not the caller's
     /// environment, which is probably `self.current_env`).
     pub fn push_new_env_for_call(&mut self, parent: EnvironmentRef) {
+        assert!(parent.1 .0 < usize::MAX);
         self.stats.env_count += 1;
 
         self.call_stack.push(self.current_env);
-        let new_env = Environment::new(parent);
+        let new_env = Environment::new(parent, false);
         self.current_env = EnvironmentRef(self.environments.len(), SnapshotRef::none());
         self.environments.push(new_env);
     }
@@ -221,6 +242,7 @@ impl ProgramMemory {
     pub fn push_new_env_for_scope(&mut self) {
         self.stats.env_count += 1;
 
+        // We want to use the current env as the parent.
         // We need to snapshot in case there is a function decl in the new scope.
         let snapshot = self.snapshot();
         self.push_new_env_for_call(snapshot);
@@ -245,13 +267,25 @@ impl ProgramMemory {
     /// Push a new stack frame on to the call stack with no connection to a parent environment.
     ///
     /// Suitable for executing a separate module.
-    pub fn push_new_root_env(&mut self) {
+    /// Precondition: include_prelude -> !self.requires_std()
+    pub fn push_new_root_env(&mut self, include_prelude: bool) {
         self.stats.env_count += 1;
 
         self.call_stack.push(self.current_env);
-        let new_env = Environment::new_root();
+        let new_env = if include_prelude {
+            Environment::new(self.std.unwrap(), true)
+        } else {
+            Environment::new_no_prelude()
+        };
         self.current_env = EnvironmentRef(self.environments.len(), SnapshotRef::none());
         self.environments.push(new_env);
+    }
+
+    /// Push a previously used environment on to the call stack.
+    pub fn restore_env(&mut self, env: EnvironmentRef) {
+        assert!(env.1.is_none());
+        self.call_stack.push(self.current_env);
+        self.current_env = env;
     }
 
     /// Pop a frame from the call stack and return a reference to the popped environment. The popped
@@ -263,7 +297,7 @@ impl ProgramMemory {
         let old = self.current_env;
         self.current_env = self.call_stack.pop().unwrap();
 
-        if !old.is_rust_env() {
+        if !old.skip_env() {
             self.environments[old.index()].compact();
 
             if self.environments[old.index()].is_empty() {
@@ -292,7 +326,10 @@ impl ProgramMemory {
     /// Merges the specified environment with the current environment, rewriting any environment refs
     /// taking snapshots into account. Deletes (if possible) or clears the squashed environment.
     pub fn squash_env(&mut self, old: EnvironmentRef) {
-        assert!(!old.is_rust_env());
+        assert!(!old.skip_env());
+        if self.current_env.skip_env() {
+            return;
+        }
 
         let mut old_env = if old.index() == self.environments.len() - 1 {
             // Common case and efficient
@@ -301,7 +338,10 @@ impl ProgramMemory {
         } else {
             // Should basically never happen in normal usage.
             self.stats.skipped_env_gcs += 1;
-            std::mem::replace(&mut self.environments[old.index()], Environment::new(self.current_env))
+            std::mem::replace(
+                &mut self.environments[old.index()],
+                Environment::new(self.current_env, false),
+            )
         };
 
         // Map of any old env refs to the current env.
@@ -367,12 +407,12 @@ impl ProgramMemory {
 
     /// Get a key from the first KCL (i.e., non-Rust) stack frame on the call stack.
     pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
-        if !self.current_env.is_rust_env() {
+        if !self.current_env.skip_env() {
             return self.get(key, source_range);
         }
 
         for env in self.call_stack.iter().rev() {
-            if !env.is_rust_env() {
+            if !env.skip_env() {
                 return self.get_from(key, *env, source_range);
             }
         }
@@ -408,7 +448,18 @@ impl ProgramMemory {
         &'a self,
         pred: impl Fn(&KclValue) -> bool + 'a,
     ) -> impl Iterator<Item = (&'a String, &'a KclValue)> {
-        self.environments[self.current_env.index()].find_all_by(pred)
+        self.find_all_in_env(self.current_env, pred)
+    }
+
+    /// Iterate over all key/value pairs in the specified environment which satisfy the provided
+    /// predicate.
+    pub fn find_all_in_env<'a>(
+        &'a self,
+        env: EnvironmentRef,
+        pred: impl Fn(&KclValue) -> bool + 'a,
+    ) -> impl Iterator<Item = (&'a String, &'a KclValue)> {
+        assert!(!env.skip_env());
+        self.environments[env.index()].find_all_by(pred)
     }
 
     /// Walk all values accessible from any environment in the call stack.
@@ -418,7 +469,7 @@ impl ProgramMemory {
     pub fn walk_call_stack(&self) -> impl Iterator<Item = &KclValue> {
         let mut cur_env = self.current_env;
         let mut stack_index = self.call_stack.len();
-        while cur_env.is_rust_env() {
+        while cur_env.skip_env() {
             stack_index -= 1;
             cur_env = self.call_stack[stack_index];
         }
@@ -455,7 +506,7 @@ impl<'a> Iterator for CallStackIterator<'a> {
         self.cur_values.as_ref()?;
 
         // Loop over each frame in the call stack.
-        loop {
+        'outer: loop {
             // Loop over each environment in the tree of scopes of which the current stack frame is a leaf.
             loop {
                 // `unwrap` is OK since we check for None at the start of the function, and if we update
@@ -478,11 +529,13 @@ impl<'a> Iterator for CallStackIterator<'a> {
                 loop {
                     self.stack_index -= 1;
                     let env_ref = self.mem.call_stack[self.stack_index];
-                    // We'll eventually hit this condition since we can't start executing in Rust.
-                    if !env_ref.is_rust_env() {
+
+                    if !env_ref.skip_env() {
                         self.cur_env = env_ref;
                         self.init_iter();
                         break;
+                    } else if self.stack_index == 0 {
+                        break 'outer;
                     }
                 }
             } else {
@@ -507,15 +560,15 @@ impl PartialEq for ProgramMemory {
 pub struct EnvironmentRef(usize, SnapshotRef);
 
 impl EnvironmentRef {
-    fn root() -> Self {
-        Self(0, SnapshotRef::none())
+    fn dummy() -> Self {
+        Self(usize::MAX, SnapshotRef(usize::MAX))
     }
 
     fn index(&self) -> usize {
         self.0
     }
 
-    fn is_rust_env(&self) -> bool {
+    fn skip_env(&self) -> bool {
         self.0 == usize::MAX
     }
 }
@@ -576,6 +629,7 @@ mod env {
         snapshots: Vec<Snapshot>,
         // An outer scope, if one exists.
         parent: Option<EnvironmentRef>,
+        is_root_env: bool,
     }
 
     impl fmt::Display for Environment {
@@ -624,36 +678,31 @@ mod env {
     }
 
     impl Environment {
-        /// Create a new root environment (new program or module)
-        pub(super) fn new_root() -> Self {
-            const NO_META: Vec<Metadata> = Vec::new();
-
-            Self {
-                // Prelude
-                bindings: IndexMap::from([
-                    ("ZERO".to_string(), KclValue::from_number(0.0, NO_META)),
-                    ("QUARTER_TURN".to_string(), KclValue::from_number(90.0, NO_META)),
-                    ("HALF_TURN".to_string(), KclValue::from_number(180.0, NO_META)),
-                    ("THREE_QUARTER_TURN".to_string(), KclValue::from_number(270.0, NO_META)),
-                ]),
-                snapshots: Vec::new(),
-                parent: None,
-            }
-        }
-
-        /// Create a new child environment, parent points to it's surrounding lexical scope.
-        pub(super) fn new(parent: EnvironmentRef) -> Self {
-            assert!(!parent.is_rust_env());
+        /// Create a new environment, parent points to it's surrounding lexical scope or the std
+        /// env if it's a root scope.
+        pub(super) fn new(parent: EnvironmentRef, is_root_env: bool) -> Self {
+            assert!(!parent.skip_env());
             Self {
                 bindings: IndexMap::new(),
                 snapshots: Vec::new(),
                 parent: Some(parent),
+                is_root_env,
+            }
+        }
+
+        /// Create a new root environment with no prelude as parent.
+        pub(super) fn new_no_prelude() -> Self {
+            Self {
+                bindings: IndexMap::new(),
+                snapshots: Vec::new(),
+                parent: None,
+                is_root_env: true,
             }
         }
 
         // True if the env is empty and not a root env.
         pub(super) fn is_empty(&self) -> bool {
-            self.snapshots.is_empty() && self.bindings.is_empty() && self.parent.is_some()
+            self.snapshots.is_empty() && self.bindings.is_empty() && !self.is_root_env
         }
 
         /// Possibly compress this environment by deleting the memory.
@@ -665,7 +714,7 @@ mod env {
         /// See module docs for more details.
         pub(super) fn compact(&mut self) {
             // Don't compress if there might be a closure or import referencing us.
-            if !self.snapshots.is_empty() || self.parent.is_none() {
+            if !self.snapshots.is_empty() || self.is_root_env {
                 return;
             }
 
@@ -845,7 +894,7 @@ mod env {
 
 #[cfg(test)]
 mod test {
-    use crate::execution::kcl_value::NumericType;
+    use crate::execution::kcl_value::{FunctionSource, NumericType};
 
     use super::*;
 
@@ -889,6 +938,7 @@ mod test {
         // Follows test_pattern_transform_function_cannot_access_future_definitions
 
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         let transform = mem.snapshot();
         mem.add("transform".to_owned(), val(1), sr()).unwrap();
         let layer = mem.snapshot();
@@ -906,6 +956,7 @@ mod test {
     #[test]
     fn simple_snapshot() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
         assert_get(mem, "a", 1);
         mem.add("a".to_owned(), val(2), sr()).unwrap_err();
@@ -923,6 +974,7 @@ mod test {
     #[test]
     fn multiple_snapshot() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
 
         let sn1 = mem.snapshot();
@@ -946,6 +998,7 @@ mod test {
     #[test]
     fn simple_call_env() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
         mem.add("b".to_owned(), val(3), sr()).unwrap();
 
@@ -970,6 +1023,7 @@ mod test {
     #[test]
     fn multiple_call_env() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
         mem.add("b".to_owned(), val(3), sr()).unwrap();
 
@@ -994,10 +1048,11 @@ mod test {
     #[test]
     fn root_env() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
         mem.add("b".to_owned(), val(3), sr()).unwrap();
 
-        mem.push_new_root_env();
+        mem.push_new_root_env(false);
         mem.get("b", sr()).unwrap_err();
         mem.add("b".to_owned(), val(4), sr()).unwrap();
         mem.add("c".to_owned(), val(5), sr()).unwrap();
@@ -1016,6 +1071,7 @@ mod test {
     #[test]
     fn rust_env() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
         mem.add("b".to_owned(), val(3), sr()).unwrap();
         let sn = mem.snapshot();
@@ -1034,6 +1090,7 @@ mod test {
     #[test]
     fn deep_call_env() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
         mem.add("b".to_owned(), val(3), sr()).unwrap();
 
@@ -1066,6 +1123,7 @@ mod test {
     #[test]
     fn snap_env() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
 
         let sn = mem.snapshot();
@@ -1086,6 +1144,7 @@ mod test {
     #[test]
     fn snap_env2() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
 
         let sn1 = mem.snapshot();
@@ -1112,6 +1171,7 @@ mod test {
     #[test]
     fn snap_env_two_updates() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
 
         let sn1 = mem.snapshot();
@@ -1154,6 +1214,7 @@ mod test {
     #[test]
     fn snap_env_clear() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
 
         mem.add("b".to_owned(), val(3), sr()).unwrap();
@@ -1177,6 +1238,7 @@ mod test {
     #[test]
     fn snap_env_clear2() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
         mem.add("b".to_owned(), val(3), sr()).unwrap();
         let sn1 = mem.snapshot();
@@ -1207,6 +1269,7 @@ mod test {
     #[test]
     fn squash_env() {
         let mem = &mut ProgramMemory::new();
+        mem.init_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
         let sn1 = mem.snapshot();
         mem.push_new_env_for_call(sn1);
@@ -1215,9 +1278,10 @@ mod test {
         mem.add(
             "f".to_owned(),
             KclValue::Function {
-                func: None,
-                expression: crate::parsing::ast::types::FunctionExpression::dummy(),
-                memory: sn2,
+                value: FunctionSource::User {
+                    ast: crate::parsing::ast::types::FunctionExpression::dummy(),
+                    memory: sn2,
+                },
                 meta: Vec::new(),
             },
             sr(),
@@ -1228,7 +1292,10 @@ mod test {
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 2);
         match mem.get("f", SourceRange::default()).unwrap() {
-            KclValue::Function { memory, .. } if *memory == sn1 => {}
+            KclValue::Function {
+                value: FunctionSource::User { memory, .. },
+                ..
+            } if memory == &sn1 => {}
             v => panic!("{v:#?}"),
         }
         assert_eq!(mem.environments.len(), 1);

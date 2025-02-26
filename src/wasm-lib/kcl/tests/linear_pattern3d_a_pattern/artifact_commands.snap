@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands linear_pattern3d_a_pattern.kcl
-snapshot_kind: text
 ---
 [
   {

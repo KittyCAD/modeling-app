@@ -3,83 +3,14 @@ source: kcl/src/simulation_tests.rs
 description: Variables in memory after executing import_glob.kcl
 ---
 {
-  "HALF_TURN": {
-    "type": "Number",
-    "value": 180.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "QUARTER_TURN": {
-    "type": "Number",
-    "value": 90.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "THREE_QUARTER_TURN": {
-    "type": "Number",
-    "value": 270.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
-  "ZERO": {
-    "type": "Number",
-    "value": 0.0,
-    "ty": {
-      "type": "Unknown"
-    },
-    "__meta": []
-  },
   "foo": {
     "type": "Function",
-    "expression": {
-      "body": {
-        "body": [
-          {
-            "argument": {
-              "end": 47,
-              "moduleId": 1,
-              "raw": "42",
-              "start": 45,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 42.0,
-                "suffix": "None"
-              }
-            },
-            "end": 47,
-            "moduleId": 1,
-            "start": 38,
-            "type": "ReturnStatement",
-            "type": "ReturnStatement"
-          }
-        ],
-        "end": 49,
-        "moduleId": 1,
-        "start": 34
-      },
-      "end": 49,
-      "moduleId": 1,
-      "params": [],
-      "start": 31,
-      "type": "FunctionExpression"
-    },
-    "memory": [
-      1,
-      1
-    ],
     "__meta": [
       {
         "sourceRange": [
           31,
           49,
-          1
+          3
         ]
       }
     ]
@@ -101,7 +32,7 @@ description: Variables in memory after executing import_glob.kcl
         "sourceRange": [
           15,
           16,
-          1
+          3
         ]
       }
     ]

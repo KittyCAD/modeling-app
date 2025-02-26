@@ -2,9 +2,12 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
+use indexmap::IndexMap;
+
 use crate::{
     execution::{ArtifactCommand, ArtifactGraph, Operation},
     lsp::IntoDiagnostic,
+    modules::ModulePath,
     source_range::SourceRange,
     ModuleId,
 };
@@ -116,6 +119,7 @@ pub struct KclErrorWithOutputs {
     pub operations: Vec<Operation>,
     pub artifact_commands: Vec<ArtifactCommand>,
     pub artifact_graph: ArtifactGraph,
+    pub filenames: IndexMap<ModuleId, ModulePath>,
 }
 
 impl KclErrorWithOutputs {
@@ -124,12 +128,14 @@ impl KclErrorWithOutputs {
         operations: Vec<Operation>,
         artifact_commands: Vec<ArtifactCommand>,
         artifact_graph: ArtifactGraph,
+        filenames: IndexMap<ModuleId, ModulePath>,
     ) -> Self {
         Self {
             error,
             operations,
             artifact_commands,
             artifact_graph,
+            filenames,
         }
     }
     pub fn no_outputs(error: KclError) -> Self {
@@ -138,6 +144,7 @@ impl KclErrorWithOutputs {
             operations: Default::default(),
             artifact_commands: Default::default(),
             artifact_graph: Default::default(),
+            filenames: Default::default(),
         }
     }
 }
@@ -402,12 +409,15 @@ impl CompilationError {
         self,
         suggestion_title: impl ToString,
         suggestion_insert: impl ToString,
+        // Will use the error source range if none is supplied
+        source_range: Option<SourceRange>,
         tag: Tag,
     ) -> CompilationError {
         CompilationError {
             suggestion: Some(Suggestion {
                 title: suggestion_title.to_string(),
                 insert: suggestion_insert.to_string(),
+                source_range: source_range.unwrap_or(self.source_range),
             }),
             tag,
             ..self
@@ -419,9 +429,9 @@ impl CompilationError {
         let suggestion = self.suggestion.as_ref()?;
         Some(format!(
             "{}{}{}",
-            &src[0..self.source_range.start()],
+            &src[0..suggestion.source_range.start()],
             suggestion.insert,
-            &src[self.source_range.end()..]
+            &src[suggestion.source_range.end()..]
         ))
     }
 }
@@ -465,4 +475,5 @@ pub enum Tag {
 pub struct Suggestion {
     pub title: String,
     pub insert: String,
+    pub source_range: SourceRange,
 }

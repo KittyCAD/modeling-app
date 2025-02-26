@@ -31,6 +31,8 @@ import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
 import { DefaultPlaneStr } from 'lib/planes'
 import { defaultPlaneStrToKey } from 'lib/planes'
+import { buildArtifactIndex } from 'lib/artifactIndex'
+import { ArtifactIndex } from 'lib/artifactIndex'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -240,6 +242,20 @@ export enum EngineConnectionEvents {
   NewTrack = 'new-track', // (track: NewTrackArgs) => void
 }
 
+function toRTCSessionDescriptionInit(
+  desc: Models['RtcSessionDescription_type']
+): RTCSessionDescriptionInit | undefined {
+  if (desc.type === 'unspecified') {
+    console.error('Invalid SDP answer: type is "unspecified".')
+    return undefined
+  }
+  return {
+    sdp: desc.sdp,
+    // Force the type to be one of the valid RTCSdpType values
+    type: desc.type as RTCSdpType,
+  }
+}
+
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
@@ -250,7 +266,7 @@ class EngineConnection extends EventTarget {
   mediaStream?: MediaStream
   idleMode: boolean = false
   promise?: Promise<void>
-  sdpAnswer?: Models['RtcSessionDescription_type']
+  sdpAnswer?: RTCSessionDescriptionInit
   triggeredStart = false
 
   onIceCandidate = function (
@@ -549,6 +565,50 @@ class EngineConnection extends EventTarget {
     this.disconnectAll()
   }
 
+  initiateConnectionExclusive(): boolean {
+    // Only run if:
+    // - A peer connection exists,
+    // - ICE gathering is complete,
+    // - We have an SDP answer,
+    // - And we haven’t already triggered this connection.
+    if (!this.pc || this.triggeredStart || !this.sdpAnswer) {
+      return false
+    }
+    this.triggeredStart = true
+
+    // Transition to the connecting state
+    this.state = {
+      type: EngineConnectionStateType.Connecting,
+      value: { type: ConnectingType.WebRTCConnecting },
+    }
+
+    // Attempt to set the remote description to initiate connection
+    this.pc
+      .setRemoteDescription(this.sdpAnswer)
+      .then(() => {
+        // Update state once the remote description has been set
+        this.state = {
+          type: EngineConnectionStateType.Connecting,
+          value: { type: ConnectingType.SetRemoteDescription },
+        }
+      })
+      .catch((error: Error) => {
+        console.error('Failed to set remote description:', error)
+        this.state = {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Error,
+            value: {
+              error: ConnectionError.LocalDescriptionInvalid,
+              context: error,
+            },
+          },
+        }
+        this.disconnectAll()
+      })
+    return true
+  }
+
   /**
    * Attempts to connect to the Engine over a WebSocket, and
    * establish the WebRTC connections.
@@ -588,38 +648,13 @@ class EngineConnection extends EventTarget {
           },
         }
 
-        const initiateConnectingExclusive = () => {
-          if (that.triggeredStart) return
-          that.triggeredStart = true
-
-          // Start connecting.
-          that.state = {
-            type: EngineConnectionStateType.Connecting,
-            value: {
-              type: ConnectingType.WebRTCConnecting,
-            },
-          }
-
-          // As soon as this is set, RTCPeerConnection tries to
-          // establish a connection.
-          // @ts-expect-error: Have to ignore because dom.ts doesn't have the right type
-          void that.pc?.setRemoteDescription(that.sdpAnswer)
-
-          that.state = {
-            type: EngineConnectionStateType.Connecting,
-            value: {
-              type: ConnectingType.SetRemoteDescription,
-            },
-          }
-        }
-
         this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
           console.log('icecandidate', event.candidate)
 
           // This is null when the ICE gathering state is done.
           // Windows ONLY uses this to signal it's done!
           if (event.candidate === null) {
-            initiateConnectingExclusive()
+            that.initiateConnectionExclusive()
             return
           }
 
@@ -643,7 +678,9 @@ class EngineConnection extends EventTarget {
           // Sometimes the remote end doesn't report the end of candidates.
           // They have 3 seconds to.
           setTimeout(() => {
-            initiateConnectingExclusive()
+            if (that.initiateConnectionExclusive()) {
+              console.warn('connected after 3 second delay')
+            }
           }, 3000)
         }
         this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
@@ -653,7 +690,7 @@ class EngineConnection extends EventTarget {
             console.log('icegatheringstatechange', this.iceGatheringState)
 
             if (this.iceGatheringState !== 'complete') return
-            initiateConnectingExclusive()
+            that.initiateConnectionExclusive()
           }
         )
 
@@ -1192,8 +1229,11 @@ class EngineConnection extends EventTarget {
                 },
               }
 
-              this.sdpAnswer = answer
+              this.sdpAnswer = toRTCSessionDescriptionInit(answer)
 
+              // We might have received this after ice candidates finish
+              // Make sure we attempt to connect when we do.
+              this.initiateConnectionExclusive()
               break
 
             case 'trickle_ice':
@@ -1369,6 +1409,7 @@ export class EngineCommandManager extends EventTarget {
    * see: src/lang/std/artifactGraph-README.md for a full explanation.
    */
   artifactGraph: ArtifactGraph = new Map()
+  artifactIndex: ArtifactIndex = []
   /**
    * The pendingCommands object is a map of the commands that have been sent to the engine that are still waiting on a reply
    */
@@ -1406,11 +1447,17 @@ export class EngineCommandManager extends EventTarget {
     commandId: string
   }
   settings: SettingsViaQueryString
-  width: number = 1337
-  height: number = 1337
+
+  streamDimensions = {
+    // Random defaults that are overwritten pretty much immediately
+    width: 1337,
+    height: 1337,
+  }
+
+  elVideo: HTMLVideoElement | null = null
 
   /**
-   * Export intent traxcks the intent of the export. If it is null there is no
+   * Export intent tracks the intent of the export. If it is null there is no
    * export in progress. Otherwise it is an enum value of the intent.
    * Another export cannot be started if one is already in progress.
    */
@@ -1513,21 +1560,20 @@ export class EngineCommandManager extends EventTarget {
       return
     }
 
-    this.width = width
-    this.height = height
+    this.streamDimensions = {
+      width,
+      height,
+    }
 
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
-      this.handleResize({
-        streamWidth: width,
-        streamHeight: height,
-      })
+      this.handleResize(this.streamDimensions)
       return
     }
 
-    const additionalSettings = this.settings.enableSSAO
-      ? '&post_effect=ssao'
-      : ''
+    let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
+    additionalSettings +=
+      '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     const pool = !this.settings.pool ? '' : `&pool=${this.settings.pool}`
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     this.engineConnection = new EngineConnection({
@@ -1817,27 +1863,22 @@ export class EngineCommandManager extends EventTarget {
     return
   }
 
-  handleResize({
-    streamWidth,
-    streamHeight,
-  }: {
-    streamWidth: number
-    streamHeight: number
-  }) {
+  handleResize({ width, height }: { width: number; height: number }) {
     if (!this.engineConnection?.isReady()) {
       return
     }
 
-    this.width = streamWidth
-    this.height = streamHeight
+    this.streamDimensions = {
+      width,
+      height,
+    }
 
     const resizeCmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
         type: 'reconfigure_stream',
-        width: streamWidth,
-        height: streamHeight,
+        ...this.streamDimensions,
         fps: 60,
       },
     }
@@ -2146,6 +2187,7 @@ export class EngineCommandManager extends EventTarget {
   }
   updateArtifactGraph(execStateArtifactGraph: ExecState['artifactGraph']) {
     this.artifactGraph = execStateArtifactGraph
+    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)

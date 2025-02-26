@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands import_cycle1.kcl
-snapshot_kind: text
 ---
 [
   {

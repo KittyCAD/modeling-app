@@ -22,7 +22,6 @@ import {
   modelingMachineDefaultContext,
 } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   isCursorInSketchCommandRange,
   updateSketchDetailsNodePaths,
@@ -110,6 +109,8 @@ import { kclEditorActor } from 'machines/kclEditorMachine'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { useSettings } from 'machines/appMachine'
+import { isDesktop } from 'lib/isDesktop'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -131,19 +132,15 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const {
-    settings: {
-      context: {
-        app: { theme, enableSSAO, allowOrbitInSketchMode },
-        modeling: {
-          defaultUnit,
-          cameraProjection,
-          highlightEdges,
-          showScaleGrid,
-          cameraOrbit,
-        },
-      },
+    app: { theme, enableSSAO, allowOrbitInSketchMode },
+    modeling: {
+      defaultUnit,
+      cameraProjection,
+      highlightEdges,
+      showScaleGrid,
+      cameraOrbit,
     },
-  } = useSettingsAuthContext()
+  } = useSettings()
   const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
@@ -800,11 +797,18 @@ export const ModelingMachineProvider = ({
         }),
         'animate-to-sketch': fromPromise(
           async ({ input: { selectionRanges } }) => {
+            const artifact = selectionRanges.graphSelections[0].artifact
             const plane = getPlaneFromArtifact(
-              selectionRanges.graphSelections[0].artifact,
+              artifact,
               engineCommandManager.artifactGraph
             )
             if (err(plane)) return Promise.reject(plane)
+            // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
+            // but still works if the user selected a plane/face by defaulting to the first path
+            const mainPath =
+              artifact?.type === 'segment' || artifact?.type === 'solid2d'
+                ? artifact?.pathId
+                : plane?.pathIds[0]
             let sketch: KclValue | null = null
             for (const variable of Object.values(
               kclManager.execState.variables
@@ -812,7 +816,7 @@ export const ModelingMachineProvider = ({
               // find programMemory that matches path artifact
               if (
                 variable?.type === 'Sketch' &&
-                variable.value.artifactId === plane.pathIds[0]
+                variable.value.artifactId === mainPath
               ) {
                 sketch = variable
                 break
@@ -821,7 +825,7 @@ export const ModelingMachineProvider = ({
                 // if the variable is an sweep, check if the underlying sketch matches the artifact
                 variable?.type === 'Solid' &&
                 variable.value.sketch.on.type === 'plane' &&
-                variable.value.sketch.artifactId === plane.pathIds[0]
+                variable.value.sketch.artifactId === mainPath
               ) {
                 sketch = {
                   type: 'Sketch',
@@ -841,9 +845,8 @@ export const ModelingMachineProvider = ({
               info?.sketchDetails?.faceId || ''
             )
 
-            const sketchArtifact = engineCommandManager.artifactGraph.get(
-              plane.pathIds[0]
-            )
+            const sketchArtifact =
+              engineCommandManager.artifactGraph.get(mainPath)
             if (sketchArtifact?.type !== 'path')
               return Promise.reject(new Error('No sketch artifact'))
             const sketchPaths = getPathsFromArtifact({
@@ -1574,7 +1577,7 @@ export const ModelingMachineProvider = ({
                   : updatedSketchNodePaths[0]
             }
 
-            if (doesNeedSplitting) {
+            if (doesNeedSplitting || indexToDelete >= 0) {
               await kclManager.executeAstMock(moddedAst)
               await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
             }
@@ -1715,8 +1718,12 @@ export const ModelingMachineProvider = ({
     previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
   }, [allowOrbitInSketchMode])
 
-  // Allow using the delete key to delete solids
-  useHotkeys(['backspace', 'delete', 'del'], () => {
+  // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
+  const deleteKeys =
+    isDesktop() && window.electron.os.isMac
+      ? ['backspace', 'delete', 'del']
+      : ['delete', 'del']
+  useHotkeys(deleteKeys, () => {
     modelingSend({ type: 'Delete selection' })
   })
 
