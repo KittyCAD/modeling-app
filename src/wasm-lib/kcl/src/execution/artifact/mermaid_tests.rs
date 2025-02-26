@@ -71,8 +71,8 @@ impl Artifact {
             Artifact::Path(a) => vec![a.plane_id],
             Artifact::Segment(a) => vec![a.path_id],
             Artifact::Solid2d(a) => vec![a.path_id],
-            Artifact::StartSketchOnFace { face_id, .. } => vec![face_id.into()],
-            Artifact::StartSketchOnPlane { plane_id, .. } => vec![plane_id.into()],
+            Artifact::StartSketchOnFace(a) => vec![a.face_id],
+            Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
             Artifact::Sweep(a) => vec![a.path_id],
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
@@ -115,8 +115,14 @@ impl Artifact {
                 // Note: Don't include these since they're parents: path_id.
                 Vec::new()
             }
-            Artifact::StartSketchOnFace { .. } => Vec::new(),
-            Artifact::StartSketchOnPlane { .. } => Vec::new(),
+            Artifact::StartSketchOnFace { .. } => {
+                // Note: Don't include these since they're parents: face_id.
+                Vec::new()
+            }
+            Artifact::StartSketchOnPlane { .. } => {
+                // Note: Don't include these since they're parents: plane_id.
+                Vec::new()
+            }
             Artifact::Sweep(a) => {
                 // Note: Don't include these since they're parents: path_id.
                 let mut ids = Vec::new();
@@ -267,9 +273,7 @@ impl ArtifactGraph {
     ) -> std::fmt::Result {
         // For now, only showing the source range.
         fn code_ref_display(code_ref: &CodeRef) -> [usize; 3] {
-            range_display(code_ref.range)
-        }
-        fn range_display(range: SourceRange) -> [usize; 3] {
+            let range = code_ref.range;
             [range.start(), range.end(), range.module_id().as_usize()]
         }
 
@@ -301,20 +305,20 @@ impl ArtifactGraph {
             Artifact::Solid2d(_solid2d) => {
                 writeln!(output, "{prefix}{}[Solid2d]", id)?;
             }
-            Artifact::StartSketchOnFace { source_range, .. } => {
+            Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
                 writeln!(
                     output,
                     "{prefix}{}[\"StartSketchOnFace<br>{:?}\"]",
                     id,
-                    range_display(*source_range)
+                    code_ref_display(code_ref)
                 )?;
             }
-            Artifact::StartSketchOnPlane { source_range, .. } => {
+            Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => {
                 writeln!(
                     output,
                     "{prefix}{}[\"StartSketchOnPlane<br>{:?}\"]",
                     id,
-                    range_display(*source_range)
+                    code_ref_display(code_ref)
                 )?;
             }
             Artifact::Sweep(sweep) => {

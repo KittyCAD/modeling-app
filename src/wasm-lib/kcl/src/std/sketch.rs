@@ -11,6 +11,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::execution::{CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -1144,11 +1145,11 @@ async fn inner_start_sketch_on(
         SketchData::Plane(plane) => {
             // Create artifact used only by the UI, not the engine.
             let id = exec_state.next_uuid();
-            exec_state.add_artifact(Artifact::StartSketchOnPlane {
+            exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
                 id: ArtifactId::from(id),
-                plane_id: plane.id,
-                source_range: args.source_range,
-            });
+                plane_id: plane.artifact_id,
+                code_ref: CodeRef::placeholder(args.source_range),
+            }));
 
             Ok(SketchSurface::Plane(plane))
         }
@@ -1163,11 +1164,11 @@ async fn inner_start_sketch_on(
 
             // Create artifact used only by the UI, not the engine.
             let id = exec_state.next_uuid();
-            exec_state.add_artifact(Artifact::StartSketchOnFace {
+            exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
                 id: ArtifactId::from(id),
-                face_id: face.id,
-                source_range: args.source_range,
-            });
+                face_id: face.artifact_id,
+                code_ref: CodeRef::placeholder(args.source_range),
+            }));
 
             Ok(SketchSurface::Face(face))
         }
