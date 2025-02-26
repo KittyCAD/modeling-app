@@ -54,6 +54,12 @@ jobs:
     - uses: actions/checkout@v4
       with:
         token: ${{ steps.app-token.outputs.token }}
+    - name: Clear hosted tool cache on Windows
+      if:  ${{ contains(matrix.os, 'windows') }}
+      run: |
+        $nodeVersion = $env:NODE_VERSION.TrimStart('v')
+        Remove-Item -Force "C:\hostedtoolcache\windows\node\$nodeVersion\x64\corepack*"
+        npm i -g --force corepack
     - run: corepack enable
     - uses: actions/setup-node@v4
       with:

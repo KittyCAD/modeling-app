@@ -77,7 +77,7 @@
     "start": "vite --port=3000 --host=0.0.0.0",
     "start:prod": "vite preview --port=3000",
     "serve": "vite serve --port=3000",
-    "build": "yarn install:rust && . $HOME/.cargo/env && yarn install:wasm-pack:sh && yarn build:wasm && vite build",
+    "build": "corepack enable && yarn install:rust && . $HOME/.cargo/env && yarn install:wasm-pack:sh && yarn build:wasm && vite build",
     "build:local": "vite build",
     "build:both": "vite build",
     "build:both:local": "yarn build:wasm && vite build",
