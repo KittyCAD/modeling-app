@@ -3018,8 +3018,29 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
         return true
       }
       return new Error(
-        `line call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
+        `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'xLine':
+      if (findKwArg(ARG_LENGTH, lineCall) !== undefined) {
+        return false
+      }
+      if (findKwArg(ARG_END_ABSOLUTE, lineCall) !== undefined) {
+        return true
+      }
+      return new Error(
+        `${name} call has neither ${ARG_LENGTH} nor ${ARG_END_ABSOLUTE} params`
+      )
+    case 'yLine':
+      if (findKwArg(ARG_LENGTH, lineCall) !== undefined) {
+        return false
+      }
+      if (findKwArg(ARG_END_ABSOLUTE, lineCall) !== undefined) {
+        return true
+      }
+      return new Error(
+        `${name} call has neither ${ARG_LENGTH} nor ${ARG_END_ABSOLUTE} params`
+      )
+
     case 'circleThreePoint':
       return false
   }
@@ -3036,18 +3057,25 @@ export function getArgForEnd(lineCall: CallExpressionKw):
     }
   | Error {
   const name = lineCall?.callee?.name
-  let arg
-  if (name === 'line') {
-    arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], lineCall)
-  } else if (name === 'xLine' || name === 'yLine') {
-    arg = findKwArgAny([ARG_LENGTH, ARG_END_ABSOLUTE], lineCall)
-  } else {
-    return new Error('cannot find end of line function: ' + name)
+  switch (name) {
+    case 'line': {
+      const arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], lineCall)
+      if (arg === undefined) {
+        return new Error("no end of the line was found in fn '" + name + "'")
+      }
+      return getValuesForXYFns(arg)
+    }
+    case 'xLine':
+    case 'yLine': {
+      const arg = findKwArgAny([ARG_LENGTH, ARG_END_ABSOLUTE], lineCall)
+      if (arg === undefined) {
+        return new Error("no end of the line was found in fn '" + name + "'")
+      }
+      return { val: arg }
+    }
+    default:
+      return new Error('unknown sketch keyword function ' + name)
   }
-  if (arg === undefined) {
-    return new Error("no end of the line was found in fn '" + name + "'")
-  }
-  return getValuesForXYFns(arg)
 }
 
 export function getFirstArg(callExp: CallExpression):
