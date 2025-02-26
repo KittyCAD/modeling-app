@@ -12,6 +12,7 @@ import child_process from 'node:child_process'
 
 const DIR_KCL_SAMPLES = 'kcl-samples'
 const URL_GIT_KCL_SAMPLES = 'https://github.com/KittyCAD/kcl-samples.git'
+const BRANCH = 'achalmers/kw-args-xylineto'
 
 interface KclSampleFile {
   file: string
@@ -32,7 +33,7 @@ child_process.spawnSync('git', [
   'clone',
   '--single-branch',
   '--branch',
-  'next',
+  BRANCH,
   URL_GIT_KCL_SAMPLES,
   DIR_KCL_SAMPLES,
 ])
