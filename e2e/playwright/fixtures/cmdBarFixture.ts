@@ -1,5 +1,5 @@
 import type { Page, Locator, Route, Request } from '@playwright/test'
-import { expect } from '@playwright/test'
+import { expect, TestInfo } from '@playwright/test'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -192,37 +192,67 @@ export class CmdBarFixture {
 
   /**
    * Start monitoring requests to the text-to-cad API endpoint
-   * and save the request bodies to a file.
-   * 
+   * and save the request bodies to a file named after the current test.
+   *
    * The monitoring will automatically stop when the test ends.
-   * 
-   * @param outputPath Optional custom path for the output file
+   *
+   * @param testInfoInOrderToGetTestTitle The TestInfo object from the test context
+   * @param customOutputDir Optional custom directory for the output file
    */
-  async monitorTextToCadRequests(outputPath = 'promptToEdit.snap.json') {
+  async monitorTextToCadRequests(
+    testInfoInOrderToGetTestTitle: TestInfo,
+    customOutputDir = 'e2e/playwright/snapshots/prompt-to-edit'
+  ) {
+    // First sanitize each title component individually
+    const sanitizedTitleComponents = [
+      ...testInfoInOrderToGetTestTitle.titlePath.slice(0, -1), // Get all parent titles
+      testInfoInOrderToGetTestTitle.title, // Add the test title
+    ].map(
+      (component) =>
+        component
+          .replace(/[^a-z0-9]/gi, '-') // Replace non-alphanumeric chars with hyphens
+          .toLowerCase()
+          .replace(/-+/g, '-') // Replace multiple consecutive hyphens with a single one
+          .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+    )
+
+    // Join the sanitized components with -- as a clear separator
+    const sanitizedTestName = sanitizedTitleComponents.join('--')
+
+    // Create the output path
+    const outputPath = path.join(
+      customOutputDir,
+      `${sanitizedTestName}.snap.json`
+    )
+
     // Create a handler function that saves request bodies to a file
     const requestHandler = (route: Route, request: Request) => {
       try {
         const requestBody = request.postDataJSON()
-        
+
         // Ensure directory exists
         const dir = path.dirname(outputPath)
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true })
         }
-        
+
         // Write the request body to the file
         fs.writeFileSync(outputPath, JSON.stringify(requestBody, null, 2))
+
+        console.log(`Saved text-to-cad API request to: ${outputPath}`)
       } catch (error) {
         console.error('Error processing text-to-cad request:', error)
       }
-      
+
       // Use void to explicitly mark the promise as ignored
       void route.continue()
     }
 
     // Start monitoring requests
     await this.page.route('**/ml/text-to-cad/iteration', requestHandler)
-    
-    console.log(`Monitoring text-to-cad API requests. Output will be saved to: ${outputPath}`)
+
+    console.log(
+      `Monitoring text-to-cad API requests. Output will be saved to: ${outputPath}`
+    )
   }
 }
