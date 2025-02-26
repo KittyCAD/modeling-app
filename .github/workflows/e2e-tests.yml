@@ -55,6 +55,8 @@ jobs:
       with:
         token: ${{ steps.app-token.outputs.token }}
     - uses: pnpm/action-setup@v4
+    # TODO: remove this
+    - run: npm install --global corepack@latest
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
