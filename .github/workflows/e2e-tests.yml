@@ -58,6 +58,9 @@ jobs:
       with:
         node-version-file: '.nvmrc'
     - uses: KittyCAD/action-install-cli@use-powershell-windows
+    - name: Add Git to PATH
+      if: runner.os == 'Windows'
+      run: echo "C:\Program Files\Git\cmd" >> $env:GITHUB_PATH
     - name: Install dependencies
       run: |
         npm install --global yarn
