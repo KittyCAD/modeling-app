@@ -79,7 +79,7 @@ interface SegmentArtifactRich extends BaseArtifact {
 
 interface SweepArtifactRich extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve' | 'loft' | 'sweep'
+  subType: 'extrusion' | 'revolve' | 'revolveAboutEdge' | 'loft' | 'sweep'
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
   edges: Array<SweepEdge>

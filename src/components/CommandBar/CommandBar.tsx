@@ -17,7 +17,9 @@ export const CommandBar = () => {
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
-  const isSelectionArgument = currentArgument?.inputType === 'selection'
+  const isSelectionArgument =
+    currentArgument?.inputType === 'selection' ||
+    currentArgument?.inputType === 'selectionMixed'
   const WrapperComponent = isSelectionArgument ? Popover : Dialog
 
   // Close the command bar when navigating
