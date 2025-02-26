@@ -31,7 +31,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
-      - run: yarn install
+      - run: pnpm install
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -46,20 +46,20 @@ jobs:
           tool: wasm-pack
 
       - name: Run build:wasm
-        run: "yarn build:wasm"
+        run: "pnpm build:wasm"
 
       - name: Set nightly version, product name, release notes, and icons
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: |
           export VERSION=${GITHUB_REF_NAME#nightly-v}
-          yarn files:set-version
-          yarn files:flip-to-nightly
+          pnpm files:set-version
+          pnpm files:flip-to-nightly
 
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
         run: |
           export VERSION=${GITHUB_REF_NAME#v}
-          yarn files:set-version
+          pnpm files:set-version
 
       - uses: actions/upload-artifact@v4
         with:
@@ -128,15 +128,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
+          cache: 'yarn' # Set this to npm, pnpm or pnpm.
 
-      - name: yarn install
+      - name: pnpm install
         # Windows is picky sometimes and fails on fetch. Step takes about ~30s
         uses: nick-fields/retry@v3.0.1
         with:
           timeout_minutes: 2
           max_attempts: 3
-          command: yarn install
+          command: pnpm install
 
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
@@ -168,7 +168,7 @@ jobs:
         if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
         # this is just not doing any codesign or release yml generation, and points to dev infra
-        run: yarn tronb:package:dev
+        run: pnpm tronb:package:dev
 
       - name: Build the app (release)
         if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
@@ -187,7 +187,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn tronb:package:prod
+          command: pnpm tronb:package:prod
 
       - name: List artifacts in out/
         run: ls -R out
@@ -248,7 +248,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn tronb:package:prod
+          command: pnpm tronb:package:prod
 
       - uses: actions/upload-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -388,7 +388,7 @@ jobs:
           export TAG="nightly-${VERSION}"
           export PREVIOUS_TAG=$(git describe --tags --match="nightly-v[0-9]*" --abbrev=0)
           export NOTES=$(./scripts/get-nightly-changelog.sh)
-          yarn files:set-notes
+          pnpm files:set-notes
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_NIGHTLY == 'true' }}
@@ -413,4 +413,4 @@ jobs:
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        run: yarn files:invalidate-bucket:nightly
+        run: pnpm files:invalidate-bucket:nightly

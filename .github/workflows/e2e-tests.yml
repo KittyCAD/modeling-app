@@ -70,7 +70,7 @@ jobs:
         key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
       shell: bash
-      run: yarn playwright install --with-deps
+      run: pnpm playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
@@ -128,21 +128,21 @@ jobs:
     - name: Build Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
       shell: bash
-      run: yarn build:wasm
+      run: pnpm build:wasm
     - name: OR Build Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
       shell: bash
-      run: yarn build:wasm
+      run: pnpm build:wasm
     - name: build web
       shell: bash
-      run: yarn tronb:vite:dev
+      run: pnpm tronb:vite:dev
     - name: Run ubuntu/chrome snapshots
       if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
       shell: bash
       # TODO: break this in its own job, for now it's not slowing down the overall execution as ubuntu is the quickest,
       # but we could do better. This forces a large 1/1 shard of all 20 snapshot tests that runs in about 3 minutes.
       run: |
-        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=1/1
+        PLATFORM=web pnpm playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=1/1
       env:
         CI: true
         NODE_ENV: development

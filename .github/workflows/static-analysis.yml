@@ -24,8 +24,8 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: yarn install
-      - run: yarn fmt-check
+      - run: pnpm install
+      - run: pnpm fmt-check
 
   yarn-build-wasm:
     runs-on: ubuntu-22.04
@@ -36,11 +36,11 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: yarn install
+      - run: pnpm install
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:
           tool: wasm-pack
-      - run: yarn build:wasm
+      - run: pnpm build:wasm
 
   yarn-tsc:
     runs-on: ubuntu-22.04
@@ -51,7 +51,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: yarn install
+      - run: pnpm install
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: './src/wasm-lib'
@@ -59,8 +59,8 @@ jobs:
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:
           tool: wasm-pack
-      - run: yarn build:wasm
-      - run: yarn tsc
+      - run: pnpm build:wasm
+      - run: pnpm tsc
 
   yarn-lint:
     runs-on: ubuntu-22.04
@@ -71,8 +71,8 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: yarn install
-      - run: yarn lint
+      - run: pnpm install
+      - run: pnpm lint
 
   python-codespell:
     runs-on: ubuntu-22.04
@@ -97,22 +97,22 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
-      - run: yarn install
+      - run: pnpm install
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:
           tool: wasm-pack
-      - run: yarn build:wasm
+      - run: pnpm build:wasm
 
-      - run: yarn simpleserver:bg
+      - run: pnpm simpleserver:bg
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
 
       - name: Install Chromium Browser
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: yarn playwright install chromium --with-deps
+        run: pnpm playwright install chromium --with-deps
 
       - name: run unit tests for kcl samples
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: yarn test:unit:kcl-samples
+        run: pnpm test:unit:kcl-samples
         env:
           VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
@@ -126,22 +126,22 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
-      - run: yarn install
+      - run: pnpm install
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:
           tool: wasm-pack
-      - run: yarn build:wasm
+      - run: pnpm build:wasm
 
-      - run: yarn simpleserver:bg
+      - run: pnpm simpleserver:bg
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
 
       - name: Install Chromium Browser
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: yarn playwright install chromium --with-deps
+        run: pnpm playwright install chromium --with-deps
 
       - name: run unit tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: yarn test:unit
+        run: pnpm test:unit
         env:
           VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 

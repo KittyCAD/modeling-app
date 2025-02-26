@@ -438,7 +438,7 @@ const getProjectPathAtStartup = async (
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
-  // aka Forge for yarn tron:start live dev or playwright tests, but not dev packaged apps
+  // aka Forge for pnpm tron:start live dev or playwright tests, but not dev packaged apps
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT) {
     return null
   }

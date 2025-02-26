@@ -26,7 +26,7 @@ jobs:
         with:
           tool: wasm-pack
       - name: build wasm
-        run: yarn build:wasm
+        run: pnpm build:wasm
 
 
       # Upload the WASM bundle as an artifact

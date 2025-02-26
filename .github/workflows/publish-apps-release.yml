@@ -105,7 +105,7 @@ jobs:
       - name: Override release notes
         env:
           NOTES: ${{ github.event.release.body }}
-        run: yarn files:set-notes
+        run: pnpm files:set-notes
 
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v2.1.8'
@@ -126,7 +126,7 @@ jobs:
           destination: 'dl.kittycad.io/releases/modeling-app'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
-        run: yarn files:invalidate-bucket
+        run: pnpm files:invalidate-bucket
 
       - name: Upload release files to Github
         if: ${{ github.event_name == 'release' }}

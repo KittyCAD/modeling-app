@@ -22,9 +22,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-      - run: yarn install
-      - run: yarn generate:machine-api
-      - run: yarn fmt
+      - run: pnpm install
+      - run: pnpm generate:machine-api
+      - run: pnpm fmt
       - name: check for changes
         id: git-check
         run: |

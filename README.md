@@ -60,37 +60,37 @@ fnm use
 
 Install the NPM dependencies with:
 ```
-yarn install
+pnpm install
 ```
 
 This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We have package scripts to run rustup, see `package.json` for reference:
 ```
 # macOS/Linux
-yarn install:rust
-yarn install:wasm-pack:sh
+pnpm install:rust
+pnpm install:wasm-pack:sh
 
 # Windows
-yarn install:rust:windows
-yarn install:wasm-pack:cargo
+pnpm install:rust:windows
+pnpm install:wasm-pack:cargo
 ```
 
 Then to build the WASM layer, run:
 ```
 # macOS/Linux
-yarn build:wasm
+pnpm build:wasm
 
 # Windows
-yarn build:wasm:windows
+pnpm build:wasm:windows
 ```
 
-Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `yarn install:tools:windows`.
+Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `pnpm install:tools:windows`.
 
 ```
 # macOS/Linux
-yarn fetch:wasm
+pnpm fetch:wasm
 
 # Windows
-yarn fetch:wasm:windows
+pnpm fetch:wasm:windows
 ```
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
@@ -98,7 +98,7 @@ That will build the WASM binary and put in the `public` dir (though gitignored).
 Finally, to run the web app only, run:
 
 ```
-yarn start
+pnpm start
 ```
 
 If you're not a Zoo employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
@@ -118,17 +118,17 @@ Third-Party Cookies".
 
 ## Desktop
 
-To spin up the desktop app, `yarn install` and `yarn build:wasm` need to have been done before hand then
+To spin up the desktop app, `pnpm install` and `pnpm build:wasm` need to have been done before hand then
 
 ```
-yarn tron:start
+pnpm tron:start
 ```
 
 This will start the application and hot-reload on changes.
 
 Devtools can be opened with the usual Cmd-Opt-I (Mac) or Ctrl-Shift-I (Linux and Windows).
 
-To package the app for your platform with electron-builder, run `yarn tronb:package:dev` (or `yarn tronb:package:prod` to point to the .env.production variables)
+To package the app for your platform with electron-builder, run `pnpm tronb:package:dev` (or `pnpm tronb:package:prod` to point to the .env.production variables)
 
 ## Checking out commits / Bisecting
 
@@ -136,9 +136,9 @@ Which commands from setup are one off vs need to be run every time?
 
 The following will need to be run when checking out a new commit and guarantees the build is not stale:
 ```bash
-yarn install
-yarn build:wasm
-yarn start # or yarn build:local && yarn serve for slower but more production-like build
+pnpm install
+pnpm build:wasm
+pnpm start # or pnpm build:local && pnpm serve for slower but more production-like build
 ```
 
 ## Before submitting a PR
@@ -148,10 +148,10 @@ Before you submit a contribution PR to this repo, please ensure that:
 - There is a corresponding issue for the changes you want to make, so that discussion of approach can be had before work begins.
 - You have separated out refactoring commits from feature commits as much as possible
 - You have run all of the following commands locally:
-  - `yarn fmt`
-  - `yarn tsc`
-  - `yarn test`
-  - Here they are all together: `yarn fmt && yarn tsc && yarn test`
+  - `pnpm fmt`
+  - `pnpm tsc`
+  - `pnpm test`
+  - Here they are all together: `pnpm fmt && pnpm tsc && pnpm test`
 
 ## Release a new version
 
@@ -260,7 +260,7 @@ docker run --network host  --rm --init -it playwright/chrome:playwright-x.xx.x
 and in another terminal, run:
 
 ```bash
-PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project="Google Chrome" <test suite>
+PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ pnpm playwright test --project="Google Chrome" <test suite>
 ```
 
 
@@ -275,7 +275,7 @@ docker run --network host  --rm --init -it playwright/chrome:playwright-1.46.0
 and in another terminal, run:
 
 ```bash
-PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project="Google Chrome" e2e/playwright/command-bar-tests.spec.ts
+PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ pnpm playwright test --project="Google Chrome" e2e/playwright/command-bar-tests.spec.ts
 ```
 
 run a specific test change the test from `test('...` to `test.only('...`
@@ -287,13 +287,13 @@ run a specific test change the test from `test('...` to `test.only('...`
 run headed
 
 ```
-yarn playwright test --headed
+pnpm playwright test --headed
 ```
 
 run with step through debugger
 
 ```
-PWDEBUG=1 yarn playwright test
+PWDEBUG=1 pnpm playwright test
 ```
 
 However, if you want a debugger I recommend using VSCode and the `playwright` extension, as the above command is a cruder debugger that steps into every function call which is annoying.
@@ -304,7 +304,7 @@ Or comment out browsers in `playwright.config.ts`.
 
 note chromium has encoder compat issues which is why were testing against the branded 'Google Chrome'
 
-You may consider using the VSCode extension, it's useful for running individual threads, but some some reason the "record a test" is locked to chromium with we can't use. A work around is to us the CI `yarn playwright codegen -b wk --load-storage ./store localhost:3000`
+You may consider using the VSCode extension, it's useful for running individual threads, but some some reason the "record a test" is locked to chromium with we can't use. A work around is to us the CI `pnpm playwright codegen -b wk --load-storage ./store localhost:3000`
 
 <details>
 <summary>
@@ -348,20 +348,20 @@ If you already haven't, run the following:
 
 ```
 yarn
-yarn build:wasm
-yarn start
+pnpm build:wasm
+pnpm start
 ```
 
 and finally:
 
 ```
-yarn test:unit
+pnpm test:unit
 ```
 
 For individual testing:
 
 ```
-yarn test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
+pnpm test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
 ```
 
 Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro) tests, in interactive mode by default.
@@ -432,17 +432,17 @@ Part of the CI CD pipeline performs static analysis on the code. Use the followi
 The following set of commands should get us closer to one and done commands to instantly retest issues.
 
 ```
-yarn test-setup
+pnpm test-setup
 ```
 
 > Gotcha, are packages up to date and is the wasm built?
 
 
 ```
-yarn tsc
-yarn fmt-check
-yarn lint
-yarn test:unit:local
+pnpm tsc
+pnpm fmt-check
+pnpm lint
+pnpm test:unit:local
 ```
 
 > Gotcha: Our unit tests have integration tests in them. You need to run a localhost server to run the unit tests.
@@ -454,10 +454,10 @@ yarn test:unit:local
 These E2E tests run in electron. There are tests that are skipped if they are ran in a windows, linux, or macos environment. We can use playwright tags to implement test skipping.
 
 ```
-yarn test:playwright:electron:local
-yarn test:playwright:electron:windows:local
-yarn test:playwright:electron:macos:local
-yarn test:playwright:electron:ubuntu:local
+pnpm test:playwright:electron:local
+pnpm test:playwright:electron:windows:local
+pnpm test:playwright:electron:macos:local
+pnpm test:playwright:electron:ubuntu:local
 ```
 
 > Why does it say local? The CI CD commands that run in the pipeline cannot be ran locally. A single command will not properly setup the testing environment locally.
