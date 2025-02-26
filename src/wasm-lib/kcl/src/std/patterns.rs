@@ -855,8 +855,8 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// // We pass in `thing1` here with `useOriginal` since we want to pattern just this object on the face.
 /// patternLinear3d(thing1,
-///     axis = [0, 1, 0],
-///     distance = 10,
+///     axis = [1, 0, 0],
+///     distance = size,
 ///     instances =2,
 ///     useOriginal = true
 /// )
