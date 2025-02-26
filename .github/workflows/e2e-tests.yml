@@ -39,7 +39,7 @@ jobs:
       fail-fast: false
       matrix:
         # TODO: enable self-hosted-windows-8-cores once available
-        os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
+        os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=windows22-base-x64"]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     runs-on: ${{ matrix.os }}
@@ -51,17 +51,55 @@ jobs:
         app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
         private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
         owner: ${{ github.repository_owner }}
+    - name: Install Git and add to PATH windows
+      if: runner.os == 'Windows'
+      run: |
+        $ErrorActionPreference = "Stop"
+
+        # Define the URL for the MSYS2 installer.
+        # This URL uses the "latest" release from the MSYS2 installer GitHub repo.
+        $msys2InstallerUrl = "https://github.com/msys2/msys2-installer/releases/latest/download/msys2-x86_64-latest.exe"
+        $installerPath = "$env:TEMP\msys2-installer.exe"
+        
+        Write-Host "Downloading MSYS2 installer from $msys2InstallerUrl..."
+        Invoke-WebRequest -Uri $msys2InstallerUrl -OutFile $installerPath
+        
+        Write-Host "Running MSYS2 installer silently..."
+        # The MSYS2 installer supports a silent install flag (/S).
+        Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
+        
+        # Optionally, add the MSYS2 bash (usually located at C:\msys64\usr\bin) to the PATH.
+        $msys2BashPath = "C:\msys64\usr\bin"
+        if (Test-Path $msys2BashPath) {
+            Write-Host "Adding MSYS2 bash directory to PATH..."
+            # Update current session's PATH.
+            $env:PATH += ";$msys2BashPath"
+            # Optionally, update the system PATH for subsequent sessions.
+            [System.Environment]::SetEnvironmentVariable("PATH", $env:PATH, [System.EnvironmentVariableTarget]::Machine)
+        } else {
+            Write-Host "MSYS2 bash directory not found at $msys2BashPath"
+        }
+        
+        Write-Host "MSYS2 (bash) installation complete. Verifying bash version..."
+        & bash --version
+        $gitInstallerUrl = "https://github.com/git-for-windows/git/releases/download/v2.41.0.windows.1/Git-2.41.0-64-bit.exe"
+        $installerPath = "$env:TEMP\GitInstaller.exe"
+        Invoke-WebRequest -Uri $gitInstallerUrl -OutFile $installerPath
+        Start-Process -FilePath $installerPath -ArgumentList '/VERYSILENT', '/NORESTART' -Wait
+        echo "C:\Program Files\Git\cmd" >> $env:GITHUB_PATH
+      shell: powershell
     - uses: actions/checkout@v4
       with:
         token: ${{ steps.app-token.outputs.token }}
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
-        cache: 'yarn'
-    - uses: KittyCAD/action-install-cli@main
+    - uses: KittyCAD/action-install-cli@use-powershell-windows
+
     - name: Install dependencies
-      shell: bash
-      run: yarn
+      run: |
+        npm install --global yarn
+        yarn
     - name: Cache Playwright Browsers
       uses: actions/cache@v4
       with:
@@ -69,7 +107,6 @@ jobs:
           ~/.cache/ms-playwright/
         key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
-      shell: bash
       run: yarn playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
