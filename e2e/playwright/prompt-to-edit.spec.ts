@@ -182,6 +182,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     })
 
     await test.step('fire of bad prompt', async () => {
+      await toolbar.monitorTextToCadRequests()
       await cmdBar.openCmdBar('promptToEdit')
       await page
         .getByTestId('cmd-bar-arg-value')
