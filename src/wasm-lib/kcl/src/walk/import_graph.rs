@@ -21,6 +21,7 @@ type Graph = Vec<Dependency>;
 /// This will (currently) return a list of lists of IDs that can be safely
 /// run concurrently. Each "stage" is blocking in this model, which will
 /// change in the future. Don't use this function widely, yet.
+#[allow(clippy::iter_over_hash_type)]
 pub fn import_graph(progs: HashMap<String, NodeRef<'_, Program>>) -> Result<Vec<Vec<String>>> {
     let mut graph = Graph::new();
 
@@ -37,6 +38,7 @@ pub fn import_graph(progs: HashMap<String, NodeRef<'_, Program>>) -> Result<Vec<
     topsort(&all_modules, graph)
 }
 
+#[allow(clippy::iter_over_hash_type)]
 fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
     let mut dep_map = HashMap::<String, Vec<String>>::new();
 
