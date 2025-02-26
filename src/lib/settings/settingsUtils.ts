@@ -74,7 +74,6 @@ export function configurationToSettingsPayload(
 export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
-  console.log('NICE!', configuration)
   return {
     app: {
       // do not read in `theme`, because it is blocked on the project level
@@ -246,10 +245,8 @@ export async function saveSettings(
     return
   }
 
-  console.log('about to save', allSettings)
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
-  console.log('changed settings!', jsProjectSettings)
   const projectTomlString = tomlStringify({ settings: jsProjectSettings })
   if (err(projectTomlString)) return
 

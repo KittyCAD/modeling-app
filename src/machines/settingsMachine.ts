@@ -207,7 +207,7 @@ export const settingsMachine = setup({
       if (!('data' in event)) return
       const eventParts = event.type.replace(/^set./, '').split('.') as [
         keyof typeof settings,
-        string
+        string,
       ]
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
       const message =
@@ -322,8 +322,6 @@ export const settingsMachine = setup({
       // @ts-ignore
       context[category][setting][level] = value
 
-      console.log('SETTING NEW VALUE!', value)
-
       const newContext = {
         ...context,
         [category]: {
@@ -332,8 +330,6 @@ export const settingsMachine = setup({
           [setting]: context[category][setting],
         },
       }
-
-      console.log('NEW CONTEXT!', newContext)
 
       return newContext
     }),

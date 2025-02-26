@@ -109,7 +109,6 @@ export class CameraControls {
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
-  totalZoom = 0
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
   get isPerspective() {
@@ -213,7 +212,6 @@ export class CameraControls {
 
   doZoom = (zoom: number) => {
     this.handleStart()
-    this.totalZoom += -1 * zoom
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -1221,7 +1219,7 @@ function calculateNearFarFromFOV(fov: number) {
   return { z_near: 0.01, z_far: 1000 }
 }
 
-export function convertThreeCamValuesToEngineCam({
+function convertThreeCamValuesToEngineCam({
   target,
   position,
   quaternion,

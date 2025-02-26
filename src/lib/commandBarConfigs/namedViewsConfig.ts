@@ -1,10 +1,8 @@
 import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
 import { Command } from '../commandTypes'
 import toast from 'react-hot-toast'
-import { engineCommandManager, sceneInfra } from 'lib/singletons'
-import { convertThreeCamValuesToEngineCam } from 'clientSideScene/CameraControls'
+import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
-import { Vector3, Quaternion } from 'three'
 import { settingsActor } from 'machines/appMachine'
 
 export function createNamedViewsCommand() {
