@@ -22,7 +22,7 @@ import {
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import { toSync, uuidv4, getNormalisedCoordinates } from 'lib/utils'
+import { toSync, uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
@@ -109,7 +109,6 @@ export class CameraControls {
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
-
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
   get isPerspective() {
@@ -457,19 +456,11 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
-        // Nonsense to do anything until the video stream is established.
-        if (!this.engineCommandManager.elVideo) return
-
-        const { x, y } = getNormalisedCoordinates(
-          event,
-          this.engineCommandManager.elVideo,
-          this.engineCommandManager.streamDimensions
-        )
         this.throttledEngCmd({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'highlight_set_entity',
-            selected_at_window: { x, y },
+            selected_at_window: { x: event.clientX, y: event.clientY },
           },
           cmd_id: newCmdId,
         })
