@@ -26,6 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - run: corepack enable
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
@@ -123,6 +125,19 @@ jobs:
           cp prepared-files/release-notes.md release-notes.md
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
+
+      - name: Get exact Node.js version
+        run: echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Clear hosted tool cache on Windows
+        if:  ${{ contains(matrix.os, 'windows') }}
+        run: |
+          $nodeVersion = $env:NODE_VERSION.TrimStart('v')
+          Remove-Item -Force "C:\hostedtoolcache\windows\node\$nodeVersion\x64\corepack*"
+          npm i -g --force corepack
+
+      - run: corepack enable
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
