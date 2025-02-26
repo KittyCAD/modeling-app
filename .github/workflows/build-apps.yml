@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
 
       - run: pnpm install
 
@@ -133,7 +133,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn' # Set this to npm, pnpm or pnpm.
+          cache: 'pnpm' # Set this to npm, pnpm or pnpm.
 
       - name: pnpm install
         # Windows is picky sometimes and fails on fetch. Step takes about ~30s

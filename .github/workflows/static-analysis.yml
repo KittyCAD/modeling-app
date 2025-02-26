@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
       - run: pnpm install
       - run: pnpm fmt-check
 
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
       - run: pnpm install
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:
@@ -50,7 +50,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
       - run: pnpm install
       - uses: Swatinem/rust-cache@v2
         with:
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
       - run: pnpm install
       - run: pnpm lint
 
@@ -95,7 +95,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
 
       - run: pnpm install
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
@@ -124,7 +124,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
 
       - run: pnpm install
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb

@@ -347,7 +347,7 @@ However because much of our tests involve clicking in the stream at specific loc
 If you already haven't, run the following:
 
 ```
-yarn
+pnpm install
 pnpm build:wasm
 pnpm start
 ```

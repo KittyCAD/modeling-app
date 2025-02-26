@@ -13,9 +13,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: yarn
+        run: pnpm install
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Cache wasm
