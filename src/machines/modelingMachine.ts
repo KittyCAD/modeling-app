@@ -1994,7 +1994,29 @@ export const modelingMachine = setup({
 
         // Extract inputs
         const ast = kclManager.ast
-        const { selection, thickness } = input
+        const { selection, thickness, nodeToEdit } = input
+        const isEditing = nodeToEdit !== undefined // && typeof nodeToEdit[1][0] === 'number'
+        let variableName: string | undefined = undefined
+
+        // If this is an edit flow, first we're going to remove the old extrusion
+        if (isEditing) {
+          // Extract the plane name from the node to edit
+          const variableNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+          if (err(variableNode)) {
+            console.error('Error extracting name')
+          } else {
+            variableName = variableNode.node.declaration.id.name
+          }
+
+          // Removing the old extrusion statement
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0] as number, 1)
+          ast.body = newBody
+        }
 
         // Insert the thickness variable if it exists
         if (

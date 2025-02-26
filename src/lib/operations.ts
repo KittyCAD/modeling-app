@@ -9,7 +9,7 @@ import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { stringToKclExpression } from './kclHelpers'
 import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
 import { isDefaultPlaneStr } from './planes'
-import { Selections } from './selections'
+import { Selection, Selections } from './selections'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -131,38 +131,45 @@ const prepareToEditShell: PrepareToEditCallback =
     console.log('artifact', artifact)
     console.log('operation', operation)
     if (
-      !artifact ||
-      !('pathId' in artifact) ||
-      operation.type !== 'StdLibCall'
+      operation.type !== 'StdLibCall' ||
+      !operation.labeledArgs ||
+      !operation.unlabeledArg ||
+      !('thickness' in operation.labeledArgs) ||
+      !('faces' in operation.labeledArgs) ||
+      !operation.labeledArgs.thickness ||
+      !operation.labeledArgs.faces
     ) {
       return baseCommand
     }
 
-    // We have to go a little roundabout to get from the original artifact
-    // to the solid2DId that we need to pass to the Extrude command.
-    const pathArtifact = getArtifactOfTypes(
-      {
-        key: artifact.pathId,
-        types: ['path'],
-      },
-      engineCommandManager.artifactGraph
-    )
-    if (
-      err(pathArtifact) ||
-      pathArtifact.type !== 'path' ||
-      !pathArtifact.solid2dId
-    )
-      return baseCommand
-    const solid2DArtifact = getArtifactOfTypes(
-      {
-        key: pathArtifact.solid2dId,
-        types: ['solid2d'],
-      },
-      engineCommandManager.artifactGraph
-    )
-    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+    if (operation.unlabeledArg.value.type != 'Solid') {
       return baseCommand
     }
+
+    const sweepId = operation.unlabeledArg.value.value.artifactId
+    if (operation.labeledArgs.faces.value.type != 'Array') {
+      return baseCommand
+    }
+
+    const candidates: { [key: string]: Selection } = {}
+    for (const a of engineCommandManager.artifactGraph.values()) {
+      if (a.type === 'cap') {
+        if (a.sweepId === sweepId && a.subType) {
+          candidates[a.subType] = {
+            artifact: a,
+            codeRef: a.faceCodeRef,
+          }
+        }
+      }
+    }
+    console.log('candidates', candidates)
+    const faceValues = operation.labeledArgs.faces.value.value
+    console.log('faceValues', faceValues)
+    const graphSelections = faceValues.flatMap((v) => {
+      if (v.type === 'String') {
+        return candidates[v.value]
+      }
+    })
 
     // Convert the thickness argument from a string to a KCL expression
     const thickness = await stringToKclExpression(
@@ -182,12 +189,7 @@ const prepareToEditShell: PrepareToEditCallback =
     const argDefaultValues: ModelingCommandSchema['Shell'] = {
       thickness,
       selection: {
-        graphSelections: [
-          {
-            artifact: solid2DArtifact,
-            codeRef: pathArtifact.codeRef,
-          },
-        ],
+        graphSelections,
         otherSelections: [],
       },
       nodeToEdit: getNodePathFromSourceRange(
