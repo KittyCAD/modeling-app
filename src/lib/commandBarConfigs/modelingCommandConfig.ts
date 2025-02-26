@@ -396,7 +396,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         validation: shellValidator,
-        skip: true,
       },
       thickness: {
         inputType: 'kcl',
