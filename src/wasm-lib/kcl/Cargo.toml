@@ -20,7 +20,7 @@ clap = { version = "4.5.27", default-features = false, optional = true, features
     "std",
     "derive",
 ] }
-convert_case = "0.6.0"
+convert_case = "0.7.1"
 dashmap = "6.1.0"
 derive-docs = { version = "0.1.38", path = "../derive-docs" }
 dhat = { version = "0.3", optional = true }
