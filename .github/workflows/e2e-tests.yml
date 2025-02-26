@@ -143,7 +143,7 @@ jobs:
       # TODO: break this in its own job, for now it's not slowing down the overall execution as ubuntu is the quickest,
       # but we could do better. This forces a large 1/1 shard of all 20 snapshot tests that runs in about 3 minutes.
       run: |
-        PLATFORM=web pnpm playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=1/1
+        PLATFORM=web pnpm playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot --trace=on --shard=1/1
       env:
         CI: true
         NODE_ENV: development
@@ -154,7 +154,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
-        name: playwright-report-${{ matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-report-snapshots-${{ matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         include-hidden-files: true
         retention-days: 30
