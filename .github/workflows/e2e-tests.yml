@@ -54,6 +54,9 @@ jobs:
     - uses: actions/checkout@v4
       with:
         token: ${{ steps.app-token.outputs.token }}
+    - name: Get exact Node.js version
+      run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
+      shell: bash
     - name: Clear hosted tool cache on Windows
       if:  ${{ contains(matrix.os, 'windows') }}
       run: |
