@@ -74,9 +74,11 @@ function CommandBarKclInput({
     arg.name,
     previouslySetValue,
   ])
-  const [value, setValue] = useState(
-    previouslySetValue?.valueText || defaultValue || ''
+  const initialValue = useMemo(
+    () => previouslySetValue?.valueText || defaultValue || '',
+    [previouslySetValue, defaultValue]
   )
+  const [value, setValue] = useState(initialValue)
   const [createNewVariable, setCreateNewVariable] = useState(
     (previouslySetValue && 'variableName' in previouslySetValue) ||
       arg.createVariableByDefault ||
@@ -105,7 +107,7 @@ function CommandBarKclInput({
   }))
   const varMentionsExtension = varMentions(varMentionData)
 
-  const { setContainer } = useCodeMirror({
+  const { setContainer, view } = useCodeMirror({
     container: editorRef.current,
     initialDocValue: value,
     autoFocus: true,
@@ -161,6 +163,21 @@ function CommandBarKclInput({
   useEffect(() => {
     if (editorRef.current) {
       setContainer(editorRef.current)
+      // Reset the value when the arg changes and
+      // the new arg is also a KCL type, since the component
+      // sticks around.
+      view?.focus()
+      view?.dispatch({
+        changes: {
+          from: 0,
+          to: view.state.doc.length,
+          insert: initialValue,
+        },
+        selection: {
+          anchor: 0,
+          head: initialValue.length,
+        },
+      })
     }
   }, [arg, editorRef])
 
