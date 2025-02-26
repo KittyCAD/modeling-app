@@ -24,12 +24,7 @@ import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import FileMachineProvider from 'components/FileMachineProvider'
 import { MachineManagerProvider } from 'components/MachineManagerProvider'
 import { PATHS } from 'lib/paths'
-import {
-  fileLoader,
-  homeLoader,
-  onboardingRedirectLoader,
-  telemetryLoader,
-} from 'lib/routeLoaders'
+import { fileLoader, homeLoader, telemetryLoader } from 'lib/routeLoaders'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { ASK_TO_OPEN_QUERY_PARAM, BROWSER_PROJECT_NAME } from 'lib/constants'
@@ -113,11 +108,6 @@ const router = createRouter([
           {
             id: PATHS.FILE + 'SETTINGS',
             children: [
-              {
-                loader: onboardingRedirectLoader,
-                index: true,
-                element: <></>,
-              },
               {
                 path: makeUrlPathRelative(PATHS.SETTINGS),
                 element: <Settings />,

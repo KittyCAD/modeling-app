@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use crate::{
     engine::new_zoo_client,
     errors::ExecErrorWithState,
-    execution::{ExecState, ExecutorContext, ExecutorSettings},
+    execution::{EnvironmentRef, ExecState, ExecutorContext, ExecutorSettings},
     settings::types::UnitLength,
     ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
 };
@@ -28,7 +28,7 @@ pub async fn execute_and_snapshot(
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let res = do_execute_and_snapshot(&ctx, program)
         .await
-        .map(|(_state, snap)| snap)
+        .map(|(_, _, snap)| snap)
         .map_err(|err| err.error);
     ctx.close().await;
     res
@@ -40,7 +40,7 @@ pub async fn execute_and_snapshot_ast(
     ast: Program,
     units: UnitLength,
     current_file: Option<PathBuf>,
-) -> Result<(ExecState, image::DynamicImage), ExecErrorWithState> {
+) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     let ctx = new_context(units, true, current_file).await?;
     let res = do_execute_and_snapshot(&ctx, ast).await;
     ctx.close().await;
@@ -51,12 +51,12 @@ pub async fn execute_and_snapshot_no_auth(
     code: &str,
     units: UnitLength,
     current_file: Option<PathBuf>,
-) -> Result<image::DynamicImage, ExecError> {
+) -> Result<(image::DynamicImage, EnvironmentRef), ExecError> {
     let ctx = new_context(units, false, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let res = do_execute_and_snapshot(&ctx, program)
         .await
-        .map(|(_state, snap)| snap)
+        .map(|(_, env_ref, snap)| (snap, env_ref))
         .map_err(|err| err.error);
     ctx.close().await;
     res
@@ -65,9 +65,10 @@ pub async fn execute_and_snapshot_no_auth(
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
-) -> Result<(ExecState, image::DynamicImage), ExecErrorWithState> {
+) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = ExecState::new(&ctx.settings);
-    ctx.run_with_ui_outputs(&program, &mut exec_state)
+    let result = ctx
+        .run_with_ui_outputs(&program, &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
     for e in exec_state.errors() {
@@ -94,7 +95,7 @@ async fn do_execute_and_snapshot(
 
     ctx.close().await;
 
-    Ok((exec_state, img))
+    Ok((exec_state, result.0, img))
 }
 
 pub async fn new_context(

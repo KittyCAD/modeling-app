@@ -49,12 +49,15 @@ impl CollectionVisitor {
                     }
                 }
                 crate::parsing::ast::types::BodyItem::VariableDeclaration(var) if !var.visibility.is_default() => {
+                    let qual_name = if self.name == "prelude" {
+                        "std::".to_owned()
+                    } else {
+                        format!("std::{}::", self.name)
+                    };
                     let mut dd = match var.kind {
                         // TODO metadata for args
-                        VariableKind::Fn => DocData::Fn(FnData::from_ast(var, format!("std::{}::", self.name))),
-                        VariableKind::Const => {
-                            DocData::Const(ConstData::from_ast(var, format!("std::{}::", self.name)))
-                        }
+                        VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual_name)),
+                        VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name)),
                     };
 
                     // FIXME this association of metadata with items is pretty flaky.

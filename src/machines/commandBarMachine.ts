@@ -5,7 +5,6 @@ import {
   CommandArgumentWithName,
   KclCommandValue,
 } from 'lib/commandTypes'
-import { Selections__old } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
@@ -16,7 +15,6 @@ export type CommandBarContext = {
   commands: Command[]
   selectedCommand?: Command
   currentArgument?: CommandArgument<unknown> & { name: string }
-  selectionRanges: Selections__old
   argumentsToSubmit: { [x: string]: unknown }
   machineManager: MachineManager
 }

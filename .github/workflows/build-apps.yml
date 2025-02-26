@@ -7,14 +7,11 @@ on:
       - main
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
-  schedule:
-    - cron: '0 4 * * *'
-  # Daily at 04:00 AM UTC
-  # Will checkout the last commit from the default branch (main as of 2023-10-04)
+      - 'nightly-v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  IS_RELEASE: ${{ github.ref_type == 'tag' }}
-  IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
+  IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+  IS_NIGHTLY: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'nightly-v') }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -53,7 +50,10 @@ jobs:
 
       - name: Set nightly version, product name, release notes, and icons
         if: ${{ env.IS_NIGHTLY == 'true' }}
-        run: yarn files:flip-to-nightly
+        run: |
+          export VERSION=${GITHUB_REF_NAME#nightly-v}
+          yarn files:set-version
+          yarn files:flip-to-nightly
 
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -273,7 +273,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    if: ${{ github.ref_type == 'tag' || github.event_name == 'schedule' }}
+    if: ${{ github.ref_type == 'tag' }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
@@ -330,8 +330,8 @@ jobs:
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
-          WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-          URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+          WEBSITE_DIR: ${{ env.IS_NIGHTLY == 'true' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
+          URL_CODED_NAME: ${{ env.IS_NIGHTLY == 'true' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
           jq --null-input \
@@ -414,14 +414,3 @@ jobs:
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: yarn files:invalidate-bucket:nightly
-
-      - name: Tag nightly commit
-        if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { VERSION } = process.env          
-            const { owner, repo } = context.repo
-            const { sha } = context
-            const ref = `refs/tags/nightly-${VERSION}`
-            github.rest.git.createRef({ owner, repo, sha, ref })

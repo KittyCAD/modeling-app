@@ -9,7 +9,7 @@ Take a starting value. Then, for each element of an array, calculate the next va
 using the previous value and the element.
 
 ```js
-reduce(array: [KclValue], start: KclValue, reduce_fn: FunctionSource) -> KclValue
+reduce(array: [KclValue], start: KclValue, reduceFn: FunctionSource) -> KclValue
 ```
 
 
@@ -19,7 +19,7 @@ reduce(array: [KclValue], start: KclValue, reduce_fn: FunctionSource) -> KclValu
 |----------|------|-------------|----------|
 | `array` | [`[KclValue]`](/docs/kcl/types/KclValue) |  | Yes |
 | `start` | [`KclValue`](/docs/kcl/types/KclValue) | Any KCL value. | Yes |
-| `reduce_fn` | `FunctionSource` |  | Yes |
+| `reduceFn` | `FunctionSource` |  | Yes |
 
 ### Returns
 
