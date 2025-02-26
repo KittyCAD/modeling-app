@@ -18,12 +18,12 @@ use crate::{
 };
 
 /// Scale a solid.
-pub async fn transform_scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg("solid")?;
     let scale = args.get_kw_arg("scale")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let solid = inner_transform_scale(solid, scale, global, exec_state, args).await?;
+    let solid = inner_scale(solid, scale, global, exec_state, args).await?;
     Ok(KclValue::Solid { value: solid })
 }
 
@@ -61,12 +61,12 @@ pub async fn transform_scale(exec_state: &mut ExecState, args: Args) -> Result<K
 ///         }, %)              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
-///     |> transformScale(
+///     |> scale(
 ///     scale = [1.0, 1.0, 2.5],
 ///     )
 /// ```
 #[stdlib {
-    name = "transformScale",
+    name = "scale",
     feature_tree_operation = false,
     keywords = true,
     unlabeled_first = true,
@@ -76,7 +76,7 @@ pub async fn transform_scale(exec_state: &mut ExecState, args: Args) -> Result<K
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
-async fn inner_transform_scale(
+async fn inner_scale(
     solid: Box<Solid>,
     scale: [f64; 3],
     global: Option<bool>,
@@ -111,12 +111,12 @@ async fn inner_transform_scale(
 }
 
 /// Move a solid.
-pub async fn transform_translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg("solid")?;
     let translate = args.get_kw_arg("translate")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let solid = inner_transform_translate(solid, translate, global, exec_state, args).await?;
+    let solid = inner_translate(solid, translate, global, exec_state, args).await?;
     Ok(KclValue::Solid { value: solid })
 }
 
@@ -154,12 +154,12 @@ pub async fn transform_translate(exec_state: &mut ExecState, args: Args) -> Resu
 ///         }, %)              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
-///     |> transformTranslate(
+///     |> translate(
 ///     translate = [1.0, 1.0, 2.5],
 ///     )
 /// ```
 #[stdlib {
-    name = "transformTranslate",
+    name = "translate",
     feature_tree_operation = false,
     keywords = true,
     unlabeled_first = true,
@@ -169,7 +169,7 @@ pub async fn transform_translate(exec_state: &mut ExecState, args: Args) -> Resu
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
-async fn inner_transform_translate(
+async fn inner_translate(
     solid: Box<Solid>,
     translate: [f64; 3],
     global: Option<bool>,
@@ -204,7 +204,7 @@ async fn inner_transform_translate(
 }
 
 /// Rotate a solid.
-pub async fn transform_rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg("solid")?;
     let roll = args.get_kw_arg_opt("roll")?;
     let pitch = args.get_kw_arg_opt("pitch")?;
@@ -313,7 +313,7 @@ pub async fn transform_rotate(exec_state: &mut ExecState, args: Args) -> Result<
         }
     }
 
-    let solid = inner_transform_rotate(solid, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
+    let solid = inner_rotate(solid, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
     Ok(KclValue::Solid { value: solid })
 }
 
@@ -370,7 +370,7 @@ pub async fn transform_rotate(exec_state: &mut ExecState, args: Args) -> Result<
 ///         }, %)              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
-///     |> transformRotate(
+///     |> rotate(
 ///         roll = 10,
 ///         pitch =  10,
 ///         yaw = 90,
@@ -409,13 +409,13 @@ pub async fn transform_rotate(exec_state: &mut ExecState, args: Args) -> Result<
 ///         }, %)              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
-///     |> transformRotate(
+///     |> rotate(
 ///     axis =  [0, 0, 1.0],
 ///     angle = 90,
 ///     )
 /// ```
 #[stdlib {
-    name = "transformRotate",
+    name = "rotate",
     feature_tree_operation = false,
     keywords = true,
     unlabeled_first = true,
@@ -429,7 +429,8 @@ pub async fn transform_rotate(exec_state: &mut ExecState, args: Args) -> Result<
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
-async fn inner_transform_rotate(
+#[allow(clippy::too_many_arguments)]
+async fn inner_rotate(
     solid: Box<Solid>,
     roll: Option<f64>,
     pitch: Option<f64>,
@@ -533,7 +534,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_empty() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate()
+    |> rotate()
 "#;
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
@@ -547,7 +548,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_axis_no_angle() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate(
+    |> rotate(
     axis =  [0, 0, 1.0],
     )
 "#;
@@ -563,7 +564,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_angle_no_axis() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate(
+    |> rotate(
     angle = 90,
     )
 "#;
@@ -579,7 +580,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_angle_out_of_range() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate(
+    |> rotate(
     axis =  [0, 0, 1.0],
     angle = 900,
     )
@@ -596,7 +597,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_angle_axis_yaw() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate(
+    |> rotate(
     axis =  [0, 0, 1.0],
     angle = 90,
     yaw = 90,
@@ -614,7 +615,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_yaw_no_pitch() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate(
+    |> rotate(
     yaw = 90,
     )
 "#;
@@ -630,7 +631,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_yaw_out_of_range() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate(
+    |> rotate(
     yaw = 900,
     pitch = 90,
     roll = 90,
@@ -648,7 +649,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_roll_out_of_range() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate(
+    |> rotate(
     yaw = 90,
     pitch = 90,
     roll = 900,
@@ -666,7 +667,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_pitch_out_of_range() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate(
+    |> rotate(
     yaw = 90,
     pitch = 900,
     roll = 90,
@@ -684,7 +685,7 @@ sweepSketch = startSketchOn('XY')
     async fn test_rotate_roll_pitch_yaw_with_angle() {
         let ast = PIPE.to_string()
             + r#"
-    |> transformRotate(
+    |> rotate(
     yaw = 90,
     pitch = 90,
     roll = 90,
