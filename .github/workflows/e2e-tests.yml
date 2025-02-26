@@ -54,6 +54,34 @@ jobs:
     - name: Install Git and add to PATH windows
       if: runner.os == 'Windows'
       run: |
+        $ErrorActionPreference = "Stop"
+
+        # Define the URL for the MSYS2 installer.
+        # This URL uses the "latest" release from the MSYS2 installer GitHub repo.
+        $msys2InstallerUrl = "https://github.com/msys2/msys2-installer/releases/latest/download/msys2-x86_64-latest.exe"
+        $installerPath = "$env:TEMP\msys2-installer.exe"
+        
+        Write-Host "Downloading MSYS2 installer from $msys2InstallerUrl..."
+        Invoke-WebRequest -Uri $msys2InstallerUrl -OutFile $installerPath
+        
+        Write-Host "Running MSYS2 installer silently..."
+        # The MSYS2 installer supports a silent install flag (/S).
+        Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
+        
+        # Optionally, add the MSYS2 bash (usually located at C:\msys64\usr\bin) to the PATH.
+        $msys2BashPath = "C:\msys64\usr\bin"
+        if (Test-Path $msys2BashPath) {
+            Write-Host "Adding MSYS2 bash directory to PATH..."
+            # Update current session's PATH.
+            $env:PATH += ";$msys2BashPath"
+            # Optionally, update the system PATH for subsequent sessions.
+            [System.Environment]::SetEnvironmentVariable("PATH", $env:PATH, [System.EnvironmentVariableTarget]::Machine)
+        } else {
+            Write-Host "MSYS2 bash directory not found at $msys2BashPath"
+        }
+        
+        Write-Host "MSYS2 (bash) installation complete. Verifying bash version..."
+        & bash --version
         $gitInstallerUrl = "https://github.com/git-for-windows/git/releases/download/v2.41.0.windows.1/Git-2.41.0-64-bit.exe"
         $installerPath = "$env:TEMP\GitInstaller.exe"
         Invoke-WebRequest -Uri $gitInstallerUrl -OutFile $installerPath
