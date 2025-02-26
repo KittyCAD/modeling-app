@@ -31,9 +31,8 @@ jobs:
 
       - name: Push tag
         run: |
-          VERSION_NO_V=$(date +'%-y.%-m.%-d')
-          TAG="nightly-v$VERSION_NO_V"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          TAG=$(./scripts/get-nightly-tag.sh)
           git tag $TAG
           git push origin tag $TAG
