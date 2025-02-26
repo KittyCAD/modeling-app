@@ -19,14 +19,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'pnpm'
+          cache: 'yarn'
 
-      - run: pnpm install
+      - run: yarn install
         working-directory: packages/codemirror-lang-kcl
 
-      - run: pnpm tsc
+      - run: yarn tsc
         working-directory: packages/codemirror-lang-kcl
 
       - name: run unit tests
-        run: pnpm test
+        run: yarn test
         working-directory: packages/codemirror-lang-kcl
