@@ -61,6 +61,7 @@
 
             electron
             playwright-driver.browsers
+            wasm-pack
           ]) ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
             libiconv 
             darwin.apple_sdk.frameworks.Security
