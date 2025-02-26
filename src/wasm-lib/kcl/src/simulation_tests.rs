@@ -2048,3 +2048,24 @@ mod import_file_parse_error {
         super::execute(TEST_NAME, true).await
     }
 }
+mod assembly_simplified_walkie {
+    const TEST_NAME: &str = "assembly_simplified_walkie";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}

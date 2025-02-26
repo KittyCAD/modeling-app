@@ -1,0 +1,428 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing assembly_simplified_walkie.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "end": 112,
+        "path": {
+          "type": "Kcl",
+          "filename": "case.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 95,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 151,
+        "path": {
+          "type": "Kcl",
+          "filename": "talk-button.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "end": 151,
+            "name": "talkButton",
+            "start": 141,
+            "type": "Identifier"
+          }
+        },
+        "start": 113,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 183,
+        "path": {
+          "type": "Kcl",
+          "filename": "button.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 165,
+              "name": {
+                "end": 165,
+                "name": "button",
+                "start": 159,
+                "type": "Identifier"
+              },
+              "start": 159,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 152,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 289,
+        "path": {
+          "type": "Kcl",
+          "filename": "globals.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 196,
+              "name": {
+                "end": 196,
+                "name": "width",
+                "start": 191,
+                "type": "Identifier"
+              },
+              "start": 191,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 204,
+              "name": {
+                "end": 204,
+                "name": "height",
+                "start": 198,
+                "type": "Identifier"
+              },
+              "start": 198,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 215,
+              "name": {
+                "end": 215,
+                "name": "thickness",
+                "start": 206,
+                "type": "Identifier"
+              },
+              "start": 206,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 228,
+              "name": {
+                "end": 228,
+                "name": "screenWidth",
+                "start": 217,
+                "type": "Identifier"
+              },
+              "start": 217,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 242,
+              "name": {
+                "end": 242,
+                "name": "screenHeight",
+                "start": 230,
+                "type": "Identifier"
+              },
+              "start": 230,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 259,
+              "name": {
+                "end": 259,
+                "name": "screenYPosition",
+                "start": 244,
+                "type": "Identifier"
+              },
+              "start": 244,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 270,
+              "name": {
+                "end": 270,
+                "name": "tolerance",
+                "start": 261,
+                "type": "Identifier"
+              },
+              "start": 261,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 184,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 314,
+        "expression": {
+          "end": 314,
+          "name": "case",
+          "start": 310,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 310,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 443,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "argument": {
+                    "end": 378,
+                    "left": {
+                      "end": 366,
+                      "left": {
+                        "end": 362,
+                        "name": "screenWidth",
+                        "start": 351,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 366,
+                        "raw": "2",
+                        "start": 365,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 351,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 378,
+                      "name": "tolerance",
+                      "start": 369,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 351,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 378,
+                  "operator": "-",
+                  "start": 349,
+                  "type": "UnaryExpression",
+                  "type": "UnaryExpression"
+                },
+                {
+                  "end": 398,
+                  "name": "screenYPosition",
+                  "start": 383,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "end": 400,
+              "start": 345,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            },
+            {
+              "end": 403,
+              "raw": "0",
+              "start": 402,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "offset"
+                  },
+                  "arg": {
+                    "end": 441,
+                    "name": "thickness",
+                    "start": 432,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 416,
+                "name": "offsetPlane",
+                "start": 405,
+                "type": "Identifier"
+              },
+              "end": 442,
+              "start": 405,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 421,
+                "raw": "\"XZ\"",
+                "start": 417,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "XZ"
+              }
+            }
+          ],
+          "callee": {
+            "end": 344,
+            "name": "button",
+            "start": 338,
+            "type": "Identifier"
+          },
+          "end": 443,
+          "start": 338,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 338,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 481,
+        "expression": {
+          "end": 481,
+          "name": "talkButton",
+          "start": 471,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 471,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 482,
+    "innerAttrs": [
+      {
+        "end": 33,
+        "name": {
+          "end": 9,
+          "name": "settings",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 32,
+            "key": {
+              "end": 27,
+              "name": "defaultLengthUnit",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "start": 10,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 32,
+              "name": "in",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "3": [
+          {
+            "end": 309,
+            "start": 289,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import the case",
+              "style": "line"
+            }
+          }
+        ],
+        "4": [
+          {
+            "end": 337,
+            "start": 314,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import the buttons",
+              "style": "line"
+            }
+          }
+        ],
+        "5": [
+          {
+            "end": 470,
+            "start": 443,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import the talk button",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 36,
+          "start": 33,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 64,
+          "start": 36,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Part of the Walkie Talkie",
+            "style": "line"
+          }
+        },
+        {
+          "end": 94,
+          "start": 65,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Import parts and constants",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

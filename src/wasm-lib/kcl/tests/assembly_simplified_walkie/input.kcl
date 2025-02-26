@@ -1,0 +1,21 @@
+@settings(defaultLengthUnit = in)
+
+
+// Part of the Walkie Talkie
+// Import parts and constants
+import "case.kcl"
+import "talk-button.kcl" as talkButton
+import button from "button.kcl"
+import width, height, thickness, screenWidth, screenHeight, screenYPosition, tolerance from "globals.kcl"
+
+// Import the case
+case
+
+// Import the buttons
+button([
+  -(screenWidth / 2 + tolerance),
+  screenYPosition
+], 0, offsetPlane("XZ", offset = thickness))
+
+// Import the talk button
+talkButton
