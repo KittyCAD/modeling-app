@@ -9,7 +9,7 @@ import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { stringToKclExpression } from './kclHelpers'
 import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
 import { isDefaultPlaneStr } from './planes'
-import { Selections } from './selections'
+import { Selection, Selections } from './selections'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -106,6 +106,92 @@ const prepareToEditExtrude: PrepareToEditCallback =
         otherSelections: [],
       },
       distance: distanceResult,
+      nodeToEdit: getNodePathFromSourceRange(
+        kclManager.ast,
+        sourceRangeFromRust(operation.sourceRange)
+      ),
+    }
+    return {
+      ...baseCommand,
+      argDefaultValues,
+    }
+  }
+
+/**
+ * Gather up the argument values for the Extrude command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditShell: PrepareToEditCallback =
+  async function prepareToEditShell({ operation, artifact }) {
+    const baseCommand = {
+      name: 'Shell',
+      groupId: 'modeling',
+    }
+    console.log('ag', engineCommandManager.artifactGraph)
+    console.log('artifact', artifact)
+    console.log('operation', operation)
+    if (
+      operation.type !== 'StdLibCall' ||
+      !operation.labeledArgs ||
+      !operation.unlabeledArg ||
+      !('thickness' in operation.labeledArgs) ||
+      !('faces' in operation.labeledArgs) ||
+      !operation.labeledArgs.thickness ||
+      !operation.labeledArgs.faces
+    ) {
+      return baseCommand
+    }
+
+    if (operation.unlabeledArg.value.type != 'Solid') {
+      return baseCommand
+    }
+
+    const sweepId = operation.unlabeledArg.value.value.artifactId
+    if (operation.labeledArgs.faces.value.type != 'Array') {
+      return baseCommand
+    }
+
+    const candidates: { [key: string]: Selection } = {}
+    for (const a of engineCommandManager.artifactGraph.values()) {
+      if (a.type === 'cap') {
+        if (a.sweepId === sweepId && a.subType) {
+          candidates[a.subType] = {
+            artifact: a,
+            codeRef: a.faceCodeRef,
+          }
+        }
+      }
+    }
+    console.log('candidates', candidates)
+    const faceValues = operation.labeledArgs.faces.value.value
+    console.log('faceValues', faceValues)
+    const graphSelections = faceValues.flatMap((v) => {
+      if (v.type === 'String') {
+        return candidates[v.value]
+      }
+    })
+
+    // Convert the thickness argument from a string to a KCL expression
+    const thickness = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['thickness']?.sourceRange[0],
+        operation.labeledArgs?.['thickness']?.sourceRange[1]
+      ),
+      {}
+    )
+    if (err(thickness) || 'errors' in thickness) {
+      return baseCommand
+    }
+
+    // Assemble the default argument values for the Extrude command,
+    // with `nodeToEdit` set, which will let the Extrude actor know
+    // to edit the node that corresponds to the StdLibCall.
+    const argDefaultValues: ModelingCommandSchema['Shell'] = {
+      thickness,
+      selection: {
+        graphSelections,
+        otherSelections: [],
+      },
       nodeToEdit: getNodePathFromSourceRange(
         kclManager.ast,
         sourceRangeFromRust(operation.sourceRange)
@@ -370,6 +456,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   shell: {
     label: 'Shell',
     icon: 'shell',
+    prepareToEdit: prepareToEditShell,
     supportsAppearance: true,
   },
   startSketchOn: {
