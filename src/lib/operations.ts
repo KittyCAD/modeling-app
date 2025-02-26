@@ -127,49 +127,71 @@ const prepareToEditShell: PrepareToEditCallback =
       name: 'Shell',
       groupId: 'modeling',
     }
-    console.log('ag', engineCommandManager.artifactGraph)
-    console.log('artifact', artifact)
-    console.log('operation', operation)
+
     if (
       operation.type !== 'StdLibCall' ||
       !operation.labeledArgs ||
       !operation.unlabeledArg ||
+      operation.unlabeledArg.value.type !== 'Solid' ||
       !('thickness' in operation.labeledArgs) ||
       !('faces' in operation.labeledArgs) ||
       !operation.labeledArgs.thickness ||
-      !operation.labeledArgs.faces
+      !operation.labeledArgs.faces ||
+      operation.labeledArgs.faces.value.type !== 'Array'
     ) {
       return baseCommand
     }
 
-    if (operation.unlabeledArg.value.type != 'Solid') {
-      return baseCommand
-    }
-
+    // Build an artifact map here of eligible artifacts corresponding to our current sweep
+    // that we can query in another loop later
     const sweepId = operation.unlabeledArg.value.value.artifactId
-    if (operation.labeledArgs.faces.value.type != 'Array') {
-      return baseCommand
-    }
-
     const candidates: { [key: string]: Selection } = {}
-    for (const a of engineCommandManager.artifactGraph.values()) {
-      if (a.type === 'cap') {
-        if (a.sweepId === sweepId && a.subType) {
-          candidates[a.subType] = {
-            artifact: a,
-            codeRef: a.faceCodeRef,
-          }
+    for (const artifact of engineCommandManager.artifactGraph.values()) {
+      if (
+        artifact.type === 'cap' &&
+        artifact.sweepId === sweepId &&
+        artifact.subType
+      ) {
+        candidates[artifact.subType] = {
+          artifact,
+          codeRef: artifact.faceCodeRef, // TODO: this looks like default values and seems worthless here
+        }
+      } else if (
+        artifact.type === 'wall' &&
+        artifact.sweepId === sweepId &&
+        artifact.type
+      ) {
+        const segArtifact = getArtifactOfTypes(
+          { key: artifact.segId, types: ['segment'] },
+          engineCommandManager.artifactGraph
+        )
+        if (err(segArtifact)) {
+          return baseCommand
+        }
+        const { codeRef } = segArtifact
+        candidates[artifact.segId] = {
+          artifact,
+          codeRef,
         }
       }
     }
-    console.log('candidates', candidates)
+
+    // Loop over face value to retrieve the corresponding artifacts and build the graphSelections
     const faceValues = operation.labeledArgs.faces.value.value
-    console.log('faceValues', faceValues)
-    const graphSelections = faceValues.flatMap((v) => {
-      if (v.type === 'String') {
-        return candidates[v.value]
+    const graphSelections: Selection[] = []
+    for (const v of faceValues) {
+      if (v.type === 'String' && v.value && candidates[v.value]) {
+        graphSelections.push(candidates[v.value])
+      } else if (
+        v.type === 'TagIdentifier' &&
+        v.artifact_id &&
+        candidates[v.artifact_id]
+      ) {
+        graphSelections.push(candidates[v.artifact_id])
+      } else {
+        return baseCommand
       }
-    })
+    }
 
     // Convert the thickness argument from a string to a KCL expression
     const thickness = await stringToKclExpression(
@@ -179,11 +201,12 @@ const prepareToEditShell: PrepareToEditCallback =
       ),
       {}
     )
+
     if (err(thickness) || 'errors' in thickness) {
       return baseCommand
     }
 
-    // Assemble the default argument values for the Extrude command,
+    // Assemble the default argument values for the Shell command,
     // with `nodeToEdit` set, which will let the Extrude actor know
     // to edit the node that corresponds to the StdLibCall.
     const argDefaultValues: ModelingCommandSchema['Shell'] = {
