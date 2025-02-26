@@ -51,6 +51,12 @@ jobs:
         app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
         private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
         owner: ${{ github.repository_owner }}
+    - name: Install Git and add to PATH windows
+      if: runner.os == 'Windows'
+      run: |
+        choco install git -y
+        echo "C:\Program Files\Git\cmd" >> $env:GITHUB_PATH
+      shell: powershell
     - uses: actions/checkout@v4
       with:
         token: ${{ steps.app-token.outputs.token }}
@@ -58,9 +64,7 @@ jobs:
       with:
         node-version-file: '.nvmrc'
     - uses: KittyCAD/action-install-cli@use-powershell-windows
-    - name: Add Git to PATH
-      if: runner.os == 'Windows'
-      run: echo "C:\Program Files\Git\cmd" >> $env:GITHUB_PATH
+
     - name: Install dependencies
       run: |
         npm install --global yarn
