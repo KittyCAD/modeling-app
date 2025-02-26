@@ -2388,6 +2388,8 @@ extrude001 = extrude(sketch001, length = 40)
     const mutatedCode = 'xLine(-40, %, $seg01)'
     const shellDeclaration =
       "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 5)"
+    const editedShellDeclaration =
+      "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 1)"
 
     await test.step(`Look for the grey of the shape`, async () => {
       await scene.expectPixelColor([99, 99, 99], testPoint, 15)
@@ -2434,6 +2436,43 @@ extrude001 = extrude(sketch001, length = 40)
         highlightedCode: '',
       })
       await scene.expectPixelColor([49, 49, 49], testPoint, 15)
+    })
+
+    await test.step('Edit shell via feature tree selection works', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'thickness',
+        currentArgValue: '5',
+        headerArguments: {
+          Selection: '1 cap, 1 face',
+          Thickness: '5',
+        },
+        highlightedHeaderArg: 'thickness',
+        commandName: 'Shell',
+      })
+      await page.keyboard.insertText('1')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '1 cap, 1 face',
+          Thickness: '1',
+        },
+        commandName: 'Shell',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await scene.expectPixelColor([150, 150, 150], testPoint, 15)
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(editedShellDeclaration)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [editedShellDeclaration],
+        highlightedCode: '',
+      })
     })
 
     await test.step('Delete shell via feature tree selection', async () => {
