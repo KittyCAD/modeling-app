@@ -54,7 +54,10 @@ jobs:
     - name: Install Git and add to PATH windows
       if: runner.os == 'Windows'
       run: |
-        winget install --id Git.Git -e --silent
+        $gitInstallerUrl = "https://github.com/git-for-windows/git/releases/download/v2.41.0.windows.1/Git-2.41.0-64-bit.exe"
+        $installerPath = "$env:TEMP\GitInstaller.exe"
+        Invoke-WebRequest -Uri $gitInstallerUrl -OutFile $installerPath
+        Start-Process -FilePath $installerPath -ArgumentList '/VERYSILENT', '/NORESTART' -Wait
         echo "C:\Program Files\Git\cmd" >> $env:GITHUB_PATH
       shell: powershell
     - uses: actions/checkout@v4
