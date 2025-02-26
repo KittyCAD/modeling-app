@@ -111,12 +111,13 @@ export function createNamedViewsCommand() {
     icon: 'settings',
     needsReview: false,
     onSubmit: async (data) => {
-      const nameToLoad = data.name
+      // Key is name but value is _id
+      const _idToLoad = data.name
       const namedViews = [
         ...settingsActor.getSnapshot().context.modeling.namedViews.current,
       ]
       console.log('NAMED VIEWS?', namedViews)
-      const viewToLoad = namedViews.find((view) => view.name === nameToLoad)
+      const viewToLoad = namedViews.find((view) => view._id === _idToLoad)
       if (viewToLoad) {
         const cameraViewData = { ...viewToLoad }
         delete cameraViewData.name
@@ -148,7 +149,7 @@ export function createNamedViewsCommand() {
             return {
               name: view.name,
               isCurrent: index === 0,
-              value: view.name,
+              value: view._id,
             }
           })
         },
