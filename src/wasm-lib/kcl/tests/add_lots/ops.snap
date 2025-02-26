@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed add_lots.kcl
-snapshot_kind: text
 ---
 [
   {

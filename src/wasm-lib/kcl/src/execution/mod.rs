@@ -724,7 +724,7 @@ impl ExecutorContext {
 
                 KclErrorWithOutputs::new(
                     e,
-                    exec_state.mod_local.operations.clone(),
+                    exec_state.global.operations.clone(),
                     exec_state.global.artifact_commands.clone(),
                     exec_state.global.artifact_graph.clone(),
                     module_id_to_module_path,
@@ -760,7 +760,13 @@ impl ExecutorContext {
             .await?;
 
         let exec_result = self
-            .exec_module_body(program, exec_state, ExecutionKind::Normal, preserve_mem)
+            .exec_module_body(
+                program,
+                exec_state,
+                ExecutionKind::Normal,
+                preserve_mem,
+                &ModulePath::Main,
+            )
             .await;
 
         // Move the artifact commands and responses to simplify cache management
@@ -782,7 +788,7 @@ impl ExecutorContext {
         ) {
             Ok(artifact_graph) => {
                 exec_state.global.artifact_graph = artifact_graph;
-                exec_result.map(|(_, env_ref)| env_ref)
+                exec_result.map(|(_, env_ref, _)| env_ref)
             }
             Err(err) => {
                 // Prefer the exec error.

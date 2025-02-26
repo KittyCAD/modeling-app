@@ -49,6 +49,9 @@ pub(super) struct GlobalState {
     pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
     /// Module loader.
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
@@ -62,9 +65,6 @@ pub(super) struct ModuleState {
     pub pipe_value: Option<KclValue>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
-    /// Operations that have been performed in execution order, for display in
-    /// the Feature Tree.
-    pub operations: Vec<Operation>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
 }
@@ -119,7 +119,7 @@ impl ExecState {
                 .find_all_in_env(main_ref, |_| true)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
-            operations: self.mod_local.operations,
+            operations: self.global.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
             artifact_graph: self.global.artifact_graph,
@@ -224,6 +224,7 @@ impl GlobalState {
             artifact_commands: Default::default(),
             artifact_responses: Default::default(),
             artifact_graph: Default::default(),
+            operations: Default::default(),
             mod_loader: Default::default(),
             errors: Default::default(),
         };
@@ -252,7 +253,6 @@ impl ModuleState {
         ModuleState {
             pipe_value: Default::default(),
             module_exports: Default::default(),
-            operations: Default::default(),
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),
                 default_angle_units: Default::default(),
