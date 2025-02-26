@@ -5,6 +5,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
+
 use crate::settings::types::{
     AppColor, AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings, NamedView
 };
@@ -85,6 +86,8 @@ mod tests {
         TextEditorSettings, NamedView
     };
     use crate::settings::types::{AppearanceSettings, UnitLength};
+
+    use serde_json::{Value};
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -208,7 +211,7 @@ color = 1567.4"#;
           }
     ]
     "#;
-
+        // serde_json to a NamedView will produce default values
         let named_views: Vec<NamedView> = serde_json::from_str(json).unwrap();
         let uuid_string = named_views[0]._id.to_string();
         let version = named_views[0]._version;
@@ -217,6 +220,32 @@ color = 1567.4"#;
     }
 
     #[test]
+    fn named_view_serde_json_string () {
+        let json = r#"
+        [
+          {
+            "name":"dog",
+            "pivot_rotation":[0.53809947,0.0,0.0,0.8428814],
+            "pivot_position":[0.5,0,0.5],
+            "eye_offset":231.52048,
+            "fov_y":45,
+            "ortho_scale_factor":1.574129,
+            "is_ortho":true,
+            "ortho_scale_enabled":true,
+            "world_coord_system":"RightHandedUpZ"
+          }
+    ]
+    "#;
+
+        // serde_json to string does not produce default values
+        let named_views: Value = match serde_json::from_str(json) {
+            Ok(x) => x,
+            Err(_) => return
+        };
+        println!("{}", named_views);
+    }
+
+#[test]
     fn test_project_settings_named_views () {
         let conf = ProjectConfiguration {
                 settings: PerProjectSettings {

@@ -67,7 +67,7 @@ mod log;
 mod lsp;
 mod modules;
 mod parsing;
-mod settings;
+pub mod settings;
 #[cfg(test)]
 mod simulation_tests;
 mod source_range;

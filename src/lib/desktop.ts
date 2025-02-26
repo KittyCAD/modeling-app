@@ -385,6 +385,7 @@ export async function writeProjectSettingsFile(
   tomlStr: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
+  console.log('PER PROJECT', tomlStr)
   if (err(tomlStr)) return Promise.reject(tomlStr)
   return window.electron.writeFile(projectSettingsFilePath, tomlStr)
 }
