@@ -319,7 +319,7 @@ pub struct NamedView {
     #[serde(default, alias = "_id")]
     pub _id: uuid::Uuid,
     /// The default unit to use in modeling dimensions.
-    #[serde(default ="1.0", alias = "_version")]
+    #[serde(default, alias = "_version")]
     pub _version: f64,
 }
 
