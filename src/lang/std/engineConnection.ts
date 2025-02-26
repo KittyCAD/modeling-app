@@ -1447,17 +1447,11 @@ export class EngineCommandManager extends EventTarget {
     commandId: string
   }
   settings: SettingsViaQueryString
-
-  streamDimensions = {
-    // Random defaults that are overwritten pretty much immediately
-    width: 1337,
-    height: 1337,
-  }
-
-  elVideo: HTMLVideoElement | null = null
+  width: number = 1337
+  height: number = 1337
 
   /**
-   * Export intent tracks the intent of the export. If it is null there is no
+   * Export intent traxcks the intent of the export. If it is null there is no
    * export in progress. Otherwise it is an enum value of the intent.
    * Another export cannot be started if one is already in progress.
    */
@@ -1560,14 +1554,15 @@ export class EngineCommandManager extends EventTarget {
       return
     }
 
-    this.streamDimensions = {
-      width,
-      height,
-    }
+    this.width = width
+    this.height = height
 
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
-      this.handleResize(this.streamDimensions)
+      this.handleResize({
+        streamWidth: width,
+        streamHeight: height,
+      })
       return
     }
 
@@ -1863,22 +1858,27 @@ export class EngineCommandManager extends EventTarget {
     return
   }
 
-  handleResize({ width, height }: { width: number; height: number }) {
+  handleResize({
+    streamWidth,
+    streamHeight,
+  }: {
+    streamWidth: number
+    streamHeight: number
+  }) {
     if (!this.engineConnection?.isReady()) {
       return
     }
 
-    this.streamDimensions = {
-      width,
-      height,
-    }
+    this.width = streamWidth
+    this.height = streamHeight
 
     const resizeCmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
         type: 'reconfigure_stream',
-        ...this.streamDimensions,
+        width: streamWidth,
+        height: streamHeight,
         fps: 60,
       },
     }
