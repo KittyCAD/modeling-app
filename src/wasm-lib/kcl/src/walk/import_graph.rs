@@ -21,7 +21,7 @@ type Graph = Vec<Dependency>;
 /// This will (currently) return a list of lists of IDs that can be safely
 /// run concurrently. Each "stage" is blocking in this model, which will
 /// change in the future. Don't use this function widely, yet.
-pub fn import_graph<'a>(progs: HashMap<String, NodeRef<'a, Program>>) -> Result<Vec<Vec<String>>> {
+pub fn import_graph(progs: HashMap<String, NodeRef<'_, Program>>) -> Result<Vec<Vec<String>>> {
     let mut graph = Graph::new();
 
     for (name, program) in progs.iter() {
@@ -41,7 +41,7 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
     let mut dep_map = HashMap::<String, Vec<String>>::new();
 
     for (dependent, dependency) in graph.iter() {
-        let mut dependencies = dep_map.remove(dependent).unwrap_or(vec![]);
+        let mut dependencies = dep_map.remove(dependent).unwrap_or_default();
         dependencies.push(dependency.to_owned());
         dep_map.insert(dependent.to_owned(), dependencies);
     }
@@ -98,10 +98,10 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
     Ok(order)
 }
 
-pub(crate) fn import_dependencies<'a>(prog: NodeRef<'a, Program>) -> Result<Vec<String>> {
+pub(crate) fn import_dependencies(prog: NodeRef<'_, Program>) -> Result<Vec<String>> {
     let ret = Arc::new(Mutex::new(vec![]));
 
-    fn walk<'tree>(ret: Arc<Mutex<Vec<String>>>, node: Node<'tree>) {
+    fn walk(ret: Arc<Mutex<Vec<String>>>, node: Node<'_>) {
         if let Node::ImportStatement(is) = node {
             let dependency = match &is.path {
                 ImportPath::Kcl { filename } => filename.to_string(),
@@ -218,6 +218,6 @@ import \"a.kcl\"
         );
         modules.insert("b.kcl".to_owned(), &b);
 
-        assert!(import_graph(modules).is_err());
+        import_graph(modules).unwrap_err();
     }
 }
