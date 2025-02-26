@@ -174,6 +174,7 @@ pub struct Sweep {
 pub enum SweepSubType {
     Extrusion,
     Revolve,
+    RevolveAboutEdge,
     Loft,
     Sweep,
 }
@@ -771,10 +772,12 @@ fn artifacts_to_update(
         }
         ModelingCmd::Extrude(kcmc::Extrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
+        | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
         | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
             let sub_type = match cmd {
                 ModelingCmd::Extrude(_) => SweepSubType::Extrusion,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
+                ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
                 ModelingCmd::Sweep(_) => SweepSubType::Sweep,
                 _ => unreachable!(),
             };
@@ -905,7 +908,7 @@ fn artifacts_to_update(
                     let path_sweep_id = path.sweep_id.ok_or_else(|| {
                         KclError::Internal(KclErrorDetails {
                             message:format!(
-                                "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                                "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                             ),
                             source_ranges: vec![range],
                         })

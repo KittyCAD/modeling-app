@@ -23,6 +23,8 @@ import { FileEntry } from 'lib/project'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { normalizeLineEndings } from 'lib/codeEditor'
 import { reportRejection } from 'lib/trap'
+import { useKclContext } from 'lang/KclProvider'
+import { kclErrorsByFilename, KCLError } from 'lang/errors'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -158,6 +160,7 @@ const FileTreeItem = ({
   level = 0,
   treeSelection,
   setTreeSelection,
+  runtimeErrors,
 }: {
   parentDir: FileEntry | undefined
   project?: IndexLoaderData['project']
@@ -177,6 +180,7 @@ const FileTreeItem = ({
   level?: number
   treeSelection: FileEntry | undefined
   setTreeSelection: Dispatch<React.SetStateAction<FileEntry | undefined>>
+  runtimeErrors: Map<string, KCLError[]>
 }) => {
   const { send: fileSend, context: fileContext } = useFileContext()
   const { onFileOpen, onFileClose } = useLspContext()
@@ -185,6 +189,8 @@ const FileTreeItem = ({
   const isCurrentFile = fileOrDir.path === currentFile?.path
   const isFileOrDirHighlighted = treeSelection?.path === fileOrDir?.path
   const itemRef = useRef(null)
+
+  const hasRuntimeError = runtimeErrors.has(fileOrDir.path)
 
   // Since every file or directory gets its own FileTreeItem, we can do this.
   // Because subtrees only render when they are opened, that means this
@@ -292,7 +298,7 @@ const FileTreeItem = ({
         >
           {!isRenaming ? (
             <button
-              className="flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
+              className="relative flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
               style={{ paddingInlineStart: getIndentationCSS(level) }}
               onClick={(e) => {
                 e.currentTarget.focus()
@@ -300,11 +306,21 @@ const FileTreeItem = ({
               }}
               onKeyUp={handleKeyUp}
             >
+              {hasRuntimeError && (
+                <p
+                  className={
+                    'absolute m-0 p-0 bottom-3 left-6 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-red-600 rounded-full border border-red-300 dark:border-red-800 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+                  }
+                  title={`Click to view notifications`}
+                >
+                  <span>x</span>
+                </p>
+              )}
               <CustomIcon
                 name={fileOrDir.name?.endsWith(FILE_EXT) ? 'kcl' : 'file'}
                 className="inline-block w-3 text-current"
               />
-              {fileOrDir.name}
+              <span className="pl-1">{fileOrDir.name}</span>
             </button>
           ) : (
             <RenameForm
@@ -414,6 +430,7 @@ const FileTreeItem = ({
                         key={level + '-' + child.path}
                         treeSelection={treeSelection}
                         setTreeSelection={setTreeSelection}
+                        runtimeErrors={runtimeErrors}
                       />
                     )
                   )}
@@ -660,6 +677,8 @@ export const FileTreeInner = ({
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
+  const { errors } = useKclContext()
+  const runtimeErrors = kclErrorsByFilename(errors)
 
   const [lastDirectoryClicked, setLastDirectoryClicked] = useState<
     FileEntry | undefined
@@ -769,6 +788,7 @@ export const FileTreeInner = ({
                 key={fileOrDir.path}
                 treeSelection={treeSelection}
                 setTreeSelection={setTreeSelection}
+                runtimeErrors={runtimeErrors}
               />
             )
           )}
