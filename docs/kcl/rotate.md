@@ -12,7 +12,13 @@ When rotating a part in 3D space, "roll," "pitch," and "yaw" refer to the three 
 
 So, in the context of a 3D model:
 
-- **Roll**: Imagine spinning a pencil on its tip - that's a roll movement. - **Pitch**: Think of a seesaw motion, where the object tilts up or down along its side axis. - **Yaw**: Like turning your head left or right, this is a rotation around the vertical axis ### Using an Axis and Angle
+- **Roll**: Imagine spinning a pencil on its tip - that's a roll movement.
+
+- **Pitch**: Think of a seesaw motion, where the object tilts up or down along its side axis.
+
+- **Yaw**: Like turning your head left or right, this is a rotation around the vertical axis
+
+### Using an Axis and Angle
 
 When rotating a part around an axis, you specify the axis of rotation and the angle of rotation.
 
