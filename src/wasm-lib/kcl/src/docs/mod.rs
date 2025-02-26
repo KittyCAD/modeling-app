@@ -1091,6 +1091,39 @@ mod tests {
         );
     }
 
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_scale() {
+        let scale_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Scale);
+        let snippet = scale_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"scale(${0:%}, scale = [${1:3.14}, ${2:3.14}, ${3:3.14}])${}"#
+        );
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_translate() {
+        let translate_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Translate);
+        let snippet = translate_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"translate(${0:%}, translate = [${1:3.14}, ${2:3.14}, ${3:3.14}])${}"#
+        );
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_rotate() {
+        let rotate_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Rotate);
+        let snippet = rotate_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"rotate(${0:%}, roll = ${1:3.14}, pitch = ${2:3.14}, yaw = ${3:3.14})${}"#
+        );
+    }
+
     // We want to test the snippets we compile at lsp start.
     #[test]
     fn get_all_stdlib_autocomplete_snippets() {
