@@ -284,6 +284,11 @@ pub struct ModelingSettings {
     pub named_views: Vec<NamedView>,
 }
 
+
+fn one () -> f64 {
+    return 1.0
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
@@ -316,34 +321,17 @@ pub struct NamedView {
     #[serde(default, alias = "worldCoordSystem", skip_serializing_if = "is_default")]
     pub world_coord_system: String,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "_id")]
+    #[serde(default = "uuid::Uuid::new_v4", alias = "_id")]
     pub _id: uuid::Uuid,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "_version")]
+    #[serde(default = "one", alias = "_version")]
     pub _version: f64,
 }
 
-impl Default for NamedView {
-    fn default() -> Self {
-        Self {
-            name: String::default(),
-            eye_offset: f64::default(),
-            fov_y: f64::default(),
-            is_ortho: bool::default(),
-            ortho_scale_enabled: bool::default(),
-            ortho_scale_factor: f64::default(),
-            pivot_position: [f64::default(), f64::default(), f64::default()],
-            pivot_rotation:  [f64::default(), f64::default(), f64::default(), f64::default()],
-            world_coord_system: String::default(),
-            _id: uuid::Uuid::new_v4(),
-            _version: 1.0
-        }
-    }
-}
 
 impl PartialEq for NamedView {
     fn eq(&self, other: &Self) -> bool {
-        self.name == other.name
+        self._id == other._id && self._version == other._version
     }
 }
 
