@@ -1,0 +1,33 @@
+{
+  "original_source_code": "sketch001 = startSketchOn('XZ')\nprofile001 = startProfileAt([57.81, 250.51], sketch001)\n  |> line(end = [121.13, 56.63], tag = $seg02)\n  |> line(end = [83.37, -34.61], tag = $seg01)\n  |> line(end = [19.66, -116.4])\n  |> line(end = [-221.8, -41.69])\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nextrude001 = extrude(profile001, length = 200)\nsketch002 = startSketchOn('XZ')\n  |> startProfileAt([-73.64, -42.89], %)\n  |> xLine(173.71, %)\n  |> line(end = [-22.12, -94.4])\n  |> xLine(-156.98, %)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nextrude002 = extrude(sketch002, length = 50)\nsketch003 = startSketchOn('XY')\n  |> startProfileAt([52.92, 157.81], %)\n  |> angledLine([0, 176.4], %, $rectangleSegmentA001)\n  |> angledLine([\n       segAng(rectangleSegmentA001) - 90,\n       53.4\n     ], %, $rectangleSegmentB001)\n  |> angledLine([\n       segAng(rectangleSegmentA001),\n       -segLen(rectangleSegmentA001)\n     ], %, $rectangleSegmentC001)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nextrude003 = extrude(sketch003, length = 20)\n",
+  "prompt": "make this neon green please, use #39FF14",
+  "source_ranges": [
+    {
+      "prompt": "The users main selection is the end cap of a general-sweep (that is an extrusion, revolve, sweep or loft).\nThe source range most likely refers to \"startProfileAt\" simply because this is the start of the profile that was swept.\nIf you need to operate on this cap, for example for sketching on the face, you can use the special string END i.e. `startSketchOn(someSweepVariable, END)`\nWhen they made this selection they main have intended this surface directly or meant something more general like the sweep body.\nSee later source ranges for more context.",
+      "range": {
+        "start": {
+          "line": 11,
+          "column": 5
+        },
+        "end": {
+          "line": 11,
+          "column": 40
+        }
+      }
+    },
+    {
+      "prompt": "This is the sweep's source range from the user's main selection of the end cap.",
+      "range": {
+        "start": {
+          "line": 17,
+          "column": 13
+        },
+        "end": {
+          "line": 17,
+          "column": 44
+        }
+      }
+    }
+  ],
+  "kcl_version": "0.2.38"
+}
