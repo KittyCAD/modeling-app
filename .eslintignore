@@ -1,3 +1,4 @@
 src/wasm-lib/*
 *.typegen.ts
 packages/codemirror-lsp-client/dist/*
+e2e/playwright/snapshots/prompt-to-edit/*
