@@ -45,6 +45,8 @@ flowchart LR
   37["SweepEdge Adjacent"]
   38["EdgeCut Fillet<br>[846, 973, 0]"]
   39["EdgeCut Fillet<br>[846, 973, 0]"]
+  40["StartSketchOnFace<br>[442, 464, 0]"]
+  41["StartSketchOnFace<br>[442, 464, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -98,4 +100,6 @@ flowchart LR
   33 --- 36
   33 --- 37
   36 <--x 39
+  9 <--x 40
+  7 <--x 41
 ```

@@ -39,7 +39,7 @@ import {
 import { err, Reason } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { findKwArg } from './util'
-import { codeRefFromRange } from './std/artifactGraph'
+import { codeRefFromRange, getPlaneFromArtifact } from './std/artifactGraph'
 import { FunctionExpression } from 'wasm-lib/kcl/bindings/FunctionExpression'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
