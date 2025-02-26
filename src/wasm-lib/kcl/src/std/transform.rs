@@ -540,7 +540,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 647, 0])], message: "Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided." }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 638, 0])], message: "Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided." }"#.to_string()
         );
     }
 
@@ -556,7 +556,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 677, 0])], message: "Expected `angle` to be provided when `axis` is provided." }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 668, 0])], message: "Expected `angle` to be provided when `axis` is provided." }"#.to_string()
         );
     }
 
@@ -572,7 +572,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 668, 0])], message: "Expected `axis` to be provided when `angle` is provided." }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 659, 0])], message: "Expected `axis` to be provided when `angle` is provided." }"#.to_string()
         );
     }
 
@@ -589,7 +589,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 694, 0])], message: "Expected angle to be between -360 and 360, found `900`" }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 685, 0])], message: "Expected angle to be between -360 and 360, found `900`" }"#.to_string()
         );
     }
 
@@ -607,7 +607,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 706, 0])], message: "Expected `roll` to be provided when `pitch` or `yaw` is provided." }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 697, 0])], message: "Expected `roll` to be provided when `pitch` or `yaw` is provided." }"#.to_string()
         );
     }
 
@@ -623,7 +623,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 666, 0])], message: "Expected `roll` to be provided when `pitch` or `yaw` is provided." }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 657, 0])], message: "Expected `roll` to be provided when `pitch` or `yaw` is provided." }"#.to_string()
         );
     }
 
@@ -641,7 +641,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 698, 0])], message: "Expected yaw to be between -360 and 360, found `900`" }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 689, 0])], message: "Expected yaw to be between -360 and 360, found `900`" }"#.to_string()
         );
     }
 
@@ -659,7 +659,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 698, 0])], message: "Expected roll to be between -360 and 360, found `900`" }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 689, 0])], message: "Expected roll to be between -360 and 360, found `900`" }"#.to_string()
         );
     }
 
@@ -677,7 +677,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 698, 0])], message: "Expected pitch to be between -360 and 360, found `900`" }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 689, 0])], message: "Expected pitch to be between -360 and 360, found `900`" }"#.to_string()
         );
     }
 
@@ -696,7 +696,7 @@ sweepSketch = startSketchOn('XY')
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 713, 0])], message: "Expected `axis` and `angle` to not be provided when `roll`, `pitch`, and `yaw` are provided." }"#.to_string()
+            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 704, 0])], message: "Expected `axis` and `angle` to not be provided when `roll`, `pitch`, and `yaw` are provided." }"#.to_string()
         );
     }
 }
