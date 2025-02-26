@@ -57,9 +57,8 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
-    - uses: KittyCAD/action-install-cli@main
+    - uses: KittyCAD/action-install-cli@use-powershell-windows
     - name: Install dependencies
-      shell: bash
       run: yarn
     - name: Cache Playwright Browsers
       uses: actions/cache@v4
@@ -68,7 +67,6 @@ jobs:
           ~/.cache/ms-playwright/
         key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
-      shell: bash
       run: yarn playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
