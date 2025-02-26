@@ -7,11 +7,11 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
     # if no last run artifact, than run plawright normally
     echo "run playwright normally"
         if [[ "$3" == *ubuntu* ]]; then
-            xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --shard=$1/$2 || true
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm test:playwright:electron:ubuntu -- --shard=$1/$2 || true
         elif [[ "$3" == *windows* ]]; then
-            yarn test:playwright:electron:windows -- --shard=$1/$2 || true
+            pnpm test:playwright:electron:windows -- --shard=$1/$2 || true
         elif [[ "$3" == *macos* ]]; then
-            yarn test:playwright:electron:macos  -- --shard=$1/$2 || true
+            pnpm test:playwright:electron:macos  -- --shard=$1/$2 || true
         else
             echo "Do not run playwright. Unable to detect os runtime."
             exit 1
@@ -31,11 +31,11 @@ while [[ $retry -le $max_retrys ]]; do
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
             if [[ "$3" == *ubuntu* ]]; then
-                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --last-failed || true
+                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm test:playwright:electron:ubuntu -- --last-failed || true
             elif [[ "$3" == *windows* ]]; then
-                yarn test:playwright:electron:windows -- --last-failed || true
+                pnpm test:playwright:electron:windows -- --last-failed || true
             elif [[ "$3" == *macos* ]]; then
-                yarn test:playwright:electron:macos -- --last-failed || true
+                pnpm test:playwright:electron:macos -- --last-failed || true
             else
                 echo "Do not run playwright. Unable to detect os runtime."
                 exit 1

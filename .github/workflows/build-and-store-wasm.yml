@@ -10,12 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: yarn
+        run: pnpm install
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Cache wasm
@@ -26,7 +27,7 @@ jobs:
         with:
           tool: wasm-pack
       - name: build wasm
-        run: yarn build:wasm
+        run: pnpm build:wasm
 
 
       # Upload the WASM bundle as an artifact
