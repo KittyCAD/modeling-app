@@ -19,8 +19,6 @@ import { test, expect } from './zoo-test'
  * These tests intentionally don't wait for or verify responses, as we're primarily
  * interested in capturing the outgoing requests for documentation and analysis.
  *
- * !!ALL!! tests in this file should have @skipWin and @skipMac there is no need to run these tests on Windows or Mac
- * as we're just collecting API usage.
  */
 
 const file = `sketch001 = startSketchOn('XZ')
@@ -58,7 +56,7 @@ extrude003 = extrude(sketch003, length = 20)
 
 test(
   `change colour`,
-  { tag: ['@snapshot', '@skipWin', '@skipMac'] },
+  { tag: '@snapshot' },
   async ({ context, homePage, cmdBar, editor, page, scene }) => {
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
