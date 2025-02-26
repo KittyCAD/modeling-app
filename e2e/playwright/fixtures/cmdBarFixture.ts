@@ -191,15 +191,16 @@ export class CmdBarFixture {
   }
 
   /**
-   * Start monitoring requests to the text-to-cad API endpoint
-   * and save the request bodies to a file named after the current test.
+   * Captures a snapshot of the request sent to the text-to-cad API endpoint
+   * and saves it to a file named after the current test.
    *
-   * The monitoring will automatically stop when the test ends.
+   * The snapshot file will be saved in the specified directory with a filename
+   * derived from the test's full path (including describe blocks).
    *
    * @param testInfoInOrderToGetTestTitle The TestInfo object from the test context
    * @param customOutputDir Optional custom directory for the output file
    */
-  async monitorTextToCadRequests(
+  async captureTextToCadRequestSnapshot(
     testInfoInOrderToGetTestTitle: TestInfo,
     customOutputDir = 'e2e/playwright/snapshots/prompt-to-edit'
   ) {
