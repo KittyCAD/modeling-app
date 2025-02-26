@@ -7,7 +7,11 @@ import {
   getPathToExtrudeForSegmentSelection,
   mutateAstWithTagForSketchSegment,
 } from './addEdgeTreatment'
-import { getNodeFromPath } from 'lang/queryAst'
+import {
+  ARG_INDEX_FIELD,
+  getNodeFromPath,
+  LABELED_ARG_FIELD,
+} from 'lang/queryAst'
 import { err } from 'lib/trap'
 import {
   createLiteral,
@@ -48,6 +52,7 @@ export function addShell({
       graphSelection,
       artifactGraph
     )
+    console.log('extrudeLookupResult', extrudeLookupResult)
     if (err(extrudeLookupResult)) {
       return new Error("Couldn't find extrude")
     }
@@ -123,7 +128,6 @@ export function addShell({
     ]
   )
   const variable = createVariableDeclaration(name, shell)
-
   const insertAt =
     insertIndex !== undefined
       ? insertIndex
@@ -134,14 +138,17 @@ export function addShell({
   modifiedAst.body.length
     ? modifiedAst.body.splice(insertAt, 0, variable)
     : modifiedAst.body.push(variable)
-
+  const argIndex = 0
   const pathToNode: PathToNode = [
     ['body', ''],
     [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['unlabeled', 'CallExpressionKw'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
+
   return {
     modifiedAst,
     pathToNode,

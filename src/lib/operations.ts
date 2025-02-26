@@ -1,5 +1,9 @@
 import { CustomIconName } from 'components/CustomIcon'
-import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
+import {
+  Artifact,
+  getArtifactOfTypes,
+  getCapCodeRef,
+} from 'lang/std/artifactGraph'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
@@ -122,7 +126,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
  * to be used in the command bar edit flow.
  */
 const prepareToEditShell: PrepareToEditCallback =
-  async function prepareToEditShell({ operation, artifact }) {
+  async function prepareToEditShell({ operation }) {
     const baseCommand = {
       name: 'Shell',
       groupId: 'modeling',
@@ -152,9 +156,16 @@ const prepareToEditShell: PrepareToEditCallback =
         artifact.sweepId === sweepId &&
         artifact.subType
       ) {
+        const codeRef = getCapCodeRef(
+          artifact,
+          engineCommandManager.artifactGraph
+        )
+        if (err(codeRef)) {
+          return baseCommand
+        }
         candidates[artifact.subType] = {
           artifact,
-          codeRef: artifact.faceCodeRef, // TODO: this looks like default values and seems worthless here
+          codeRef,
         }
       } else if (
         artifact.type === 'wall' &&
@@ -220,6 +231,7 @@ const prepareToEditShell: PrepareToEditCallback =
         sourceRangeFromRust(operation.sourceRange)
       ),
     }
+    console.log('argDefaultValues', argDefaultValues)
     return {
       ...baseCommand,
       argDefaultValues,

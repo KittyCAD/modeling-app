@@ -1995,11 +1995,11 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness, nodeToEdit } = input
-        const isEditing = nodeToEdit !== undefined // && typeof nodeToEdit[1][0] === 'number'
         let variableName: string | undefined = undefined
+        let insertIndex: number | undefined = undefined
 
         // If this is an edit flow, first we're going to remove the old extrusion
-        if (isEditing) {
+        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
           // Extract the plane name from the node to edit
           const variableNode = getNodeFromPath<VariableDeclaration>(
             ast,
@@ -2014,27 +2014,13 @@ export const modelingMachine = setup({
 
           // Removing the old extrusion statement
           const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0] as number, 1)
+          newBody.splice(nodeToEdit[1][0], 1)
           ast.body = newBody
-        }
-
-        // Insert the thickness variable if it exists
-        if (
-          'variableName' in thickness &&
-          thickness.variableName &&
-          thickness.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(
-            thickness.insertIndex,
-            0,
-            thickness.variableDeclarationAst
-          )
-          ast.body = newBody
+          insertIndex = nodeToEdit[1][0]
         }
 
         // Perform the shell op
-        const shellResult = addShell({
+        const addResult = addShell({
           node: ast,
           selection,
           artifactGraph: engineCommandManager.artifactGraph,
@@ -2042,16 +2028,35 @@ export const modelingMachine = setup({
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
+          variableName,
+          insertIndex,
         })
-        if (err(shellResult)) {
-          return err(shellResult)
+        if (err(addResult)) {
+          return err(addResult)
+        }
+
+        // Insert the distance variable if the user has provided a variable name
+        if (
+          'variableName' in thickness &&
+          thickness.variableName &&
+          typeof addResult.pathToNode[1][0] === 'number'
+        ) {
+          const insertIndex = Math.min(
+            addResult.pathToNode[1][0],
+            thickness.insertIndex
+          )
+          const newBody = [...addResult.modifiedAst.body]
+          newBody.splice(insertIndex, 0, thickness.variableDeclarationAst)
+          addResult.modifiedAst.body = newBody
+          // Since we inserted a new variable, we need to update the path to the extrude argument
+          addResult.pathToNode[1][0]++
         }
 
         const updateAstResult = await kclManager.updateAst(
-          shellResult.modifiedAst,
+          addResult.modifiedAst,
           true,
           {
-            focusPath: [shellResult.pathToNode],
+            focusPath: [addResult.pathToNode],
           }
         )
 
