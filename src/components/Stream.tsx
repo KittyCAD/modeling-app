@@ -47,6 +47,8 @@ export const Stream = () => {
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
 
+  engineCommandManager.elVideo = videoRef.current
+
   /**
    * Execute code and show a "building scene message"
    * in Stream.tsx in the meantime.
@@ -272,7 +274,7 @@ export const Stream = () => {
 
     if (btnName(e.nativeEvent).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sendSelectEventToEngine(e, videoRef.current)
+      sendSelectEventToEngine(e)
     }
   }
 
@@ -294,7 +296,7 @@ export const Stream = () => {
       return
     }
 
-    sendSelectEventToEngine(e, videoRef.current)
+    sendSelectEventToEngine(e)
       .then(({ entity_id }) => {
         if (!entity_id) {
           // No entity selected. This is benign
