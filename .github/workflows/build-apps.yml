@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: corepack enable
+      - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
         with:
@@ -127,7 +127,7 @@ jobs:
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
 
-      - run: corepack enable
+      - uses: pnpm/action-setup@v4
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4

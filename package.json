@@ -229,6 +229,7 @@
     "postcss": "^8.4.43",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.8.8",
+    "rimraf": "^6.0.1",
     "setimmediate": "^1.0.5",
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.0.0",
