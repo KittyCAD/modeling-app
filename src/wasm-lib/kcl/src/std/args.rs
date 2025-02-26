@@ -759,22 +759,6 @@ impl<'a> FromKclValue<'a> for [f64; 2] {
     }
 }
 
-impl<'a> FromKclValue<'a> for [f32; 3] {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Array { value, meta: _ } = arg else {
-            return None;
-        };
-        if value.len() != 3 {
-            return None;
-        }
-        let v0 = value.first()?;
-        let v1 = value.get(1)?;
-        let v2 = value.get(2)?;
-        let array = [v0.as_f32()?, v1.as_f32()?, v2.as_f32()?];
-        Some(array)
-    }
-}
-
 impl<'a> FromKclValue<'a> for [usize; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Array { value, meta: _ } = arg else {
@@ -1495,15 +1479,6 @@ impl<'a> FromKclValue<'a> for TyF64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, ty.clone())),
-            _ => None,
-        }
-    }
-}
-impl<'a> FromKclValue<'a> for f32 {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        match arg {
-            KclValue::Number { value, meta: _ } => Some(*value as f32),
-            KclValue::Int { value, meta: _ } => Some(*value as f32),
             _ => None,
         }
     }

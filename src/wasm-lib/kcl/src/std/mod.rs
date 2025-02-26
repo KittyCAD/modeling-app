@@ -160,7 +160,6 @@ lazy_static! {
         Box::new(crate::std::transform::TransformScale),
         Box::new(crate::std::transform::TransformTranslate),
         Box::new(crate::std::transform::TransformRotate),
-        Box::new(crate::std::transform::TransformRotateAboutAxis),
     ];
 }
 

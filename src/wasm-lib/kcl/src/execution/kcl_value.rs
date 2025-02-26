@@ -486,16 +486,6 @@ impl KclValue {
         }
     }
 
-    pub fn as_f32(&self) -> Option<f32> {
-        if let KclValue::Number { value, meta: _ } = &self {
-            Some(*value as f32)
-        } else if let KclValue::Int { value, meta: _ } = &self {
-            Some(*value as f32)
-        } else {
-            None
-        }
-    }
-
     pub fn as_bool(&self) -> Option<bool> {
         if let KclValue::Bool { value, meta: _ } = &self {
             Some(*value)

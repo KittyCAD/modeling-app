@@ -866,7 +866,7 @@ impl ExecutorContext {
 }
 
 #[cfg(test)]
-async fn parse_execute(code: &str) -> Result<(crate::Program, EnvironmentRef, ExecutorContext, ExecState)> {
+pub(crate) async fn parse_execute(code: &str) -> Result<(crate::Program, EnvironmentRef, ExecutorContext, ExecState)> {
     let program = crate::Program::parse_no_errs(code)?;
 
     let ctx = ExecutorContext {
