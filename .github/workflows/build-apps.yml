@@ -27,6 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - run: corepack enable
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
@@ -124,6 +126,8 @@ jobs:
           cp prepared-files/release-notes.md release-notes.md
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
+
+      - run: corepack enable
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
