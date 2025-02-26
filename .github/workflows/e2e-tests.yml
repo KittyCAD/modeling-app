@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pierremtb/adhoc/pnpm]
   pull_request:
 
 concurrency:
