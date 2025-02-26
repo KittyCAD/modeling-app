@@ -39,7 +39,7 @@ jobs:
       fail-fast: false
       matrix:
         # TODO: enable self-hosted-windows-8-cores once available
-        os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
+        os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=windows22-base-x64"]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     runs-on: ${{ matrix.os }}
