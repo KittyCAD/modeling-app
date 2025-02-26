@@ -686,6 +686,8 @@ export class SceneEntities {
             ? segmentUtils.tangentialArcTo.init
             : segment.type === 'Circle'
             ? segmentUtils.circle.init
+            : segment.type === 'Arc'
+            ? segmentUtils.arc.init
             : segment.type === 'CircleThreePoint'
             ? segmentUtils.circleThreePoint.init
             : segmentUtils.straight.init
@@ -703,6 +705,15 @@ export class SceneEntities {
                 p1: segment.p1,
                 p2: segment.p2,
                 p3: segment.p3,
+              }
+            : segment.type === 'Arc'
+            ? {
+                type: 'arc-segment',
+                from: segment.from,
+                center: segment.center,
+                to: segment.to,
+                ccw: segment.ccw,
+                radius: segment.radius,
               }
             : {
                 type: 'straight-segment',

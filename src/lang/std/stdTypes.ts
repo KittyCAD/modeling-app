@@ -42,8 +42,10 @@ interface StraightSegmentInput {
 interface ArcSegmentInput {
   type: 'arc-segment'
   from: [number, number]
+  to: [number, number]
   center: [number, number]
   radius: number
+  ccw: boolean
 }
 /** Inputs for three point circle */
 interface CircleThreePointSegmentInput {
