@@ -96,6 +96,12 @@ export class CameraControls {
   wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
+  old:
+    | {
+        camera: PerspectiveCamera | OrthographicCamera
+        target: Vector3
+      }
+    | undefined
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -264,6 +270,11 @@ export class CameraControls {
     >[0]
 
     const cb = ({ data, type }: CallBackParam) => {
+      // We're reconnecting, so ignore this init proces.
+      if (this.old) {
+        return
+      }
+
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -275,6 +286,7 @@ export class CameraControls {
         camSettings.center.y,
         camSettings.center.z
       )
+
       const orientation = new Quaternion(
         camSettings.orientation.x,
         camSettings.orientation.y,
@@ -929,6 +941,28 @@ export class CameraControls {
         object_ids: [], // leave empty to zoom to all objects
         padding: 0.2, // padding around the objects
         animated: false, // don't animate the zoom for now
+      },
+    })
+  }
+
+  async restoreCameraPosition(): Promise<void> {
+    if (!this.old) return
+
+    this.camera = this.old.camera.clone()
+    this.target = this.old.target.clone()
+
+    void this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam({
+          isPerspective: true,
+          position: this.camera.position,
+          quaternion: this.camera.quaternion,
+          zoom: this.camera.zoom,
+          target: this.target,
+        }),
       },
     })
   }
