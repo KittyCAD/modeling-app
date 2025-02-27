@@ -122,6 +122,8 @@ pub enum ModuleRepr {
 #[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash, ts_rs::TS)]
 #[serde(tag = "type")]
 pub enum ModulePath {
+    // The main file of the project.
+    Main,
     Local { value: PathBuf },
     Std { value: String },
 }
@@ -136,8 +138,8 @@ impl ModulePath {
 
     pub(crate) fn std_path(&self) -> Option<String> {
         match self {
-            ModulePath::Local { value: _ } => None,
             ModulePath::Std { value: p } => Some(p.clone()),
+            _ => None,
         }
     }
 
@@ -152,6 +154,7 @@ impl ModulePath {
                     })
                 })
                 .map(str::to_owned),
+            ModulePath::Main => unreachable!(),
         }
     }
 
@@ -179,6 +182,7 @@ impl ModulePath {
 impl fmt::Display for ModulePath {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            ModulePath::Main => write!(f, "main"),
             ModulePath::Local { value: path } => path.display().fmt(f),
             ModulePath::Std { value: s } => write!(f, "std::{s}"),
         }

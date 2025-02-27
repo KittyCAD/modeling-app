@@ -93,8 +93,14 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         exec_kind: ExecutionKind,
         preserve_mem: bool,
-    ) -> Result<(Option<KclValue>, EnvironmentRef), KclError> {
+        path: &ModulePath,
+    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
+        crate::log::log(format!("enter module {path}"));
+
         let old_units = exec_state.length_unit();
+        let original_execution = self.engine.replace_execution_kind(exec_kind).await;
+        let mut local_state = ModuleState::new(&self.settings, path.std_path());
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
 
         let no_prelude = self
             .handle_annotations(program.inner_attrs.iter(), crate::execution::BodyType::Root, exec_state)
@@ -103,7 +109,6 @@ impl ExecutorContext {
         if !preserve_mem {
             exec_state.mut_memory().push_new_root_env(!no_prelude);
         }
-        let original_execution = self.engine.replace_execution_kind(exec_kind).await;
 
         let result = self
             .exec_block(program, exec_state, crate::execution::BodyType::Root)
@@ -115,12 +120,16 @@ impl ExecutorContext {
         } else {
             exec_state.mut_memory().pop_env()
         };
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+
         if !exec_kind.is_isolated() && new_units != old_units {
             self.engine.set_units(old_units.into(), Default::default()).await?;
         }
         self.engine.replace_execution_kind(original_execution).await;
 
-        result.map(|result| (result, env_ref))
+        crate::log::log(format!("leave {path}"));
+
+        result.map(|result| (result, env_ref, local_state.module_exports))
     }
 
     /// Execute an AST's program.
@@ -436,31 +445,24 @@ impl ExecutorContext {
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
         exec_state.global.mod_loader.enter_module(path);
-        let mut local_state = ModuleState::new(&self.settings, path.std_path());
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-
-        let result = self.exec_module_body(program, exec_state, exec_kind, false).await;
-
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        let result = self.exec_module_body(program, exec_state, exec_kind, false, path).await;
         exec_state.global.mod_loader.leave_module(path);
 
-        result
-            .map_err(|err| {
-                if let KclError::ImportCycle(_) = err {
-                    // It was an import cycle.  Keep the original message.
-                    err.override_source_ranges(vec![source_range])
-                } else {
-                    KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "Error loading imported file. Open it to view more details. {}: {}",
-                            path,
-                            err.message()
-                        ),
-                        source_ranges: vec![source_range],
-                    })
-                }
-            })
-            .map(|(val, env)| (val, env, local_state.module_exports))
+        result.map_err(|err| {
+            if let KclError::ImportCycle(_) = err {
+                // It was an import cycle.  Keep the original message.
+                err.override_source_ranges(vec![source_range])
+            } else {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "Error loading imported file. Open it to view more details. {}: {}",
+                        path,
+                        err.message()
+                    ),
+                    source_ranges: vec![source_range],
+                })
+            }
+        })
     }
 
     #[async_recursion]
@@ -1033,7 +1035,7 @@ impl Node<CallExpressionKw> {
                         // before running, and we will likely want to use the
                         // return value. The call takes ownership of the args,
                         // so we need to build the op before the call.
-                        exec_state.mod_local.operations.push(op);
+                        exec_state.global.operations.push(op);
                     }
                     result
                 }?;
@@ -1055,20 +1057,17 @@ impl Node<CallExpressionKw> {
                     .iter()
                     .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                     .collect();
-                exec_state
-                    .mod_local
-                    .operations
-                    .push(Operation::UserDefinedFunctionCall {
-                        name: Some(fn_name.clone()),
-                        function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: args
-                            .kw_args
-                            .unlabeled
-                            .as_ref()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                        labeled_args: op_labeled_args,
-                        source_range: callsite,
-                    });
+                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                    name: Some(fn_name.clone()),
+                    function_source_range: func.function_def_source_range().unwrap_or_default(),
+                    unlabeled_arg: args
+                        .kw_args
+                        .unlabeled
+                        .as_ref()
+                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                    labeled_args: op_labeled_args,
+                    source_range: callsite,
+                });
 
                 let return_value = func
                     .call_fn_kw(args, exec_state, ctx.clone(), callsite)
@@ -1092,10 +1091,7 @@ impl Node<CallExpressionKw> {
                 })?;
 
                 // Track return operation.
-                exec_state
-                    .mod_local
-                    .operations
-                    .push(Operation::UserDefinedFunctionReturn);
+                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
 
                 Ok(result)
             }
@@ -1174,7 +1170,7 @@ impl Node<CallExpression> {
                         // before running, and we will likely want to use the
                         // return value. The call takes ownership of the args,
                         // so we need to build the op before the call.
-                        exec_state.mod_local.operations.push(op);
+                        exec_state.global.operations.push(op);
                     }
                     result
                 }?;
@@ -1190,17 +1186,14 @@ impl Node<CallExpression> {
                 let func = exec_state.memory().get(fn_name, source_range)?.clone();
 
                 // Track call operation.
-                exec_state
-                    .mod_local
-                    .operations
-                    .push(Operation::UserDefinedFunctionCall {
-                        name: Some(fn_name.clone()),
-                        function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: None,
-                        // TODO: Add the arguments for legacy positional parameters.
-                        labeled_args: Default::default(),
-                        source_range: callsite,
-                    });
+                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                    name: Some(fn_name.clone()),
+                    function_source_range: func.function_def_source_range().unwrap_or_default(),
+                    unlabeled_arg: None,
+                    // TODO: Add the arguments for legacy positional parameters.
+                    labeled_args: Default::default(),
+                    source_range: callsite,
+                });
 
                 let return_value = func
                     .call_fn(fn_args, exec_state, ctx.clone(), source_range)
@@ -1224,10 +1217,7 @@ impl Node<CallExpression> {
                 })?;
 
                 // Track return operation.
-                exec_state
-                    .mod_local
-                    .operations
-                    .push(Operation::UserDefinedFunctionReturn);
+                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
 
                 Ok(result)
             }
