@@ -44,7 +44,7 @@ test.describe('Point-and-click tests', () => {
       await moveToCircle()
       const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
       await editor.expectState({
-        activeLines: ["constsketch002=startSketchOn('XZ')"],
+        activeLines: ["sketch002=startSketchOn('XZ')"],
         highlightedCode: circleSnippet,
         diagnostics: [],
       })
@@ -53,7 +53,7 @@ test.describe('Point-and-click tests', () => {
         await moveToCircle()
         const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
         await editor.expectState({
-          activeLines: ["constsketch002=startSketchOn('XZ')"],
+          activeLines: ["sketch002=startSketchOn('XZ')"],
           highlightedCode: circleSnippet,
           diagnostics: [],
         })
