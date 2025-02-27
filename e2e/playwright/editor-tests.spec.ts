@@ -689,7 +689,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Enter')
       await page.keyboard.type(`extrusion = startSketchOn('XY')
-  |> circle({ center: [0, 0], radius: dia/2 }, %)
+  |> circle(center: [0, 0], radius: dia/2)
     |> hole(squareHole(length, width, height), %)
     |> extrude(length = height)`)
 

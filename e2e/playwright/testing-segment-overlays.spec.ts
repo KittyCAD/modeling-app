@@ -825,7 +825,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           localStorage.setItem(
             'persistCode',
             `part001 = startSketchOn('XZ')
-      |> circle({ center = [1 + 0, 0], radius = 8 }, %)
+      |> circle(center = [1 + 0, 0], radius = 8)
     `
           )
           localStorage.setItem('disableAxis', 'true')
@@ -841,7 +841,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await u.closeDebugPanel()
 
         await page
-          .getByText('circle({ center = [1 + 0, 0], radius = 8 }, %)')
+          .getByText('circle(center = [1 + 0, 0], radius = 8)')
           .click()
         await page.waitForTimeout(100)
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -860,10 +860,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           hoverPos,
           constraintType: 'xAbsolute',
           expectBeforeUnconstrained:
-            'circle({ center = [1 + 0, 0], radius = 8 }, %)',
+            'circle(center = [1 + 0, 0], radius = 8)',
           expectAfterUnconstrained:
-            'circle({ center = [1, 0], radius = 8 }, %)',
-          expectFinal: 'circle({ center = [xAbs001, 0], radius = 8 }, %)',
+            'circle(center = [1, 0], radius = 8)',
+          expectFinal: 'circle(center = [xAbs001, 0], radius = 8)',
           ang: ang + 105,
           steps: 6,
           locator: '[data-overlay-toolbar-index="0"]',
@@ -873,10 +873,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           hoverPos,
           constraintType: 'yAbsolute',
           expectBeforeUnconstrained:
-            'circle({ center = [xAbs001, 0], radius = 8 }, %)',
+            'circle(center = [xAbs001, 0], radius = 8)',
           expectAfterUnconstrained:
-            'circle({ center = [xAbs001, yAbs001], radius =  8 }, %)',
-          expectFinal: 'circle({ center = [xAbs001, 0], radius =  8 }, %)',
+            'circle(center = [xAbs001, yAbs001], radius =  8)',
+          expectFinal: 'circle(center = [xAbs001, 0], radius =  8)',
           ang: ang + 180,
           steps: 30,
           locator: '[data-overlay-toolbar-index="0"]',
@@ -886,10 +886,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           hoverPos,
           constraintType: 'radius',
           expectBeforeUnconstrained:
-            'circle({ center = [xAbs001, 0], radius = 8 }, %)',
+            'circle(center = [xAbs001, 0], radius = 8)',
           expectAfterUnconstrained:
-            'circle({ center = [xAbs001, 0], radius = radius001 }, %)',
-          expectFinal: 'circle({ center = [xAbs001, 0], radius = 8 }, %)',
+            'circle(center = [xAbs001, 0], radius = radius001)',
+          expectFinal: 'circle(center = [xAbs001, 0], radius = 8)',
           ang: ang + 105,
           steps: 10,
           locator: '[data-overlay-toolbar-index="0"]',

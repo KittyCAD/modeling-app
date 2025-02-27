@@ -47,10 +47,10 @@ sketch001 = startSketchOn('XZ')
     )
 
 sketch002 = startSketchOn(sketch001, seg03)
-  |> circle({
+  |> circle(
     center = [-1.25, 1],
     radius = mountingHoleDiameter / 2,
-  }, %)
+  )
   |> patternLinear2d(
     instances = 2,
     distance = 2.5,
@@ -64,10 +64,10 @@ sketch002 = startSketchOn(sketch001, seg03)
   |> extrude(%, length = -thickness-.01)
 
 sketch003 = startSketchOn(sketch001, seg04)
-  |> circle({
+  |> circle(
     center = [1, -1],
     radius = mountingHoleDiameter / 2,
-  }, %)
+  )
   |> patternLinear2d(
     instances = 2,
     distance = 4,

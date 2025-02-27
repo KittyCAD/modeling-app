@@ -599,7 +599,7 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')profile001 = circle({ center = [14.44, -2.44], radius = 1 }, sketch001)`
+      `sketch001 = startSketchOn('XZ')profile001 = circle(sketch001, center = [14.44, -2.44], radius = 1)`
     )
   }
 )

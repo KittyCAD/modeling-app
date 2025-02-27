@@ -269,10 +269,10 @@ test.describe(`Testing gizmo, fixture-based`, () => {
              ], %)
           |> close()
         const sketch001 = startSketchOn('XZ')
-          |> circle({
+          |> circle(
                center: [818.33, 168.1],
                radius: 182.8
-             }, %)
+             )
           |> extrude(length = 50)
       `
       )
@@ -296,7 +296,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
 
     await test.step(`Select an edge of this circle`, async () => {
       const circleSnippet =
-        'circle({ center: [818.33, 168.1], radius: 182.8 }, %)'
+        'circle(center: [818.33, 168.1], radius: 182.8)'
       await moveToCircle()
       await clickCircle()
       await editor.expectState({
