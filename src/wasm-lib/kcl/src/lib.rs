@@ -207,15 +207,6 @@ impl Program {
     }
 }
 
-impl From<parsing::ast::types::Node<parsing::ast::types::Program>> for Program {
-    fn from(ast: parsing::ast::types::Node<parsing::ast::types::Program>) -> Program {
-        Self {
-            ast,
-            original_file_contents: String::new(),
-        }
-    }
-}
-
 #[inline]
 fn try_f64_to_usize(f: f64) -> Option<usize> {
     let i = f as usize;

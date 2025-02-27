@@ -84,10 +84,14 @@ async fn execute(test_name: &str, render_to_png: bool) {
     let Ok(ast) = ast_res else {
         return;
     };
+    let ast = crate::Program {
+        ast,
+        original_file_contents: read("input.kcl", test_name),
+    };
 
     // Run the program.
     let exec_res = crate::test_server::execute_and_snapshot_ast(
-        ast.into(),
+        ast,
         crate::settings::types::UnitLength::Mm,
         Some(Path::new("tests").join(test_name).join("input.kcl").to_owned()),
     )

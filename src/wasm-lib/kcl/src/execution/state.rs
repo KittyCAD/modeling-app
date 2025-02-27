@@ -203,7 +203,6 @@ impl ExecState {
     }
 
     pub(super) fn add_id_to_source(&mut self, id: ModuleId, source: ModuleSource) {
-        debug_assert!(!self.global.id_to_source.contains_key(&id));
         self.global.id_to_source.insert(id, source.clone());
     }
 
