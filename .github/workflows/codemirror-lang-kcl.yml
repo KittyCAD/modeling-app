@@ -23,12 +23,12 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
-      - run: yarn install
+      - run: pnpm install
         working-directory: packages/codemirror-lang-kcl
 
-      - run: yarn tsc
+      - run: pnpm tsc
         working-directory: packages/codemirror-lang-kcl
 
       - name: run unit tests
-        run: yarn test
+        run: pnpm test
         working-directory: packages/codemirror-lang-kcl
