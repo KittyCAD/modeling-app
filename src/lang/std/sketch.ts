@@ -2380,7 +2380,19 @@ export function getConstraintInfoKw(
     fnName === 'circleThreePoint' ||
     findKwArg('endAbsolute', callExpression) !== undefined
   if (!(fnName in sketchLineHelperMapKw)) return []
-  const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
+  const correctFnName = (() => {
+    switch (fnName) {
+      case 'line':
+        return isAbsolute ? 'lineTo' : fnName
+      case 'xLine':
+        return isAbsolute ? 'xLineTo' : fnName
+      case 'yLine':
+        return isAbsolute ? 'yLineTo' : fnName
+    }
+  })()
+  if (correctFnName === undefined) {
+    return []
+  }
   return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
     callExpression,
     code,

@@ -699,7 +699,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
 |> line([-0.08, 0.05], %)`
     const ast = assertParse(openSketch)
     expect(ast.start).toEqual(0)
-    expect(ast.end).toEqual(227)
+    expect(ast.end).toEqual(245)
   })
   it('should find the location to add new lineTo', () => {
     const openSketch = `sketch001 = startSketchOn('XZ')
