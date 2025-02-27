@@ -53,9 +53,9 @@ function TextToCadImprovementMessage({
         Text-to-CAD is a new ML model. There will be prompts that work and
         prompts that don't and prompts that generate something a little bit off.
         Sometimes even a small tweak to your prompt will make it better on the
-        next run. Or using prompt to edit to make it better. We look at all the
-        failures to make the model better and see our weaknesses. Over time the
-        model will get better. See our{' '}
+        next run. Try our prompt-to-edit feature to iterate on your result with
+        AI. We look at all the failures to make the model better and see our
+        weaknesses. Over time the model will get better. See our{' '}
         <a
           href="https://discord.gg/JQEpHR7Nt2"
           onClick={openExternalBrowserIfDesktop(
