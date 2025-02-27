@@ -199,6 +199,7 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@types/react-modal": "^3.16.3",
+    "@types/testing-library__jest-dom": "^6.0.0",
     "@types/three": "^0.172.0",
     "@types/ua-parser-js": "^0.7.39",
     "@types/uuid": "^9.0.8",
