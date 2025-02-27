@@ -458,17 +458,6 @@ export function addShell({
   insertIndex?: number
   variableName?: string
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  console.log(
-    'addShell args',
-    JSON.stringify({
-      node,
-      sweepName,
-      faces,
-      thickness,
-      insertIndex,
-      variableName,
-    })
-  )
   const modifiedAst = structuredClone(node)
   const name =
     variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)

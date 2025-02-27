@@ -14,7 +14,7 @@ import {
   Selection,
   updateSelections,
 } from 'lib/selections'
-import { assign, fromPromise, fromCallback, setup } from 'xstate'
+import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import { isNodeSafeToReplacePath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
@@ -90,10 +90,7 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from 'lang/modifyAst/deleteSelection'
-import {
-  getPathsFromPlaneArtifact,
-  getSweepFromSuspectedSweepSurface,
-} from 'lang/std/artifactGraph'
+import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
 import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
@@ -2037,6 +2034,8 @@ export const modelingMachine = setup({
             graphSelection,
             engineCommandManager.artifactGraph
           )
+          // TODO: this one returns empty paths on edit after creation in the cap e2e tests
+          // and *sometimes* when trying in the app manually. Not idea why.
           console.log(
             'extrudeLookupResult',
             JSON.stringify(extrudeLookupResult)
@@ -2163,7 +2162,6 @@ export const modelingMachine = setup({
           }
         )
 
-        console.log('updateAstResult', JSON.stringify(updateAstResult))
         await codeManager.updateEditorWithAstAndWriteToFile(
           updateAstResult.newAst
         )

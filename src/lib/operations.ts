@@ -231,7 +231,6 @@ const prepareToEditShell: PrepareToEditCallback =
         sourceRangeFromRust(operation.sourceRange)
       ),
     }
-    console.log('argDefaultValues', argDefaultValues)
     return {
       ...baseCommand,
       argDefaultValues,
