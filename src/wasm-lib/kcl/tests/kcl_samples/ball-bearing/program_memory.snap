@@ -2004,11 +2004,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -2240,11 +2240,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -2476,11 +2476,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -2712,11 +2712,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -2948,11 +2948,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -3184,11 +3184,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -3420,11 +3420,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -3656,11 +3656,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -3892,11 +3892,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -4128,11 +4128,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "start": {
             "from": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "to": [
               0.5375,
-              0.10825317547305482
+              0.1083
             ],
             "units": {
               "type": "Inches"
@@ -4318,11 +4318,11 @@ description: Variables in memory after executing ball-bearing.kcl
       "start": {
         "from": [
           0.5375,
-          0.10825317547305482
+          0.1083
         ],
         "to": [
           0.5375,
-          0.10825317547305482
+          0.1083
         ],
         "units": {
           "type": "Inches"
@@ -4355,7 +4355,7 @@ description: Variables in memory after executing ball-bearing.kcl
   },
   "chainThickness": {
     "type": "Number",
-    "value": 0.03125,
+    "value": 0.0313,
     "ty": {
       "type": "Unknown"
     },
@@ -5098,11 +5098,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -5232,11 +5232,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -5366,11 +5366,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -5500,11 +5500,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -5634,11 +5634,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -5768,11 +5768,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -5902,11 +5902,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -6036,11 +6036,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -6170,11 +6170,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -6304,11 +6304,11 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "start": {
             "from": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "to": [
-              0.63125,
+              0.6313,
               0.0
             ],
             "units": {
@@ -6425,11 +6425,11 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "start": {
         "from": [
-          0.63125,
+          0.6313,
           0.0
         ],
         "to": [
-          0.63125,
+          0.6313,
           0.0
         ],
         "units": {

@@ -94,12 +94,12 @@ description: Variables in memory after executing circle_three_point.kcl
         },
         "start": {
           "from": [
-            30.00594901040716,
-            19.749999999999996
+            30.0059,
+            19.75
           ],
           "to": [
-            30.00594901040716,
-            19.749999999999996
+            30.0059,
+            19.75
           ],
           "units": {
             "type": "Mm"

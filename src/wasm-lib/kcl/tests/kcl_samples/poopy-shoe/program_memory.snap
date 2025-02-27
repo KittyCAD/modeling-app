@@ -1727,7 +1727,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 },
                 "to": [
                   3.0,
-                  2.4898230358802604
+                  2.4898
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1823,7 +1823,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "to": [
           3.0,
-          2.4898230358802604
+          2.4898
         ],
         "type": "ToPoint",
         "units": {
@@ -1886,7 +1886,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "to": [
           3.0,
-          2.4898230358802604
+          2.4898
         ],
         "type": "ToPoint",
         "units": {
@@ -2438,7 +2438,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               },
               "to": [
                 3.0,
-                2.4898230358802604
+                2.4898
               ],
               "type": "ToPoint",
               "units": {
@@ -3035,7 +3035,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 },
                 "to": [
                   3.0,
-                  2.4898230358802604
+                  2.4898
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -4311,7 +4311,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       },
                       "to": [
                         3.0,
-                        2.4898230358802604
+                        2.4898
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -6683,7 +6683,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                             },
                             "to": [
                               3.0,
-                              2.4898230358802604
+                              2.4898
                             ],
                             "type": "ToPoint",
                             "units": {

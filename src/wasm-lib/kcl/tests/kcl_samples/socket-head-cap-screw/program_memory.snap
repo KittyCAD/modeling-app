@@ -5,7 +5,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
 {
   "capRatio": {
     "type": "Number",
-    "value": 0.6070287539936102,
+    "value": 0.607,
     "ty": {
       "type": "Unknown"
     },
@@ -135,7 +135,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
   },
   "hexRatio": {
     "type": "Number",
-    "value": 0.4992012779552716,
+    "value": 0.4992,
     "ty": {
       "type": "Unknown"
     },
@@ -187,7 +187,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
   },
   "hexWallLength": {
     "type": "Number",
-    "value": 0.09021097956087902,
+    "value": 0.0902,
     "ty": {
       "type": "Unknown"
     },
@@ -231,7 +231,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
   },
   "hexWallToWall": {
     "type": "Number",
-    "value": 0.15625,
+    "value": 0.1563,
     "ty": {
       "type": "Unknown"
     },

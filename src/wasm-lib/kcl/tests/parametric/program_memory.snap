@@ -438,7 +438,7 @@ description: Variables in memory after executing parametric.kcl
   },
   "thickness": {
     "type": "Number",
-    "value": 0.1851640199545103,
+    "value": 0.1852,
     "ty": {
       "type": "Unknown"
     },

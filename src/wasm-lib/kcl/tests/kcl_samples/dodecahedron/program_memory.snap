@@ -218,11 +218,11 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "start": {
           "from": [
-            15.176549955167156,
+            15.1765,
             0.0
           ],
           "to": [
-            15.176549955167156,
+            15.1765,
             0.0
           ],
           "units": {
@@ -486,11 +486,11 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           "start": {
             "from": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "to": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "units": {
@@ -750,11 +750,11 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           "start": {
             "from": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "to": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "units": {
@@ -1014,11 +1014,11 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           "start": {
             "from": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "to": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "units": {
@@ -1278,11 +1278,11 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           "start": {
             "from": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "to": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "units": {
@@ -1542,11 +1542,11 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           "start": {
             "from": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "to": [
-              15.176549955167156,
+              15.1765,
               0.0
             ],
             "units": {
@@ -1749,11 +1749,11 @@ description: Variables in memory after executing dodecahedron.kcl
       },
       "start": {
         "from": [
-          15.176549955167156,
+          15.1765,
           0.0
         ],
         "to": [
-          15.176549955167156,
+          15.1765,
           0.0
         ],
         "units": {
@@ -2000,11 +2000,11 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "start": {
           "from": [
-            15.176549955167156,
+            15.1765,
             0.0
           ],
           "to": [
-            15.176549955167156,
+            15.1765,
             0.0
           ],
           "units": {
@@ -2206,11 +2206,11 @@ description: Variables in memory after executing dodecahedron.kcl
       },
       "start": {
         "from": [
-          15.176549955167156,
+          15.1765,
           0.0
         ],
         "to": [
-          15.176549955167156,
+          15.1765,
           0.0
         ],
         "units": {
@@ -2266,7 +2266,7 @@ description: Variables in memory after executing dodecahedron.kcl
   },
   "dihedral": {
     "type": "Number",
-    "value": 2.0344439357957027,
+    "value": 2.0344,
     "ty": {
       "type": "Unknown"
     },
@@ -2282,7 +2282,7 @@ description: Variables in memory after executing dodecahedron.kcl
   },
   "edgeL": {
     "type": "Number",
-    "value": 17.841104488654498,
+    "value": 17.8411,
     "ty": {
       "type": "Unknown"
     },
@@ -2326,7 +2326,7 @@ description: Variables in memory after executing dodecahedron.kcl
   },
   "inscR": {
     "type": "Number",
-    "value": 19.866361807294155,
+    "value": 19.8664,
     "ty": {
       "type": "Unknown"
     },
@@ -2356,7 +2356,7 @@ description: Variables in memory after executing dodecahedron.kcl
   },
   "pentR": {
     "type": "Number",
-    "value": 15.176549955167156,
+    "value": 15.1765,
     "ty": {
       "type": "Unknown"
     },
@@ -2423,7 +2423,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -17.76901418668612,
+                "value": -17.769,
                 "ty": {
                   "type": "Unknown"
                 },
@@ -2468,7 +2468,7 @@ description: Variables in memory after executing dodecahedron.kcl
               },
               {
                 "type": "Number",
-                "value": 10.981854713951094,
+                "value": 10.9819,
                 "ty": {
                   "type": "Unknown"
                 },
@@ -2540,7 +2540,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": [
               {
                 "type": "Number",
-                "value": -0.4472135954999579,
+                "value": -0.4472,
                 "ty": {
                   "type": "Known",
                   "type": "Count"
@@ -2579,7 +2579,7 @@ description: Variables in memory after executing dodecahedron.kcl
               },
               {
                 "type": "Number",
-                "value": 0.8944271909999159,
+                "value": 0.8944,
                 "ty": {
                   "type": "Known",
                   "type": "Count"
@@ -2690,7 +2690,7 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 0.8944271909999159,
+                "value": 0.8944,
                 "ty": {
                   "type": "Known",
                   "type": "Count"
@@ -2729,7 +2729,7 @@ description: Variables in memory after executing dodecahedron.kcl
               },
               {
                 "type": "Number",
-                "value": 0.4472135954999579,
+                "value": 0.4472,
                 "ty": {
                   "type": "Known",
                   "type": "Count"

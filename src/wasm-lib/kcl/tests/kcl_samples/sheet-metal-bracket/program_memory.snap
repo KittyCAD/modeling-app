@@ -686,7 +686,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "value": "e10"
                 },
                 "to": [
-                  0.5899999999999999,
+                  0.59,
                   3.0
                 ],
                 "type": "ToPoint",
@@ -738,7 +738,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ]
                 },
                 "from": [
-                  0.5899999999999999,
+                  0.59,
                   3.0
                 ],
                 "tag": {
@@ -748,7 +748,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "value": "e11"
                 },
                 "to": [
-                  0.5899999999999999,
+                  0.59,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -800,7 +800,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   ]
                 },
                 "from": [
-                  0.5899999999999999,
+                  0.59,
                   0.0
                 ],
                 "tag": {
@@ -1059,7 +1059,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 "to": [
                   5.5,
-                  0.08999999999999986
+                  0.09
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1111,7 +1111,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 "from": [
                   5.5,
-                  0.08999999999999986
+                  0.09
                 ],
                 "tag": {
                   "end": 1018,
@@ -1121,7 +1121,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 "to": [
                   6.0,
-                  0.08999999999999986
+                  0.09
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1173,7 +1173,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 "from": [
                   6.0,
-                  0.08999999999999986
+                  0.09
                 ],
                 "tag": {
                   "end": 1062,
@@ -1183,7 +1183,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 "to": [
                   6.0,
-                  -0.00000000000000013877787807814457
+                  -0.0
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1235,7 +1235,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 "from": [
                   6.0,
-                  -0.00000000000000013877787807814457
+                  -0.0
                 ],
                 "tag": {
                   "end": 1121,
@@ -1245,7 +1245,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 "to": [
                   5.41,
-                  -0.00000000000000013877787807814457
+                  -0.0
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1297,7 +1297,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 "from": [
                   5.41,
-                  -0.00000000000000013877787807814457
+                  -0.0
                 ],
                 "tag": {
                   "end": 1164,
@@ -1567,7 +1567,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "e10"
         },
         "to": [
-          0.5899999999999999,
+          0.59,
           3.0
         ],
         "type": "ToPoint",
@@ -1620,7 +1620,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ]
         },
         "from": [
-          0.5899999999999999,
+          0.59,
           3.0
         ],
         "tag": {
@@ -1630,7 +1630,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "e11"
         },
         "to": [
-          0.5899999999999999,
+          0.59,
           0.0
         ],
         "type": "ToPoint",
@@ -1683,7 +1683,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           ]
         },
         "from": [
-          0.5899999999999999,
+          0.59,
           0.0
         ],
         "tag": {
@@ -2198,7 +2198,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "to": [
           5.5,
-          0.08999999999999986
+          0.09
         ],
         "type": "ToPoint",
         "units": {
@@ -2251,7 +2251,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "from": [
           5.5,
-          0.08999999999999986
+          0.09
         ],
         "tag": {
           "end": 1018,
@@ -2261,7 +2261,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "to": [
           6.0,
-          0.08999999999999986
+          0.09
         ],
         "type": "ToPoint",
         "units": {
@@ -2314,7 +2314,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "from": [
           6.0,
-          0.08999999999999986
+          0.09
         ],
         "tag": {
           "end": 1062,
@@ -2324,7 +2324,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "to": [
           6.0,
-          -0.00000000000000013877787807814457
+          -0.0
         ],
         "type": "ToPoint",
         "units": {
@@ -2377,7 +2377,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "from": [
           6.0,
-          -0.00000000000000013877787807814457
+          -0.0
         ],
         "tag": {
           "end": 1121,
@@ -2387,7 +2387,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "to": [
           5.41,
-          -0.00000000000000013877787807814457
+          -0.0
         ],
         "type": "ToPoint",
         "units": {
@@ -2440,7 +2440,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         "from": [
           5.41,
-          -0.00000000000000013877787807814457
+          -0.0
         ],
         "tag": {
           "end": 1164,
@@ -3364,7 +3364,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
   },
   "outsideBendRad": {
     "type": "Number",
-    "value": 0.16999999999999998,
+    "value": 0.17,
     "ty": {
       "type": "Default",
       "len": {

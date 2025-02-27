@@ -382,7 +382,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
   },
   "capRatio": {
     "type": "Number",
-    "value": 0.6070287539936102,
+    "value": 0.607,
     "ty": {
       "type": "Unknown"
     },
@@ -705,7 +705,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
   },
   "hexRatio": {
     "type": "Number",
-    "value": 0.8223684210526315,
+    "value": 0.8224,
     "ty": {
       "type": "Unknown"
     },

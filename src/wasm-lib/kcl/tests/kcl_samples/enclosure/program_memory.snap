@@ -357,7 +357,7 @@ description: Variables in memory after executing enclosure.kcl
                   "value": "rectangleSegmentB001"
                 },
                 "to": [
-                  125.00000000000001,
+                  125.0,
                   175.0
                 ],
                 "type": "ToPoint",
@@ -409,7 +409,7 @@ description: Variables in memory after executing enclosure.kcl
                   ]
                 },
                 "from": [
-                  125.00000000000001,
+                  125.0,
                   175.0
                 ],
                 "tag": {
@@ -419,7 +419,7 @@ description: Variables in memory after executing enclosure.kcl
                   "value": "rectangleSegmentC001"
                 },
                 "to": [
-                  0.000000000000014210854715202004,
+                  0.0,
                   175.0
                 ],
                 "type": "ToPoint",
@@ -471,7 +471,7 @@ description: Variables in memory after executing enclosure.kcl
                   ]
                 },
                 "from": [
-                  0.000000000000014210854715202004,
+                  0.0,
                   175.0
                 ],
                 "tag": {
@@ -2602,7 +2602,7 @@ description: Variables in memory after executing enclosure.kcl
           "value": "rectangleSegmentB001"
         },
         "to": [
-          125.00000000000001,
+          125.0,
           175.0
         ],
         "type": "ToPoint",
@@ -2781,7 +2781,7 @@ description: Variables in memory after executing enclosure.kcl
           ]
         },
         "from": [
-          125.00000000000001,
+          125.0,
           175.0
         ],
         "tag": {
@@ -2791,7 +2791,7 @@ description: Variables in memory after executing enclosure.kcl
           "value": "rectangleSegmentC001"
         },
         "to": [
-          0.000000000000014210854715202004,
+          0.0,
           175.0
         ],
         "type": "ToPoint",
@@ -2970,7 +2970,7 @@ description: Variables in memory after executing enclosure.kcl
           ]
         },
         "from": [
-          0.000000000000014210854715202004,
+          0.0,
           175.0
         ],
         "tag": {
@@ -3425,7 +3425,7 @@ description: Variables in memory after executing enclosure.kcl
                 "value": "rectangleSegmentB001"
               },
               "to": [
-                125.00000000000001,
+                125.0,
                 175.0
               ],
               "type": "ToPoint",
@@ -3477,7 +3477,7 @@ description: Variables in memory after executing enclosure.kcl
                 ]
               },
               "from": [
-                125.00000000000001,
+                125.0,
                 175.0
               ],
               "tag": {
@@ -3487,7 +3487,7 @@ description: Variables in memory after executing enclosure.kcl
                 "value": "rectangleSegmentC001"
               },
               "to": [
-                0.000000000000014210854715202004,
+                0.0,
                 175.0
               ],
               "type": "ToPoint",
@@ -3539,7 +3539,7 @@ description: Variables in memory after executing enclosure.kcl
                 ]
               },
               "from": [
-                0.000000000000014210854715202004,
+                0.0,
                 175.0
               ],
               "tag": {

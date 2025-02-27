@@ -2624,7 +2624,7 @@ description: Variables in memory after executing bracket.kcl
   },
   "thickness": {
     "type": "Number",
-    "value": 0.35132402626147197,
+    "value": 0.3513,
     "ty": {
       "type": "Unknown"
     },

@@ -26,7 +26,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           210.0
         ],
         "from": [
-          4.000000000000001,
+          4.0,
           210.0
         ],
         "tag": {
@@ -36,7 +36,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "value": "arc000"
         },
         "to": [
-          -3.999999999999999,
+          -4.0,
           210.0
         ],
         "type": "TangentialArc",
@@ -94,7 +94,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           200.0
         ],
         "from": [
-          -3.9999999999999996,
+          -4.0,
           200.0
         ],
         "tag": {
@@ -1276,11 +1276,11 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "start": {
           "from": [
-            -26.806746,
+            -26.8067,
             -10.0
           ],
           "to": [
-            -26.806746,
+            -26.8067,
             -10.0
           ],
           "units": {
@@ -1314,7 +1314,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   ]
                 },
                 "from": [
-                  -29.806746,
+                  -29.8067,
                   7.0
                 ],
                 "tag": {
@@ -1324,7 +1324,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "value": "gripEdgeTop"
                 },
                 "to": [
-                  -29.806746,
+                  -29.8067,
                   -7.0
                 ],
                 "type": "ToPoint",
@@ -1410,7 +1410,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           ]
         },
         "from": [
-          -29.806746,
+          -29.8067,
           7.0
         ],
         "tag": {
@@ -1420,7 +1420,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "value": "gripEdgeTop"
         },
         "to": [
-          -29.806746,
+          -29.8067,
           -7.0
         ],
         "type": "ToPoint",
@@ -2043,11 +2043,11 @@ description: Variables in memory after executing food-service-spatula.kcl
             },
             "start": {
               "from": [
-                -26.806746,
+                -26.8067,
                 -10.0
               ],
               "to": [
-                -26.806746,
+                -26.8067,
                 -10.0
               ],
               "units": {
@@ -2081,7 +2081,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                       ]
                     },
                     "from": [
-                      -29.806746,
+                      -29.8067,
                       7.0
                     ],
                     "tag": {
@@ -2091,7 +2091,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                       "value": "gripEdgeTop"
                     },
                     "to": [
-                      -29.806746,
+                      -29.8067,
                       -7.0
                     ],
                     "type": "ToPoint",
@@ -2216,7 +2216,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 210.0
               ],
               "from": [
-                4.000000000000001,
+                4.0,
                 210.0
               ],
               "tag": {
@@ -2226,7 +2226,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "arc000"
               },
               "to": [
-                -3.999999999999999,
+                -4.0,
                 210.0
               ],
               "type": "TangentialArc",
@@ -2283,7 +2283,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 200.0
               ],
               "from": [
-                -3.9999999999999996,
+                -4.0,
                 200.0
               ],
               "tag": {
@@ -2355,7 +2355,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "line000"
               },
               "to": [
-                4.000000000000001,
+                4.0,
                 210.0
               ],
               "type": "ToPoint",
@@ -2407,7 +2407,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 ]
               },
               "from": [
-                -3.999999999999999,
+                -4.0,
                 210.0
               ],
               "tag": {
@@ -2417,7 +2417,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "line001"
               },
               "to": [
-                -3.9999999999999996,
+                -4.0,
                 200.0
               ],
               "type": "ToPoint",
@@ -2766,11 +2766,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "start": {
         "from": [
-          -26.806746,
+          -26.8067,
           -10.0
         ],
         "to": [
-          -26.806746,
+          -26.8067,
           -10.0
         ],
         "units": {
@@ -2804,7 +2804,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 ]
               },
               "from": [
-                -29.806746,
+                -29.8067,
                 7.0
               ],
               "tag": {
@@ -2814,7 +2814,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "gripEdgeTop"
               },
               "to": [
-                -29.806746,
+                -29.8067,
                 -7.0
               ],
               "type": "ToPoint",
@@ -3261,8 +3261,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "value": "handleBottomEdge"
                 },
                 "to": [
-                  31.819805,
-                  35.319805
+                  31.8198,
+                  35.3198
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3313,8 +3313,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   ]
                 },
                 "from": [
-                  171.063597,
-                  91.32128900000001
+                  171.0636,
+                  91.3213
                 ],
                 "tag": {
                   "end": 3022,
@@ -3323,8 +3323,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "value": "handleTopEdge"
                 },
                 "to": [
-                  29.06807999999998,
-                  39.63914700000001
+                  29.0681,
+                  39.6391
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3419,8 +3419,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "value": "handleBottomEdge"
         },
         "to": [
-          31.819805,
-          35.319805
+          31.8198,
+          35.3198
         ],
         "type": "ToPoint",
         "units": {
@@ -3465,7 +3465,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 208.593833,
+                "value": 208.5938,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -3509,7 +3509,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               {
                 "type": "Number",
-                "value": 75.921946,
+                "value": 75.9219,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -3545,7 +3545,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 0.34202,
+                "value": 0.342,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -3589,7 +3589,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               {
                 "type": "Number",
-                "value": -0.939693,
+                "value": -0.9397,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -3705,7 +3705,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": [
               {
                 "type": "Number",
-                "value": 0.939693,
+                "value": 0.9397,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -3749,7 +3749,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               {
                 "type": "Number",
-                "value": 0.34202,
+                "value": 0.342,
                 "ty": {
                   "type": "Default",
                   "len": {
@@ -4060,8 +4060,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "handleBottomEdge"
               },
               "to": [
-                31.819805,
-                35.319805
+                31.8198,
+                35.3198
               ],
               "type": "ToPoint",
               "units": {
@@ -4112,8 +4112,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 ]
               },
               "from": [
-                171.063597,
-                91.32128900000001
+                171.0636,
+                91.3213
               ],
               "tag": {
                 "end": 3022,
@@ -4122,8 +4122,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "handleTopEdge"
               },
               "to": [
-                29.06807999999998,
-                39.63914700000001
+                29.0681,
+                39.6391
               ],
               "type": "ToPoint",
               "units": {
@@ -4192,8 +4192,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           ]
         },
         "from": [
-          171.063597,
-          91.32128900000001
+          171.0636,
+          91.3213
         ],
         "tag": {
           "end": 3022,
@@ -4202,8 +4202,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "value": "handleTopEdge"
         },
         "to": [
-          29.06807999999998,
-          39.63914700000001
+          29.0681,
+          39.6391
         ],
         "type": "ToPoint",
         "units": {
@@ -4287,7 +4287,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "value": "line000"
         },
         "to": [
-          4.000000000000001,
+          4.0,
           210.0
         ],
         "type": "ToPoint",
@@ -4340,7 +4340,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           ]
         },
         "from": [
-          -3.999999999999999,
+          -4.0,
           210.0
         ],
         "tag": {
@@ -4350,7 +4350,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "value": "line001"
         },
         "to": [
-          -3.9999999999999996,
+          -4.0,
           200.0
         ],
         "type": "ToPoint",
@@ -4874,11 +4874,11 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "start": {
             "from": [
-              -26.806746,
+              -26.8067,
               -10.0
             ],
             "to": [
-              -26.806746,
+              -26.8067,
               -10.0
             ],
             "units": {
@@ -4912,7 +4912,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     ]
                   },
                   "from": [
-                    -29.806746,
+                    -29.8067,
                     7.0
                   ],
                   "tag": {
@@ -4922,7 +4922,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "value": "gripEdgeTop"
                   },
                   "to": [
-                    -29.806746,
+                    -29.8067,
                     -7.0
                   ],
                   "type": "ToPoint",
@@ -5243,7 +5243,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               ],
               "from": [
                 -55.0,
-                5.0000000000000036
+                5.0
               ],
               "tag": {
                 "end": 1196,
@@ -5253,7 +5253,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "to": [
                 -55.0,
-                -4.9999999999999964
+                -5.0
               ],
               "type": "TangentialArc",
               "units": {
@@ -5352,7 +5352,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "to": [
                 -55.0,
-                5.0000000000000036
+                5.0
               ],
               "type": "ToPoint",
               "units": {
@@ -5389,7 +5389,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "from": [
                 -55.0,
-                -4.9999999999999964
+                -5.0
               ],
               "tag": {
                 "end": 1262,
@@ -5619,12 +5619,12 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "start": {
         "from": [
-          -24.833425848836807,
-          22.99722453489577
+          -24.8334,
+          22.9972
         ],
         "to": [
-          -24.833425848836807,
-          22.99722453489577
+          -24.8334,
+          22.9972
         ],
         "units": {
           "type": "Mm"
@@ -5662,8 +5662,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 18.99999999999999
               ],
               "from": [
-                -54.83342584883681,
-                23.99722453489576
+                -54.8334,
+                23.9972
               ],
               "tag": {
                 "end": 1196,
@@ -5672,8 +5672,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "arc000"
               },
               "to": [
-                -55.166574151163196,
-                14.002775465104218
+                -55.1666,
+                14.0028
               ],
               "type": "TangentialArc",
               "units": {
@@ -5714,8 +5714,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 18.0
               ],
               "from": [
-                -25.166574151163196,
-                13.002775465104227
+                -25.1666,
+                13.0028
               ],
               "tag": {
                 "end": 1335,
@@ -5724,8 +5724,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "arc001"
               },
               "to": [
-                -24.833425848836807,
-                22.99722453489577
+                -24.8334,
+                22.9972
               ],
               "type": "TangentialArcTo",
               "units": {
@@ -5761,8 +5761,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 ]
               },
               "from": [
-                -24.833425848836807,
-                22.99722453489577
+                -24.8334,
+                22.9972
               ],
               "tag": {
                 "end": 1125,
@@ -5771,8 +5771,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "line000"
               },
               "to": [
-                -54.83342584883681,
-                23.99722453489576
+                -54.8334,
+                23.9972
               ],
               "type": "ToPoint",
               "units": {
@@ -5808,8 +5808,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 ]
               },
               "from": [
-                -55.166574151163196,
-                14.002775465104218
+                -55.1666,
+                14.0028
               ],
               "tag": {
                 "end": 1262,
@@ -5818,8 +5818,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "line001"
               },
               "to": [
-                -25.166574151163196,
-                13.002775465104227
+                -25.1666,
+                13.0028
               ],
               "type": "ToPoint",
               "units": {
@@ -6039,12 +6039,12 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "start": {
         "from": [
-          -25.16657415116319,
-          -13.002775465104229
+          -25.1666,
+          -13.0028
         ],
         "to": [
-          -25.16657415116319,
-          -13.002775465104229
+          -25.1666,
+          -13.0028
         ],
         "units": {
           "type": "Mm"
@@ -6082,8 +6082,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 -18.999999999999996
               ],
               "from": [
-                -55.16657415116319,
-                -14.002775465104225
+                -55.1666,
+                -14.0028
               ],
               "tag": {
                 "end": 1196,
@@ -6092,8 +6092,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "arc000"
               },
               "to": [
-                -54.8334258488368,
-                -23.997224534895768
+                -54.8334,
+                -23.9972
               ],
               "type": "TangentialArc",
               "units": {
@@ -6134,8 +6134,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 -18.0
               ],
               "from": [
-                -24.833425848836796,
-                -22.99722453489577
+                -24.8334,
+                -22.9972
               ],
               "tag": {
                 "end": 1335,
@@ -6144,8 +6144,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "arc001"
               },
               "to": [
-                -25.16657415116319,
-                -13.002775465104229
+                -25.1666,
+                -13.0028
               ],
               "type": "TangentialArcTo",
               "units": {
@@ -6181,8 +6181,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 ]
               },
               "from": [
-                -25.16657415116319,
-                -13.002775465104229
+                -25.1666,
+                -13.0028
               ],
               "tag": {
                 "end": 1125,
@@ -6191,8 +6191,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "line000"
               },
               "to": [
-                -55.16657415116319,
-                -14.002775465104225
+                -55.1666,
+                -14.0028
               ],
               "type": "ToPoint",
               "units": {
@@ -6228,8 +6228,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 ]
               },
               "from": [
-                -54.8334258488368,
-                -23.997224534895768
+                -54.8334,
+                -23.9972
               ],
               "tag": {
                 "end": 1262,
@@ -6238,8 +6238,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "value": "line001"
               },
               "to": [
-                -24.833425848836796,
-                -22.99722453489577
+                -24.8334,
+                -22.9972
               ],
               "type": "ToPoint",
               "units": {

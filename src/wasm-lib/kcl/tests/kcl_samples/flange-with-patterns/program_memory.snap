@@ -1422,7 +1422,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
   },
   "topTotalThickness": {
     "type": "Number",
-    "value": 0.1279999999999999,
+    "value": 0.128,
     "ty": {
       "type": "Default",
       "len": {

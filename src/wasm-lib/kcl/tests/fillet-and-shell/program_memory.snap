@@ -1211,11 +1211,11 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "start": {
         "from": [
           0.0,
-          10.799999999999999
+          10.8
         ],
         "to": [
           0.0,
-          10.799999999999999
+          10.8
         ],
         "units": {
           "type": "Mm"

@@ -2259,7 +2259,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "to": [
           88.0,
-          35.666666666666664
+          35.6667
         ],
         "type": "ToPoint",
         "units": {
@@ -2312,7 +2312,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "from": [
           88.0,
-          35.666666666666664
+          35.6667
         ],
         "tag": {
           "end": 2605,
@@ -2322,7 +2322,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "to": [
           88.0,
-          18.999999999999996
+          19.0
         ],
         "type": "ToPoint",
         "units": {
@@ -2375,7 +2375,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "from": [
           88.0,
-          18.999999999999996
+          19.0
         ],
         "tag": {
           "end": 2665,
@@ -2385,7 +2385,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "to": [
           76.0,
-          10.666666666666663
+          10.6667
         ],
         "type": "ToPoint",
         "units": {
@@ -2438,7 +2438,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "from": [
           76.0,
-          10.666666666666663
+          10.6667
         ],
         "tag": {
           "end": 2691,
@@ -2574,7 +2574,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "to": [
           -88.0,
-          35.666666666666664
+          35.6667
         ],
         "type": "ToPoint",
         "units": {
@@ -2627,7 +2627,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "from": [
           -88.0,
-          35.666666666666664
+          35.6667
         ],
         "tag": {
           "end": 3452,
@@ -2637,7 +2637,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "to": [
           -88.0,
-          18.999999999999996
+          19.0
         ],
         "type": "ToPoint",
         "units": {
@@ -2690,7 +2690,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "from": [
           -88.0,
-          18.999999999999996
+          19.0
         ],
         "tag": {
           "end": 3511,
@@ -2700,7 +2700,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "to": [
           -76.0,
-          10.666666666666663
+          10.6667
         ],
         "type": "ToPoint",
         "units": {
@@ -2753,7 +2753,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         "from": [
           -76.0,
-          10.666666666666663
+          10.6667
         ],
         "tag": {
           "end": 3537,
@@ -4733,7 +4733,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     -88.0,
-                    35.666666666666664
+                    35.6667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -4785,7 +4785,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     -88.0,
-                    35.666666666666664
+                    35.6667
                   ],
                   "tag": {
                     "end": 3452,
@@ -4795,7 +4795,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     -88.0,
-                    18.999999999999996
+                    19.0
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -4847,7 +4847,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     -88.0,
-                    18.999999999999996
+                    19.0
                   ],
                   "tag": {
                     "end": 3511,
@@ -4857,7 +4857,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     -76.0,
-                    10.666666666666663
+                    10.6667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -4909,7 +4909,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     -76.0,
-                    10.666666666666663
+                    10.6667
                   ],
                   "tag": {
                     "end": 3537,
@@ -5269,7 +5269,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     -88.0,
-                    35.666666666666664
+                    35.6667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -5321,7 +5321,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     -88.0,
-                    35.666666666666664
+                    35.6667
                   ],
                   "tag": {
                     "end": 3452,
@@ -5331,7 +5331,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     -88.0,
-                    18.999999999999996
+                    19.0
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -5383,7 +5383,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     -88.0,
-                    18.999999999999996
+                    19.0
                   ],
                   "tag": {
                     "end": 3511,
@@ -5393,7 +5393,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     -76.0,
-                    10.666666666666663
+                    10.6667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -5445,7 +5445,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     -76.0,
-                    10.666666666666663
+                    10.6667
                   ],
                   "tag": {
                     "end": 3537,
@@ -5810,7 +5810,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     88.0,
-                    35.666666666666664
+                    35.6667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -5862,7 +5862,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     88.0,
-                    35.666666666666664
+                    35.6667
                   ],
                   "tag": {
                     "end": 2605,
@@ -5872,7 +5872,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     88.0,
-                    18.999999999999996
+                    19.0
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -5924,7 +5924,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     88.0,
-                    18.999999999999996
+                    19.0
                   ],
                   "tag": {
                     "end": 2665,
@@ -5934,7 +5934,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     76.0,
-                    10.666666666666663
+                    10.6667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -5986,7 +5986,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     76.0,
-                    10.666666666666663
+                    10.6667
                   ],
                   "tag": {
                     "end": 2691,
@@ -6346,7 +6346,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     88.0,
-                    35.666666666666664
+                    35.6667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -6398,7 +6398,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     88.0,
-                    35.666666666666664
+                    35.6667
                   ],
                   "tag": {
                     "end": 2605,
@@ -6408,7 +6408,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     88.0,
-                    18.999999999999996
+                    19.0
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -6460,7 +6460,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     88.0,
-                    18.999999999999996
+                    19.0
                   ],
                   "tag": {
                     "end": 2665,
@@ -6470,7 +6470,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "to": [
                     76.0,
-                    10.666666666666663
+                    10.6667
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -6522,7 +6522,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   },
                   "from": [
                     76.0,
-                    10.666666666666663
+                    10.6667
                   ],
                   "tag": {
                     "end": 2691,

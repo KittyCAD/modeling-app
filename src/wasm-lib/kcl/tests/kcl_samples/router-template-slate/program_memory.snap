@@ -548,11 +548,11 @@ description: Variables in memory after executing router-template-slate.kcl
         "start": {
           "from": [
             0.0,
-            28.11875
+            28.1188
           ],
           "to": [
             0.0,
-            28.11875
+            28.1188
           ],
           "units": {
             "type": "Mm"
@@ -586,7 +586,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   0.0,
-                  28.11875
+                  28.1188
                 ],
                 "tag": {
                   "end": 584,
@@ -596,7 +596,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "to": [
                   10.75,
-                  28.11875
+                  28.1188
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -648,7 +648,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   30.75,
-                  -122.49375
+                  -122.4938
                 ],
                 "tag": {
                   "end": 879,
@@ -658,7 +658,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "to": [
                   0.0,
-                  -122.49375
+                  -122.4938
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -695,7 +695,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   30.75,
-                  -12.493749999999999
+                  -12.4937
                 ],
                 "tag": {
                   "end": 849,
@@ -705,7 +705,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "to": [
                   30.75,
-                  -122.49375
+                  -122.4938
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -756,8 +756,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   ]
                 },
                 "from": [
-                  18.86875,
-                  -12.493749999999999
+                  18.8688,
+                  -12.4937
                 ],
                 "tag": {
                   "end": 815,
@@ -767,7 +767,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "to": [
                   30.75,
-                  -12.493749999999999
+                  -12.4937
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -818,7 +818,7 @@ description: Variables in memory after executing router-template-slate.kcl
                   ]
                 },
                 "from": [
-                  18.86875,
+                  18.8688,
                   20.0
                 ],
                 "tag": {
@@ -828,8 +828,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   "value": "seg05"
                 },
                 "to": [
-                  18.86875,
-                  -12.493749999999999
+                  18.8688,
+                  -12.4937
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1639,11 +1639,11 @@ description: Variables in memory after executing router-template-slate.kcl
               "start": {
                 "from": [
                   0.0,
-                  28.11875
+                  28.1188
                 ],
                 "to": [
                   0.0,
-                  28.11875
+                  28.1188
                 ],
                 "units": {
                   "type": "Mm"
@@ -1677,7 +1677,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "from": [
                         0.0,
-                        28.11875
+                        28.1188
                       ],
                       "tag": {
                         "end": 584,
@@ -1687,7 +1687,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "to": [
                         10.75,
-                        28.11875
+                        28.1188
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1739,7 +1739,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "from": [
                         30.75,
-                        -122.49375
+                        -122.4938
                       ],
                       "tag": {
                         "end": 879,
@@ -1749,7 +1749,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "to": [
                         0.0,
-                        -122.49375
+                        -122.4938
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1786,7 +1786,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "from": [
                         30.75,
-                        -12.493749999999999
+                        -12.4937
                       ],
                       "tag": {
                         "end": 849,
@@ -1796,7 +1796,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "to": [
                         30.75,
-                        -122.49375
+                        -122.4938
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1847,8 +1847,8 @@ description: Variables in memory after executing router-template-slate.kcl
                         ]
                       },
                       "from": [
-                        18.86875,
-                        -12.493749999999999
+                        18.8688,
+                        -12.4937
                       ],
                       "tag": {
                         "end": 815,
@@ -1858,7 +1858,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "to": [
                         30.75,
-                        -12.493749999999999
+                        -12.4937
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1909,7 +1909,7 @@ description: Variables in memory after executing router-template-slate.kcl
                         ]
                       },
                       "from": [
-                        18.86875,
+                        18.8688,
                         20.0
                       ],
                       "tag": {
@@ -1919,8 +1919,8 @@ description: Variables in memory after executing router-template-slate.kcl
                         "value": "seg05"
                       },
                       "to": [
-                        18.86875,
-                        -12.493749999999999
+                        18.8688,
+                        -12.4937
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2002,11 +2002,11 @@ description: Variables in memory after executing router-template-slate.kcl
         "start": {
           "from": [
             -20.75,
-            -12.493749999999999
+            -12.4937
           ],
           "to": [
             -20.75,
-            -12.493749999999999
+            -12.4937
           ],
           "units": {
             "type": "Mm"
@@ -2040,7 +2040,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   -20.75,
-                  -12.493749999999999
+                  -12.4937
                 ],
                 "tag": {
                   "end": 1507,
@@ -2050,7 +2050,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "to": [
                   -27.75,
-                  -12.493749999999999
+                  -12.4937
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2102,7 +2102,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   -27.75,
-                  -12.493749999999999
+                  -12.4937
                 ],
                 "tag": {
                   "end": 1628,
@@ -2111,8 +2111,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   "value": "rectangleSegmentB001"
                 },
                 "to": [
-                  -27.750000000000014,
-                  -92.49375
+                  -27.75,
+                  -92.4938
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2163,8 +2163,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   ]
                 },
                 "from": [
-                  -27.750000000000014,
-                  -92.49375
+                  -27.75,
+                  -92.4938
                 ],
                 "tag": {
                   "end": 1754,
@@ -2173,8 +2173,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   "value": "rectangleSegmentC001"
                 },
                 "to": [
-                  -20.750000000000014,
-                  -92.49375
+                  -20.75,
+                  -92.4938
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2964,11 +2964,11 @@ description: Variables in memory after executing router-template-slate.kcl
               "start": {
                 "from": [
                   0.0,
-                  28.11875
+                  28.1188
                 ],
                 "to": [
                   0.0,
-                  28.11875
+                  28.1188
                 ],
                 "units": {
                   "type": "Mm"
@@ -3002,7 +3002,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "from": [
                         0.0,
-                        28.11875
+                        28.1188
                       ],
                       "tag": {
                         "end": 584,
@@ -3012,7 +3012,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "to": [
                         10.75,
-                        28.11875
+                        28.1188
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3064,7 +3064,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "from": [
                         30.75,
-                        -122.49375
+                        -122.4938
                       ],
                       "tag": {
                         "end": 879,
@@ -3074,7 +3074,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "to": [
                         0.0,
-                        -122.49375
+                        -122.4938
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3111,7 +3111,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "from": [
                         30.75,
-                        -12.493749999999999
+                        -12.4937
                       ],
                       "tag": {
                         "end": 849,
@@ -3121,7 +3121,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "to": [
                         30.75,
-                        -122.49375
+                        -122.4938
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3172,8 +3172,8 @@ description: Variables in memory after executing router-template-slate.kcl
                         ]
                       },
                       "from": [
-                        18.86875,
-                        -12.493749999999999
+                        18.8688,
+                        -12.4937
                       ],
                       "tag": {
                         "end": 815,
@@ -3183,7 +3183,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "to": [
                         30.75,
-                        -12.493749999999999
+                        -12.4937
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3234,7 +3234,7 @@ description: Variables in memory after executing router-template-slate.kcl
                         ]
                       },
                       "from": [
-                        18.86875,
+                        18.8688,
                         20.0
                       ],
                       "tag": {
@@ -3244,8 +3244,8 @@ description: Variables in memory after executing router-template-slate.kcl
                         "value": "seg05"
                       },
                       "to": [
-                        18.86875,
-                        -12.493749999999999
+                        18.8688,
+                        -12.4937
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3327,11 +3327,11 @@ description: Variables in memory after executing router-template-slate.kcl
         "start": {
           "from": [
             20.75,
-            -12.493749999999999
+            -12.4937
           ],
           "to": [
             20.75,
-            -12.493749999999999
+            -12.4937
           ],
           "units": {
             "type": "Mm"
@@ -3365,7 +3365,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "from": [
                   20.75,
-                  -12.493749999999999
+                  -12.4937
                 ],
                 "tag": {
                   "end": 2125,
@@ -3375,7 +3375,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "to": [
                   27.75,
-                  -12.493749999999999
+                  -12.4937
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -3578,7 +3578,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "from": [
           -20.75,
-          -12.493749999999999
+          -12.4937
         ],
         "tag": {
           "end": 1507,
@@ -3588,7 +3588,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "to": [
           -27.75,
-          -12.493749999999999
+          -12.4937
         ],
         "type": "ToPoint",
         "units": {
@@ -3641,7 +3641,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "from": [
           20.75,
-          -12.493749999999999
+          -12.4937
         ],
         "tag": {
           "end": 2125,
@@ -3651,7 +3651,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "to": [
           27.75,
-          -12.493749999999999
+          -12.4937
         ],
         "type": "ToPoint",
         "units": {
@@ -3704,7 +3704,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "from": [
           -27.75,
-          -12.493749999999999
+          -12.4937
         ],
         "tag": {
           "end": 1628,
@@ -3713,8 +3713,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "value": "rectangleSegmentB001"
         },
         "to": [
-          -27.750000000000014,
-          -92.49375
+          -27.75,
+          -92.4938
         ],
         "type": "ToPoint",
         "units": {
@@ -3766,8 +3766,8 @@ description: Variables in memory after executing router-template-slate.kcl
           ]
         },
         "from": [
-          -27.750000000000014,
-          -92.49375
+          -27.75,
+          -92.4938
         ],
         "tag": {
           "end": 1754,
@@ -3776,8 +3776,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "value": "rectangleSegmentC001"
         },
         "to": [
-          -20.750000000000014,
-          -92.49375
+          -20.75,
+          -92.4938
         ],
         "type": "ToPoint",
         "units": {
@@ -3852,7 +3852,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "from": [
           0.0,
-          28.11875
+          28.1188
         ],
         "tag": {
           "end": 584,
@@ -3862,7 +3862,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "to": [
           10.75,
-          28.11875
+          28.1188
         ],
         "type": "ToPoint",
         "units": {
@@ -3915,7 +3915,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "from": [
           30.75,
-          -122.49375
+          -122.4938
         ],
         "tag": {
           "end": 879,
@@ -3925,7 +3925,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "to": [
           0.0,
-          -122.49375
+          -122.4938
         ],
         "type": "ToPoint",
         "units": {
@@ -3963,7 +3963,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "from": [
           30.75,
-          -12.493749999999999
+          -12.4937
         ],
         "tag": {
           "end": 849,
@@ -3973,7 +3973,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "to": [
           30.75,
-          -122.49375
+          -122.4938
         ],
         "type": "ToPoint",
         "units": {
@@ -4025,8 +4025,8 @@ description: Variables in memory after executing router-template-slate.kcl
           ]
         },
         "from": [
-          18.86875,
-          -12.493749999999999
+          18.8688,
+          -12.4937
         ],
         "tag": {
           "end": 815,
@@ -4036,7 +4036,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "to": [
           30.75,
-          -12.493749999999999
+          -12.4937
         ],
         "type": "ToPoint",
         "units": {
@@ -4088,7 +4088,7 @@ description: Variables in memory after executing router-template-slate.kcl
           ]
         },
         "from": [
-          18.86875,
+          18.8688,
           20.0
         ],
         "tag": {
@@ -4098,8 +4098,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "value": "seg05"
         },
         "to": [
-          18.86875,
-          -12.493749999999999
+          18.8688,
+          -12.4937
         ],
         "type": "ToPoint",
         "units": {
@@ -4509,11 +4509,11 @@ description: Variables in memory after executing router-template-slate.kcl
       "start": {
         "from": [
           0.0,
-          28.11875
+          28.1188
         ],
         "to": [
           0.0,
-          28.11875
+          28.1188
         ],
         "units": {
           "type": "Mm"
@@ -4547,7 +4547,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "from": [
                 0.0,
-                28.11875
+                28.1188
               ],
               "tag": {
                 "end": 584,
@@ -4557,7 +4557,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "to": [
                 10.75,
-                28.11875
+                28.1188
               ],
               "type": "ToPoint",
               "units": {
@@ -4609,7 +4609,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "from": [
                 30.75,
-                -122.49375
+                -122.4938
               ],
               "tag": {
                 "end": 879,
@@ -4619,7 +4619,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "to": [
                 0.0,
-                -122.49375
+                -122.4938
               ],
               "type": "ToPoint",
               "units": {
@@ -4656,7 +4656,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "from": [
                 30.75,
-                -12.493749999999999
+                -12.4937
               ],
               "tag": {
                 "end": 849,
@@ -4666,7 +4666,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "to": [
                 30.75,
-                -122.49375
+                -122.4938
               ],
               "type": "ToPoint",
               "units": {
@@ -4717,8 +4717,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 ]
               },
               "from": [
-                18.86875,
-                -12.493749999999999
+                18.8688,
+                -12.4937
               ],
               "tag": {
                 "end": 815,
@@ -4728,7 +4728,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "to": [
                 30.75,
-                -12.493749999999999
+                -12.4937
               ],
               "type": "ToPoint",
               "units": {
@@ -4779,7 +4779,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 ]
               },
               "from": [
-                18.86875,
+                18.8688,
                 20.0
               ],
               "tag": {
@@ -4789,8 +4789,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 "value": "seg05"
               },
               "to": [
-                18.86875,
-                -12.493749999999999
+                18.8688,
+                -12.4937
               ],
               "type": "ToPoint",
               "units": {
@@ -5519,11 +5519,11 @@ description: Variables in memory after executing router-template-slate.kcl
             "start": {
               "from": [
                 0.0,
-                28.11875
+                28.1188
               ],
               "to": [
                 0.0,
-                28.11875
+                28.1188
               ],
               "units": {
                 "type": "Mm"
@@ -5557,7 +5557,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "from": [
                       0.0,
-                      28.11875
+                      28.1188
                     ],
                     "tag": {
                       "end": 584,
@@ -5567,7 +5567,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "to": [
                       10.75,
-                      28.11875
+                      28.1188
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -5619,7 +5619,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "from": [
                       30.75,
-                      -122.49375
+                      -122.4938
                     ],
                     "tag": {
                       "end": 879,
@@ -5629,7 +5629,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "to": [
                       0.0,
-                      -122.49375
+                      -122.4938
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -5666,7 +5666,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "from": [
                       30.75,
-                      -12.493749999999999
+                      -12.4937
                     ],
                     "tag": {
                       "end": 849,
@@ -5676,7 +5676,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "to": [
                       30.75,
-                      -122.49375
+                      -122.4938
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -5727,8 +5727,8 @@ description: Variables in memory after executing router-template-slate.kcl
                       ]
                     },
                     "from": [
-                      18.86875,
-                      -12.493749999999999
+                      18.8688,
+                      -12.4937
                     ],
                     "tag": {
                       "end": 815,
@@ -5738,7 +5738,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "to": [
                       30.75,
-                      -12.493749999999999
+                      -12.4937
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -5789,7 +5789,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       ]
                     },
                     "from": [
-                      18.86875,
+                      18.8688,
                       20.0
                     ],
                     "tag": {
@@ -5799,8 +5799,8 @@ description: Variables in memory after executing router-template-slate.kcl
                       "value": "seg05"
                     },
                     "to": [
-                      18.86875,
-                      -12.493749999999999
+                      18.8688,
+                      -12.4937
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -5882,11 +5882,11 @@ description: Variables in memory after executing router-template-slate.kcl
       "start": {
         "from": [
           -20.75,
-          -12.493749999999999
+          -12.4937
         ],
         "to": [
           -20.75,
-          -12.493749999999999
+          -12.4937
         ],
         "units": {
           "type": "Mm"
@@ -5920,7 +5920,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "from": [
                 -20.75,
-                -12.493749999999999
+                -12.4937
               ],
               "tag": {
                 "end": 1507,
@@ -5930,7 +5930,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "to": [
                 -27.75,
-                -12.493749999999999
+                -12.4937
               ],
               "type": "ToPoint",
               "units": {
@@ -5982,7 +5982,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "from": [
                 -27.75,
-                -12.493749999999999
+                -12.4937
               ],
               "tag": {
                 "end": 1628,
@@ -5991,8 +5991,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 "value": "rectangleSegmentB001"
               },
               "to": [
-                -27.750000000000014,
-                -92.49375
+                -27.75,
+                -92.4938
               ],
               "type": "ToPoint",
               "units": {
@@ -6043,8 +6043,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 ]
               },
               "from": [
-                -27.750000000000014,
-                -92.49375
+                -27.75,
+                -92.4938
               ],
               "tag": {
                 "end": 1754,
@@ -6053,8 +6053,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 "value": "rectangleSegmentC001"
               },
               "to": [
-                -20.750000000000014,
-                -92.49375
+                -20.75,
+                -92.4938
               ],
               "type": "ToPoint",
               "units": {
@@ -6773,11 +6773,11 @@ description: Variables in memory after executing router-template-slate.kcl
             "start": {
               "from": [
                 0.0,
-                28.11875
+                28.1188
               ],
               "to": [
                 0.0,
-                28.11875
+                28.1188
               ],
               "units": {
                 "type": "Mm"
@@ -6811,7 +6811,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "from": [
                       0.0,
-                      28.11875
+                      28.1188
                     ],
                     "tag": {
                       "end": 584,
@@ -6821,7 +6821,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "to": [
                       10.75,
-                      28.11875
+                      28.1188
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -6873,7 +6873,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "from": [
                       30.75,
-                      -122.49375
+                      -122.4938
                     ],
                     "tag": {
                       "end": 879,
@@ -6883,7 +6883,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "to": [
                       0.0,
-                      -122.49375
+                      -122.4938
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -6920,7 +6920,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "from": [
                       30.75,
-                      -12.493749999999999
+                      -12.4937
                     ],
                     "tag": {
                       "end": 849,
@@ -6930,7 +6930,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "to": [
                       30.75,
-                      -122.49375
+                      -122.4938
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -6981,8 +6981,8 @@ description: Variables in memory after executing router-template-slate.kcl
                       ]
                     },
                     "from": [
-                      18.86875,
-                      -12.493749999999999
+                      18.8688,
+                      -12.4937
                     ],
                     "tag": {
                       "end": 815,
@@ -6992,7 +6992,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "to": [
                       30.75,
-                      -12.493749999999999
+                      -12.4937
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -7043,7 +7043,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       ]
                     },
                     "from": [
-                      18.86875,
+                      18.8688,
                       20.0
                     ],
                     "tag": {
@@ -7053,8 +7053,8 @@ description: Variables in memory after executing router-template-slate.kcl
                       "value": "seg05"
                     },
                     "to": [
-                      18.86875,
-                      -12.493749999999999
+                      18.8688,
+                      -12.4937
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -7136,11 +7136,11 @@ description: Variables in memory after executing router-template-slate.kcl
       "start": {
         "from": [
           20.75,
-          -12.493749999999999
+          -12.4937
         ],
         "to": [
           20.75,
-          -12.493749999999999
+          -12.4937
         ],
         "units": {
           "type": "Mm"
@@ -7174,7 +7174,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "from": [
                 20.75,
-                -12.493749999999999
+                -12.4937
               ],
               "tag": {
                 "end": 2125,
@@ -7184,7 +7184,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "to": [
                 27.75,
-                -12.493749999999999
+                -12.4937
               ],
               "type": "ToPoint",
               "units": {
@@ -7290,7 +7290,7 @@ description: Variables in memory after executing router-template-slate.kcl
   },
   "templateGap": {
     "type": "Number",
-    "value": 1.8812499999999996,
+    "value": 1.8812,
     "ty": {
       "type": "Unknown"
     },

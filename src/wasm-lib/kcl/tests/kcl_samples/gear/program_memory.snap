@@ -1673,7 +1673,7 @@ description: Variables in memory after executing gear.kcl
   },
   "baseDiameter": {
     "type": "Number",
-    "value": 9.866772518252038,
+    "value": 9.8668,
     "ty": {
       "type": "Unknown"
     },
@@ -1786,11 +1786,11 @@ description: Variables in memory after executing gear.kcl
         },
         "start": {
           "from": [
-            4.933386259126019,
+            4.9334,
             0.0
           ],
           "to": [
-            4.933386259126019,
+            4.9334,
             0.0
           ],
           "units": {
@@ -4619,11 +4619,11 @@ description: Variables in memory after executing gear.kcl
               },
               "start": {
                 "from": [
-                  4.933386259126019,
+                  4.9334,
                   0.0
                 ],
                 "to": [
-                  4.933386259126019,
+                  4.9334,
                   0.0
                 ],
                 "units": {
@@ -4685,11 +4685,11 @@ description: Variables in memory after executing gear.kcl
         },
         "start": {
           "from": [
-            0.9921567416492215,
+            0.9922,
             0.125
           ],
           "to": [
-            0.9921567416492215,
+            0.9922,
             0.125
           ],
           "units": {
@@ -15861,12 +15861,12 @@ description: Variables in memory after executing gear.kcl
       },
       "start": {
         "from": [
-          5.7399134909054,
-          0.340430781396414
+          5.7399,
+          0.3404
         ],
         "to": [
-          5.7399134909054,
-          0.340430781396414
+          5.7399,
+          0.3404
         ],
         "units": {
           "type": "Inches"
@@ -15899,7 +15899,7 @@ description: Variables in memory after executing gear.kcl
   },
   "startAngle": {
     "type": "Number",
-    "value": 0.1253278311680654,
+    "value": 0.1253,
     "ty": {
       "type": "Unknown"
     },
@@ -20656,12 +20656,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -25447,12 +25447,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -30238,12 +30238,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -35029,12 +35029,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -39820,12 +39820,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -44611,12 +44611,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -49402,12 +49402,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -54193,12 +54193,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -58984,12 +58984,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -63775,12 +63775,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -68566,12 +68566,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -73357,12 +73357,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -78148,12 +78148,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -82939,12 +82939,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -87730,12 +87730,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -92521,12 +92521,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -97312,12 +97312,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -102103,12 +102103,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -106894,12 +106894,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -111685,12 +111685,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -116476,12 +116476,12 @@ description: Variables in memory after executing gear.kcl
           },
           "start": {
             "from": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "to": [
-              5.7399134909054,
-              0.340430781396414
+              5.7399,
+              0.3404
             ],
             "units": {
               "type": "Inches"
@@ -116568,7 +116568,7 @@ description: Variables in memory after executing gear.kcl
   },
   "toothAngle": {
     "type": "Number",
-    "value": 11.428571428571429,
+    "value": 11.4286,
     "ty": {
       "type": "Unknown"
     },

@@ -128,8 +128,8 @@ description: Variables in memory after executing french-press.kcl
           ]
         },
         "from": [
-          2.333107663889005,
-          0.37321452147779016
+          2.3331,
+          0.3732
         ],
         "tag": {
           "end": 1231,
@@ -138,8 +138,8 @@ description: Variables in memory after executing french-press.kcl
           "value": "edge2"
         },
         "to": [
-          2.633107663889005,
-          -0.14640072079287297
+          2.6331,
+          -0.1464
         ],
         "type": "ToPoint",
         "units": {
@@ -191,8 +191,8 @@ description: Variables in memory after executing french-press.kcl
           ]
         },
         "from": [
-          1.8134924216183421,
-          -0.9660159630635361
+          1.8135,
+          -0.966
         ],
         "tag": {
           "end": 1379,
@@ -201,7 +201,7 @@ description: Variables in memory after executing french-press.kcl
           "value": "edge3"
         },
         "to": [
-          0.4867138541834928,
+          0.4867,
           -0.2
         ],
         "type": "ToPoint",
@@ -255,7 +255,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "from": [
           0.1,
-          -0.03301270189221936
+          -0.033
         ],
         "tag": {
           "end": 1564,
@@ -264,8 +264,8 @@ description: Variables in memory after executing french-press.kcl
           "value": "edge4"
         },
         "to": [
-          0.27171385418349275,
-          -0.03301270189221936
+          0.2717,
+          -0.033
         ],
         "type": "ToPoint",
         "units": {
@@ -317,8 +317,8 @@ description: Variables in memory after executing french-press.kcl
           ]
         },
         "from": [
-          0.5717138541834927,
-          -0.11339745962155623
+          0.5717,
+          -0.1134
         ],
         "tag": {
           "end": 1748,
@@ -327,8 +327,8 @@ description: Variables in memory after executing french-press.kcl
           "value": "edge5"
         },
         "to": [
-          1.8681815324858868,
-          -0.8619134226850924
+          1.8682,
+          -0.8619
         ],
         "type": "ToPoint",
         "units": {
@@ -380,8 +380,8 @@ description: Variables in memory after executing french-press.kcl
           ]
         },
         "from": [
-          2.551194234378106,
-          -0.17890072079287309
+          2.5512,
+          -0.1789
         ],
         "tag": {
           "end": 1934,
@@ -390,8 +390,8 @@ description: Variables in memory after executing french-press.kcl
           "value": "edge6"
         },
         "to": [
-          2.2686942343781062,
-          0.3104036323453345
+          2.2687,
+          0.3104
         ],
         "type": "ToPoint",
         "units": {
@@ -443,8 +443,8 @@ description: Variables in memory after executing french-press.kcl
           ]
         },
         "from": [
-          0.23671385418349275,
-          -0.13301270189221936
+          0.2367,
+          -0.133
         ],
         "tag": {
           "end": 1498,
@@ -454,7 +454,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "to": [
           0.1,
-          -0.13301270189221936
+          -0.133
         ],
         "type": "ToPoint",
         "units": {
@@ -6397,8 +6397,8 @@ description: Variables in memory after executing french-press.kcl
           "value": "seg1"
         },
         "to": [
-          2.1350000000000002,
-          1.1850555349946517
+          2.135,
+          1.1851
         ],
         "type": "ToPoint",
         "units": {
@@ -7725,8 +7725,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    2.333107663889005,
-                    0.37321452147779016
+                    2.3331,
+                    0.3732
                   ],
                   "tag": {
                     "end": 1231,
@@ -7735,8 +7735,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge2"
                   },
                   "to": [
-                    2.633107663889005,
-                    -0.14640072079287297
+                    2.6331,
+                    -0.1464
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -7787,8 +7787,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    1.8134924216183421,
-                    -0.9660159630635361
+                    1.8135,
+                    -0.966
                   ],
                   "tag": {
                     "end": 1379,
@@ -7797,7 +7797,7 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge3"
                   },
                   "to": [
-                    0.4867138541834928,
+                    0.4867,
                     -0.2
                   ],
                   "type": "ToPoint",
@@ -7850,7 +7850,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "from": [
                     0.1,
-                    -0.03301270189221936
+                    -0.033
                   ],
                   "tag": {
                     "end": 1564,
@@ -7859,8 +7859,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge4"
                   },
                   "to": [
-                    0.27171385418349275,
-                    -0.03301270189221936
+                    0.2717,
+                    -0.033
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -7911,8 +7911,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    0.5717138541834927,
-                    -0.11339745962155623
+                    0.5717,
+                    -0.1134
                   ],
                   "tag": {
                     "end": 1748,
@@ -7921,8 +7921,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge5"
                   },
                   "to": [
-                    1.8681815324858868,
-                    -0.8619134226850924
+                    1.8682,
+                    -0.8619
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -7973,8 +7973,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    2.551194234378106,
-                    -0.17890072079287309
+                    2.5512,
+                    -0.1789
                   ],
                   "tag": {
                     "end": 1934,
@@ -7983,8 +7983,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge6"
                   },
                   "to": [
-                    2.2686942343781062,
-                    0.3104036323453345
+                    2.2687,
+                    0.3104
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -8035,8 +8035,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    0.23671385418349275,
-                    -0.13301270189221936
+                    0.2367,
+                    -0.133
                   ],
                   "tag": {
                     "end": 1498,
@@ -8046,7 +8046,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "to": [
                     0.1,
-                    -0.13301270189221936
+                    -0.133
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -8928,8 +8928,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    2.333107663889005,
-                    0.37321452147779016
+                    2.3331,
+                    0.3732
                   ],
                   "tag": {
                     "end": 1231,
@@ -8938,8 +8938,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge2"
                   },
                   "to": [
-                    2.633107663889005,
-                    -0.14640072079287297
+                    2.6331,
+                    -0.1464
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -8990,8 +8990,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    1.8134924216183421,
-                    -0.9660159630635361
+                    1.8135,
+                    -0.966
                   ],
                   "tag": {
                     "end": 1379,
@@ -9000,7 +9000,7 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge3"
                   },
                   "to": [
-                    0.4867138541834928,
+                    0.4867,
                     -0.2
                   ],
                   "type": "ToPoint",
@@ -9053,7 +9053,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "from": [
                     0.1,
-                    -0.03301270189221936
+                    -0.033
                   ],
                   "tag": {
                     "end": 1564,
@@ -9062,8 +9062,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge4"
                   },
                   "to": [
-                    0.27171385418349275,
-                    -0.03301270189221936
+                    0.2717,
+                    -0.033
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -9114,8 +9114,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    0.5717138541834927,
-                    -0.11339745962155623
+                    0.5717,
+                    -0.1134
                   ],
                   "tag": {
                     "end": 1748,
@@ -9124,8 +9124,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge5"
                   },
                   "to": [
-                    1.8681815324858868,
-                    -0.8619134226850924
+                    1.8682,
+                    -0.8619
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -9176,8 +9176,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    2.551194234378106,
-                    -0.17890072079287309
+                    2.5512,
+                    -0.1789
                   ],
                   "tag": {
                     "end": 1934,
@@ -9186,8 +9186,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge6"
                   },
                   "to": [
-                    2.2686942343781062,
-                    0.3104036323453345
+                    2.2687,
+                    0.3104
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -9238,8 +9238,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    0.23671385418349275,
-                    -0.13301270189221936
+                    0.2367,
+                    -0.133
                   ],
                   "tag": {
                     "end": 1498,
@@ -9249,7 +9249,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "to": [
                     0.1,
-                    -0.13301270189221936
+                    -0.133
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -10131,8 +10131,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    2.333107663889005,
-                    0.37321452147779016
+                    2.3331,
+                    0.3732
                   ],
                   "tag": {
                     "end": 1231,
@@ -10141,8 +10141,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge2"
                   },
                   "to": [
-                    2.633107663889005,
-                    -0.14640072079287297
+                    2.6331,
+                    -0.1464
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -10193,8 +10193,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    1.8134924216183421,
-                    -0.9660159630635361
+                    1.8135,
+                    -0.966
                   ],
                   "tag": {
                     "end": 1379,
@@ -10203,7 +10203,7 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge3"
                   },
                   "to": [
-                    0.4867138541834928,
+                    0.4867,
                     -0.2
                   ],
                   "type": "ToPoint",
@@ -10256,7 +10256,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "from": [
                     0.1,
-                    -0.03301270189221936
+                    -0.033
                   ],
                   "tag": {
                     "end": 1564,
@@ -10265,8 +10265,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge4"
                   },
                   "to": [
-                    0.27171385418349275,
-                    -0.03301270189221936
+                    0.2717,
+                    -0.033
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -10317,8 +10317,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    0.5717138541834927,
-                    -0.11339745962155623
+                    0.5717,
+                    -0.1134
                   ],
                   "tag": {
                     "end": 1748,
@@ -10327,8 +10327,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge5"
                   },
                   "to": [
-                    1.8681815324858868,
-                    -0.8619134226850924
+                    1.8682,
+                    -0.8619
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -10379,8 +10379,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    2.551194234378106,
-                    -0.17890072079287309
+                    2.5512,
+                    -0.1789
                   ],
                   "tag": {
                     "end": 1934,
@@ -10389,8 +10389,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge6"
                   },
                   "to": [
-                    2.2686942343781062,
-                    0.3104036323453345
+                    2.2687,
+                    0.3104
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -10441,8 +10441,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    0.23671385418349275,
-                    -0.13301270189221936
+                    0.2367,
+                    -0.133
                   ],
                   "tag": {
                     "end": 1498,
@@ -10452,7 +10452,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "to": [
                     0.1,
-                    -0.13301270189221936
+                    -0.133
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -11334,8 +11334,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    2.333107663889005,
-                    0.37321452147779016
+                    2.3331,
+                    0.3732
                   ],
                   "tag": {
                     "end": 1231,
@@ -11344,8 +11344,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge2"
                   },
                   "to": [
-                    2.633107663889005,
-                    -0.14640072079287297
+                    2.6331,
+                    -0.1464
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -11396,8 +11396,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    1.8134924216183421,
-                    -0.9660159630635361
+                    1.8135,
+                    -0.966
                   ],
                   "tag": {
                     "end": 1379,
@@ -11406,7 +11406,7 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge3"
                   },
                   "to": [
-                    0.4867138541834928,
+                    0.4867,
                     -0.2
                   ],
                   "type": "ToPoint",
@@ -11459,7 +11459,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "from": [
                     0.1,
-                    -0.03301270189221936
+                    -0.033
                   ],
                   "tag": {
                     "end": 1564,
@@ -11468,8 +11468,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge4"
                   },
                   "to": [
-                    0.27171385418349275,
-                    -0.03301270189221936
+                    0.2717,
+                    -0.033
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -11520,8 +11520,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    0.5717138541834927,
-                    -0.11339745962155623
+                    0.5717,
+                    -0.1134
                   ],
                   "tag": {
                     "end": 1748,
@@ -11530,8 +11530,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge5"
                   },
                   "to": [
-                    1.8681815324858868,
-                    -0.8619134226850924
+                    1.8682,
+                    -0.8619
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -11582,8 +11582,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    2.551194234378106,
-                    -0.17890072079287309
+                    2.5512,
+                    -0.1789
                   ],
                   "tag": {
                     "end": 1934,
@@ -11592,8 +11592,8 @@ description: Variables in memory after executing french-press.kcl
                     "value": "edge6"
                   },
                   "to": [
-                    2.2686942343781062,
-                    0.3104036323453345
+                    2.2687,
+                    0.3104
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -11644,8 +11644,8 @@ description: Variables in memory after executing french-press.kcl
                     ]
                   },
                   "from": [
-                    0.23671385418349275,
-                    -0.13301270189221936
+                    0.2367,
+                    -0.133
                   ],
                   "tag": {
                     "end": 1498,
@@ -11655,7 +11655,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "to": [
                     0.1,
-                    -0.13301270189221936
+                    -0.133
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -13083,8 +13083,8 @@ description: Variables in memory after executing french-press.kcl
                   "value": "seg1"
                 },
                 "to": [
-                  2.1350000000000002,
-                  1.1850555349946517
+                  2.135,
+                  1.1851
                 ],
                 "type": "ToPoint",
                 "units": {

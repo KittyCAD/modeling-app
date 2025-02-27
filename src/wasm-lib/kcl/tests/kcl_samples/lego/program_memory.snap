@@ -93,7 +93,7 @@ description: Variables in memory after executing lego.kcl
   },
   "lSegments": {
     "type": "Number",
-    "value": 7.959999999999999,
+    "value": 7.96,
     "ty": {
       "type": "Unknown"
     },
@@ -8277,7 +8277,7 @@ description: Variables in memory after executing lego.kcl
   },
   "wSegments": {
     "type": "Number",
-    "value": 7.933333333333334,
+    "value": 7.9333,
     "ty": {
       "type": "Unknown"
     },

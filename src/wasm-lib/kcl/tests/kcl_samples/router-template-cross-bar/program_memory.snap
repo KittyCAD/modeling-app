@@ -27,7 +27,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
   },
   "distanceToInsideEdge": {
     "type": "Number",
-    "value": 32.63125,
+    "value": 32.6313,
     "ty": {
       "type": "Unknown"
     },
@@ -947,11 +947,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "start": {
           "from": [
             0.0,
-            31.88125
+            31.8813
           ],
           "to": [
             0.0,
-            31.88125
+            31.8813
           ],
           "units": {
             "type": "Mm"
@@ -985,7 +985,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "from": [
                   0.0,
-                  31.88125
+                  31.8813
                 ],
                 "tag": {
                   "end": 554,
@@ -995,7 +995,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "to": [
                   10.75,
-                  31.88125
+                  31.8813
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1046,7 +1046,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  32.63125,
+                  32.6313,
                   -10.0
                 ],
                 "tag": {
@@ -1056,8 +1056,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg02"
                 },
                 "to": [
-                  32.63125,
-                  10.940625
+                  32.6313,
+                  10.9406
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1108,7 +1108,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  22.63125,
+                  22.6313,
                   20.0
                 ],
                 "tag": {
@@ -1118,7 +1118,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg03"
                 },
                 "to": [
-                  22.63125,
+                  22.6313,
                   -10.0
                 ],
                 "type": "ToPoint",
@@ -1170,8 +1170,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  32.63125,
-                  41.88125
+                  32.6313,
+                  41.8813
                 ],
                 "tag": {
                   "end": 1074,
@@ -1181,7 +1181,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "to": [
                   0.0,
-                  41.88125
+                  41.8813
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1232,8 +1232,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  102.63125,
-                  30.940625
+                  102.6313,
+                  30.9406
                 ],
                 "tag": {
                   "end": 984,
@@ -1242,8 +1242,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg05"
                 },
                 "to": [
-                  32.63125,
-                  30.940625
+                  32.6313,
+                  30.9406
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1294,8 +1294,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  32.63125,
-                  10.940625
+                  32.6313,
+                  10.9406
                 ],
                 "tag": {
                   "end": 895,
@@ -1304,8 +1304,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg06"
                 },
                 "to": [
-                  102.63125,
-                  10.940625
+                  102.6313,
+                  10.9406
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1356,7 +1356,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  22.63125,
+                  22.6313,
                   -10.0
                 ],
                 "tag": {
@@ -1366,7 +1366,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg07"
                 },
                 "to": [
-                  32.63125,
+                  32.6313,
                   -10.0
                 ],
                 "type": "ToPoint",
@@ -1418,8 +1418,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  102.63125,
-                  10.940625
+                  102.6313,
+                  10.9406
                 ],
                 "tag": {
                   "end": 940,
@@ -1428,8 +1428,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg08"
                 },
                 "to": [
-                  102.63125,
-                  30.940625
+                  102.6313,
+                  30.9406
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1486,7 +1486,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ],
                 "from": [
                   10.75,
-                  31.88125
+                  31.8813
                 ],
                 "radius": 11.88125,
                 "tag": {
@@ -1496,7 +1496,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg09"
                 },
                 "to": [
-                  22.63125,
+                  22.6313,
                   20.0
                 ],
                 "type": "Arc",
@@ -1548,8 +1548,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  32.63125,
-                  30.940625
+                  32.6313,
+                  30.9406
                 ],
                 "tag": {
                   "end": 1044,
@@ -1558,8 +1558,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "seg10"
                 },
                 "to": [
-                  32.63125,
-                  41.88125
+                  32.6313,
+                  41.8813
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2696,11 +2696,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "start": {
                 "from": [
                   0.0,
-                  31.88125
+                  31.8813
                 ],
                 "to": [
                   0.0,
-                  31.88125
+                  31.8813
                 ],
                 "units": {
                   "type": "Mm"
@@ -2734,7 +2734,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "from": [
                         0.0,
-                        31.88125
+                        31.8813
                       ],
                       "tag": {
                         "end": 554,
@@ -2744,7 +2744,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "to": [
                         10.75,
-                        31.88125
+                        31.8813
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2795,7 +2795,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        32.63125,
+                        32.6313,
                         -10.0
                       ],
                       "tag": {
@@ -2805,8 +2805,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg02"
                       },
                       "to": [
-                        32.63125,
-                        10.940625
+                        32.6313,
+                        10.9406
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2857,7 +2857,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        22.63125,
+                        22.6313,
                         20.0
                       ],
                       "tag": {
@@ -2867,7 +2867,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg03"
                       },
                       "to": [
-                        22.63125,
+                        22.6313,
                         -10.0
                       ],
                       "type": "ToPoint",
@@ -2919,8 +2919,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        32.63125,
-                        41.88125
+                        32.6313,
+                        41.8813
                       ],
                       "tag": {
                         "end": 1074,
@@ -2930,7 +2930,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "to": [
                         0.0,
-                        41.88125
+                        41.8813
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2981,8 +2981,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        102.63125,
-                        30.940625
+                        102.6313,
+                        30.9406
                       ],
                       "tag": {
                         "end": 984,
@@ -2991,8 +2991,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg05"
                       },
                       "to": [
-                        32.63125,
-                        30.940625
+                        32.6313,
+                        30.9406
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3043,8 +3043,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        32.63125,
-                        10.940625
+                        32.6313,
+                        10.9406
                       ],
                       "tag": {
                         "end": 895,
@@ -3053,8 +3053,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg06"
                       },
                       "to": [
-                        102.63125,
-                        10.940625
+                        102.6313,
+                        10.9406
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3105,7 +3105,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        22.63125,
+                        22.6313,
                         -10.0
                       ],
                       "tag": {
@@ -3115,7 +3115,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg07"
                       },
                       "to": [
-                        32.63125,
+                        32.6313,
                         -10.0
                       ],
                       "type": "ToPoint",
@@ -3167,8 +3167,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        102.63125,
-                        10.940625
+                        102.6313,
+                        10.9406
                       ],
                       "tag": {
                         "end": 940,
@@ -3177,8 +3177,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg08"
                       },
                       "to": [
-                        102.63125,
-                        30.940625
+                        102.6313,
+                        30.9406
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3235,7 +3235,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ],
                       "from": [
                         10.75,
-                        31.88125
+                        31.8813
                       ],
                       "radius": 11.88125,
                       "tag": {
@@ -3245,7 +3245,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg09"
                       },
                       "to": [
-                        22.63125,
+                        22.6313,
                         20.0
                       ],
                       "type": "Arc",
@@ -3297,8 +3297,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        32.63125,
-                        30.940625
+                        32.6313,
+                        30.9406
                       ],
                       "tag": {
                         "end": 1044,
@@ -3307,8 +3307,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg10"
                       },
                       "to": [
-                        32.63125,
-                        41.88125
+                        32.6313,
+                        41.8813
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3389,11 +3389,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "start": {
           "from": [
-            -32.63125,
+            -32.6313,
             0.0
           ],
           "to": [
-            -32.63125,
+            -32.6313,
             0.0
           ],
           "units": {
@@ -3427,7 +3427,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  -32.63125,
+                  -32.6313,
                   0.0
                 ],
                 "tag": {
@@ -3437,7 +3437,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentA001"
                 },
                 "to": [
-                  -22.63125,
+                  -22.6313,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -3489,7 +3489,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  -22.63125,
+                  -22.6313,
                   0.0
                 ],
                 "tag": {
@@ -3499,7 +3499,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentB001"
                 },
                 "to": [
-                  -22.63125,
+                  -22.6313,
                   -10.0
                 ],
                 "type": "ToPoint",
@@ -3551,7 +3551,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  -22.63125,
+                  -22.6313,
                   -10.0
                 ],
                 "tag": {
@@ -3561,7 +3561,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentC001"
                 },
                 "to": [
-                  -32.63125,
+                  -32.6313,
                   -10.0
                 ],
                 "type": "ToPoint",
@@ -4699,11 +4699,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "start": {
                 "from": [
                   0.0,
-                  31.88125
+                  31.8813
                 ],
                 "to": [
                   0.0,
-                  31.88125
+                  31.8813
                 ],
                 "units": {
                   "type": "Mm"
@@ -4737,7 +4737,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "from": [
                         0.0,
-                        31.88125
+                        31.8813
                       ],
                       "tag": {
                         "end": 554,
@@ -4747,7 +4747,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "to": [
                         10.75,
-                        31.88125
+                        31.8813
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4798,7 +4798,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        32.63125,
+                        32.6313,
                         -10.0
                       ],
                       "tag": {
@@ -4808,8 +4808,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg02"
                       },
                       "to": [
-                        32.63125,
-                        10.940625
+                        32.6313,
+                        10.9406
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4860,7 +4860,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        22.63125,
+                        22.6313,
                         20.0
                       ],
                       "tag": {
@@ -4870,7 +4870,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg03"
                       },
                       "to": [
-                        22.63125,
+                        22.6313,
                         -10.0
                       ],
                       "type": "ToPoint",
@@ -4922,8 +4922,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        32.63125,
-                        41.88125
+                        32.6313,
+                        41.8813
                       ],
                       "tag": {
                         "end": 1074,
@@ -4933,7 +4933,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "to": [
                         0.0,
-                        41.88125
+                        41.8813
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -4984,8 +4984,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        102.63125,
-                        30.940625
+                        102.6313,
+                        30.9406
                       ],
                       "tag": {
                         "end": 984,
@@ -4994,8 +4994,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg05"
                       },
                       "to": [
-                        32.63125,
-                        30.940625
+                        32.6313,
+                        30.9406
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5046,8 +5046,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        32.63125,
-                        10.940625
+                        32.6313,
+                        10.9406
                       ],
                       "tag": {
                         "end": 895,
@@ -5056,8 +5056,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg06"
                       },
                       "to": [
-                        102.63125,
-                        10.940625
+                        102.6313,
+                        10.9406
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5108,7 +5108,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        22.63125,
+                        22.6313,
                         -10.0
                       ],
                       "tag": {
@@ -5118,7 +5118,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg07"
                       },
                       "to": [
-                        32.63125,
+                        32.6313,
                         -10.0
                       ],
                       "type": "ToPoint",
@@ -5170,8 +5170,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        102.63125,
-                        10.940625
+                        102.6313,
+                        10.9406
                       ],
                       "tag": {
                         "end": 940,
@@ -5180,8 +5180,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg08"
                       },
                       "to": [
-                        102.63125,
-                        30.940625
+                        102.6313,
+                        30.9406
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5238,7 +5238,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ],
                       "from": [
                         10.75,
-                        31.88125
+                        31.8813
                       ],
                       "radius": 11.88125,
                       "tag": {
@@ -5248,7 +5248,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg09"
                       },
                       "to": [
-                        22.63125,
+                        22.6313,
                         20.0
                       ],
                       "type": "Arc",
@@ -5300,8 +5300,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        32.63125,
-                        30.940625
+                        32.6313,
+                        30.9406
                       ],
                       "tag": {
                         "end": 1044,
@@ -5310,8 +5310,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "seg10"
                       },
                       "to": [
-                        32.63125,
-                        41.88125
+                        32.6313,
+                        41.8813
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -5392,11 +5392,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "start": {
           "from": [
-            32.63125,
+            32.6313,
             0.0
           ],
           "to": [
-            32.63125,
+            32.6313,
             0.0
           ],
           "units": {
@@ -5430,7 +5430,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  32.63125,
+                  32.6313,
                   0.0
                 ],
                 "tag": {
@@ -5440,8 +5440,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentA002"
                 },
                 "to": [
-                  22.63125,
-                  0.0000000000000012246467991473533
+                  22.6313,
+                  0.0
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5492,8 +5492,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  22.63125,
-                  0.0000000000000012246467991473533
+                  22.6313,
+                  0.0
                 ],
                 "tag": {
                   "end": 1817,
@@ -5502,8 +5502,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentB002"
                 },
                 "to": [
-                  22.631249999999998,
-                  -9.999999999999998
+                  22.6312,
+                  -10.0
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -5554,8 +5554,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  22.631249999999998,
-                  -9.999999999999998
+                  22.6312,
+                  -10.0
                 ],
                 "tag": {
                   "end": 1943,
@@ -5564,7 +5564,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentC002"
                 },
                 "to": [
-                  32.631249999999994,
+                  32.6312,
                   -10.0
                 ],
                 "type": "ToPoint",
@@ -6922,11 +6922,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "start": {
                       "from": [
                         0.0,
-                        31.88125
+                        31.8813
                       ],
                       "to": [
                         0.0,
-                        31.88125
+                        31.8813
                       ],
                       "units": {
                         "type": "Mm"
@@ -6960,7 +6960,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "from": [
                               0.0,
-                              31.88125
+                              31.8813
                             ],
                             "tag": {
                               "end": 554,
@@ -6970,7 +6970,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "to": [
                               10.75,
-                              31.88125
+                              31.8813
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -7021,7 +7021,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               ]
                             },
                             "from": [
-                              32.63125,
+                              32.6313,
                               -10.0
                             ],
                             "tag": {
@@ -7031,8 +7031,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               "value": "seg02"
                             },
                             "to": [
-                              32.63125,
-                              10.940625
+                              32.6313,
+                              10.9406
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -7083,7 +7083,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               ]
                             },
                             "from": [
-                              22.63125,
+                              22.6313,
                               20.0
                             ],
                             "tag": {
@@ -7093,7 +7093,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               "value": "seg03"
                             },
                             "to": [
-                              22.63125,
+                              22.6313,
                               -10.0
                             ],
                             "type": "ToPoint",
@@ -7145,8 +7145,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               ]
                             },
                             "from": [
-                              32.63125,
-                              41.88125
+                              32.6313,
+                              41.8813
                             ],
                             "tag": {
                               "end": 1074,
@@ -7156,7 +7156,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "to": [
                               0.0,
-                              41.88125
+                              41.8813
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -7207,8 +7207,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               ]
                             },
                             "from": [
-                              102.63125,
-                              30.940625
+                              102.6313,
+                              30.9406
                             ],
                             "tag": {
                               "end": 984,
@@ -7217,8 +7217,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               "value": "seg05"
                             },
                             "to": [
-                              32.63125,
-                              30.940625
+                              32.6313,
+                              30.9406
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -7269,8 +7269,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               ]
                             },
                             "from": [
-                              32.63125,
-                              10.940625
+                              32.6313,
+                              10.9406
                             ],
                             "tag": {
                               "end": 895,
@@ -7279,8 +7279,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               "value": "seg06"
                             },
                             "to": [
-                              102.63125,
-                              10.940625
+                              102.6313,
+                              10.9406
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -7331,7 +7331,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               ]
                             },
                             "from": [
-                              22.63125,
+                              22.6313,
                               -10.0
                             ],
                             "tag": {
@@ -7341,7 +7341,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               "value": "seg07"
                             },
                             "to": [
-                              32.63125,
+                              32.6313,
                               -10.0
                             ],
                             "type": "ToPoint",
@@ -7393,8 +7393,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               ]
                             },
                             "from": [
-                              102.63125,
-                              10.940625
+                              102.6313,
+                              10.9406
                             ],
                             "tag": {
                               "end": 940,
@@ -7403,8 +7403,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               "value": "seg08"
                             },
                             "to": [
-                              102.63125,
-                              30.940625
+                              102.6313,
+                              30.9406
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -7461,7 +7461,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             ],
                             "from": [
                               10.75,
-                              31.88125
+                              31.8813
                             ],
                             "radius": 11.88125,
                             "tag": {
@@ -7471,7 +7471,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               "value": "seg09"
                             },
                             "to": [
-                              22.63125,
+                              22.6313,
                               20.0
                             ],
                             "type": "Arc",
@@ -7523,8 +7523,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               ]
                             },
                             "from": [
-                              32.63125,
-                              30.940625
+                              32.6313,
+                              30.9406
                             ],
                             "tag": {
                               "end": 1044,
@@ -7533,8 +7533,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                               "value": "seg10"
                             },
                             "to": [
-                              32.63125,
-                              41.88125
+                              32.6313,
+                              41.8813
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -7615,11 +7615,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "start": {
                 "from": [
-                  -32.63125,
+                  -32.6313,
                   0.0
                 ],
                 "to": [
-                  -32.63125,
+                  -32.6313,
                   0.0
                 ],
                 "units": {
@@ -7653,7 +7653,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        -32.63125,
+                        -32.6313,
                         0.0
                       ],
                       "tag": {
@@ -7663,7 +7663,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "rectangleSegmentA001"
                       },
                       "to": [
-                        -22.63125,
+                        -22.6313,
                         0.0
                       ],
                       "type": "ToPoint",
@@ -7715,7 +7715,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        -22.63125,
+                        -22.6313,
                         0.0
                       ],
                       "tag": {
@@ -7725,7 +7725,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "rectangleSegmentB001"
                       },
                       "to": [
-                        -22.63125,
+                        -22.6313,
                         -10.0
                       ],
                       "type": "ToPoint",
@@ -7777,7 +7777,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         ]
                       },
                       "from": [
-                        -22.63125,
+                        -22.6313,
                         -10.0
                       ],
                       "tag": {
@@ -7787,7 +7787,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                         "value": "rectangleSegmentC001"
                       },
                       "to": [
-                        -32.63125,
+                        -32.6313,
                         -10.0
                       ],
                       "type": "ToPoint",
@@ -7869,11 +7869,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "start": {
           "from": [
-            -32.63125,
+            -32.6313,
             0.0
           ],
           "to": [
-            -32.63125,
+            -32.6313,
             0.0
           ],
           "units": {
@@ -7907,7 +7907,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  -32.63125,
+                  -32.6313,
                   0.0
                 ],
                 "tag": {
@@ -7917,7 +7917,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentA003"
                 },
                 "to": [
-                  32.63125,
+                  32.6313,
                   0.0
                 ],
                 "type": "ToPoint",
@@ -7969,7 +7969,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  32.63125,
+                  32.6313,
                   0.0
                 ],
                 "tag": {
@@ -7979,7 +7979,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentB003"
                 },
                 "to": [
-                  32.63125,
+                  32.6313,
                   -10.0
                 ],
                 "type": "ToPoint",
@@ -8031,7 +8031,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   ]
                 },
                 "from": [
-                  32.63125,
+                  32.6313,
                   -10.0
                 ],
                 "tag": {
@@ -8041,7 +8041,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "rectangleSegmentC003"
                 },
                 "to": [
-                  -32.63125,
+                  -32.6313,
                   -10.0
                 ],
                 "type": "ToPoint",
@@ -8178,7 +8178,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          -32.63125,
+          -32.6313,
           0.0
         ],
         "tag": {
@@ -8188,7 +8188,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "rectangleSegmentA001"
         },
         "to": [
-          -22.63125,
+          -22.6313,
           0.0
         ],
         "type": "ToPoint",
@@ -8241,7 +8241,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          32.63125,
+          32.6313,
           0.0
         ],
         "tag": {
@@ -8251,8 +8251,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "rectangleSegmentA002"
         },
         "to": [
-          22.63125,
-          0.0000000000000012246467991473533
+          22.6313,
+          0.0
         ],
         "type": "ToPoint",
         "units": {
@@ -8304,7 +8304,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          -32.63125,
+          -32.6313,
           0.0
         ],
         "tag": {
@@ -8314,7 +8314,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "rectangleSegmentA003"
         },
         "to": [
-          32.63125,
+          32.6313,
           0.0
         ],
         "type": "ToPoint",
@@ -8367,7 +8367,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          -22.63125,
+          -22.6313,
           0.0
         ],
         "tag": {
@@ -8377,7 +8377,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "rectangleSegmentB001"
         },
         "to": [
-          -22.63125,
+          -22.6313,
           -10.0
         ],
         "type": "ToPoint",
@@ -8430,8 +8430,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          22.63125,
-          0.0000000000000012246467991473533
+          22.6313,
+          0.0
         ],
         "tag": {
           "end": 1817,
@@ -8440,8 +8440,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "rectangleSegmentB002"
         },
         "to": [
-          22.631249999999998,
-          -9.999999999999998
+          22.6312,
+          -10.0
         ],
         "type": "ToPoint",
         "units": {
@@ -8493,7 +8493,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          32.63125,
+          32.6313,
           0.0
         ],
         "tag": {
@@ -8503,7 +8503,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "rectangleSegmentB003"
         },
         "to": [
-          32.63125,
+          32.6313,
           -10.0
         ],
         "type": "ToPoint",
@@ -8556,7 +8556,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          -22.63125,
+          -22.6313,
           -10.0
         ],
         "tag": {
@@ -8566,7 +8566,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "rectangleSegmentC001"
         },
         "to": [
-          -32.63125,
+          -32.6313,
           -10.0
         ],
         "type": "ToPoint",
@@ -8619,8 +8619,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          22.631249999999998,
-          -9.999999999999998
+          22.6312,
+          -10.0
         ],
         "tag": {
           "end": 1943,
@@ -8629,7 +8629,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "rectangleSegmentC002"
         },
         "to": [
-          32.631249999999994,
+          32.6312,
           -10.0
         ],
         "type": "ToPoint",
@@ -8682,7 +8682,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          32.63125,
+          32.6313,
           -10.0
         ],
         "tag": {
@@ -8692,7 +8692,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "rectangleSegmentC003"
         },
         "to": [
-          -32.63125,
+          -32.6313,
           -10.0
         ],
         "type": "ToPoint",
@@ -8768,7 +8768,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "from": [
           0.0,
-          31.88125
+          31.8813
         ],
         "tag": {
           "end": 554,
@@ -8778,7 +8778,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "to": [
           10.75,
-          31.88125
+          31.8813
         ],
         "type": "ToPoint",
         "units": {
@@ -8830,7 +8830,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          32.63125,
+          32.6313,
           -10.0
         ],
         "tag": {
@@ -8840,8 +8840,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "seg02"
         },
         "to": [
-          32.63125,
-          10.940625
+          32.6313,
+          10.9406
         ],
         "type": "ToPoint",
         "units": {
@@ -8893,7 +8893,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          22.63125,
+          22.6313,
           20.0
         ],
         "tag": {
@@ -8903,7 +8903,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "seg03"
         },
         "to": [
-          22.63125,
+          22.6313,
           -10.0
         ],
         "type": "ToPoint",
@@ -8956,8 +8956,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          32.63125,
-          41.88125
+          32.6313,
+          41.8813
         ],
         "tag": {
           "end": 1074,
@@ -8967,7 +8967,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "to": [
           0.0,
-          41.88125
+          41.8813
         ],
         "type": "ToPoint",
         "units": {
@@ -9019,8 +9019,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          102.63125,
-          30.940625
+          102.6313,
+          30.9406
         ],
         "tag": {
           "end": 984,
@@ -9029,8 +9029,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "seg05"
         },
         "to": [
-          32.63125,
-          30.940625
+          32.6313,
+          30.9406
         ],
         "type": "ToPoint",
         "units": {
@@ -9082,8 +9082,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          32.63125,
-          10.940625
+          32.6313,
+          10.9406
         ],
         "tag": {
           "end": 895,
@@ -9092,8 +9092,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "seg06"
         },
         "to": [
-          102.63125,
-          10.940625
+          102.6313,
+          10.9406
         ],
         "type": "ToPoint",
         "units": {
@@ -9145,7 +9145,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          22.63125,
+          22.6313,
           -10.0
         ],
         "tag": {
@@ -9155,7 +9155,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "seg07"
         },
         "to": [
-          32.63125,
+          32.6313,
           -10.0
         ],
         "type": "ToPoint",
@@ -9208,8 +9208,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          102.63125,
-          10.940625
+          102.6313,
+          10.9406
         ],
         "tag": {
           "end": 940,
@@ -9218,8 +9218,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "seg08"
         },
         "to": [
-          102.63125,
-          30.940625
+          102.6313,
+          30.9406
         ],
         "type": "ToPoint",
         "units": {
@@ -9277,7 +9277,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         ],
         "from": [
           10.75,
-          31.88125
+          31.8813
         ],
         "radius": 11.88125,
         "tag": {
@@ -9287,7 +9287,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "seg09"
         },
         "to": [
-          22.63125,
+          22.6313,
           20.0
         ],
         "type": "Arc",
@@ -9340,8 +9340,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           ]
         },
         "from": [
-          32.63125,
-          30.940625
+          32.6313,
+          30.9406
         ],
         "tag": {
           "end": 1044,
@@ -9350,8 +9350,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "seg10"
         },
         "to": [
-          32.63125,
-          41.88125
+          32.6313,
+          41.8813
         ],
         "type": "ToPoint",
         "units": {
@@ -9970,11 +9970,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "start": {
         "from": [
           0.0,
-          31.88125
+          31.8813
         ],
         "to": [
           0.0,
-          31.88125
+          31.8813
         ],
         "units": {
           "type": "Mm"
@@ -10008,7 +10008,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "from": [
                 0.0,
-                31.88125
+                31.8813
               ],
               "tag": {
                 "end": 554,
@@ -10018,7 +10018,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "to": [
                 10.75,
-                31.88125
+                31.8813
               ],
               "type": "ToPoint",
               "units": {
@@ -10069,7 +10069,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                32.63125,
+                32.6313,
                 -10.0
               ],
               "tag": {
@@ -10079,8 +10079,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "seg02"
               },
               "to": [
-                32.63125,
-                10.940625
+                32.6313,
+                10.9406
               ],
               "type": "ToPoint",
               "units": {
@@ -10131,7 +10131,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                22.63125,
+                22.6313,
                 20.0
               ],
               "tag": {
@@ -10141,7 +10141,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "seg03"
               },
               "to": [
-                22.63125,
+                22.6313,
                 -10.0
               ],
               "type": "ToPoint",
@@ -10193,8 +10193,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                32.63125,
-                41.88125
+                32.6313,
+                41.8813
               ],
               "tag": {
                 "end": 1074,
@@ -10204,7 +10204,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "to": [
                 0.0,
-                41.88125
+                41.8813
               ],
               "type": "ToPoint",
               "units": {
@@ -10255,8 +10255,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                102.63125,
-                30.940625
+                102.6313,
+                30.9406
               ],
               "tag": {
                 "end": 984,
@@ -10265,8 +10265,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "seg05"
               },
               "to": [
-                32.63125,
-                30.940625
+                32.6313,
+                30.9406
               ],
               "type": "ToPoint",
               "units": {
@@ -10317,8 +10317,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                32.63125,
-                10.940625
+                32.6313,
+                10.9406
               ],
               "tag": {
                 "end": 895,
@@ -10327,8 +10327,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "seg06"
               },
               "to": [
-                102.63125,
-                10.940625
+                102.6313,
+                10.9406
               ],
               "type": "ToPoint",
               "units": {
@@ -10379,7 +10379,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                22.63125,
+                22.6313,
                 -10.0
               ],
               "tag": {
@@ -10389,7 +10389,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "seg07"
               },
               "to": [
-                32.63125,
+                32.6313,
                 -10.0
               ],
               "type": "ToPoint",
@@ -10441,8 +10441,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                102.63125,
-                10.940625
+                102.6313,
+                10.9406
               ],
               "tag": {
                 "end": 940,
@@ -10451,8 +10451,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "seg08"
               },
               "to": [
-                102.63125,
-                30.940625
+                102.6313,
+                30.9406
               ],
               "type": "ToPoint",
               "units": {
@@ -10509,7 +10509,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               ],
               "from": [
                 10.75,
-                31.88125
+                31.8813
               ],
               "radius": 11.88125,
               "tag": {
@@ -10519,7 +10519,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "seg09"
               },
               "to": [
-                22.63125,
+                22.6313,
                 20.0
               ],
               "type": "Arc",
@@ -10571,8 +10571,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                32.63125,
-                30.940625
+                32.6313,
+                30.9406
               ],
               "tag": {
                 "end": 1044,
@@ -10581,8 +10581,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "seg10"
               },
               "to": [
-                32.63125,
-                41.88125
+                32.6313,
+                41.8813
               ],
               "type": "ToPoint",
               "units": {
@@ -11638,11 +11638,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "start": {
               "from": [
                 0.0,
-                31.88125
+                31.8813
               ],
               "to": [
                 0.0,
-                31.88125
+                31.8813
               ],
               "units": {
                 "type": "Mm"
@@ -11676,7 +11676,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "from": [
                       0.0,
-                      31.88125
+                      31.8813
                     ],
                     "tag": {
                       "end": 554,
@@ -11686,7 +11686,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "to": [
                       10.75,
-                      31.88125
+                      31.8813
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -11737,7 +11737,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      32.63125,
+                      32.6313,
                       -10.0
                     ],
                     "tag": {
@@ -11747,8 +11747,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg02"
                     },
                     "to": [
-                      32.63125,
-                      10.940625
+                      32.6313,
+                      10.9406
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -11799,7 +11799,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      22.63125,
+                      22.6313,
                       20.0
                     ],
                     "tag": {
@@ -11809,7 +11809,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg03"
                     },
                     "to": [
-                      22.63125,
+                      22.6313,
                       -10.0
                     ],
                     "type": "ToPoint",
@@ -11861,8 +11861,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      32.63125,
-                      41.88125
+                      32.6313,
+                      41.8813
                     ],
                     "tag": {
                       "end": 1074,
@@ -11872,7 +11872,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "to": [
                       0.0,
-                      41.88125
+                      41.8813
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -11923,8 +11923,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      102.63125,
-                      30.940625
+                      102.6313,
+                      30.9406
                     ],
                     "tag": {
                       "end": 984,
@@ -11933,8 +11933,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg05"
                     },
                     "to": [
-                      32.63125,
-                      30.940625
+                      32.6313,
+                      30.9406
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -11985,8 +11985,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      32.63125,
-                      10.940625
+                      32.6313,
+                      10.9406
                     ],
                     "tag": {
                       "end": 895,
@@ -11995,8 +11995,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg06"
                     },
                     "to": [
-                      102.63125,
-                      10.940625
+                      102.6313,
+                      10.9406
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -12047,7 +12047,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      22.63125,
+                      22.6313,
                       -10.0
                     ],
                     "tag": {
@@ -12057,7 +12057,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg07"
                     },
                     "to": [
-                      32.63125,
+                      32.6313,
                       -10.0
                     ],
                     "type": "ToPoint",
@@ -12109,8 +12109,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      102.63125,
-                      10.940625
+                      102.6313,
+                      10.9406
                     ],
                     "tag": {
                       "end": 940,
@@ -12119,8 +12119,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg08"
                     },
                     "to": [
-                      102.63125,
-                      30.940625
+                      102.6313,
+                      30.9406
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -12177,7 +12177,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     ],
                     "from": [
                       10.75,
-                      31.88125
+                      31.8813
                     ],
                     "radius": 11.88125,
                     "tag": {
@@ -12187,7 +12187,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg09"
                     },
                     "to": [
-                      22.63125,
+                      22.6313,
                       20.0
                     ],
                     "type": "Arc",
@@ -12239,8 +12239,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      32.63125,
-                      30.940625
+                      32.6313,
+                      30.9406
                     ],
                     "tag": {
                       "end": 1044,
@@ -12249,8 +12249,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg10"
                     },
                     "to": [
-                      32.63125,
-                      41.88125
+                      32.6313,
+                      41.8813
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -12331,11 +12331,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "start": {
         "from": [
-          -32.63125,
+          -32.6313,
           0.0
         ],
         "to": [
-          -32.63125,
+          -32.6313,
           0.0
         ],
         "units": {
@@ -12369,7 +12369,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                -32.63125,
+                -32.6313,
                 0.0
               ],
               "tag": {
@@ -12379,7 +12379,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "rectangleSegmentA001"
               },
               "to": [
-                -22.63125,
+                -22.6313,
                 0.0
               ],
               "type": "ToPoint",
@@ -12431,7 +12431,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                -22.63125,
+                -22.6313,
                 0.0
               ],
               "tag": {
@@ -12441,7 +12441,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "rectangleSegmentB001"
               },
               "to": [
-                -22.63125,
+                -22.6313,
                 -10.0
               ],
               "type": "ToPoint",
@@ -12493,7 +12493,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                -22.63125,
+                -22.6313,
                 -10.0
               ],
               "tag": {
@@ -12503,7 +12503,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "rectangleSegmentC001"
               },
               "to": [
-                -32.63125,
+                -32.6313,
                 -10.0
               ],
               "type": "ToPoint",
@@ -13560,11 +13560,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "start": {
               "from": [
                 0.0,
-                31.88125
+                31.8813
               ],
               "to": [
                 0.0,
-                31.88125
+                31.8813
               ],
               "units": {
                 "type": "Mm"
@@ -13598,7 +13598,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "from": [
                       0.0,
-                      31.88125
+                      31.8813
                     ],
                     "tag": {
                       "end": 554,
@@ -13608,7 +13608,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "to": [
                       10.75,
-                      31.88125
+                      31.8813
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -13659,7 +13659,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      32.63125,
+                      32.6313,
                       -10.0
                     ],
                     "tag": {
@@ -13669,8 +13669,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg02"
                     },
                     "to": [
-                      32.63125,
-                      10.940625
+                      32.6313,
+                      10.9406
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -13721,7 +13721,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      22.63125,
+                      22.6313,
                       20.0
                     ],
                     "tag": {
@@ -13731,7 +13731,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg03"
                     },
                     "to": [
-                      22.63125,
+                      22.6313,
                       -10.0
                     ],
                     "type": "ToPoint",
@@ -13783,8 +13783,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      32.63125,
-                      41.88125
+                      32.6313,
+                      41.8813
                     ],
                     "tag": {
                       "end": 1074,
@@ -13794,7 +13794,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "to": [
                       0.0,
-                      41.88125
+                      41.8813
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -13845,8 +13845,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      102.63125,
-                      30.940625
+                      102.6313,
+                      30.9406
                     ],
                     "tag": {
                       "end": 984,
@@ -13855,8 +13855,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg05"
                     },
                     "to": [
-                      32.63125,
-                      30.940625
+                      32.6313,
+                      30.9406
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -13907,8 +13907,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      32.63125,
-                      10.940625
+                      32.6313,
+                      10.9406
                     ],
                     "tag": {
                       "end": 895,
@@ -13917,8 +13917,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg06"
                     },
                     "to": [
-                      102.63125,
-                      10.940625
+                      102.6313,
+                      10.9406
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -13969,7 +13969,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      22.63125,
+                      22.6313,
                       -10.0
                     ],
                     "tag": {
@@ -13979,7 +13979,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg07"
                     },
                     "to": [
-                      32.63125,
+                      32.6313,
                       -10.0
                     ],
                     "type": "ToPoint",
@@ -14031,8 +14031,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      102.63125,
-                      10.940625
+                      102.6313,
+                      10.9406
                     ],
                     "tag": {
                       "end": 940,
@@ -14041,8 +14041,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg08"
                     },
                     "to": [
-                      102.63125,
-                      30.940625
+                      102.6313,
+                      30.9406
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -14099,7 +14099,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     ],
                     "from": [
                       10.75,
-                      31.88125
+                      31.8813
                     ],
                     "radius": 11.88125,
                     "tag": {
@@ -14109,7 +14109,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg09"
                     },
                     "to": [
-                      22.63125,
+                      22.6313,
                       20.0
                     ],
                     "type": "Arc",
@@ -14161,8 +14161,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      32.63125,
-                      30.940625
+                      32.6313,
+                      30.9406
                     ],
                     "tag": {
                       "end": 1044,
@@ -14171,8 +14171,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "seg10"
                     },
                     "to": [
-                      32.63125,
-                      41.88125
+                      32.6313,
+                      41.8813
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -14253,11 +14253,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "start": {
         "from": [
-          32.63125,
+          32.6313,
           0.0
         ],
         "to": [
-          32.63125,
+          32.6313,
           0.0
         ],
         "units": {
@@ -14291,7 +14291,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                32.63125,
+                32.6313,
                 0.0
               ],
               "tag": {
@@ -14301,8 +14301,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "rectangleSegmentA002"
               },
               "to": [
-                22.63125,
-                0.0000000000000012246467991473533
+                22.6313,
+                0.0
               ],
               "type": "ToPoint",
               "units": {
@@ -14353,8 +14353,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                22.63125,
-                0.0000000000000012246467991473533
+                22.6313,
+                0.0
               ],
               "tag": {
                 "end": 1817,
@@ -14363,8 +14363,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "rectangleSegmentB002"
               },
               "to": [
-                22.631249999999998,
-                -9.999999999999998
+                22.6312,
+                -10.0
               ],
               "type": "ToPoint",
               "units": {
@@ -14415,8 +14415,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                22.631249999999998,
-                -9.999999999999998
+                22.6312,
+                -10.0
               ],
               "tag": {
                 "end": 1943,
@@ -14425,7 +14425,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "rectangleSegmentC002"
               },
               "to": [
-                32.631249999999994,
+                32.6312,
                 -10.0
               ],
               "type": "ToPoint",
@@ -15702,11 +15702,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "start": {
                     "from": [
                       0.0,
-                      31.88125
+                      31.8813
                     ],
                     "to": [
                       0.0,
-                      31.88125
+                      31.8813
                     ],
                     "units": {
                       "type": "Mm"
@@ -15740,7 +15740,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "from": [
                             0.0,
-                            31.88125
+                            31.8813
                           ],
                           "tag": {
                             "end": 554,
@@ -15750,7 +15750,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "to": [
                             10.75,
-                            31.88125
+                            31.8813
                           ],
                           "type": "ToPoint",
                           "units": {
@@ -15801,7 +15801,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             ]
                           },
                           "from": [
-                            32.63125,
+                            32.6313,
                             -10.0
                           ],
                           "tag": {
@@ -15811,8 +15811,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             "value": "seg02"
                           },
                           "to": [
-                            32.63125,
-                            10.940625
+                            32.6313,
+                            10.9406
                           ],
                           "type": "ToPoint",
                           "units": {
@@ -15863,7 +15863,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             ]
                           },
                           "from": [
-                            22.63125,
+                            22.6313,
                             20.0
                           ],
                           "tag": {
@@ -15873,7 +15873,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             "value": "seg03"
                           },
                           "to": [
-                            22.63125,
+                            22.6313,
                             -10.0
                           ],
                           "type": "ToPoint",
@@ -15925,8 +15925,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             ]
                           },
                           "from": [
-                            32.63125,
-                            41.88125
+                            32.6313,
+                            41.8813
                           ],
                           "tag": {
                             "end": 1074,
@@ -15936,7 +15936,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "to": [
                             0.0,
-                            41.88125
+                            41.8813
                           ],
                           "type": "ToPoint",
                           "units": {
@@ -15987,8 +15987,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             ]
                           },
                           "from": [
-                            102.63125,
-                            30.940625
+                            102.6313,
+                            30.9406
                           ],
                           "tag": {
                             "end": 984,
@@ -15997,8 +15997,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             "value": "seg05"
                           },
                           "to": [
-                            32.63125,
-                            30.940625
+                            32.6313,
+                            30.9406
                           ],
                           "type": "ToPoint",
                           "units": {
@@ -16049,8 +16049,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             ]
                           },
                           "from": [
-                            32.63125,
-                            10.940625
+                            32.6313,
+                            10.9406
                           ],
                           "tag": {
                             "end": 895,
@@ -16059,8 +16059,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             "value": "seg06"
                           },
                           "to": [
-                            102.63125,
-                            10.940625
+                            102.6313,
+                            10.9406
                           ],
                           "type": "ToPoint",
                           "units": {
@@ -16111,7 +16111,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             ]
                           },
                           "from": [
-                            22.63125,
+                            22.6313,
                             -10.0
                           ],
                           "tag": {
@@ -16121,7 +16121,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             "value": "seg07"
                           },
                           "to": [
-                            32.63125,
+                            32.6313,
                             -10.0
                           ],
                           "type": "ToPoint",
@@ -16173,8 +16173,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             ]
                           },
                           "from": [
-                            102.63125,
-                            10.940625
+                            102.6313,
+                            10.9406
                           ],
                           "tag": {
                             "end": 940,
@@ -16183,8 +16183,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             "value": "seg08"
                           },
                           "to": [
-                            102.63125,
-                            30.940625
+                            102.6313,
+                            30.9406
                           ],
                           "type": "ToPoint",
                           "units": {
@@ -16241,7 +16241,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           ],
                           "from": [
                             10.75,
-                            31.88125
+                            31.8813
                           ],
                           "radius": 11.88125,
                           "tag": {
@@ -16251,7 +16251,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             "value": "seg09"
                           },
                           "to": [
-                            22.63125,
+                            22.6313,
                             20.0
                           ],
                           "type": "Arc",
@@ -16303,8 +16303,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             ]
                           },
                           "from": [
-                            32.63125,
-                            30.940625
+                            32.6313,
+                            30.9406
                           ],
                           "tag": {
                             "end": 1044,
@@ -16313,8 +16313,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             "value": "seg10"
                           },
                           "to": [
-                            32.63125,
-                            41.88125
+                            32.6313,
+                            41.8813
                           ],
                           "type": "ToPoint",
                           "units": {
@@ -16395,11 +16395,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             },
             "start": {
               "from": [
-                -32.63125,
+                -32.6313,
                 0.0
               ],
               "to": [
-                -32.63125,
+                -32.6313,
                 0.0
               ],
               "units": {
@@ -16433,7 +16433,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      -32.63125,
+                      -32.6313,
                       0.0
                     ],
                     "tag": {
@@ -16443,7 +16443,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "rectangleSegmentA001"
                     },
                     "to": [
-                      -22.63125,
+                      -22.6313,
                       0.0
                     ],
                     "type": "ToPoint",
@@ -16495,7 +16495,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      -22.63125,
+                      -22.6313,
                       0.0
                     ],
                     "tag": {
@@ -16505,7 +16505,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "rectangleSegmentB001"
                     },
                     "to": [
-                      -22.63125,
+                      -22.6313,
                       -10.0
                     ],
                     "type": "ToPoint",
@@ -16557,7 +16557,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       ]
                     },
                     "from": [
-                      -22.63125,
+                      -22.6313,
                       -10.0
                     ],
                     "tag": {
@@ -16567,7 +16567,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       "value": "rectangleSegmentC001"
                     },
                     "to": [
-                      -32.63125,
+                      -32.6313,
                       -10.0
                     ],
                     "type": "ToPoint",
@@ -16649,11 +16649,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       },
       "start": {
         "from": [
-          -32.63125,
+          -32.6313,
           0.0
         ],
         "to": [
-          -32.63125,
+          -32.6313,
           0.0
         ],
         "units": {
@@ -16687,7 +16687,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                -32.63125,
+                -32.6313,
                 0.0
               ],
               "tag": {
@@ -16697,7 +16697,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "rectangleSegmentA003"
               },
               "to": [
-                32.63125,
+                32.6313,
                 0.0
               ],
               "type": "ToPoint",
@@ -16749,7 +16749,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                32.63125,
+                32.6313,
                 0.0
               ],
               "tag": {
@@ -16759,7 +16759,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "rectangleSegmentB003"
               },
               "to": [
-                32.63125,
+                32.6313,
                 -10.0
               ],
               "type": "ToPoint",
@@ -16811,7 +16811,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 ]
               },
               "from": [
-                32.63125,
+                32.6313,
                 -10.0
               ],
               "tag": {
@@ -16821,7 +16821,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "value": "rectangleSegmentC003"
               },
               "to": [
-                -32.63125,
+                -32.6313,
                 -10.0
               ],
               "type": "ToPoint",
@@ -16928,7 +16928,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
   },
   "templateGap": {
     "type": "Number",
-    "value": 1.8812499999999996,
+    "value": 1.8812,
     "ty": {
       "type": "Unknown"
     },
