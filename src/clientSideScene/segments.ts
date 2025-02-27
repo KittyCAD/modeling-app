@@ -999,12 +999,7 @@ class ArcSegment implements SegmentUtils {
     }
     group.name = ARC_SEGMENT
 
-    group.add(
-      arcMesh,
-      endAngleHandle,
-      circleCenterGroup,
-      radiusIndicatorGroup
-    )
+    group.add(arcMesh, endAngleHandle, circleCenterGroup, radiusIndicatorGroup)
     const updateOverlaysCallback = this.update({
       prevSegment,
       input,
