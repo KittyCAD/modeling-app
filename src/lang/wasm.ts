@@ -12,7 +12,6 @@ import {
   get_kcl_version,
   make_default_planes,
   coredump,
-  toml_stringify,
   default_app_settings,
   parse_app_settings,
   parse_project_settings,
@@ -638,9 +637,6 @@ export async function coreDump(
   }
 }
 
-export function tomlStringify(toml: any): string | Error {
-  return toml_stringify(JSON.stringify(toml))
-}
 
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()

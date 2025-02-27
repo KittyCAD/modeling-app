@@ -19,7 +19,6 @@ import {
   get_tangential_arc_to_info as GetTangentialArcToInfo,
   make_default_planes as MakeDefaultPlanes,
   coredump as CoreDump,
-  toml_stringify as TomlStringify,
   default_app_settings as DefaultAppSettings,
   parse_app_settings as ParseAppSettings,
   parse_project_settings as ParseProjectSettings,
@@ -87,9 +86,6 @@ export const make_default_planes: typeof MakeDefaultPlanes = (...args) => {
 }
 export const coredump: typeof CoreDump = (...args) => {
   return getModule().coredump(...args)
-}
-export const toml_stringify: typeof TomlStringify = (...args) => {
-  return getModule().toml_stringify(...args)
 }
 export const default_app_settings: typeof DefaultAppSettings = (...args) => {
   return getModule().default_app_settings(...args)
