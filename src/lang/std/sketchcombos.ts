@@ -1755,17 +1755,16 @@ export function getConstraintType(
   fnName: ToolTip,
   isAbsolute: boolean
 ): LineInputsType | null {
+  if (fnName === 'xLine') return 'yRelative'
+  if (fnName === 'yLine') return 'xRelative'
+  if (fnName === 'xLineTo') return 'yAbsolute'
+  if (fnName === 'yLineTo') return 'xAbsolute'
   // this function assumes that for two val sketch functions that one arg is locked down not both
   // and for one val sketch functions that the arg is NOT locked down
   // these conditions should have been checked previously.
   // completely locked down or not locked down at all does not depend on the fnName so we can check that first
   const isArr = isArray(val)
-  if (!isArr) {
-    if (fnName === 'xLine') return 'yRelative'
-    if (fnName === 'yLine') return 'xRelative'
-    if (fnName === 'xLineTo') return 'yAbsolute'
-    if (fnName === 'yLineTo') return 'xAbsolute'
-  } else {
+  if (isArr) {
     const isFirstArgLockedDown = isNotLiteralArrayOrStatic(val[0])
     if (fnName === 'line' && !isAbsolute)
       return isFirstArgLockedDown ? 'xRelative' : 'yRelative'

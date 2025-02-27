@@ -21,7 +21,12 @@ import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { codeRefFromRange } from './artifactGraph'
 import { findKwArg } from 'lang/util'
-import { ARG_END, ARG_END_ABSOLUTE } from './sketch'
+import {
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  sketchFnIsAbsolute,
+  sketchFnNameToTooltip,
+} from './sketch'
 
 beforeAll(async () => {
   await initPromise
@@ -124,9 +129,14 @@ function getConstraintTypeFromSourceHelper2(
 ): ReturnType<typeof getConstraintType> | Error {
   const ast = assertParse(code)
 
-  const arg = (ast.body[0] as any).expression.arguments[0] as Expr
-  const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
-  return getConstraintType(arg, fnName, false)
+  const call = (ast.body[0] as any).expression
+  const arg = call.arguments[0] as Expr
+  const fnName = call.callee.name as ToolTip
+  const correctFnName = sketchFnNameToTooltip(fnName, sketchFnIsAbsolute(call))
+  if (correctFnName === undefined) {
+    return new Error(`could not map this ${fnName} call to a tooltip`)
+  }
+  return getConstraintType(arg, correctFnName, false)
 }
 
 function makeSelections(

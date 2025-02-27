@@ -2369,6 +2369,34 @@ export function getConstraintInfo(
   )
 }
 
+/* Keyword functions like 'line' could be absolute or relative, depending on their parameters.
+But tooltips like 'line' or 'lineTo' are either relative or absolute. Not both.
+So, map (line, absolute) to lineTo, and (line, relative) to line. Etc.
+*/
+export function sketchFnNameToTooltip(
+  fnName: string,
+  isAbsolute: boolean
+): ToolTip | undefined {
+  switch (fnName) {
+    case 'line':
+      return isAbsolute ? 'lineTo' : fnName
+    case 'xLine':
+      return isAbsolute ? 'xLineTo' : fnName
+    case 'yLine':
+      return isAbsolute ? 'yLineTo' : fnName
+  }
+}
+
+export function sketchFnIsAbsolute(
+  callExpression: Node<CallExpressionKw>
+): boolean {
+  const fnName = callExpression.callee.name
+  return (
+    fnName === 'circleThreePoint' ||
+    findKwArg('endAbsolute', callExpression) !== undefined
+  )
+}
+
 export function getConstraintInfoKw(
   callExpression: Node<CallExpressionKw>,
   code: string,
@@ -2376,23 +2404,12 @@ export function getConstraintInfoKw(
   filterValue?: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
-  const isAbsolute =
-    fnName === 'circleThreePoint' ||
-    findKwArg('endAbsolute', callExpression) !== undefined
-  if (!(fnName in sketchLineHelperMapKw)) return []
-  const correctFnName = (() => {
-    switch (fnName) {
-      case 'line':
-        return isAbsolute ? 'lineTo' : fnName
-      case 'xLine':
-        return isAbsolute ? 'xLineTo' : fnName
-      case 'yLine':
-        return isAbsolute ? 'yLineTo' : fnName
-    }
-  })()
+  const isAbsolute = sketchFnIsAbsolute(callExpression)
+  const correctFnName = sketchFnNameToTooltip(fnName, isAbsolute)
   if (correctFnName === undefined) {
     return []
   }
+  if (!(correctFnName in sketchLineHelperMapKw)) return []
   return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
     callExpression,
     code,
