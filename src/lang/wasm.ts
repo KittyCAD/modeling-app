@@ -637,7 +637,6 @@ export async function coreDump(
   }
 }
 
-
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
 }
