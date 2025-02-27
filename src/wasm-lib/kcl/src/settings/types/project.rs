@@ -5,9 +5,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-
 use crate::settings::types::{
-    AppColor, AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings
+    AppColor, AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings,
 };
 
 /// High level project configuration.
@@ -83,11 +82,11 @@ mod tests {
 
     use super::{
         AppSettings, AppTheme, CommandBarSettings, ModelingSettings, PerProjectSettings, ProjectConfiguration,
-        TextEditorSettings
+        TextEditorSettings,
     };
-    use crate::settings::types::{AppearanceSettings, UnitLength, NamedView};
+    use crate::settings::types::{AppearanceSettings, NamedView, UnitLength};
 
-    use serde_json::{Value};
+    use serde_json::Value;
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -191,11 +190,11 @@ color = 1567.4"#;
         assert!(result
             .unwrap_err()
             .to_string()
-                .contains("color: Validation error: color"));
+            .contains("color: Validation error: color"));
     }
 
     #[test]
-    fn named_view_serde_json () {
+    fn named_view_serde_json() {
         let json = r#"
         [
           {
@@ -220,7 +219,7 @@ color = 1567.4"#;
     }
 
     #[test]
-    fn named_view_serde_json_string () {
+    fn named_view_serde_json_string() {
         let json = r#"
         [
           {
@@ -240,76 +239,76 @@ color = 1567.4"#;
         // serde_json to string does not produce default values
         let named_views: Value = match serde_json::from_str(json) {
             Ok(x) => x,
-            Err(_) => return
+            Err(_) => return,
         };
         println!("{}", named_views);
     }
 
-#[test]
-    fn test_project_settings_named_views () {
+    #[test]
+    fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
-                settings: PerProjectSettings {
-                    app: AppSettings {
-                        appearance: AppearanceSettings {
-                            theme: AppTheme::Dark,
-                            color: 138.0.into()
+            settings: PerProjectSettings {
+                app: AppSettings {
+                    appearance: AppearanceSettings {
+                        theme: AppTheme::Dark,
+                        color: 138.0.into(),
+                    },
+                    onboarding_status: Default::default(),
+                    project_directory: None,
+                    theme: None,
+                    theme_color: None,
+                    dismiss_web_banner: false,
+                    enable_ssao: None,
+                    stream_idle_mode: false,
+                    allow_orbit_in_sketch_mode: false,
+                    named_views: vec![
+                        NamedView {
+                            name: String::from("Hello"),
+                            eye_offset: 1236.4015,
+                            fov_y: 45.0,
+                            is_ortho: false,
+                            ortho_scale_enabled: false,
+                            ortho_scale_factor: 45.0,
+                            pivot_position: [-100.0, 100.0, 100.0],
+                            pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
+                            world_coord_system: String::from("RightHandedUpZ"),
+                            id: uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
+                            version: 1.0,
                         },
-                        onboarding_status: Default::default(),
-                        project_directory: None,
-                        theme: None,
-                        theme_color: None,
-                        dismiss_web_banner: false,
-                        enable_ssao: None,
-                        stream_idle_mode: false,
-                        allow_orbit_in_sketch_mode: false,
-                        named_views: vec![
-        NamedView {
-            name: String::from("Hello"),
-            eye_offset: 1236.4015,
-            fov_y: 45.0,
-            is_ortho: false,
-            ortho_scale_enabled: false,
-            ortho_scale_factor: 45.0,
-            pivot_position: [-100.0, 100.0, 100.0],
-            pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
-            world_coord_system: String::from("RightHandedUpZ"),
-            id:uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
-            version: 1.0
-        },
-                            NamedView {
-                                name: String::from("Goodbye"),
-                                eye_offset: 1236.4015,
-                                fov_y: 45.0,
-                                is_ortho: false,
-                                ortho_scale_enabled: false,
-                                ortho_scale_factor: 45.0,
-                                pivot_position: [-100.0, 100.0, 100.0],
-                                pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
-                                world_coord_system: String::from("RightHandedUpZ"),
-                                id:uuid::uuid!("423611ea-66e3-43c9-9d0d-1091ba92948c"),
-                                version: 1.0
-                            },
-                        ]
-                    },
-                    modeling: ModelingSettings {
-                        base_unit: UnitLength::Yd,
-                        camera_projection: Default::default(),
-                        camera_orbit: Default::default(),
-                        mouse_controls: Default::default(),
-                        highlight_edges: Default::default(),
-                        show_debug_panel: true,
-                        enable_ssao: true.into(),
-                        show_scale_grid: false,
-                    },
-                    text_editor: TextEditorSettings {
-                        text_wrapping: false.into(),
-                        blinking_cursor: false.into()
-                    },
-                    command_bar: CommandBarSettings {
-                        include_settings: false.into()
-                    },
-                }
-            };
+                        NamedView {
+                            name: String::from("Goodbye"),
+                            eye_offset: 1236.4015,
+                            fov_y: 45.0,
+                            is_ortho: false,
+                            ortho_scale_enabled: false,
+                            ortho_scale_factor: 45.0,
+                            pivot_position: [-100.0, 100.0, 100.0],
+                            pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
+                            world_coord_system: String::from("RightHandedUpZ"),
+                            id: uuid::uuid!("423611ea-66e3-43c9-9d0d-1091ba92948c"),
+                            version: 1.0,
+                        },
+                    ],
+                },
+                modeling: ModelingSettings {
+                    base_unit: UnitLength::Yd,
+                    camera_projection: Default::default(),
+                    camera_orbit: Default::default(),
+                    mouse_controls: Default::default(),
+                    highlight_edges: Default::default(),
+                    show_debug_panel: true,
+                    enable_ssao: true.into(),
+                    show_scale_grid: false,
+                },
+                text_editor: TextEditorSettings {
+                    text_wrapping: false.into(),
+                    blinking_cursor: false.into(),
+                },
+                command_bar: CommandBarSettings {
+                    include_settings: false.into(),
+                },
+            },
+        };
         let serialized = toml::to_string(&conf).unwrap();
         let old_project_file = r#"[settings.app.appearance]
 theme = "dark"

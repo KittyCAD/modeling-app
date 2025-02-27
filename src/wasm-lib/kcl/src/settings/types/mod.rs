@@ -284,8 +284,8 @@ pub struct ModelingSettings {
     pub show_scale_grid: bool,
 }
 
-fn named_view_point_version_one () -> f64 {
-    return 1.0
+fn named_view_point_version_one() -> f64 {
+    return 1.0;
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate)]
@@ -326,7 +326,6 @@ pub struct NamedView {
     #[serde(default = "named_view_point_version_one", alias = "version")]
     pub version: f64,
 }
-
 
 impl PartialEq for NamedView {
     fn eq(&self, other: &Self) -> bool {

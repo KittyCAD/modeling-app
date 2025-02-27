@@ -1,8 +1,8 @@
 //! Functions for interacting with TOML files.
 //! We do this in rust because the Javascript TOML libraries are actual trash.
 
-use wasm_bindgen::prelude::wasm_bindgen;
 use kcl_lib::settings::types::Configuration;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 pub fn toml_stringify(json: &str) -> Result<String, String> {
