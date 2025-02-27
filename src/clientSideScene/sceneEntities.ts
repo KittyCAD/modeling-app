@@ -149,7 +149,6 @@ export const SEGMENT_WIDTH_PX = 1.6
 export const ARC_SEGMENT = 'arc-segment'
 export const ARC_SEGMENT_BODY = 'arc-segment-body'
 export const ARC_SEGMENT_DASH = 'arc-segment-dash'
-export const ARC_ANGLE_START_RADIUS = 'arc-angle-start-radius'
 export const ARC_ANGLE_END = 'arc-angle-end'
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels

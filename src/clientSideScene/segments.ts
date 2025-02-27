@@ -52,7 +52,6 @@ import {
   ARC_SEGMENT,
   ARC_SEGMENT_BODY,
   ARC_SEGMENT_DASH,
-  ARC_ANGLE_START_RADIUS,
   ARC_ANGLE_END,
   getParentGroup,
 } from './sceneEntities'
@@ -968,9 +967,6 @@ class ArcSegment implements SegmentUtils {
     const meshType = isDraftSegment ? ARC_SEGMENT_DASH : ARC_SEGMENT_BODY
 
     // Create handles for the arc
-    const startRadiusHandle = createArrowhead(scale, theme, color)
-    startRadiusHandle.name = ARC_ANGLE_START_RADIUS
-    startRadiusHandle.userData.type = ARC_ANGLE_START_RADIUS
 
     const endAngleHandle = createArrowhead(scale, theme, color)
     endAngleHandle.name = ARC_ANGLE_END
@@ -1005,7 +1001,6 @@ class ArcSegment implements SegmentUtils {
 
     group.add(
       arcMesh,
-      startRadiusHandle,
       endAngleHandle,
       circleCenterGroup,
       radiusIndicatorGroup
@@ -1047,9 +1042,6 @@ class ArcSegment implements SegmentUtils {
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
     const endAngle = Math.atan2(to[1] - center[1], to[0] - center[0])
 
-    const startRadiusHandle = group.getObjectByName(
-      ARC_ANGLE_START_RADIUS
-    ) as Group
     const endAngleHandle = group.getObjectByName(ARC_ANGLE_END) as Group
     const radiusLengthIndicator = group.getObjectByName(
       SEGMENT_LENGTH_LABEL
@@ -1074,18 +1066,6 @@ class ArcSegment implements SegmentUtils {
     let isHandlesVisible = !shouldHideIdle
     if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
       isHandlesVisible = !shouldHideHover
-    }
-
-    if (startRadiusHandle) {
-      startRadiusHandle.position.set(from[0], from[1], 0)
-
-      const tangentAngle = startAngle + (Math.PI / 2) * (ccw ? 1 : -1)
-      startRadiusHandle.quaternion.setFromUnitVectors(
-        new Vector3(0, 1, 0),
-        new Vector3(Math.cos(tangentAngle), Math.sin(tangentAngle), 0)
-      )
-      startRadiusHandle.scale.set(scale, scale, scale)
-      startRadiusHandle.visible = isHandlesVisible
     }
 
     if (endAngleHandle) {
