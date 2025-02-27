@@ -267,14 +267,16 @@ const initializeMouseEvents = (
   }
 
   const handleClick = () => {
-    if (raycasterIntersect.current && !disableClicks) {
+    if (raycasterIntersect.current) {
       const axisName = raycasterIntersect.current.object.name as AxisNames
       sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
     }
   }
 
-  window.addEventListener('mousemove', handleMouseMove)
-  window.addEventListener('click', handleClick)
+  if (!disableClicks) {
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('click', handleClick)
+  }
 
   const disposeMouseEvents = () => {
     window.removeEventListener('mousemove', handleMouseMove)
