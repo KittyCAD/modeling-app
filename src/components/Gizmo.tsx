@@ -1,6 +1,6 @@
 import { SceneInfra } from 'clientSideScene/sceneInfra'
 import { sceneInfra } from 'lib/singletons'
-import { MutableRefObject, useEffect, useRef } from 'react'
+import { MutableRefObject, useEffect, useMemo, useRef } from 'react'
 import {
   WebGLRenderer,
   Scene,
@@ -27,6 +27,8 @@ import {
   ViewControlContextMenu,
 } from './ViewControlMenu'
 import { AxisNames } from 'lib/constants'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { useSettings } from 'machines/appMachine'
 
 const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5
@@ -40,6 +42,11 @@ enum AxisColors {
 }
 
 export default function Gizmo() {
+  const { state: modelingState, send: modelingSend } = useModelingContext()
+  const settings = useSettings()
+  const shouldDisableOrbit =
+    modelingState.matches('Sketch') &&
+    !settings.app.allowOrbitInSketchMode.current
   const menuItems = useViewControlMenuItems()
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -64,7 +71,8 @@ export default function Gizmo() {
     const { mouse, disposeMouseEvents } = initializeMouseEvents(
       canvas,
       raycasterIntersect,
-      sceneInfra
+      sceneInfra,
+      shouldDisableOrbit
     )
     const raycasterObjects = [...gizmoAxisHeads]
 
@@ -99,7 +107,7 @@ export default function Gizmo() {
       renderer.dispose()
       disposeMouseEvents()
     }
-  }, [])
+  }, [shouldDisableOrbit])
 
   return (
     <div className="relative">
@@ -246,7 +254,8 @@ const quaternionsEqual = (
 const initializeMouseEvents = (
   canvas: HTMLCanvasElement,
   raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
-  sceneInfra: SceneInfra
+  sceneInfra: SceneInfra,
+  disableClicks: boolean
 ): { mouse: Vector2; disposeMouseEvents: () => void } => {
   const mouse = new Vector2()
   mouse.x = 1 // fix initial mouse position issue
@@ -258,7 +267,7 @@ const initializeMouseEvents = (
   }
 
   const handleClick = () => {
-    if (raycasterIntersect.current) {
+    if (raycasterIntersect.current && !disableClicks) {
       const axisName = raycasterIntersect.current.object.name as AxisNames
       sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
     }
