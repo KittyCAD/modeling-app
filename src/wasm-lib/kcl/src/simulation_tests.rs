@@ -132,10 +132,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                         Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
                     }))
                     .unwrap();
-                    let report = error
-                        .clone()
-                        .into_miette_report_with_outputs(&read("input.kcl", test_name))
-                        .unwrap();
+                    let report = error.clone().into_miette_report_with_outputs().unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
                         eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl/{ok_path_str} and other associated passing artifacts");

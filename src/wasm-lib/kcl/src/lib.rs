@@ -134,6 +134,11 @@ use crate::log::{log, logln};
 pub struct Program {
     #[serde(flatten)]
     pub ast: parsing::ast::types::Node<parsing::ast::types::Program>,
+    // The ui doesn't need to know about this.
+    // It's purely used for saving the contents of the original file, so we can use it for errors.
+    // Because in the case of the root file, we don't want to read the file from disk again.
+    #[serde(skip)]
+    pub original_file_contents: String,
 }
 
 #[cfg(any(test, feature = "lsp-test-util"))]
@@ -147,7 +152,13 @@ impl Program {
         let tokens = parsing::token::lex(input, module_id)?;
         let (ast, errs) = parsing::parse_tokens(tokens).0?;
 
-        Ok((ast.map(|ast| Program { ast }), errs))
+        Ok((
+            ast.map(|ast| Program {
+                ast,
+                original_file_contents: input.to_string(),
+            }),
+            errs,
+        ))
     }
 
     pub fn parse_no_errs(input: &str) -> Result<Program, KclError> {
@@ -155,7 +166,10 @@ impl Program {
         let tokens = parsing::token::lex(input, module_id)?;
         let ast = parsing::parse_tokens(tokens).parse_errs_as_err()?;
 
-        Ok(Program { ast })
+        Ok(Program {
+            ast,
+            original_file_contents: input.to_string(),
+        })
     }
 
     pub fn compute_digest(&mut self) -> parsing::ast::digest::Digest {
@@ -171,6 +185,7 @@ impl Program {
     pub fn change_meta_settings(&mut self, settings: crate::MetaSettings) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_meta_settings(settings)?,
+            original_file_contents: self.original_file_contents.clone(),
         })
     }
 
@@ -194,7 +209,10 @@ impl Program {
 
 impl From<parsing::ast::types::Node<parsing::ast::types::Program>> for Program {
     fn from(ast: parsing::ast::types::Node<parsing::ast::types::Program>) -> Program {
-        Self { ast }
+        Self {
+            ast,
+            original_file_contents: String::new(),
+        }
     }
 }
 

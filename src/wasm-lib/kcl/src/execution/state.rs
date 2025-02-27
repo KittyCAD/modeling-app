@@ -182,6 +182,26 @@ impl ExecState {
         self.global.path_to_source_id.insert(path.clone(), id);
     }
 
+    pub(crate) fn add_root_module_contents(&mut self, program: &crate::Program) {
+        let root_id = ModuleId::default();
+        // Get the path for the root module.
+        let path = self
+            .global
+            .path_to_source_id
+            .iter()
+            .find(|(_, v)| **v == root_id)
+            .unwrap()
+            .0
+            .clone();
+        self.add_id_to_source(
+            root_id,
+            ModuleSource {
+                path,
+                source: program.original_file_contents.to_string(),
+            },
+        );
+    }
+
     pub(super) fn add_id_to_source(&mut self, id: ModuleId, source: ModuleSource) {
         debug_assert!(!self.global.id_to_source.contains_key(&id));
         self.global.id_to_source.insert(id, source.clone());
@@ -251,8 +271,6 @@ impl GlobalState {
         global
             .path_to_source_id
             .insert(ModulePath::Local { value: root_path }, root_id);
-        // Ideally we'd have a way to set the root module's source here, but
-        // we don't have a way to get the source from the executor settings.
         global
     }
 }

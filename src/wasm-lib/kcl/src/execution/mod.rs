@@ -532,6 +532,7 @@ impl ExecutorContext {
             }
         }
 
+        exec_state.add_root_module_contents(&program);
         let result = self.inner_run(&program.ast, &mut exec_state, true).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
@@ -585,9 +586,15 @@ impl ExecutorContext {
                             .await
                             .is_err()
                     {
-                        (true, program.ast)
+                        (true, program)
                     } else {
-                        (clear_scene, changed_program)
+                        (
+                            clear_scene,
+                            crate::Program {
+                                ast: changed_program,
+                                original_file_contents: program.original_file_contents,
+                            },
+                        )
                     }
                 }
                 CacheResult::NoAction(true) => {
@@ -608,7 +615,7 @@ impl ExecutorContext {
 
                         return Ok(old_state.to_wasm_outcome(result_env));
                     }
-                    (true, program.ast)
+                    (true, program)
                 }
                 CacheResult::NoAction(false) => return Ok(old_state.to_wasm_outcome(result_env)),
             };
@@ -636,10 +643,11 @@ impl ExecutorContext {
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
-            (program.ast, exec_state, false)
+            (program, exec_state, false)
         };
 
-        let result = self.inner_run(&program, &mut exec_state, preserve_mem).await;
+        exec_state.add_root_module_contents(&program);
+        let result = self.inner_run(&program.ast, &mut exec_state, preserve_mem).await;
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -650,7 +658,7 @@ impl ExecutorContext {
 
         // Save this as the last successful execution to the cache.
         cache::write_old_ast(OldAstState {
-            ast: program,
+            ast: program.ast,
             exec_state: exec_state.clone(),
             settings: self.settings.clone(),
             result_env: result.0,
@@ -691,6 +699,7 @@ impl ExecutorContext {
         self.send_clear_scene(exec_state, Default::default())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
+        exec_state.add_root_module_contents(program);
         self.inner_run(&program.ast, exec_state, false).await
     }
 
