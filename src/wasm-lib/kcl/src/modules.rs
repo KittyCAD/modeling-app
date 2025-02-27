@@ -143,17 +143,23 @@ impl ModulePath {
         }
     }
 
-    pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<String, KclError> {
+    pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<ModuleSource, KclError> {
         match self {
-            ModulePath::Local { value: p } => fs.read_to_string(p, source_range).await,
-            ModulePath::Std { value: name } => read_std(name)
-                .ok_or_else(|| {
-                    KclError::Semantic(KclErrorDetails {
-                        message: format!("Cannot find standard library module to import: std::{name}."),
-                        source_ranges: vec![source_range],
+            ModulePath::Local { value: p } => Ok(ModuleSource {
+                source: fs.read_to_string(p, source_range).await?,
+                path: self.clone(),
+            }),
+            ModulePath::Std { value: name } => Ok(ModuleSource {
+                source: read_std(name)
+                    .ok_or_else(|| {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!("Cannot find standard library module to import: std::{name}."),
+                            source_ranges: vec![source_range],
+                        })
                     })
-                })
-                .map(str::to_owned),
+                    .map(str::to_owned)?,
+                path: self.clone(),
+            }),
             ModulePath::Main => unreachable!(),
         }
     }
@@ -187,4 +193,10 @@ impl fmt::Display for ModulePath {
             ModulePath::Std { value: s } => write!(f, "std::{s}"),
         }
     }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+pub struct ModuleSource {
+    pub path: ModulePath,
+    pub source: String,
 }
