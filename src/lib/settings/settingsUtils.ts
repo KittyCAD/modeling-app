@@ -22,6 +22,7 @@ import { err } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 
 /**
@@ -71,6 +72,26 @@ export function configurationToSettingsPayload(
   }
 }
 
+function isNamedView (namedView: DeepPartial<NamedView> | undefined) : namedView is NamedView {
+  const namedViewKeys = [
+    'name', 'eye_offset', 'fov_y', 'ortho_scale_enabled', 'ortho_scale_factor', 'pivot_position', 'pivot_rotation', 'world_coord_system', 'id', 'version'
+  ] as const;
+
+  return namedViewKeys.every((key)=>{
+    return namedView && namedView[key]
+  })
+}
+
+function deepPartialNamedViewsToNamedViews (maybeViews: (DeepPartial<NamedView> | undefined)[] | undefined) : NamedView[] {
+  const namedViews : NamedView[] = []
+  maybeViews?.forEach((maybeView)=>{
+    if (isNamedView(maybeView)) {
+      namedViews.push(maybeView)
+    }
+  })
+  return namedViews
+}
+
 export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
@@ -86,7 +107,7 @@ export function projectConfigurationToSettingsPayload(
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
-      namedViews: configuration?.settings?.app?.named_views,
+      namedViews: deepPartialNamedViewsToNamedViews(configuration?.settings?.app?.named_views)
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
