@@ -1724,7 +1724,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.40"
+version = "0.2.41"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
