@@ -156,6 +156,7 @@ async fn execute_test(test: &Test, render_to_png: bool) {
                         ".**[].value" => rounded_redaction(4),
                         ".**.from[]" => rounded_redaction(4),
                         ".**.to[]" => rounded_redaction(4),
+                        ".**.center[]" => rounded_redaction(4),
                         ".**[].x[]" => rounded_redaction(4),
                         ".**[].y[]" => rounded_redaction(4),
                         ".**[].z[]" => rounded_redaction(4),
