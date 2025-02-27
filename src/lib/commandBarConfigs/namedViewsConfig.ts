@@ -154,10 +154,10 @@ export function createNamedViewsCommand() {
           ...settingsActor.getSnapshot().context.app.namedViews.current,
         ]
         const _idToLoad = data.name
-        const viewToLoad = namedViews.find((view) => view._id === _idToLoad)
+        const viewToLoad = namedViews.find((view) => view.id === _idToLoad)
         if (viewToLoad) {
           // Split into the name and the engine data
-          const { name, _id, _version, ...engineViewData } = viewToLoad
+          const { name, id, version, ...engineViewData } = viewToLoad
 
           // Only send the specific camera information, the NamedView itself
           // is not directly compatible with the engine API
@@ -203,7 +203,7 @@ export function createNamedViewsCommand() {
             return {
               name: view.name,
               isCurrent: false,
-              value: view._id,
+              value: view.id,
             }
           })
         },

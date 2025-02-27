@@ -213,8 +213,8 @@ color = 1567.4"#;
     "#;
         // serde_json to a NamedView will produce default values
         let named_views: Vec<NamedView> = serde_json::from_str(json).unwrap();
-        let uuid_string = named_views[0]._id.to_string();
-        let version = named_views[0]._version;
+        let uuid_string = named_views[0].id.to_string();
+        let version = named_views[0].version;
         assert_eq!(uuid_string.len(), 36);
         assert_eq!(version, 1.0);
     }
@@ -273,8 +273,8 @@ color = 1567.4"#;
             pivot_position: [-100.0, 100.0, 100.0],
             pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
             world_coord_system: String::from("RightHandedUpZ"),
-            _id:uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
-            _version: 1.0
+            id:uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
+            version: 1.0
         },
                             NamedView {
                                 name: String::from("Goodbye"),
@@ -286,8 +286,8 @@ color = 1567.4"#;
                                 pivot_position: [-100.0, 100.0, 100.0],
                                 pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
                                 world_coord_system: String::from("RightHandedUpZ"),
-                                _id:uuid::uuid!("423611ea-66e3-43c9-9d0d-1091ba92948c"),
-                                _version: 1.0
+                                id:uuid::uuid!("423611ea-66e3-43c9-9d0d-1091ba92948c"),
+                                version: 1.0
                             },
                         ]
                     },

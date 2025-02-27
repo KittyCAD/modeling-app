@@ -284,8 +284,7 @@ pub struct ModelingSettings {
     pub show_scale_grid: bool,
 }
 
-
-fn one () -> f64 {
+fn named_view_point_version_one () -> f64 {
     return 1.0
 }
 
@@ -293,45 +292,45 @@ fn one () -> f64 {
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct NamedView {
-    /// The default unit to use in modeling dimensions.
+    /// User defined name to identify the named view. A label.
     #[serde(default, alias = "name", skip_serializing_if = "is_default")]
     pub name: String,
-    /// The default unit to use in modeling dimensions.
+    /// Engine camera eye off set
     #[serde(default, alias = "eyeOffset", skip_serializing_if = "is_default")]
     pub eye_offset: f64,
-    /// The default unit to use in modeling dimensions.
+    /// Engine camera vertical FOV
     #[serde(default, alias = "fovY", skip_serializing_if = "is_default")]
     pub fov_y: f64,
-    /// The default unit to use in modeling dimensions.
+    // Engine camera is orthographic or perpsective projection
     #[serde(default, alias = "isOrtho")]
     pub is_ortho: bool,
-    /// The default unit to use in modeling dimensions.
+    /// Engine camera is orthographic camera scaling enabled
     #[serde(default, alias = "orthoScaleEnabled")]
     pub ortho_scale_enabled: bool,
-    /// The default unit to use in modeling dimensions.
+    /// Engine camera orthographic scaling factor
     #[serde(default, alias = "orthoScaleFactor", skip_serializing_if = "is_default")]
     pub ortho_scale_factor: f64,
-    /// The default unit to use in modeling dimensions.
+    /// Engine camera position that the camera pivots around
     #[serde(default, alias = "pivotPosition", skip_serializing_if = "is_default")]
     pub pivot_position: [f64; 3],
-    /// The default unit to use in modeling dimensions.
+    /// Engine camera orientation in relation to the pivot position
     #[serde(default, alias = "pivotRotation", skip_serializing_if = "is_default")]
     pub pivot_rotation: [f64; 4],
-    /// The default unit to use in modeling dimensions.
+    /// Engine camera world coordinate system orientation
     #[serde(default, alias = "worldCoordSystem", skip_serializing_if = "is_default")]
     pub world_coord_system: String,
-    /// The default unit to use in modeling dimensions.
-    #[serde(default = "uuid::Uuid::new_v4", alias = "_id")]
-    pub _id: uuid::Uuid,
-    /// The default unit to use in modeling dimensions.
-    #[serde(default = "one", alias = "_version")]
-    pub _version: f64,
+    /// A unique uuidv4 to have a unique key when storing named views
+    #[serde(default = "uuid::Uuid::new_v4", alias = "id")]
+    pub id: uuid::Uuid,
+    /// Version number of the view point if the engine camera API changes
+    #[serde(default = "named_view_point_version_one", alias = "version")]
+    pub version: f64,
 }
 
 
 impl PartialEq for NamedView {
     fn eq(&self, other: &Self) -> bool {
-        self._id == other._id && self._version == other._version
+        self.id == other.id && self.version == other.version
     }
 }
 
