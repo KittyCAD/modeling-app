@@ -33,11 +33,49 @@ import { EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { reportRejection } from 'lib/trap'
 import { codeManager, kclManager } from 'lib/singletons'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
 const FRUSTUM_SIZE = 0.5
 const OUTPUT_KEY = 'source.glb'
+
+function TextToCadImprovementMessage({
+  label,
+  ...rest
+}: React.HTMLElementAttributes<HTMLDetailsElement> & { label: string }) {
+  return (
+    <details {...rest}>
+      <summary className="text-chalkboard-70 dark:text-chalkboard-30">
+        {label}
+      </summary>
+      <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+        Text-to-CAD is a new ML model. There will be prompts that work and
+        prompts that don't and prompts that generate something a little bit off.
+        Sometimes even a small tweak to your prompt will make it better on the
+        next run. Or using prompt to edit to make it better. We look at all the
+        failures to make the model better and see our weaknesses. Over time the
+        model will get better. See our{' '}
+        <a
+          href="https://discord.gg/JQEpHR7Nt2"
+          onClick={openExternalBrowserIfDesktop(
+            'https://discord.gg/JQEpHR7Nt2'
+          )}
+        >
+          Discord
+        </a>{' '}
+        or{' '}
+        <a
+          href="https://community.zoo.dev/"
+          onClick={openExternalBrowserIfDesktop('https://community.zoo.dev/')}
+        >
+          Discourse
+        </a>{' '}
+        or some prompting tips from the community or our team.
+      </p>
+    </details>
+  )
+}
 
 export function ToastTextToCadError({
   toastId,
@@ -286,6 +324,10 @@ export function ToastTextToCadSuccess({
               : data.prompt}
             "
           </p>
+          <TextToCadImprovementMessage
+            className="text-sm mt-2"
+            label="Not what you expected?"
+          />
         </section>
         <div className="flex justify-between gap-8">
           <ActionButton
