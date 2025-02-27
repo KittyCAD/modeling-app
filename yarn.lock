@@ -5536,10 +5536,10 @@ graphemer@^1.4.0:
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
-happy-dom@^16.3.0:
-  version "16.3.0"
-  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-16.3.0.tgz#e138b5692cdff8e1e25d02b7730d320b4a151f65"
-  integrity sha512-Q71RaIhyS21vhW17Tpa5W36yqQXIlE1TZ0A0Gguts8PShUSQE/7fBgxYGxgm3+5y0gF6afdlAVHLQqgrIcfRzg==
+happy-dom@^17.1.8:
+  version "17.1.8"
+  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-17.1.8.tgz#e45f61daa31cf1f03c76150daec81527f9607a0b"
+  integrity sha512-Yxbq/FG79z1rhAf/iB6YM8wO2JB/JDQBy99RiLSs+2siEAi5J05x9eW1nnASHZJbpldjJE2KuFLsLZ+AzX/IxA==
   dependencies:
     webidl-conversions "^7.0.0"
     whatwg-mimetype "^3.0.0"

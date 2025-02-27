@@ -195,7 +195,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-suggest-no-throw": "^1.0.0",
     "eslint-plugin-testing-library": "^7.1.1",
-    "happy-dom": "^16.3.0",
+    "happy-dom": "^17.1.8",
     "http-server": "^14.1.1",
     "husky": "^9.1.5",
     "kill-port": "^2.0.1",
