@@ -5,7 +5,9 @@ description: Error from executing import_file_parse_error.kcl
 KCL Syntax error
 
   × syntax: Unexpected token: }
-   ╭────
- 1 │ import hotdog from "parse-failure.kcl"
-   ·                                 ─
+   ╭─[3:1]
+ 2 │   return 
+ 3 │ }
+   · ┬
+   · ╰── tests/import_file_parse_error/parse-failure.kcl
    ╰────

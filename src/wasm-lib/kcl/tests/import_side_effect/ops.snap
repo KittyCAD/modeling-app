@@ -2,4 +2,28 @@
 source: kcl/src/simulation_tests.rs
 description: Operations executed import_side_effect.kcl
 ---
-[]
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": [
+          95,
+          99,
+          3
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      81,
+      100,
+      3
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

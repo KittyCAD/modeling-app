@@ -67,8 +67,8 @@ impl Discovered {
 }
 
 impl IntoDiagnostic for Discovered {
-    fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
-        (&self).to_lsp_diagnostic(code)
+    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
+        (&self).to_lsp_diagnostics(code)
     }
 
     fn severity(&self) -> DiagnosticSeverity {
@@ -77,11 +77,11 @@ impl IntoDiagnostic for Discovered {
 }
 
 impl IntoDiagnostic for &Discovered {
-    fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
+    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
 
-        Diagnostic {
+        vec![Diagnostic {
             range: source_range.to_lsp_range(code),
             severity: Some(self.severity()),
             code: None,
@@ -92,7 +92,7 @@ impl IntoDiagnostic for &Discovered {
             related_information: None,
             tags: None,
             data: None,
-        }
+        }]
     }
 
     fn severity(&self) -> DiagnosticSeverity {

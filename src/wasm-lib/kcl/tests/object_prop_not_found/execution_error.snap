@@ -8,5 +8,6 @@ KCL UndefinedValue error
    ╭─[2:5]
  1 │ obj = {  }
  2 │ k = obj["age"]
-   ·     ──────────
+   ·     ─────┬────
+   ·          ╰── tests/object_prop_not_found/input.kcl
    ╰────

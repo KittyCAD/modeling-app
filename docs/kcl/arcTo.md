@@ -29,7 +29,7 @@ arcTo(data: ArcToData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> arcTo({ end = [10, 0], interior = [5, 5] }, %)
   |> close()

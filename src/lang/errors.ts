@@ -351,16 +351,16 @@ export function kclErrorsByFilename(
     const sourceRange: SourceRange = error.sourceRange
     const fileIndex = sourceRange[2]
     const modulePath: ModulePath | undefined = filenames[fileIndex]
-    if (modulePath) {
-      let stdOrLocalPath = modulePath.value
-      if (stdOrLocalPath) {
+    if (modulePath && modulePath.type === 'Local') {
+      let localPath = modulePath.value
+      if (localPath) {
         // Build up an array of errors per file name
-        const value = fileNameToError.get(stdOrLocalPath)
+        const value = fileNameToError.get(localPath)
         if (!value) {
-          fileNameToError.set(stdOrLocalPath, [error])
+          fileNameToError.set(localPath, [error])
         } else {
           value.push(error)
-          fileNameToError.set(stdOrLocalPath, [error])
+          fileNameToError.set(localPath, [error])
         }
       }
     }

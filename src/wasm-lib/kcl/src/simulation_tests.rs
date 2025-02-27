@@ -169,11 +169,14 @@ async fn execute_test(test: &Test, render_to_png: bool) {
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
-                    let report = crate::errors::Report {
-                        error: error.error,
-                        filename: format!("{}.kcl", &test.name),
-                        kcl_source: read(&test.entry_point, &test.input_dir),
-                    };
+                    miette::set_hook(Box::new(|_| {
+                        Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
+                    }))
+                    .unwrap();
+                    let report = error
+                        .clone()
+                        .into_miette_report_with_outputs(&read(&test.entry_point, &test.input_dir))
+                        .unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
                         eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl/{} and other associated passing artifacts", ok_path.to_string_lossy());
@@ -2043,6 +2046,28 @@ mod array_elem_pop_fail {
 }
 mod helix_simple {
     const TEST_NAME: &str = "helix_simple";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod import_file_not_exist_error {
+    const TEST_NAME: &str = "import_file_not_exist_error";
 
     /// Test parsing KCL.
     #[test]

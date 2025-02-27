@@ -10,6 +10,7 @@ KCL ImportCycle error
    ╭─[2:1]
  1 │ @settings(defaultLengthUnit = in)
  2 │ import two from "import_cycle2.kcl"
-   · ───────────────────────────────────
+   · ─────────────────┬─────────────────
+   ·                  ╰── tests/import_cycle1/input.kcl
  3 │ 
    ╰────
