@@ -383,7 +383,7 @@ jobs:
           # see https://github.com/actions/checkout/issues/1471
           git fetch --prune --unshallow --tags
           export TAG="nightly-${VERSION}"
-          export PREVIOUS_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1 --glob="nightly-v[0-9]*"))
+          export PREVIOUS_TAG=$(git tag --list --sort=-committerdate nightly-v* | head -n2 | tail -n1)
           export NOTES=$(./scripts/get-nightly-changelog.sh)
           yarn files:set-notes
 
