@@ -457,7 +457,7 @@ export function addShell({
   thickness: Expr
   insertIndex?: number
   variableName?: string
-}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   console.log(
     'addShell args',
     JSON.stringify({

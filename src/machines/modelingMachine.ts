@@ -2003,7 +2003,6 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness, nodeToEdit } = input
-        console.log('input', JSON.stringify(input))
         let variableName: string | undefined = undefined
         let insertIndex: number | undefined = undefined
 
@@ -2033,17 +2032,6 @@ export const modelingMachine = setup({
         const faces: Expr[] = []
         let pathToExtrudeNode: PathToNode | undefined = undefined
         for (const graphSelection of selection.graphSelections) {
-          const sweepLookupResult = getSweepFromSuspectedSweepSurface(
-            graphSelection.artifact.id,
-            engineCommandManager.artifactGraph
-          )
-          if (err(sweepLookupResult)) {
-            const error = Error(
-              "Couldn't find sweep from getSweepFromSuspectedSweepSurface"
-            )
-            console.error(error)
-            return error
-          }
           const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
             clonedAstForGetExtrude,
             graphSelection,
@@ -2073,8 +2061,6 @@ export const modelingMachine = setup({
             extrudeLookupResult.pathToSegmentNode,
             'VariableDeclarator'
           )
-          console.log('extrudeNode', JSON.stringify(extrudeNode))
-          console.log('segmentNode', JSON.stringify(segmentNode))
           if (err(extrudeNode) || err(segmentNode)) {
             const error = new Error("Couldn't find extrude or segment")
             console.error(error)
@@ -2151,12 +2137,8 @@ export const modelingMachine = setup({
           insertIndex,
           variableName,
         })
-        if (err(addResult)) {
-          console.error(addResult)
-          return addResult
-        }
 
-        // Insert the distance variable if the user has provided a variable name
+        // Insert the thickness variable if the user has provided a variable name
         if (
           'variableName' in thickness &&
           thickness.variableName &&
@@ -2181,6 +2163,7 @@ export const modelingMachine = setup({
           }
         )
 
+        console.log('updateAstResult', JSON.stringify(updateAstResult))
         await codeManager.updateEditorWithAstAndWriteToFile(
           updateAstResult.newAst
         )
