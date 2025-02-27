@@ -7,7 +7,7 @@ use validator::Validate;
 
 
 use crate::settings::types::{
-    AppColor, AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings, NamedView
+    AppColor, AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings
 };
 
 /// High level project configuration.

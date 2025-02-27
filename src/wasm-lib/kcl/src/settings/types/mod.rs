@@ -279,7 +279,7 @@ pub struct ModelingSettings {
     #[serde(default, alias = "showScaleGrid", skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
     /// Settings that affect the behavior of the command bar.
-    #[serde(default, alias = "namedViews")]
+    #[serde(default, alias = "namedViews", skip_serializing_if = "Vec::is_empty")]
     #[validate(nested)]
     pub named_views: Vec<NamedView>,
 }
