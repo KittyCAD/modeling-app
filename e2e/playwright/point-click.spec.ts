@@ -9,7 +9,7 @@ import { Locator } from '@playwright/test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test.describe('Point-and-click tests', { tag: ['@skipWin'] }, () => {
+test.describe('Point-and-click tests', () => {
   test('verify extruding circle works', async ({
     context,
     homePage,
