@@ -275,7 +275,7 @@ impl Node<Program> {
         Ok(None)
     }
 
-    pub fn change_meta_settings(&mut self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
+    pub fn change_meta_settings(&self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
         for node in &mut new_program.inner_attrs {
@@ -4035,7 +4035,7 @@ startSketchOn('XY')"#;
         let some_program_string = r#"@settings(defaultLengthUnit = inch)
 
 startSketchOn('XY')"#;
-        let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let result = program.meta_settings().unwrap();
         assert!(result.is_some());
         let meta_settings = result.unwrap();
@@ -4077,7 +4077,7 @@ startSketchOn('XY')
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_get_meta_settings_nothing_to_mm() {
         let some_program_string = r#"startSketchOn('XY')"#;
-        let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let result = program.meta_settings().unwrap();
         assert!(result.is_none());
 
