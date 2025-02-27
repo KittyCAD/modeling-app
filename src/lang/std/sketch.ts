@@ -1257,7 +1257,7 @@ export const arc: SketchLineHelper = {
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
 
-    const { center, radius, from, to, ccw } = input
+    const { center, radius, from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -1279,13 +1279,6 @@ export const arc: SketchLineHelper = {
     const startAngleDegrees = (startAngle * 180) / Math.PI
     const endAngleDegrees = (endAngle * 180) / Math.PI
 
-    // Update center
-    const newCenter = createArrayExpression([
-      createLiteral(roundOff(center[0])),
-      createLiteral(roundOff(center[1])),
-    ])
-    mutateObjExpProp(firstArg, newCenter, 'center')
-
     // Update radius
     const newRadius = createLiteral(roundOff(radius))
     mutateObjExpProp(firstArg, newRadius, 'radius')
@@ -1297,10 +1290,6 @@ export const arc: SketchLineHelper = {
     // Update angleEnd
     const newAngleEnd = createLiteral(roundOff(endAngleDegrees))
     mutateObjExpProp(firstArg, newAngleEnd, 'angleEnd')
-
-    // Update ccw
-    const newCcw = createLiteral(ccw)
-    mutateObjExpProp(firstArg, newCcw, 'ccw')
 
     return {
       modifiedAst: _node,
