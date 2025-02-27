@@ -9,7 +9,11 @@ Draw a line parallel to the X axis, that ends at the given X.
 E.g. if the previous line ended at (1, 1), then xLineTo(4) draws a line from (1, 1) to (4, 1)
 
 ```js
-xLineTo(to: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+xLineTo(
+  to: number,
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 

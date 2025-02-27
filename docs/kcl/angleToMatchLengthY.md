@@ -9,7 +9,11 @@ Returns the angle to match the given length for y.
 
 
 ```js
-angleToMatchLengthY(tag: TagIdentifier, to: number, sketch: Sketch) -> number
+angleToMatchLengthY(
+  tag: TagIdentifier,
+  to: number,
+  sketch: Sketch,
+) -> number
 ```
 
 

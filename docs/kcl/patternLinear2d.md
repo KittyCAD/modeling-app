@@ -9,7 +9,13 @@ Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
 of distance between each repetition, some specified number of times.
 
 ```js
-patternLinear2d(sketchSet: SketchSet, instances: integer, distance: number, axis: [number], useOriginal?: bool) -> [Sketch]
+patternLinear2d(
+  sketchSet: SketchSet,
+  instances: integer,
+  distance: number,
+  axis: [number],
+  useOriginal?: bool,
+) -> [Sketch]
 ```
 
 

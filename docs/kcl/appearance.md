@@ -9,7 +9,12 @@ Set the appearance of a solid. This only works on solids, not sketches or indivi
 This will work on any solid, including extruded solids, revolved solids, and shelled solids.
 
 ```js
-appearance(solidSet: SolidSet, color: String, metalness?: number, roughness?: number) -> SolidSet
+appearance(
+  solidSet: SolidSet,
+  color: String,
+  metalness?: number,
+  roughness?: number,
+) -> SolidSet
 ```
 
 

@@ -9,7 +9,11 @@ Take a starting value. Then, for each element of an array, calculate the next va
 using the previous value and the element.
 
 ```js
-reduce(array: [KclValue], start: KclValue, reduceFn: FunctionSource) -> KclValue
+reduce(
+  array: [KclValue],
+  start: KclValue,
+  reduceFn: FunctionSource,
+) -> KclValue
 ```
 
 
