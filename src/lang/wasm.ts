@@ -21,6 +21,8 @@ import {
   clear_scene_and_bust_cache,
   kcl_settings,
   change_kcl_settings,
+  serialize_project_configuration,
+  serialize_configuration,
   reloadModule,
 } from 'lib/wasm_lib_wrapper'
 
@@ -785,4 +787,28 @@ export function unitAngToUnitAngle(input: UnitAng): UnitAngle {
  */
 export function getKclVersion(): string {
   return get_kcl_version()
+}
+
+/**
+ * Serialize a project configuration to a TOML string.
+ */
+export function serializeConfiguration(configuration: any): string | Error {
+  try {
+    return serialize_configuration(configuration)
+  } catch (e: any) {
+    return new Error(`Error serializing configuration: ${e}`)
+  }
+}
+
+/**
+ * Serialize a project configuration to a TOML string.
+ */
+export function serializeProjectConfiguration(
+  configuration: any
+): string | Error {
+  try {
+    return serialize_project_configuration(configuration)
+  } catch (e: any) {
+    return new Error(`Error serializing project configuration: ${e}`)
+  }
 }

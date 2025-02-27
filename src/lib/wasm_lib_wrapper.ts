@@ -29,6 +29,8 @@ import {
   kcl_settings as KclSettings,
   change_kcl_settings as ChangeKclSettings,
   get_kcl_version as GetKclVersion,
+  serialize_configuration as SerializeConfiguration,
+  serialize_project_configuration as SerializeProjectConfiguration,
 } from '../wasm-lib/pkg/wasm_lib'
 
 type ModuleType = typeof import('../wasm-lib/pkg/wasm_lib')
@@ -122,3 +124,12 @@ export const change_kcl_settings: typeof ChangeKclSettings = (...args) => {
 export const get_kcl_version: typeof GetKclVersion = () => {
   return getModule().get_kcl_version()
 }
+export const serialize_configuration: typeof SerializeConfiguration = (
+  ...args
+) => {
+  return getModule().serialize_configuration(...args)
+}
+export const serialize_project_configuration: typeof SerializeProjectConfiguration =
+  (...args) => {
+    return getModule().serialize_project_configuration(...args)
+  }
