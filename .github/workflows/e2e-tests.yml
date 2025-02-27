@@ -49,8 +49,7 @@ jobs:
           predicate-quantifier: every
           filters: |
             significant:
-              - '!public/kcl-samples/**'
-              - '!README.md'
+              - '!(public/kcl-samples/**|README.md)'
       - name: Display path changes
         run: |
           echo "Significant changes: ${{ steps.filter.outputs.significant }}"
