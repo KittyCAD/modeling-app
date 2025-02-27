@@ -60,7 +60,7 @@ test.describe('Point-and-click tests', () => {
 
         await clickCircle()
         await editor.expectState({
-          activeLines: ["|>"+circleSnippet],
+          activeLines: ['|>' + circleSnippet],
           highlightedCode: circleSnippet,
           diagnostics: [],
         })
