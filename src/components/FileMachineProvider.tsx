@@ -4,6 +4,7 @@ import { type IndexLoaderData } from 'lib/types'
 import { BROWSER_PATH, PATHS } from 'lib/paths'
 import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
+import { DEV } from 'env'
 import {
   Actor,
   AnyStateMachine,
@@ -60,21 +61,35 @@ export const FileMachineProvider = ({
   )
 
   useEffect(() => {
-    const {
-      createNamedViewCommand,
-      deleteNamedViewCommand,
-      loadNamedViewCommand,
-    } = createNamedViewsCommand()
-    commandBarActor.send({
-      type: 'Add commands',
-      data: {
-        commands: [
-          createNamedViewCommand,
-          deleteNamedViewCommand,
-          loadNamedViewCommand,
-        ],
-      },
-    })
+    // TODO: Engine feature is not deployed
+    if (DEV) {
+      const {
+        createNamedViewCommand,
+        deleteNamedViewCommand,
+        loadNamedViewCommand,
+      } = createNamedViewsCommand()
+
+      const commands = [
+        createNamedViewCommand,
+        deleteNamedViewCommand,
+        loadNamedViewCommand,
+      ]
+      commandBarActor.send({
+        type: 'Add commands',
+        data: {
+          commands
+        },
+      })
+      return () => {
+        // Remove commands if you go to the home page
+        commandBarActor.send({
+        type: 'Remove commands',
+        data: {
+          commands
+        },
+      })
+      }
+    }
   }, [])
 
   // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider

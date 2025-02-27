@@ -14,7 +14,8 @@ export function createNamedViewsCommand() {
   const createNamedViewCommand: Command = {
     name: 'Create named view',
     displayName: `Create named view`,
-    description: 'Saves a named view based on your current view to load again later',
+    description:
+      'Saves a named view based on your current view to load again later',
     groupId: 'namedViews',
     icon: 'settings',
     needsReview: false,
