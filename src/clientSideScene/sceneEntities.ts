@@ -2191,7 +2191,6 @@ export class SceneEntities {
         to: dragTo,
       }
     }
-    console.log('on Drag??')
 
     if (group.name === PROFILE_START) {
       modded = updateStartProfileAtArgs({

@@ -1227,6 +1227,72 @@ export const circle: SketchLineHelperKw = {
     ]
   },
 }
+
+export const arc: SketchLineHelper = {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    return new Error('arc not implemented')
+  },
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+
+    const { center, radius, from, to, ccw } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: callExpression, shallowPath } = nodeMeta
+    const firstArg = callExpression.arguments?.[0]
+
+    if (firstArg.type !== 'ObjectExpression') {
+      return new Error('Expected object expression as first argument')
+    }
+
+    // Calculate start angle (from center to 'from' point)
+    const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
+
+    // Calculate end angle (from center to 'to' point)
+    const endAngle = Math.atan2(to[1] - center[1], to[0] - center[0])
+
+    // Create literals for the angles (convert to degrees)
+    const startAngleDegrees = (startAngle * 180) / Math.PI
+    const endAngleDegrees = (endAngle * 180) / Math.PI
+
+    // Update center
+    const newCenter = createArrayExpression([
+      createLiteral(roundOff(center[0])),
+      createLiteral(roundOff(center[1])),
+    ])
+    mutateObjExpProp(firstArg, newCenter, 'center')
+
+    // Update radius
+    const newRadius = createLiteral(roundOff(radius))
+    mutateObjExpProp(firstArg, newRadius, 'radius')
+
+    // Update angleStart
+    const newAngleStart = createLiteral(roundOff(startAngleDegrees))
+    mutateObjExpProp(firstArg, newAngleStart, 'angleStart')
+
+    // Update angleEnd
+    const newAngleEnd = createLiteral(roundOff(endAngleDegrees))
+    mutateObjExpProp(firstArg, newAngleEnd, 'angleEnd')
+
+    // Update ccw
+    const newCcw = createLiteral(ccw)
+    mutateObjExpProp(firstArg, newCcw, 'ccw')
+
+    return {
+      modifiedAst: _node,
+      pathToNode: shallowPath,
+    }
+  },
+  getTag: getTag(),
+  addTag: addTag(),
+  getConstraintInfo: (callExp, code, pathToNode) => {
+    return []
+  },
+}
+
 export const circleThreePoint: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'circle-three-point-segment') {
@@ -2270,6 +2336,8 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToY,
   angledLineThatIntersects,
   tangentialArcTo,
+  circle,
+  arc,
 } as const
 
 export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
