@@ -886,11 +886,20 @@ impl ExecutorContext {
 }
 
 #[cfg(test)]
-pub(crate) async fn parse_execute(code: &str) -> Result<(crate::Program, EnvironmentRef, ExecutorContext, ExecState)> {
+pub(crate) async fn parse_execute(
+    code: &str,
+) -> Result<(crate::Program, EnvironmentRef, ExecutorContext, ExecState), KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
     let ctx = ExecutorContext {
-        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
+        engine: Arc::new(Box::new(
+            crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
+                KclError::Internal(crate::errors::KclErrorDetails {
+                    message: format!("Failed to create mock engine connection: {}", err),
+                    source_ranges: vec![SourceRange::default()],
+                })
+            })?,
+        )),
         fs: Arc::new(crate::fs::FileManager::new()),
         stdlib: Arc::new(crate::std::StdLib::new()),
         settings: Default::default(),
@@ -1293,7 +1302,7 @@ const x = 5
 const answer = returnX()"#;
 
         let result = parse_execute(ast).await;
-        let err = result.unwrap_err().downcast::<KclError>().unwrap();
+        let err = result.unwrap_err();
         assert_eq!(
             err,
             KclError::UndefinedValue(KclErrorDetails {
@@ -1326,7 +1335,7 @@ foo
 "#;
 
         let result = parse_execute(ast).await;
-        let err = result.unwrap_err().downcast::<KclError>().unwrap();
+        let err = result.unwrap_err();
         assert_eq!(
             err,
             KclError::Syntax(KclErrorDetails {
@@ -1350,7 +1359,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn(XY)
-    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
+    |> circle( center= [0, 0], radius= 1 , tag =$tag1)
     |> extrude(length = 10)
 }
 
@@ -1361,7 +1370,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 "#;
 
         let result = parse_execute(ast).await;
-        let err = result.unwrap_err().downcast::<KclError>().unwrap();
+        let err = result.unwrap_err();
         assert_eq!(
             err,
             KclError::UndefinedValue(KclErrorDetails {
@@ -1512,7 +1521,7 @@ let myNull = 0 / 0
 let notNull = !myNull
 "#;
         assert_eq!(
-            parse_execute(code1).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code1).await.unwrap_err(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
                 source_ranges: vec![SourceRange::new(56, 63, ModuleId::default())],
@@ -1521,7 +1530,7 @@ let notNull = !myNull
 
         let code2 = "let notZero = !0";
         assert_eq!(
-            parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code2).await.unwrap_err(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
                 source_ranges: vec![SourceRange::new(14, 16, ModuleId::default())],
@@ -1532,7 +1541,7 @@ let notNull = !myNull
 let notEmptyString = !""
 "#;
         assert_eq!(
-            parse_execute(code3).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code3).await.unwrap_err(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: string (text)".to_owned(),
                 source_ranges: vec![SourceRange::new(22, 25, ModuleId::default())],
@@ -1544,7 +1553,7 @@ let obj = { a: 1 }
 let notMember = !obj.a
 "#;
         assert_eq!(
-            parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code4).await.unwrap_err(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
                 source_ranges: vec![SourceRange::new(36, 42, ModuleId::default())],
@@ -1555,7 +1564,7 @@ let notMember = !obj.a
 let a = []
 let notArray = !a";
         assert_eq!(
-            parse_execute(code5).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code5).await.unwrap_err(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: array (list)".to_owned(),
                 source_ranges: vec![SourceRange::new(27, 29, ModuleId::default())],
@@ -1566,7 +1575,7 @@ let notArray = !a";
 let x = {}
 let notObject = !x";
         assert_eq!(
-            parse_execute(code6).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code6).await.unwrap_err(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: object".to_owned(),
                 source_ranges: vec![SourceRange::new(28, 30, ModuleId::default())],
@@ -1576,7 +1585,7 @@ let notObject = !x";
         let code7 = "
 fn x = () => { return 1 }
 let notFunction = !x";
-        let fn_err = parse_execute(code7).await.unwrap_err().downcast::<KclError>().unwrap();
+        let fn_err = parse_execute(code7).await.unwrap_err();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
         assert!(
@@ -1590,7 +1599,7 @@ let notFunction = !x";
         let code8 = "
 let myTagDeclarator = $myTag
 let notTagDeclarator = !myTagDeclarator";
-        let tag_declarator_err = parse_execute(code8).await.unwrap_err().downcast::<KclError>().unwrap();
+        let tag_declarator_err = parse_execute(code8).await.unwrap_err();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
         assert!(
@@ -1604,7 +1613,7 @@ let notTagDeclarator = !myTagDeclarator";
         let code9 = "
 let myTagDeclarator = $myTag
 let notTagIdentifier = !myTag";
-        let tag_identifier_err = parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap();
+        let tag_identifier_err = parse_execute(code9).await.unwrap_err();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
         assert!(
@@ -1619,7 +1628,7 @@ let notTagIdentifier = !myTag";
         assert_eq!(
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
-            parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code10).await.unwrap_err(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token: !".to_owned(),
                 source_ranges: vec![SourceRange::new(14, 15, ModuleId::default())],
@@ -1632,7 +1641,7 @@ let notPipeSub = 1 |> identity(!%))";
         assert_eq!(
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
-            parse_execute(code11).await.unwrap_err().downcast::<KclError>().unwrap(),
+            parse_execute(code11).await.unwrap_err(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token: |>".to_owned(),
                 source_ranges: vec![SourceRange::new(54, 56, ModuleId::default())],

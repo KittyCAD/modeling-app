@@ -10,7 +10,7 @@ sketch001 = startSketchOn('XZ')
 extrude001 = extrude(sketch001, length = 50)
 
 sketch002 = startSketchOn(extrude001, seg01)
-  |> circle({ center = [-2.08, 47.7], radius = 1.4 }, %)
+  |> circle(center = [-2.08, 47.7], radius = 1.4)
   |> patternLinear2d(instances = 5, distance = 5, axis = [1, 0])
   // Instances was reduced from 12 to speed this up.
   |> patternLinear2d(instances = 6, distance = 4, axis = [0, -1])

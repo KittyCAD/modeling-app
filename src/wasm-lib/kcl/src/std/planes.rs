@@ -36,7 +36,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('XY', offset = 150))
-///     |> circle({ center = [0, 100], radius = 50 }, %)
+///     |> circle( center = [0, 100], radius = 50 )
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -52,7 +52,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('XZ', offset = 150))
-///     |> circle({ center = [0, 100], radius = 50 }, %)
+///     |> circle( center = [0, 100], radius = 50 )
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -68,7 +68,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('YZ', offset = 150))
-///     |> circle({ center = [0, 100], radius = 50 }, %)
+///     |> circle( center = [0, 100], radius = 50 )
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -84,7 +84,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('-XZ', offset = -150))
-///     |> circle({ center = [0, 100], radius = 50 }, %)
+///     |> circle( center = [0, 100], radius = 50 )
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -92,7 +92,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // A circle on the XY plane
 /// startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
-///   |> circle({ radius = 10, center = [0, 0] }, %)
+///   |> circle( radius = 10, center = [0, 0] )
 ///   
 /// // Triangle on the plane 4 units above
 /// startSketchOn(offsetPlane("XY", offset = 4))

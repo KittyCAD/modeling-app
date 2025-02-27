@@ -37,8 +37,8 @@ exampleSketch = startSketchOn(XY)
   |> line(end = [5, 0])
   |> line(end = [0, -5])
   |> close()
-  |> hole(circle({ center = [1, 1], radius = .25 }, %), %)
-  |> hole(circle({ center = [1, 4], radius = .25 }, %), %)
+  |> hole(circle(center = [1, 1], radius = .25), %)
+  |> hole(circle(center = [1, 4], radius = .25), %)
 
 example = extrude(exampleSketch, length = 1)
 ```
@@ -57,7 +57,7 @@ fn squareHoleSketch() {
 }
 
 exampleSketch = startSketchOn(-XZ)
-  |> circle({ center = [0, 0], radius = 3 }, %)
+  |> circle(center = [0, 0], radius = 3)
   |> hole(squareHoleSketch(), %)
 example = extrude(exampleSketch, length = 1)
 ```

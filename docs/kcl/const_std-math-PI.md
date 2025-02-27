@@ -18,7 +18,7 @@ std::math::PI: number = 3.14159265358979323846264338327950288_
 circumference = 70
 
 exampleSketch = startSketchOn("XZ")
- |> circle({ center = [0, 0], radius = circumference/ (2 * PI) }, %)
+ |> circle(center = [0, 0], radius = circumference/ (2 * PI))
 
 example = extrude(exampleSketch, length = 5)
 ```

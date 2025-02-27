@@ -6,7 +6,7 @@
 /// circumference = 70
 ///
 /// exampleSketch = startSketchOn("XZ")
-///  |> circle({ center = [0, 0], radius = circumference/ (2 * PI) }, %)
+///  |> circle(center = [0, 0], radius = circumference/ (2 * PI))
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```

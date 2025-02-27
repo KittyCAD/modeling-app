@@ -76,8 +76,8 @@ description: Operations executed revolve_about_edge.kcl
           }
         },
         "sourceRange": [
-          204,
-          266,
+          197,
+          259,
           0
         ]
       },
@@ -89,16 +89,16 @@ description: Operations executed revolve_about_edge.kcl
           }
         },
         "sourceRange": [
-          268,
-          269,
+          261,
+          262,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      196,
-      270,
+      189,
+      263,
       0
     ],
     "type": "StdLibCall",

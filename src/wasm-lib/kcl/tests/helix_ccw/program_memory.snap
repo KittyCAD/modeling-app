@@ -15,7 +15,7 @@ description: Variables in memory after executing helix_ccw.kcl
           "id": "[uuid]",
           "sourceRange": [
             35,
-            78,
+            71,
             0
           ],
           "tag": null,
@@ -31,7 +31,7 @@ description: Variables in memory after executing helix_ccw.kcl
               "id": "[uuid]",
               "sourceRange": [
                 35,
-                78,
+                71,
                 0
               ]
             },
@@ -103,7 +103,7 @@ description: Variables in memory after executing helix_ccw.kcl
             "id": "[uuid]",
             "sourceRange": [
               35,
-              78,
+              71,
               0
             ]
           }
@@ -117,7 +117,7 @@ description: Variables in memory after executing helix_ccw.kcl
           {
             "sourceRange": [
               35,
-              78,
+              71,
               0
             ]
           }
@@ -133,7 +133,7 @@ description: Variables in memory after executing helix_ccw.kcl
         {
           "sourceRange": [
             35,
-            78,
+            71,
             0
           ]
         }

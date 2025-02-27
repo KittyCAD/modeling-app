@@ -445,7 +445,7 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
       },
       {
         "declaration": {
-          "end": 376,
+          "end": 375,
           "id": {
             "end": 260,
             "name": "part002",
@@ -486,88 +486,73 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
               {
                 "arguments": [
                   {
-                    "end": 336,
-                    "properties": [
-                      {
-                        "end": 322,
-                        "key": {
-                          "end": 313,
-                          "name": "center",
-                          "start": 307,
-                          "type": "Identifier"
-                        },
-                        "start": 307,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "end": 318,
-                              "raw": "0",
-                              "start": 317,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            },
-                            {
-                              "end": 321,
-                              "raw": "0",
-                              "start": 320,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          ],
-                          "end": 322,
-                          "start": 316,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "end": 334,
-                        "key": {
-                          "end": 330,
-                          "name": "radius",
-                          "start": 324,
-                          "type": "Identifier"
-                        },
-                        "start": 324,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 334,
-                          "raw": "5",
-                          "start": 333,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "center"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 316,
+                          "raw": "0",
+                          "start": 315,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 5.0,
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 319,
+                          "raw": "0",
+                          "start": 318,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
                             "suffix": "None"
                           }
                         }
+                      ],
+                      "end": 320,
+                      "start": 314,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 332,
+                      "raw": "5",
+                      "start": 331,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 5.0,
+                        "suffix": "None"
                       }
-                    ],
-                    "start": 305,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                    }
                   },
                   {
-                    "end": 339,
-                    "start": 338,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 350,
-                    "start": 341,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "myCircle"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tag"
+                    },
+                    "arg": {
+                      "end": 349,
+                      "start": 340,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "myCircle"
+                    }
                   }
                 ],
                 "callee": {
@@ -576,10 +561,11 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                   "start": 298,
                   "type": "Identifier"
                 },
-                "end": 351,
+                "end": 350,
                 "start": 298,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -590,9 +576,9 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 375,
+                      "end": 374,
                       "raw": "5",
-                      "start": 374,
+                      "start": 373,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -603,19 +589,19 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                   }
                 ],
                 "callee": {
-                  "end": 364,
+                  "end": 363,
                   "name": "extrude",
-                  "start": 357,
+                  "start": 356,
                   "type": "Identifier"
                 },
-                "end": 376,
-                "start": 357,
+                "end": 375,
+                "start": 356,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 376,
+            "end": 375,
             "start": 263,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -623,14 +609,14 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
           "start": 253,
           "type": "VariableDeclarator"
         },
-        "end": 376,
+        "end": 375,
         "kind": "const",
         "start": 253,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 377,
+    "end": 376,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [

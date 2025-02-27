@@ -338,7 +338,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       197,
-      239,
+      232,
       3
     ],
     "command": {
@@ -358,7 +358,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       197,
-      239,
+      232,
       3
     ],
     "command": {
@@ -369,7 +369,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       197,
-      239,
+      232,
       3
     ],
     "command": {
@@ -386,7 +386,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       197,
-      239,
+      232,
       3
     ],
     "command": {
@@ -415,7 +415,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       197,
-      239,
+      232,
       3
     ],
     "command": {
@@ -468,7 +468,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       114,
-      156,
+      149,
       4
     ],
     "command": {
@@ -488,7 +488,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       114,
-      156,
+      149,
       4
     ],
     "command": {
@@ -499,7 +499,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       114,
-      156,
+      149,
       4
     ],
     "command": {
@@ -516,7 +516,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       114,
-      156,
+      149,
       4
     ],
     "command": {
@@ -545,7 +545,7 @@ description: Artifact commands assembly_non_default_units.kcl
     "cmdId": "[uuid]",
     "range": [
       114,
-      156,
+      149,
       4
     ],
     "command": {

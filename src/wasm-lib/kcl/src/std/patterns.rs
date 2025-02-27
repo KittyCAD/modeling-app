@@ -117,7 +117,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///
 /// // Sketch 4 cylinders.
 /// sketch001 = startSketchOn('XZ')
-///   |> circle({ center = [0, 0], radius = 2 }, %)
+///   |> circle(center = [0, 0], radius = 2)
 ///   |> extrude(length = 5)
 ///   |> patternTransform(instances = 4, transform = transform)
 /// ```
@@ -130,7 +130,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// sketch001 = startSketchOn('XZ')
-///   |> circle({ center = [0, 0], radius = 2 }, %)
+///   |> circle(center = [0, 0], radius = 2)
 ///   |> extrude(length = 5)
 ///   |> patternTransform(instances = 4, transform = transform)
 /// ```
@@ -226,7 +226,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer() {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
+///     |> circle(center = [0, 0], radius = 1, tag = $tag1)
 ///     |> extrude(length = h)
 /// }
 /// // The vase is 100 layers tall.
@@ -303,7 +303,7 @@ async fn inner_pattern_transform<'a>(
 ///
 /// // Sketch 4 circles.
 /// sketch001 = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> circle(center= [0, 0], radius= 2)
 ///   |> patternTransform2d(instances = 4, transform = transform)
 /// ```
 #[stdlib {
@@ -715,7 +715,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> circle({ center = [0, 0], radius = 1 }, %)
+///   |> circle(center = [0, 0], radius = 1)
 ///   |> patternLinear2d(
 ///        axis = [1, 0],
 ///        instances = 7,
@@ -821,11 +821,11 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> extrude(length = 65)
 ///
 /// const thing1 = startSketchOn(case, 'end')
-///     |> circle({center = [-size / 2, -size / 2], radius = 25}, %)
+///     |> circle(center = [-size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
 /// const thing2 = startSketchOn(case, 'end')
-///     |> circle({center = [size / 2, -size / 2], radius = 25}, %)
+///     |> circle(center = [size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
 /// // We pass in the "case" here since we want to pattern the whole sketch.
@@ -849,7 +849,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> extrude(length = 65)
 ///
 /// const thing1 = startSketchOn(case, 'end')
-///     |> circle({ center =[-size / 2, -size / 2], radius = 25}, %)
+///     |> circle(center =[-size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
 /// // We pass in `thing1` here with `useOriginal` since we want to pattern just this object on the face.
@@ -1166,7 +1166,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
-///   |> circle({ center = [0, 0], radius = 1 }, %)
+///   |> circle(center = [0, 0], radius = 1)
 ///
 /// example = extrude(exampleSketch, length = -5)
 ///   |> patternCircular3d(

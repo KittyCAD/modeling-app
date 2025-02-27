@@ -5,13 +5,13 @@ flowchart LR
     3["Segment<br>[71, 107, 0]"]
   end
   subgraph path5 [Path]
-    5["Path<br>[145, 190, 0]"]
-    6["Segment<br>[145, 190, 0]"]
+    5["Path<br>[145, 183, 0]"]
+    6["Segment<br>[145, 183, 0]"]
     7[Solid2d]
   end
   1["Plane<br>[12, 31, 0]"]
   4["Plane<br>[120, 139, 0]"]
-  8["Sweep RevolveAboutEdge<br>[196, 270, 0]"]
+  8["Sweep RevolveAboutEdge<br>[189, 263, 0]"]
   9[Wall]
   10["Cap Start"]
   11["Cap End"]

@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands import_whole.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -327,7 +326,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       61,
-      104,
+      97,
       3
     ],
     "command": {
@@ -347,7 +346,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       61,
-      104,
+      97,
       3
     ],
     "command": {
@@ -358,7 +357,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       61,
-      104,
+      97,
       3
     ],
     "command": {
@@ -375,7 +374,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       61,
-      104,
+      97,
       3
     ],
     "command": {
@@ -404,7 +403,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       61,
-      104,
+      97,
       3
     ],
     "command": {
@@ -415,8 +414,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      110,
-      130,
+      103,
+      123,
       3
     ],
     "command": {
@@ -435,8 +434,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      110,
-      130,
+      103,
+      123,
       3
     ],
     "command": {
@@ -449,8 +448,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      110,
-      130,
+      103,
+      123,
       3
     ],
     "command": {
@@ -460,8 +459,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      110,
-      130,
+      103,
+      123,
       3
     ],
     "command": {
@@ -472,8 +471,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      110,
-      130,
+      103,
+      123,
       3
     ],
     "command": {
@@ -485,8 +484,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      110,
-      130,
+      103,
+      123,
       3
     ],
     "command": {
@@ -499,8 +498,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      110,
-      130,
+      103,
+      123,
       3
     ],
     "command": {

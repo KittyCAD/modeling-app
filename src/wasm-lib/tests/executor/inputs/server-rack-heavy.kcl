@@ -30,22 +30,22 @@ fn caster = (originStart) => {
     |> xLine(-3.543, %)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
-    |> hole(circle({ center: [
+    |> hole(circle(center = [
          (3.543 - 2.756) / 2,
          (3.543 - 2.756) / 2
-       ], radius: 8.8 / 2 / 25.4}, %), %)
-    |> hole(circle({ center: [
+       ], radius = 8.8 / 2 / 25.4), %)
+    |> hole(circle(center = [
          (3.543 - 2.756) / 2 + 2.756,
          (3.543 - 2.756) / 2
-       ], radius: 8.8 / 2 / 25.4 }, %), %)
-    |> hole(circle({ center: [
+       ], radius = 8.8 / 2 / 25.4 ), %)
+    |> hole(circle(center = [
          (3.543 - 2.756) / 2,
          (3.543 - 2.756) / 2 + 2.756
-       ], radius: 8.8 / 2 / 25.4 }, %), %)
-    |> hole(circle({ center: [
+       ], radius = 8.8 / 2 / 25.4 ), %)
+    |> hole(circle(center = [
          (3.543 - 2.756) / 2 + 2.756,
          (3.543 - 2.756) / 2 + 2.756
-       ], radius: 8.8 / 2 / 25.4 }, %), %)
+       ], radius = 8.8 / 2 / 25.4 ), %)
     |> extrude(length = -.25)
 
   const sketch002c = startSketchOn(sketch001c, 'START')
@@ -71,7 +71,7 @@ fn caster = (originStart) => {
     }
   }
   const sketch003c = startSketchOn(plane002c)
-    |> circle({ center: [0, 1.2], radius 2.48 / 2 }, %)
+    |> circle(center = [0, 1.2], radius = 2.48 / 2)
   const examplec = extrude(sketch003c, length = -1 - (3 / 16))
   return examplec
 }
