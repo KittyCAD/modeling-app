@@ -9,7 +9,11 @@ Draw a line relative to the current origin to a specified distance away
 from the current position along the 'x' axis.
 
 ```js
-xLine(length: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+xLine(
+  length: number,
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 

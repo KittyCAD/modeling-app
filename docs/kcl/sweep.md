@@ -9,7 +9,12 @@ Extrude a sketch along a path.
 This, like extrude, is able to create a 3-dimensional solid from a 2-dimensional sketch. However, unlike extrude, this creates a solid by using the extent of the sketch as its path. This is useful for creating more complex shapes that can't be created with a simple extrusion.
 
 ```js
-sweep(sketch: Sketch, path: SweepPath, sectional?: bool, tolerance?: number) -> Solid
+sweep(
+  sketch: Sketch,
+  path: SweepPath,
+  sectional?: bool,
+  tolerance?: number,
+) -> Solid
 ```
 
 

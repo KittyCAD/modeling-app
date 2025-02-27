@@ -9,7 +9,12 @@ Extend the current sketch with a new straight line.
 
 
 ```js
-line(sketch: Sketch, endAbsolute?: [number], end?: [number], tag?: TagDeclarator) -> Sketch
+line(
+  sketch: Sketch,
+  endAbsolute?: [number],
+  end?: [number],
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 

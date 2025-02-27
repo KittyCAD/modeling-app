@@ -1046,7 +1046,7 @@ impl LanguageServer for Backend {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
                         value: format!(
-                            "```{}{}```\n{}",
+                            "```\n{}{}\n```\n\n{}",
                             name,
                             if let Some(detail) = &label_details.detail {
                                 detail

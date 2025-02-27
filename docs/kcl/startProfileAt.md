@@ -9,7 +9,11 @@ Start a new profile at a given point.
 
 
 ```js
-startProfileAt(to: [number], sketchSurface: SketchSurface, tag?: TagDeclarator) -> Sketch
+startProfileAt(
+  to: [number],
+  sketchSurface: SketchSurface,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 

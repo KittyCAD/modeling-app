@@ -17,7 +17,10 @@ This is important to understand because if you were to then sketch on the result
 The point is if you want to export the result of a sketch on a face, you only need to export the final Solid that was created from the sketch on the face, since it will include all the parent faces and Solids.
 
 ```js
-startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface
+startSketchOn(
+  data: SketchData,
+  tag?: FaceTag,
+) -> SketchSurface
 ```
 
 

@@ -9,7 +9,10 @@ Compute the length of the given leg.
 
 
 ```js
-legLen(hypotenuse: number, leg: number) -> number
+legLen(
+  hypotenuse: number,
+  leg: number,
+) -> number
 ```
 
 ### Tags

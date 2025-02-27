@@ -9,7 +9,10 @@ Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 
 
 ```js
-hole(holeSketch: SketchSet, sketch: Sketch) -> Sketch
+hole(
+  holeSketch: SketchSet,
+  sketch: Sketch,
+) -> Sketch
 ```
 
 

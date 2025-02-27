@@ -11,7 +11,13 @@ of distance between each repetition, some specified number of times.
 ///
 
 ```js
-patternLinear3d(solidSet: SolidSet, instances: integer, distance: number, axis: [number], useOriginal?: bool) -> [Solid]
+patternLinear3d(
+  solidSet: SolidSet,
+  instances: integer,
+  distance: number,
+  axis: [number],
+  useOriginal?: bool,
+) -> [Solid]
 ```
 
 

@@ -9,7 +9,11 @@ Draw a 3 point arc.
 The arc is constructed such that the start point is the current position of the sketch and two more points defined as the end and interior point. The interior point is placed between the start point and end point. The radius of the arc will be controlled by how far the interior point is placed from the start and end.
 
 ```js
-arcTo(data: ArcToData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+arcTo(
+  data: ArcToData,
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 
