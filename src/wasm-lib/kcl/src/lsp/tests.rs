@@ -902,10 +902,13 @@ async fn test_kcl_lsp_on_hover() {
         .unwrap();
 
     // Check the hover.
-    if let Some(hover) = hover {
-        assert_eq!(hover.contents, tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { kind: tower_lsp::lsp_types::MarkupKind::Markdown, value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a new 2-dimensional sketch on a specific plane or face.\n\n### Sketch on Face Behavior\n\nThere are some important behaviors to understand when sketching on a face:\n\nThe resulting sketch will _include_ the face and thus Solid that was sketched on. So say you were to export the resulting Sketch / Solid from a sketch on a face, you would get both the artifact of the sketch on the face and the parent face / Solid itself.\n\nThis is important to understand because if you were to then sketch on the resulting Solid, it would again include the face and parent Solid that was sketched on. This could go on indefinitely.\n\nThe point is if you want to export the result of a sketch on a face, you only need to export the final Solid that was created from the sketch on the face, since it will include all the parent faces and Solids.".to_string() }));
-    } else {
-        panic!("Expected hover");
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            value.contains("startSketchOn");
+            value.contains("-> SketchSurface");
+            value.contains("Start a new 2-dimensional sketch on a specific");
+        }
+        _ => unreachable!(),
     }
 }
 
@@ -3472,4 +3475,69 @@ async fn kcl_test_kcl_lsp_completions_number_literal() {
         .unwrap();
 
     assert_eq!(completions.is_none(), true);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_kcl_lsp_multi_file_error() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let cwd = std::env::current_dir().unwrap();
+    let joined = cwd.join("tests/import_file_parse_error/");
+
+    // Change the current directory.
+    std::env::set_current_dir(joined).unwrap();
+
+    let code = std::fs::read_to_string("input.kcl").unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///input.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.clone(),
+            },
+        })
+        .await;
+
+    // Send diagnostics request.
+    let diagnostics = server
+        .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///input.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            identifier: None,
+            previous_result_id: None,
+        })
+        .await
+        .unwrap();
+
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics {
+        if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+            assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+            let item = diagnostics.full_document_diagnostic_report.items.first().unwrap();
+            assert_eq!(item.message, "syntax: Unexpected token: }");
+            assert_eq!(
+                Some(vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
+                    location: tower_lsp::lsp_types::Location {
+                        uri: "file:///parse-failure.kcl".try_into().unwrap(),
+                        range: tower_lsp::lsp_types::Range {
+                            start: tower_lsp::lsp_types::Position { line: 1, character: 9 },
+                            end: tower_lsp::lsp_types::Position { line: 2, character: 1 },
+                        },
+                    },
+                    message: "syntax: Unexpected token: }".to_string(),
+                }]),
+                item.related_information
+            );
+        } else {
+            panic!("Expected full diagnostics");
+        }
+    } else {
+        panic!("Expected diagnostics");
+    }
 }

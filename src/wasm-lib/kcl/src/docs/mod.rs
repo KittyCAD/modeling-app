@@ -4,7 +4,10 @@
 mod gen_std_tests;
 pub mod kcl_doc;
 
-use std::path::Path;
+use std::{
+    fmt::{self, Write},
+    path::Path,
+};
 
 use anyhow::Result;
 use schemars::JsonSchema;
@@ -87,6 +90,17 @@ pub struct StdLibFnArg {
     /// Defaults to true.
     #[serde(default = "its_true")]
     pub label_required: bool,
+}
+
+impl fmt::Display for StdLibFnArg {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.name)?;
+        if !self.required {
+            f.write_char('?')?;
+        }
+        f.write_str(": ")?;
+        f.write_str(&self.type_)
+    }
 }
 
 fn its_true() -> bool {
@@ -419,20 +433,29 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
         })
     }
 
-    fn fn_signature(&self) -> String {
+    fn fn_signature(&self, include_name: bool) -> String {
         let mut signature = String::new();
-        signature.push_str(&format!("{}(", self.name()));
-        for (i, arg) in self.args(false).iter().enumerate() {
-            if i > 0 {
-                signature.push_str(", ");
-            }
-            if arg.required {
-                signature.push_str(&format!("{}: {}", arg.name, arg.type_));
-            } else {
-                signature.push_str(&format!("{}?: {}", arg.name, arg.type_));
-            }
+        if include_name {
+            signature.push_str(&self.name());
         }
-        signature.push(')');
+
+        let args = self.args(false);
+        if args.is_empty() {
+            signature.push_str("()");
+        } else if args.len() == 1 {
+            signature.push('(');
+            signature.push_str(&args[0].to_string());
+            signature.push(')');
+        } else {
+            signature.push('(');
+            for a in args {
+                signature.push_str("\n  ");
+                signature.push_str(&a.to_string());
+                signature.push(',');
+            }
+            signature.push('\n');
+            signature.push(')');
+        }
         if let Some(return_value) = self.return_value(false) {
             signature.push_str(&format!(" -> {}", return_value.type_));
         }
@@ -444,7 +467,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
         Ok(CompletionItem {
             label: self.name(),
             label_details: Some(CompletionItemLabelDetails {
-                detail: Some(self.fn_signature().replace(&self.name(), "")),
+                detail: Some(self.fn_signature(false)),
                 description: None,
             }),
             kind: Some(CompletionItemKind::FUNCTION),
@@ -1088,6 +1111,39 @@ mod tests {
 	angleStart = ${1:3.14},
 	ccw = ${2:false},
 }, ${3:%})${}"#
+        );
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_scale() {
+        let scale_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Scale);
+        let snippet = scale_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"scale(${0:%}, scale = [${1:3.14}, ${2:3.14}, ${3:3.14}])${}"#
+        );
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_translate() {
+        let translate_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Translate);
+        let snippet = translate_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"translate(${0:%}, translate = [${1:3.14}, ${2:3.14}, ${3:3.14}])${}"#
+        );
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_rotate() {
+        let rotate_fn: Box<dyn StdLibFn> = Box::new(crate::std::transform::Rotate);
+        let snippet = rotate_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"rotate(${0:%}, roll = ${1:3.14}, pitch = ${2:3.14}, yaw = ${3:3.14})${}"#
         );
     }
 

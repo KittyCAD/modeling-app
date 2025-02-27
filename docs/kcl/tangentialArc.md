@@ -9,7 +9,11 @@ Draw a curved line segment along part of an imaginary circle.
 The arc is constructed such that the last line segment is placed tangent to the imaginary circle of the specified radius. The resulting arc is the segment of the imaginary circle from that tangent point for 'offset' degrees along the imaginary circle.
 
 ```js
-tangentialArc(data: TangentialArcData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+tangentialArc(
+  data: TangentialArcData,
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 
@@ -29,7 +33,7 @@ tangentialArc(data: TangentialArcData, sketch: Sketch, tag?: TagDeclarator) -> S
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 60, length = 10 }, %)
   |> tangentialArc({ radius = 10, offset = -120 }, %)

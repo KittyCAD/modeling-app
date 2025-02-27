@@ -20,7 +20,7 @@ export fn increment(x) {
 Other files in the project can now import functions that have been exported.
 This makes them available to use in another file.
 
-```
+```norun
 // main.kcl
 import increment from "util.kcl"
 
@@ -48,13 +48,13 @@ export fn decrement(x) {
 
 When importing, you can import multiple functions at once.
 
-```
+```norun
 import increment, decrement from "util.kcl"
 ```
 
 Imported symbols can be renamed for convenience or to avoid name collisions.
 
-```
+```norun
 import increment as inc, decrement as dec from "util.kcl"
 ```
 
@@ -63,13 +63,13 @@ import increment as inc, decrement as dec from "util.kcl"
 `import` can also be used to import files from other CAD systems. The format of the statement is the
 same as for KCL files. You can only import the whole file, not items from it. E.g.,
 
-```
+```norun
 import "tests/inputs/cube.obj"
 
 // Use `cube` just like a KCL object.
 ```
 
-```
+```norun
 import "tests/inputs/cube-2.sldprt" as cube
 
 // Use `cube` just like a KCL object.
@@ -78,7 +78,7 @@ import "tests/inputs/cube-2.sldprt" as cube
 You can make the file format explicit using a format attribute (useful if using a different
 extension), e.g.,
 
-```
+```norun
 @(format = obj)
 import "tests/inputs/cube"
 ```
@@ -87,7 +87,7 @@ For formats lacking unit data (such as STL, OBJ, or PLY files), the default
 unit of measurement is millimeters. Alternatively you may specify the unit
 by using an attirbute. Likewise, you can also specify a coordinate system. E.g.,
 
-```
+```norun
 @(unitLength = ft, coords = opengl)
 import "tests/inputs/cube.obj"
 ```

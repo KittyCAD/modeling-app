@@ -9,7 +9,14 @@ Create a helix.
 
 
 ```js
-helix(revolutions: number, angleStart: number, ccw?: bool, radius: number, axis: Axis3dOrEdgeReference, length?: number) -> HelixValue
+helix(
+  revolutions: number,
+  angleStart: number,
+  ccw?: bool,
+  radius: number,
+  axis: Axis3dOrEdgeReference,
+  length?: number,
+) -> HelixValue
 ```
 
 

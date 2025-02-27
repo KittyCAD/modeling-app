@@ -1,6 +1,7 @@
 import CommandArgOptionInput from './CommandArgOptionInput'
 import CommandBarBasicInput from './CommandBarBasicInput'
 import CommandBarSelectionInput from './CommandBarSelectionInput'
+import CommandBarSelectionMixedInput from './CommandBarSelectionMixedInput'
 import { CommandArgument } from 'lib/commandTypes'
 import CommandBarHeader from './CommandBarHeader'
 import CommandBarKclInput from './CommandBarKclInput'
@@ -79,6 +80,14 @@ function ArgumentInput({
     case 'selection':
       return (
         <CommandBarSelectionInput
+          arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+        />
+      )
+    case 'selectionMixed':
+      return (
+        <CommandBarSelectionMixedInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
