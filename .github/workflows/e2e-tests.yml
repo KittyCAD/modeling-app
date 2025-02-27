@@ -170,7 +170,7 @@ jobs:
       shell: bash
       id: git-check
       run: |
-          git add e2e/playwright/snapshot-tests.spec.ts-snapshots
+          git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
           if git status | grep -q "Changes to be committed"
           then echo "modified=true" >> $GITHUB_OUTPUT
           else echo "modified=false" >> $GITHUB_OUTPUT
@@ -179,7 +179,7 @@ jobs:
       if: steps.git-check.outputs.modified == 'true'
       shell: bash
       run: |
-        git add e2e/playwright/snapshot-tests.spec.ts-snapshots
+        git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git

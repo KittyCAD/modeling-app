@@ -8,5 +8,6 @@ KCL UndefinedValue error
    ╭─[3:8]
  2 │ pushedArr = push(arr, 4)
  3 │ fail = arr[3]
-   ·        ──────
+   ·        ───┬──
+   ·           ╰── tests/array_elem_push_fail/input.kcl
    ╰────

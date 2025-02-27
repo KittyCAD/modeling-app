@@ -8,5 +8,6 @@ KCL Semantic error
    ╭─[2:5]
  1 │ arr = [1, 2, 3]
  2 │ x = arr[1.2]
-   ·     ────────
+   ·     ────┬───
+   ·         ╰── tests/invalid_index_fractional/input.kcl
    ╰────

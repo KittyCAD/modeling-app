@@ -657,9 +657,8 @@ impl GeometryTrait for Box<Solid> {
 
 #[cfg(test)]
 mod tests {
-    use crate::execution::kcl_value::NumericType;
-
     use super::*;
+    use crate::execution::kcl_value::NumericType;
 
     #[test]
     fn test_array_to_point3d() {
@@ -807,6 +806,59 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///       instances = 7,
 ///       distance = 6
 ///     )
+/// ```
+///
+/// ///
+/// ```no_run
+/// // Pattern a whole sketch on face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(length = 65)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle({center = [-size / 2, -size / 2], radius = 25}, %)
+///     |> extrude(length = 50)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle({center = [size / 2, -size / 2], radius = 25}, %)
+///     |> extrude(length = 50)
+///
+/// // We pass in the "case" here since we want to pattern the whole sketch.
+/// // And the case was the base of the sketch.
+/// patternLinear3d(case,
+///     axis= [1, 0, 0],
+///     distance= 250,
+///     instances=2,
+///  )
+/// ```
+///
+/// ```no_run
+/// // Pattern an object on a face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line(end = [2 * size, 0])
+///     |> line(end = [0, 2 * size])
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(length = 65)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle({ center =[-size / 2, -size / 2], radius = 25}, %)
+///     |> extrude(length = 50)
+///
+/// // We pass in `thing1` here with `useOriginal` since we want to pattern just this object on the face.
+/// patternLinear3d(thing1,
+///     axis = [1, 0, 0],
+///     distance = size,
+///     instances =2,
+///     useOriginal = true
+/// )
 /// ```
 #[stdlib {
     name = "patternLinear3d",

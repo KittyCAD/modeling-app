@@ -9,7 +9,12 @@ Cut a straight transitional edge along a tagged path.
 Chamfer is similar in function and use to a fillet, except a fillet will blend the transition along an edge, rather than cut a sharp, straight transitional edge.
 
 ```js
-chamfer(solid: Solid, length: number, tags: [EdgeReference], tag?: TagDeclarator) -> Solid
+chamfer(
+  solid: Solid,
+  length: number,
+  tags: [EdgeReference],
+  tag?: TagDeclarator,
+) -> Solid
 ```
 
 
