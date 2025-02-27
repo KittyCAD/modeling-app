@@ -30,38 +30,40 @@ export function createNamedViewsCommand() {
           await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
-            // @ts-ignore Not in production yet.
+            // @ts-ignore TODO: Not in production yet.
             cmd: { type: 'default_camera_get_view' },
           })
 
-        if (!cameraGetViewResponse) {
+        if (!(cameraGetViewResponse && 'resp' in cameraGetViewResponse)) {
           return toast.error('Unable to create named view, websocket failure')
         }
 
-        const view = cameraGetViewResponse.resp.data.modeling_response.data
+        if ('modeling_response' in cameraGetViewResponse.resp.data) {
+          // @ts-ignore TODO: Not in production yet.
+          const view = cameraGetViewResponse.resp.data.modeling_response.data
+          // Create a new named view
+          const requestedView: NamedView = {
+            name: data.name,
+            ...view.view,
+          }
+          // Retrieve application state for namedViews
+          const namedViews = [
+            ...settingsActor.getSnapshot().context.app.namedViews.current,
+          ]
 
-        // Create a new named view
-        const requestedView: NamedView = {
-          name: data.name,
-          ...view.view,
+          // Create and set namedViews application state
+          const requestedNamedViews = [...namedViews, requestedView]
+          settingsActor.send({
+            type: `set.app.namedViews`,
+            data: {
+              level: 'project',
+              value: requestedNamedViews,
+            },
+          })
+          toast.success(
+            `Your named view ${requestedView.name} successfully created.`
+          )
         }
-        // Retrieve application state for namedViews
-        const namedViews = [
-          ...settingsActor.getSnapshot().context.app.namedViews.current,
-        ]
-
-        // Create and set namedViews application state
-        const requestedNamedViews = [...namedViews, requestedView]
-        settingsActor.send({
-          type: `set.app.namedViews`,
-          data: {
-            level: 'project',
-            value: requestedNamedViews,
-          },
-        })
-        toast.success(
-          `Your named view ${requestedView.name} successfully created.`
-        )
       }
       invokeAndForgetCreateNamedView().catch(reportRejection)
     },
@@ -166,7 +168,7 @@ export function createNamedViewsCommand() {
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
-              // @ts-ignore Not in production yet.
+              // @ts-ignore TODO: Not in production yet.
               type: 'default_camera_set_view',
               view: {
                 ...engineViewData,

@@ -77,17 +77,17 @@ export const FileMachineProvider = ({
       commandBarActor.send({
         type: 'Add commands',
         data: {
-          commands
+          commands,
         },
       })
       return () => {
         // Remove commands if you go to the home page
         commandBarActor.send({
-        type: 'Remove commands',
-        data: {
-          commands
-        },
-      })
+          type: 'Remove commands',
+          data: {
+            commands,
+          },
+        })
       }
     }
   }, [])
