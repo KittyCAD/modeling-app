@@ -8,21 +8,22 @@ use crate::{
     execution::{
         annotations,
         cad_op::{OpArg, OpKclValue, Operation},
-        kcl_value::{FunctionSource, NumericType},
+        kcl_value::{FunctionSource, NumericType, PrimitiveType, RuntimeType},
         memory,
         state::ModuleState,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, TagEngineInfo, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, Plane, PlaneType, Point3d,
+        TagEngineInfo, TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
         CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
         ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NodeRef,
-        ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, UnaryOperator,
+        ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{
-        args::{Arg, KwArgs},
+        args::{Arg, FromKclValue, KwArgs},
         FunctionKind,
     },
     CompilationError,
@@ -53,7 +54,7 @@ impl ExecutorContext {
         let mut no_prelude = false;
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
-                if matches!(body_type, BodyType::Root(_)) {
+                if matches!(body_type, BodyType::Root) {
                     let old_units = exec_state.length_unit();
                     exec_state.mod_local.settings.update_from_annotation(annotation)?;
                     let new_units = exec_state.length_unit();
@@ -69,12 +70,12 @@ impl ExecutorContext {
                     ));
                 }
             } else if annotation.name() == Some(annotations::NO_PRELUDE) {
-                if matches!(body_type, BodyType::Root(_)) {
+                if matches!(body_type, BodyType::Root) {
                     no_prelude = true;
                 } else {
                     exec_state.err(CompilationError::err(
                         annotation.as_source_range(),
-                        "Prelude can only be skipped at the top level scope of a file",
+                        "The standard library can only be skipped at the top level scope of a file",
                     ));
                 }
             } else {
@@ -87,51 +88,65 @@ impl ExecutorContext {
         Ok(no_prelude)
     }
 
+    pub(super) async fn exec_module_body(
+        &self,
+        program: &Node<Program>,
+        exec_state: &mut ExecState,
+        exec_kind: ExecutionKind,
+        preserve_mem: bool,
+        path: &ModulePath,
+    ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
+        crate::log::log(format!("enter module {path}"));
+
+        let old_units = exec_state.length_unit();
+        let original_execution = self.engine.replace_execution_kind(exec_kind).await;
+        let mut local_state = ModuleState::new(&self.settings, path.std_path());
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+
+        let no_prelude = self
+            .handle_annotations(program.inner_attrs.iter(), crate::execution::BodyType::Root, exec_state)
+            .await?;
+
+        if !preserve_mem {
+            exec_state.mut_memory().push_new_root_env(!no_prelude);
+        }
+
+        let result = self
+            .exec_block(program, exec_state, crate::execution::BodyType::Root)
+            .await;
+
+        let new_units = exec_state.length_unit();
+        let env_ref = if preserve_mem {
+            exec_state.mut_memory().pop_and_preserve_env()
+        } else {
+            exec_state.mut_memory().pop_env()
+        };
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+
+        if !exec_kind.is_isolated() && new_units != old_units {
+            self.engine.set_units(old_units.into(), Default::default()).await?;
+        }
+        self.engine.replace_execution_kind(original_execution).await;
+
+        crate::log::log(format!("leave {path}"));
+
+        result.map(|result| (result, env_ref, local_state.module_exports))
+    }
+
     /// Execute an AST's program.
     #[async_recursion]
-    pub(super) async fn exec_program<'a>(
+    pub(super) async fn exec_block<'a>(
         &'a self,
         program: NodeRef<'a, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        let no_prelude = self
-            .handle_annotations(program.inner_attrs.iter(), body_type, exec_state)
-            .await?;
-
-        if !no_prelude && body_type == BodyType::Root(true) {
-            // Import std::prelude
-            let prelude_range = SourceRange::from(program).start_as_range();
-            let id = self
-                .open_module(
-                    &ImportPath::Std {
-                        path: vec!["std".to_owned(), "prelude".to_owned()],
-                    },
-                    &[],
-                    exec_state,
-                    prelude_range,
-                )
-                .await?;
-            let (module_memory, module_exports) = self
-                .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, prelude_range)
-                .await
-                .unwrap();
-            for name in module_exports {
-                let item = exec_state
-                    .memory()
-                    .get_from(&name, module_memory, prelude_range)
-                    .cloned()
-                    .unwrap();
-                exec_state.mut_memory().add(name, item, prelude_range)?;
-            }
-        }
-
         let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
-                    if !matches!(body_type, BodyType::Root(_)) {
+                    if !matches!(body_type, BodyType::Root) {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: "Imports are only supported at the top-level of a file.".to_owned(),
                             source_ranges: vec![import_stmt.into()],
@@ -262,7 +277,7 @@ impl ExecutorContext {
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
 
-                    if matches!(body_type, BodyType::Root(_)) {
+                    if matches!(body_type, BodyType::Root) {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: "Cannot return from outside a function.".to_owned(),
                             source_ranges: vec![metadata.source_range],
@@ -292,7 +307,7 @@ impl ExecutorContext {
             }
         }
 
-        if matches!(body_type, BodyType::Root(_)) {
+        if matches!(body_type, BodyType::Root) {
             // Flush the batch queue.
             self.engine
                 .flush_batch(
@@ -307,7 +322,7 @@ impl ExecutorContext {
         Ok(last_expr)
     }
 
-    async fn open_module(
+    pub(super) async fn open_module(
         &self,
         path: &ImportPath,
         attrs: &[Node<Annotation>],
@@ -324,9 +339,12 @@ impl ExecutorContext {
                 }
 
                 let id = exec_state.next_module_id();
+                // Add file path string to global state even if it fails to import
+                exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
+                exec_state.add_id_to_source(id, source.clone());
                 // TODO handle parsing errors properly
-                let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
+                let parsed = crate::parsing::parse_str(&source.source, id).parse_errs_as_err()?;
                 exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed, None));
 
                 Ok(id)
@@ -338,6 +356,8 @@ impl ExecutorContext {
 
                 let id = exec_state.next_module_id();
                 let path = resolved_path.expect_path();
+                // Add file path string to global state even if it fails to import
+                exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let format = super::import::format_from_annotations(attrs, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
                 exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
@@ -349,15 +369,20 @@ impl ExecutorContext {
                 }
 
                 let id = exec_state.next_module_id();
+                // Add file path string to global state even if it fails to import
+                exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
-                let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err().unwrap();
+                exec_state.add_id_to_source(id, source.clone());
+                let parsed = crate::parsing::parse_str(&source.source, id)
+                    .parse_errs_as_err()
+                    .unwrap();
                 exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }
         }
     }
 
-    async fn exec_module_for_items(
+    pub(super) async fn exec_module_for_items(
         &self,
         module_id: ModuleId,
         exec_state: &mut ExecState,
@@ -424,43 +449,25 @@ impl ExecutorContext {
         exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
-        let old_units = exec_state.length_unit();
-        let mut local_state = ModuleState::new(&self.settings, path.std_path());
         exec_state.global.mod_loader.enter_module(path);
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-        exec_state.mut_memory().push_new_root_env();
-        let original_execution = self.engine.replace_execution_kind(exec_kind).await;
-
-        let result = self
-            .exec_program(program, exec_state, crate::execution::BodyType::Root(true))
-            .await;
-
-        let new_units = exec_state.length_unit();
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-        let env_ref = exec_state.mut_memory().pop_env();
+        let result = self.exec_module_body(program, exec_state, exec_kind, false, path).await;
         exec_state.global.mod_loader.leave_module(path);
-        if !exec_kind.is_isolated() && new_units != old_units {
-            self.engine.set_units(old_units.into(), Default::default()).await?;
-        }
-        self.engine.replace_execution_kind(original_execution).await;
 
-        result
-            .map_err(|err| {
-                if let KclError::ImportCycle(_) = err {
-                    // It was an import cycle.  Keep the original message.
-                    err.override_source_ranges(vec![source_range])
-                } else {
-                    KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "Error loading imported file. Open it to view more details. {}: {}",
-                            path,
-                            err.message()
-                        ),
-                        source_ranges: vec![source_range],
-                    })
-                }
-            })
-            .map(|result| (result, env_ref, local_state.module_exports))
+        result.map_err(|err| {
+            if let KclError::ImportCycle(_) = err {
+                // It was an import cycle.  Keep the original message.
+                err.override_source_ranges(vec![source_range])
+            } else {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "Error loading imported file. Open it to view more details. {}: {}",
+                        path,
+                        err.message()
+                    ),
+                    source_ranges: vec![source_range],
+                })
+            }
+        })
     }
 
     #[async_recursion]
@@ -584,9 +591,87 @@ impl ExecutorContext {
                 // TODO this lets us use the label as a variable name, but not as a tag in most cases
                 result
             }
+            Expr::AscribedExpression(expr) => {
+                let result = self
+                    .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
+                    .await?;
+                coerce(result, &expr.ty, exec_state).map_err(|value| {
+                    KclError::Semantic(KclErrorDetails {
+                        message: format!(
+                            "could not coerce {} value to type {}",
+                            value.human_friendly_type(),
+                            expr.ty
+                        ),
+                        source_ranges: vec![expr.into()],
+                    })
+                })?
+            }
         };
         Ok(item)
     }
+}
+
+fn coerce(value: KclValue, ty: &Node<Type>, exec_state: &mut ExecState) -> Result<KclValue, KclValue> {
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), &exec_state.mod_local.settings).ok_or_else(|| value.clone())?;
+    if value.has_type(&ty) {
+        return Ok(value);
+    }
+
+    // TODO coerce numeric types
+
+    if let KclValue::Object { value, meta } = value {
+        return match ty {
+            RuntimeType::Primitive(PrimitiveType::Plane) => {
+                let origin = value
+                    .get("origin")
+                    .and_then(Point3d::from_kcl_val)
+                    .ok_or_else(|| KclValue::Object {
+                        value: value.clone(),
+                        meta: meta.clone(),
+                    })?;
+                let x_axis = value
+                    .get("xAxis")
+                    .and_then(Point3d::from_kcl_val)
+                    .ok_or_else(|| KclValue::Object {
+                        value: value.clone(),
+                        meta: meta.clone(),
+                    })?;
+                let y_axis = value
+                    .get("yAxis")
+                    .and_then(Point3d::from_kcl_val)
+                    .ok_or_else(|| KclValue::Object {
+                        value: value.clone(),
+                        meta: meta.clone(),
+                    })?;
+                let z_axis = value
+                    .get("zAxis")
+                    .and_then(Point3d::from_kcl_val)
+                    .ok_or_else(|| KclValue::Object {
+                        value: value.clone(),
+                        meta: meta.clone(),
+                    })?;
+
+                let id = exec_state.global.id_generator.next_uuid();
+                let plane = Plane {
+                    id,
+                    artifact_id: id.into(),
+                    origin,
+                    x_axis,
+                    y_axis,
+                    z_axis,
+                    value: PlaneType::Uninit,
+                    // TODO use length unit from origin
+                    units: exec_state.length_unit(),
+                    meta,
+                };
+
+                Ok(KclValue::Plane { value: Box::new(plane) })
+            }
+            _ => Err(KclValue::Object { value, meta }),
+        };
+    }
+
+    Err(value)
 }
 
 impl BinaryPart {
@@ -880,9 +965,19 @@ impl Node<UnaryExpression> {
                     ty: ty.clone(),
                 })
             }
+            KclValue::Plane { value } => {
+                let mut plane = value.clone();
+                plane.z_axis.x *= -1.0;
+                plane.z_axis.y *= -1.0;
+                plane.z_axis.z *= -1.0;
+
+                plane.value = PlaneType::Uninit;
+                plane.id = exec_state.next_uuid();
+                Ok(KclValue::Plane { value: plane })
+            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "You can only negate numbers, but this is a {}",
+                    "You can only negate numbers or planes, but this is a {}",
                     value.human_friendly_type()
                 ),
                 source_ranges: vec![self.into()],
@@ -1033,7 +1128,7 @@ impl Node<CallExpressionKw> {
                         // before running, and we will likely want to use the
                         // return value. The call takes ownership of the args,
                         // so we need to build the op before the call.
-                        exec_state.mod_local.operations.push(op);
+                        exec_state.global.operations.push(op);
                     }
                     result
                 }?;
@@ -1055,20 +1150,17 @@ impl Node<CallExpressionKw> {
                     .iter()
                     .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                     .collect();
-                exec_state
-                    .mod_local
-                    .operations
-                    .push(Operation::UserDefinedFunctionCall {
-                        name: Some(fn_name.clone()),
-                        function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: args
-                            .kw_args
-                            .unlabeled
-                            .as_ref()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                        labeled_args: op_labeled_args,
-                        source_range: callsite,
-                    });
+                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                    name: Some(fn_name.clone()),
+                    function_source_range: func.function_def_source_range().unwrap_or_default(),
+                    unlabeled_arg: args
+                        .kw_args
+                        .unlabeled
+                        .as_ref()
+                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                    labeled_args: op_labeled_args,
+                    source_range: callsite,
+                });
 
                 let return_value = func
                     .call_fn_kw(args, exec_state, ctx.clone(), callsite)
@@ -1092,10 +1184,7 @@ impl Node<CallExpressionKw> {
                 })?;
 
                 // Track return operation.
-                exec_state
-                    .mod_local
-                    .operations
-                    .push(Operation::UserDefinedFunctionReturn);
+                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
 
                 Ok(result)
             }
@@ -1174,7 +1263,7 @@ impl Node<CallExpression> {
                         // before running, and we will likely want to use the
                         // return value. The call takes ownership of the args,
                         // so we need to build the op before the call.
-                        exec_state.mod_local.operations.push(op);
+                        exec_state.global.operations.push(op);
                     }
                     result
                 }?;
@@ -1190,17 +1279,14 @@ impl Node<CallExpression> {
                 let func = exec_state.memory().get(fn_name, source_range)?.clone();
 
                 // Track call operation.
-                exec_state
-                    .mod_local
-                    .operations
-                    .push(Operation::UserDefinedFunctionCall {
-                        name: Some(fn_name.clone()),
-                        function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: None,
-                        // TODO: Add the arguments for legacy positional parameters.
-                        labeled_args: Default::default(),
-                        source_range: callsite,
-                    });
+                exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
+                    name: Some(fn_name.clone()),
+                    function_source_range: func.function_def_source_range().unwrap_or_default(),
+                    unlabeled_arg: None,
+                    // TODO: Add the arguments for legacy positional parameters.
+                    labeled_args: Default::default(),
+                    source_range: callsite,
+                });
 
                 let return_value = func
                     .call_fn(fn_args, exec_state, ctx.clone(), source_range)
@@ -1224,10 +1310,7 @@ impl Node<CallExpression> {
                 })?;
 
                 // Track return operation.
-                exec_state
-                    .mod_local
-                    .operations
-                    .push(Operation::UserDefinedFunctionReturn);
+                exec_state.global.operations.push(Operation::UserDefinedFunctionReturn);
 
                 Ok(result)
             }
@@ -1483,7 +1566,7 @@ impl Node<IfExpression> {
             .await?
             .get_bool()?;
         if cond {
-            let block_result = ctx.exec_program(&self.then_val, exec_state, BodyType::Block).await?;
+            let block_result = ctx.exec_block(&self.then_val, exec_state, BodyType::Block).await?;
             // Block must end in an expression, so this has to be Some.
             // Enforced by the parser.
             // See https://github.com/KittyCAD/modeling-app/issues/4015
@@ -1503,7 +1586,7 @@ impl Node<IfExpression> {
                 .await?
                 .get_bool()?;
             if cond {
-                let block_result = ctx.exec_program(&else_if.then_val, exec_state, BodyType::Block).await?;
+                let block_result = ctx.exec_block(&else_if.then_val, exec_state, BodyType::Block).await?;
                 // Block must end in an expression, so this has to be Some.
                 // Enforced by the parser.
                 // See https://github.com/KittyCAD/modeling-app/issues/4015
@@ -1512,7 +1595,7 @@ impl Node<IfExpression> {
         }
 
         // Run the final `else` branch.
-        ctx.exec_program(&self.final_else, exec_state, BodyType::Block)
+        ctx.exec_block(&self.final_else, exec_state, BodyType::Block)
             .await
             .map(|expr| expr.unwrap())
     }
@@ -1745,7 +1828,7 @@ pub(crate) async fn call_user_defined_function(
 
     // Execute the function body using the memory we just created.
     let result = ctx
-        .exec_program(&function_expression.body, exec_state, BodyType::Block)
+        .exec_block(&function_expression.body, exec_state, BodyType::Block)
         .await;
     let result = result.map(|_| {
         exec_state
@@ -1778,7 +1861,7 @@ pub(crate) async fn call_user_defined_function_kw(
 
     // Execute the function body using the memory we just created.
     let result = ctx
-        .exec_program(&function_expression.body, exec_state, BodyType::Block)
+        .exec_block(&function_expression.body, exec_state, BodyType::Block)
         .await;
     let result = result.map(|_| {
         exec_state
@@ -1873,6 +1956,7 @@ mod test {
         }
         fn additional_program_memory(items: &[(String, KclValue)]) -> ProgramMemory {
             let mut program_memory = ProgramMemory::new();
+            program_memory.init_for_tests();
             for (name, item) in items {
                 program_memory
                     .add(name.clone(), item.clone(), SourceRange::default())
@@ -1882,7 +1966,7 @@ mod test {
         }
         // Declare the test cases.
         for (test_name, params, args, expected) in [
-            ("empty", Vec::new(), Vec::new(), Ok(ProgramMemory::new())),
+            ("empty", Vec::new(), Vec::new(), Ok(additional_program_memory(&[]))),
             (
                 "all params required, and all given, should be OK",
                 vec![req_param("x")],
@@ -1950,11 +2034,71 @@ mod test {
             });
             let args = args.into_iter().map(Arg::synthetic).collect();
             let mut exec_state = ExecState::new(&Default::default());
+            exec_state.mut_memory().init_for_tests();
             let actual = assign_args_to_params(func_expr, args, &mut exec_state).map(|_| exec_state.global.memory);
             assert_eq!(
                 actual, expected,
                 "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
             );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn ascription() {
+        let program = r#"
+a = 42: number
+b = a: number
+p = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 }
+}: Plane
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let mem = result.3.memory();
+        assert!(matches!(
+            mem.get_from("p", result.1, SourceRange::default()).unwrap(),
+            KclValue::Plane { .. }
+        ));
+
+        let program = r#"
+a = 42: string
+"#;
+        let result = parse_execute(program).await;
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("could not coerce number value to type string"));
+
+        let program = r#"
+a = 42: Plane
+"#;
+        let result = parse_execute(program).await;
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("could not coerce number value to type Plane"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn neg_plane() {
+        let program = r#"
+p = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 }
+}: Plane
+p2 = -p
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let mem = result.3.memory();
+        match mem.get_from("p2", result.1, SourceRange::default()).unwrap() {
+            KclValue::Plane { value } => assert_eq!(value.z_axis.z, -1.0),
+            _ => unreachable!(),
         }
     }
 

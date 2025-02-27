@@ -9,7 +9,10 @@ Compute the four quadrant arctangent of Y and X (in radians).
 
 
 ```js
-atan2(y: number, x: number) -> number
+atan2(
+  y: number,
+  x: number,
+) -> number
 ```
 
 ### Tags

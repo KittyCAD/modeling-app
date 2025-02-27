@@ -5,13 +5,14 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use super::EnvironmentRef;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
         annotations, kcl_value, memory::ProgramMemory, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId,
         ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
     },
-    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
+    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::Annotation,
     source_range::SourceRange,
     CompilationError,
@@ -32,6 +33,8 @@ pub(super) struct GlobalState {
     pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
+    /// Map from module ID to source file.
+    pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// Output map of UUIDs to artifacts.
@@ -47,6 +50,9 @@ pub(super) struct GlobalState {
     pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
     /// Module loader.
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
@@ -60,9 +66,6 @@ pub(super) struct ModuleState {
     pub pipe_value: Option<KclValue>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
-    /// Operations that have been performed in execution order, for display in
-    /// the Feature Tree.
-    pub operations: Vec<Operation>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
 }
@@ -108,30 +111,36 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub fn to_wasm_outcome(self) -> ExecOutcome {
+    pub fn to_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
             variables: self
                 .memory()
-                .find_all_in_current_env(|_| true)
+                .find_all_in_env(main_ref, |_| true)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
-            operations: self.mod_local.operations,
+            operations: self.global.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
             artifact_graph: self.global.artifact_graph,
             errors: self.global.errors,
+            filenames: self
+                .global
+                .path_to_source_id
+                .iter()
+                .map(|(k, v)| ((*v), k.clone()))
+                .collect(),
         }
     }
 
-    pub fn to_mock_wasm_outcome(self) -> ExecOutcome {
+    pub fn to_mock_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
             variables: self
                 .memory()
-                .find_all_in_current_env(|_| true)
+                .find_all_in_env(main_ref, |_| true)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: Default::default(),
@@ -139,6 +148,7 @@ impl ExecState {
             artifact_commands: Default::default(),
             artifact_graph: Default::default(),
             errors: self.global.errors,
+            filenames: Default::default(),
         }
     }
 
@@ -167,11 +177,18 @@ impl ExecState {
         self.global.path_to_source_id.get(path).cloned()
     }
 
-    pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
+    pub(super) fn add_path_to_source_id(&mut self, path: ModulePath, id: ModuleId) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
-
         self.global.path_to_source_id.insert(path.clone(), id);
+    }
 
+    pub(super) fn add_id_to_source(&mut self, id: ModuleId, source: ModuleSource) {
+        debug_assert!(!self.global.id_to_source.contains_key(&id));
+        self.global.id_to_source.insert(id, source.clone());
+    }
+
+    pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
+        debug_assert!(self.global.path_to_source_id.contains_key(&path));
         let module_info = ModuleInfo { id, repr, path };
         self.global.module_infos.insert(id, module_info);
     }
@@ -213,8 +230,10 @@ impl GlobalState {
             artifact_commands: Default::default(),
             artifact_responses: Default::default(),
             artifact_graph: Default::default(),
+            operations: Default::default(),
             mod_loader: Default::default(),
             errors: Default::default(),
+            id_to_source: Default::default(),
         };
 
         let root_id = ModuleId::default();
@@ -223,11 +242,17 @@ impl GlobalState {
             root_id,
             ModuleInfo {
                 id: root_id,
-                path: ModulePath::Local(root_path.clone()),
+                path: ModulePath::Local {
+                    value: root_path.clone(),
+                },
                 repr: ModuleRepr::Root,
             },
         );
-        global.path_to_source_id.insert(ModulePath::Local(root_path), root_id);
+        global
+            .path_to_source_id
+            .insert(ModulePath::Local { value: root_path }, root_id);
+        // Ideally we'd have a way to set the root module's source here, but
+        // we don't have a way to get the source from the executor settings.
         global
     }
 }
@@ -237,7 +262,6 @@ impl ModuleState {
         ModuleState {
             pipe_value: Default::default(),
             module_exports: Default::default(),
-            operations: Default::default(),
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),
                 default_angle_units: Default::default(),

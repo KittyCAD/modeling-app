@@ -9,7 +9,11 @@ Starting at the current sketch's origin, draw a curved line segment along
 some part of an imaginary circle until it reaches a point the given (x, y) distance away.
 
 ```js
-tangentialArcToRelative(delta: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
+tangentialArcToRelative(
+  delta: [number],
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 
@@ -29,7 +33,7 @@ tangentialArcToRelative(delta: [number], sketch: Sketch, tag?: TagDeclarator) ->
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 45, length = 10 }, %)
   |> tangentialArcToRelative([0, -10], %)

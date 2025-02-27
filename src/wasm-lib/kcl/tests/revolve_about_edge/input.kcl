@@ -1,0 +1,9 @@
+sketch001 = startSketchOn('XY')
+  |> startProfileAt([-25, 25], %)
+  |> yLine(-50, %, $rectangleSegmentB001)
+sketch002 = startSketchOn('XY')
+  |> circle({ center = [-50, 0], radius = 10 }, %)
+  |> revolve({
+       angle = 90,
+       axis = rectangleSegmentB001
+     }, %)

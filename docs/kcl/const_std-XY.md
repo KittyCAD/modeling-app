@@ -1,5 +1,5 @@
 ---
-title: "HALF_TURN"
+title: "std::XY"
 excerpt: ""
 layout: manual
 ---
@@ -9,7 +9,7 @@ layout: manual
 
 
 ```js
-HALF_TURN: number(deg) = 180deg
+std::XY
 ```
 
 

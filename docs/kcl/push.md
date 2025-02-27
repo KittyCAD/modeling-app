@@ -9,7 +9,10 @@ Append an element to the end of an array.
 Returns a new array with the element appended.
 
 ```js
-push(array: [KclValue], elem: KclValue) -> KclValue
+push(
+  array: [KclValue],
+  elem: KclValue,
+) -> KclValue
 ```
 
 

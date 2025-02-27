@@ -64,13 +64,13 @@ impl ModuleLoader {
     }
 
     pub(crate) fn enter_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local(ref path) = path {
+        if let ModulePath::Local { value: ref path } = path {
             self.import_stack.push(path.clone());
         }
     }
 
     pub(crate) fn leave_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local(ref path) = path {
+        if let ModulePath::Local { value: ref path } = path {
             let popped = self.import_stack.pop().unwrap();
             assert_eq!(path, &popped);
         }
@@ -119,38 +119,48 @@ pub enum ModuleRepr {
 }
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash, ts_rs::TS)]
+#[serde(tag = "type")]
 pub enum ModulePath {
-    Local(PathBuf),
-    Std(String),
+    // The main file of the project.
+    Main,
+    Local { value: PathBuf },
+    Std { value: String },
 }
 
 impl ModulePath {
     pub(crate) fn expect_path(&self) -> &PathBuf {
         match self {
-            ModulePath::Local(p) => p,
+            ModulePath::Local { value: p } => p,
             _ => unreachable!(),
         }
     }
 
     pub(crate) fn std_path(&self) -> Option<String> {
         match self {
-            ModulePath::Local(_) => None,
-            ModulePath::Std(p) => Some(p.clone()),
+            ModulePath::Std { value: p } => Some(p.clone()),
+            _ => None,
         }
     }
 
-    pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<String, KclError> {
+    pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<ModuleSource, KclError> {
         match self {
-            ModulePath::Local(p) => fs.read_to_string(p, source_range).await,
-            ModulePath::Std(name) => read_std(name)
-                .ok_or_else(|| {
-                    KclError::Semantic(KclErrorDetails {
-                        message: format!("Cannot find standard library module to import: std::{name}."),
-                        source_ranges: vec![source_range],
+            ModulePath::Local { value: p } => Ok(ModuleSource {
+                source: fs.read_to_string(p, source_range).await?,
+                path: self.clone(),
+            }),
+            ModulePath::Std { value: name } => Ok(ModuleSource {
+                source: read_std(name)
+                    .ok_or_else(|| {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!("Cannot find standard library module to import: std::{name}."),
+                            source_ranges: vec![source_range],
+                        })
                     })
-                })
-                .map(str::to_owned),
+                    .map(str::to_owned)?,
+                path: self.clone(),
+            }),
+            ModulePath::Main => unreachable!(),
         }
     }
 
@@ -162,14 +172,14 @@ impl ModulePath {
                 } else {
                     std::path::PathBuf::from(path)
                 };
-                ModulePath::Local(resolved_path)
+                ModulePath::Local { value: resolved_path }
             }
             ImportPath::Std { path } => {
                 // For now we only support importing from singly-nested modules inside std.
                 assert_eq!(path.len(), 2);
                 assert_eq!(&path[0], "std");
 
-                ModulePath::Std(path[1].clone())
+                ModulePath::Std { value: path[1].clone() }
             }
         }
     }
@@ -178,8 +188,15 @@ impl ModulePath {
 impl fmt::Display for ModulePath {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ModulePath::Local(path) => path.display().fmt(f),
-            ModulePath::Std(s) => write!(f, "std::{s}"),
+            ModulePath::Main => write!(f, "main"),
+            ModulePath::Local { value: path } => path.display().fmt(f),
+            ModulePath::Std { value: s } => write!(f, "std::{s}"),
         }
     }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+pub struct ModuleSource {
+    pub path: ModulePath,
+    pub source: String,
 }

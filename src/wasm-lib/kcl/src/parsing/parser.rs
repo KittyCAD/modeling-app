@@ -13,7 +13,7 @@ use winnow::{
 };
 
 use super::{
-    ast::types::{ImportPath, LabelledExpression},
+    ast::types::{Ascription, ImportPath, LabelledExpression},
     token::NumericSuffix,
 };
 use crate::{
@@ -23,11 +23,11 @@ use crate::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
             BoxNode, CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr,
-            ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
-            ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue,
-            MemberExpression, MemberObject, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-            ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang,
-            TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            ExpressionStatement, FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector,
+            ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
+            MemberObject, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
+            Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang,
+            TagDeclarator, Type, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -580,7 +580,8 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 | Expr::ArrayExpression(_)
                 | Expr::ArrayRangeExpression(_)
                 | Expr::ObjectExpression(_)
-                | Expr::LabelledExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
+                | Expr::LabelledExpression(..)
+                | Expr::AscribedExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
                     return Err(CompilationError::fatal(
                         source_range,
@@ -842,7 +843,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
-    let expr = expression_but_not_ascription
+    let expr = expression
         .context(expected(
             "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
         ))
@@ -1120,7 +1121,7 @@ fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
 //     return x
 // }
 fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
-    fn return_type(i: &mut TokenSlice) -> PResult<FnArgType> {
+    fn return_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
         argument_type(i)
@@ -1832,24 +1833,6 @@ fn return_stmt(i: &mut TokenSlice) -> PResult<Node<ReturnStatement>> {
 
 /// Parse a KCL expression.
 fn expression(i: &mut TokenSlice) -> PResult<Expr> {
-    let expr = expression_but_not_ascription.parse_next(i)?;
-    let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
-
-    // TODO this is probably not giving ascription the right precedence, but I have no idea how Winnow is handling that.
-    // Since we're not creating AST nodes for ascription, I don't think it matters right now.
-    if let Some((colon, _, _)) = ty {
-        ParseContext::err(CompilationError::err(
-            // Sadly there is no SourceRange for the type itself
-            colon.into(),
-            "Type ascription is experimental and currently does nothing.",
-        ));
-    }
-
-    Ok(expr)
-}
-
-// TODO once we remove the old record instantiation syntax, we can accept types ascription anywhere.
-fn expression_but_not_ascription(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         pipe_expression.map(Box::new).map(Expr::PipeExpression),
         expression_but_not_pipe,
@@ -1859,7 +1842,7 @@ fn expression_but_not_ascription(i: &mut TokenSlice) -> PResult<Expr> {
 }
 
 fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
-    let expr = alt((
+    let mut expr = alt((
         binary_expression.map(Box::new).map(Expr::BinaryExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         expr_allowed_in_pipe_expr,
@@ -1867,6 +1850,12 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
     .context(expected("a KCL value"))
     .parse_next(i)?;
 
+    let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
+    if let Some((_, _, ty)) = ty {
+        ParseContext::warn(CompilationError::err((&ty).into(), "Type ascription is experimental."));
+
+        expr = Expr::AscribedExpression(Box::new(Ascription::new(expr, ty)))
+    }
     let label = opt(label).parse_next(i)?;
     match label {
         Some(label) => Ok(Expr::LabelledExpression(Box::new(LabelledExpression::new(expr, label)))),
@@ -2521,11 +2510,18 @@ fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
 /// - a primitive type, e.g. 'number' or 'string' or 'bool'
 /// - an array type, e.g. 'number[]' or 'string[]' or 'bool[]'
 /// - an object type, e.g. '{x: number, y: number}' or '{name: string, age: number}'
-fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
+fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
-        (open_brace, parameters, close_brace).map(|(_, params, _)| Ok(FnArgType::Object { properties: params })),
+        (open_brace, parameters, close_brace).map(|(open, params, close)| {
+            Ok(Node::new(
+                Type::Object { properties: params },
+                open.start,
+                close.end,
+                open.module_id,
+            ))
+        }),
         // Array types
         (
             one_of(TokenType::Type),
@@ -2534,8 +2530,8 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
             close_bracket,
         )
             .map(|(token, uom, _, _)| {
-                FnArgPrimitive::from_str(&token.value, uom)
-                    .map(FnArgType::Array)
+                PrimitiveType::from_str(&token.value, uom)
+                    .map(|t| Node::new(Type::Array(t), token.start, token.end, token.module_id))
                     .ok_or_else(|| {
                         CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
                     })
@@ -2552,8 +2548,8 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
                         "Unit of Measure types are experimental and currently do nothing.",
                     ));
                 }
-                FnArgPrimitive::from_str(&token.value, suffix)
-                    .map(FnArgType::Primitive)
+                PrimitiveType::from_str(&token.value, suffix)
+                    .map(|t| Node::new(Type::Primitive(t), token.start, token.end, token.module_id))
                     .ok_or_else(|| {
                         CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
                     })
@@ -2571,7 +2567,7 @@ fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
 struct ParamDescription {
     labeled: bool,
     arg_name: Token,
-    type_: std::option::Option<FnArgType>,
+    type_: std::option::Option<Node<Type>>,
     default_value: Option<DefaultParamVal>,
 }
 
@@ -4537,11 +4533,11 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_starting_with_reserved_type() {
         let some_program_string = r#"
     startSketchOn('XY')
-    |> line(%, $sketch)
+    |> line(%, $Sketch)
     "#;
         assert_err(
             some_program_string,
-            "Cannot assign a tag to a reserved keyword: sketch",
+            "Cannot assign a tag to a reserved keyword: Sketch",
             [41, 47],
         );
     }

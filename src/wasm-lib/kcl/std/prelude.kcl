@@ -1,7 +1,31 @@
-@no_prelude
+@no_std
+
+// Note that everything in the prelude is treated as exported.
+
 export import * from "std::math"
 
 export ZERO = 0
 export QUARTER_TURN = 90deg
 export HALF_TURN = 180deg
 export THREE_QUARTER_TURN = 270deg
+
+export XY = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 },
+}: Plane
+
+export XZ = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 0, y = -1, z = 0 },
+}: Plane
+
+export YZ = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 0, y = 1, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 1, y = 0, z = 0 },
+}: Plane

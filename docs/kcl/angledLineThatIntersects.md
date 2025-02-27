@@ -9,7 +9,11 @@ Draw an angled line from the current origin, constructing a line segment
 such that the newly created line intersects the desired target line segment.
 
 ```js
-angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+angledLineThatIntersects(
+  data: AngledLineThatIntersectsData,
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 
@@ -29,7 +33,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch: Sketch, tag
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [5, 10])
   |> line(endAbsolute = [-10, 10], tag = $lineToIntersect)

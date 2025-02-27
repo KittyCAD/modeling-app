@@ -13,6 +13,7 @@ describe('test kclErrToDiagnostic', () => {
         operations: [],
         artifactCommands: [],
         artifactGraph: defaultArtifactGraph(),
+        filenames: {},
       },
       {
         name: '',
@@ -23,6 +24,7 @@ describe('test kclErrToDiagnostic', () => {
         operations: [],
         artifactCommands: [],
         artifactGraph: defaultArtifactGraph(),
+        filenames: {},
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors)

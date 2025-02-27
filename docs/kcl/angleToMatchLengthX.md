@@ -9,7 +9,11 @@ Returns the angle to match the given length for x.
 
 
 ```js
-angleToMatchLengthX(tag: TagIdentifier, to: number, sketch: Sketch) -> number
+angleToMatchLengthX(
+  tag: TagIdentifier,
+  to: number,
+  sketch: Sketch,
+) -> number
 ```
 
 

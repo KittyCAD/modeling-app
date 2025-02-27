@@ -13,36 +13,23 @@ import {
   createLiteral,
   createIdentifier,
   findUniqueName,
-  createCallExpressionStdLib,
-  createObjectExpression,
   createArrayExpression,
   createVariableDeclaration,
   createCallExpressionStdLibKw,
   createLabeledArg,
 } from 'lang/modifyAst'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
-import { KclManager } from 'lang/KclSingleton'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import EditorManager from 'editor/manager'
-import CodeManager from 'lang/codeManager'
 
 export function addShell({
   node,
   selection,
   artifactGraph,
   thickness,
-  dependencies,
 }: {
   node: Node<Program>
   selection: Selections
   artifactGraph: ArtifactGraph
   thickness: Expr
-  dependencies: {
-    kclManager: KclManager
-    engineCommandManager: EngineCommandManager
-    editorManager: EditorManager
-    codeManager: CodeManager
-  }
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
 
@@ -55,8 +42,7 @@ export function addShell({
     const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
       graphSelection,
-      artifactGraph,
-      dependencies
+      artifactGraph
     )
     if (err(extrudeLookupResult)) {
       return new Error("Couldn't find extrude")

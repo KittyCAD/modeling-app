@@ -9,7 +9,12 @@ Extend the current sketch with a new straight line.
 
 
 ```js
-line(sketch: Sketch, end_absolute?: [number], end?: [number], tag?: TagDeclarator) -> Sketch
+line(
+  sketch: Sketch,
+  endAbsolute?: [number],
+  end?: [number],
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 
@@ -18,7 +23,7 @@ line(sketch: Sketch, end_absolute?: [number], end?: [number], tag?: TagDeclarato
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `end_absolute` | `[number]` | Which absolute point should this line go to? Incompatible with `end`. | No |
+| `endAbsolute` | `[number]` | Which absolute point should this line go to? Incompatible with `end`. | No |
 | `end` | `[number]` | How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`. | No |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
@@ -30,7 +35,7 @@ line(sketch: Sketch, end_absolute?: [number], end?: [number], tag?: TagDeclarato
 ### Examples
 
 ```js
-triangle = startSketchOn("XZ")
+triangle = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   // The 'end' argument means it ends at exactly [10, 0].
   // This is an absolute measurement, it is NOT relative to
@@ -41,7 +46,7 @@ triangle = startSketchOn("XZ")
   |> close()
   |> extrude(length = 5)
 
-box = startSketchOn("XZ")
+box = startSketchOn(XZ)
   |> startProfileAt([10, 10], %)
   // The 'to' argument means move the pen this much.
   // So, [10, 0] is a relative distance away from the current point.

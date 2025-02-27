@@ -9,5 +9,6 @@ KCL Semantic error
    ╭─[2:7]
  1 │ obj = { key = 123 }
  2 │ num = obj[3]
-   ·       ──────
+   ·       ───┬──
+   ·          ╰── tests/non_string_key_of_object/input.kcl
    ╰────

@@ -16,6 +16,7 @@ const INPUT_TYPES = [
   'text',
   'kcl',
   'selection',
+  'selectionMixed',
   'boolean',
 ] as const
 export interface KclExpression {
@@ -164,6 +165,23 @@ export type CommandArgumentConfig<
       }) => Promise<boolean | string>
     }
   | {
+      inputType: 'selectionMixed'
+      selectionTypes: Artifact['type'][]
+      multiple: boolean
+      allowNoSelection?: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+      selectionSource?: {
+        allowSceneSelection?: boolean
+        allowCodeSelection?: boolean
+      }
+    }
+  | {
       inputType: 'kcl'
       createVariableByDefault?: boolean
       variableName?:
@@ -265,6 +283,23 @@ export type CommandArgument<
         data: any
         context: CommandBarContext
       }) => Promise<boolean | string>
+    }
+  | {
+      inputType: 'selectionMixed'
+      selectionTypes: Artifact['type'][]
+      multiple: boolean
+      allowNoSelection?: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+      selectionSource?: {
+        allowSceneSelection?: boolean
+        allowCodeSelection?: boolean
+      }
     }
   | {
       inputType: 'kcl'

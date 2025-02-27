@@ -87,6 +87,9 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
   }
   Helix: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     revolutions: KclCommandValue
     angleStart: KclCommandValue
     counterClockWise: boolean
@@ -494,6 +497,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     status: 'development',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       revolutions: {
         inputType: 'kcl',
         defaultValue: '1',
@@ -509,9 +519,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       counterClockWise: {
         inputType: 'options',
         required: true,
+        defaultValue: false,
         options: [
-          { name: 'True', isCurrent: false, value: true },
-          { name: 'False', isCurrent: true, value: false },
+          { name: 'False', value: false },
+          { name: 'True', value: true },
         ],
       },
       radius: {
@@ -522,10 +533,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       axis: {
         inputType: 'options',
         required: true,
+        defaultValue: 'X',
         options: [
-          { name: 'X Axis', isCurrent: true, value: 'X' },
-          { name: 'Y Axis', isCurrent: false, value: 'Y' },
-          { name: 'Z Axis', isCurrent: false, value: 'Z' },
+          { name: 'X Axis', value: 'X' },
+          { name: 'Y Axis', value: 'Y' },
+          { name: 'Z Axis', value: 'Z' },
         ],
       },
       length: {
@@ -676,7 +688,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'chat',
     args: {
       selection: {
-        inputType: 'selection',
+        inputType: 'selectionMixed',
         selectionTypes: [
           'solid2d',
           'segment',
@@ -688,6 +700,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
+        selectionSource: {
+          allowSceneSelection: true,
+          allowCodeSelection: true,
+        },
         skip: true,
       },
       prompt: {

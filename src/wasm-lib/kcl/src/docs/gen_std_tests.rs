@@ -1,4 +1,8 @@
-use std::collections::{BTreeMap, HashMap};
+use std::{
+    collections::{BTreeMap, HashMap},
+    fs::File,
+    io::Read as _,
+};
 
 use anyhow::Result;
 use base64::Engine;
@@ -7,15 +11,17 @@ use handlebars::Renderable;
 use indexmap::IndexMap;
 use itertools::Itertools;
 use serde_json::json;
+use tokio::task::JoinSet;
 
+use super::kcl_doc::{ConstData, DocData, FnData};
 use crate::{
     docs::{is_primitive, StdLibFn},
     std::StdLib,
+    ExecutorContext,
 };
 
-use super::kcl_doc::{ConstData, DocData, FnData};
-
 const TYPES_DIR: &str = "../../../docs/kcl/types";
+const LANG_TOPICS: [&str; 4] = ["Types", "Modules", "Settings", "Known Issues"];
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
@@ -345,7 +351,18 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
         .collect();
     sorted.sort_by(|t1, t2| t1.0.cmp(&t2.0));
     let data: Vec<_> = sorted.into_iter().map(|(_, val)| val).collect();
+
+    let topics: Vec<_> = LANG_TOPICS
+        .iter()
+        .map(|name| {
+            json!({
+                "name": name,
+                "file_name": name.to_lowercase().replace(' ', "-"),
+            })
+        })
+        .collect();
     let data = json!({
+        "lang_topics": topics,
         "modules": data,
     });
 
@@ -457,7 +474,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("const", &data)?;
-    expectorate::assert_contents(format!("../../../docs/kcl/const_{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
 }
@@ -525,7 +542,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
         "summary": internal_fn.summary(),
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),
-        "fn_signature": internal_fn.fn_signature(),
+        "fn_signature": internal_fn.fn_signature(true),
         "tags": internal_fn.tags(),
         "examples": examples,
         "is_utilities": internal_fn.tags().contains(&"utilities".to_string()),
@@ -990,4 +1007,68 @@ fn test_generate_stdlib_json_schema() {
         "../../../docs/kcl/std.json",
         &serde_json::to_string_pretty(&json_data).unwrap(),
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_code_in_topics() {
+    let mut join_set = JoinSet::new();
+    for name in LANG_TOPICS {
+        let filename = format!("../../../docs/kcl/{}.md", name.to_lowercase().replace(' ', "-"));
+        let mut file = File::open(&filename).unwrap();
+        let mut text = String::new();
+        file.read_to_string(&mut text).unwrap();
+
+        for (i, (eg, attr)) in find_examples(&text, &filename).into_iter().enumerate() {
+            if attr == "norun" {
+                continue;
+            }
+
+            let f = filename.clone();
+            join_set.spawn(async move { (format!("{f}, example {i}"), run_example(&eg).await) });
+        }
+    }
+    let results: Vec<_> = join_set
+        .join_all()
+        .await
+        .into_iter()
+        .filter_map(|a| a.1.err().map(|e| format!("{}: {}", a.0, e)))
+        .collect();
+    assert!(results.is_empty(), "Failures: {}", results.join(", "))
+}
+
+fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
+    let mut buf = String::new();
+    let mut attr = String::new();
+    let mut in_eg = false;
+    let mut result = Vec::new();
+    for line in text.lines() {
+        if let Some(rest) = line.strip_prefix("```") {
+            if in_eg {
+                result.push((buf, attr));
+                buf = String::new();
+                attr = String::new();
+                in_eg = false;
+            } else {
+                attr = rest.to_owned();
+                in_eg = true;
+            }
+            continue;
+        }
+        if in_eg {
+            buf.push('\n');
+            buf.push_str(line)
+        }
+    }
+
+    assert!(!in_eg, "Unclosed code tags in {}", filename);
+
+    result
+}
+
+async fn run_example(text: &str) -> Result<()> {
+    let program = crate::Program::parse_no_errs(text)?;
+    let ctx = ExecutorContext::new_with_default_client(crate::UnitLength::Mm).await?;
+    let mut exec_state = crate::execution::ExecState::new(&ctx.settings);
+    ctx.run(&program, &mut exec_state).await?;
+    Ok(())
 }

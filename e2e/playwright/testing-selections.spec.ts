@@ -382,7 +382,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
       '|> line(end = [0, -pipeLength])'
     )
     await u.clearCommandLogs()
-    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Delete')
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
 
@@ -439,7 +439,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
       '|> startProfileAt([23.24, 136.52], %)'
     )
     await u.clearCommandLogs()
-    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Delete')
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(`sketch005 = startSketchOn({`)
@@ -453,7 +453,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
       '  |> line(end = [20.91, -28.61])'
     )
     await u.clearCommandLogs()
-    await page.keyboard.press('Backspace')
+    await page.keyboard.press('Delete')
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(codeToBeDeletedSnippet)
@@ -518,7 +518,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
         '|> line(end = [170.36, -121.61], tag = $seg01)'
       )
       await u.clearCommandLogs()
-      await page.keyboard.press('Backspace')
+      await page.keyboard.press('Delete')
 
       await expect(page.getByText('Unable to delete selection')).toBeVisible()
     }

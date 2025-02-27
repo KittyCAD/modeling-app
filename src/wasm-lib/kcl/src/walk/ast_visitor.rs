@@ -130,6 +130,9 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
             Node::LabelledExpression(e) => {
                 vec![(&e.expr).into(), (&e.label).into()]
             }
+            Node::Ascription(e) => {
+                vec![(&e.expr).into()]
+            }
             Node::PipeSubstitution(_)
             | Node::TagDeclarator(_)
             | Node::Identifier(_)

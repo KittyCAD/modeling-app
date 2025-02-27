@@ -124,7 +124,8 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">
                       {argValue ? (
-                        arg.inputType === 'selection' ? (
+                        arg.inputType === 'selection' ||
+                        arg.inputType === 'selectionMixed' ? (
                           getSelectionTypeDisplayText(argValue as Selections)
                         ) : arg.inputType === 'kcl' ? (
                           roundOff(

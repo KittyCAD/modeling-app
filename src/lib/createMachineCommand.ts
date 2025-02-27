@@ -188,6 +188,16 @@ export function buildCommandArgument<
       selectionTypes: arg.selectionTypes,
       validation: arg.validation,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
+  } else if (arg.inputType === 'selectionMixed') {
+    return {
+      inputType: arg.inputType,
+      ...baseCommandArgument,
+      multiple: arg.multiple,
+      selectionTypes: arg.selectionTypes,
+      validation: arg.validation,
+      allowNoSelection: arg.allowNoSelection,
+      selectionSource: arg.selectionSource,
+    } satisfies CommandArgument<O, T> & { inputType: 'selectionMixed' }
   } else if (arg.inputType === 'kcl') {
     return {
       inputType: arg.inputType,

@@ -15,7 +15,7 @@ pub(super) const SIGNIFICANT_ATTRS: [&str; 2] = [SETTINGS, NO_PRELUDE];
 pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
-pub(super) const NO_PRELUDE: &str = "no_prelude";
+pub(super) const NO_PRELUDE: &str = "no_std";
 
 pub(super) const IMPORT_FORMAT: &str = "format";
 pub(super) const IMPORT_FORMAT_VALUES: [&str; 9] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "stp", "step", "stl"];
@@ -65,7 +65,7 @@ impl UnitLen {
             "yd" => Ok(UnitLen::Yards),
             value => Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `inch`, `ft`, `yd`"
+                    "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `in`, `ft`, `yd`"
                 ),
                 source_ranges: vec![source_range],
             })),
