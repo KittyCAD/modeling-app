@@ -264,6 +264,10 @@ export function createSettings() {
           )
         },
       }),
+      namedViews: new Setting<NamedView[]>({
+        defaultValue: [],
+        validate: (v) => true,
+      }),
     },
     /**
      * Settings that affect the behavior while modeling.
@@ -468,10 +472,6 @@ export function createSettings() {
       //     inputType: 'boolean',
       //   },
       // }),
-      namedViews: new Setting<NamedView[]>({
-        defaultValue: [],
-        validate: (v) => true,
-      }),
     },
     /**
      * Settings that affect the behavior of the KCL text editor.

@@ -34,7 +34,7 @@ export function createNamedViewsCommand() {
           })
 
         if (!cameraGetViewResponse) {
-          return toast.error('Unable to create named view, websocket failure.')
+          return toast.error('Unable to create named view, websocket failure')
         }
 
         const view = cameraGetViewResponse.resp.data.modeling_response.data
@@ -46,13 +46,13 @@ export function createNamedViewsCommand() {
         }
         // Retrieve application state for namedViews
         const namedViews = [
-          ...settingsActor.getSnapshot().context.modeling.namedViews.current,
+          ...settingsActor.getSnapshot().context.app.namedViews.current,
         ]
 
         // Create and set namedViews application state
         const requestedNamedViews = [...namedViews, requestedView]
         settingsActor.send({
-          type: `set.modeling.namedViews`,
+          type: `set.app.namedViews`,
           data: {
             level: 'project',
             value: requestedNamedViews,
@@ -89,7 +89,7 @@ export function createNamedViewsCommand() {
       const nameToDelete = data.name
       // Retrieve application state for namedViews
       const namedViews = [
-        ...settingsActor.getSnapshot().context.modeling.namedViews.current,
+        ...settingsActor.getSnapshot().context.app.namedViews.current,
       ]
 
       // Find the named view in the array
@@ -104,15 +104,15 @@ export function createNamedViewsCommand() {
 
         // Update global state with the new computed state
         settingsActor.send({
-          type: `set.modeling.namedViews`,
+          type: `set.app.namedViews`,
           data: {
             level: 'project',
             value: namedViews,
           },
         })
-        toast.success(`Deleted ${name} named view.`)
+        toast.success(`Deleted ${name} named view`)
       } else {
-        toast.error(`Unable to delete, could not find the named view.`)
+        toast.error(`Unable to delete, could not find the named view`)
       }
     },
     args: {
@@ -121,7 +121,7 @@ export function createNamedViewsCommand() {
         inputType: 'options',
         options: () => {
           const namedViews = [
-            ...settingsActor.getSnapshot().context.modeling.namedViews.current,
+            ...settingsActor.getSnapshot().context.app.namedViews.current,
           ]
           return namedViews.map((view, index) => {
             return {
@@ -151,7 +151,7 @@ export function createNamedViewsCommand() {
 
         // Retrieve application state for namedViews
         const namedViews = [
-          ...settingsActor.getSnapshot().context.modeling.namedViews.current,
+          ...settingsActor.getSnapshot().context.app.namedViews.current,
         ]
         const _idToLoad = data.name
         const viewToLoad = namedViews.find((view) => view._id === _idToLoad)
@@ -172,7 +172,19 @@ export function createNamedViewsCommand() {
               },
             },
           })
-          toast.success(`Loaded ${name} named view.`)
+
+          const isPerpsective = !engineViewData.is_ortho
+
+          // Update the GUI for orthographic and projection
+          settingsActor.send({
+            type: 'set.modeling.cameraProjection',
+            data: {
+              level: 'user',
+              value: isPerpsective ? 'perspective' : 'orthographic',
+            },
+          })
+
+          toast.success(`Loaded ${name} named view`)
         } else {
           toast.error(`Unable to load named view, could not find named view`)
         }
@@ -185,7 +197,7 @@ export function createNamedViewsCommand() {
         inputType: 'options',
         options: () => {
           const namedViews = [
-            ...settingsActor.getSnapshot().context.modeling.namedViews.current,
+            ...settingsActor.getSnapshot().context.app.namedViews.current,
           ]
           return namedViews.map((view) => {
             return {

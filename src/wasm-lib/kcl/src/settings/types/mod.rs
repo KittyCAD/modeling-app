@@ -124,6 +124,10 @@ pub struct AppSettings {
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
     allow_orbit_in_sketch_mode: bool,
+    /// Settings that affect the behavior of the command bar.
+    #[serde(default, alias = "namedViews", skip_serializing_if = "Vec::is_empty")]
+    #[validate(nested)]
+    pub named_views: Vec<NamedView>,
 }
 
 // TODO: When we remove backwards compatibility with the old settings file, we can remove this.
@@ -278,10 +282,6 @@ pub struct ModelingSettings {
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, alias = "showScaleGrid", skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
-    /// Settings that affect the behavior of the command bar.
-    #[serde(default, alias = "namedViews", skip_serializing_if = "Vec::is_empty")]
-    #[validate(nested)]
-    pub named_views: Vec<NamedView>,
 }
 
 
@@ -666,6 +666,7 @@ textWrapping = true
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
+                        named_views: Vec::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
@@ -676,7 +677,6 @@ textWrapping = true
                         show_debug_panel: true,
                         enable_ssao: false.into(),
                         show_scale_grid: false,
-                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
@@ -730,6 +730,7 @@ includeSettings = false
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
+                        named_views: Vec::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -740,7 +741,6 @@ includeSettings = false
                         show_debug_panel: true,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
-                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -799,6 +799,7 @@ defaultProjectName = "projects-$nnn"
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
+                        named_views: Vec::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -809,7 +810,6 @@ defaultProjectName = "projects-$nnn"
                         show_debug_panel: true,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
-                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -880,6 +880,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
+                        named_views: Vec::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
@@ -890,7 +891,6 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         show_debug_panel: false,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
-                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),

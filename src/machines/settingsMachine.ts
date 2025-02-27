@@ -78,7 +78,7 @@ export const settingsMachine = setup({
           level: SettingsLevel
         }
       | { type: 'Set all settings'; settings: typeof settings }
-      | { type: 'set.modeling.namedViews'; value: NamedView }
+      | { type: 'set.app.namedViews'; value: NamedView }
       | { type: 'load.project'; project?: Project }
       | { type: 'clear.project' }
     ) & { doNotPersist?: boolean },
@@ -394,7 +394,7 @@ export const settingsMachine = setup({
           ],
         },
 
-        'set.modeling.namedViews': {
+        'set.app.namedViews': {
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel'],

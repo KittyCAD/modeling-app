@@ -86,6 +86,7 @@ export function projectConfigurationToSettingsPayload(
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      namedViews: configuration?.settings?.app?.named_views,
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -94,7 +95,6 @@ export function projectConfigurationToSettingsPayload(
       ),
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
-      namedViews: configuration?.settings?.modeling?.named_views,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,

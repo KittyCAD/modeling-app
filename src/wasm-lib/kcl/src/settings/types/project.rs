@@ -83,9 +83,9 @@ mod tests {
 
     use super::{
         AppSettings, AppTheme, CommandBarSettings, ModelingSettings, PerProjectSettings, ProjectConfiguration,
-        TextEditorSettings, NamedView
+        TextEditorSettings
     };
-    use crate::settings::types::{AppearanceSettings, UnitLength};
+    use crate::settings::types::{AppearanceSettings, UnitLength, NamedView};
 
     use serde_json::{Value};
 
@@ -128,6 +128,7 @@ includeSettings = false
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
+                        named_views: Vec::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -138,7 +139,6 @@ includeSettings = false
                         show_debug_panel: true,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
-                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -262,16 +262,6 @@ color = 1567.4"#;
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                    },
-                    modeling: ModelingSettings {
-                        base_unit: UnitLength::Yd,
-                        camera_projection: Default::default(),
-                        camera_orbit: Default::default(),
-                        mouse_controls: Default::default(),
-                        highlight_edges: Default::default(),
-                        show_debug_panel: true,
-                        enable_ssao: true.into(),
-                        show_scale_grid: false,
                         named_views: vec![
         NamedView {
             name: String::from("Hello"),
@@ -301,6 +291,16 @@ color = 1567.4"#;
                             },
                         ]
                     },
+                    modeling: ModelingSettings {
+                        base_unit: UnitLength::Yd,
+                        camera_projection: Default::default(),
+                        camera_orbit: Default::default(),
+                        mouse_controls: Default::default(),
+                        highlight_edges: Default::default(),
+                        show_debug_panel: true,
+                        enable_ssao: true.into(),
+                        show_scale_grid: false,
+                    },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
                         blinking_cursor: false.into()
@@ -320,7 +320,7 @@ base_unit = "yd"
 show_debug_panel = true
 
 
-[[settings.modeling.named_views]]
+[[settings.app.named_views]]
 name = "Hello"
 eye_offset = 1236.4015
 fov_y = 45.0
@@ -333,7 +333,7 @@ world_coord_system = RightHandedUpZ
 _id = 323611ea-66e3-43c9-9d0d-1091ba92948c
 _version = 1.0
 
-[[settings.modeling.named_views]]
+[[settings.app.named_views]]
 name = Goodbye
 eye_offset = 1236.4015
 fov_y = 45.0
