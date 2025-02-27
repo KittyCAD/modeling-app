@@ -157,6 +157,7 @@ export const SEGMENT_BODIES = [
   TANGENTIAL_ARC_TO_SEGMENT,
   CIRCLE_SEGMENT,
   CIRCLE_THREE_POINT_SEGMENT,
+  ARC_SEGMENT,
 ]
 export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   ...SEGMENT_BODIES,
@@ -2027,6 +2028,7 @@ export class SceneEntities {
       CIRCLE_THREE_POINT_HANDLE1,
       CIRCLE_THREE_POINT_HANDLE2,
       CIRCLE_THREE_POINT_HANDLE3,
+      ARC_ANGLE_END,
     ])
     if (!group) return
     const pathToNode: PathToNode = structuredClone(group.userData.pathToNode)
@@ -2100,6 +2102,64 @@ export class SceneEntities {
           radius: group.userData.radius,
           ccw: true,
         }
+
+      // Handle ARC_SEGMENT with radius handle (outer arc)
+      if (
+        group.name === ARC_SEGMENT &&
+        (!subGroup || subGroup?.name === ARROWHEAD)
+      ) {
+        return {
+          type: 'arc-segment',
+          from: group.userData.from,
+          to: group.userData.to,
+          center: group.userData.center,
+          // distance between the center and the drag point
+          radius: Math.sqrt(
+            (group.userData.center[0] - dragTo[0]) ** 2 +
+              (group.userData.center[1] - dragTo[1]) ** 2
+          ),
+          ccw: group.userData.ccw,
+        }
+      }
+      // Handle ARC_SEGMENT with center handle
+      if (
+        group.name === ARC_SEGMENT &&
+        subGroup?.name === CIRCLE_CENTER_HANDLE
+      ) {
+        return {
+          type: 'arc-segment',
+          from: group.userData.from,
+          to: group.userData.to,
+          center: dragTo,
+          radius: group.userData.radius,
+          ccw: group.userData.ccw,
+        }
+      }
+      // Handle ARC_SEGMENT with end angle handle
+      if (group.name === ARC_SEGMENT && subGroup?.name === ARC_ANGLE_END) {
+        // Calculate the angle from center to drag point
+        const center = group.userData.center
+        const endAngle = Math.atan2(
+          dragTo[1] - center[1],
+          dragTo[0] - center[0]
+        )
+
+        // Calculate the point on the arc at the given angle and radius
+        const radius = group.userData.radius
+        const toPoint: [number, number] = [
+          center[0] + radius * Math.cos(endAngle),
+          center[1] + radius * Math.sin(endAngle),
+        ]
+
+        return {
+          type: 'arc-segment',
+          from: group.userData.from,
+          to: toPoint,
+          center: center,
+          radius: radius,
+          ccw: group.userData.ccw,
+        }
+      }
       if (
         subGroup?.name &&
         [
@@ -2131,6 +2191,7 @@ export class SceneEntities {
         to: dragTo,
       }
     }
+    console.log('on Drag??')
 
     if (group.name === PROFILE_START) {
       modded = updateStartProfileAtArgs({
