@@ -8,5 +8,6 @@ KCL UndefinedValue error
    ╭─[3:8]
  2 │ pushedArr = pop(arr)
  3 │ fail = pushedArr[2]
-   ·        ────────────
+   ·        ──────┬─────
+   ·              ╰── tests/array_elem_pop_fail/input.kcl
    ╰────

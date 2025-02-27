@@ -28,6 +28,7 @@ export default function lspHoverExt(
       '.cm-tooltip': {
         fontSize: '12px',
         maxWidth: '400px',
+        padding: '2px',
       },
     }),
   ]

@@ -170,7 +170,8 @@ test.describe('Point-and-click tests', () => {
         })
 
         await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
-          await toolbar.exitSketch()
+          await toolbar.exitSketchBtn.click()
+          await scene.waitForExecutionDone()
         })
         await test.step('Check there is no errors after code created in previous steps executes', async () => {
           await editor.expectState({
@@ -201,9 +202,7 @@ test.describe('Point-and-click tests', () => {
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await expect(
-        page.getByTestId('model-state-indicator-receive-reliable')
-      ).toBeVisible()
+      await scene.waitForExecutionDone()
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -391,7 +390,6 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
       await scene.waitForExecutionDone()
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)

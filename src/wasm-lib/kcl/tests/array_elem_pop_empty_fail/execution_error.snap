@@ -8,5 +8,6 @@ KCL Semantic error
    ╭─[2:8]
  1 │ arr = []
  2 │ fail = pop(arr)
-   ·        ────────
+   ·        ────┬───
+   ·            ╰── tests/array_elem_pop_empty_fail/input.kcl
    ╰────

@@ -13,7 +13,8 @@ use crate::{
     },
     parsing::{
         ast::types::{
-            DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
+            DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node,
+            PrimitiveType as AstPrimitiveType, TagDeclarator, TagNode, Type,
         },
         token::NumericSuffix,
     },
@@ -562,6 +563,51 @@ impl KclValue {
         Ok(*b)
     }
 
+    /// True if `self` has a type which is a subtype of `ty` without coercion.
+    pub fn has_type(&self, ty: &RuntimeType) -> bool {
+        let Some(self_ty) = self.ty() else {
+            return false;
+        };
+
+        self_ty.subtype(ty)
+    }
+
+    fn ty(&self) -> Option<RuntimeType> {
+        match self {
+            KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
+            KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(ty.clone()))),
+            KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
+            KclValue::Object { value, .. } => {
+                let properties = value
+                    .iter()
+                    .map(|(k, v)| v.ty().map(|t| (k.clone(), t)))
+                    .collect::<Option<Vec<_>>>()?;
+                Some(RuntimeType::Object(properties))
+            }
+            KclValue::Plane { .. } => Some(RuntimeType::Primitive(PrimitiveType::Plane)),
+            KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
+            KclValue::Sketches { .. } => Some(RuntimeType::Array(PrimitiveType::Sketch)),
+            KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
+            KclValue::Solids { .. } => Some(RuntimeType::Array(PrimitiveType::Solid)),
+            KclValue::Array { value, .. } => Some(RuntimeType::Tuple(
+                value
+                    .iter()
+                    .map(|v| v.ty().and_then(RuntimeType::primitive))
+                    .collect::<Option<Vec<_>>>()?,
+            )),
+            KclValue::Face { .. } => None,
+            KclValue::Helix { .. } => None,
+            KclValue::ImportedGeometry(..) => None,
+            KclValue::Function { .. } => None,
+            KclValue::Module { .. } => None,
+            KclValue::TagIdentifier(_) => None,
+            KclValue::TagDeclarator(_) => None,
+            KclValue::KclNone { .. } => None,
+            KclValue::Uuid { .. } => None,
+            KclValue::Tombstone { .. } => None,
+        }
+    }
+
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
     /// If it's not a function, return Err.
     pub async fn call_fn(
@@ -643,6 +689,79 @@ impl KclValue {
                 message: "cannot call this because it isn't a function".to_string(),
                 source_ranges: vec![callsite],
             })),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum RuntimeType {
+    Primitive(PrimitiveType),
+    Array(PrimitiveType),
+    Tuple(Vec<PrimitiveType>),
+    Object(Vec<(String, RuntimeType)>),
+}
+
+impl RuntimeType {
+    pub fn from_parsed(value: Type, settings: &super::MetaSettings) -> Option<Self> {
+        match value {
+            Type::Primitive(pt) => Some(RuntimeType::Primitive(PrimitiveType::from_parsed(pt, settings)?)),
+            Type::Array(pt) => Some(RuntimeType::Array(PrimitiveType::from_parsed(pt, settings)?)),
+            Type::Object { properties } => Some(RuntimeType::Object(
+                properties
+                    .into_iter()
+                    .map(|p| {
+                        p.type_.and_then(|t| {
+                            RuntimeType::from_parsed(t.inner, settings).map(|ty| (p.identifier.inner.name, ty))
+                        })
+                    })
+                    .collect::<Option<Vec<_>>>()?,
+            )),
+        }
+    }
+
+    // Subtype with no coercion, including refining numeric types.
+    fn subtype(&self, sup: &RuntimeType) -> bool {
+        use RuntimeType::*;
+
+        match (self, sup) {
+            // TODO arrays could be covariant
+            (Primitive(t1), Primitive(t2)) | (Array(t1), Array(t2)) => t1 == t2,
+            (Tuple(t1), Tuple(t2)) => t1 == t2,
+            (Tuple(t1), Array(t2)) => t1.iter().all(|t| t == t2),
+            // TODO record subtyping - subtype can be larger, fields can be covariant.
+            (Object(t1), Object(t2)) => t1 == t2,
+            _ => false,
+        }
+    }
+
+    fn primitive(self) -> Option<PrimitiveType> {
+        match self {
+            RuntimeType::Primitive(t) => Some(t),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum PrimitiveType {
+    Number(NumericType),
+    String,
+    Boolean,
+    Sketch,
+    Solid,
+    Plane,
+}
+
+impl PrimitiveType {
+    fn from_parsed(value: AstPrimitiveType, settings: &super::MetaSettings) -> Option<Self> {
+        match value {
+            AstPrimitiveType::String => Some(PrimitiveType::String),
+            AstPrimitiveType::Boolean => Some(PrimitiveType::Boolean),
+            AstPrimitiveType::Number(suffix) => Some(PrimitiveType::Number(NumericType::from_parsed(suffix, settings))),
+            AstPrimitiveType::Sketch => Some(PrimitiveType::Sketch),
+            AstPrimitiveType::Solid => Some(PrimitiveType::Solid),
+            AstPrimitiveType::Plane => Some(PrimitiveType::Plane),
+            _ => None,
         }
     }
 }

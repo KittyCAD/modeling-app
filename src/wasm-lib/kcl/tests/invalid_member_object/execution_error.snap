@@ -9,5 +9,6 @@ KCL Semantic error
    ╭─[2:5]
  1 │ num = 999
  2 │ x = num[3]
-   ·     ──────
+   ·     ───┬──
+   ·        ╰── tests/invalid_member_object/input.kcl
    ╰────

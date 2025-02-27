@@ -646,17 +646,16 @@ export function codeToIdSelections(
 }
 
 export async function sendSelectEventToEngine(
-  e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  e: MouseEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
+  el: HTMLVideoElement
 ) {
-  // No video stream to normalise against, return immediately
-  if (!engineCommandManager.elVideo)
-    return Promise.reject('video element not ready')
-
-  const { x, y } = getNormalisedCoordinates(
-    e,
-    engineCommandManager.elVideo,
-    engineCommandManager.streamDimensions
-  )
+  const { x, y } = getNormalisedCoordinates({
+    clientX: e.clientX,
+    clientY: e.clientY,
+    el,
+    streamWidth: engineCommandManager.width,
+    streamHeight: engineCommandManager.height,
+  })
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {

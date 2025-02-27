@@ -642,10 +642,12 @@ impl Backend {
         };
 
         for diagnostic in diagnostics {
-            let d = diagnostic.to_lsp_diagnostic(&params.text);
+            let lsp_d = diagnostic.to_lsp_diagnostics(&params.text);
             // Make sure we don't duplicate diagnostics.
-            if !items.iter().any(|x| x == &d) {
-                items.push(d);
+            for d in lsp_d {
+                if !items.iter().any(|x| x == &d) {
+                    items.push(d);
+                }
             }
         }
 
@@ -673,7 +675,7 @@ impl Backend {
 
         match executor_ctx.run_with_caching(ast.clone()).await {
             Err(err) => {
-                self.add_to_diagnostics(params, &[err.error], false).await;
+                self.add_to_diagnostics(params, &[err], false).await;
 
                 // Since we already published the diagnostics we don't really care about the error
                 // string.
@@ -1046,7 +1048,7 @@ impl LanguageServer for Backend {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
                         value: format!(
-                            "```{}{}```\n{}",
+                            "```\n{}{}\n```\n\n{}",
                             name,
                             if let Some(detail) = &label_details.detail {
                                 detail

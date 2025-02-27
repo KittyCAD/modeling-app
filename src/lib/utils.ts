@@ -161,20 +161,25 @@ export function toSync<F extends AsyncFn<F>>(
   }
 }
 
-export function getNormalisedCoordinates(
-  e: PointerEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
-  elVideo: HTMLVideoElement,
-  streamDimensions: {
-    width: number
-    height: number
-  }
-) {
-  const { left, top, width, height } = elVideo?.getBoundingClientRect()
-  const browserX = e.clientX - left
-  const browserY = e.clientY - top
+export function getNormalisedCoordinates({
+  clientX,
+  clientY,
+  streamWidth,
+  streamHeight,
+  el,
+}: {
+  clientX: number
+  clientY: number
+  streamWidth: number
+  streamHeight: number
+  el: HTMLElement
+}) {
+  const { left, top, width, height } = el?.getBoundingClientRect()
+  const browserX = clientX - left
+  const browserY = clientY - top
   return {
-    x: Math.round((browserX / width) * streamDimensions.width),
-    y: Math.round((browserY / height) * streamDimensions.height),
+    x: Math.round((browserX / width) * streamWidth),
+    y: Math.round((browserY / height) * streamHeight),
   }
 }
 

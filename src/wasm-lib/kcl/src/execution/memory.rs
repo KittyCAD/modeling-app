@@ -138,6 +138,7 @@
 use std::{collections::HashMap, fmt};
 
 use anyhow::Result;
+use env::Environment;
 use indexmap::IndexMap;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -147,7 +148,6 @@ use crate::{
     execution::KclValue,
     source_range::SourceRange,
 };
-use env::Environment;
 
 /// The distinguished name of the return value of a function.
 pub(crate) const RETURN_NAME: &str = "__return";
@@ -894,9 +894,8 @@ mod env {
 
 #[cfg(test)]
 mod test {
-    use crate::execution::kcl_value::{FunctionSource, NumericType};
-
     use super::*;
+    use crate::execution::kcl_value::{FunctionSource, NumericType};
 
     fn sr() -> SourceRange {
         SourceRange::default()

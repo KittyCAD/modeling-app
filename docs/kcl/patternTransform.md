@@ -35,7 +35,12 @@ The transform function returns a transform object. All properties of the object 
    - `rotation.origin` (either "local" i.e. rotate around its own center, "global" i.e. rotate around the scene's center, or a 3D point, defaults to "local")
 
 ```js
-patternTransform(solidSet: SolidSet, instances: integer, transform: FunctionSource, useOriginal?: bool) -> [Solid]
+patternTransform(
+  solidSet: SolidSet,
+  instances: integer,
+  transform: FunctionSource,
+  useOriginal?: bool,
+) -> [Solid]
 ```
 
 

@@ -9,7 +9,11 @@ Check that a numerical value is greater than another at runtime,
 otherwise raise an error.
 
 ```js
-assertGreaterThan(left: number, right: number, message: string) -> ()
+assertGreaterThan(
+  left: number,
+  right: number,
+  message: string,
+) -> ()
 ```
 
 
