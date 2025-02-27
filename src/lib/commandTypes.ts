@@ -189,6 +189,13 @@ export type CommandArgumentConfig<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: C
           ) => string)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
   | {
       inputType: 'string'
@@ -290,6 +297,13 @@ export type CommandArgument<
   | {
       inputType: 'kcl'
       createVariableByDefault?: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
       variableName?:
         | string
         | ((

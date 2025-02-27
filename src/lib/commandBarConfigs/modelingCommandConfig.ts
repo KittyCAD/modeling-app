@@ -401,7 +401,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
-        // TODO: add dry-run validation on thickness param
+        validation: shellValidator,
       },
     },
   },

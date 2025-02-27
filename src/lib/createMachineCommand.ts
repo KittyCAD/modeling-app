@@ -201,6 +201,7 @@ export function buildCommandArgument<
     return {
       inputType: arg.inputType,
       createVariableByDefault: arg.createVariableByDefault,
+      validation: arg.validation,
       variableName: arg.variableName,
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
