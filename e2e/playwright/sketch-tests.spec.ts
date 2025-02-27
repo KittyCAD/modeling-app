@@ -403,9 +403,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
 
     const dragPX = 40
 
-    await page
-      .getByText('circle(center = [4.61, -5.01], radius = 8)')
-      .click()
+    await page.getByText('circle(center = [4.61, -5.01], radius = 8)').click()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()

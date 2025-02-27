@@ -840,9 +840,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await u.expectCmdLog('[data-message-type="execution-done"]')
         await u.closeDebugPanel()
 
-        await page
-          .getByText('circle(center = [1 + 0, 0], radius = 8)')
-          .click()
+        await page.getByText('circle(center = [1 + 0, 0], radius = 8)').click()
         await page.waitForTimeout(100)
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
         await page.waitForTimeout(500)
@@ -859,10 +857,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await clickConstrained({
           hoverPos,
           constraintType: 'xAbsolute',
-          expectBeforeUnconstrained:
-            'circle(center = [1 + 0, 0], radius = 8)',
-          expectAfterUnconstrained:
-            'circle(center = [1, 0], radius = 8)',
+          expectBeforeUnconstrained: 'circle(center = [1 + 0, 0], radius = 8)',
+          expectAfterUnconstrained: 'circle(center = [1, 0], radius = 8)',
           expectFinal: 'circle(center = [xAbs001, 0], radius = 8)',
           ang: ang + 105,
           steps: 6,

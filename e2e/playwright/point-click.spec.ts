@@ -42,8 +42,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step('check code model connection works and that button is still enable once circle is selected ', async () => {
       await moveToCircle()
-      const circleSnippet =
-        'circle(center = [318.33, 168.1], radius = 182.8)'
+      const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
       await editor.expectState({
         activeLines: ["constsketch002=startSketchOn('XZ')"],
         highlightedCode: circleSnippet,
@@ -52,8 +51,7 @@ test.describe('Point-and-click tests', () => {
 
       await test.step('check code model connection works and that button is still enable once circle is selected ', async () => {
         await moveToCircle()
-        const circleSnippet =
-          'circle(center = [318.33, 168.1], radius = 182.8)'
+        const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
         await editor.expectState({
           activeLines: ["constsketch002=startSketchOn('XZ')"],
           highlightedCode: circleSnippet,

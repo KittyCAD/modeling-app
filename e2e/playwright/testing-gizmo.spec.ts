@@ -295,8 +295,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
     await test.step(`Select an edge of this circle`, async () => {
-      const circleSnippet =
-        'circle(center: [818.33, 168.1], radius: 182.8)'
+      const circleSnippet = 'circle(center: [818.33, 168.1], radius: 182.8)'
       await moveToCircle()
       await clickCircle()
       await editor.expectState({

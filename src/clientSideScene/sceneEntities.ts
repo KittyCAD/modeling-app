@@ -1607,15 +1607,19 @@ export class SceneEntities {
     const varName = findUniqueName(_ast, 'profile')
     const newExpression = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('circle', [
-        createObjectExpression({
-          center: createArrayExpression([
-            createLiteral(roundOff(circleCenter[0])),
-            createLiteral(roundOff(circleCenter[1])),
-          ]),
-          radius: createLiteral(1),
-        }),
-        createIdentifier(varDec.node.id.name),
+      createCallExpressionStdLibKw('circle', [
+        varDec.node.id.name,
+        null,
+        [
+          createLabeledArg(
+            'center',
+            createArrayExpression([
+              createLiteral(roundOff(circleCenter[0])),
+              createLiteral(roundOff(circleCenter[1])),
+            ])
+          ),
+          createLabeledArg('radius', createLiteral(1)),
+        ],
       ])
     )
 
