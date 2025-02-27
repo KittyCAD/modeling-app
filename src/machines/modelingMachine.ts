@@ -1,4 +1,5 @@
 import {
+  Expr,
   PathToNode,
   VariableDeclaration,
   VariableDeclarator,
@@ -43,7 +44,10 @@ import { revolveSketch } from 'lang/modifyAst/addRevolve'
 import {
   addHelix,
   addOffsetPlane,
+  addShell,
   addSweep,
+  createIdentifier,
+  createLiteral,
   extrudeSketch,
   loftSketches,
 } from 'lang/modifyAst'
@@ -52,6 +56,8 @@ import {
   ChamferParameters,
   EdgeTreatmentType,
   FilletParameters,
+  getPathToExtrudeForSegmentSelection,
+  mutateAstWithTagForSketchSegment,
 } from 'lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
@@ -78,14 +84,16 @@ import { ToolbarModeName } from 'lib/toolbar'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { Mesh, Vector3 } from 'three'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { addShell } from 'lang/modifyAst/addShell'
 import { KclCommandValue } from 'lib/commandTypes'
 import { ModelingMachineContext } from 'components/ModelingMachineProvider'
 import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from 'lang/modifyAst/deleteSelection'
-import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
+import {
+  getPathsFromPlaneArtifact,
+  getSweepFromSuspectedSweepSurface,
+} from 'lang/std/artifactGraph'
 import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
@@ -1995,6 +2003,7 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness, nodeToEdit } = input
+        console.log('input', JSON.stringify(input))
         let variableName: string | undefined = undefined
         let insertIndex: number | undefined = undefined
 
@@ -2012,27 +2021,139 @@ export const modelingMachine = setup({
             variableName = variableNode.node.declaration.id.name
           }
 
-          // Removing the old extrusion statement
+          // Removing the old statement
           const newBody = [...ast.body]
           newBody.splice(nodeToEdit[1][0], 1)
           ast.body = newBody
           insertIndex = nodeToEdit[1][0]
         }
 
+        // Turn the selection into the faces list
+        const clonedAstForGetExtrude = structuredClone(ast)
+        const faces: Expr[] = []
+        let pathToExtrudeNode: PathToNode | undefined = undefined
+        for (const graphSelection of selection.graphSelections) {
+          const sweepLookupResult = getSweepFromSuspectedSweepSurface(
+            graphSelection.artifact.id,
+            engineCommandManager.artifactGraph
+          )
+          if (err(sweepLookupResult)) {
+            const error = Error(
+              "Couldn't find sweep from getSweepFromSuspectedSweepSurface"
+            )
+            console.error(error)
+            return error
+          }
+          const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
+            clonedAstForGetExtrude,
+            graphSelection,
+            engineCommandManager.artifactGraph
+          )
+          console.log(
+            'extrudeLookupResult',
+            JSON.stringify(extrudeLookupResult)
+          )
+          if (err(extrudeLookupResult)) {
+            const error = Error(
+              "Couldn't find extrude paths from getPathToExtrudeForSegmentSelection"
+            )
+            console.error(error)
+            return error
+          }
+
+          // TODO: this assumes the segment is piped directly from the sketch, with no intermediate `VariableDeclarator` between.
+          // We must find a technique for these situations that is robust to intermediate declarations
+          const extrudeNode = getNodeFromPath<VariableDeclarator>(
+            ast,
+            extrudeLookupResult.pathToExtrudeNode,
+            'VariableDeclarator'
+          )
+          const segmentNode = getNodeFromPath<VariableDeclarator>(
+            ast,
+            extrudeLookupResult.pathToSegmentNode,
+            'VariableDeclarator'
+          )
+          console.log('extrudeNode', JSON.stringify(extrudeNode))
+          console.log('segmentNode', JSON.stringify(segmentNode))
+          if (err(extrudeNode) || err(segmentNode)) {
+            const error = new Error("Couldn't find extrude or segment")
+            console.error(error)
+            return error
+          }
+          if (
+            extrudeNode.node.init.type === 'CallExpression' ||
+            extrudeNode.node.init.type === 'CallExpressionKw'
+          ) {
+            pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
+          } else if (segmentNode.node.init.type === 'PipeExpression') {
+            pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode
+          } else {
+            const error = Error(
+              "Couldn't find extrude node that was either a call expression or a pipe"
+            )
+            console.error(error)
+            return error
+          }
+
+          const selectedArtifact = graphSelection.artifact
+          if (!selectedArtifact) {
+            const error = new Error('Bad artifact')
+            console.error(error)
+            return error
+          }
+
+          // Check on the selection, and handle the wall vs cap casees
+          let expr: Expr
+          if (selectedArtifact.type === 'cap') {
+            expr = createLiteral(selectedArtifact.subType)
+          } else if (selectedArtifact.type === 'wall') {
+            const tagResult = mutateAstWithTagForSketchSegment(
+              ast,
+              extrudeLookupResult.pathToSegmentNode
+            )
+            if (err(tagResult)) return tagResult
+            const { tag } = tagResult
+            expr = createIdentifier(tag)
+          } else {
+            const error = new Error('Artifact is neither a cap nor a wall')
+            console.error(error)
+            return error
+          }
+          faces.push(expr)
+        }
+
+        if (!pathToExtrudeNode) {
+          const error = new Error('No extrude found')
+          console.error(error)
+          return error
+        }
+
+        const extrudeNode = getNodeFromPath<VariableDeclarator>(
+          ast,
+          pathToExtrudeNode,
+          'VariableDeclarator'
+        )
+        if (err(extrudeNode)) {
+          console.error(extrudeNode)
+          return extrudeNode
+        }
+
         // Perform the shell op
+        const sweepName = extrudeNode.node.id.name
         const addResult = addShell({
           node: ast,
-          selection,
-          artifactGraph: engineCommandManager.artifactGraph,
+          sweepName,
+          faces: faces,
           thickness:
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
-          variableName,
           insertIndex,
+          variableName,
         })
         if (err(addResult)) {
-          return err(addResult)
+          console.error(addResult)
+          return addResult
         }
 
         // Insert the distance variable if the user has provided a variable name

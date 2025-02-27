@@ -443,6 +443,71 @@ export function loftSketches(
   }
 }
 
+export function addShell({
+  node,
+  sweepName,
+  faces,
+  thickness,
+  insertIndex,
+  variableName,
+}: {
+  node: Node<Program>
+  sweepName: string
+  faces: Expr[]
+  thickness: Expr
+  insertIndex?: number
+  variableName?: string
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  console.log(
+    'addShell args',
+    JSON.stringify({
+      node,
+      sweepName,
+      faces,
+      thickness,
+      insertIndex,
+      variableName,
+    })
+  )
+  const modifiedAst = structuredClone(node)
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
+  const shell = createCallExpressionStdLibKw(
+    'shell',
+    createIdentifier(sweepName),
+    [
+      createLabeledArg('faces', createArrayExpression(faces)),
+      createLabeledArg('thickness', thickness),
+    ]
+  )
+  const variable = createVariableDeclaration(name, shell)
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length
+      : 0
+
+  modifiedAst.body.length
+    ? modifiedAst.body.splice(insertAt, 0, variable)
+    : modifiedAst.body.push(variable)
+  const argIndex = 0
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [insertAt, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
 export function addSweep(
   node: Node<Program>,
   profileDeclarator: VariableDeclarator,
