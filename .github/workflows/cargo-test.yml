@@ -30,7 +30,7 @@ jobs:
             only-kcl-samples:
               - 'public/kcl-samples/**'
               - '!src/wasm-lib/**'
-      - name: Display significant changes
+      - name: Display path changes
         run: |
           echo "Only kcl-samples changes: ${{ steps.filter.outputs.only-kcl-samples }}"
 

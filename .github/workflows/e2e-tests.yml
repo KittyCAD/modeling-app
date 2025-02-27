@@ -51,7 +51,7 @@ jobs:
             significant:
               - '!public/kcl-samples/**'
               - '!README.md'
-      - name: Display significant changes
+      - name: Display path changes
         run: |
           echo "Significant changes: ${{ steps.filter.outputs.significant }}"
 
