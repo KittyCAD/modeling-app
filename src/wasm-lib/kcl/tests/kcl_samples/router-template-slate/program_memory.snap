@@ -450,8 +450,8 @@ description: Variables in memory after executing router-template-slate.kcl
             },
             "ccw": false,
             "center": [
-              -10.749999999999998,
-              19.999999999999993
+              -10.75,
+              20.0
             ],
             "from": [
               -18.8688,
@@ -1541,8 +1541,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -10.749999999999998,
-                    19.999999999999993
+                    -10.75,
+                    20.0
                   ],
                   "from": [
                     -18.8688,
@@ -2866,8 +2866,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -10.749999999999998,
-                    19.999999999999993
+                    -10.75,
+                    20.0
                   ],
                   "from": [
                     -18.8688,
@@ -4411,8 +4411,8 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           "ccw": false,
           "center": [
-            -10.749999999999998,
-            19.999999999999993
+            -10.75,
+            20.0
           ],
           "from": [
             -18.8688,
@@ -5421,8 +5421,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -10.749999999999998,
-                  19.999999999999993
+                  -10.75,
+                  20.0
                 ],
                 "from": [
                   -18.8688,
@@ -6675,8 +6675,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -10.749999999999998,
-                  19.999999999999993
+                  -10.75,
+                  20.0
                 ],
                 "from": [
                   -18.8688,

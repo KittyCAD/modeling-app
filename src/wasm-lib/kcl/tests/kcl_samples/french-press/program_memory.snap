@@ -705,8 +705,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                0.29999999999999993,
-                0.16999999999999993
+                0.3,
+                0.17
               ],
               "from": [
                 0.3,
@@ -1067,8 +1067,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                0.29999999999999993,
-                0.16999999999999993
+                0.3,
+                0.17
               ],
               "from": [
                 0.3,
@@ -1429,8 +1429,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                0.29999999999999993,
-                0.16999999999999993
+                0.3,
+                0.17
               ],
               "from": [
                 0.3,
@@ -5431,7 +5431,7 @@ description: Variables in memory after executing french-press.kcl
             "ccw": false,
             "center": [
               2.86,
-              5.155614035087721
+              5.1556
             ],
             "from": [
               2.86,
@@ -5458,8 +5458,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": false,
             "center": [
-              -24.039664515669777,
-              2.89114029614839
+              -24.0397,
+              2.8911
             ],
             "from": [
               4.1,
@@ -5486,8 +5486,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": false,
             "center": [
-              3.1336451558572067,
-              1.6474333716247522
+              3.1336,
+              1.6474
             ],
             "from": [
               4.17,
@@ -5583,8 +5583,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": true,
             "center": [
-              3.041879904469464,
-              1.6080552712384852
+              3.0419,
+              1.6081
             ],
             "from": [
               3.03,
@@ -5611,8 +5611,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": true,
             "center": [
-              -49.51058427201375,
-              2.327847634072964
+              -49.5106,
+              2.3278
             ],
             "from": [
               3.63,
@@ -5639,8 +5639,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": true,
             "center": [
-              2.7870780851185235,
-              5.108898070547343
+              2.7871,
+              5.1089
             ],
             "from": [
               3.56,
@@ -7193,7 +7193,7 @@ description: Variables in memory after executing french-press.kcl
               "ccw": true,
               "center": [
                 2.605,
-                0.49999999999999994
+                0.5
               ],
               "from": [
                 2.305,
@@ -7249,8 +7249,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                2.113492421618342,
-                -0.4464007207928729
+                2.1135,
+                -0.4464
               ],
               "from": [
                 2.6331,
@@ -7306,8 +7306,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": true,
               "center": [
-                0.23671385418349272,
-                -0.6330127018922194
+                0.2367,
+                -0.633
               ],
               "from": [
                 0.4867,
@@ -7414,8 +7414,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                0.2717138541834927,
-                -0.6330127018922194
+                0.2717,
+                -0.633
               ],
               "from": [
                 0.2717,
@@ -7471,8 +7471,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": true,
               "center": [
-                2.118181532485887,
-                -0.42890072079287306
+                2.1182,
+                -0.4289
               ],
               "from": [
                 1.8682,
@@ -7528,8 +7528,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                2.8124789066000964,
-                0.5639745893897541
+                2.8125,
+                0.564
               ],
               "from": [
                 2.2687,
@@ -8396,7 +8396,7 @@ description: Variables in memory after executing french-press.kcl
               "ccw": true,
               "center": [
                 2.605,
-                0.49999999999999994
+                0.5
               ],
               "from": [
                 2.305,
@@ -8452,8 +8452,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                2.113492421618342,
-                -0.4464007207928729
+                2.1135,
+                -0.4464
               ],
               "from": [
                 2.6331,
@@ -8509,8 +8509,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": true,
               "center": [
-                0.23671385418349272,
-                -0.6330127018922194
+                0.2367,
+                -0.633
               ],
               "from": [
                 0.4867,
@@ -8617,8 +8617,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                0.2717138541834927,
-                -0.6330127018922194
+                0.2717,
+                -0.633
               ],
               "from": [
                 0.2717,
@@ -8674,8 +8674,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": true,
               "center": [
-                2.118181532485887,
-                -0.42890072079287306
+                2.1182,
+                -0.4289
               ],
               "from": [
                 1.8682,
@@ -8731,8 +8731,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                2.8124789066000964,
-                0.5639745893897541
+                2.8125,
+                0.564
               ],
               "from": [
                 2.2687,
@@ -9599,7 +9599,7 @@ description: Variables in memory after executing french-press.kcl
               "ccw": true,
               "center": [
                 2.605,
-                0.49999999999999994
+                0.5
               ],
               "from": [
                 2.305,
@@ -9655,8 +9655,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                2.113492421618342,
-                -0.4464007207928729
+                2.1135,
+                -0.4464
               ],
               "from": [
                 2.6331,
@@ -9712,8 +9712,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": true,
               "center": [
-                0.23671385418349272,
-                -0.6330127018922194
+                0.2367,
+                -0.633
               ],
               "from": [
                 0.4867,
@@ -9820,8 +9820,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                0.2717138541834927,
-                -0.6330127018922194
+                0.2717,
+                -0.633
               ],
               "from": [
                 0.2717,
@@ -9877,8 +9877,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": true,
               "center": [
-                2.118181532485887,
-                -0.42890072079287306
+                2.1182,
+                -0.4289
               ],
               "from": [
                 1.8682,
@@ -9934,8 +9934,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                2.8124789066000964,
-                0.5639745893897541
+                2.8125,
+                0.564
               ],
               "from": [
                 2.2687,
@@ -10802,7 +10802,7 @@ description: Variables in memory after executing french-press.kcl
               "ccw": true,
               "center": [
                 2.605,
-                0.49999999999999994
+                0.5
               ],
               "from": [
                 2.305,
@@ -10858,8 +10858,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                2.113492421618342,
-                -0.4464007207928729
+                2.1135,
+                -0.4464
               ],
               "from": [
                 2.6331,
@@ -10915,8 +10915,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": true,
               "center": [
-                0.23671385418349272,
-                -0.6330127018922194
+                0.2367,
+                -0.633
               ],
               "from": [
                 0.4867,
@@ -11023,8 +11023,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                0.2717138541834927,
-                -0.6330127018922194
+                0.2717,
+                -0.633
               ],
               "from": [
                 0.2717,
@@ -11080,8 +11080,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": true,
               "center": [
-                2.118181532485887,
-                -0.42890072079287306
+                2.1182,
+                -0.4289
               ],
               "from": [
                 1.8682,
@@ -11137,8 +11137,8 @@ description: Variables in memory after executing french-press.kcl
               },
               "ccw": false,
               "center": [
-                2.8124789066000964,
-                0.5639745893897541
+                2.8125,
+                0.564
               ],
               "from": [
                 2.2687,
@@ -11868,8 +11868,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": false,
             "center": [
-              0.29999999999999993,
-              0.16999999999999993
+              0.3,
+              0.17
             ],
             "from": [
               0.3,
@@ -12175,8 +12175,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": false,
             "center": [
-              0.29999999999999993,
-              0.16999999999999993
+              0.3,
+              0.17
             ],
             "from": [
               0.3,
@@ -12482,8 +12482,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": false,
             "center": [
-              0.29999999999999993,
-              0.16999999999999993
+              0.3,
+              0.17
             ],
             "from": [
               0.3,
@@ -13366,8 +13366,8 @@ description: Variables in memory after executing french-press.kcl
             },
             "ccw": false,
             "center": [
-              0.050000000000000044,
-              10.923550952893729
+              0.05,
+              10.9236
             ],
             "from": [
               0.65,
@@ -16987,7 +16987,7 @@ description: Variables in memory after executing french-press.kcl
           "ccw": false,
           "center": [
             2.86,
-            5.155614035087721
+            5.1556
           ],
           "from": [
             2.86,
@@ -17014,8 +17014,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": false,
           "center": [
-            -24.039664515669777,
-            2.89114029614839
+            -24.0397,
+            2.8911
           ],
           "from": [
             4.1,
@@ -17042,8 +17042,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": false,
           "center": [
-            3.1336451558572067,
-            1.6474333716247522
+            3.1336,
+            1.6474
           ],
           "from": [
             4.17,
@@ -17139,8 +17139,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": true,
           "center": [
-            3.041879904469464,
-            1.6080552712384852
+            3.0419,
+            1.6081
           ],
           "from": [
             3.03,
@@ -17167,8 +17167,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": true,
           "center": [
-            -49.51058427201375,
-            2.327847634072964
+            -49.5106,
+            2.3278
           ],
           "from": [
             3.63,
@@ -17195,8 +17195,8 @@ description: Variables in memory after executing french-press.kcl
           },
           "ccw": true,
           "center": [
-            2.7870780851185235,
-            5.108898070547343
+            2.7871,
+            5.1089
           ],
           "from": [
             3.56,

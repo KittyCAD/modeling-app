@@ -2133,7 +2133,7 @@ description: Variables in memory after executing bracket.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000000000004447451969524649,
+              -0.0,
               -0.375
             ],
             "from": [
@@ -2186,7 +2186,7 @@ description: Variables in memory after executing bracket.kcl
             "ccw": false,
             "center": [
               -0.0,
-              -0.37499999999999994
+              -0.375
             ],
             "from": [
               -0.375,
@@ -2350,7 +2350,7 @@ description: Variables in memory after executing bracket.kcl
           },
           "ccw": true,
           "center": [
-            -0.00000000000000004447451969524649,
+            -0.0,
             -0.375
           ],
           "from": [
@@ -2403,7 +2403,7 @@ description: Variables in memory after executing bracket.kcl
           "ccw": false,
           "center": [
             -0.0,
-            -0.37499999999999994
+            -0.375
           ],
           "from": [
             -0.375,

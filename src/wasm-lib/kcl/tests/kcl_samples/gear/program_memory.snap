@@ -4445,8 +4445,8 @@ description: Variables in memory after executing gear.kcl
             },
             "ccw": false,
             "center": [
-              0.0000000000000002220446049250313,
-              0.00000000000000030531133177191805
+              0.0,
+              0.0
             ],
             "from": [
               0.9922,
@@ -4474,8 +4474,8 @@ description: Variables in memory after executing gear.kcl
             },
             "ccw": false,
             "center": [
-              0.0000000000000002220446049250313,
-              0.00000000000000030531133177191805
+              0.0,
+              0.0
             ],
             "from": [
               -1.0,

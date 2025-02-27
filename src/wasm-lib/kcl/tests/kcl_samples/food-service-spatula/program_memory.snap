@@ -22,7 +22,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "ccw": true,
         "center": [
-          0.0000000000000008881784197001252,
+          0.0,
           210.0
         ],
         "from": [
@@ -90,7 +90,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "ccw": true,
         "center": [
-          0.0000000000000002220446049250313,
+          0.0,
           200.0
         ],
         "from": [
@@ -359,8 +359,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             },
             "ccw": true,
             "center": [
-              35.24257682559525,
-              -0.0000003610731695857794
+              35.2426,
+              -0.0
             ],
             "from": [
               -70.0,
@@ -684,8 +684,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            35.24257682559525,
-            -0.0000003610731695857794
+            35.2426,
+            -0.0
           ],
           "from": [
             -70.0,
@@ -1041,7 +1041,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             },
             "ccw": true,
             "center": [
-              -22.806746,
+              -22.8067,
               -7.0
             ],
             "from": [
@@ -1093,7 +1093,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             },
             "ccw": true,
             "center": [
-              -22.806746,
+              -22.8067,
               7.0
             ],
             "from": [
@@ -1145,7 +1145,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             },
             "ccw": true,
             "center": [
-              -26.806746,
+              -26.8067,
               7.0
             ],
             "from": [
@@ -1202,7 +1202,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             },
             "ccw": true,
             "center": [
-              -26.806746,
+              -26.8067,
               -7.0
             ],
             "from": [
@@ -1544,7 +1544,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            0.0000000000000008881784197001252,
+            0.0,
             210.0
           ],
           "from": [
@@ -1605,7 +1605,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            0.0000000000000002220446049250313,
+            0.0,
             200.0
           ],
           "from": [
@@ -1808,7 +1808,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -22.806746,
+                  -22.8067,
                   -7.0
                 ],
                 "from": [
@@ -1860,7 +1860,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -22.806746,
+                  -22.8067,
                   7.0
                 ],
                 "from": [
@@ -1912,7 +1912,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -26.806746,
+                  -26.8067,
                   7.0
                 ],
                 "from": [
@@ -1969,7 +1969,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -26.806746,
+                  -26.8067,
                   -7.0
                 ],
                 "from": [
@@ -2212,7 +2212,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "ccw": true,
               "center": [
-                0.0000000000000008881784197001252,
+                0.0,
                 210.0
               ],
               "from": [
@@ -2279,7 +2279,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "ccw": true,
               "center": [
-                0.0000000000000002220446049250313,
+                0.0,
                 200.0
               ],
               "from": [
@@ -2531,7 +2531,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            -22.806746,
+            -22.8067,
             -7.0
           ],
           "from": [
@@ -2583,7 +2583,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            -22.806746,
+            -22.8067,
             7.0
           ],
           "from": [
@@ -2635,7 +2635,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            -26.806746,
+            -26.8067,
             7.0
           ],
           "from": [
@@ -2692,7 +2692,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            -26.806746,
+            -26.8067,
             -7.0
           ],
           "from": [
@@ -4639,7 +4639,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "ccw": true,
               "center": [
-                -22.806746,
+                -22.8067,
                 -7.0
               ],
               "from": [
@@ -4691,7 +4691,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "ccw": true,
               "center": [
-                -22.806746,
+                -22.8067,
                 7.0
               ],
               "from": [
@@ -4743,7 +4743,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "ccw": true,
               "center": [
-                -26.806746,
+                -26.8067,
                 7.0
               ],
               "from": [
@@ -4800,7 +4800,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "ccw": true,
               "center": [
-                -26.806746,
+                -26.8067,
                 -7.0
               ],
               "from": [
@@ -5061,7 +5061,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "ccw": true,
           "center": [
             -55.0,
-            0.000000000000003552713678800501
+            0.0
           ],
           "from": [
             -55.0,
@@ -5239,7 +5239,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               "ccw": true,
               "center": [
                 -55.0,
-                0.000000000000003552713678800501
+                0.0
               ],
               "from": [
                 -55.0,
@@ -5481,7 +5481,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "ccw": true,
           "center": [
             -55.0,
-            18.99999999999999
+            19.0
           ],
           "from": [
             -54.8334,
@@ -5541,7 +5541,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            -25.000000000000007,
+            -25.0,
             18.0
           ],
           "from": [
@@ -5659,7 +5659,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               "ccw": true,
               "center": [
                 -55.0,
-                18.99999999999999
+                19.0
               ],
               "from": [
                 -54.8334,
@@ -5710,7 +5710,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "ccw": true,
               "center": [
-                -25.000000000000007,
+                -25.0,
                 18.0
               ],
               "from": [
@@ -5900,8 +5900,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            -54.99999999999999,
-            -18.999999999999996
+            -55.0,
+            -19.0
           ],
           "from": [
             -55.1666,
@@ -5961,7 +5961,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            -24.999999999999986,
+            -25.0,
             -18.0
           ],
           "from": [
@@ -6078,8 +6078,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "ccw": true,
               "center": [
-                -54.99999999999999,
-                -18.999999999999996
+                -55.0,
+                -19.0
               ],
               "from": [
                 -55.1666,
@@ -6130,7 +6130,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "ccw": true,
               "center": [
-                -24.999999999999986,
+                -25.0,
                 -18.0
               ],
               "from": [
@@ -6366,8 +6366,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "ccw": true,
           "center": [
-            35.24257682559525,
-            -0.0000003610731695857794
+            35.2426,
+            -0.0
           ],
           "from": [
             -70.0,

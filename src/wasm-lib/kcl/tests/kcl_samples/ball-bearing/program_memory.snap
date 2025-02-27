@@ -50,7 +50,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -218,7 +218,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -386,7 +386,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -554,7 +554,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -722,7 +722,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -890,7 +890,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -1058,7 +1058,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -1226,7 +1226,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -1394,7 +1394,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -1562,7 +1562,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                0.0009999999999999846
+                0.001
               ],
               "from": [
                 0.475,
@@ -1706,7 +1706,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "ccw": false,
           "center": [
             0.6,
-            0.0009999999999999846
+            0.001
           ],
           "from": [
             0.475,
@@ -1884,7 +1884,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -2120,7 +2120,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -2356,7 +2356,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -2592,7 +2592,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -2828,7 +2828,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -3064,7 +3064,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -3300,7 +3300,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -3536,7 +3536,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -3772,7 +3772,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -4008,7 +4008,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "ccw": false,
               "center": [
                 0.6,
-                -0.000000000000000013877787807814457
+                -0.0
               ],
               "from": [
                 0.5375,
@@ -4198,7 +4198,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "ccw": false,
           "center": [
             0.6,
-            -0.000000000000000013877787807814457
+            -0.0
           ],
           "from": [
             0.5375,

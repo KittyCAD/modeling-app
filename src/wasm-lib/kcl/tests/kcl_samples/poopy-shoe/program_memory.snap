@@ -3158,7 +3158,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000000000031381574228150926,
+              -0.0,
               5.125
             ],
             "from": [
@@ -3650,8 +3650,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "ccw": false,
             "center": [
-              3.000000000000001,
-              3.124053030303032
+              3.0,
+              3.1241
             ],
             "from": [
               3.0,
@@ -3678,8 +3678,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             },
             "ccw": true,
             "center": [
-              6.999999999999999,
-              3.000946969696969
+              7.0,
+              3.0009
             ],
             "from": [
               5.0,
@@ -4649,7 +4649,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "ccw": false,
             "center": [
               3.0,
-              3.1240530303030303
+              3.1241
             ],
             "from": [
               3.0,
@@ -4677,7 +4677,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "ccw": true,
             "center": [
               7.0,
-              3.0009469696969697
+              3.0009
             ],
             "from": [
               5.0,
@@ -5201,7 +5201,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "ccw": false,
                   "center": [
                     3.0,
-                    3.1240530303030303
+                    3.1241
                   ],
                   "from": [
                     3.0,
@@ -5229,7 +5229,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "ccw": true,
                   "center": [
                     7.0,
-                    3.0009469696969697
+                    3.0009
                   ],
                   "from": [
                     5.0,
@@ -6022,8 +6022,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   },
                   "ccw": false,
                   "center": [
-                    3.000000000000001,
-                    3.124053030303032
+                    3.0,
+                    3.1241
                   ],
                   "from": [
                     3.0,
@@ -6050,8 +6050,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   },
                   "ccw": true,
                   "center": [
-                    6.999999999999999,
-                    3.000946969696969
+                    7.0,
+                    3.0009
                   ],
                   "from": [
                     5.0,

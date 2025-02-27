@@ -287,7 +287,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              1.6999999999999997,
+              1.7,
               -0.95
             ],
             "from": [
@@ -315,8 +315,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              0.9286548683761525,
-              -1.8692533317427733
+              0.9287,
+              -1.8693
             ],
             "from": [
               1.5072,
@@ -343,8 +343,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              0.15730973675230542,
-              -0.9499999999999995
+              0.1573,
+              -0.95
             ],
             "from": [
               0.3501,
@@ -455,8 +455,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              1.8573097367523055,
-              1.0500000000000005
+              1.8573,
+              1.05
             ],
             "from": [
               1.8573,
@@ -483,8 +483,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              3.0143274341880764,
-              2.4288799976141613
+              3.0143,
+              2.4289
             ],
             "from": [
               2.0501,
@@ -511,8 +511,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              4.1713451316238475,
-              1.0500000000000007
+              4.1713,
+              1.05
             ],
             "from": [
               3.9785,
@@ -623,7 +623,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              5.871345131623848,
+              5.8713,
               -0.95
             ],
             "from": [
@@ -651,8 +651,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              5.100000000000001,
-              -1.8692533317427742
+              5.1,
+              -1.8693
             ],
             "from": [
               5.6785,
@@ -679,8 +679,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": false,
             "center": [
-              4.32567653803991,
-              -0.9464505641218501
+              4.3257,
+              -0.9465
             ],
             "from": [
               4.5215,

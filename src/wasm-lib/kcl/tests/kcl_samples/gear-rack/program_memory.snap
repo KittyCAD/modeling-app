@@ -93,8 +93,8 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "ccw": true,
             "center": [
-              -49.52783984263369,
-              11.042752908157384
+              -49.5278,
+              11.0428
             ],
             "from": [
               -49.6855,
@@ -331,8 +331,8 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "ccw": false,
             "center": [
-              49.52783984263369,
-              11.042752908157384
+              49.5278,
+              11.0428
             ],
             "from": [
               49.6855,
@@ -912,8 +912,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -963,8 +963,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -1014,8 +1014,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -1065,8 +1065,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -1298,8 +1298,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -1349,8 +1349,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -1400,8 +1400,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -1451,8 +1451,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -1684,8 +1684,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -1735,8 +1735,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -1786,8 +1786,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -1837,8 +1837,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -2070,8 +2070,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -2121,8 +2121,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -2172,8 +2172,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -2223,8 +2223,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -2456,8 +2456,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -2507,8 +2507,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -2558,8 +2558,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -2609,8 +2609,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -2842,8 +2842,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -2893,8 +2893,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -2944,8 +2944,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -2995,8 +2995,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -3228,8 +3228,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -3279,8 +3279,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -3330,8 +3330,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -3381,8 +3381,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -3614,8 +3614,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -3665,8 +3665,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -3716,8 +3716,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -3767,8 +3767,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -4000,8 +4000,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -4051,8 +4051,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -4102,8 +4102,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -4153,8 +4153,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -4386,8 +4386,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -4437,8 +4437,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -4488,8 +4488,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -4539,8 +4539,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -4772,8 +4772,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -4823,8 +4823,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -4874,8 +4874,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -4925,8 +4925,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -5158,8 +5158,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -5209,8 +5209,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -5260,8 +5260,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -5311,8 +5311,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -5544,8 +5544,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -5595,8 +5595,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -5646,8 +5646,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -5697,8 +5697,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -5930,8 +5930,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -5981,8 +5981,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -6032,8 +6032,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -6083,8 +6083,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -6316,8 +6316,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -6367,8 +6367,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -6418,8 +6418,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -6469,8 +6469,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -6702,8 +6702,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -6753,8 +6753,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -6804,8 +6804,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -6855,8 +6855,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -7088,8 +7088,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -7139,8 +7139,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -7190,8 +7190,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -7241,8 +7241,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -7474,8 +7474,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -7525,8 +7525,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -7576,8 +7576,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -7627,8 +7627,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -7860,8 +7860,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -7911,8 +7911,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -7962,8 +7962,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -8013,8 +8013,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -8246,8 +8246,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -8297,8 +8297,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -8348,8 +8348,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -8399,8 +8399,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -8632,8 +8632,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -8683,8 +8683,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -8734,8 +8734,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -8785,8 +8785,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -9018,8 +9018,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -9069,8 +9069,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -9120,8 +9120,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -9171,8 +9171,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -9404,8 +9404,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -9455,8 +9455,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -9506,8 +9506,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -9557,8 +9557,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -9790,8 +9790,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -9841,8 +9841,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -9892,8 +9892,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -9943,8 +9943,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -10176,8 +10176,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -10227,8 +10227,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -10278,8 +10278,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -10329,8 +10329,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -10562,8 +10562,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -10613,8 +10613,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -10664,8 +10664,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -10715,8 +10715,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -10948,8 +10948,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -10999,8 +10999,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -11050,8 +11050,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -11101,8 +11101,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -11334,8 +11334,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -11385,8 +11385,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -11436,8 +11436,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -11487,8 +11487,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -11720,8 +11720,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -11771,8 +11771,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -11822,8 +11822,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -11873,8 +11873,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -12106,8 +12106,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -12157,8 +12157,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -12208,8 +12208,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -12259,8 +12259,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -12492,8 +12492,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -12543,8 +12543,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -12594,8 +12594,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -12645,8 +12645,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -12878,8 +12878,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -12929,8 +12929,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -12980,8 +12980,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -13031,8 +13031,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -13264,8 +13264,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -13315,8 +13315,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -13366,8 +13366,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -13417,8 +13417,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -13650,8 +13650,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -13701,8 +13701,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -13752,8 +13752,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -13803,8 +13803,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -14036,8 +14036,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -14087,8 +14087,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -14138,8 +14138,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -14189,8 +14189,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -14422,8 +14422,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -14473,8 +14473,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -14524,8 +14524,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -14575,8 +14575,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -14808,8 +14808,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -14859,8 +14859,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -14910,8 +14910,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -14961,8 +14961,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -15194,8 +15194,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -15245,8 +15245,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -15296,8 +15296,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -15347,8 +15347,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -15580,8 +15580,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -15631,8 +15631,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -15682,8 +15682,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -15733,8 +15733,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -15966,8 +15966,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -16017,8 +16017,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -16068,8 +16068,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -16119,8 +16119,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -16352,8 +16352,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -16403,8 +16403,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -16454,8 +16454,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -16505,8 +16505,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -16738,8 +16738,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -16789,8 +16789,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -16840,8 +16840,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -16891,8 +16891,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -17124,8 +17124,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -17175,8 +17175,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -17226,8 +17226,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -17277,8 +17277,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -17510,8 +17510,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -17561,8 +17561,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -17612,8 +17612,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -17663,8 +17663,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -17896,8 +17896,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -17947,8 +17947,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -17998,8 +17998,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -18049,8 +18049,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -18282,8 +18282,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -18333,8 +18333,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -18384,8 +18384,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -18435,8 +18435,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -18668,8 +18668,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -18719,8 +18719,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -18770,8 +18770,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -18821,8 +18821,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -19054,8 +19054,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -19105,8 +19105,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -19156,8 +19156,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -19207,8 +19207,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -19440,8 +19440,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -19491,8 +19491,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -19542,8 +19542,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -19593,8 +19593,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -19826,8 +19826,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -19877,8 +19877,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -19928,8 +19928,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -19979,8 +19979,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -20212,8 +20212,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -20263,8 +20263,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -20314,8 +20314,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -20365,8 +20365,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -20598,8 +20598,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -20649,8 +20649,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -20700,8 +20700,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -20751,8 +20751,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -20984,8 +20984,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -21035,8 +21035,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -21086,8 +21086,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -21137,8 +21137,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -21370,8 +21370,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -21421,8 +21421,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -21472,8 +21472,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -21523,8 +21523,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -21756,8 +21756,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -21807,8 +21807,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -21858,8 +21858,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -21909,8 +21909,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -22142,8 +22142,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -22193,8 +22193,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -22244,8 +22244,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -22295,8 +22295,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -22528,8 +22528,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -22579,8 +22579,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -22630,8 +22630,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -22681,8 +22681,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -22914,8 +22914,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -22965,8 +22965,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -23016,8 +23016,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -23067,8 +23067,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -23300,8 +23300,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -23351,8 +23351,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -23402,8 +23402,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -23453,8 +23453,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -23686,8 +23686,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -23737,8 +23737,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -23788,8 +23788,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -23839,8 +23839,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -24072,8 +24072,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -24123,8 +24123,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -24174,8 +24174,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -24225,8 +24225,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -24458,8 +24458,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -24509,8 +24509,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -24560,8 +24560,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -24611,8 +24611,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
@@ -24844,8 +24844,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -49.31486621658758,
-                10.875000000000002
+                -49.3149,
+                10.875
               ],
               "from": [
                 -49.4323,
@@ -24895,8 +24895,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.78793786301433,
-                11.832247120949162
+                -48.7879,
+                11.8322
               ],
               "from": [
                 -48.9456,
@@ -24946,8 +24946,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": false,
               "center": [
-                -48.60143300000001,
-                11.832247316584827
+                -48.6014,
+                11.8322
               ],
               "from": [
                 -48.6014,
@@ -24997,8 +24997,8 @@ description: Variables in memory after executing gear-rack.kcl
               },
               "ccw": true,
               "center": [
-                -47.95704286301433,
-                11.042752879050854
+                -47.957,
+                11.0428
               ],
               "from": [
                 -48.1147,
