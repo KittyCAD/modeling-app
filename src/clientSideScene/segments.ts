@@ -639,11 +639,10 @@ class CircleSegment implements SegmentUtils {
     }
 
     if (radiusLengthIndicator) {
-      // The radius indicator is placed at the midpoint of the radius,
-      // at a 45 degree CCW angle from the positive X-axis
+      // The radius indicator is placed halfway between the center and the start angle point
       const indicatorPoint = {
-        x: center[0] + (Math.cos(Math.PI / 4) * radius) / 2,
-        y: center[1] + (Math.sin(Math.PI / 4) * radius) / 2,
+        x: center[0] + (Math.cos(Math.atan2(from[1] - center[1], from[0] - center[0])) * radius) / 2,
+        y: center[1] + (Math.sin(Math.atan2(from[1] - center[1], from[0] - center[0])) * radius) / 2,
       }
       const labelWrapper = radiusLengthIndicator.getObjectByName(
         SEGMENT_LENGTH_LABEL_TEXT
@@ -652,11 +651,10 @@ class CircleSegment implements SegmentUtils {
       const label = labelWrapperElem.children[0] as HTMLParagraphElement
       label.innerText = `${roundOff(radius)}`
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
-      const isPlaneBackFace = center[0] > indicatorPoint.x
-      label.style.setProperty(
-        '--degree',
-        `${isPlaneBackFace ? '45' : '-45'}deg`
-      )
+
+      // Calculate the angle for the label
+      const labelAngle = (Math.atan2(from[1] - center[1], from[0] - center[0]) * 180) / Math.PI
+      label.style.setProperty('--degree', `${labelAngle}deg`)
       label.style.setProperty('--x', `0px`)
       label.style.setProperty('--y', `0px`)
       labelWrapper.position.set(indicatorPoint.x, indicatorPoint.y, 0)
@@ -1076,11 +1074,10 @@ class ArcSegment implements SegmentUtils {
     }
 
     if (radiusLengthIndicator) {
-      // The radius indicator is placed at the midpoint of the radius
-      const midAngle = startAngle + arcAngle / 2
+      // The radius indicator is placed halfway between the center and the start angle point
       const indicatorPoint = {
-        x: center[0] + (Math.cos(midAngle) * radius) / 2,
-        y: center[1] + (Math.sin(midAngle) * radius) / 2,
+        x: center[0] + (Math.cos(startAngle) * radius) / 2,
+        y: center[1] + (Math.sin(startAngle) * radius) / 2,
       }
       const labelWrapper = radiusLengthIndicator.getObjectByName(
         SEGMENT_LENGTH_LABEL_TEXT
@@ -1091,7 +1088,7 @@ class ArcSegment implements SegmentUtils {
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
 
       // Calculate the angle for the label
-      const labelAngle = (midAngle * 180) / Math.PI
+      const labelAngle = (startAngle * 180) / Math.PI
       label.style.setProperty('--degree', `${labelAngle}deg`)
       label.style.setProperty('--x', `0px`)
       label.style.setProperty('--y', `0px`)
