@@ -65,7 +65,7 @@ impl UnitLen {
             "yd" => Ok(UnitLen::Yards),
             value => Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `inch`, `ft`, `yd`"
+                    "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `in`, `ft`, `yd`"
                 ),
                 source_ranges: vec![source_range],
             })),

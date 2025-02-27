@@ -9,7 +9,10 @@ Make the inside of a 3D object hollow.
 Remove volume from a 3-dimensional shape such that a wall of the provided thickness remains around the exterior of the shape.
 
 ```js
-hollow(thickness: number, solid: Solid) -> Solid
+hollow(
+  thickness: number,
+  solid: Solid,
+) -> Solid
 ```
 
 

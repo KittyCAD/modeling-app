@@ -1,5 +1,5 @@
 import { Text } from '@codemirror/state'
-import { Marked } from '@ts-stack/markdown'
+import { Marked, MarkedOptions } from '@ts-stack/markdown'
 
 import type * as LSP from 'vscode-languageserver-protocol'
 import { isArray } from '../lib/utils'
@@ -43,14 +43,18 @@ export function offsetToPos(doc: Text, offset: number) {
   }
 }
 
+const markedOptions: MarkedOptions = {
+  gfm: true,
+}
+
 export function formatMarkdownContents(
   contents: LSP.MarkupContent | LSP.MarkedString | LSP.MarkedString[]
 ): string {
   if (isArray(contents)) {
     return contents.map((c) => formatMarkdownContents(c) + '\n\n').join('')
   } else if (typeof contents === 'string') {
-    return Marked.parse(contents)
+    return Marked.parse(contents, markedOptions)
   } else {
-    return Marked.parse(contents.value)
+    return Marked.parse(contents.value, markedOptions)
   }
 }

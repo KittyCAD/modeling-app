@@ -675,6 +675,7 @@ pub enum Expr {
     UnaryExpression(BoxNode<UnaryExpression>),
     IfExpression(BoxNode<IfExpression>),
     LabelledExpression(BoxNode<LabelledExpression>),
+    AscribedExpression(BoxNode<Ascription>),
     None(Node<KclNone>),
 }
 
@@ -718,6 +719,7 @@ impl Expr {
             Expr::PipeSubstitution(_pipe_substitution) => None,
             Expr::IfExpression(_) => None,
             Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
+            Expr::AscribedExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::None(_none) => None,
         }
     }
@@ -745,6 +747,7 @@ impl Expr {
             Expr::IfExpression(_) => {}
             Expr::PipeSubstitution(_) => {}
             Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
+            Expr::AscribedExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::None(_) => {}
         }
     }
@@ -767,6 +770,7 @@ impl Expr {
             Expr::UnaryExpression(unary_expression) => unary_expression.start,
             Expr::IfExpression(expr) => expr.start,
             Expr::LabelledExpression(expr) => expr.start,
+            Expr::AscribedExpression(expr) => expr.start,
             Expr::None(none) => none.start,
         }
     }
@@ -789,6 +793,7 @@ impl Expr {
             Expr::UnaryExpression(unary_expression) => unary_expression.end,
             Expr::IfExpression(expr) => expr.end,
             Expr::LabelledExpression(expr) => expr.end,
+            Expr::AscribedExpression(expr) => expr.end,
             Expr::None(none) => none.end,
         }
     }
@@ -817,6 +822,8 @@ impl Expr {
             Expr::TagDeclarator(_) => None,
             // TODO LSP hover info for tag
             Expr::LabelledExpression(expr) => expr.expr.get_hover_value_for_position(pos, code),
+            // TODO LSP hover info for type
+            Expr::AscribedExpression(expr) => expr.expr.get_hover_value_for_position(pos, code),
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Expr::PipeSubstitution(_) => None,
         }
@@ -847,6 +854,7 @@ impl Expr {
             Expr::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
             Expr::IfExpression(ref mut expr) => expr.rename_identifiers(old_name, new_name),
             Expr::LabelledExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
+            Expr::AscribedExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::None(_) => {}
         }
     }
@@ -873,6 +881,7 @@ impl Expr {
             Expr::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             Expr::IfExpression(expr) => expr.get_constraint_level(),
             Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
+            Expr::AscribedExpression(expr) => expr.expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
         }
     }
@@ -882,6 +891,7 @@ impl Expr {
             Expr::CallExpression(call_expression) => call_expression.has_substitution_arg(),
             Expr::CallExpressionKw(call_expression) => call_expression.has_substitution_arg(),
             Expr::LabelledExpression(expr) => expr.expr.has_substitution_arg(),
+            Expr::AscribedExpression(expr) => expr.expr.has_substitution_arg(),
             _ => false,
         }
     }
@@ -910,6 +920,7 @@ impl Expr {
             Expr::UnaryExpression(_) => "expression",
             Expr::IfExpression(_) => "if expression",
             Expr::LabelledExpression(_) => "labelled expression",
+            Expr::AscribedExpression(_) => "type-ascribed expression",
             Expr::None(_) => "none",
         }
     }
@@ -991,6 +1002,27 @@ impl LabelledExpression {
             end,
             module_id,
         )
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct Ascription {
+    pub expr: Expr,
+    pub ty: Node<Type>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl Ascription {
+    pub(crate) fn new(expr: Expr, ty: Node<Type>) -> Node<Ascription> {
+        let start = expr.start();
+        let end = ty.end;
+        let module_id = expr.module_id();
+        Node::new(Ascription { expr, ty, digest: None }, start, end, module_id)
     }
 }
 
@@ -2984,9 +3016,10 @@ impl PipeExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
 #[serde(tag = "type")]
-pub enum FnArgPrimitive {
+pub enum PrimitiveType {
     /// A string type.
     String,
     /// A number type.
@@ -3002,67 +3035,98 @@ pub enum FnArgPrimitive {
     SketchSurface,
     /// An solid type.
     Solid,
+    /// A plane.
+    Plane,
 }
 
-impl FnArgPrimitive {
+impl PrimitiveType {
     pub fn digestable_id(&self) -> &[u8] {
         match self {
-            FnArgPrimitive::String => b"string",
-            FnArgPrimitive::Number(suffix) => suffix.digestable_id(),
-            FnArgPrimitive::Boolean => b"bool",
-            FnArgPrimitive::Tag => b"tag",
-            FnArgPrimitive::Sketch => b"Sketch",
-            FnArgPrimitive::SketchSurface => b"SketchSurface",
-            FnArgPrimitive::Solid => b"Solid",
+            PrimitiveType::String => b"string",
+            PrimitiveType::Number(suffix) => suffix.digestable_id(),
+            PrimitiveType::Boolean => b"bool",
+            PrimitiveType::Tag => b"tag",
+            PrimitiveType::Sketch => b"Sketch",
+            PrimitiveType::SketchSurface => b"SketchSurface",
+            PrimitiveType::Solid => b"Solid",
+            PrimitiveType::Plane => b"Plane",
         }
     }
 
     pub fn from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
-            ("string", None) => Some(FnArgPrimitive::String),
-            ("bool", None) => Some(FnArgPrimitive::Boolean),
-            ("tag", None) => Some(FnArgPrimitive::Tag),
-            ("Sketch", None) => Some(FnArgPrimitive::Sketch),
-            ("SketchSurface", None) => Some(FnArgPrimitive::SketchSurface),
-            ("Solid", None) => Some(FnArgPrimitive::Solid),
-            ("number", None) => Some(FnArgPrimitive::Number(NumericSuffix::None)),
-            ("number", Some(s)) => Some(FnArgPrimitive::Number(s)),
+            ("string", None) => Some(PrimitiveType::String),
+            ("bool", None) => Some(PrimitiveType::Boolean),
+            ("tag", None) => Some(PrimitiveType::Tag),
+            ("Sketch", None) => Some(PrimitiveType::Sketch),
+            ("SketchSurface", None) => Some(PrimitiveType::SketchSurface),
+            ("Solid", None) => Some(PrimitiveType::Solid),
+            ("Plane", None) => Some(PrimitiveType::Plane),
+            ("number", None) => Some(PrimitiveType::Number(NumericSuffix::None)),
+            ("number", Some(s)) => Some(PrimitiveType::Number(s)),
             _ => None,
         }
     }
 }
 
-impl fmt::Display for FnArgPrimitive {
+impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            FnArgPrimitive::Number(suffix) => {
+            PrimitiveType::Number(suffix) => {
                 write!(f, "number")?;
                 if *suffix != NumericSuffix::None {
                     write!(f, "({suffix})")?;
                 }
                 Ok(())
             }
-            FnArgPrimitive::String => write!(f, "string"),
-            FnArgPrimitive::Boolean => write!(f, "bool"),
-            FnArgPrimitive::Tag => write!(f, "tag"),
-            FnArgPrimitive::Sketch => write!(f, "Sketch"),
-            FnArgPrimitive::SketchSurface => write!(f, "SketchSurface"),
-            FnArgPrimitive::Solid => write!(f, "Solid"),
+            PrimitiveType::String => write!(f, "string"),
+            PrimitiveType::Boolean => write!(f, "bool"),
+            PrimitiveType::Tag => write!(f, "tag"),
+            PrimitiveType::Sketch => write!(f, "Sketch"),
+            PrimitiveType::SketchSurface => write!(f, "SketchSurface"),
+            PrimitiveType::Solid => write!(f, "Solid"),
+            PrimitiveType::Plane => write!(f, "Plane"),
         }
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
 #[serde(tag = "type")]
-pub enum FnArgType {
+pub enum Type {
     /// A primitive type.
-    Primitive(FnArgPrimitive),
+    Primitive(PrimitiveType),
     // An array of a primitive type.
-    Array(FnArgPrimitive),
+    Array(PrimitiveType),
     // An object type.
     Object {
         properties: Vec<Parameter>,
     },
+}
+
+impl fmt::Display for Type {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Type::Primitive(primitive_type) => primitive_type.fmt(f),
+            Type::Array(primitive_type) => write!(f, "{primitive_type}[]"),
+            Type::Object { properties } => {
+                write!(f, "{{")?;
+                let mut first = true;
+                for p in properties {
+                    if first {
+                        first = false;
+                    } else {
+                        write!(f, ",")?;
+                    }
+                    write!(f, "{}: ", p.identifier.name)?;
+                    if let Some(ty) = &p.type_ {
+                        write!(f, " {}", ty.inner)?;
+                    }
+                }
+                write!(f, " }}")
+            }
+        }
+    }
 }
 
 /// Default value for a parameter of a KCL function.
@@ -3092,7 +3156,7 @@ pub struct Parameter {
     /// The type of the parameter.
     /// This is optional if the user defines a type.
     #[serde(skip)]
-    pub type_: Option<FnArgType>,
+    pub type_: Option<Node<Type>>,
     /// Is the parameter optional?
     /// If so, what is its default value?
     /// If this is None, then the parameter is required.
@@ -3142,7 +3206,7 @@ pub struct FunctionExpression {
     pub params: Vec<Parameter>,
     pub body: Node<Program>,
     #[serde(skip)]
-    pub return_type: Option<FnArgType>,
+    pub return_type: Option<Node<Type>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -3608,11 +3672,17 @@ const cylinder = startSketchOn('-XZ')
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
         assert_eq!(
-            params[0].type_,
-            Some(FnArgType::Primitive(FnArgPrimitive::Number(NumericSuffix::Mm)))
+            params[0].type_.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::Number(NumericSuffix::Mm))
         );
-        assert_eq!(params[1].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
-        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+        assert_eq!(
+            params[1].type_.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::String)
+        );
+        assert_eq!(
+            params[2].type_.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::String)
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3633,11 +3703,17 @@ const cylinder = startSketchOn('-XZ')
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
         assert_eq!(
-            params[0].type_,
-            Some(FnArgType::Array(FnArgPrimitive::Number(NumericSuffix::None)))
+            params[0].type_.as_ref().unwrap().inner,
+            Type::Array(PrimitiveType::Number(NumericSuffix::None))
         );
-        assert_eq!(params[1].type_, Some(FnArgType::Array(FnArgPrimitive::String)));
-        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+        assert_eq!(
+            params[1].type_.as_ref().unwrap().inner,
+            Type::Array(PrimitiveType::String)
+        );
+        assert_eq!(
+            params[2].type_.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::String)
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3659,12 +3735,12 @@ const cylinder = startSketchOn('-XZ')
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
         assert_eq!(
-            params[0].type_,
-            Some(FnArgType::Array(FnArgPrimitive::Number(NumericSuffix::None)))
+            params[0].type_.as_ref().unwrap().inner,
+            Type::Array(PrimitiveType::Number(NumericSuffix::None))
         );
         assert_eq!(
-            params[1].type_,
-            Some(FnArgType::Object {
+            params[1].type_.as_ref().unwrap().inner,
+            Type::Object {
                 properties: vec![
                     Parameter {
                         identifier: Node::new(
@@ -3676,7 +3752,12 @@ const cylinder = startSketchOn('-XZ')
                             40,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number(NumericSuffix::None))),
+                        type_: Some(Node::new(
+                            Type::Primitive(PrimitiveType::Number(NumericSuffix::None)),
+                            42,
+                            48,
+                            module_id
+                        )),
                         default_value: None,
                         labeled: true,
                         digest: None,
@@ -3691,7 +3772,7 @@ const cylinder = startSketchOn('-XZ')
                             56,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Array(FnArgPrimitive::String)),
+                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 58, 64, module_id)),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3706,15 +3787,18 @@ const cylinder = startSketchOn('-XZ')
                             72,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
+                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 75, 81, module_id)),
                         labeled: true,
                         default_value: Some(DefaultParamVal::none()),
                         digest: None
                     }
                 ]
-            })
+            }
         );
-        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+        assert_eq!(
+            params[2].type_.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::String)
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3736,8 +3820,8 @@ const cylinder = startSketchOn('-XZ')
         let params = &func_expr.params;
         assert_eq!(params.len(), 0);
         assert_eq!(
-            func_expr.return_type,
-            Some(FnArgType::Object {
+            func_expr.return_type.as_ref().unwrap().inner,
+            Type::Object {
                 properties: vec![
                     Parameter {
                         identifier: Node::new(
@@ -3749,7 +3833,12 @@ const cylinder = startSketchOn('-XZ')
                             18,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number(NumericSuffix::None))),
+                        type_: Some(Node::new(
+                            Type::Primitive(PrimitiveType::Number(NumericSuffix::None)),
+                            20,
+                            26,
+                            module_id
+                        )),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3764,7 +3853,7 @@ const cylinder = startSketchOn('-XZ')
                             34,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Array(FnArgPrimitive::String)),
+                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 36, 42, module_id)),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3779,13 +3868,13 @@ const cylinder = startSketchOn('-XZ')
                             50,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
+                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 53, 59, module_id)),
                         labeled: true,
                         default_value: Some(DefaultParamVal::none()),
                         digest: None
                     }
                 ]
-            })
+            }
         );
     }
 

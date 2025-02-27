@@ -8,5 +8,6 @@ KCL UndefinedValue error
     ╭─[22:1]
  21 │ // Error, after creating meaningful output.
  22 │ foo
-    · ───
+    · ─┬─
+    ·  ╰── tests/cube_with_error/input.kcl
     ╰────

@@ -1,5 +1,5 @@
 ---
-title: "ZERO"
+title: "std::XZ"
 excerpt: ""
 layout: manual
 ---
@@ -9,7 +9,7 @@ layout: manual
 
 
 ```js
-ZERO: number = 0
+std::XZ
 ```
 
 

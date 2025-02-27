@@ -1,6 +1,70 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed import_function_not_sketch.kcl
-snapshot_kind: text
 ---
-[]
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": [
+          66,
+          70,
+          3
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      52,
+      71,
+      3
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "axis": {
+              "type": "String",
+              "value": "y"
+            }
+          }
+        },
+        "sourceRange": [
+          312,
+          326,
+          3
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          328,
+          329,
+          3
+        ]
+      }
+    },
+    "name": "revolve",
+    "sourceRange": [
+      304,
+      330,
+      3
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

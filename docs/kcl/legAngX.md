@@ -9,7 +9,10 @@ Compute the angle of the given leg for x.
 
 
 ```js
-legAngX(hypotenuse: number, leg: number) -> number
+legAngX(
+  hypotenuse: number,
+  leg: number,
+) -> number
 ```
 
 ### Tags

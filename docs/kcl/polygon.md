@@ -9,7 +9,11 @@ Create a regular polygon with the specified number of sides that is either inscr
 
 
 ```js
-polygon(data: PolygonData, sketchSurfaceOrGroup: SketchOrSurface, tag?: TagDeclarator) -> Sketch
+polygon(
+  data: PolygonData,
+  sketchSurfaceOrGroup: SketchOrSurface,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 

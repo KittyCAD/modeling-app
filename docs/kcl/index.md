@@ -6,13 +6,22 @@ layout: manual
 
 ## Table of Contents
 
-* [Types](kcl/types)
-* [Modules](kcl/modules)
-* [Known Issues](kcl/KNOWN-ISSUES)
+### Language
+
+* [`Types`](kcl/types)
+* [`Modules`](kcl/modules)
+* [`Settings`](kcl/settings)
+* [`Known Issues`](kcl/known-issues)
+
+### Standard library
+
 * **`std`**
   * [`HALF_TURN`](kcl/const_std-HALF_TURN)
   * [`QUARTER_TURN`](kcl/const_std-QUARTER_TURN)
   * [`THREE_QUARTER_TURN`](kcl/const_std-THREE_QUARTER_TURN)
+  * [`XY`](kcl/const_std-XY)
+  * [`XZ`](kcl/const_std-XZ)
+  * [`YZ`](kcl/const_std-YZ)
   * [`ZERO`](kcl/const_std-ZERO)
   * [`abs`](kcl/abs)
   * [`acos`](kcl/acos)
@@ -90,7 +99,9 @@ layout: manual
   * [`reduce`](kcl/reduce)
   * [`rem`](kcl/rem)
   * [`revolve`](kcl/revolve)
+  * [`rotate`](kcl/rotate)
   * [`round`](kcl/round)
+  * [`scale`](kcl/scale)
   * [`segAng`](kcl/segAng)
   * [`segEnd`](kcl/segEnd)
   * [`segEndX`](kcl/segEndX)
@@ -110,6 +121,7 @@ layout: manual
   * [`tangentialArcToRelative`](kcl/tangentialArcToRelative)
   * [`toDegrees`](kcl/toDegrees)
   * [`toRadians`](kcl/toRadians)
+  * [`translate`](kcl/translate)
   * [`xLine`](kcl/xLine)
   * [`xLineTo`](kcl/xLineTo)
   * [`yLine`](kcl/yLine)
