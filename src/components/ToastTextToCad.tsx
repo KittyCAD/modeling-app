@@ -478,6 +478,10 @@ export function ToastPromptToEditCadSuccess({
               : data.prompt}
             "
           </p>
+          <TextToCadImprovementMessage
+            className="text-sm mt-2"
+            label="Not what you expected?"
+          />
           <p>Do you want to keep the change?</p>
         </section>
         <div className="flex justify-between gap-8">
