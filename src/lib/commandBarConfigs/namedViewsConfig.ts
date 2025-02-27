@@ -14,7 +14,7 @@ export function createNamedViewsCommand() {
   const createNamedViewCommand: Command = {
     name: 'Create named view',
     displayName: `Create named view`,
-    description: 'Create a named view to reload this view',
+    description: 'Saves a named view based on your current view to load again later',
     groupId: 'namedViews',
     icon: 'settings',
     needsReview: false,
@@ -78,7 +78,7 @@ export function createNamedViewsCommand() {
   const deleteNamedViewCommand: Command = {
     name: 'Delete named view',
     displayName: `Delete named view`,
-    description: 'Delete a named view',
+    description: 'Deletes the named view from settings',
     groupId: 'namedViews',
     icon: 'settings',
     needsReview: false,
@@ -139,7 +139,7 @@ export function createNamedViewsCommand() {
   const loadNamedViewCommand: Command = {
     name: 'Load named view',
     displayName: `Load named view`,
-    description: 'Load a named view',
+    description: 'Loads your camera to the named view',
     groupId: 'namedViews',
     icon: 'settings',
     needsReview: false,
