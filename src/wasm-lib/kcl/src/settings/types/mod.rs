@@ -301,7 +301,7 @@ pub struct NamedView {
     /// Engine camera vertical FOV
     #[serde(default, alias = "fovY", skip_serializing_if = "is_default")]
     pub fov_y: f64,
-    // Engine camera is orthographic or perpsective projection
+    // Engine camera is orthographic or perspective projection
     #[serde(default, alias = "isOrtho")]
     pub is_ortho: bool,
     /// Engine camera is orthographic camera scaling enabled
