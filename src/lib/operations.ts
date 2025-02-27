@@ -305,7 +305,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Sweep'] = {
     target: target,
     trajectory,
-    sectional, 
+    sectional,
     nodeToEdit: getNodePathFromSourceRange(
       kclManager.ast,
       sourceRangeFromRust(operation.sourceRange)
