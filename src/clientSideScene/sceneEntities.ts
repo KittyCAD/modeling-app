@@ -2348,6 +2348,20 @@ export class SceneEntities {
         p2: segment.p2,
         p3: segment.p3,
       }
+    } else if (
+      type === ARC_SEGMENT &&
+      'type' in segment &&
+      segment.type === 'Arc'
+    ) {
+      update = segmentUtils.arc.update
+      input = {
+        type: 'arc-segment',
+        from: segment.from,
+        to: segment.to,
+        center: segment.center,
+        radius: segment.radius,
+        ccw: segment.ccw,
+      }
     }
     const callBack =
       update &&
