@@ -2103,35 +2103,32 @@ export class SceneEntities {
           ccw: true,
         }
 
-      // Handle ARC_SEGMENT with radius handle (outer arc)
-      if (
-        group.name === ARC_SEGMENT &&
-        (!subGroup || subGroup?.name === ARROWHEAD)
-      ) {
-        return {
-          type: 'arc-segment',
-          from: group.userData.from,
-          to: group.userData.to,
-          center: group.userData.center,
-          // distance between the center and the drag point
-          radius: Math.sqrt(
-            (group.userData.center[0] - dragTo[0]) ** 2 +
-              (group.userData.center[1] - dragTo[1]) ** 2
-          ),
-          ccw: group.userData.ccw,
-        }
-      }
       // Handle ARC_SEGMENT with center handle
       if (
         group.name === ARC_SEGMENT &&
         subGroup?.name === CIRCLE_CENTER_HANDLE
       ) {
+        // the user is dragging the circle's center, but the values they updating the arc's radius and start angle
+        // we need to calculate what the radius should be and a new to point that respects the endAngle
+        const newCenter = dragTo
+        const radius = Math.sqrt(
+          (newCenter[0] - group.userData.from[0]) ** 2 +
+            (newCenter[1] - group.userData.from[1]) ** 2
+        )
+        const endAngle = Math.atan2(
+          group.userData.to[1] - group.userData.center[1],
+          group.userData.to[0] - group.userData.center[0]
+        )
+        const newTo: [number, number] = [
+          newCenter[0] + radius * Math.cos(endAngle),
+          newCenter[1] + radius * Math.sin(endAngle),
+        ]
         return {
           type: 'arc-segment',
           from: group.userData.from,
-          to: group.userData.to,
-          center: dragTo,
-          radius: group.userData.radius,
+          to: newTo,
+          center: newCenter,
+          radius,
           ccw: group.userData.ccw,
         }
       }
