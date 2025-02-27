@@ -2093,6 +2093,8 @@ export function transformAstSketchLines({
               center: seg.center,
               radius: seg.radius,
               from,
+              to: from, // For a full circle, to is the same as from
+              ccw: true, // Default to counter-clockwise for circles
             }
           : seg.type === 'CircleThreePoint'
           ? {
