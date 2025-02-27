@@ -52,6 +52,8 @@ import {
   getConstraintInfoKw,
   isAbsoluteLine,
   ARG_LENGTH,
+  sketchFnNameToTooltip,
+  sketchFnIsAbsolute,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
@@ -173,9 +175,8 @@ function createCallWrapper(
             return [true, 'yLine']
         }
       })()
-      const labeledArgs = [
-        createLabeledArg(isAbsolute ? ARG_END_ABSOLUTE : ARG_LENGTH, val),
-      ]
+      const argLabel = isAbsolute ? ARG_END_ABSOLUTE : ARG_LENGTH
+      const labeledArgs = [createLabeledArg(argLabel, val)]
       if (tag) {
         labeledArgs.push(createLabeledArg(ARG_TAG, tag))
       }
@@ -1412,6 +1413,14 @@ export function removeSingleConstraint({
     console.error(callExp)
     return false
   }
+  const correctFnName = (() => {
+    switch (callExp.node.type) {
+      case 'CallExpressionKw': {
+        const isAbsolute = sketchFnIsAbsolute(callExp.node)
+        return sketchFnNameToTooltip(callExp.node.callee.name, isAbsolute)
+      }
+    }
+  })()
   if (
     callExp.node.type !== 'CallExpression' &&
     callExp.node.type !== 'CallExpressionKw'
@@ -1454,21 +1463,29 @@ export function removeSingleConstraint({
           )
         } else {
           // It's a kw call.
-          const isAbsolute = callExp.node.callee.name == 'lineTo'
+          const res: { isAbsolute: boolean; fnName: ToolTip } | undefined =
+            (() => {
+              switch (correctFnName) {
+                case 'lineTo':
+                  return { isAbsolute: true, fnName: 'line' }
+                case 'line':
+                  return { isAbsolute: false, fnName: 'line' }
+              }
+            })()
+          if (res === undefined) {
+            return new Error('Unrecognized kw call function ' + correctFnName)
+          }
+          const { isAbsolute, fnName } = res
           if (isAbsolute) {
             const args = [
               createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(values)),
             ]
-            return createStdlibCallExpressionKw('line', args, tag)
+            return createStdlibCallExpressionKw(fnName, args, tag)
           } else {
             const args = [
               createLabeledArg(ARG_END, createArrayExpression(values)),
             ]
-            return createStdlibCallExpressionKw(
-              callExp.node.callee.name as ToolTip,
-              args,
-              tag
-            )
+            return createStdlibCallExpressionKw(fnName, args, tag)
           }
         }
       }
@@ -1586,7 +1603,7 @@ export function removeSingleConstraint({
       }
 
       return createCallWrapper(
-        callExp.node.callee.name as any,
+        correctFnName || (callExp.node.callee.name as any),
         rawArgs[0].expr,
         tag
       )
@@ -2084,12 +2101,26 @@ export function transformAstSketchLines({
     }
     const { to, from } = seg
     // Note to ADAM: Here is where the replaceExisting call gets sent.
+    const correctFnName = (() => {
+      switch (call.node.type) {
+        case 'CallExpressionKw': {
+          const fnName = call.node.callee.name as ToolTip
+          const correctFnName = sketchFnNameToTooltip(
+            fnName,
+            sketchFnIsAbsolute(call.node)
+          )
+          return correctFnName
+        }
+      }
+    })()
+    const fnName =
+      correctFnName || transformTo || (call.node.callee.name as ToolTip)
     const replacedSketchLine = replaceSketchLine({
       node: node,
       variables: memVars,
       pathToNode: _pathToNode,
       referencedSegment,
-      fnName: transformTo || (call.node.callee.name as ToolTip),
+      fnName,
       segmentInput:
         seg.type === 'Circle'
           ? {

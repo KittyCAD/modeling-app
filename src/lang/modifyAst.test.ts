@@ -679,7 +679,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         'objectProperty',
         'angle',
       ],
-      ['line(endAbsolute = [6.14 + 0, 3.14 + 0])', 'arrayIndex', 0],
+      ['line(endAbsolute = [6.14, 3.14 + 0])', 'arrayIndex', 0],
       ['xLine(endAbsolute = 8)', '', ''],
       ['yLine(endAbsolute = 5)', '', ''],
       ['yLine(length = 3.14, tag = $a)', '', ''],
@@ -718,11 +718,13 @@ describe('Testing removeSingleConstraintInfo', () => {
       const ast = assertParse(code)
 
       const execState = await enginelessExecutor(ast)
-      const lineOfInterest = expectedFinish.split('(')[0] + '('
-      const range = topLevelRange(
-        code.indexOf(lineOfInterest) + 1,
-        code.indexOf(lineOfInterest) + lineOfInterest.length
-      )
+      const lineOfInterest =
+        expectedFinish.indexOf('=') >= 0 && expectedFinish.indexOf('{') === -1
+          ? expectedFinish.split('=')[0]
+          : expectedFinish.split('(')[0] + '('
+      const start = code.indexOf(lineOfInterest)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const range = topLevelRange(start + 1, start + lineOfInterest.length)
       const pathToNode = getNodePathFromSourceRange(ast, range)
       let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {

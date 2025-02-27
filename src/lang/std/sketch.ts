@@ -2387,9 +2387,7 @@ export function sketchFnNameToTooltip(
   }
 }
 
-export function sketchFnIsAbsolute(
-  callExpression: Node<CallExpressionKw>
-): boolean {
+export function sketchFnIsAbsolute(callExpression: CallExpressionKw): boolean {
   const fnName = callExpression.callee.name
   return (
     fnName === 'circleThreePoint' ||
