@@ -144,6 +144,13 @@ export const CIRCLE_SEGMENT_BODY = 'circle-segment-body'
 export const CIRCLE_SEGMENT_DASH = 'circle-segment-body-dashed'
 export const CIRCLE_CENTER_HANDLE = 'circle-center-handle'
 export const SEGMENT_WIDTH_PX = 1.6
+
+// Arc segment constants
+export const ARC_SEGMENT = 'arc-segment'
+export const ARC_SEGMENT_BODY = 'arc-segment-body'
+export const ARC_SEGMENT_DASH = 'arc-segment-dash'
+export const ARC_ANGLE_START_RADIUS = 'arc-angle-start-radius'
+export const ARC_ANGLE_END = 'arc-angle-end'
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
 export const SEGMENT_BODIES = [
@@ -212,6 +219,7 @@ export class SceneEntities {
         update = segmentUtils.tangentialArcTo.update
       }
       if (
+        segment.userData &&
         segment.userData.from &&
         segment.userData.center &&
         segment.userData.radius &&
@@ -221,8 +229,28 @@ export class SceneEntities {
         input = {
           type: 'arc-segment',
           from: segment.userData.from,
+          to: segment.userData.from,
           center: segment.userData.center,
           radius: segment.userData.radius,
+          ccw: true,
+        }
+      }
+      if (
+        segment.userData &&
+        segment.userData.from &&
+        segment.userData.center &&
+        segment.userData.radius &&
+        segment.userData.to &&
+        segment.userData.type === ARC_SEGMENT
+      ) {
+        update = segmentUtils.arc.update
+        input = {
+          type: 'arc-segment',
+          from: segment.userData.from,
+          to: segment.userData.to,
+          center: segment.userData.center,
+          radius: segment.userData.radius,
+          ccw: segment.userData.ccw,
         }
       }
       if (
@@ -696,6 +724,8 @@ export class SceneEntities {
             ? {
                 type: 'arc-segment',
                 from: segment.from,
+                to: segment.from,
+                ccw: true,
                 center: segment.center,
                 radius: segment.radius,
               }
@@ -1690,6 +1720,8 @@ export class SceneEntities {
               center: circleCenter,
               radius: Math.sqrt(x ** 2 + y ** 2),
               from: circleCenter,
+              to: circleCenter, // Same as from for a full circle
+              ccw: true,
             }
           )
           if (err(moddedResult)) return
@@ -1755,6 +1787,8 @@ export class SceneEntities {
               center: circleCenter,
               radius: Math.sqrt(x ** 2 + y ** 2),
               from: circleCenter,
+              to: circleCenter, // Same as from for a full circle
+              ccw: true,
             }
           )
           if (err(moddedResult)) return
@@ -2044,12 +2078,14 @@ export class SceneEntities {
         return {
           type: 'arc-segment',
           from,
+          to: from, // Same as from for a full circle
           center: group.userData.center,
           // distance between the center and the drag point
           radius: Math.sqrt(
             (group.userData.center[0] - dragTo[0]) ** 2 +
               (group.userData.center[1] - dragTo[1]) ** 2
           ),
+          ccw: true,
         }
       if (
         group.name === CIRCLE_SEGMENT &&
@@ -2058,8 +2094,10 @@ export class SceneEntities {
         return {
           type: 'arc-segment',
           from,
+          to: from, // Same as from for a full circle
           center: dragTo,
           radius: group.userData.radius,
+          ccw: true,
         }
       if (
         subGroup?.name &&
@@ -2228,12 +2266,14 @@ export class SceneEntities {
       'type' in segment &&
       segment.type === 'Circle'
     ) {
-      update = segmentUtils.circle.update
+      update = segmentUtils.arc.update
       input = {
         type: 'arc-segment',
         from: segment.from,
+        to: segment.from, // Use from as to for full circles
         center: segment.center,
         radius: segment.radius,
+        ccw: true,
       }
     } else if (
       type === CIRCLE_THREE_POINT_SEGMENT &&
@@ -2372,10 +2412,36 @@ export class SceneEntities {
             input = {
               type: 'arc-segment',
               from: parent.userData.from,
+              to: parent.userData.to,
               radius: parent.userData.radius,
               center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === CIRCLE_SEGMENT) {
+            update = segmentUtils.circle.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              to: parent.userData.to,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === ARC_SEGMENT) {
+            update = segmentUtils.arc.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              to: parent.userData.to,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
             }
           }
+
           update &&
             update({
               prevSegment: parent.userData.prevSegment,
@@ -2415,10 +2481,36 @@ export class SceneEntities {
             input = {
               type: 'arc-segment',
               from: parent.userData.from,
+              to: parent.userData.to,
               radius: parent.userData.radius,
               center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === CIRCLE_SEGMENT) {
+            update = segmentUtils.circle.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              to: parent.userData.to,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === ARC_SEGMENT) {
+            update = segmentUtils.arc.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              to: parent.userData.to,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
             }
           }
+
           update &&
             update({
               prevSegment: parent.userData.prevSegment,
