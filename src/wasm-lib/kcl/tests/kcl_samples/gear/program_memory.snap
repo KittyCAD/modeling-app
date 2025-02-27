@@ -46,7 +46,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 3.278056010287,
+        "value": 3.2781,
         "ty": {
           "type": "Unknown"
         },
@@ -62,7 +62,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.63271342087481,
+        "value": 4.6327,
         "ty": {
           "type": "Unknown"
         },
@@ -78,7 +78,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.67003258945473,
+        "value": 5.67,
         "ty": {
           "type": "Unknown"
         },
@@ -94,7 +94,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 6.542742586628019,
+        "value": 6.5427,
         "ty": {
           "type": "Unknown"
         },
@@ -110,7 +110,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 7.310047023873329,
+        "value": 7.31,
         "ty": {
           "type": "Unknown"
         },
@@ -126,7 +126,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 8.002331571109536,
+        "value": 8.0023,
         "ty": {
           "type": "Unknown"
         },
@@ -142,7 +142,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 8.637659944899402,
+        "value": 8.6377,
         "ty": {
           "type": "Unknown"
         },
@@ -158,7 +158,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 9.227810281273825,
+        "value": 9.2278,
         "ty": {
           "type": "Unknown"
         },
@@ -174,7 +174,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 9.780969713785646,
+        "value": 9.781,
         "ty": {
           "type": "Unknown"
         },
@@ -190,7 +190,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 10.303103644118965,
+        "value": 10.3031,
         "ty": {
           "type": "Unknown"
         },
@@ -206,7 +206,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 10.798718809160444,
+        "value": 10.7987,
         "ty": {
           "type": "Unknown"
         },
@@ -222,7 +222,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 11.271319106228173,
+        "value": 11.2713,
         "ty": {
           "type": "Unknown"
         },
@@ -238,7 +238,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 11.723693090294438,
+        "value": 11.7237,
         "ty": {
           "type": "Unknown"
         },
@@ -254,7 +254,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 12.158103415636992,
+        "value": 12.1581,
         "ty": {
           "type": "Unknown"
         },
@@ -270,7 +270,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 12.576416247331547,
+        "value": 12.5764,
         "ty": {
           "type": "Unknown"
         },
@@ -286,7 +286,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 12.980192378519897,
+        "value": 12.9802,
         "ty": {
           "type": "Unknown"
         },
@@ -302,7 +302,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 13.370753057721048,
+        "value": 13.3708,
         "ty": {
           "type": "Unknown"
         },
@@ -318,7 +318,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 13.749228612312548,
+        "value": 13.7492,
         "ty": {
           "type": "Unknown"
         },
@@ -334,7 +334,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 14.116595065222958,
+        "value": 14.1166,
         "ty": {
           "type": "Unknown"
         },
@@ -350,7 +350,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 14.473702182241265,
+        "value": 14.4737,
         "ty": {
           "type": "Unknown"
         },
@@ -366,7 +366,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 14.82129528137112,
+        "value": 14.8213,
         "ty": {
           "type": "Unknown"
         },
@@ -382,7 +382,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 15.160032421049559,
+        "value": 15.16,
         "ty": {
           "type": "Unknown"
         },
@@ -398,7 +398,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 15.490498110878104,
+        "value": 15.4905,
         "ty": {
           "type": "Unknown"
         },
@@ -414,7 +414,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 15.813214368287623,
+        "value": 15.8132,
         "ty": {
           "type": "Unknown"
         },
@@ -430,7 +430,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 16.128649723553853,
+        "value": 16.1286,
         "ty": {
           "type": "Unknown"
         },
@@ -446,7 +446,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 16.437226620323262,
+        "value": 16.4372,
         "ty": {
           "type": "Unknown"
         },
@@ -462,7 +462,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 16.739327547974028,
+        "value": 16.7393,
         "ty": {
           "type": "Unknown"
         },
@@ -478,7 +478,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 17.035300161847665,
+        "value": 17.0353,
         "ty": {
           "type": "Unknown"
         },
@@ -494,7 +494,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 17.325461588432532,
+        "value": 17.3255,
         "ty": {
           "type": "Unknown"
         },
@@ -510,7 +510,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 17.610102068761822,
+        "value": 17.6101,
         "ty": {
           "type": "Unknown"
         },
@@ -526,7 +526,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 17.889488060340003,
+        "value": 17.8895,
         "ty": {
           "type": "Unknown"
         },
@@ -542,7 +542,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 18.16386489287851,
+        "value": 18.1639,
         "ty": {
           "type": "Unknown"
         },
@@ -558,7 +558,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 18.43345905391209,
+        "value": 18.4335,
         "ty": {
           "type": "Unknown"
         },
@@ -574,7 +574,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 18.69848016549467,
+        "value": 18.6985,
         "ty": {
           "type": "Unknown"
         },
@@ -590,7 +590,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 18.95912270155777,
+        "value": 18.9591,
         "ty": {
           "type": "Unknown"
         },
@@ -606,7 +606,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 19.215567486372375,
+        "value": 19.2156,
         "ty": {
           "type": "Unknown"
         },
@@ -622,7 +622,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 19.467983007303847,
+        "value": 19.468,
         "ty": {
           "type": "Unknown"
         },
@@ -638,7 +638,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 19.71652656925924,
+        "value": 19.7165,
         "ty": {
           "type": "Unknown"
         },
@@ -654,7 +654,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 19.96134531357144,
+        "value": 19.9613,
         "ty": {
           "type": "Unknown"
         },
@@ -670,7 +670,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 20.202577120298965,
+        "value": 20.2026,
         "ty": {
           "type": "Unknown"
         },
@@ -686,7 +686,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 20.44035140985671,
+        "value": 20.4404,
         "ty": {
           "type": "Unknown"
         },
@@ -702,7 +702,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 20.674789857386138,
+        "value": 20.6748,
         "ty": {
           "type": "Unknown"
         },
@@ -718,7 +718,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 20.90600703121124,
+        "value": 20.906,
         "ty": {
           "type": "Unknown"
         },
@@ -734,7 +734,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 21.134110965022845,
+        "value": 21.1341,
         "ty": {
           "type": "Unknown"
         },
@@ -750,7 +750,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 21.35920367201789,
+        "value": 21.3592,
         "ty": {
           "type": "Unknown"
         },
@@ -766,7 +766,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 21.581381608039788,
+        "value": 21.5814,
         "ty": {
           "type": "Unknown"
         },
@@ -782,7 +782,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 21.800736089775693,
+        "value": 21.8007,
         "ty": {
           "type": "Unknown"
         },
@@ -798,7 +798,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 22.017353673234954,
+        "value": 22.0174,
         "ty": {
           "type": "Unknown"
         },
@@ -814,7 +814,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 22.231316497029166,
+        "value": 22.2313,
         "ty": {
           "type": "Unknown"
         },
@@ -830,7 +830,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 22.442702594378407,
+        "value": 22.4427,
         "ty": {
           "type": "Unknown"
         },
@@ -846,7 +846,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 22.65158617726129,
+        "value": 22.6516,
         "ty": {
           "type": "Unknown"
         },
@@ -862,7 +862,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 22.85803789569273,
+        "value": 22.858,
         "ty": {
           "type": "Unknown"
         },
@@ -878,7 +878,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 23.062125074743264,
+        "value": 23.0621,
         "ty": {
           "type": "Unknown"
         },
@@ -894,7 +894,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 23.26391193159458,
+        "value": 23.2639,
         "ty": {
           "type": "Unknown"
         },
@@ -910,7 +910,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 23.463459774651632,
+        "value": 23.4635,
         "ty": {
           "type": "Unknown"
         },
@@ -926,7 +926,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 23.660827186493695,
+        "value": 23.6608,
         "ty": {
           "type": "Unknown"
         },
@@ -942,7 +942,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 23.85607019224171,
+        "value": 23.8561,
         "ty": {
           "type": "Unknown"
         },
@@ -958,7 +958,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 24.049242414740085,
+        "value": 24.0492,
         "ty": {
           "type": "Unknown"
         },
@@ -974,7 +974,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 24.240395217794923,
+        "value": 24.2404,
         "ty": {
           "type": "Unknown"
         },
@@ -990,7 +990,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 24.4295778385756,
+        "value": 24.4296,
         "ty": {
           "type": "Unknown"
         },
@@ -1006,7 +1006,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 24.616837510166015,
+        "value": 24.6168,
         "ty": {
           "type": "Unknown"
         },
@@ -1022,7 +1022,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 24.802219575148605,
+        "value": 24.8022,
         "ty": {
           "type": "Unknown"
         },
@@ -1038,7 +1038,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 24.985767591010926,
+        "value": 24.9858,
         "ty": {
           "type": "Unknown"
         },
@@ -1054,7 +1054,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 25.167523428085023,
+        "value": 25.1675,
         "ty": {
           "type": "Unknown"
         },
@@ -1070,7 +1070,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 25.347527360656258,
+        "value": 25.3475,
         "ty": {
           "type": "Unknown"
         },
@@ -1086,7 +1086,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 25.525818151816647,
+        "value": 25.5258,
         "ty": {
           "type": "Unknown"
         },
@@ -1102,7 +1102,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 25.702433132580378,
+        "value": 25.7024,
         "ty": {
           "type": "Unknown"
         },
@@ -1118,7 +1118,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 25.87740827572941,
+        "value": 25.8774,
         "ty": {
           "type": "Unknown"
         },
@@ -1134,7 +1134,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 26.050778264813243,
+        "value": 26.0508,
         "ty": {
           "type": "Unknown"
         },
@@ -1150,7 +1150,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 26.222576558685816,
+        "value": 26.2226,
         "ty": {
           "type": "Unknown"
         },
@@ -1166,7 +1166,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 26.392835451928836,
+        "value": 26.3928,
         "ty": {
           "type": "Unknown"
         },
@@ -1182,7 +1182,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 26.561586131477547,
+        "value": 26.5616,
         "ty": {
           "type": "Unknown"
         },
@@ -1198,7 +1198,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 26.728858729737457,
+        "value": 26.7289,
         "ty": {
           "type": "Unknown"
         },
@@ -1214,7 +1214,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 26.894682374454746,
+        "value": 26.8947,
         "ty": {
           "type": "Unknown"
         },
@@ -1230,7 +1230,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 27.059085235579907,
+        "value": 27.0591,
         "ty": {
           "type": "Unknown"
         },
@@ -1246,7 +1246,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 27.222094569343902,
+        "value": 27.2221,
         "ty": {
           "type": "Unknown"
         },
@@ -1262,7 +1262,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 27.383736759747126,
+        "value": 27.3837,
         "ty": {
           "type": "Unknown"
         },
@@ -1278,7 +1278,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 27.54403735764486,
+        "value": 27.544,
         "ty": {
           "type": "Unknown"
         },
@@ -1294,7 +1294,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 27.7030211175977,
+        "value": 27.703,
         "ty": {
           "type": "Unknown"
         },
@@ -1310,7 +1310,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 27.860712032641256,
+        "value": 27.8607,
         "ty": {
           "type": "Unknown"
         },
@@ -1326,7 +1326,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 28.01713336711757,
+        "value": 28.0171,
         "ty": {
           "type": "Unknown"
         },
@@ -1342,7 +1342,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 28.172307687698915,
+        "value": 28.1723,
         "ty": {
           "type": "Unknown"
         },
@@ -1358,7 +1358,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 28.326256892724267,
+        "value": 28.3263,
         "ty": {
           "type": "Unknown"
         },
@@ -1374,7 +1374,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 28.479002239959787,
+        "value": 28.479,
         "ty": {
           "type": "Unknown"
         },
@@ -1390,7 +1390,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 28.63056437288562,
+        "value": 28.6306,
         "ty": {
           "type": "Unknown"
         },
@@ -1406,7 +1406,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 28.780963345603883,
+        "value": 28.781,
         "ty": {
           "type": "Unknown"
         },
@@ -1422,7 +1422,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 28.93021864645528,
+        "value": 28.9302,
         "ty": {
           "type": "Unknown"
         },
@@ -1438,7 +1438,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 29.078349220425718,
+        "value": 29.0783,
         "ty": {
           "type": "Unknown"
         },
@@ -1454,7 +1454,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 29.225373490417677,
+        "value": 29.2254,
         "ty": {
           "type": "Unknown"
         },
@@ -1470,7 +1470,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 29.371309377456395,
+        "value": 29.3713,
         "ty": {
           "type": "Unknown"
         },
@@ -1486,7 +1486,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 29.51617431989512,
+        "value": 29.5162,
         "ty": {
           "type": "Unknown"
         },
@@ -1502,7 +1502,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 29.659985291680066,
+        "value": 29.66,
         "ty": {
           "type": "Unknown"
         },
@@ -1518,7 +1518,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 29.802758819730247,
+        "value": 29.8028,
         "ty": {
           "type": "Unknown"
         },
@@ -1534,7 +1534,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 29.944511000484795,
+        "value": 29.9445,
         "ty": {
           "type": "Unknown"
         },
@@ -1550,7 +1550,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 30.085257515665738,
+        "value": 30.0853,
         "ty": {
           "type": "Unknown"
         },
@@ -1566,7 +1566,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 30.22501364730141,
+        "value": 30.225,
         "ty": {
           "type": "Unknown"
         },
@@ -1582,7 +1582,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 30.36379429205286,
+        "value": 30.3638,
         "ty": {
           "type": "Unknown"
         },
@@ -1598,7 +1598,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 30.501613974882027,
+        "value": 30.5016,
         "ty": {
           "type": "Unknown"
         },
@@ -1614,7 +1614,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 30.6384868620988,
+        "value": 30.6385,
         "ty": {
           "type": "Unknown"
         },
@@ -1630,7 +1630,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 30.77442677382089,
+        "value": 30.7744,
         "ty": {
           "type": "Unknown"
         },
@@ -1646,7 +1646,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 30.909447195878926,
+        "value": 30.9094,
         "ty": {
           "type": "Unknown"
         },
@@ -1977,7 +1977,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0000625070454912599,
+        "value": 0.0001,
         "ty": {
           "type": "Unknown"
         },
@@ -2000,7 +2000,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.00017666657698341137,
+        "value": 0.0002,
         "ty": {
           "type": "Unknown"
         },
@@ -2023,7 +2023,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0003243188502597555,
+        "value": 0.0003,
         "ty": {
           "type": "Unknown"
         },
@@ -2046,7 +2046,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0004989553497173338,
+        "value": 0.0005,
         "ty": {
           "type": "Unknown"
         },
@@ -2069,7 +2069,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0006968006807384353,
+        "value": 0.0007,
         "ty": {
           "type": "Unknown"
         },
@@ -2092,7 +2092,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0009152985488974086,
+        "value": 0.0009,
         "ty": {
           "type": "Unknown"
         },
@@ -2115,7 +2115,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.001152565910963188,
+        "value": 0.0012,
         "ty": {
           "type": "Unknown"
         },
@@ -2138,7 +2138,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0014071389200792095,
+        "value": 0.0014,
         "ty": {
           "type": "Unknown"
         },
@@ -2161,7 +2161,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0016778360225289946,
+        "value": 0.0017,
         "ty": {
           "type": "Unknown"
         },
@@ -2184,7 +2184,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0019636766448255516,
+        "value": 0.002,
         "ty": {
           "type": "Unknown"
         },
@@ -2207,7 +2207,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0022638293974856505,
+        "value": 0.0023,
         "ty": {
           "type": "Unknown"
         },
@@ -2230,7 +2230,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0025775772850710754,
+        "value": 0.0026,
         "ty": {
           "type": "Unknown"
         },
@@ -2253,7 +2253,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0029042933452769204,
+        "value": 0.0029,
         "ty": {
           "type": "Unknown"
         },
@@ -2276,7 +2276,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0032434230072537207,
+        "value": 0.0032,
         "ty": {
           "type": "Unknown"
         },
@@ -2299,7 +2299,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.003594470956201745,
+        "value": 0.0036,
         "ty": {
           "type": "Unknown"
         },
@@ -2322,7 +2322,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.003956991122401138,
+        "value": 0.004,
         "ty": {
           "type": "Unknown"
         },
@@ -2345,7 +2345,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.004330578898298187,
+        "value": 0.0043,
         "ty": {
           "type": "Unknown"
         },
@@ -2368,7 +2368,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0047148649830881795,
+        "value": 0.0047,
         "ty": {
           "type": "Unknown"
         },
@@ -2391,7 +2391,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.005109510441116544,
+        "value": 0.0051,
         "ty": {
           "type": "Unknown"
         },
@@ -2414,7 +2414,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.005514202682200486,
+        "value": 0.0055,
         "ty": {
           "type": "Unknown"
         },
@@ -2437,7 +2437,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.005928652153504077,
+        "value": 0.0059,
         "ty": {
           "type": "Unknown"
         },
@@ -2460,7 +2460,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.006352589588499047,
+        "value": 0.0064,
         "ty": {
           "type": "Unknown"
         },
@@ -2483,7 +2483,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.006785763697686686,
+        "value": 0.0068,
         "ty": {
           "type": "Unknown"
         },
@@ -2506,7 +2506,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.007227939213679313,
+        "value": 0.0072,
         "ty": {
           "type": "Unknown"
         },
@@ -2529,7 +2529,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.00767889522351195,
+        "value": 0.0077,
         "ty": {
           "type": "Unknown"
         },
@@ -2552,7 +2552,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.008138423735983502,
+        "value": 0.0081,
         "ty": {
           "type": "Unknown"
         },
@@ -2575,7 +2575,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.008606328442986422,
+        "value": 0.0086,
         "ty": {
           "type": "Unknown"
         },
@@ -2598,7 +2598,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.009082423642225945,
+        "value": 0.0091,
         "ty": {
           "type": "Unknown"
         },
@@ -2621,7 +2621,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.009566533295191304,
+        "value": 0.0096,
         "ty": {
           "type": "Unknown"
         },
@@ -2644,7 +2644,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.010058490199243209,
+        "value": 0.0101,
         "ty": {
           "type": "Unknown"
         },
@@ -2667,7 +2667,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.010558135256586831,
+        "value": 0.0106,
         "ty": {
           "type": "Unknown"
         },
@@ -2690,7 +2690,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.01106531682598183,
+        "value": 0.0111,
         "ty": {
           "type": "Unknown"
         },
@@ -2713,7 +2713,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.011579890145488547,
+        "value": 0.0116,
         "ty": {
           "type": "Unknown"
         },
@@ -2736,7 +2736,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.012101716816514563,
+        "value": 0.0121,
         "ty": {
           "type": "Unknown"
         },
@@ -2759,7 +2759,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.012630664341010622,
+        "value": 0.0126,
         "ty": {
           "type": "Unknown"
         },
@@ -2782,7 +2782,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.013166605704952095,
+        "value": 0.0132,
         "ty": {
           "type": "Unknown"
         },
@@ -2805,7 +2805,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.013709419002299217,
+        "value": 0.0137,
         "ty": {
           "type": "Unknown"
         },
@@ -2828,7 +2828,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.014258987094495468,
+        "value": 0.0143,
         "ty": {
           "type": "Unknown"
         },
@@ -2851,7 +2851,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.014815197301282057,
+        "value": 0.0148,
         "ty": {
           "type": "Unknown"
         },
@@ -2874,7 +2874,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.01537794111920604,
+        "value": 0.0154,
         "ty": {
           "type": "Unknown"
         },
@@ -2897,7 +2897,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.01594711396469828,
+        "value": 0.0159,
         "ty": {
           "type": "Unknown"
         },
@@ -2920,7 +2920,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.016522614939020408,
+        "value": 0.0165,
         "ty": {
           "type": "Unknown"
         },
@@ -2943,7 +2943,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.01710434661273219,
+        "value": 0.0171,
         "ty": {
           "type": "Unknown"
         },
@@ -2966,7 +2966,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.017692214827634056,
+        "value": 0.0177,
         "ty": {
           "type": "Unknown"
         },
@@ -2989,7 +2989,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.018286128514396205,
+        "value": 0.0183,
         "ty": {
           "type": "Unknown"
         },
@@ -3012,7 +3012,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.018885999524304364,
+        "value": 0.0189,
         "ty": {
           "type": "Unknown"
         },
@@ -3035,7 +3035,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.019491742473739804,
+        "value": 0.0195,
         "ty": {
           "type": "Unknown"
         },
@@ -3058,7 +3058,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.02010327460017497,
+        "value": 0.0201,
         "ty": {
           "type": "Unknown"
         },
@@ -3081,7 +3081,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.02072051562860533,
+        "value": 0.0207,
         "ty": {
           "type": "Unknown"
         },
@@ -3104,7 +3104,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.02134338764745808,
+        "value": 0.0213,
         "ty": {
           "type": "Unknown"
         },
@@ -3127,7 +3127,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.021971814993128114,
+        "value": 0.022,
         "ty": {
           "type": "Unknown"
         },
@@ -3150,7 +3150,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.02260572414237766,
+        "value": 0.0226,
         "ty": {
           "type": "Unknown"
         },
@@ -3173,7 +3173,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.023245043611922145,
+        "value": 0.0232,
         "ty": {
           "type": "Unknown"
         },
@@ -3196,7 +3196,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.023889703864591716,
+        "value": 0.0239,
         "ty": {
           "type": "Unknown"
         },
@@ -3219,7 +3219,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.02453963722152308,
+        "value": 0.0245,
         "ty": {
           "type": "Unknown"
         },
@@ -3242,7 +3242,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.025194777779886934,
+        "value": 0.0252,
         "ty": {
           "type": "Unknown"
         },
@@ -3265,7 +3265,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.02585506133570964,
+        "value": 0.0259,
         "ty": {
           "type": "Unknown"
         },
@@ -3288,7 +3288,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.026520425311386042,
+        "value": 0.0265,
         "ty": {
           "type": "Unknown"
         },
@@ -3311,7 +3311,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.027190808687521495,
+        "value": 0.0272,
         "ty": {
           "type": "Unknown"
         },
@@ -3334,7 +3334,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.027866151938774675,
+        "value": 0.0279,
         "ty": {
           "type": "Unknown"
         },
@@ -3357,7 +3357,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.028546396973399557,
+        "value": 0.0285,
         "ty": {
           "type": "Unknown"
         },
@@ -3380,7 +3380,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.02923148707621792,
+        "value": 0.0292,
         "ty": {
           "type": "Unknown"
         },
@@ -3403,7 +3403,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.029921366854771148,
+        "value": 0.0299,
         "ty": {
           "type": "Unknown"
         },
@@ -3426,7 +3426,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.030615982188428592,
+        "value": 0.0306,
         "ty": {
           "type": "Unknown"
         },
@@ -3449,7 +3449,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.03131528018024177,
+        "value": 0.0313,
         "ty": {
           "type": "Unknown"
         },
@@ -3472,7 +3472,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.03201920911135847,
+        "value": 0.032,
         "ty": {
           "type": "Unknown"
         },
@@ -3495,7 +3495,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.032727718397821015,
+        "value": 0.0327,
         "ty": {
           "type": "Unknown"
         },
@@ -3518,7 +3518,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.033440758549589666,
+        "value": 0.0334,
         "ty": {
           "type": "Unknown"
         },
@@ -3541,7 +3541,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.03415828113164654,
+        "value": 0.0342,
         "ty": {
           "type": "Unknown"
         },
@@ -3564,7 +3564,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.03488023872704149,
+        "value": 0.0349,
         "ty": {
           "type": "Unknown"
         },
@@ -3587,7 +3587,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.035606584901759775,
+        "value": 0.0356,
         "ty": {
           "type": "Unknown"
         },
@@ -3610,7 +3610,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.03633727417129373,
+        "value": 0.0363,
         "ty": {
           "type": "Unknown"
         },
@@ -3633,7 +3633,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0370722619688143,
+        "value": 0.0371,
         "ty": {
           "type": "Unknown"
         },
@@ -3656,7 +3656,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.03781150461484439,
+        "value": 0.0378,
         "ty": {
           "type": "Unknown"
         },
@@ -3679,7 +3679,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.038554959288341906,
+        "value": 0.0386,
         "ty": {
           "type": "Unknown"
         },
@@ -3702,7 +3702,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.03930258399910991,
+        "value": 0.0393,
         "ty": {
           "type": "Unknown"
         },
@@ -3725,7 +3725,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04005433756145593,
+        "value": 0.0401,
         "ty": {
           "type": "Unknown"
         },
@@ -3748,7 +3748,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.040810179569026384,
+        "value": 0.0408,
         "ty": {
           "type": "Unknown"
         },
@@ -3771,7 +3771,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04157007037075122,
+        "value": 0.0416,
         "ty": {
           "type": "Unknown"
         },
@@ -3794,7 +3794,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04233397104783376,
+        "value": 0.0423,
         "ty": {
           "type": "Unknown"
         },
@@ -3817,7 +3817,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04310184339172857,
+        "value": 0.0431,
         "ty": {
           "type": "Unknown"
         },
@@ -3840,7 +3840,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04387364988305348,
+        "value": 0.0439,
         "ty": {
           "type": "Unknown"
         },
@@ -3863,7 +3863,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04464935367138284,
+        "value": 0.0446,
         "ty": {
           "type": "Unknown"
         },
@@ -3886,7 +3886,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04542891855587772,
+        "value": 0.0454,
         "ty": {
           "type": "Unknown"
         },
@@ -3909,7 +3909,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.046212308966705584,
+        "value": 0.0462,
         "ty": {
           "type": "Unknown"
         },
@@ -3932,7 +3932,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04699948994721004,
+        "value": 0.047,
         "ty": {
           "type": "Unknown"
         },
@@ -3955,7 +3955,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0477904271367906,
+        "value": 0.0478,
         "ty": {
           "type": "Unknown"
         },
@@ -3978,7 +3978,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.048585086754457496,
+        "value": 0.0486,
         "ty": {
           "type": "Unknown"
         },
@@ -4001,7 +4001,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.049383435583025714,
+        "value": 0.0494,
         "ty": {
           "type": "Unknown"
         },
@@ -4024,7 +4024,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.050185440953917304,
+        "value": 0.0502,
         "ty": {
           "type": "Unknown"
         },
@@ -4047,7 +4047,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0509910707325415,
+        "value": 0.051,
         "ty": {
           "type": "Unknown"
         },
@@ -4070,7 +4070,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.051800293304224865,
+        "value": 0.0518,
         "ty": {
           "type": "Unknown"
         },
@@ -4093,7 +4093,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.05261307756066391,
+        "value": 0.0526,
         "ty": {
           "type": "Unknown"
         },
@@ -4116,7 +4116,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.05342939288687609,
+        "value": 0.0534,
         "ty": {
           "type": "Unknown"
         },
@@ -4139,7 +4139,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.05424920914862519,
+        "value": 0.0542,
         "ty": {
           "type": "Unknown"
         },
@@ -4162,7 +4162,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.05507249668029868,
+        "value": 0.0551,
         "ty": {
           "type": "Unknown"
         },
@@ -4185,7 +4185,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.05589922627321697,
+        "value": 0.0559,
         "ty": {
           "type": "Unknown"
         },
@@ -4208,7 +4208,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.05672936916435378,
+        "value": 0.0567,
         "ty": {
           "type": "Unknown"
         },
@@ -4231,7 +4231,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.057562897025449034,
+        "value": 0.0576,
         "ty": {
           "type": "Unknown"
         },
@@ -4254,7 +4254,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.058399781952496954,
+        "value": 0.0584,
         "ty": {
           "type": "Unknown"
         },
@@ -4277,7 +4277,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.059239996455594746,
+        "value": 0.0592,
         "ty": {
           "type": "Unknown"
         },
@@ -4900,7 +4900,7 @@ description: Variables in memory after executing gear.kcl
     "value": [
       {
         "type": "Number",
-        "value": 4.933386259126019,
+        "value": 4.9334,
         "ty": {
           "type": "Unknown"
         },
@@ -5007,7 +5007,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.941471543689127,
+        "value": 4.9415,
         "ty": {
           "type": "Unknown"
         },
@@ -5114,7 +5114,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.949556828252236,
+        "value": 4.9496,
         "ty": {
           "type": "Unknown"
         },
@@ -5221,7 +5221,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.957642112815345,
+        "value": 4.9576,
         "ty": {
           "type": "Unknown"
         },
@@ -5328,7 +5328,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.965727397378454,
+        "value": 4.9657,
         "ty": {
           "type": "Unknown"
         },
@@ -5435,7 +5435,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.9738126819415625,
+        "value": 4.9738,
         "ty": {
           "type": "Unknown"
         },
@@ -5542,7 +5542,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.981897966504671,
+        "value": 4.9819,
         "ty": {
           "type": "Unknown"
         },
@@ -5649,7 +5649,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.98998325106778,
+        "value": 4.99,
         "ty": {
           "type": "Unknown"
         },
@@ -5756,7 +5756,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.998068535630889,
+        "value": 4.9981,
         "ty": {
           "type": "Unknown"
         },
@@ -5863,7 +5863,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.0061538201939975,
+        "value": 5.0062,
         "ty": {
           "type": "Unknown"
         },
@@ -5970,7 +5970,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.014239104757106,
+        "value": 5.0142,
         "ty": {
           "type": "Unknown"
         },
@@ -6077,7 +6077,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.0223243893202145,
+        "value": 5.0223,
         "ty": {
           "type": "Unknown"
         },
@@ -6184,7 +6184,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.030409673883324,
+        "value": 5.0304,
         "ty": {
           "type": "Unknown"
         },
@@ -6291,7 +6291,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.0384949584464325,
+        "value": 5.0385,
         "ty": {
           "type": "Unknown"
         },
@@ -6398,7 +6398,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.046580243009541,
+        "value": 5.0466,
         "ty": {
           "type": "Unknown"
         },
@@ -6505,7 +6505,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.0546655275726495,
+        "value": 5.0547,
         "ty": {
           "type": "Unknown"
         },
@@ -6612,7 +6612,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.062750812135759,
+        "value": 5.0628,
         "ty": {
           "type": "Unknown"
         },
@@ -6719,7 +6719,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.0708360966988675,
+        "value": 5.0708,
         "ty": {
           "type": "Unknown"
         },
@@ -6826,7 +6826,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.078921381261976,
+        "value": 5.0789,
         "ty": {
           "type": "Unknown"
         },
@@ -6933,7 +6933,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.0870066658250845,
+        "value": 5.087,
         "ty": {
           "type": "Unknown"
         },
@@ -7040,7 +7040,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.095091950388193,
+        "value": 5.0951,
         "ty": {
           "type": "Unknown"
         },
@@ -7147,7 +7147,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.1031772349513025,
+        "value": 5.1032,
         "ty": {
           "type": "Unknown"
         },
@@ -7254,7 +7254,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.111262519514411,
+        "value": 5.1113,
         "ty": {
           "type": "Unknown"
         },
@@ -7361,7 +7361,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.1193478040775195,
+        "value": 5.1193,
         "ty": {
           "type": "Unknown"
         },
@@ -7468,7 +7468,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.127433088640628,
+        "value": 5.1274,
         "ty": {
           "type": "Unknown"
         },
@@ -7575,7 +7575,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.135518373203737,
+        "value": 5.1355,
         "ty": {
           "type": "Unknown"
         },
@@ -7682,7 +7682,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.143603657766846,
+        "value": 5.1436,
         "ty": {
           "type": "Unknown"
         },
@@ -7789,7 +7789,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.151688942329955,
+        "value": 5.1517,
         "ty": {
           "type": "Unknown"
         },
@@ -7896,7 +7896,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.159774226893063,
+        "value": 5.1598,
         "ty": {
           "type": "Unknown"
         },
@@ -8003,7 +8003,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.167859511456172,
+        "value": 5.1679,
         "ty": {
           "type": "Unknown"
         },
@@ -8110,7 +8110,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.175944796019281,
+        "value": 5.1759,
         "ty": {
           "type": "Unknown"
         },
@@ -8217,7 +8217,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.18403008058239,
+        "value": 5.184,
         "ty": {
           "type": "Unknown"
         },
@@ -8324,7 +8324,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.192115365145498,
+        "value": 5.1921,
         "ty": {
           "type": "Unknown"
         },
@@ -8431,7 +8431,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.200200649708607,
+        "value": 5.2002,
         "ty": {
           "type": "Unknown"
         },
@@ -8538,7 +8538,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.208285934271715,
+        "value": 5.2083,
         "ty": {
           "type": "Unknown"
         },
@@ -8645,7 +8645,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.216371218834825,
+        "value": 5.2164,
         "ty": {
           "type": "Unknown"
         },
@@ -8752,7 +8752,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.224456503397933,
+        "value": 5.2245,
         "ty": {
           "type": "Unknown"
         },
@@ -8859,7 +8859,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.232541787961042,
+        "value": 5.2325,
         "ty": {
           "type": "Unknown"
         },
@@ -8966,7 +8966,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.24062707252415,
+        "value": 5.2406,
         "ty": {
           "type": "Unknown"
         },
@@ -9073,7 +9073,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.248712357087259,
+        "value": 5.2487,
         "ty": {
           "type": "Unknown"
         },
@@ -9180,7 +9180,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.256797641650368,
+        "value": 5.2568,
         "ty": {
           "type": "Unknown"
         },
@@ -9287,7 +9287,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.264882926213477,
+        "value": 5.2649,
         "ty": {
           "type": "Unknown"
         },
@@ -9394,7 +9394,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.272968210776585,
+        "value": 5.273,
         "ty": {
           "type": "Unknown"
         },
@@ -9501,7 +9501,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.281053495339694,
+        "value": 5.2811,
         "ty": {
           "type": "Unknown"
         },
@@ -9608,7 +9608,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.289138779902803,
+        "value": 5.2891,
         "ty": {
           "type": "Unknown"
         },
@@ -9715,7 +9715,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.297224064465912,
+        "value": 5.2972,
         "ty": {
           "type": "Unknown"
         },
@@ -9822,7 +9822,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.30530934902902,
+        "value": 5.3053,
         "ty": {
           "type": "Unknown"
         },
@@ -9929,7 +9929,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.313394633592129,
+        "value": 5.3134,
         "ty": {
           "type": "Unknown"
         },
@@ -10036,7 +10036,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.321479918155237,
+        "value": 5.3215,
         "ty": {
           "type": "Unknown"
         },
@@ -10143,7 +10143,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.329565202718347,
+        "value": 5.3296,
         "ty": {
           "type": "Unknown"
         },
@@ -10250,7 +10250,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.337650487281455,
+        "value": 5.3377,
         "ty": {
           "type": "Unknown"
         },
@@ -10357,7 +10357,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.345735771844564,
+        "value": 5.3457,
         "ty": {
           "type": "Unknown"
         },
@@ -10464,7 +10464,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.353821056407672,
+        "value": 5.3538,
         "ty": {
           "type": "Unknown"
         },
@@ -10571,7 +10571,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.361906340970782,
+        "value": 5.3619,
         "ty": {
           "type": "Unknown"
         },
@@ -10678,7 +10678,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.36999162553389,
+        "value": 5.37,
         "ty": {
           "type": "Unknown"
         },
@@ -10785,7 +10785,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.378076910096999,
+        "value": 5.3781,
         "ty": {
           "type": "Unknown"
         },
@@ -10892,7 +10892,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.386162194660107,
+        "value": 5.3862,
         "ty": {
           "type": "Unknown"
         },
@@ -10999,7 +10999,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.394247479223216,
+        "value": 5.3942,
         "ty": {
           "type": "Unknown"
         },
@@ -11106,7 +11106,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.402332763786325,
+        "value": 5.4023,
         "ty": {
           "type": "Unknown"
         },
@@ -11213,7 +11213,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.410418048349434,
+        "value": 5.4104,
         "ty": {
           "type": "Unknown"
         },
@@ -11320,7 +11320,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.418503332912542,
+        "value": 5.4185,
         "ty": {
           "type": "Unknown"
         },
@@ -11427,7 +11427,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.426588617475651,
+        "value": 5.4266,
         "ty": {
           "type": "Unknown"
         },
@@ -11534,7 +11534,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.43467390203876,
+        "value": 5.4347,
         "ty": {
           "type": "Unknown"
         },
@@ -11641,7 +11641,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.442759186601869,
+        "value": 5.4428,
         "ty": {
           "type": "Unknown"
         },
@@ -11748,7 +11748,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.450844471164977,
+        "value": 5.4508,
         "ty": {
           "type": "Unknown"
         },
@@ -11855,7 +11855,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.458929755728086,
+        "value": 5.4589,
         "ty": {
           "type": "Unknown"
         },
@@ -11962,7 +11962,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.467015040291194,
+        "value": 5.467,
         "ty": {
           "type": "Unknown"
         },
@@ -12069,7 +12069,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.475100324854304,
+        "value": 5.4751,
         "ty": {
           "type": "Unknown"
         },
@@ -12176,7 +12176,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.483185609417412,
+        "value": 5.4832,
         "ty": {
           "type": "Unknown"
         },
@@ -12283,7 +12283,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.491270893980521,
+        "value": 5.4913,
         "ty": {
           "type": "Unknown"
         },
@@ -12390,7 +12390,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.499356178543629,
+        "value": 5.4994,
         "ty": {
           "type": "Unknown"
         },
@@ -12497,7 +12497,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.507441463106738,
+        "value": 5.5074,
         "ty": {
           "type": "Unknown"
         },
@@ -12604,7 +12604,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.515526747669847,
+        "value": 5.5155,
         "ty": {
           "type": "Unknown"
         },
@@ -12711,7 +12711,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.523612032232956,
+        "value": 5.5236,
         "ty": {
           "type": "Unknown"
         },
@@ -12818,7 +12818,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.531697316796064,
+        "value": 5.5317,
         "ty": {
           "type": "Unknown"
         },
@@ -12925,7 +12925,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.539782601359173,
+        "value": 5.5398,
         "ty": {
           "type": "Unknown"
         },
@@ -13032,7 +13032,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.547867885922281,
+        "value": 5.5479,
         "ty": {
           "type": "Unknown"
         },
@@ -13139,7 +13139,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.555953170485391,
+        "value": 5.556,
         "ty": {
           "type": "Unknown"
         },
@@ -13246,7 +13246,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.564038455048499,
+        "value": 5.564,
         "ty": {
           "type": "Unknown"
         },
@@ -13353,7 +13353,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.572123739611608,
+        "value": 5.5721,
         "ty": {
           "type": "Unknown"
         },
@@ -13460,7 +13460,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.580209024174717,
+        "value": 5.5802,
         "ty": {
           "type": "Unknown"
         },
@@ -13567,7 +13567,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.588294308737826,
+        "value": 5.5883,
         "ty": {
           "type": "Unknown"
         },
@@ -13674,7 +13674,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.596379593300934,
+        "value": 5.5964,
         "ty": {
           "type": "Unknown"
         },
@@ -13781,7 +13781,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.604464877864043,
+        "value": 5.6045,
         "ty": {
           "type": "Unknown"
         },
@@ -13888,7 +13888,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.612550162427151,
+        "value": 5.6126,
         "ty": {
           "type": "Unknown"
         },
@@ -13995,7 +13995,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.62063544699026,
+        "value": 5.6206,
         "ty": {
           "type": "Unknown"
         },
@@ -14102,7 +14102,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.628720731553369,
+        "value": 5.6287,
         "ty": {
           "type": "Unknown"
         },
@@ -14209,7 +14209,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.636806016116478,
+        "value": 5.6368,
         "ty": {
           "type": "Unknown"
         },
@@ -14316,7 +14316,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.644891300679586,
+        "value": 5.6449,
         "ty": {
           "type": "Unknown"
         },
@@ -14423,7 +14423,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.652976585242695,
+        "value": 5.653,
         "ty": {
           "type": "Unknown"
         },
@@ -14530,7 +14530,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.661061869805804,
+        "value": 5.6611,
         "ty": {
           "type": "Unknown"
         },
@@ -14637,7 +14637,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.669147154368913,
+        "value": 5.6691,
         "ty": {
           "type": "Unknown"
         },
@@ -14744,7 +14744,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.6772324389320215,
+        "value": 5.6772,
         "ty": {
           "type": "Unknown"
         },
@@ -14851,7 +14851,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.68531772349513,
+        "value": 5.6853,
         "ty": {
           "type": "Unknown"
         },
@@ -14958,7 +14958,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.6934030080582385,
+        "value": 5.6934,
         "ty": {
           "type": "Unknown"
         },
@@ -15065,7 +15065,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.701488292621348,
+        "value": 5.7015,
         "ty": {
           "type": "Unknown"
         },
@@ -15172,7 +15172,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.7095735771844565,
+        "value": 5.7096,
         "ty": {
           "type": "Unknown"
         },
@@ -15279,7 +15279,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.717658861747565,
+        "value": 5.7177,
         "ty": {
           "type": "Unknown"
         },
@@ -15386,7 +15386,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.7257441463106735,
+        "value": 5.7257,
         "ty": {
           "type": "Unknown"
         },
@@ -15493,7 +15493,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.733829430873783,
+        "value": 5.7338,
         "ty": {
           "type": "Unknown"
         },
@@ -15600,7 +15600,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.7419147154368915,
+        "value": 5.7419,
         "ty": {
           "type": "Unknown"
         },
@@ -116601,7 +116601,7 @@ description: Variables in memory after executing gear.kcl
     "value": [
       {
         "type": "Number",
-        "value": 4.933386259126019,
+        "value": 4.9334,
         "ty": {
           "type": "Unknown"
         },
@@ -116715,7 +116715,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.94147153403564,
+        "value": 4.9415,
         "ty": {
           "type": "Unknown"
         },
@@ -116829,7 +116829,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.94955675101173,
+        "value": 4.9496,
         "ty": {
           "type": "Unknown"
         },
@@ -116943,7 +116943,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.957641852086215,
+        "value": 4.9576,
         "ty": {
           "type": "Unknown"
         },
@@ -117057,7 +117057,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.965726779253557,
+        "value": 4.9657,
         "ty": {
           "type": "Unknown"
         },
@@ -117171,7 +117171,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.973811474471019,
+        "value": 4.9738,
         "ty": {
           "type": "Unknown"
         },
@@ -117285,7 +117285,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.981895879658916,
+        "value": 4.9819,
         "ty": {
           "type": "Unknown"
         },
@@ -117399,7 +117399,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.989979936700865,
+        "value": 4.99,
         "ty": {
           "type": "Unknown"
         },
@@ -117513,7 +117513,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 4.998063587444043,
+        "value": 4.9981,
         "ty": {
           "type": "Unknown"
         },
@@ -117627,7 +117627,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.006146773699441,
+        "value": 5.0061,
         "ty": {
           "type": "Unknown"
         },
@@ -117741,7 +117741,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.01422943724212,
+        "value": 5.0142,
         "ty": {
           "type": "Unknown"
         },
@@ -117855,7 +117855,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.022311519811464,
+        "value": 5.0223,
         "ty": {
           "type": "Unknown"
         },
@@ -117969,7 +117969,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.030392963111438,
+        "value": 5.0304,
         "ty": {
           "type": "Unknown"
         },
@@ -118083,7 +118083,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.0384737088108364,
+        "value": 5.0385,
         "ty": {
           "type": "Unknown"
         },
@@ -118197,7 +118197,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.046553698543549,
+        "value": 5.0466,
         "ty": {
           "type": "Unknown"
         },
@@ -118311,7 +118311,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.054632873908808,
+        "value": 5.0546,
         "ty": {
           "type": "Unknown"
         },
@@ -118425,7 +118425,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.062711176471453,
+        "value": 5.0627,
         "ty": {
           "type": "Unknown"
         },
@@ -118539,7 +118539,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.070788547762174,
+        "value": 5.0708,
         "ty": {
           "type": "Unknown"
         },
@@ -118653,7 +118653,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.07886492927778,
+        "value": 5.0789,
         "ty": {
           "type": "Unknown"
         },
@@ -118767,7 +118767,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.086940262481452,
+        "value": 5.0869,
         "ty": {
           "type": "Unknown"
         },
@@ -118881,7 +118881,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.095014488802995,
+        "value": 5.095,
         "ty": {
           "type": "Unknown"
         },
@@ -118995,7 +118995,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.103087549639104,
+        "value": 5.1031,
         "ty": {
           "type": "Unknown"
         },
@@ -119109,7 +119109,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.111159386353611,
+        "value": 5.1112,
         "ty": {
           "type": "Unknown"
         },
@@ -119223,7 +119223,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.119229940277748,
+        "value": 5.1192,
         "ty": {
           "type": "Unknown"
         },
@@ -119337,7 +119337,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.127299152710408,
+        "value": 5.1273,
         "ty": {
           "type": "Unknown"
         },
@@ -119451,7 +119451,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.135366964918393,
+        "value": 5.1354,
         "ty": {
           "type": "Unknown"
         },
@@ -119565,7 +119565,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.1434333181366805,
+        "value": 5.1434,
         "ty": {
           "type": "Unknown"
         },
@@ -119679,7 +119679,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.151498153568677,
+        "value": 5.1515,
         "ty": {
           "type": "Unknown"
         },
@@ -119793,7 +119793,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.159561412386478,
+        "value": 5.1596,
         "ty": {
           "type": "Unknown"
         },
@@ -119907,7 +119907,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.167623035731127,
+        "value": 5.1676,
         "ty": {
           "type": "Unknown"
         },
@@ -120021,7 +120021,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.175682964712872,
+        "value": 5.1757,
         "ty": {
           "type": "Unknown"
         },
@@ -120135,7 +120135,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.183741140411425,
+        "value": 5.1837,
         "ty": {
           "type": "Unknown"
         },
@@ -120249,7 +120249,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.191797503876221,
+        "value": 5.1918,
         "ty": {
           "type": "Unknown"
         },
@@ -120363,7 +120363,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.19985199612668,
+        "value": 5.1999,
         "ty": {
           "type": "Unknown"
         },
@@ -120477,7 +120477,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.2079045581524595,
+        "value": 5.2079,
         "ty": {
           "type": "Unknown"
         },
@@ -120591,7 +120591,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.2159551309137235,
+        "value": 5.216,
         "ty": {
           "type": "Unknown"
         },
@@ -120705,7 +120705,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.2240036553413915,
+        "value": 5.224,
         "ty": {
           "type": "Unknown"
         },
@@ -120819,7 +120819,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.232050072337408,
+        "value": 5.2321,
         "ty": {
           "type": "Unknown"
         },
@@ -120933,7 +120933,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.240094322774994,
+        "value": 5.2401,
         "ty": {
           "type": "Unknown"
         },
@@ -121047,7 +121047,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.2481363474989156,
+        "value": 5.2481,
         "ty": {
           "type": "Unknown"
         },
@@ -121161,7 +121161,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.256176087325739,
+        "value": 5.2562,
         "ty": {
           "type": "Unknown"
         },
@@ -121275,7 +121275,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.264213483044088,
+        "value": 5.2642,
         "ty": {
           "type": "Unknown"
         },
@@ -121389,7 +121389,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.272248475414913,
+        "value": 5.2722,
         "ty": {
           "type": "Unknown"
         },
@@ -121503,7 +121503,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.280281005171747,
+        "value": 5.2803,
         "ty": {
           "type": "Unknown"
         },
@@ -121617,7 +121617,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.288311013020966,
+        "value": 5.2883,
         "ty": {
           "type": "Unknown"
         },
@@ -121731,7 +121731,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.296338439642051,
+        "value": 5.2963,
         "ty": {
           "type": "Unknown"
         },
@@ -121845,7 +121845,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.304363225687851,
+        "value": 5.3044,
         "ty": {
           "type": "Unknown"
         },
@@ -121959,7 +121959,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.312385311784842,
+        "value": 5.3124,
         "ty": {
           "type": "Unknown"
         },
@@ -122073,7 +122073,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.320404638533391,
+        "value": 5.3204,
         "ty": {
           "type": "Unknown"
         },
@@ -122187,7 +122187,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.328421146508015,
+        "value": 5.3284,
         "ty": {
           "type": "Unknown"
         },
@@ -122301,7 +122301,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.336434776257645,
+        "value": 5.3364,
         "ty": {
           "type": "Unknown"
         },
@@ -122415,7 +122415,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.344445468305889,
+        "value": 5.3444,
         "ty": {
           "type": "Unknown"
         },
@@ -122529,7 +122529,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.3524531631512895,
+        "value": 5.3525,
         "ty": {
           "type": "Unknown"
         },
@@ -122643,7 +122643,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.360457801267595,
+        "value": 5.3605,
         "ty": {
           "type": "Unknown"
         },
@@ -122757,7 +122757,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.36845932310401,
+        "value": 5.3685,
         "ty": {
           "type": "Unknown"
         },
@@ -122871,7 +122871,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.37645766908547,
+        "value": 5.3765,
         "ty": {
           "type": "Unknown"
         },
@@ -122985,7 +122985,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.384452779612897,
+        "value": 5.3845,
         "ty": {
           "type": "Unknown"
         },
@@ -123099,7 +123099,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.392444595063467,
+        "value": 5.3924,
         "ty": {
           "type": "Unknown"
         },
@@ -123213,7 +123213,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.400433055790868,
+        "value": 5.4004,
         "ty": {
           "type": "Unknown"
         },
@@ -123327,7 +123327,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.408418102125568,
+        "value": 5.4084,
         "ty": {
           "type": "Unknown"
         },
@@ -123441,7 +123441,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.416399674375072,
+        "value": 5.4164,
         "ty": {
           "type": "Unknown"
         },
@@ -123555,7 +123555,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.4243777128242,
+        "value": 5.4244,
         "ty": {
           "type": "Unknown"
         },
@@ -123669,7 +123669,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.432352157735334,
+        "value": 5.4324,
         "ty": {
           "type": "Unknown"
         },
@@ -123783,7 +123783,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.4403229493486895,
+        "value": 5.4403,
         "ty": {
           "type": "Unknown"
         },
@@ -123897,7 +123897,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.448290027882581,
+        "value": 5.4483,
         "ty": {
           "type": "Unknown"
         },
@@ -124011,7 +124011,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.4562533335336845,
+        "value": 5.4563,
         "ty": {
           "type": "Unknown"
         },
@@ -124125,7 +124125,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.464212806477302,
+        "value": 5.4642,
         "ty": {
           "type": "Unknown"
         },
@@ -124239,7 +124239,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.472168386867627,
+        "value": 5.4722,
         "ty": {
           "type": "Unknown"
         },
@@ -124353,7 +124353,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.480120014838003,
+        "value": 5.4801,
         "ty": {
           "type": "Unknown"
         },
@@ -124467,7 +124467,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.4880676305012,
+        "value": 5.4881,
         "ty": {
           "type": "Unknown"
         },
@@ -124581,7 +124581,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.496011173949669,
+        "value": 5.496,
         "ty": {
           "type": "Unknown"
         },
@@ -124695,7 +124695,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.5039505852558115,
+        "value": 5.504,
         "ty": {
           "type": "Unknown"
         },
@@ -124809,7 +124809,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.5118858044722465,
+        "value": 5.5119,
         "ty": {
           "type": "Unknown"
         },
@@ -124923,7 +124923,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.51981677163207,
+        "value": 5.5198,
         "ty": {
           "type": "Unknown"
         },
@@ -125037,7 +125037,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.527743426749126,
+        "value": 5.5277,
         "ty": {
           "type": "Unknown"
         },
@@ -125151,7 +125151,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.53566570981827,
+        "value": 5.5357,
         "ty": {
           "type": "Unknown"
         },
@@ -125265,7 +125265,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.543583560815635,
+        "value": 5.5436,
         "ty": {
           "type": "Unknown"
         },
@@ -125379,7 +125379,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.551496919698899,
+        "value": 5.5515,
         "ty": {
           "type": "Unknown"
         },
@@ -125493,7 +125493,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.559405726407545,
+        "value": 5.5594,
         "ty": {
           "type": "Unknown"
         },
@@ -125607,7 +125607,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.567309920863135,
+        "value": 5.5673,
         "ty": {
           "type": "Unknown"
         },
@@ -125721,7 +125721,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.575209442969574,
+        "value": 5.5752,
         "ty": {
           "type": "Unknown"
         },
@@ -125835,7 +125835,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.583104232613373,
+        "value": 5.5831,
         "ty": {
           "type": "Unknown"
         },
@@ -125949,7 +125949,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.590994229663917,
+        "value": 5.591,
         "ty": {
           "type": "Unknown"
         },
@@ -126063,7 +126063,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.598879373973734,
+        "value": 5.5989,
         "ty": {
           "type": "Unknown"
         },
@@ -126177,7 +126177,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.606759605378761,
+        "value": 5.6068,
         "ty": {
           "type": "Unknown"
         },
@@ -126291,7 +126291,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.61463486369861,
+        "value": 5.6146,
         "ty": {
           "type": "Unknown"
         },
@@ -126405,7 +126405,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.622505088736835,
+        "value": 5.6225,
         "ty": {
           "type": "Unknown"
         },
@@ -126519,7 +126519,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.630370220281198,
+        "value": 5.6304,
         "ty": {
           "type": "Unknown"
         },
@@ -126633,7 +126633,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.638230198103939,
+        "value": 5.6382,
         "ty": {
           "type": "Unknown"
         },
@@ -126747,7 +126747,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.646084961962044,
+        "value": 5.6461,
         "ty": {
           "type": "Unknown"
         },
@@ -126861,7 +126861,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.653934451597509,
+        "value": 5.6539,
         "ty": {
           "type": "Unknown"
         },
@@ -126975,7 +126975,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.6617786067376095,
+        "value": 5.6618,
         "ty": {
           "type": "Unknown"
         },
@@ -127089,7 +127089,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.669617367095167,
+        "value": 5.6696,
         "ty": {
           "type": "Unknown"
         },
@@ -127203,7 +127203,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.6774506723688205,
+        "value": 5.6775,
         "ty": {
           "type": "Unknown"
         },
@@ -127317,7 +127317,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.68527846224329,
+        "value": 5.6853,
         "ty": {
           "type": "Unknown"
         },
@@ -127431,7 +127431,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.69310067638965,
+        "value": 5.6931,
         "ty": {
           "type": "Unknown"
         },
@@ -127545,7 +127545,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.70091725446559,
+        "value": 5.7009,
         "ty": {
           "type": "Unknown"
         },
@@ -127659,7 +127659,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.708728136115692,
+        "value": 5.7087,
         "ty": {
           "type": "Unknown"
         },
@@ -127773,7 +127773,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.716533260971688,
+        "value": 5.7165,
         "ty": {
           "type": "Unknown"
         },
@@ -127887,7 +127887,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.724332568652743,
+        "value": 5.7243,
         "ty": {
           "type": "Unknown"
         },
@@ -128001,7 +128001,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.732125998765708,
+        "value": 5.7321,
         "ty": {
           "type": "Unknown"
         },
@@ -128115,7 +128115,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 5.7399134909054,
+        "value": 5.7399,
         "ty": {
           "type": "Unknown"
         },
@@ -128357,7 +128357,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0003088767863740056,
+        "value": 0.0003,
         "ty": {
           "type": "Unknown"
         },
@@ -128471,7 +128471,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0008744212578835879,
+        "value": 0.0009,
         "ty": {
           "type": "Unknown"
         },
@@ -128585,7 +128585,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0016078567618411604,
+        "value": 0.0016,
         "ty": {
           "type": "Unknown"
         },
@@ -128699,7 +128699,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0024776761473543365,
+        "value": 0.0025,
         "ty": {
           "type": "Unknown"
         },
@@ -128813,7 +128813,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0034657557821869064,
+        "value": 0.0035,
         "ty": {
           "type": "Unknown"
         },
@@ -128927,7 +128927,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.004559923342801028,
+        "value": 0.0046,
         "ty": {
           "type": "Unknown"
         },
@@ -129041,7 +129041,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.005751283318115823,
+        "value": 0.0058,
         "ty": {
           "type": "Unknown"
         },
@@ -129155,7 +129155,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0070329744407806065,
+        "value": 0.007,
         "ty": {
           "type": "Unknown"
         },
@@ -129269,7 +129269,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.008399501272888125,
+        "value": 0.0084,
         "ty": {
           "type": "Unknown"
         },
@@ -129383,7 +129383,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0098463378936239,
+        "value": 0.0098,
         "ty": {
           "type": "Unknown"
         },
@@ -129497,7 +129497,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.011369675884793196,
+        "value": 0.0114,
         "ty": {
           "type": "Unknown"
         },
@@ -129611,7 +129611,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.012966255352231596,
+        "value": 0.013,
         "ty": {
           "type": "Unknown"
         },
@@ -129725,7 +129725,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.014633246806296421,
+        "value": 0.0146,
         "ty": {
           "type": "Unknown"
         },
@@ -129839,7 +129839,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.016368165769808582,
+        "value": 0.0164,
         "ty": {
           "type": "Unknown"
         },
@@ -129953,7 +129953,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.01816880930794178,
+        "value": 0.0182,
         "ty": {
           "type": "Unknown"
         },
@@ -130067,7 +130067,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.020033207739199133,
+        "value": 0.02,
         "ty": {
           "type": "Unknown"
         },
@@ -130181,7 +130181,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.02195958715890933,
+        "value": 0.022,
         "ty": {
           "type": "Unknown"
         },
@@ -130295,7 +130295,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.023946339851143025,
+        "value": 0.0239,
         "ty": {
           "type": "Unknown"
         },
@@ -130409,7 +130409,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.025992000576771767,
+        "value": 0.026,
         "ty": {
           "type": "Unknown"
         },
@@ -130523,7 +130523,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.028095227319117417,
+        "value": 0.0281,
         "ty": {
           "type": "Unknown"
         },
@@ -130637,7 +130637,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.030254785465826266,
+        "value": 0.0303,
         "ty": {
           "type": "Unknown"
         },
@@ -130751,7 +130751,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.03246953467771104,
+        "value": 0.0325,
         "ty": {
           "type": "Unknown"
         },
@@ -130865,7 +130865,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.03473841788570083,
+        "value": 0.0347,
         "ty": {
           "type": "Unknown"
         },
@@ -130979,7 +130979,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.037060451992753096,
+        "value": 0.0371,
         "ty": {
           "type": "Unknown"
         },
@@ -131093,7 +131093,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.039434719956037256,
+        "value": 0.0394,
         "ty": {
           "type": "Unknown"
         },
@@ -131207,7 +131207,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0418603639971446,
+        "value": 0.0419,
         "ty": {
           "type": "Unknown"
         },
@@ -131321,7 +131321,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04433657974219399,
+        "value": 0.0443,
         "ty": {
           "type": "Unknown"
         },
@@ -131435,7 +131435,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.04686261113460805,
+        "value": 0.0469,
         "ty": {
           "type": "Unknown"
         },
@@ -131549,7 +131549,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.049437745994617054,
+        "value": 0.0494,
         "ty": {
           "type": "Unknown"
         },
@@ -131663,7 +131663,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.052061312123746775,
+        "value": 0.0521,
         "ty": {
           "type": "Unknown"
         },
@@ -131777,7 +131777,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.05473267387142298,
+        "value": 0.0547,
         "ty": {
           "type": "Unknown"
         },
@@ -131891,7 +131891,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.05745122909571445,
+        "value": 0.0575,
         "ty": {
           "type": "Unknown"
         },
@@ -132005,7 +132005,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.06021640646204922,
+        "value": 0.0602,
         "ty": {
           "type": "Unknown"
         },
@@ -132119,7 +132119,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.06302766303321676,
+        "value": 0.063,
         "ty": {
           "type": "Unknown"
         },
@@ -132233,7 +132233,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.065884482111606,
+        "value": 0.0659,
         "ty": {
           "type": "Unknown"
         },
@@ -132347,7 +132347,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.06878637130082663,
+        "value": 0.0688,
         "ty": {
           "type": "Unknown"
         },
@@ -132461,7 +132461,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.07173286075894866,
+        "value": 0.0717,
         "ty": {
           "type": "Unknown"
         },
@@ -132575,7 +132575,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.07472350161975819,
+        "value": 0.0747,
         "ty": {
           "type": "Unknown"
         },
@@ -132689,7 +132689,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.07775786456188008,
+        "value": 0.0778,
         "ty": {
           "type": "Unknown"
         },
@@ -132803,7 +132803,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.08083553850849659,
+        "value": 0.0808,
         "ty": {
           "type": "Unknown"
         },
@@ -132917,7 +132917,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.0839561294427825,
+        "value": 0.084,
         "ty": {
           "type": "Unknown"
         },
@@ -133031,7 +133031,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.08711925932620523,
+        "value": 0.0871,
         "ty": {
           "type": "Unknown"
         },
@@ -133145,7 +133145,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.09032456510852403,
+        "value": 0.0903,
         "ty": {
           "type": "Unknown"
         },
@@ -133259,7 +133259,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.09357169781977537,
+        "value": 0.0936,
         "ty": {
           "type": "Unknown"
         },
@@ -133373,7 +133373,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.09686032173575797,
+        "value": 0.0969,
         "ty": {
           "type": "Unknown"
         },
@@ -133487,7 +133487,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.1001901136095766,
+        "value": 0.1002,
         "ty": {
           "type": "Unknown"
         },
@@ -133601,7 +133601,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.10356076196269755,
+        "value": 0.1036,
         "ty": {
           "type": "Unknown"
         },
@@ -133715,7 +133715,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.10697196642975125,
+        "value": 0.107,
         "ty": {
           "type": "Unknown"
         },
@@ -133829,7 +133829,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.11042343715198077,
+        "value": 0.1104,
         "ty": {
           "type": "Unknown"
         },
@@ -133943,7 +133943,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.11391489421480577,
+        "value": 0.1139,
         "ty": {
           "type": "Unknown"
         },
@@ -134057,7 +134057,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.1174460671254962,
+        "value": 0.1174,
         "ty": {
           "type": "Unknown"
         },
@@ -134171,7 +134171,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.12101669432735565,
+        "value": 0.121,
         "ty": {
           "type": "Unknown"
         },
@@ -134285,7 +134285,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.12462652274722663,
+        "value": 0.1246,
         "ty": {
           "type": "Unknown"
         },
@@ -134399,7 +134399,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.1282753073734455,
+        "value": 0.1283,
         "ty": {
           "type": "Unknown"
         },
@@ -134513,7 +134513,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.13196281086168624,
+        "value": 0.132,
         "ty": {
           "type": "Unknown"
         },
@@ -134627,7 +134627,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.13568880316636908,
+        "value": 0.1357,
         "ty": {
           "type": "Unknown"
         },
@@ -134741,7 +134741,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.13945306119556672,
+        "value": 0.1395,
         "ty": {
           "type": "Unknown"
         },
@@ -134855,7 +134855,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.1432553684875183,
+        "value": 0.1433,
         "ty": {
           "type": "Unknown"
         },
@@ -134969,7 +134969,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.14709551490705794,
+        "value": 0.1471,
         "ty": {
           "type": "Unknown"
         },
@@ -135083,7 +135083,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.15097329636042395,
+        "value": 0.151,
         "ty": {
           "type": "Unknown"
         },
@@ -135197,7 +135197,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.15488851452703706,
+        "value": 0.1549,
         "ty": {
           "type": "Unknown"
         },
@@ -135311,7 +135311,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.15884097660699775,
+        "value": 0.1588,
         "ty": {
           "type": "Unknown"
         },
@@ -135425,7 +135425,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.16283049508312877,
+        "value": 0.1628,
         "ty": {
           "type": "Unknown"
         },
@@ -135539,7 +135539,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.1668568874965288,
+        "value": 0.1669,
         "ty": {
           "type": "Unknown"
         },
@@ -135653,7 +135653,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.1709199762346539,
+        "value": 0.1709,
         "ty": {
           "type": "Unknown"
         },
@@ -135767,7 +135767,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.17501958833106557,
+        "value": 0.175,
         "ty": {
           "type": "Unknown"
         },
@@ -135881,7 +135881,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.17915555527602786,
+        "value": 0.1792,
         "ty": {
           "type": "Unknown"
         },
@@ -135995,7 +135995,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.18332771283721647,
+        "value": 0.1833,
         "ty": {
           "type": "Unknown"
         },
@@ -136109,7 +136109,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.18753590088987154,
+        "value": 0.1875,
         "ty": {
           "type": "Unknown"
         },
@@ -136223,7 +136223,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.1917799632557494,
+        "value": 0.1918,
         "ty": {
           "type": "Unknown"
         },
@@ -136337,7 +136337,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.19605974755032152,
+        "value": 0.1961,
         "ty": {
           "type": "Unknown"
         },
@@ -136451,7 +136451,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.20037510503767433,
+        "value": 0.2004,
         "ty": {
           "type": "Unknown"
         },
@@ -136565,7 +136565,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2047258904926297,
+        "value": 0.2047,
         "ty": {
           "type": "Unknown"
         },
@@ -136679,7 +136679,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.20911196206963611,
+        "value": 0.2091,
         "ty": {
           "type": "Unknown"
         },
@@ -136793,7 +136793,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2135331811780031,
+        "value": 0.2135,
         "ty": {
           "type": "Unknown"
         },
@@ -136907,7 +136907,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.21798941236310168,
+        "value": 0.218,
         "ty": {
           "type": "Unknown"
         },
@@ -137021,7 +137021,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2224805231931727,
+        "value": 0.2225,
         "ty": {
           "type": "Unknown"
         },
@@ -137135,7 +137135,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.22700638415140037,
+        "value": 0.227,
         "ty": {
           "type": "Unknown"
         },
@@ -137249,7 +137249,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2315668685329578,
+        "value": 0.2316,
         "ty": {
           "type": "Unknown"
         },
@@ -137363,7 +137363,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.23616185234672285,
+        "value": 0.2362,
         "ty": {
           "type": "Unknown"
         },
@@ -137477,7 +137477,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.24079121422140434,
+        "value": 0.2408,
         "ty": {
           "type": "Unknown"
         },
@@ -137591,7 +137591,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.24545483531583348,
+        "value": 0.2455,
         "ty": {
           "type": "Unknown"
         },
@@ -137705,7 +137705,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.25015259923317573,
+        "value": 0.2502,
         "ty": {
           "type": "Unknown"
         },
@@ -137819,7 +137819,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2548843919388649,
+        "value": 0.2549,
         "ty": {
           "type": "Unknown"
         },
@@ -137933,7 +137933,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2596501016820405,
+        "value": 0.2597,
         "ty": {
           "type": "Unknown"
         },
@@ -138047,7 +138047,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2644496189203095,
+        "value": 0.2644,
         "ty": {
           "type": "Unknown"
         },
@@ -138161,7 +138161,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.26928283624765087,
+        "value": 0.2693,
         "ty": {
           "type": "Unknown"
         },
@@ -138275,7 +138275,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2741496483253046,
+        "value": 0.2741,
         "ty": {
           "type": "Unknown"
         },
@@ -138389,7 +138389,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.27904995181548115,
+        "value": 0.279,
         "ty": {
           "type": "Unknown"
         },
@@ -138503,7 +138503,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2839836453177521,
+        "value": 0.284,
         "ty": {
           "type": "Unknown"
         },
@@ -138617,7 +138617,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.2889506293079834,
+        "value": 0.289,
         "ty": {
           "type": "Unknown"
         },
@@ -138731,7 +138731,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.29395080607968677,
+        "value": 0.294,
         "ty": {
           "type": "Unknown"
         },
@@ -138845,7 +138845,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.29898407968766355,
+        "value": 0.299,
         "ty": {
           "type": "Unknown"
         },
@@ -138959,7 +138959,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.3040503558938321,
+        "value": 0.3041,
         "ty": {
           "type": "Unknown"
         },
@@ -139073,7 +139073,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.309149542115132,
+        "value": 0.3091,
         "ty": {
           "type": "Unknown"
         },
@@ -139187,7 +139187,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.31428154737340264,
+        "value": 0.3143,
         "ty": {
           "type": "Unknown"
         },
@@ -139301,7 +139301,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.3194462822471468,
+        "value": 0.3194,
         "ty": {
           "type": "Unknown"
         },
@@ -139415,7 +139415,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.3246436588250858,
+        "value": 0.3246,
         "ty": {
           "type": "Unknown"
         },
@@ -139529,7 +139529,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.3298735906614216,
+        "value": 0.3299,
         "ty": {
           "type": "Unknown"
         },
@@ -139643,7 +139643,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.33513599273272865,
+        "value": 0.3351,
         "ty": {
           "type": "Unknown"
         },
@@ -139757,7 +139757,7 @@ description: Variables in memory after executing gear.kcl
       },
       {
         "type": "Number",
-        "value": 0.340430781396414,
+        "value": 0.3404,
         "ty": {
           "type": "Unknown"
         },
