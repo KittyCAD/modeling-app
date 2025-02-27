@@ -1888,11 +1888,11 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { target, trajectory, sectional, nodeToEdit } = input
-        const isEditing = nodeToEdit !== undefined // && typeof nodeToEdit[1][0] === 'number'
         let variableName: string | undefined = undefined
+        let insertIndex: number | undefined = undefined
 
         // If this is an edit flow, first we're going to remove the old extrusion
-        if (isEditing) {
+        if (nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number') {
           // Extract the plane name from the node to edit
           const variableNode = getNodeFromPath<VariableDeclaration>(
             ast,
@@ -1905,10 +1905,11 @@ export const modelingMachine = setup({
             variableName = variableNode.node.declaration.id.name
           }
 
-          // Removing the old extrusion statement
+          // Removing the old statement
           const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0] as number, 1)
+          newBody.splice(nodeToEdit[1][0], 1)
           ast.body = newBody
+          insertIndex = nodeToEdit[1][0]
         }
 
         // Find the target declaration
@@ -1942,18 +1943,19 @@ export const modelingMachine = setup({
         const trajectoryDeclarator = trajectoryNode.node
 
         // Perform the sweep
-        const result = addSweep(
-          ast,
+        const addResult = addSweep({
+          node: ast,
           targetDeclarator,
           trajectoryDeclarator,
           sectional,
-          variableName
-        )
+          variableName,
+          insertIndex,
+        })
         const updatedAst = await kclManager.updateAst(
-          result.modifiedAst,
+          addResult.modifiedAst,
           true,
           {
-            focusPath: [result.pathToNode],
+            focusPath: [addResult.pathToNode],
           }
         )
 
