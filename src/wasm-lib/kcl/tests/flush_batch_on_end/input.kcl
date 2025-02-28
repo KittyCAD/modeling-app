@@ -11,16 +11,18 @@ length = 1 + 1 / 2
 sketch000 = startSketchOn('XY')
 
 // create a profile of the outside of the pipe
-outerProfile = circle({
+outerProfile = circle(
+  sketch000,
   center = [0.0, 0.0],
-  radius = outerDiameter / 2
-}, sketch000, $arc000)
+  radius = outerDiameter / 2,
+  tag = $arc000)
 
 // create a profile of the inside of the pipe
-innerProfile = circle({
+innerProfile = circle(
+  sketch000,
   center = [0.0, 0.0],
-  radius = innerDiameter / 2
-}, sketch000, $arc001)
+  radius = innerDiameter / 2,
+  tag = $arc001)
 
 // create a profile with holes sketch000Profile000Holes
 pipeProfile = outerProfile
