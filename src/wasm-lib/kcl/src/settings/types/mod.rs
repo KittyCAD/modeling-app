@@ -320,10 +320,10 @@ pub struct NamedView {
     #[serde(default, alias = "worldCoordSystem", skip_serializing_if = "is_default")]
     pub world_coord_system: String,
     /// A unique uuidv4 to have a unique key when storing named views
-    #[serde(default = "uuid::Uuid::new_v4", alias = "id")]
+    #[serde(default = "uuid::Uuid::new_v4")]
     pub id: uuid::Uuid,
     /// Version number of the view point if the engine camera API changes
-    #[serde(default = "named_view_point_version_one", alias = "version")]
+    #[serde(default = "named_view_point_version_one")]
     pub version: f64,
 }
 
