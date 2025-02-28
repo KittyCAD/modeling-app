@@ -138,7 +138,7 @@ function createCallWrapper(
     }
     if (tooltip === 'lineTo') {
       const labeledArgs = [
-        createLabeledArg('endAbsolute', createArrayExpression(val)),
+        createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(val)),
       ]
       if (tag) {
         labeledArgs.push(createLabeledArg(ARG_TAG, tag))
