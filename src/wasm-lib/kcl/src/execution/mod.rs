@@ -626,6 +626,8 @@ impl ExecutorContext {
                 let mut exec_state = old_state;
                 exec_state.reset(&self.settings);
 
+                exec_state.add_root_module_contents(&program);
+
                 // We don't do this in mock mode since there is no engine connection
                 // anyways and from the TS side we override memory and don't want to clear it.
                 self.send_clear_scene(&mut exec_state, Default::default())
@@ -635,12 +637,15 @@ impl ExecutorContext {
                 (exec_state, false)
             } else {
                 old_state.mut_memory().restore_env(result_env);
+                old_state.add_root_module_contents(&program);
+
                 (old_state, true)
             };
 
             (program, exec_state, preserve_mem)
         } else {
             let mut exec_state = ExecState::new(&self.settings);
+            exec_state.add_root_module_contents(&program);
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -696,6 +701,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        exec_state.add_root_module_contents(program);
         self.send_clear_scene(exec_state, Default::default())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -711,7 +717,6 @@ impl ExecutorContext {
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
-        exec_state.add_root_module_contents(program);
 
         // Re-apply the settings, in case the cache was busted.
         self.engine
