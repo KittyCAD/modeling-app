@@ -61,7 +61,9 @@ export default function Gizmo() {
       modelingState.matches('Sketch') &&
       !settings.app.allowOrbitInSketchMode.current
     if (wrapperRef.current) {
-      wrapperRef.current.style.opacity = disableOrbitRef.current ? '0.5' : '1'
+      wrapperRef.current.style.filter = disableOrbitRef.current
+        ? 'grayscale(100%)'
+        : 'none'
       wrapperRef.current.style.cursor = disableOrbitRef.current
         ? 'not-allowed'
         : 'auto'
