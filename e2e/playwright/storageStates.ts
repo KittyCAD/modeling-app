@@ -10,10 +10,10 @@ export const TEST_SETTINGS = {
     theme: Themes.Dark,
     onboardingStatus: 'dismissed',
     projectDirectory: '',
-    enableSSAO: false,
     showDebugPanel: true,
   },
   modeling: {
+    enableSSAO: false,
     defaultUnit: 'in',
     mouseControls: 'Zoo',
     cameraProjection: 'perspective',

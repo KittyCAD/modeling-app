@@ -46,7 +46,6 @@ export function configurationToSettingsPayload(
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
-      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showDebugPanel: configuration?.settings?.app?.show_debug_panel,
     },
     modeling: {
@@ -57,6 +56,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.modeling?.mouse_controls
       ),
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
+      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
     },
     textEditor: {
@@ -124,7 +124,6 @@ export function projectConfigurationToSettingsPayload(
       streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
-      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       namedViews: deepPartialNamedViewsToNamedViews(
         configuration?.settings?.app?.named_views
       ),
@@ -133,6 +132,8 @@ export function projectConfigurationToSettingsPayload(
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
+      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,

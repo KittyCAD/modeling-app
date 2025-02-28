@@ -174,13 +174,6 @@ export function createSettings() {
           </div>
         ),
       }),
-      enableSSAO: new Setting<boolean>({
-        defaultValue: true,
-        description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
-        validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
-      }),
       /**
        * Whether to show the debug panel, which lets you see
        * various states of the app to aid in development
@@ -308,6 +301,13 @@ export function createSettings() {
                 ],
             })),
         },
+      }),
+      enableSSAO: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'both', //for now
       }),
       /**
        * The controls for how to navigate the 3D view
