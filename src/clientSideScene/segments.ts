@@ -641,8 +641,16 @@ class CircleSegment implements SegmentUtils {
     if (radiusLengthIndicator) {
       // The radius indicator is placed halfway between the center and the start angle point
       const indicatorPoint = {
-        x: center[0] + (Math.cos(Math.atan2(from[1] - center[1], from[0] - center[0])) * radius) / 2,
-        y: center[1] + (Math.sin(Math.atan2(from[1] - center[1], from[0] - center[0])) * radius) / 2,
+        x:
+          center[0] +
+          (Math.cos(Math.atan2(from[1] - center[1], from[0] - center[0])) *
+            radius) /
+            2,
+        y:
+          center[1] +
+          (Math.sin(Math.atan2(from[1] - center[1], from[0] - center[0])) *
+            radius) /
+            2,
       }
       const labelWrapper = radiusLengthIndicator.getObjectByName(
         SEGMENT_LENGTH_LABEL_TEXT
@@ -653,7 +661,8 @@ class CircleSegment implements SegmentUtils {
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
 
       // Calculate the angle for the label
-      const labelAngle = (Math.atan2(from[1] - center[1], from[0] - center[0]) * 180) / Math.PI
+      const labelAngle =
+        (Math.atan2(from[1] - center[1], from[0] - center[0]) * 180) / Math.PI
       label.style.setProperty('--degree', `${labelAngle}deg`)
       label.style.setProperty('--x', `0px`)
       label.style.setProperty('--y', `0px`)
