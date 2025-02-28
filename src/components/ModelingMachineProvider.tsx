@@ -1497,6 +1497,12 @@ export const ModelingMachineProvider = ({
             return result
           }
         ),
+        'set-up-draft-arc': fromPromise(
+          async ({ input: { sketchDetails, data } }) => {
+            return reject('No sketch details or data')
+            // TODO implement
+          }
+        ),
         'setup-client-side-sketch-segments': fromPromise(
           async ({ input: { sketchDetails, selectionRanges } }) => {
             if (!sketchDetails) return
