@@ -127,6 +127,34 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate/main.kcl",
+    "multipleFiles": false,
+    "title": "Gridfinity Baseplate",
+    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion"
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate-magnets/main.kcl",
+    "multipleFiles": false,
+    "title": "Gridfinity Baseplate With Magnets",
+    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This baseplate version includes holes for magnet placement"
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "gridfinity-bins/main.kcl",
+    "multipleFiles": false,
+    "title": "Gridfinity Bins",
+    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion"
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "gridfinity-bins-stacking-lip/main.kcl",
+    "multipleFiles": false,
+    "title": "Gridfinity Bins With A Stacking Lip",
+    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This Gridfinity bins version includes a lip to allowable stacking Gridfinity bins"
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "hex-nut/main.kcl",
     "multipleFiles": false,
     "title": "Hex nut",

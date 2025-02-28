@@ -24,6 +24,7 @@
     "typescript": "^5.7.2"
   },
   "devDependencies": {
+    "@lezer/common": "1.2.3",
     "@lezer/generator": "^1.7.2",
     "@rollup/plugin-typescript": "^12.1.2",
     "rollup": "^4.29.1",
