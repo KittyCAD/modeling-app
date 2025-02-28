@@ -285,7 +285,7 @@ pub struct ModelingSettings {
 }
 
 fn named_view_point_version_one() -> f64 {
-    return 1.0;
+    1.0
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate)]
