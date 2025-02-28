@@ -2864,7 +2864,7 @@ extrude001 = extrude(profile001, length = 100)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 500, y: 250 }
-    const initialColor: [number, number, number] = [135, 135, 135]
+    const initialColor: [number, number, number] = [123, 123, 123]
 
     await test.step(`Confirm extrude exists with default appearance`, async () => {
       await toolbar.closePane('code')
@@ -2905,7 +2905,7 @@ extrude001 = extrude(profile001, length = 100)
       })
       await cmdBar.progressCmdBar()
       await toolbar.closePane('feature-tree')
-      await scene.expectPixelColor(shapeColor, testPoint, 40)
+      await scene.expectPixelColor(shapeColor, testPoint, 10)
       await toolbar.openPane('code')
       if (hex === 'default') {
         const anyAppearanceDeclaration = `|> appearance(`
@@ -2931,9 +2931,9 @@ extrude001 = extrude(profile001, length = 100)
       await setApperanceAndCheck('Purple', '#FF00FF', [180, 0, 180])
       await setApperanceAndCheck('Yellow', '#FFFF00', [180, 180, 0])
       await setApperanceAndCheck('Black', '#000000', [0, 0, 0])
-      await setApperanceAndCheck('Dark Grey', '#080808', [10, 10, 10])
-      await setApperanceAndCheck('Light Grey', '#D3D3D3', [190, 190, 190])
-      await setApperanceAndCheck('White', '#FFFFFF', [200, 200, 200])
+      await setApperanceAndCheck('Dark Grey', '#080808', [0x33, 0x33, 0x33])
+      await setApperanceAndCheck('Light Grey', '#D3D3D3', [176, 176, 176])
+      await setApperanceAndCheck('White', '#FFFFFF', [184, 184, 184])
       await setApperanceAndCheck(
         'Default (clear appearance)',
         'default',
