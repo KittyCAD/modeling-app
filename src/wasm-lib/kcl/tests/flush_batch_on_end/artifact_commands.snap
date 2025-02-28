@@ -651,17 +651,5 @@ description: Artifact commands flush_batch_on_end.kcl
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
     }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
   }
 ]

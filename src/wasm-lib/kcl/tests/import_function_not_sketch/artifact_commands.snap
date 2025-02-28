@@ -292,17 +292,5 @@ description: Artifact commands import_function_not_sketch.kcl
       "type": "set_scene_units",
       "unit": "in"
     }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
   }
 ]
