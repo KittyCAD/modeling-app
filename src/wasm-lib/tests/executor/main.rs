@@ -2024,3 +2024,32 @@ async fn kcl_test_error_no_auth_websocket() {
         .to_string()
         .contains("Please send the following object over this websocket"));
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_ensure_nothing_left_in_batch() {
+    let code = r#"@settings(defaultLengthUnit = in)
+// Set units in inches (in)
+
+
+// Define constants
+innerDiameter = 0.364
+outerDiameter = 35 / 64
+length = 1 + 1 / 2
+
+// create a sketch on the 'XY' plane
+sketch000 = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(end = [0, innerDiameter / 2])
+"#;
+
+    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
+        .await
+        .unwrap();
+    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+    let program = kcl_lib::Program::parse_no_errs(code).unwrap();
+    ctx.run_with_ui_outputs(&program, &mut exec_state).await.unwrap();
+
+    // Ensure nothing is left in the batch
+    assert!(ctx.engine.batch().read().await.is_empty());
+    assert!(ctx.engine.batch_end().read().await.is_empty());
+}
