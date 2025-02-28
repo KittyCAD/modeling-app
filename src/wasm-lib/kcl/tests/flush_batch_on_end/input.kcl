@@ -1,24 +1,30 @@
-width = 20
-length = 10
-thickness = 1
-filletRadius = 2
+@settings(defaultLengthUnit = in)
+// Set units in inches (in)
 
-mountingPlateSketch = startSketchOn("XY")
-  |> startProfileAt([-width / 2, -length / 2], %)
-  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
-  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
-  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
-  |> close(tag = $edge4)
 
-mountingPlate = extrude(mountingPlateSketch, length = thickness)
-  |> fillet(
-       radius = filletRadius,
-       tags = [
-         getNextAdjacentEdge(edge1),
-         getNextAdjacentEdge(edge2),
-         getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge4)
-       ],
-     )
+// Define constants
+innerDiameter = 0.364
+outerDiameter = 35 / 64
+length = 1 + 1 / 2
 
-// We end on fillet specifically for this test DO NOT REMOVE
+// create a sketch on the 'XY' plane
+sketch000 = startSketchOn('XY')
+
+// create a profile of the outside of the pipe
+outerProfile = circle({
+  center = [0.0, 0.0],
+  radius = outerDiameter / 2
+}, sketch000, $arc000)
+
+// create a profile of the inside of the pipe
+innerProfile = circle({
+  center = [0.0, 0.0],
+  radius = innerDiameter / 2
+}, sketch000, $arc001)
+
+// create a profile with holes sketch000Profile000Holes
+pipeProfile = outerProfile
+  |> hole(innerProfile, %)
+
+// extrude the pipe profile to create the pipe
+pipe = extrude(pipeProfile, length = length)
