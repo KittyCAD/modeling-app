@@ -71,3 +71,4 @@ venv
 
 # electron
 out/
+*.snap.new

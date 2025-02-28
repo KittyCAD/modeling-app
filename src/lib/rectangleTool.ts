@@ -24,6 +24,7 @@ import {
   isBinaryExpression,
   isLiteralValueNumber,
 } from 'lang/util'
+import { ARG_END_ABSOLUTE } from 'lang/std/sketch'
 
 /**
  * It does not create the startSketchOn and it does not create the startProfileAt.
@@ -70,7 +71,7 @@ export const getRectangleCallExpressions = (
   ]),
   createCallExpressionStdLibKw('line', null, [
     createLabeledArg(
-      'endAbsolute',
+      ARG_END_ABSOLUTE,
       createArrayExpression([
         createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
         createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),

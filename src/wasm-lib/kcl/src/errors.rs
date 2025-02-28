@@ -1,13 +1,12 @@
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use indexmap::IndexMap;
-
 use crate::{
     execution::{ArtifactCommand, ArtifactGraph, Operation},
     lsp::IntoDiagnostic,
-    modules::ModulePath,
+    modules::{ModulePath, ModuleSource},
     source_range::SourceRange,
     ModuleId,
 };
@@ -88,8 +87,8 @@ pub enum KclError {
     ImportCycle(KclErrorDetails),
     #[error("type: {0:?}")]
     Type(KclErrorDetails),
-    #[error("unimplemented: {0:?}")]
-    Unimplemented(KclErrorDetails),
+    #[error("i/o: {0:?}")]
+    Io(KclErrorDetails),
     #[error("unexpected: {0:?}")]
     Unexpected(KclErrorDetails),
     #[error("value already defined: {0:?}")]
@@ -120,6 +119,7 @@ pub struct KclErrorWithOutputs {
     pub artifact_commands: Vec<ArtifactCommand>,
     pub artifact_graph: ArtifactGraph,
     pub filenames: IndexMap<ModuleId, ModulePath>,
+    pub source_files: IndexMap<ModuleId, ModuleSource>,
 }
 
 impl KclErrorWithOutputs {
@@ -129,6 +129,7 @@ impl KclErrorWithOutputs {
         artifact_commands: Vec<ArtifactCommand>,
         artifact_graph: ArtifactGraph,
         filenames: IndexMap<ModuleId, ModulePath>,
+        source_files: IndexMap<ModuleId, ModuleSource>,
     ) -> Self {
         Self {
             error,
@@ -136,6 +137,7 @@ impl KclErrorWithOutputs {
             artifact_commands,
             artifact_graph,
             filenames,
+            source_files,
         }
     }
     pub fn no_outputs(error: KclError) -> Self {
@@ -145,7 +147,158 @@ impl KclErrorWithOutputs {
             artifact_commands: Default::default(),
             artifact_graph: Default::default(),
             filenames: Default::default(),
+            source_files: Default::default(),
         }
+    }
+    pub fn into_miette_report_with_outputs(self) -> anyhow::Result<ReportWithOutputs> {
+        let mut source_ranges = self.error.source_ranges();
+
+        // Pop off the first source range to get the filename.
+        let first_source_range = source_ranges
+            .pop()
+            .ok_or_else(|| anyhow::anyhow!("No source ranges found"))?;
+
+        let source = self
+            .source_files
+            .get(&first_source_range.module_id())
+            .cloned()
+            .ok_or_else(|| {
+                anyhow::anyhow!(
+                    "Could not find source file for module id: {:?}",
+                    first_source_range.module_id()
+                )
+            })?;
+        let filename = source.path.to_string();
+        let kcl_source = source.source.to_string();
+
+        let mut related = Vec::new();
+        for source_range in source_ranges {
+            let module_id = source_range.module_id();
+            let source = self
+                .source_files
+                .get(&module_id)
+                .cloned()
+                .ok_or_else(|| anyhow::anyhow!("Could not find source file for module id: {:?}", module_id))?;
+            let error = self.error.override_source_ranges(vec![source_range]);
+            let report = Report {
+                error,
+                kcl_source: source.source.to_string(),
+                filename: source.path.to_string(),
+            };
+            related.push(report);
+        }
+
+        Ok(ReportWithOutputs {
+            error: self,
+            kcl_source,
+            filename,
+            related,
+        })
+    }
+}
+
+impl IntoDiagnostic for KclErrorWithOutputs {
+    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
+        let message = self.error.get_message();
+        let source_ranges = self.error.source_ranges();
+
+        source_ranges
+            .into_iter()
+            .map(|source_range| {
+                let source = self
+                    .source_files
+                    .get(&source_range.module_id())
+                    .cloned()
+                    .unwrap_or(ModuleSource {
+                        source: code.to_string(),
+                        path: self.filenames.get(&source_range.module_id()).unwrap().clone(),
+                    });
+                let mut filename = source.path.to_string();
+                if !filename.starts_with("file://") {
+                    filename = format!("file:///{}", filename.trim_start_matches("/"));
+                }
+
+                let related_information = if let Ok(uri) = url::Url::parse(&filename) {
+                    Some(vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
+                        location: tower_lsp::lsp_types::Location {
+                            uri,
+                            range: source_range.to_lsp_range(&source.source),
+                        },
+                        message: message.to_string(),
+                    }])
+                } else {
+                    None
+                };
+
+                Diagnostic {
+                    range: source_range.to_lsp_range(code),
+                    severity: Some(self.severity()),
+                    code: None,
+                    // TODO: this is neat we can pass a URL to a help page here for this specific error.
+                    code_description: None,
+                    source: Some("kcl".to_string()),
+                    related_information,
+                    message: message.clone(),
+                    tags: None,
+                    data: None,
+                }
+            })
+            .collect()
+    }
+
+    fn severity(&self) -> DiagnosticSeverity {
+        DiagnosticSeverity::ERROR
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+#[error("{}", self.error.error.get_message())]
+pub struct ReportWithOutputs {
+    pub error: KclErrorWithOutputs,
+    pub kcl_source: String,
+    pub filename: String,
+    pub related: Vec<Report>,
+}
+
+impl miette::Diagnostic for ReportWithOutputs {
+    fn code<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
+        let family = match self.error.error {
+            KclError::Lexical(_) => "Lexical",
+            KclError::Syntax(_) => "Syntax",
+            KclError::Semantic(_) => "Semantic",
+            KclError::ImportCycle(_) => "ImportCycle",
+            KclError::Type(_) => "Type",
+            KclError::Io(_) => "I/O",
+            KclError::Unexpected(_) => "Unexpected",
+            KclError::ValueAlreadyDefined(_) => "ValueAlreadyDefined",
+            KclError::UndefinedValue(_) => "UndefinedValue",
+            KclError::InvalidExpression(_) => "InvalidExpression",
+            KclError::Engine(_) => "Engine",
+            KclError::Internal(_) => "Internal",
+        };
+        let error_string = format!("KCL {family} error");
+        Some(Box::new(error_string))
+    }
+
+    fn source_code(&self) -> Option<&dyn miette::SourceCode> {
+        Some(&self.kcl_source)
+    }
+
+    fn labels(&self) -> Option<Box<dyn Iterator<Item = miette::LabeledSpan> + '_>> {
+        let iter = self
+            .error
+            .error
+            .source_ranges()
+            .clone()
+            .into_iter()
+            .map(miette::SourceSpan::from)
+            .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
+        Some(Box::new(iter))
+    }
+
+    fn related<'a>(&'a self) -> Option<Box<dyn Iterator<Item = &'a dyn miette::Diagnostic> + 'a>> {
+        let iter = self.related.iter().map(|r| r as &dyn miette::Diagnostic);
+        Some(Box::new(iter))
     }
 }
 
@@ -165,7 +318,7 @@ impl miette::Diagnostic for Report {
             KclError::Semantic(_) => "Semantic",
             KclError::ImportCycle(_) => "ImportCycle",
             KclError::Type(_) => "Type",
-            KclError::Unimplemented(_) => "Unimplemented",
+            KclError::Io(_) => "I/O",
             KclError::Unexpected(_) => "Unexpected",
             KclError::ValueAlreadyDefined(_) => "ValueAlreadyDefined",
             KclError::UndefinedValue(_) => "UndefinedValue",
@@ -188,7 +341,7 @@ impl miette::Diagnostic for Report {
             .clone()
             .into_iter()
             .map(miette::SourceSpan::from)
-            .map(|span| miette::LabeledSpan::new_with_span(None, span));
+            .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
         Some(Box::new(iter))
     }
 }
@@ -224,7 +377,7 @@ impl KclError {
             KclError::Semantic(_) => "semantic",
             KclError::ImportCycle(_) => "import cycle",
             KclError::Type(_) => "type",
-            KclError::Unimplemented(_) => "unimplemented",
+            KclError::Io(_) => "i/o",
             KclError::Unexpected(_) => "unexpected",
             KclError::ValueAlreadyDefined(_) => "value already defined",
             KclError::UndefinedValue(_) => "undefined value",
@@ -241,7 +394,7 @@ impl KclError {
             KclError::Semantic(e) => e.source_ranges.clone(),
             KclError::ImportCycle(e) => e.source_ranges.clone(),
             KclError::Type(e) => e.source_ranges.clone(),
-            KclError::Unimplemented(e) => e.source_ranges.clone(),
+            KclError::Io(e) => e.source_ranges.clone(),
             KclError::Unexpected(e) => e.source_ranges.clone(),
             KclError::ValueAlreadyDefined(e) => e.source_ranges.clone(),
             KclError::UndefinedValue(e) => e.source_ranges.clone(),
@@ -259,7 +412,7 @@ impl KclError {
             KclError::Semantic(e) => &e.message,
             KclError::ImportCycle(e) => &e.message,
             KclError::Type(e) => &e.message,
-            KclError::Unimplemented(e) => &e.message,
+            KclError::Io(e) => &e.message,
             KclError::Unexpected(e) => &e.message,
             KclError::ValueAlreadyDefined(e) => &e.message,
             KclError::UndefinedValue(e) => &e.message,
@@ -277,7 +430,7 @@ impl KclError {
             KclError::Semantic(e) => e.source_ranges = source_ranges,
             KclError::ImportCycle(e) => e.source_ranges = source_ranges,
             KclError::Type(e) => e.source_ranges = source_ranges,
-            KclError::Unimplemented(e) => e.source_ranges = source_ranges,
+            KclError::Io(e) => e.source_ranges = source_ranges,
             KclError::Unexpected(e) => e.source_ranges = source_ranges,
             KclError::ValueAlreadyDefined(e) => e.source_ranges = source_ranges,
             KclError::UndefinedValue(e) => e.source_ranges = source_ranges,
@@ -297,7 +450,7 @@ impl KclError {
             KclError::Semantic(e) => e.source_ranges.extend(source_ranges),
             KclError::ImportCycle(e) => e.source_ranges.extend(source_ranges),
             KclError::Type(e) => e.source_ranges.extend(source_ranges),
-            KclError::Unimplemented(e) => e.source_ranges.extend(source_ranges),
+            KclError::Io(e) => e.source_ranges.extend(source_ranges),
             KclError::Unexpected(e) => e.source_ranges.extend(source_ranges),
             KclError::ValueAlreadyDefined(e) => e.source_ranges.extend(source_ranges),
             KclError::UndefinedValue(e) => e.source_ranges.extend(source_ranges),
@@ -311,7 +464,7 @@ impl KclError {
 }
 
 impl IntoDiagnostic for KclError {
-    fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
+    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.get_message();
         let source_ranges = self.source_ranges();
 
@@ -322,18 +475,23 @@ impl IntoDiagnostic for KclError {
             .filter(|r| r.module_id() == module_id)
             .collect::<Vec<_>>();
 
-        Diagnostic {
-            range: source_ranges.first().map(|r| r.to_lsp_range(code)).unwrap_or_default(),
-            severity: Some(self.severity()),
-            code: None,
-            // TODO: this is neat we can pass a URL to a help page here for this specific error.
-            code_description: None,
-            source: Some("kcl".to_string()),
-            message,
-            related_information: None,
-            tags: None,
-            data: None,
+        let mut diagnostics = Vec::new();
+        for source_range in &source_ranges {
+            diagnostics.push(Diagnostic {
+                range: source_range.to_lsp_range(code),
+                severity: Some(self.severity()),
+                code: None,
+                // TODO: this is neat we can pass a URL to a help page here for this specific error.
+                code_description: None,
+                source: Some("kcl".to_string()),
+                related_information: None,
+                message: message.clone(),
+                tags: None,
+                data: None,
+            });
         }
+
+        diagnostics
     }
 
     fn severity(&self) -> DiagnosticSeverity {

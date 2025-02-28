@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.38"
+version = "0.2.44"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -22,7 +22,7 @@ clap = { version = "4.5.27", default-features = false, optional = true, features
 ] }
 convert_case = "0.6.0"
 dashmap = "6.1.0"
-derive-docs = { version = "0.1.38", path = "../derive-docs" }
+derive-docs = { version = "0.1.44", path = "../derive-docs" }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
 form_urlencoded = "1.2.1"

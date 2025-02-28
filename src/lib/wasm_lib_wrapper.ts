@@ -19,7 +19,6 @@ import {
   get_tangential_arc_to_info as GetTangentialArcToInfo,
   make_default_planes as MakeDefaultPlanes,
   coredump as CoreDump,
-  toml_stringify as TomlStringify,
   default_app_settings as DefaultAppSettings,
   parse_app_settings as ParseAppSettings,
   parse_project_settings as ParseProjectSettings,
@@ -29,6 +28,8 @@ import {
   kcl_settings as KclSettings,
   change_kcl_settings as ChangeKclSettings,
   get_kcl_version as GetKclVersion,
+  serialize_configuration as SerializeConfiguration,
+  serialize_project_configuration as SerializeProjectConfiguration,
 } from '../wasm-lib/pkg/wasm_lib'
 
 type ModuleType = typeof import('../wasm-lib/pkg/wasm_lib')
@@ -86,9 +87,6 @@ export const make_default_planes: typeof MakeDefaultPlanes = (...args) => {
 export const coredump: typeof CoreDump = (...args) => {
   return getModule().coredump(...args)
 }
-export const toml_stringify: typeof TomlStringify = (...args) => {
-  return getModule().toml_stringify(...args)
-}
 export const default_app_settings: typeof DefaultAppSettings = (...args) => {
   return getModule().default_app_settings(...args)
 }
@@ -122,3 +120,12 @@ export const change_kcl_settings: typeof ChangeKclSettings = (...args) => {
 export const get_kcl_version: typeof GetKclVersion = () => {
   return getModule().get_kcl_version()
 }
+export const serialize_configuration: typeof SerializeConfiguration = (
+  ...args
+) => {
+  return getModule().serialize_configuration(...args)
+}
+export const serialize_project_configuration: typeof SerializeProjectConfiguration =
+  (...args) => {
+    return getModule().serialize_project_configuration(...args)
+  }

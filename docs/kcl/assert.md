@@ -9,7 +9,10 @@ Check a value at runtime, and raise an error if the argument provided
 is false.
 
 ```js
-assert(data: bool, message: string) -> ()
+assert(
+  data: bool,
+  message: string,
+) -> ()
 ```
 
 
