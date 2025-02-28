@@ -3,7 +3,9 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+pub use artifact::{
+    Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane,
+};
 use cache::OldAstState;
 pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
