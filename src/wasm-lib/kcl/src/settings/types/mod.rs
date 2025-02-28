@@ -6,6 +6,7 @@ use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
@@ -125,9 +126,9 @@ pub struct AppSettings {
     #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
     allow_orbit_in_sketch_mode: bool,
     /// Settings that affect the behavior of the command bar.
-    #[serde(default, alias = "namedViews", skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, alias = "namedViews", skip_serializing_if = "HashMap::is_empty")]
     #[validate(nested)]
-    pub named_views: Vec<NamedView>,
+    pub named_views: HashMap<uuid::Uuid, NamedView>,
 }
 
 // TODO: When we remove backwards compatibility with the old settings file, we can remove this.
@@ -288,7 +289,7 @@ fn named_view_point_version_one() -> f64 {
     1.0
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate, PartialEq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct NamedView {
@@ -319,21 +320,10 @@ pub struct NamedView {
     /// Engine camera world coordinate system orientation
     #[serde(default, alias = "worldCoordSystem", skip_serializing_if = "is_default")]
     pub world_coord_system: String,
-    /// A unique uuidv4 to have a unique key when storing named views
-    #[serde(default = "uuid::Uuid::new_v4")]
-    pub id: uuid::Uuid,
     /// Version number of the view point if the engine camera API changes
     #[serde(default = "named_view_point_version_one")]
     pub version: f64,
 }
-
-impl PartialEq for NamedView {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id && self.version == other.version
-    }
-}
-
-impl Eq for NamedView {}
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[ts(export)]
@@ -621,6 +611,7 @@ mod tests {
         ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
     use crate::settings::types::CameraOrbitType;
+    use std::collections::HashMap;
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -664,7 +655,7 @@ textWrapping = true
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: Vec::default()
+                        named_views: HashMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
@@ -728,7 +719,7 @@ includeSettings = false
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: Vec::default()
+                        named_views: HashMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -797,7 +788,7 @@ defaultProjectName = "projects-$nnn"
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: Vec::default()
+                        named_views: HashMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -878,7 +869,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: Vec::default()
+                        named_views: HashMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,

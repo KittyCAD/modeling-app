@@ -73,7 +73,7 @@ export function configurationToSettingsPayload(
   }
 }
 
-function isNamedView(
+export function isNamedView(
   namedView: DeepPartial<NamedView> | undefined
 ): namedView is NamedView {
   const namedViewKeys = [
@@ -85,7 +85,6 @@ function isNamedView(
     'pivot_position',
     'pivot_rotation',
     'world_coord_system',
-    'id',
     'version',
   ] as const
 
@@ -95,12 +94,17 @@ function isNamedView(
 }
 
 function deepPartialNamedViewsToNamedViews(
-  maybeViews: (DeepPartial<NamedView> | undefined)[] | undefined
-): NamedView[] {
-  const namedViews: NamedView[] = []
-  maybeViews?.forEach((maybeView) => {
+  maybeViews: { [key: string]: NamedView | undefined } | undefined
+): { [key: string]: NamedView } {
+  const namedViews: { [key: string]: NamedView } = {}
+
+  if (!maybeViews) {
+    return namedViews
+  }
+
+  Object.entries(maybeViews)?.forEach(([key, maybeView]) => {
     if (isNamedView(maybeView)) {
-      namedViews.push(maybeView)
+      namedViews[key] = maybeView
     }
   })
   return namedViews
@@ -284,6 +288,7 @@ export async function saveSettings(
 
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
+  console.log(allSettings, jsProjectSettings, 'nice')
   const projectTomlString = serializeProjectConfiguration({
     settings: jsProjectSettings,
   })

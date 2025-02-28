@@ -87,6 +87,7 @@ mod tests {
     use crate::settings::types::{AppearanceSettings, NamedView, UnitLength};
 
     use serde_json::Value;
+    use std::collections::HashMap;
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -123,7 +124,7 @@ includeSettings = false
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: Vec::default()
+                        named_views: HashMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
@@ -208,9 +209,7 @@ color = 1567.4"#;
     "#;
         // serde_json to a NamedView will produce default values
         let named_views: Vec<NamedView> = serde_json::from_str(json).unwrap();
-        let uuid_string = named_views[0].id.to_string();
         let version = named_views[0].version;
-        assert_eq!(uuid_string.len(), 36);
         assert_eq!(version, 1.0);
     }
 
@@ -257,34 +256,38 @@ color = 1567.4"#;
                     enable_ssao: None,
                     stream_idle_mode: false,
                     allow_orbit_in_sketch_mode: false,
-                    named_views: vec![
-                        NamedView {
-                            name: String::from("Hello"),
-                            eye_offset: 1236.4015,
-                            fov_y: 45.0,
-                            is_ortho: false,
-                            ortho_scale_enabled: false,
-                            ortho_scale_factor: 45.0,
-                            pivot_position: [-100.0, 100.0, 100.0],
-                            pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
-                            world_coord_system: String::from("RightHandedUpZ"),
-                            id: uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
-                            version: 1.0,
-                        },
-                        NamedView {
-                            name: String::from("Goodbye"),
-                            eye_offset: 1236.4015,
-                            fov_y: 45.0,
-                            is_ortho: false,
-                            ortho_scale_enabled: false,
-                            ortho_scale_factor: 45.0,
-                            pivot_position: [-100.0, 100.0, 100.0],
-                            pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
-                            world_coord_system: String::from("RightHandedUpZ"),
-                            id: uuid::uuid!("423611ea-66e3-43c9-9d0d-1091ba92948c"),
-                            version: 1.0,
-                        },
-                    ],
+                    named_views: HashMap::from([
+                        (
+                            uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
+                            NamedView {
+                                name: String::from("Hello"),
+                                eye_offset: 1236.4015,
+                                fov_y: 45.0,
+                                is_ortho: false,
+                                ortho_scale_enabled: false,
+                                ortho_scale_factor: 45.0,
+                                pivot_position: [-100.0, 100.0, 100.0],
+                                pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
+                                world_coord_system: String::from("RightHandedUpZ"),
+                                version: 1.0,
+                            },
+                        ),
+                        (
+                            uuid::uuid!("423611ea-66e3-43c9-9d0d-1091ba92948c"),
+                            NamedView {
+                                name: String::from("Goodbye"),
+                                eye_offset: 1236.4015,
+                                fov_y: 45.0,
+                                is_ortho: false,
+                                ortho_scale_enabled: false,
+                                ortho_scale_factor: 45.0,
+                                pivot_position: [-100.0, 100.0, 100.0],
+                                pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
+                                world_coord_system: String::from("RightHandedUpZ"),
+                                version: 1.0,
+                            },
+                        ),
+                    ]),
                 },
                 modeling: ModelingSettings {
                     base_unit: UnitLength::Yd,
@@ -310,7 +313,7 @@ color = 1567.4"#;
 theme = "dark"
 color = 138.0
 
-[[settings.app.named_views]]
+[settings.app.named_views.323611ea-66e3-43c9-9d0d-1091ba92948c]
 name = "Hello"
 eye_offset = 1236.4015
 fov_y = 45.0
@@ -320,10 +323,9 @@ ortho_scale_factor = 45.0
 pivot_position = [-100.0, 100.0, 100.0]
 pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
 world_coord_system = "RightHandedUpZ"
-id = "323611ea-66e3-43c9-9d0d-1091ba92948c"
 version = 1.0
 
-[[settings.app.named_views]]
+[settings.app.named_views.423611ea-66e3-43c9-9d0d-1091ba92948c]
 name = "Goodbye"
 eye_offset = 1236.4015
 fov_y = 45.0
@@ -333,7 +335,6 @@ ortho_scale_factor = 45.0
 pivot_position = [-100.0, 100.0, 100.0]
 pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
 world_coord_system = "RightHandedUpZ"
-id = "423611ea-66e3-43c9-9d0d-1091ba92948c"
 version = 1.0
 
 [settings.modeling]

@@ -1,5 +1,5 @@
 import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
-import { Command } from '../commandTypes'
+import { Command, CommandArgumentOption } from '../commandTypes'
 import toast from 'react-hot-toast'
 import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
@@ -47,12 +47,16 @@ export function createNamedViewsCommand() {
             ...view.view,
           }
           // Retrieve application state for namedViews
-          const namedViews = [
+          const namedViews = {
             ...settingsActor.getSnapshot().context.app.namedViews.current,
-          ]
+          }
 
           // Create and set namedViews application state
-          const requestedNamedViews = [...namedViews, requestedView]
+          const uniqueUuidV4 = uuidv4()
+          const requestedNamedViews = {
+            ...namedViews,
+            [uniqueUuidV4]: requestedView,
+          }
           settingsActor.send({
             type: `set.app.namedViews`,
             data: {
@@ -87,31 +91,27 @@ export function createNamedViewsCommand() {
       if (!data) {
         return toast.error('Unable to delete named view, missing name')
       }
-      const nameToDelete = data.name
+      const idToDelete = data.name
+
       // Retrieve application state for namedViews
-      const namedViews = [
+
+      const namedViews = {
         ...settingsActor.getSnapshot().context.app.namedViews.current,
-      ]
+      }
+
+      const { [idToDelete]: viewToDelete, ...rest } = namedViews
 
       // Find the named view in the array
-      const indexToDelete = namedViews.findIndex(
-        (view) => view.name === nameToDelete
-      )
-      if (indexToDelete >= 0) {
-        const name = namedViews[indexToDelete].name
-
-        // Remove the named view from the array
-        namedViews.splice(indexToDelete, 1)
-
+      if (idToDelete && viewToDelete) {
         // Update global state with the new computed state
         settingsActor.send({
           type: `set.app.namedViews`,
           data: {
             level: 'project',
-            value: namedViews,
+            value: rest,
           },
         })
-        toast.success(`Named view ${name} removed.`)
+        toast.success(`Named view ${viewToDelete.name} removed.`)
       } else {
         toast.error(`Unable to delete, could not find the named view`)
       }
@@ -121,16 +121,20 @@ export function createNamedViewsCommand() {
         required: true,
         inputType: 'options',
         options: () => {
-          const namedViews = [
+          const namedViews = {
             ...settingsActor.getSnapshot().context.app.namedViews.current,
-          ]
-          return namedViews.map((view, index) => {
-            return {
-              name: view.name,
-              isCurrent: false,
-              value: view.name,
+          }
+          const options: CommandArgumentOption<any>[] = []
+          Object.entries(namedViews).forEach(([key, view]) => {
+            if (view) {
+              options.push({
+                name: view.name,
+                isCurrent: false,
+                value: key,
+              })
             }
           })
+          return options
         },
       },
     },
@@ -151,14 +155,15 @@ export function createNamedViewsCommand() {
         }
 
         // Retrieve application state for namedViews
-        const namedViews = [
+        const namedViews = {
           ...settingsActor.getSnapshot().context.app.namedViews.current,
-        ]
-        const _idToLoad = data.name
-        const viewToLoad = namedViews.find((view) => view.id === _idToLoad)
+        }
+
+        const idToLoad = data.name
+        const viewToLoad = namedViews[idToLoad]
         if (viewToLoad) {
           // Split into the name and the engine data
-          const { name, id, version, ...engineViewData } = viewToLoad
+          const { name, version, ...engineViewData } = viewToLoad
 
           // Only send the specific camera information, the NamedView itself
           // is not directly compatible with the engine API
@@ -197,16 +202,20 @@ export function createNamedViewsCommand() {
         required: true,
         inputType: 'options',
         options: () => {
-          const namedViews = [
+          const namedViews = {
             ...settingsActor.getSnapshot().context.app.namedViews.current,
-          ]
-          return namedViews.map((view) => {
-            return {
-              name: view.name,
-              isCurrent: false,
-              value: view.id,
+          }
+          const options: CommandArgumentOption<any>[] = []
+          Object.entries(namedViews).forEach(([key, view]) => {
+            if (view) {
+              options.push({
+                name: view.name,
+                isCurrent: false,
+                value: key,
+              })
             }
           })
+          return options
         },
       },
     },
