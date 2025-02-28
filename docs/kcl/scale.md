@@ -11,7 +11,11 @@ By default the transform is applied in local sketch axis, therefore the origin w
 If you want to apply the transform in global space, set `global` to `true`. The origin of the model will move. If the model is not centered on origin and you scale globally it will look like the model moves and gets bigger at the same time. Say you have a square `(1,1) - (1,2) - (2,2) - (2,1)` and you scale by 2 globally it will become `(2,2) - (2,4)`...etc so the origin has moved from `(1.5, 1.5)` to `(2,2)`.
 
 ```js
-scale(solid: Solid, scale: [number], global?: bool) -> Solid
+scale(
+  solid: Solid,
+  scale: [number],
+  global?: bool,
+) -> Solid
 ```
 
 

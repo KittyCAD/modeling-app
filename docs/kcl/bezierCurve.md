@@ -9,7 +9,11 @@ Draw a smooth, continuous, curved line segment from the current origin to
 the desired (x, y), using a number of control points to shape the curve's shape.
 
 ```js
-bezierCurve(data: BezierData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+bezierCurve(
+  data: BezierData,
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 

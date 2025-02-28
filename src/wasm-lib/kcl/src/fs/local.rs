@@ -31,7 +31,7 @@ impl FileSystem for FileManager {
         source_range: SourceRange,
     ) -> Result<Vec<u8>, KclError> {
         tokio::fs::read(&path).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails {
+            KclError::Io(KclErrorDetails {
                 message: format!("Failed to read file `{}`: {}", path.as_ref().display(), e),
                 source_ranges: vec![source_range],
             })
@@ -44,7 +44,7 @@ impl FileSystem for FileManager {
         source_range: SourceRange,
     ) -> Result<String, KclError> {
         tokio::fs::read_to_string(&path).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails {
+            KclError::Io(KclErrorDetails {
                 message: format!("Failed to read file `{}`: {}", path.as_ref().display(), e),
                 source_ranges: vec![source_range],
             })
@@ -60,7 +60,7 @@ impl FileSystem for FileManager {
             if e.kind() == std::io::ErrorKind::NotFound {
                 Ok(false)
             } else {
-                Err(KclError::Engine(KclErrorDetails {
+                Err(KclError::Io(KclErrorDetails {
                     message: format!("Failed to check if file `{}` exists: {}", path.as_ref().display(), e),
                     source_ranges: vec![source_range],
                 }))
@@ -82,7 +82,7 @@ impl FileSystem for FileManager {
             }
 
             let mut read_dir = tokio::fs::read_dir(&path).await.map_err(|e| {
-                KclError::Engine(KclErrorDetails {
+                KclError::Io(KclErrorDetails {
                     message: format!("Failed to read directory `{}`: {}", path.display(), e),
                     source_ranges: vec![source_range],
                 })

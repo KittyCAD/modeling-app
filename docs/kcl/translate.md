@@ -9,7 +9,11 @@ Move a solid.
 
 
 ```js
-translate(solid: Solid, translate: [number], global?: bool) -> Solid
+translate(
+  solid: Solid,
+  translate: [number],
+  global?: bool,
+) -> Solid
 ```
 
 

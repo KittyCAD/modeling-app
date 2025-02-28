@@ -9,7 +9,15 @@ Repeat a 3-dimensional solid some number of times along a partial or
 complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orentation of the solid with respect to the center of the circle is maintained.
 
 ```js
-patternCircular3d(solidSet: SolidSet, instances: integer, axis: [number], center: [number], arcDegrees: number, rotateDuplicates: bool, useOriginal?: bool) -> [Solid]
+patternCircular3d(
+  solidSet: SolidSet,
+  instances: integer,
+  axis: [number],
+  center: [number],
+  arcDegrees: number,
+  rotateDuplicates: bool,
+  useOriginal?: bool,
+) -> [Solid]
 ```
 
 

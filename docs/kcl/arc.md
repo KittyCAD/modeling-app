@@ -11,7 +11,11 @@ The arc is constructed such that the current position of the sketch is placed al
 Unless this makes a lot of sense and feels like what you're looking for to construct your shape, you're likely looking for tangentialArc.
 
 ```js
-arc(data: ArcData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+arc(
+  data: ArcData,
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 

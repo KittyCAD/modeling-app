@@ -1,5 +1,6 @@
 .editor {
-  @apply text-base flex-1;
+  @apply text-base flex-1 overflow-auto;
+  scrollbar-width: thin;
 }
 
 .editor :global(.cm-editor) {

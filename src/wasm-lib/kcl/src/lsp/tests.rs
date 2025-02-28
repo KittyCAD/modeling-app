@@ -902,10 +902,13 @@ async fn test_kcl_lsp_on_hover() {
         .unwrap();
 
     // Check the hover.
-    if let Some(hover) = hover {
-        assert_eq!(hover.contents, tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { kind: tower_lsp::lsp_types::MarkupKind::Markdown, value: "```startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface```\nStart a new 2-dimensional sketch on a specific plane or face.\n\n### Sketch on Face Behavior\n\nThere are some important behaviors to understand when sketching on a face:\n\nThe resulting sketch will _include_ the face and thus Solid that was sketched on. So say you were to export the resulting Sketch / Solid from a sketch on a face, you would get both the artifact of the sketch on the face and the parent face / Solid itself.\n\nThis is important to understand because if you were to then sketch on the resulting Solid, it would again include the face and parent Solid that was sketched on. This could go on indefinitely.\n\nThe point is if you want to export the result of a sketch on a face, you only need to export the final Solid that was created from the sketch on the face, since it will include all the parent faces and Solids.".to_string() }));
-    } else {
-        panic!("Expected hover");
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            value.contains("startSketchOn");
+            value.contains("-> SketchSurface");
+            value.contains("Start a new 2-dimensional sketch on a specific");
+        }
+        _ => unreachable!(),
     }
 }
 
@@ -1135,7 +1138,7 @@ fn myFn = (param1) => {
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Send semantic tokens request.
     let semantic_tokens = server
@@ -2248,7 +2251,7 @@ part001 = cube([0,0], 20)
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(ast.body.len(), 2);
+    assert_eq!(ast.ast.body.len(), 2);
 
     // Send change file.
     server
@@ -2425,7 +2428,7 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Send change file.
     server
@@ -2447,7 +2450,7 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(ast, default_hashed);
+    assert_eq!(ast.ast, default_hashed);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2476,7 +2479,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2503,11 +2506,15 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Clear the ast and memory.
-    server
-        .ast_map
-        .insert("file:///test.kcl".to_string(), Node::<Program>::default());
+    server.ast_map.insert(
+        "file:///test.kcl".to_string(),
+        crate::Program {
+            ast: Default::default(),
+            original_file_contents: Default::default(),
+        },
+    );
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(ast, Node::<Program>::default());
+    assert_eq!(ast.ast, Node::<Program>::default());
 
     // Send change file, but the code is the same.
     server
@@ -2526,7 +2533,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2558,7 +2565,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2601,7 +2608,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2633,7 +2640,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2679,7 +2686,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2711,7 +2718,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2736,7 +2743,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2768,7 +2775,7 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2792,7 +2799,7 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2828,7 +2835,7 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != default_hashed);
+    assert!(ast.ast != default_hashed);
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2859,7 +2866,7 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
@@ -2992,7 +2999,7 @@ part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have one diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
@@ -3013,7 +3020,7 @@ part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have one diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
@@ -3106,7 +3113,7 @@ part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Send change file, but the code is the same.
     server
@@ -3125,7 +3132,7 @@ part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have diagnostics.
 
@@ -3165,7 +3172,7 @@ part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Send change file, but the code is the same.
     server
@@ -3192,7 +3199,7 @@ NEW_LINT = 1"#
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Assure we have diagnostics.
 
@@ -3299,7 +3306,7 @@ part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Get the symbols map.
     let symbols_map = server.symbols_map.get("file:///test.kcl").unwrap().clone();
@@ -3386,7 +3393,7 @@ part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Get the symbols map.
     let symbols_map = server.symbols_map.get("file:///test.kcl").unwrap().clone();
@@ -3425,7 +3432,7 @@ part001 = startSketchOn('XY')
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast != Node::<Program>::default());
+    assert!(ast.ast != Node::<Program>::default());
 
     // Get the symbols map.
     let symbols_map = server.symbols_map.get("file:///test.kcl").unwrap().clone();
