@@ -58,6 +58,9 @@ export type ModelingCommandSchema = {
     selection: Selections
   }
   Shell: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     selection: Selections
     thickness: KclCommandValue
   }
@@ -380,6 +383,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'shell',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
@@ -391,7 +401,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
-        // TODO: add dry-run validation on thickness param
+        // For now this post-selection arg validation works well but we might need to disable it it guards too much
+        validation: shellValidator,
       },
     },
   },
