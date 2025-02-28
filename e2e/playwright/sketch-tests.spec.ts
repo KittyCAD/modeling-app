@@ -367,7 +367,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-    |> circle(center = [4.61, -5.01], radius = 8 )`
+    |> circle(center = [4.61, -5.01], radius = 8)`
       )
     })
 
@@ -1388,7 +1388,7 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
         await toolbar.circleBtn.click()
         await page.waitForTimeout(100)
         await circlePoint1()
-        await editor.expectEditor.toContain('profile003 = circle(center = [')
+        await editor.expectEditor.toContain('profile003 = circle(sketch001, center = [')
       })
 
       await test.step('equip line tool and verify circle code is removed', async () => {
