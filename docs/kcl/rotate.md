@@ -23,7 +23,15 @@ So, in the context of a 3D model:
 When rotating a part around an axis, you specify the axis of rotation and the angle of rotation.
 
 ```js
-rotate(solid: Solid, roll?: number, pitch?: number, yaw?: number, axis?: [number], angle?: number, global?: bool) -> Solid
+rotate(
+  solid: Solid,
+  roll?: number,
+  pitch?: number,
+  yaw?: number,
+  axis?: [number],
+  angle?: number,
+  global?: bool,
+) -> Solid
 ```
 
 

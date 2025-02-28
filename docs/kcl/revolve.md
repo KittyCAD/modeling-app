@@ -11,7 +11,10 @@ This, like extrude, is able to create a 3-dimensional solid from a 2-dimensional
 Revolve occurs around a local sketch axis rather than a global axis.
 
 ```js
-revolve(data: RevolveData, sketch: Sketch) -> Solid
+revolve(
+  data: RevolveData,
+  sketch: Sketch,
+) -> Solid
 ```
 
 

@@ -13,13 +13,12 @@ use itertools::Itertools;
 use serde_json::json;
 use tokio::task::JoinSet;
 
+use super::kcl_doc::{ConstData, DocData, FnData};
 use crate::{
     docs::{is_primitive, StdLibFn},
     std::StdLib,
     ExecutorContext,
 };
-
-use super::kcl_doc::{ConstData, DocData, FnData};
 
 const TYPES_DIR: &str = "../../../docs/kcl/types";
 const LANG_TOPICS: [&str; 4] = ["Types", "Modules", "Settings", "Known Issues"];
@@ -543,7 +542,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
         "summary": internal_fn.summary(),
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),
-        "fn_signature": internal_fn.fn_signature(),
+        "fn_signature": internal_fn.fn_signature(true),
         "tags": internal_fn.tags(),
         "examples": examples,
         "is_utilities": internal_fn.tags().contains(&"utilities".to_string()),

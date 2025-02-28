@@ -3,8 +3,16 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use cache::OldAstState;
+pub use cache::{bust_cache, clear_mem_cache};
+pub use cad_op::Operation;
+pub use geometry::*;
+pub(crate) use import::{
+    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
+};
 use indexmap::IndexMap;
+pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -12,8 +20,10 @@ use kcmc::{
     ImageFormat, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
+pub use memory::EnvironmentRef;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+pub use state::{ExecState, IdGenerator, MetaSettings};
 
 use crate::{
     engine::EngineManager,
@@ -24,23 +34,12 @@ use crate::{
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath},
-    parsing::ast::types::{Expr, ImportPath, Node, NodeRef, Program},
+    parsing::ast::types::{Expr, ImportPath, NodeRef},
     settings::types::UnitLength,
     source_range::SourceRange,
     std::StdLib,
     CompilationError, ExecError, ExecutionKind, KclErrorWithOutputs,
 };
-
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
-pub use cache::{bust_cache, clear_mem_cache};
-pub use cad_op::Operation;
-pub use geometry::*;
-pub(crate) use import::{
-    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
-};
-pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
-pub use memory::EnvironmentRef;
-pub use state::{ExecState, IdGenerator, MetaSettings};
 
 pub(crate) mod annotations;
 mod artifact;
@@ -533,7 +532,7 @@ impl ExecutorContext {
             }
         }
 
-        let result = self.inner_run(&program.ast, &mut exec_state, true).await?;
+        let result = self.inner_run(&program, &mut exec_state, true).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -586,9 +585,15 @@ impl ExecutorContext {
                             .await
                             .is_err()
                     {
-                        (true, program.ast)
+                        (true, program)
                     } else {
-                        (clear_scene, changed_program)
+                        (
+                            clear_scene,
+                            crate::Program {
+                                ast: changed_program,
+                                original_file_contents: program.original_file_contents,
+                            },
+                        )
                     }
                 }
                 CacheResult::NoAction(true) => {
@@ -609,7 +614,7 @@ impl ExecutorContext {
 
                         return Ok(old_state.to_wasm_outcome(result_env));
                     }
-                    (true, program.ast)
+                    (true, program)
                 }
                 CacheResult::NoAction(false) => return Ok(old_state.to_wasm_outcome(result_env)),
             };
@@ -637,7 +642,7 @@ impl ExecutorContext {
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
-            (program.ast, exec_state, false)
+            (program, exec_state, false)
         };
 
         let result = self.inner_run(&program, &mut exec_state, preserve_mem).await;
@@ -651,7 +656,7 @@ impl ExecutorContext {
 
         // Save this as the last successful execution to the cache.
         cache::write_old_ast(OldAstState {
-            ast: program,
+            ast: program.ast,
             exec_state: exec_state.clone(),
             settings: self.settings.clone(),
             result_env: result.0,
@@ -692,18 +697,19 @@ impl ExecutorContext {
         self.send_clear_scene(exec_state, Default::default())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-        self.inner_run(&program.ast, exec_state, false).await
+        self.inner_run(program, exec_state, false).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
     /// output everything.
     async fn inner_run(
         &self,
-        program: &Node<Program>,
+        program: &crate::Program,
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
+        exec_state.add_root_module_contents(program);
 
         // Re-apply the settings, in case the cache was busted.
         self.engine
@@ -712,7 +718,7 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let env_ref = self
-            .execute_and_build_graph(program, exec_state, preserve_mem)
+            .execute_and_build_graph(&program.ast, exec_state, preserve_mem)
             .await
             .map_err(|e| {
                 let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
@@ -728,6 +734,7 @@ impl ExecutorContext {
                     exec_state.global.artifact_commands.clone(),
                     exec_state.global.artifact_graph.clone(),
                     module_id_to_module_path,
+                    exec_state.global.id_to_source.clone(),
                 )
             })?;
 

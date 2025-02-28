@@ -5,19 +5,18 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use super::EnvironmentRef;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
         annotations, kcl_value, memory::ProgramMemory, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId,
         ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
     },
-    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
+    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::Annotation,
     source_range::SourceRange,
     CompilationError,
 };
-
-use super::EnvironmentRef;
 
 /// State for executing a program.
 #[derive(Debug, Clone)]
@@ -34,6 +33,8 @@ pub(super) struct GlobalState {
     pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
+    /// Map from module ID to source file.
+    pub id_to_source: IndexMap<ModuleId, ModuleSource>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// Output map of UUIDs to artifacts.
@@ -181,6 +182,30 @@ impl ExecState {
         self.global.path_to_source_id.insert(path.clone(), id);
     }
 
+    pub(crate) fn add_root_module_contents(&mut self, program: &crate::Program) {
+        let root_id = ModuleId::default();
+        // Get the path for the root module.
+        let path = self
+            .global
+            .path_to_source_id
+            .iter()
+            .find(|(_, v)| **v == root_id)
+            .unwrap()
+            .0
+            .clone();
+        self.add_id_to_source(
+            root_id,
+            ModuleSource {
+                path,
+                source: program.original_file_contents.to_string(),
+            },
+        );
+    }
+
+    pub(super) fn add_id_to_source(&mut self, id: ModuleId, source: ModuleSource) {
+        self.global.id_to_source.insert(id, source.clone());
+    }
+
     pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
         debug_assert!(self.global.path_to_source_id.contains_key(&path));
         let module_info = ModuleInfo { id, repr, path };
@@ -227,6 +252,7 @@ impl GlobalState {
             operations: Default::default(),
             mod_loader: Default::default(),
             errors: Default::default(),
+            id_to_source: Default::default(),
         };
 
         let root_id = ModuleId::default();

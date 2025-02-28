@@ -9,7 +9,10 @@ Create a helix on a cylinder.
 
 
 ```js
-helixRevolutions(data: HelixRevolutionsData, solid: Solid) -> Solid
+helixRevolutions(
+  data: HelixRevolutionsData,
+  solid: Solid,
+) -> Solid
 ```
 
 

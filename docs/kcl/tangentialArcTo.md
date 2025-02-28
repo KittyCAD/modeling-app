@@ -9,7 +9,11 @@ Starting at the current sketch's origin, draw a curved line segment along
 some part of an imaginary circle until it reaches the desired (x, y) coordinates.
 
 ```js
-tangentialArcTo(to: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
+tangentialArcTo(
+  to: [number],
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 
