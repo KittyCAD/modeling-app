@@ -356,6 +356,7 @@ impl ProgramMemory {
         owner: usize,
     ) -> Result<&KclValue, KclError> {
         loop {
+            eprintln!("get from {env_ref:?}");
             let env = self.get_env(env_ref.index());
             env_ref = match env.get(var, env_ref.1, owner) {
                 Ok(item) => return Ok(item),
@@ -517,6 +518,7 @@ impl Stack {
     /// `parent` is the environment where the function being called is declared (not the caller's
     /// environment, which is probably `self.current_env`).
     pub fn push_new_env_for_call(&mut self, parent: EnvironmentRef) {
+        eprintln!("push");
         let env_ref = self.memory.new_env(Some(parent), false, self.id);
         self.call_stack.push(self.current_env);
         self.current_env = env_ref;
@@ -541,6 +543,7 @@ impl Stack {
     ///
     /// Trying to read or write from this environment will panic with an index out of bounds.
     pub fn push_new_env_for_rust_call(&mut self) {
+        eprintln!("push rust");
         self.call_stack.push(self.current_env);
         // Rust functions shouldn't try to set or access anything in their environment, so don't
         // waste time and space on a new env. Using usize::MAX means we'll get an overflow if we
@@ -553,6 +556,7 @@ impl Stack {
     /// Suitable for executing a separate module.
     /// Precondition: include_prelude -> !self.memory.requires_std()
     pub fn push_new_root_env(&mut self, include_prelude: bool) {
+        eprintln!("push root");
         let parent = include_prelude.then(|| self.memory.std.unwrap());
         let env_ref = self.memory.new_env(parent, true, self.id);
         self.call_stack.push(self.current_env);
@@ -564,6 +568,7 @@ impl Stack {
     /// SAFETY: the env must not be being used by another `Stack` since we'll move the env from
     /// read-only to owned.
     pub fn restore_env(&mut self, env: EnvironmentRef) {
+        eprintln!("restore");
         assert!(env.1.is_none());
         self.call_stack.push(self.current_env);
         self.memory.get_env(env.index()).restore_owner(self.id);
@@ -576,6 +581,7 @@ impl Stack {
     /// The popped environment may be retained completely (if it may be referenced by a function decl
     /// or import) or retained but its contents deleted or completely discarded.
     pub fn pop_env(&mut self) -> EnvironmentRef {
+        eprintln!("pop");
         let old = self.current_env;
         self.current_env = self.call_stack.pop().unwrap();
 

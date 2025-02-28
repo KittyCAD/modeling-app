@@ -96,13 +96,15 @@ impl ExecutorContext {
         preserve_mem: bool,
         path: &ModulePath,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
-        crate::log::log(format!("enter module {path}"));
+        crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
         let old_units = exec_state.length_unit();
         let original_execution = self.engine.replace_execution_kind(exec_kind).await;
 
         let mut local_state = ModuleState::new(&self.settings, path.std_path(), exec_state.stack().memory.clone());
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        if !preserve_mem {
+            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        }
 
         let no_prelude = self
             .handle_annotations(program.inner_attrs.iter(), crate::execution::BodyType::Root, exec_state)
@@ -111,6 +113,8 @@ impl ExecutorContext {
         if !preserve_mem {
             exec_state.mut_stack().push_new_root_env(!no_prelude);
         }
+
+        eprintln!("exec running {}", exec_state.stack());
 
         let result = self
             .exec_block(program, exec_state, crate::execution::BodyType::Root)
@@ -122,7 +126,9 @@ impl ExecutorContext {
         } else {
             exec_state.mut_stack().pop_env()
         };
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        if !preserve_mem {
+            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        }
 
         if !exec_kind.is_isolated() && new_units != old_units {
             self.engine.set_units(old_units.into(), Default::default()).await?;

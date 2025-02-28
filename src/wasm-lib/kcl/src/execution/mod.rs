@@ -530,6 +530,7 @@ impl ExecutorContext {
                 mem.add(k, v, SourceRange::synthetic())
                     .map_err(KclErrorWithOutputs::no_outputs)?;
             }
+            eprintln!("running {mem}");
         }
 
         let result = self.inner_run(&program.ast, &mut exec_state, true).await?;
@@ -1876,6 +1877,10 @@ let w = f() + f()
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
+
+        let mem = cache::read_old_memory().await.unwrap();
+        let old = cache::read_old_ast().await.unwrap();
+        eprintln!("{:?}\n{mem}\n{}", old.result_env, mem.memory);
 
         let ctx2 = ExecutorContext::new_mock().await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
