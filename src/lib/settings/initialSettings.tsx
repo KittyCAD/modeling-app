@@ -20,6 +20,7 @@ import { isArray, toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
 import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
 
 /**
@@ -262,6 +263,11 @@ export function createSettings() {
             </div>
           )
         },
+      }),
+      namedViews: new Setting<{ [key in string]: NamedView }>({
+        defaultValue: {},
+        validate: (v) => true,
+        hideOnLevel: 'user',
       }),
     },
     /**
