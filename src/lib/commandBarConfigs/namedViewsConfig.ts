@@ -60,9 +60,7 @@ export function createNamedViewsCommand() {
               value: requestedNamedViews,
             },
           })
-          toast.success(
-            `Named view ${requestedView.name} created.`
-          )
+          toast.success(`Named view ${requestedView.name} created.`)
         }
       }
       invokeAndForgetCreateNamedView().catch(reportRejection)
