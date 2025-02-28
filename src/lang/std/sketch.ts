@@ -77,6 +77,8 @@ import {
 export const ARG_TAG = 'tag'
 export const ARG_END = 'end'
 export const ARG_END_ABSOLUTE = 'endAbsolute'
+export const ARG_CIRCLE_CENTER = 'center'
+export const ARG_CIRCLE_RADIUS = 'radius'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -1077,7 +1079,7 @@ export const tangentialArcTo: SketchLineHelper = {
     ]
   },
 }
-export const circle: SketchLineHelper = {
+export const circle: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
 
@@ -1138,51 +1140,67 @@ export const circle: SketchLineHelper = {
     if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
     const { center, radius } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
 
-    const { node: callExpression, shallowPath } = nodeMeta
+    const { node: callExpression } = nodeMeta
 
-    const firstArg = callExpression.arguments?.[0]
     const newCenter = createArrayExpression([
       createLiteral(roundOff(center[0])),
       createLiteral(roundOff(center[1])),
     ])
-    mutateObjExpProp(firstArg, newCenter, 'center')
+    mutateKwArg(ARG_CIRCLE_CENTER, callExpression, newCenter)
     const newRadius = createLiteral(roundOff(radius))
-    mutateObjExpProp(firstArg, newRadius, 'radius')
+    mutateKwArg(ARG_CIRCLE_RADIUS, callExpression, newRadius)
     return {
       modifiedAst: _node,
-      pathToNode: shallowPath,
+      pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
-    if (callExp.type !== 'CallExpression') return []
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  getConstraintInfo: (callExp: CallExpressionKw, code, pathToNode) => {
+    if (callExp.type !== 'CallExpressionKw') return []
     const firstArg = callExp.arguments?.[0]
-    if (firstArg.type !== 'ObjectExpression') return []
-    const centerDetails = getObjExprProperty(firstArg, 'center')
-    const radiusDetails = getObjExprProperty(firstArg, 'radius')
-    if (!centerDetails || !radiusDetails) return []
-    if (centerDetails.expr.type !== 'ArrayExpression') return []
+    if (firstArg.type !== 'LabeledArg') return []
+    let centerDetails = null
+    let radiusDetails = null
+    let centerIndex = 0
+    let radiusIndex = 0
+    let index = 0
+    for (const prop of callExp.arguments) {
+      if (
+        prop.label?.name === 'center' &&
+        'arg' in prop &&
+        prop.type === 'LabeledArg'
+      ) {
+        centerIndex = index
+        centerDetails = prop.arg
+      }
+      if (
+        prop.label?.name === 'radius' &&
+        'arg' in prop &&
+        prop.type === 'LabeledArg'
+      ) {
+        radiusIndex = index
+        radiusDetails = prop.arg
+      }
+      index++
+    }
+    if (centerDetails === null || radiusDetails === null) return []
+    if (centerDetails.type !== 'ArrayExpression') return []
 
     const pathToCenterArrayExpression: PathToNode = [
       ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['properties', 'ObjectExpression'],
-      [centerDetails.index, 'index'],
-      ['value', 'Property'],
-      ['elements', 'ArrayExpression'],
+      ['arguments', 'CallExpressionKw'],
+      [centerIndex, 'index'],
+      ['arg', 'ArrayExpression'],
     ]
     const pathToRadiusLiteral: PathToNode = [
       ...pathToNode,
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-      ['properties', 'ObjectExpression'],
-      [radiusDetails.index, 'index'],
-      ['value', 'Property'],
+      ['arguments', 'CallExpressionKw'],
+      [radiusIndex, 'index'],
+      ['arg', 'Literal'],
     ]
     const pathToXArg: PathToNode = [
       ...pathToCenterArrayExpression,
@@ -1196,27 +1214,25 @@ export const circle: SketchLineHelper = {
     return [
       constrainInfo(
         'radius',
-        isNotLiteralArrayOrStatic(radiusDetails.expr),
-        code.slice(radiusDetails.expr.start, radiusDetails.expr.end),
+        isNotLiteralArrayOrStatic(radiusDetails),
+        code.slice(radiusDetails.start, radiusDetails.end),
         'circle',
         'radius',
-        topLevelRange(radiusDetails.expr.start, radiusDetails.expr.end),
+        topLevelRange(radiusDetails.start, radiusDetails.end),
         pathToRadiusLiteral
       ),
       {
         stdLibFnName: 'circle',
         type: 'xAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(
-          centerDetails.expr.elements[0]
-        ),
+        isConstrained: isNotLiteralArrayOrStatic(centerDetails.elements[0]),
         sourceRange: topLevelRange(
-          centerDetails.expr.elements[0].start,
-          centerDetails.expr.elements[0].end
+          centerDetails.elements[0].start,
+          centerDetails.elements[0].end
         ),
         pathToNode: pathToXArg,
         value: code.slice(
-          centerDetails.expr.elements[0].start,
-          centerDetails.expr.elements[0].end
+          centerDetails.elements[0].start,
+          centerDetails.elements[0].end
         ),
         argPosition: {
           type: 'arrayInObject',
@@ -1227,17 +1243,15 @@ export const circle: SketchLineHelper = {
       {
         stdLibFnName: 'circle',
         type: 'yAbsolute',
-        isConstrained: isNotLiteralArrayOrStatic(
-          centerDetails.expr.elements[1]
-        ),
+        isConstrained: isNotLiteralArrayOrStatic(centerDetails.elements[1]),
         sourceRange: topLevelRange(
-          centerDetails.expr.elements[1].start,
-          centerDetails.expr.elements[1].end
+          centerDetails.elements[1].start,
+          centerDetails.elements[1].end
         ),
         pathToNode: pathToYArg,
         value: code.slice(
-          centerDetails.expr.elements[1].start,
-          centerDetails.expr.elements[1].end
+          centerDetails.elements[1].start,
+          centerDetails.elements[1].end
         ),
         argPosition: {
           type: 'arrayInObject',
@@ -2295,13 +2309,13 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToY,
   angledLineThatIntersects,
   tangentialArcTo,
-  circle,
 } as const
 
 export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   line,
   lineTo,
   circleThreePoint,
+  circle,
 } as const
 
 export function changeSketchArguments(
