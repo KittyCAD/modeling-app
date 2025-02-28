@@ -34,7 +34,7 @@ use crate::{
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath},
-    parsing::ast::types::{Expr, ImportPath, Node, NodeRef, Program},
+    parsing::ast::types::{Expr, ImportPath, NodeRef},
     settings::types::UnitLength,
     source_range::SourceRange,
     std::StdLib,
@@ -532,8 +532,7 @@ impl ExecutorContext {
             }
         }
 
-        exec_state.add_root_module_contents(&program);
-        let result = self.inner_run(&program.ast, &mut exec_state, true).await?;
+        let result = self.inner_run(&program, &mut exec_state, true).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -646,8 +645,7 @@ impl ExecutorContext {
             (program, exec_state, false)
         };
 
-        exec_state.add_root_module_contents(&program);
-        let result = self.inner_run(&program.ast, &mut exec_state, preserve_mem).await;
+        let result = self.inner_run(&program, &mut exec_state, preserve_mem).await;
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -699,19 +697,19 @@ impl ExecutorContext {
         self.send_clear_scene(exec_state, Default::default())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-        exec_state.add_root_module_contents(program);
-        self.inner_run(&program.ast, exec_state, false).await
+        self.inner_run(program, exec_state, false).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
     /// output everything.
     async fn inner_run(
         &self,
-        program: &Node<Program>,
+        program: &crate::Program,
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
+        exec_state.add_root_module_contents(program);
 
         // Re-apply the settings, in case the cache was busted.
         self.engine
@@ -720,7 +718,7 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let env_ref = self
-            .execute_and_build_graph(program, exec_state, preserve_mem)
+            .execute_and_build_graph(&program.ast, exec_state, preserve_mem)
             .await
             .map_err(|e| {
                 let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
