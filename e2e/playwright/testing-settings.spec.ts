@@ -854,7 +854,7 @@ test.describe('Testing settings', () => {
       const debugPaneButton = page.getByTestId('debug-pane-button')
       const commandsButton = page.getByRole('button', { name: 'Commands' })
       const debugPaneOption = page.getByRole('option', {
-        name: 'Settings · modeling · show debug panel',
+        name: 'Settings · app · show debug panel',
       })
 
       async function setShowDebugPanelTo(value: 'On' | 'Off') {
