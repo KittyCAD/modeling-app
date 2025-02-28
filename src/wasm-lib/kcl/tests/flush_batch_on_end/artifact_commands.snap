@@ -326,7 +326,7 @@ description: Artifact commands flush_batch_on_end.kcl
     "cmdId": "[uuid]",
     "range": [
       282,
-      373,
+      374,
       0
     ],
     "command": {
@@ -346,7 +346,7 @@ description: Artifact commands flush_batch_on_end.kcl
     "cmdId": "[uuid]",
     "range": [
       282,
-      373,
+      374,
       0
     ],
     "command": {
@@ -357,7 +357,7 @@ description: Artifact commands flush_batch_on_end.kcl
     "cmdId": "[uuid]",
     "range": [
       282,
-      373,
+      374,
       0
     ],
     "command": {
@@ -374,7 +374,7 @@ description: Artifact commands flush_batch_on_end.kcl
     "cmdId": "[uuid]",
     "range": [
       282,
-      373,
+      374,
       0
     ],
     "command": {
@@ -403,7 +403,7 @@ description: Artifact commands flush_batch_on_end.kcl
     "cmdId": "[uuid]",
     "range": [
       282,
-      373,
+      374,
       0
     ],
     "command": {
@@ -414,8 +414,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      436,
-      527,
+      437,
+      529,
       0
     ],
     "command": {
@@ -434,8 +434,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      436,
-      527,
+      437,
+      529,
       0
     ],
     "command": {
@@ -445,8 +445,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      436,
-      527,
+      437,
+      529,
       0
     ],
     "command": {
@@ -462,8 +462,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      436,
-      527,
+      437,
+      529,
       0
     ],
     "command": {
@@ -491,8 +491,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      436,
-      527,
+      437,
+      529,
       0
     ],
     "command": {
@@ -503,8 +503,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      617,
-      638,
+      619,
+      640,
       0
     ],
     "command": {
@@ -516,8 +516,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      617,
-      638,
+      619,
+      640,
       0
     ],
     "command": {
@@ -529,8 +529,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "command": {
@@ -549,8 +549,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "command": {
@@ -563,8 +563,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "command": {
@@ -574,8 +574,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "command": {
@@ -586,8 +586,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "command": {
@@ -599,8 +599,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "command": {
@@ -613,8 +613,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "command": {
@@ -627,8 +627,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "command": {
@@ -641,8 +641,8 @@ description: Artifact commands flush_batch_on_end.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "command": {

@@ -36,8 +36,8 @@ description: Operations executed flush_batch_on_end.kcl
           }
         },
         "sourceRange": [
-          622,
-          634,
+          624,
+          636,
           0
         ]
       },
@@ -49,16 +49,16 @@ description: Operations executed flush_batch_on_end.kcl
           }
         },
         "sourceRange": [
-          636,
-          637,
+          638,
+          639,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      617,
-      638,
+      619,
+      640,
       0
     ],
     "type": "StdLibCall",
@@ -75,16 +75,16 @@ description: Operations executed flush_batch_on_end.kcl
           }
         },
         "sourceRange": [
-          724,
-          730,
+          726,
+          732,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      694,
-      731,
+      696,
+      733,
       0
     ],
     "type": "StdLibCall",
@@ -96,8 +96,8 @@ description: Operations executed flush_batch_on_end.kcl
         }
       },
       "sourceRange": [
-        702,
-        713,
+        704,
+        715,
         0
       ]
     }
