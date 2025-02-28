@@ -97,7 +97,7 @@ test.describe(
       {
         name: 'XZ',
         plane: 'XZ',
-        coords: { x: 700, y: 80 },
+        coords: { x: 684, y: 427 },
         description: 'blue plane',
       },
       {
@@ -115,7 +115,7 @@ test.describe(
       {
         name: '-XZ',
         plane: '-XZ',
-        coords: { x: 700, y: 427 },
+        coords: { x: 700, y: 80 },
         description: 'back of blue plane',
       },
     ]
