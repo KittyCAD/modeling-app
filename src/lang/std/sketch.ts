@@ -16,6 +16,7 @@ import {
   VariableMap,
 } from 'lang/wasm'
 import {
+    ARG_INDEX_FIELD,
   getNodeFromPath,
   getNodeFromPathCurry,
   getObjExprProperty,
@@ -1193,14 +1194,14 @@ export const circle: SketchLineHelperKw = {
     const pathToCenterArrayExpression: PathToNode = [
       ...pathToNode,
       ['arguments', 'CallExpressionKw'],
-      [centerIndex, 'index'],
-      ['arg', 'ArrayExpression'],
+      [centerIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
     ]
     const pathToRadiusLiteral: PathToNode = [
       ...pathToNode,
       ['arguments', 'CallExpressionKw'],
-      [radiusIndex, 'index'],
-      ['arg', 'Literal'],
+      [radiusIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
     ]
     const pathToXArg: PathToNode = [
       ...pathToCenterArrayExpression,
