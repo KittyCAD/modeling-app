@@ -86,8 +86,8 @@ mod tests {
     };
     use crate::settings::types::{AppearanceSettings, NamedView, UnitLength};
 
+    use indexmap::IndexMap;
     use serde_json::Value;
-    use std::collections::HashMap;
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -124,7 +124,7 @@ includeSettings = false
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: HashMap::default()
+                        named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
@@ -256,7 +256,7 @@ color = 1567.4"#;
                     enable_ssao: None,
                     stream_idle_mode: false,
                     allow_orbit_in_sketch_mode: false,
-                    named_views: HashMap::from([
+                    named_views: IndexMap::from([
                         (
                             uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
                             NamedView {

@@ -3,10 +3,10 @@
 pub mod project;
 
 use anyhow::Result;
+use indexmap::IndexMap;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
@@ -126,9 +126,8 @@ pub struct AppSettings {
     #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
     allow_orbit_in_sketch_mode: bool,
     /// Settings that affect the behavior of the command bar.
-    #[serde(default, alias = "namedViews", skip_serializing_if = "HashMap::is_empty")]
-    #[validate(nested)]
-    pub named_views: HashMap<uuid::Uuid, NamedView>,
+    #[serde(default, alias = "namedViews", skip_serializing_if = "IndexMap::is_empty")]
+    pub named_views: IndexMap<uuid::Uuid, NamedView>,
 }
 
 // TODO: When we remove backwards compatibility with the old settings file, we can remove this.
@@ -611,7 +610,7 @@ mod tests {
         ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
     use crate::settings::types::CameraOrbitType;
-    use std::collections::HashMap;
+    use indexmap::IndexMap;
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -655,7 +654,7 @@ textWrapping = true
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: HashMap::default()
+                        named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
@@ -719,7 +718,7 @@ includeSettings = false
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: HashMap::default()
+                        named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -788,7 +787,7 @@ defaultProjectName = "projects-$nnn"
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: HashMap::default()
+                        named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -869,7 +868,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: HashMap::default()
+                        named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
