@@ -52,7 +52,7 @@ export default function Gizmo() {
   const raycasterPassiveUpdateTimer = useRef(0)
   const disableOrbitRef = useRef(false)
 
-  // Temporary fix for #4040: 
+  // Temporary fix for #4040:
   // Disable gizmo orbiting in sketch mode
   // This effect updates disableOrbitRef whenever the user
   // toggles between Sketch mode and 3D mode
@@ -62,7 +62,9 @@ export default function Gizmo() {
       !settings.app.allowOrbitInSketchMode.current
     if (wrapperRef.current) {
       wrapperRef.current.style.opacity = disableOrbitRef.current ? '0.5' : '1'
-      wrapperRef.current.style.cursor = disableOrbitRef.current ? 'not-allowed' : 'auto'
+      wrapperRef.current.style.cursor = disableOrbitRef.current
+        ? 'not-allowed'
+        : 'auto'
     }
   }, [modelingState, settings.app.allowOrbitInSketchMode.current])
 
