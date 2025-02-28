@@ -96,10 +96,6 @@ mod tests {
 theme = "dark"
 themeColor = "138"
 
-[settings.modeling]
-defaultUnit = "yd"
-showDebugPanel = true
-
 [settings.textEditor]
 textWrapping = false
 blinkingCursor = false
@@ -130,12 +126,12 @@ includeSettings = false
                         named_views: Vec::default()
                     },
                     modeling: ModelingSettings {
-                        base_unit: UnitLength::Yd,
+                        base_unit: UnitLength::Mm,
                         camera_projection: Default::default(),
                         camera_orbit: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
-                        show_debug_panel: true,
+                        show_debug_panel: false,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
                     },
@@ -314,11 +310,6 @@ color = 1567.4"#;
 theme = "dark"
 color = 138.0
 
-[settings.modeling]
-base_unit = "yd"
-show_debug_panel = true
-
-
 [[settings.app.named_views]]
 name = "Hello"
 eye_offset = 1236.4015
@@ -328,12 +319,12 @@ ortho_scale_enabled = false
 ortho_scale_factor = 45.0
 pivot_position = [-100.0, 100.0, 100.0]
 pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
-world_coord_system = RightHandedUpZ
-_id = 323611ea-66e3-43c9-9d0d-1091ba92948c
-_version = 1.0
+world_coord_system = "RightHandedUpZ"
+id = "323611ea-66e3-43c9-9d0d-1091ba92948c"
+version = 1.0
 
 [[settings.app.named_views]]
-name = Goodbye
+name = "Goodbye"
 eye_offset = 1236.4015
 fov_y = 45.0
 is_ortho = false
@@ -341,9 +332,13 @@ ortho_scale_enabled = false
 ortho_scale_factor = 45.0
 pivot_position = [-100.0, 100.0, 100.0]
 pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
-world_coord_system = RightHandedUpZ
-_id = 423611ea-66e3-43c9-9d0d-1091ba92948c
-_version = 1.0
+world_coord_system = "RightHandedUpZ"
+id = "423611ea-66e3-43c9-9d0d-1091ba92948c"
+version = 1.0
+
+[settings.modeling]
+base_unit = "yd"
+show_debug_panel = true
 
 [settings.text_editor]
 text_wrapping = false
