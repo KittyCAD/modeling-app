@@ -49,6 +49,10 @@ import {
   TANGENTIAL_ARC_TO_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT_BODY,
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
+  ARC_SEGMENT,
+  ARC_SEGMENT_BODY,
+  ARC_SEGMENT_DASH,
+  ARC_ANGLE_END,
   getParentGroup,
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
@@ -635,11 +639,18 @@ class CircleSegment implements SegmentUtils {
     }
 
     if (radiusLengthIndicator) {
-      // The radius indicator is placed at the midpoint of the radius,
-      // at a 45 degree CCW angle from the positive X-axis
+      // The radius indicator is placed halfway between the center and the start angle point
       const indicatorPoint = {
-        x: center[0] + (Math.cos(Math.PI / 4) * radius) / 2,
-        y: center[1] + (Math.sin(Math.PI / 4) * radius) / 2,
+        x:
+          center[0] +
+          (Math.cos(Math.atan2(from[1] - center[1], from[0] - center[0])) *
+            radius) /
+            2,
+        y:
+          center[1] +
+          (Math.sin(Math.atan2(from[1] - center[1], from[0] - center[0])) *
+            radius) /
+            2,
       }
       const labelWrapper = radiusLengthIndicator.getObjectByName(
         SEGMENT_LENGTH_LABEL_TEXT
@@ -648,11 +659,11 @@ class CircleSegment implements SegmentUtils {
       const label = labelWrapperElem.children[0] as HTMLParagraphElement
       label.innerText = `${roundOff(radius)}`
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
-      const isPlaneBackFace = center[0] > indicatorPoint.x
-      label.style.setProperty(
-        '--degree',
-        `${isPlaneBackFace ? '45' : '-45'}deg`
-      )
+
+      // Calculate the angle for the label
+      const labelAngle =
+        (Math.atan2(from[1] - center[1], from[0] - center[0]) * 180) / Math.PI
+      label.style.setProperty('--degree', `${labelAngle}deg`)
       label.style.setProperty('--x', `0px`)
       label.style.setProperty('--y', `0px`)
       labelWrapper.position.set(indicatorPoint.x, indicatorPoint.y, 0)
@@ -922,6 +933,223 @@ class CircleThreePointSegment implements SegmentUtils {
       }
       return segmentOverlayPayload
     }
+  }
+}
+
+class ArcSegment implements SegmentUtils {
+  init: SegmentUtils['init'] = ({
+    prevSegment,
+    input,
+    id,
+    pathToNode,
+    isDraftSegment,
+    scale = 1,
+    theme,
+    isSelected,
+    sceneInfra,
+  }) => {
+    if (input.type !== 'arc-segment') {
+      return new Error('Invalid segment type')
+    }
+    const { from, to, center, radius, ccw } = input
+    const baseColor = getThemeColorForThreeJs(theme)
+    const color = isSelected ? 0x0000ff : baseColor
+
+    // Calculate start and end angles
+    const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
+    const endAngle = Math.atan2(to[1] - center[1], to[0] - center[0])
+
+    const group = new Group()
+    const geometry = createArcGeometry({
+      center,
+      radius,
+      startAngle,
+      endAngle,
+      ccw,
+      isDashed: isDraftSegment,
+      scale,
+    })
+    const mat = new MeshBasicMaterial({ color })
+    const arcMesh = new Mesh(geometry, mat)
+    const meshType = isDraftSegment ? ARC_SEGMENT_DASH : ARC_SEGMENT_BODY
+
+    // Create handles for the arc
+
+    const endAngleHandle = createArrowhead(scale, theme, color)
+    endAngleHandle.name = ARC_ANGLE_END
+    endAngleHandle.userData.type = ARC_ANGLE_END
+
+    const circleCenterGroup = createCircleCenterHandle(scale, theme, color)
+
+    // A radius indicator that appears from the center to the perimeter
+    const radiusIndicatorGroup = createLengthIndicator({
+      from: center,
+      to: from,
+      scale,
+    })
+
+    arcMesh.userData.type = meshType
+    arcMesh.name = meshType
+    group.userData = {
+      type: ARC_SEGMENT,
+      draft: isDraftSegment,
+      id,
+      from,
+      to,
+      radius,
+      center,
+      ccw,
+      prevSegment,
+      pathToNode,
+      isSelected,
+      baseColor,
+    }
+    group.name = ARC_SEGMENT
+
+    group.add(arcMesh, endAngleHandle, circleCenterGroup, radiusIndicatorGroup)
+    const updateOverlaysCallback = this.update({
+      prevSegment,
+      input,
+      group,
+      scale,
+      sceneInfra,
+    })
+    if (err(updateOverlaysCallback)) return updateOverlaysCallback
+
+    return {
+      group,
+      updateOverlaysCallback,
+    }
+  }
+
+  update: SegmentUtils['update'] = ({
+    prevSegment,
+    input,
+    group,
+    scale = 1,
+    sceneInfra,
+  }) => {
+    if (input.type !== 'arc-segment') {
+      return new Error('Invalid segment type')
+    }
+    const { from, to, center, radius, ccw } = input
+    group.userData.from = from
+    group.userData.to = to
+    group.userData.center = center
+    group.userData.radius = radius
+    group.userData.ccw = ccw
+    group.userData.prevSegment = prevSegment
+
+    // Calculate start and end angles
+    const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
+    const endAngle = Math.atan2(to[1] - center[1], to[0] - center[0])
+
+    const endAngleHandle = group.getObjectByName(ARC_ANGLE_END) as Group
+    const radiusLengthIndicator = group.getObjectByName(
+      SEGMENT_LENGTH_LABEL
+    ) as Group
+    const circleCenterHandle = group.getObjectByName(
+      CIRCLE_CENTER_HANDLE
+    ) as Group
+
+    // Calculate arc length
+    let arcAngle = endAngle - startAngle
+    if (ccw && arcAngle > 0) arcAngle = arcAngle - 2 * Math.PI
+    if (!ccw && arcAngle < 0) arcAngle = arcAngle + 2 * Math.PI
+
+    const arcLength = Math.abs(arcAngle) * radius
+    const pxLength = arcLength / scale
+    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
+    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
+
+    const hoveredParent =
+      sceneInfra.hoveredObject &&
+      getParentGroup(sceneInfra.hoveredObject, [ARC_SEGMENT])
+    let isHandlesVisible = !shouldHideIdle
+    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
+      isHandlesVisible = !shouldHideHover
+    }
+
+    if (endAngleHandle) {
+      endAngleHandle.position.set(to[0], to[1], 0)
+
+      const tangentAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
+      endAngleHandle.quaternion.setFromUnitVectors(
+        new Vector3(0, 1, 0),
+        new Vector3(Math.cos(tangentAngle), Math.sin(tangentAngle), 0)
+      )
+      endAngleHandle.scale.set(scale, scale, scale)
+      endAngleHandle.visible = isHandlesVisible
+    }
+
+    if (radiusLengthIndicator) {
+      // The radius indicator is placed halfway between the center and the start angle point
+      const indicatorPoint = {
+        x: center[0] + (Math.cos(startAngle) * radius) / 2,
+        y: center[1] + (Math.sin(startAngle) * radius) / 2,
+      }
+      const labelWrapper = radiusLengthIndicator.getObjectByName(
+        SEGMENT_LENGTH_LABEL_TEXT
+      ) as CSS2DObject
+      const labelWrapperElem = labelWrapper.element as HTMLDivElement
+      const label = labelWrapperElem.children[0] as HTMLParagraphElement
+      label.innerText = `${roundOff(radius)}`
+      label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
+
+      // Calculate the angle for the label
+      const labelAngle = (startAngle * 180) / Math.PI
+      label.style.setProperty('--degree', `${labelAngle}deg`)
+      label.style.setProperty('--x', `0px`)
+      label.style.setProperty('--y', `0px`)
+      labelWrapper.position.set(indicatorPoint.x, indicatorPoint.y, 0)
+      radiusLengthIndicator.visible = isHandlesVisible
+    }
+
+    if (circleCenterHandle) {
+      circleCenterHandle.position.set(center[0], center[1], 0)
+      circleCenterHandle.scale.set(scale, scale, scale)
+      circleCenterHandle.visible = isHandlesVisible
+    }
+
+    const arcSegmentBody = group.children.find(
+      (child) => child.userData.type === ARC_SEGMENT_BODY
+    ) as Mesh
+
+    if (arcSegmentBody) {
+      const newGeo = createArcGeometry({
+        radius,
+        center,
+        startAngle,
+        endAngle,
+        ccw,
+        scale,
+      })
+      arcSegmentBody.geometry = newGeo
+    }
+
+    const arcSegmentBodyDashed = group.getObjectByName(ARC_SEGMENT_DASH)
+    if (arcSegmentBodyDashed instanceof Mesh) {
+      arcSegmentBodyDashed.geometry = createArcGeometry({
+        center,
+        radius,
+        startAngle,
+        endAngle,
+        ccw,
+        isDashed: true,
+        scale,
+      })
+    }
+
+    return () =>
+      sceneInfra.updateOverlayDetails({
+        handle: endAngleHandle,
+        group,
+        isHandlesVisible,
+        from,
+        to,
+        angle: endAngle + (Math.PI / 2) * (ccw ? 1 : -1),
+        hasThreeDotMenu: true,
+      })
   }
 }
 
@@ -1357,4 +1585,5 @@ export const segmentUtils = {
   tangentialArcTo: new TangentialArcToSegment(),
   circle: new CircleSegment(),
   circleThreePoint: new CircleThreePointSegment(),
+  arc: new ArcSegment(),
 } as const
