@@ -15,14 +15,16 @@ outerProfile = circle(
   sketch000,
   center = [0.0, 0.0],
   radius = outerDiameter / 2,
-  tag = $arc000)
+  tag = $arc000,
+)
 
 // create a profile of the inside of the pipe
 innerProfile = circle(
   sketch000,
   center = [0.0, 0.0],
   radius = innerDiameter / 2,
-  tag = $arc001)
+  tag = $arc001,
+)
 
 // create a profile with holes sketch000Profile000Holes
 pipeProfile = outerProfile
