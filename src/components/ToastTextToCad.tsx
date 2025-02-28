@@ -43,7 +43,7 @@ const OUTPUT_KEY = 'source.glb'
 function TextToCadImprovementMessage({
   label,
   ...rest
-}: React.HTMLElementAttributes<HTMLDetailsElement> & { label: string }) {
+}: React.HTMLAttributes<HTMLDetailsElement> & { label: string }) {
   return (
     <details {...rest}>
       <summary className="text-chalkboard-70 dark:text-chalkboard-30">
