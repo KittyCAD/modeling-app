@@ -3,7 +3,6 @@
 pub mod project;
 
 use anyhow::Result;
-use indexmap::IndexMap;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -126,17 +125,14 @@ pub struct AppSettings {
     pub dismiss_web_banner: bool,
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, alias = "streamIdleMode", skip_serializing_if = "is_default")]
-    stream_idle_mode: bool,
+    pub stream_idle_mode: bool,
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
-    allow_orbit_in_sketch_mode: bool,
+    pub allow_orbit_in_sketch_mode: bool,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
     #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
-    /// Settings that affect the behavior of the command bar.
-    #[serde(default, alias = "namedViews", skip_serializing_if = "IndexMap::is_empty")]
-    pub named_views: IndexMap<uuid::Uuid, NamedView>,
 }
 
 // TODO: When we remove backwards compatibility with the old settings file, we can remove this.
@@ -292,46 +288,6 @@ pub struct ModelingSettings {
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, alias = "showScaleGrid", skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
-}
-
-fn named_view_point_version_one() -> f64 {
-    1.0
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate, PartialEq)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct NamedView {
-    /// User defined name to identify the named view. A label.
-    #[serde(default, alias = "name", skip_serializing_if = "is_default")]
-    pub name: String,
-    /// Engine camera eye off set
-    #[serde(default, alias = "eyeOffset", skip_serializing_if = "is_default")]
-    pub eye_offset: f64,
-    /// Engine camera vertical FOV
-    #[serde(default, alias = "fovY", skip_serializing_if = "is_default")]
-    pub fov_y: f64,
-    // Engine camera is orthographic or perspective projection
-    #[serde(default, alias = "isOrtho")]
-    pub is_ortho: bool,
-    /// Engine camera is orthographic camera scaling enabled
-    #[serde(default, alias = "orthoScaleEnabled")]
-    pub ortho_scale_enabled: bool,
-    /// Engine camera orthographic scaling factor
-    #[serde(default, alias = "orthoScaleFactor", skip_serializing_if = "is_default")]
-    pub ortho_scale_factor: f64,
-    /// Engine camera position that the camera pivots around
-    #[serde(default, alias = "pivotPosition", skip_serializing_if = "is_default")]
-    pub pivot_position: [f64; 3],
-    /// Engine camera orientation in relation to the pivot position
-    #[serde(default, alias = "pivotRotation", skip_serializing_if = "is_default")]
-    pub pivot_rotation: [f64; 4],
-    /// Engine camera world coordinate system orientation
-    #[serde(default, alias = "worldCoordSystem", skip_serializing_if = "is_default")]
-    pub world_coord_system: String,
-    /// Version number of the view point if the engine camera API changes
-    #[serde(default = "named_view_point_version_one")]
-    pub version: f64,
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -620,7 +576,6 @@ mod tests {
         ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
     use crate::settings::types::CameraOrbitType;
-    use indexmap::IndexMap;
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -665,7 +620,6 @@ textWrapping = true
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
                         show_debug_panel: true,
-                        named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
@@ -730,7 +684,6 @@ includeSettings = false
                         show_debug_panel: true,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -800,7 +753,6 @@ defaultProjectName = "projects-$nnn"
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
                         show_debug_panel: true,
-                        named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -882,7 +834,6 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         show_debug_panel: false,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
-                        named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
