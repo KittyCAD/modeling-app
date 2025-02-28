@@ -776,11 +776,13 @@ impl ExecutorContext {
             )
             .await;
 
-        // Flush the batch with all the end commands.
-        // If we don't do this then some programs might not fully finish executing.
-        self.engine
-            .flush_batch(true, SourceRange::new(program.end, program.end, ModuleId::default()))
-            .await?;
+        if exec_result.is_ok() {
+            // Flush the batch with all the end commands.
+            // If we don't do this then some programs might not fully finish executing.
+            self.engine
+                .flush_batch(true, SourceRange::new(program.end, program.end, ModuleId::default()))
+                .await?;
+        }
 
         // Move the artifact commands and responses to simplify cache management
         // and error creation.
