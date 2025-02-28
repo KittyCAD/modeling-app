@@ -87,8 +87,8 @@ pub enum KclError {
     ImportCycle(KclErrorDetails),
     #[error("type: {0:?}")]
     Type(KclErrorDetails),
-    #[error("unimplemented: {0:?}")]
-    Unimplemented(KclErrorDetails),
+    #[error("i/o: {0:?}")]
+    Io(KclErrorDetails),
     #[error("unexpected: {0:?}")]
     Unexpected(KclErrorDetails),
     #[error("value already defined: {0:?}")]
@@ -150,7 +150,7 @@ impl KclErrorWithOutputs {
             source_files: Default::default(),
         }
     }
-    pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
+    pub fn into_miette_report_with_outputs(self) -> anyhow::Result<ReportWithOutputs> {
         let mut source_ranges = self.error.source_ranges();
 
         // Pop off the first source range to get the filename.
@@ -162,33 +162,23 @@ impl KclErrorWithOutputs {
             .source_files
             .get(&first_source_range.module_id())
             .cloned()
-            .unwrap_or(ModuleSource {
-                source: code.to_string(),
-                path: self
-                    .filenames
-                    .get(&first_source_range.module_id())
-                    .ok_or_else(|| {
-                        anyhow::anyhow!(
-                            "Could not find filename for module id: {:?}",
-                            first_source_range.module_id()
-                        )
-                    })?
-                    .clone(),
-            });
+            .ok_or_else(|| {
+                anyhow::anyhow!(
+                    "Could not find source file for module id: {:?}",
+                    first_source_range.module_id()
+                )
+            })?;
         let filename = source.path.to_string();
         let kcl_source = source.source.to_string();
 
         let mut related = Vec::new();
         for source_range in source_ranges {
             let module_id = source_range.module_id();
-            let source = self.source_files.get(&module_id).cloned().unwrap_or(ModuleSource {
-                source: code.to_string(),
-                path: self
-                    .filenames
-                    .get(&module_id)
-                    .ok_or_else(|| anyhow::anyhow!("Could not find filename for module id: {:?}", module_id))?
-                    .clone(),
-            });
+            let source = self
+                .source_files
+                .get(&module_id)
+                .cloned()
+                .ok_or_else(|| anyhow::anyhow!("Could not find source file for module id: {:?}", module_id))?;
             let error = self.error.override_source_ranges(vec![source_range]);
             let report = Report {
                 error,
@@ -278,7 +268,7 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::Semantic(_) => "Semantic",
             KclError::ImportCycle(_) => "ImportCycle",
             KclError::Type(_) => "Type",
-            KclError::Unimplemented(_) => "Unimplemented",
+            KclError::Io(_) => "I/O",
             KclError::Unexpected(_) => "Unexpected",
             KclError::ValueAlreadyDefined(_) => "ValueAlreadyDefined",
             KclError::UndefinedValue(_) => "UndefinedValue",
@@ -328,7 +318,7 @@ impl miette::Diagnostic for Report {
             KclError::Semantic(_) => "Semantic",
             KclError::ImportCycle(_) => "ImportCycle",
             KclError::Type(_) => "Type",
-            KclError::Unimplemented(_) => "Unimplemented",
+            KclError::Io(_) => "I/O",
             KclError::Unexpected(_) => "Unexpected",
             KclError::ValueAlreadyDefined(_) => "ValueAlreadyDefined",
             KclError::UndefinedValue(_) => "UndefinedValue",
@@ -387,7 +377,7 @@ impl KclError {
             KclError::Semantic(_) => "semantic",
             KclError::ImportCycle(_) => "import cycle",
             KclError::Type(_) => "type",
-            KclError::Unimplemented(_) => "unimplemented",
+            KclError::Io(_) => "i/o",
             KclError::Unexpected(_) => "unexpected",
             KclError::ValueAlreadyDefined(_) => "value already defined",
             KclError::UndefinedValue(_) => "undefined value",
@@ -404,7 +394,7 @@ impl KclError {
             KclError::Semantic(e) => e.source_ranges.clone(),
             KclError::ImportCycle(e) => e.source_ranges.clone(),
             KclError::Type(e) => e.source_ranges.clone(),
-            KclError::Unimplemented(e) => e.source_ranges.clone(),
+            KclError::Io(e) => e.source_ranges.clone(),
             KclError::Unexpected(e) => e.source_ranges.clone(),
             KclError::ValueAlreadyDefined(e) => e.source_ranges.clone(),
             KclError::UndefinedValue(e) => e.source_ranges.clone(),
@@ -422,7 +412,7 @@ impl KclError {
             KclError::Semantic(e) => &e.message,
             KclError::ImportCycle(e) => &e.message,
             KclError::Type(e) => &e.message,
-            KclError::Unimplemented(e) => &e.message,
+            KclError::Io(e) => &e.message,
             KclError::Unexpected(e) => &e.message,
             KclError::ValueAlreadyDefined(e) => &e.message,
             KclError::UndefinedValue(e) => &e.message,
@@ -440,7 +430,7 @@ impl KclError {
             KclError::Semantic(e) => e.source_ranges = source_ranges,
             KclError::ImportCycle(e) => e.source_ranges = source_ranges,
             KclError::Type(e) => e.source_ranges = source_ranges,
-            KclError::Unimplemented(e) => e.source_ranges = source_ranges,
+            KclError::Io(e) => e.source_ranges = source_ranges,
             KclError::Unexpected(e) => e.source_ranges = source_ranges,
             KclError::ValueAlreadyDefined(e) => e.source_ranges = source_ranges,
             KclError::UndefinedValue(e) => e.source_ranges = source_ranges,
@@ -460,7 +450,7 @@ impl KclError {
             KclError::Semantic(e) => e.source_ranges.extend(source_ranges),
             KclError::ImportCycle(e) => e.source_ranges.extend(source_ranges),
             KclError::Type(e) => e.source_ranges.extend(source_ranges),
-            KclError::Unimplemented(e) => e.source_ranges.extend(source_ranges),
+            KclError::Io(e) => e.source_ranges.extend(source_ranges),
             KclError::Unexpected(e) => e.source_ranges.extend(source_ranges),
             KclError::ValueAlreadyDefined(e) => e.source_ranges.extend(source_ranges),
             KclError::UndefinedValue(e) => e.source_ranges.extend(source_ranges),

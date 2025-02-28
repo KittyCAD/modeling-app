@@ -84,10 +84,14 @@ async fn execute(test_name: &str, render_to_png: bool) {
     let Ok(ast) = ast_res else {
         return;
     };
+    let ast = crate::Program {
+        ast,
+        original_file_contents: read("input.kcl", test_name),
+    };
 
     // Run the program.
     let exec_res = crate::test_server::execute_and_snapshot_ast(
-        ast.into(),
+        ast,
         crate::settings::types::UnitLength::Mm,
         Some(Path::new("tests").join(test_name).join("input.kcl").to_owned()),
     )
@@ -132,10 +136,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                         Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
                     }))
                     .unwrap();
-                    let report = error
-                        .clone()
-                        .into_miette_report_with_outputs(&read("input.kcl", test_name))
-                        .unwrap();
+                    let report = error.clone().into_miette_report_with_outputs().unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
                         eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl/{ok_path_str} and other associated passing artifacts");

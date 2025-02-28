@@ -12,7 +12,6 @@ import {
   get_kcl_version,
   make_default_planes,
   coredump,
-  toml_stringify,
   default_app_settings,
   parse_app_settings,
   parse_project_settings,
@@ -21,6 +20,8 @@ import {
   clear_scene_and_bust_cache,
   kcl_settings,
   change_kcl_settings,
+  serialize_project_configuration,
+  serialize_configuration,
   reloadModule,
 } from 'lib/wasm_lib_wrapper'
 
@@ -636,10 +637,6 @@ export async function coreDump(
   }
 }
 
-export function tomlStringify(toml: any): string | Error {
-  return toml_stringify(JSON.stringify(toml))
-}
-
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
 }
@@ -785,4 +782,28 @@ export function unitAngToUnitAngle(input: UnitAng): UnitAngle {
  */
 export function getKclVersion(): string {
   return get_kcl_version()
+}
+
+/**
+ * Serialize a project configuration to a TOML string.
+ */
+export function serializeConfiguration(configuration: any): string | Error {
+  try {
+    return serialize_configuration(configuration)
+  } catch (e: any) {
+    return new Error(`Error serializing configuration: ${e}`)
+  }
+}
+
+/**
+ * Serialize a project configuration to a TOML string.
+ */
+export function serializeProjectConfiguration(
+  configuration: any
+): string | Error {
+  try {
+    return serialize_project_configuration(configuration)
+  } catch (e: any) {
+    return new Error(`Error serializing project configuration: ${e}`)
+  }
 }
