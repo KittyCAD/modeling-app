@@ -83,37 +83,31 @@ test.describe(
 
     const planeConfigs = [
       {
-        name: 'XY',
         plane: 'XY',
         coords: { x: 600, y: 388 },
         description: 'red plane',
       },
       {
-        name: 'YZ',
         plane: 'YZ',
         coords: { x: 700, y: 250 },
         description: 'green plane',
       },
       {
-        name: 'XZ',
         plane: 'XZ',
         coords: { x: 684, y: 427 },
         description: 'blue plane',
       },
       {
-        name: '-XY',
         plane: '-XY',
         coords: { x: 600, y: 118 },
         description: 'back of red plane',
       },
       {
-        name: '-YZ',
         plane: '-YZ',
         coords: { x: 700, y: 219 },
         description: 'back of green plane',
       },
       {
-        name: '-XZ',
         plane: '-XZ',
         coords: { x: 700, y: 80 },
         description: 'back of blue plane',
@@ -121,7 +115,7 @@ test.describe(
     ]
 
     for (const config of planeConfigs) {
-      test(config.name, async ({ page, homePage, scene }) => {
+      test(config.plane, async ({ page, homePage, scene }) => {
         await sketchOnPlaneAndBackSideTest(
           page,
           homePage,
