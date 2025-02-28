@@ -106,6 +106,15 @@ pub struct CodeRef {
     pub path_to_node: DummyPathToNode,
 }
 
+impl CodeRef {
+    pub fn placeholder(range: SourceRange) -> Self {
+        Self {
+            range,
+            path_to_node: Vec::new(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -176,6 +185,24 @@ pub enum SweepSubType {
 pub struct Solid2d {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct StartSketchOnFace {
+    pub id: ArtifactId,
+    pub face_id: ArtifactId,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct StartSketchOnPlane {
+    pub id: ArtifactId,
+    pub plane_id: ArtifactId,
+    pub code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -295,18 +322,8 @@ pub enum Artifact {
     Path(Path),
     Segment(Segment),
     Solid2d(Solid2d),
-    #[serde(rename_all = "camelCase")]
-    StartSketchOnFace {
-        id: ArtifactId,
-        face_id: Uuid,
-        source_range: SourceRange,
-    },
-    #[serde(rename_all = "camelCase")]
-    StartSketchOnPlane {
-        id: ArtifactId,
-        plane_id: Uuid,
-        source_range: SourceRange,
-    },
+    StartSketchOnFace(StartSketchOnFace),
+    StartSketchOnPlane(StartSketchOnPlane),
     Sweep(Sweep),
     Wall(Wall),
     Cap(Cap),
@@ -323,8 +340,8 @@ impl Artifact {
             Artifact::Path(a) => a.id,
             Artifact::Segment(a) => a.id,
             Artifact::Solid2d(a) => a.id,
-            Artifact::StartSketchOnFace { id, .. } => *id,
-            Artifact::StartSketchOnPlane { id, .. } => *id,
+            Artifact::StartSketchOnFace(a) => a.id,
+            Artifact::StartSketchOnPlane(a) => a.id,
             Artifact::Sweep(a) => a.id,
             Artifact::Wall(a) => a.id,
             Artifact::Cap(a) => a.id,
@@ -342,9 +359,8 @@ impl Artifact {
             Artifact::Path(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
             Artifact::Solid2d(_) => None,
-            // TODO: We should add code refs for these.
-            Artifact::StartSketchOnFace { .. } => None,
-            Artifact::StartSketchOnPlane { .. } => None,
+            Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
+            Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
             Artifact::Sweep(a) => Some(&a.code_ref),
             Artifact::Wall(_) => None,
             Artifact::Cap(_) => None,
@@ -505,6 +521,10 @@ pub(super) fn build_artifact_graph(
             // Merge with existing artifacts.
             merge_artifact_into_map(&mut map, artifact);
         }
+    }
+
+    for exec_artifact in exec_artifacts.values() {
+        merge_artifact_into_map(&mut map, exec_artifact.clone());
     }
 
     Ok(ArtifactGraph { map })
@@ -841,15 +861,15 @@ fn artifacts_to_update(
                     })
                 })?;
                 let extra_artifact = exec_artifacts.values().find(|a| {
-                    if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
-                        *id == face_id.0
+                    if let Artifact::StartSketchOnFace(s) = a {
+                        s.face_id == face_id
                     } else {
                         false
                     }
                 });
                 let sketch_on_face_source_range = extra_artifact
                     .and_then(|a| match a {
-                        Artifact::StartSketchOnFace { source_range, .. } => Some(*source_range),
+                        Artifact::StartSketchOnFace(s) => Some(s.code_ref.range),
                         // TODO: If we didn't find it, it's probably a bug.
                         _ => None,
                     })
@@ -894,15 +914,15 @@ fn artifacts_to_update(
                         })
                     })?;
                     let extra_artifact = exec_artifacts.values().find(|a| {
-                        if let Artifact::StartSketchOnFace { face_id: id, .. } = a {
-                            *id == face_id.0
+                        if let Artifact::StartSketchOnFace(s) = a {
+                            s.face_id == face_id
                         } else {
                             false
                         }
                     });
                     let sketch_on_face_source_range = extra_artifact
                         .and_then(|a| match a {
-                            Artifact::StartSketchOnFace { source_range, .. } => Some(*source_range),
+                            Artifact::StartSketchOnFace(s) => Some(s.code_ref.range),
                             _ => None,
                         })
                         .unwrap_or_default();

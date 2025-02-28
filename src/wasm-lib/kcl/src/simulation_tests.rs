@@ -84,10 +84,14 @@ async fn execute(test_name: &str, render_to_png: bool) {
     let Ok(ast) = ast_res else {
         return;
     };
+    let ast = crate::Program {
+        ast,
+        original_file_contents: read("input.kcl", test_name),
+    };
 
     // Run the program.
     let exec_res = crate::test_server::execute_and_snapshot_ast(
-        ast.into(),
+        ast,
         crate::settings::types::UnitLength::Mm,
         Some(Path::new("tests").join(test_name).join("input.kcl").to_owned()),
     )
@@ -128,11 +132,11 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
-                    let report = crate::errors::Report {
-                        error: error.error,
-                        filename: format!("{test_name}.kcl"),
-                        kcl_source: read("input.kcl", test_name),
-                    };
+                    miette::set_hook(Box::new(|_| {
+                        Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
+                    }))
+                    .unwrap();
+                    let report = error.clone().into_miette_report_with_outputs().unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
                         eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl/{ok_path_str} and other associated passing artifacts");
@@ -2027,8 +2031,52 @@ mod helix_simple {
     }
 }
 
+mod import_file_not_exist_error {
+    const TEST_NAME: &str = "import_file_not_exist_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
 mod import_file_parse_error {
     const TEST_NAME: &str = "import_file_parse_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod flush_batch_on_end {
+    const TEST_NAME: &str = "flush_batch_on_end";
 
     /// Test parsing KCL.
     #[test]

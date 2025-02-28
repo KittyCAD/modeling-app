@@ -4,7 +4,8 @@ import {
   initPromise,
   parseAppSettings,
   parseProjectSettings,
-  tomlStringify,
+  serializeConfiguration,
+  serializeProjectConfiguration,
 } from 'lang/wasm'
 import { mouseControlsToCameraSystem } from 'lib/cameraControls'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
@@ -22,6 +23,7 @@ import { err } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 
 /**
@@ -71,6 +73,43 @@ export function configurationToSettingsPayload(
   }
 }
 
+export function isNamedView(
+  namedView: DeepPartial<NamedView> | undefined
+): namedView is NamedView {
+  const namedViewKeys = [
+    'name',
+    'eye_offset',
+    'fov_y',
+    'ortho_scale_enabled',
+    'ortho_scale_factor',
+    'pivot_position',
+    'pivot_rotation',
+    'world_coord_system',
+    'version',
+  ] as const
+
+  return namedViewKeys.every((key) => {
+    return namedView && namedView[key]
+  })
+}
+
+function deepPartialNamedViewsToNamedViews(
+  maybeViews: { [key: string]: NamedView | undefined } | undefined
+): { [key: string]: NamedView } {
+  const namedViews: { [key: string]: NamedView } = {}
+
+  if (!maybeViews) {
+    return namedViews
+  }
+
+  Object.entries(maybeViews)?.forEach(([key, maybeView]) => {
+    if (isNamedView(maybeView)) {
+      namedViews[key] = maybeView
+    }
+  })
+  return namedViews
+}
+
 export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
@@ -86,6 +125,9 @@ export function projectConfigurationToSettingsPayload(
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      namedViews: deepPartialNamedViewsToNamedViews(
+        configuration?.settings?.app?.named_views
+      ),
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -131,7 +173,7 @@ export function readLocalStorageAppSettingsFile():
   } catch (e) {
     const settings = defaultAppSettings()
     if (err(settings)) return settings
-    const tomlStr = tomlStringify(settings)
+    const tomlStr = serializeConfiguration(settings)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
@@ -152,7 +194,7 @@ function readLocalStorageProjectSettingsFile():
   const projectSettings = parseProjectSettings(stored)
   if (err(projectSettings)) {
     const settings = defaultProjectSettings()
-    const tomlStr = tomlStringify(settings)
+    const tomlStr = serializeProjectConfiguration(settings)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
@@ -229,7 +271,7 @@ export async function saveSettings(
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
-  const appTomlString = tomlStringify({ settings: jsAppSettings })
+  const appTomlString = serializeConfiguration({ settings: jsAppSettings })
   if (err(appTomlString)) return
 
   // Write the app settings.
@@ -246,7 +288,9 @@ export async function saveSettings(
 
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
-  const projectTomlString = tomlStringify({ settings: jsProjectSettings })
+  const projectTomlString = serializeProjectConfiguration({
+    settings: jsProjectSettings,
+  })
   if (err(projectTomlString)) return
 
   // Write the project settings.

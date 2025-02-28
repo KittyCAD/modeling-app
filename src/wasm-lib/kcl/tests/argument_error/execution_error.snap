@@ -8,5 +8,6 @@ KCL Type error
    ╭─[5:5]
  4 │ 
  5 │ map(f, [0, 1])
-   ·     ─
+   ·     ┬
+   ·     ╰── tests/argument_error/input.kcl
    ╰────

@@ -9,7 +9,13 @@ Construct a circle derived from 3 points.
 
 
 ```js
-circleThreePoint(p1: [number], p2: [number], p3: [number], sketchSurfaceOrGroup: SketchOrSurface, tag?: TagDeclarator) -> Sketch
+circleThreePoint(
+  p1: [number],
+  p2: [number],
+  p3: [number],
+  sketchSurfaceOrGroup: SketchOrSurface,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 

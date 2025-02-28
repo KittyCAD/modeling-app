@@ -38,6 +38,7 @@ flowchart LR
   32[Wall]
   33["SweepEdge Opposite"]
   34["SweepEdge Adjacent"]
+  35["StartSketchOnFace<br>[332, 364, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -89,4 +90,5 @@ flowchart LR
   31 --- 32
   31 --- 33
   31 --- 34
+  11 <--x 35
 ```

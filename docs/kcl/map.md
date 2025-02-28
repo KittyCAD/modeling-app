@@ -9,7 +9,10 @@ Apply a function to every element of a list.
 Given a list like `[a, b, c]`, and a function like `f`, returns `[f(a), f(b), f(c)]`
 
 ```js
-map(array: [KclValue], mapFn: FunctionSource) -> [KclValue]
+map(
+  array: [KclValue],
+  mapFn: FunctionSource,
+) -> [KclValue]
 ```
 
 

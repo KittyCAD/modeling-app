@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.39"
+version = "0.2.44"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -22,7 +22,7 @@ clap = { version = "4.5.27", default-features = false, optional = true, features
 ] }
 convert_case = "0.6.0"
 dashmap = "6.1.0"
-derive-docs = { version = "0.1.38", path = "../derive-docs" }
+derive-docs = { version = "0.1.44", path = "../derive-docs" }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
 form_urlencoded = "1.2.1"
@@ -72,7 +72,7 @@ ts-rs = { version = "10.1.0", features = [
 url = { version = "2.5.4", features = ["serde"] }
 urlencoding = "2.1.3"
 uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
-validator = { version = "0.19.0", features = ["derive"] }
+validator = { version = "0.20.0", features = ["derive"] }
 web-time = "1.1"
 winnow = "0.6.22"
 zip = { version = "2.2.2", default-features = false }
@@ -140,4 +140,3 @@ required-features = ["lsp-test-util"]
 [[bench]]
 name = "executor_benchmark_criterion"
 harness = false
-

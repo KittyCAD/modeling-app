@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands cube_with_error.kcl
-snapshot_kind: text
 ---
 [
   {

@@ -35,6 +35,18 @@ A custom plane.
 
 
 ----
+A custom plane which has not been sent to the engine. It must be sent before it is used.
+
+**enum:** `Uninit`
+
+
+
+
+
+
+
+
+----
 
 
 

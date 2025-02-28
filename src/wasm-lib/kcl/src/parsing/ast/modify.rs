@@ -182,9 +182,7 @@ pub async fn modify_ast_for_sketch(
     let recasted = program.ast.recast(&FormatOptions::default(), 0);
 
     // Re-parse the ast so we get the correct source ranges.
-    *program = crate::parsing::parse_str(&recasted, module_id)
-        .parse_errs_as_err()?
-        .into();
+    program.ast = crate::parsing::parse_str(&recasted, module_id).parse_errs_as_err()?;
 
     Ok(recasted)
 }
