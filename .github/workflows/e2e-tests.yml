@@ -85,7 +85,7 @@ jobs:
       with:
         tool: wasm-pack
     - name: Cache Wasm (because rust diff)
-      if: github.event_name != 'schedule' && steps.filter.outputs.rust == 'true'
+      if: github.event_name == 'schedule' || steps.filter.outputs.rust == 'true'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
