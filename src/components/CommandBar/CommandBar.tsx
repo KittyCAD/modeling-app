@@ -43,9 +43,10 @@ export const CommandBar = () => {
       if (commandBarState.matches('Review')) {
         const entries = Object.entries(selectedCommand?.args || {}).filter(
           ([_, argConfig]) =>
-            typeof argConfig.required === 'function'
+            !argConfig.hidden &&
+            (typeof argConfig.required === 'function'
               ? argConfig.required(commandBarState.context)
-              : argConfig.required
+              : argConfig.required)
         )
 
         const currentArgName = entries[entries.length - 1][0]
@@ -64,7 +65,9 @@ export const CommandBar = () => {
         commandBarActor.send({ type: 'Deselect command' })
       }
     } else {
-      const entries = Object.entries(selectedCommand?.args || {})
+      const entries = Object.entries(selectedCommand?.args || {}).filter(
+        (a) => !a[1].hidden
+      )
       const index = entries.findIndex(
         ([key, _]) => key === currentArgument.name
       )
