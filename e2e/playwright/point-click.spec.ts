@@ -2357,7 +2357,7 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       await test.step('Edit shell via feature tree selection works', async () => {
         // TODO: this test hits a case that happens sometimes in manual testing where
         // we can't edit the shell right after its creation. As if the codemod didn't fully
-        // register during the initall add flow. 
+        // register during the initall add flow.
         test.skip()
         await toolbar.closePane('code')
         await toolbar.openPane('feature-tree')
