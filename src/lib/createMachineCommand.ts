@@ -178,7 +178,6 @@ export function buildCommandArgument<
       options: arg.optionsFromContext
         ? arg.optionsFromContext(context)
         : arg.options,
-      validation: arg.validation,
     } satisfies CommandArgument<O, T> & { inputType: 'options' }
   } else if (arg.inputType === 'selection') {
     return {

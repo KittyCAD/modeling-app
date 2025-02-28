@@ -144,13 +144,6 @@ export type CommandArgumentConfig<
             machineContext?: C
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
-      validation?: ({
-        data,
-        context,
-      }: {
-        data: any
-        context: CommandBarContext
-      }) => Promise<boolean | string>
     }
   | {
       inputType: 'selection'
@@ -264,13 +257,6 @@ export type CommandArgument<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
           ) => OutputType)
-      validation?: ({
-        data,
-        context,
-      }: {
-        data: any
-        context: CommandBarContext
-      }) => Promise<boolean | string>
     }
   | {
       inputType: 'selection'

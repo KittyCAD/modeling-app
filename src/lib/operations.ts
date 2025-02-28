@@ -213,7 +213,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 
   // We have to go a little roundabout to get from the original artifact
-  // to the solid2DId that we need to pass to the Extrude command.
+  // to the solid2DId that we need to pass to the Sweep command, just like Extrude.
   const pathArtifact = getArtifactOfTypes(
     {
       key: artifact.pathId,
@@ -221,12 +221,15 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     },
     engineCommandManager.artifactGraph
   )
+
   if (
     err(pathArtifact) ||
     pathArtifact.type !== 'path' ||
     !pathArtifact.solid2dId
-  )
+  ) {
     return baseCommand
+  }
+
   const targetArtifact = getArtifactOfTypes(
     {
       key: pathArtifact.solid2dId,
@@ -234,6 +237,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     },
     engineCommandManager.artifactGraph
   )
+
   if (err(targetArtifact) || targetArtifact.type !== 'solid2d') {
     return baseCommand
   }
@@ -249,12 +253,14 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 
   // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
-  if (!('path' in operation.labeledArgs) || !operation.labeledArgs.path)
+  if (!('path' in operation.labeledArgs) || !operation.labeledArgs.path) {
     return baseCommand
+  }
 
   if (operation.labeledArgs.path.value.type !== 'Sketch') {
     return baseCommand
   }
+
   const trajectoryPathArtifact = getArtifactOfTypes(
     {
       key: operation.labeledArgs.path.value.value.artifactId,
@@ -262,6 +268,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     },
     engineCommandManager.artifactGraph
   )
+
   if (err(trajectoryPathArtifact) || trajectoryPathArtifact.type !== 'path') {
     return baseCommand
   }
@@ -273,6 +280,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     },
     engineCommandManager.artifactGraph
   )
+
   if (err(trajectoryArtifact) || trajectoryArtifact.type !== 'segment') {
     return baseCommand
   }
@@ -291,8 +299,10 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   if (
     !('sectional' in operation.labeledArgs) ||
     !operation.labeledArgs.sectional
-  )
+  ) {
     return baseCommand
+  }
+
   const sectional =
     codeManager.code.slice(
       operation.labeledArgs.sectional.sourceRange[0],

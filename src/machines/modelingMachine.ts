@@ -1899,6 +1899,7 @@ export const modelingMachine = setup({
             nodeToEdit,
             'VariableDeclaration'
           )
+
           if (err(variableNode)) {
             console.error('Error extracting name')
           } else {
@@ -1951,6 +1952,7 @@ export const modelingMachine = setup({
           variableName,
           insertIndex,
         })
+
         const updatedAst = await kclManager.updateAst(
           addResult.modifiedAst,
           true,

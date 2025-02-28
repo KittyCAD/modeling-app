@@ -230,22 +230,15 @@ export const sweepValidator = async ({
   data,
 }: {
   context: CommandBarContext
-  data: { trajectory?: Selections; sectional?: boolean }
+  data: { trajectory: Selections }
 }): Promise<boolean | string> => {
-  console.log('sweepValidator', context, data)
-
-  // Retrieve the sectional argument if it exists
-  const sectional = data.sectional ?? false
-
-  // Retrieve the parent path from the segment selection directly
-  const trajectoryArgument =
-    data.trajectory ?? context.argumentsToSubmit['trajectory']
-  if (!isSelections(trajectoryArgument)) {
+  if (!isSelections(data.trajectory)) {
     console.log('Unable to sweep, selections are missing')
     return 'Unable to sweep, selections are missing'
   }
 
-  const trajectoryArtifact = trajectoryArgument.graphSelections[0].artifact
+  // Retrieve the parent path from the segment selection directly
+  const trajectoryArtifact = data.trajectory.graphSelections[0].artifact
   if (!trajectoryArtifact) {
     return "Unable to sweep, couldn't find the trajectory artifact"
   }
@@ -268,13 +261,13 @@ export const sweepValidator = async ({
   const command = async () => {
     // TODO: second look on defaults here
     const DEFAULT_TOLERANCE: Models['LengthUnit_type'] = 1e-7
+    const DEFAULT_SECTIONAL = false
     const cmdArgs = {
       target,
       trajectory,
-      sectional,
+      sectional: DEFAULT_SECTIONAL,
       tolerance: DEFAULT_TOLERANCE,
     }
-    console.log(cmdArgs)
     return await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
