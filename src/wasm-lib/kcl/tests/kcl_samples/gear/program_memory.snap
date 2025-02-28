@@ -4353,8 +4353,8 @@ description: Variables in memory after executing gear.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2919,
-            3030,
+            2917,
+            3026,
             0
           ],
           "tag": null,
@@ -4439,7 +4439,7 @@ description: Variables in memory after executing gear.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2791,
-                2913,
+                2911,
                 0
               ]
             },
@@ -4467,8 +4467,8 @@ description: Variables in memory after executing gear.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2919,
-                3030,
+                2917,
+                3026,
                 0
               ]
             },
@@ -4496,8 +4496,8 @@ description: Variables in memory after executing gear.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3036,
-                3043,
+                3032,
+                3039,
                 0
               ]
             },

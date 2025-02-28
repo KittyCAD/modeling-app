@@ -10076,16 +10076,16 @@ description: Operations executed gear.kcl
           }
         },
         "sourceRange": [
-          3066,
-          3077,
+          3062,
+          3073,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3049,
-      3078,
+      3045,
+      3074,
       0
     ],
     "type": "StdLibCall",
