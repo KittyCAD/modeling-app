@@ -47,6 +47,11 @@ impl ProjectConfiguration {
             }
         }
 
+        if settings.settings.modeling.show_debug_panel && !settings.settings.app.show_debug_panel {
+            settings.settings.app.show_debug_panel = settings.settings.modeling.show_debug_panel;
+            settings.settings.modeling.show_debug_panel = Default::default();
+        }
+
         settings.validate()?;
 
         Ok(settings)
@@ -124,6 +129,7 @@ includeSettings = false
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
+                        show_debug_panel: true,
                         named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
@@ -132,7 +138,7 @@ includeSettings = false
                         camera_orbit: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
-                        show_debug_panel: false,
+                        show_debug_panel: Default::default(),
                         enable_ssao: true.into(),
                         show_scale_grid: false,
                     },
@@ -145,6 +151,29 @@ includeSettings = false
                     },
                 }
             }
+        );
+
+        // Write the file back out.
+        let serialized = toml::to_string(&parsed).unwrap();
+        assert_eq!(
+            serialized,
+            r#"[settings.app]
+show_debug_panel = true
+
+[settings.app.appearance]
+theme = "dark"
+color = 138.0
+
+[settings.modeling]
+base_unit = "yd"
+
+[settings.text_editor]
+text_wrapping = false
+blinking_cursor = false
+
+[settings.command_bar]
+include_settings = false
+"#
         );
     }
 

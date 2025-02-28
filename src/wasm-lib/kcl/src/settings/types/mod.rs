@@ -56,6 +56,11 @@ impl Configuration {
             }
         }
 
+        if settings.settings.modeling.show_debug_panel && !settings.settings.app.show_debug_panel {
+            settings.settings.app.show_debug_panel = settings.settings.modeling.show_debug_panel;
+            settings.settings.modeling.show_debug_panel = Default::default();
+        }
+
         settings.validate()?;
 
         Ok(settings)
@@ -125,6 +130,10 @@ pub struct AppSettings {
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
     allow_orbit_in_sketch_mode: bool,
+    /// Whether to show the debug panel, which lets you see various states
+    /// of the app to aid in development.
+    #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
+    pub show_debug_panel: bool,
     /// Settings that affect the behavior of the command bar.
     #[serde(default, alias = "namedViews", skip_serializing_if = "IndexMap::is_empty")]
     pub named_views: IndexMap<uuid::Uuid, NamedView>,
@@ -274,6 +283,7 @@ pub struct ModelingSettings {
     pub highlight_edges: DefaultTrue,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
+    /// Remove this when we remove backwards compatibility with the old settings file.
     #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
@@ -654,6 +664,7 @@ textWrapping = true
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
+                        show_debug_panel: true,
                         named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
@@ -661,8 +672,8 @@ textWrapping = true
                         camera_projection: CameraProjectionType::Orthographic,
                         camera_orbit: Default::default(),
                         mouse_controls: Default::default(),
+                        show_debug_panel: Default::default(),
                         highlight_edges: Default::default(),
-                        show_debug_panel: true,
                         enable_ssao: false.into(),
                         show_scale_grid: false,
                     },
@@ -716,6 +727,7 @@ includeSettings = false
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
+                        show_debug_panel: true,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
                         named_views: IndexMap::default()
@@ -726,9 +738,9 @@ includeSettings = false
                         camera_orbit: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
-                        show_debug_panel: true,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
+                        show_debug_panel: Default::default(),
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -787,6 +799,7 @@ defaultProjectName = "projects-$nnn"
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
+                        show_debug_panel: true,
                         named_views: IndexMap::default()
                     },
                     modeling: ModelingSettings {
@@ -795,7 +808,7 @@ defaultProjectName = "projects-$nnn"
                         camera_orbit: CameraOrbitType::Spherical,
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
-                        show_debug_panel: true,
+                        show_debug_panel: Default::default(),
                         enable_ssao: true.into(),
                         show_scale_grid: false,
                     },
@@ -820,6 +833,7 @@ defaultProjectName = "projects-$nnn"
             serialized,
             r#"[settings.app]
 onboarding_status = "dismissed"
+show_debug_panel = true
 
 [settings.app.appearance]
 theme = "dark"
@@ -827,7 +841,6 @@ color = 138.0
 
 [settings.modeling]
 base_unit = "yd"
-show_debug_panel = true
 
 [settings.text_editor]
 text_wrapping = false
@@ -866,6 +879,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
+                        show_debug_panel: false,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
                         named_views: IndexMap::default()
@@ -876,7 +890,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         camera_orbit: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: true.into(),
-                        show_debug_panel: false,
+                        show_debug_panel: Default::default(),
                         enable_ssao: true.into(),
                         show_scale_grid: false,
                     },
