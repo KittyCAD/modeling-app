@@ -61,7 +61,7 @@ export function createNamedViewsCommand() {
             },
           })
           toast.success(
-            `Your named view ${requestedView.name} successfully created.`
+            `Named view ${requestedView.name} created.`
           )
         }
       }
@@ -113,7 +113,7 @@ export function createNamedViewsCommand() {
             value: namedViews,
           },
         })
-        toast.success(`Deleted ${name} named view`)
+        toast.success(`Named view ${name} removed.`)
       } else {
         toast.error(`Unable to delete, could not find the named view`)
       }
@@ -187,7 +187,7 @@ export function createNamedViewsCommand() {
             },
           })
 
-          toast.success(`Loaded ${name} named view`)
+          toast.success(`Named view ${name} loaded.`)
         } else {
           toast.error(`Unable to load named view, could not find named view`)
         }
