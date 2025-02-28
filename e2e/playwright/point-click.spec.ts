@@ -2877,23 +2877,41 @@ extrude001 = extrude(profile001, length = 100)
       shapeColor: [number, number, number]
     ) {
       await toolbar.openPane('feature-tree')
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'Extrude',
-        0
-      )
-      await operationButton.click({ button: 'right' })
-      const menuButton = page.getByTestId('context-menu-set-appearance')
-      await menuButton.click()
-      await cmdBar.expectState({
-        commandName: 'Appearance',
-        currentArgKey: 'color',
-        currentArgValue: '',
-        headerArguments: {
-          Color: '',
-        },
-        highlightedHeaderArg: 'color',
-        stage: 'arguments',
+      const enterAppearanceFlow = async (stepName: string) =>
+        test.step(stepName, async () => {
+          const operationButton = await toolbar.getFeatureTreeOperation(
+            'Extrude',
+            0
+          )
+          await operationButton.click({ button: 'right' })
+          const menuButton = page.getByTestId('context-menu-set-appearance')
+          await menuButton.click()
+          await cmdBar.expectState({
+            commandName: 'Appearance',
+            currentArgKey: 'color',
+            currentArgValue: '',
+            headerArguments: {
+              Color: '',
+            },
+            highlightedHeaderArg: 'color',
+            stage: 'arguments',
+          })
+        })
+
+      await enterAppearanceFlow(`Open Set Appearance flow`)
+
+      await test.step(`Validate hidden argument "nodeToEdit" can't be reached with Backspace`, async () => {
+        await page.keyboard.press('Backspace')
+        await cmdBar.expectState({
+          stage: 'pickCommand',
+        })
+        await page.keyboard.press('Escape')
+        await cmdBar.expectState({
+          stage: 'commandBarClosed',
+        })
       })
+
+      await enterAppearanceFlow(`Restart Appearance flow`)
       const item = page.getByText(option, { exact: true })
       await item.click()
       await cmdBar.expectState({
