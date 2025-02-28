@@ -143,9 +143,6 @@ pub struct ProjectModelingSettings {
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
-    /// Whether or not to show a scale grid in the 3D modeling view
-    #[serde(default, alias = "showScaleGrid", skip_serializing_if = "is_default")]
-    pub show_scale_grid: bool,
 }
 
 fn named_view_point_version_one() -> f64 {
@@ -241,7 +238,6 @@ includeSettings = false
                         highlight_edges: Default::default(),
                         show_debug_panel: Default::default(),
                         enable_ssao: true.into(),
-                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -418,7 +414,6 @@ color = 1567.4"#;
                     highlight_edges: Default::default(),
                     show_debug_panel: Default::default(),
                     enable_ssao: true.into(),
-                    show_scale_grid: false,
                 },
                 text_editor: TextEditorSettings {
                     text_wrapping: false.into(),

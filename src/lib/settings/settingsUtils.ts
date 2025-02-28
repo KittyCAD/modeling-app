@@ -133,7 +133,6 @@ export function projectConfigurationToSettingsPayload(
       defaultUnit: configuration?.settings?.modeling?.base_unit,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
-      showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,

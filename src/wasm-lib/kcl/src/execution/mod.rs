@@ -279,7 +279,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             units: config.settings.modeling.base_unit,
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
-            show_grid: config.settings.modeling.show_scale_grid,
+            show_grid: Default::default(),
             replay: None,
             project_directory: None,
             current_file: None,
