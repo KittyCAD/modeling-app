@@ -413,6 +413,31 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
         },
         {
+          id: 'arc',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Arc tool' })
+                  ? 'arc'
+                  : 'none',
+              },
+            }),
+          icon: 'arc',
+          status: 'available',
+          // disabled: (state) =>
+          //   (!isEditingExistingSketch(state.context) &&
+          //     !state.matches({ Sketch: 'Arc tool' })) ||
+          //   pipeHasCircle(state.context),
+          title: 'Arc',
+          // todo hotkey
+          // hotkey: (state) =>
+          //   state.matches({ Sketch: 'Tangential arc to' }) ? ['Esc', 'A'] : 'A',
+          description: 'Start drawing an arc',
+          links: [],
+          isActive: (state) => state.matches({ Sketch: 'Arc tool' }),
+        },
+        {
           id: 'three-point-arc',
           onClick: () => console.error('Three-point arc not yet implemented'),
           icon: 'arc',
@@ -473,7 +498,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 tool: !modelingState.matches({
                   Sketch: 'Circle three point tool',
                 })
-                  ? 'circleThreePointNeo'
+                  ? 'circleThreePoint'
                   : 'none',
               },
             }),
