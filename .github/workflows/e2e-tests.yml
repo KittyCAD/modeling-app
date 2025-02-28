@@ -3,6 +3,8 @@ on:
   push:
     branches: [ main, pierremtb/adhoc/pnpm]
   pull_request:
+  schedule:
+    - cron: 0 * * * *  # hourly
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -15,23 +17,6 @@ permissions:
 
 
 jobs:
-
-  check-rust-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      rust-changed: ${{ steps.filter.outputs.rust }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - id: filter
-        name: Check for Rust changes
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            rust:
-              - 'src/wasm-lib/**'
-
   electron:
     timeout-minutes: 60
     name: playwright:electron:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
@@ -42,8 +27,8 @@ jobs:
         os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
+        # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
-    needs: check-rust-changes
     steps:
     - uses: actions/create-github-app-token@v1
       id: app-token
@@ -54,6 +39,13 @@ jobs:
     - uses: actions/checkout@v4
       with:
         token: ${{ steps.app-token.outputs.token }}
+    - id: filter
+      name: Check for Rust changes
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          rust:
+            - 'src/wasm-lib/**'
     - uses: pnpm/action-setup@v4
     # TODO: remove this
     - run: npm install --global --force corepack@latest
@@ -76,7 +68,7 @@ jobs:
       run: pnpm playwright install --with-deps
     - name: Download Wasm Cache
       id: download-wasm
-      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      if: github.event_name != 'schedule' && steps.filter.outputs.rust == 'false'
       uses: dawidd6/action-download-artifact@v7
       continue-on-error: true
       with:
@@ -86,7 +78,7 @@ jobs:
         branch: main
         path: src/wasm-lib/pkg
     - name: copy wasm blob
-      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      if: github.event_name != 'schedule' && steps.filter.outputs.rust == 'false'
       shell: bash
       run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
       continue-on-error: true
@@ -96,7 +88,7 @@ jobs:
       with:
         tool: wasm-pack
     - name: Cache Wasm (because rust diff)
-      if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      if: github.event_name == 'schedule' || steps.filter.outputs.rust == 'true'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
@@ -129,7 +121,7 @@ jobs:
         cat /tmp/vector.toml
         ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
     - name: Build Wasm (because rust diff)
-      if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      if: github.event_name == 'schedule' || steps.filter.outputs.rust == 'true'
       shell: bash
       run: pnpm build:wasm
     - name: OR Build Wasm (because wasm cache failed)
