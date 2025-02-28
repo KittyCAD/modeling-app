@@ -72,6 +72,7 @@ import {
   addCallExpressionsToPipe,
   addCloseToPipe,
   addNewSketchLn,
+  ARG_END_ABSOLUTE,
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
@@ -904,7 +905,7 @@ export class SceneEntities {
                     createPipeSubstitution(),
                   ])
                 : createCallExpressionStdLibKw('line', null, [
-                    createLabeledArg('endAbsolute', originCoords),
+                    createLabeledArg(ARG_END_ABSOLUTE, originCoords),
                   ]),
             ],
           })
