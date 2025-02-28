@@ -201,7 +201,7 @@ test.describe('Feature Tree pane', () => {
         await toolbar.exitSketchBtn.click()
       })
 
-      await test.step('On an offset plane should *not* work', async () => {
+      await test.step('On an offset plane should work', async () => {
         // Tooltip is getting in the way of clicking, so I'm first closing the pane
         await toolbar.closeFeatureTreePane()
         await (await toolbar.getFeatureTreeOperation('Sketch', 2)).dblclick()
@@ -212,13 +212,7 @@ test.describe('Feature Tree pane', () => {
         })
         await expect(
           toolbar.exitSketchBtn,
-          'We should not be in sketch mode now'
-        ).not.toBeVisible()
-        await expect(
-          page.getByText(
-            'Editing sketches on faces or offset planes through the feature tree is not yet supported'
-          ),
-          'We should see a toast message about this'
+          'We should be in sketch mode now'
         ).toBeVisible()
       })
     }
