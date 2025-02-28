@@ -3,6 +3,7 @@ import { HomePageFixture } from './fixtures/homePageFixture'
 import { getUtils } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
+import { SceneFixture } from './fixtures/sceneFixture'
 
 test.describe(
   'Can create sketches on all planes and their back sides',
@@ -11,16 +12,17 @@ test.describe(
     const sketchOnPlaneAndBackSideTest = async (
       page: Page,
       homePage: HomePageFixture,
+      scene: SceneFixture,
       plane: string,
       clickCoords: { x: number; y: number }
     ) => {
       const u = await getUtils(page)
-      const PUR = 400 / 37.5 //pixeltoUnitRatio
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      // FIXME: Cannot use scene.waitForExecutionDone() since there is no KCL code
-      await page.waitForTimeout(10000)
+      const XYPlanRed: [number, number, number] = [98, 50, 51]
+      await scene.expectPixelColor(XYPlanRed, { x: 700, y: 300 }, 15)
+
       await u.openDebugPanel()
 
       const coord =
@@ -43,7 +45,7 @@ test.describe(
         },
       }
 
-      const code = `sketch001 = startSketchOn('${plane}')profile001 = startProfileAt([0.9, -1.22], sketch001)`
+      const code = `sketch001 = startSketchOn('${plane}')profile001 = startProfileAt([0.91, -1.22], sketch001)`
 
       await u.openDebugPanel()
 
@@ -56,17 +58,14 @@ test.describe(
 
       await u.closeDebugPanel()
       await page.mouse.click(clickCoords.x, clickCoords.y)
-      await page.waitForTimeout(300) // wait for animation
+      await page.waitForTimeout(600) // wait for animation
 
       await expect(
         page.getByRole('button', { name: 'line Line', exact: true })
       ).toBeVisible()
 
-      // draw a line
-      const startXPx = 600
-
       await u.closeDebugPanel()
-      await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+      await page.mouse.click(707, 393)
 
       await expect(page.locator('.cm-content')).toHaveText(code)
 
@@ -81,49 +80,56 @@ test.describe(
       await u.clearCommandLogs()
       await u.removeCurrentCode()
     }
-    test('XY', async ({ page, homePage }) => {
-      await sketchOnPlaneAndBackSideTest(
-        page,
-        homePage,
-        'XY',
-        { x: 600, y: 388 } // red plane
-        // { x: 600, y: 400 }, // red plane // clicks grid helper and that causes problems, should fix so that these coords work too.
-      )
-    })
 
-    test('YZ', async ({ page, homePage }) => {
-      await sketchOnPlaneAndBackSideTest(page, homePage, 'YZ', {
-        x: 700,
-        y: 250,
-      }) // green plane
-    })
+    const planeConfigs = [
+      {
+        name: 'XY',
+        plane: 'XY',
+        coords: { x: 600, y: 388 },
+        description: 'red plane',
+      },
+      {
+        name: 'YZ',
+        plane: 'YZ',
+        coords: { x: 700, y: 250 },
+        description: 'green plane',
+      },
+      {
+        name: 'XZ',
+        plane: 'XZ',
+        coords: { x: 700, y: 80 },
+        description: 'blue plane',
+      },
+      {
+        name: '-XY',
+        plane: '-XY',
+        coords: { x: 600, y: 118 },
+        description: 'back of red plane',
+      },
+      {
+        name: '-YZ',
+        plane: '-YZ',
+        coords: { x: 700, y: 219 },
+        description: 'back of green plane',
+      },
+      {
+        name: '-XZ',
+        plane: '-XZ',
+        coords: { x: 700, y: 427 },
+        description: 'back of blue plane',
+      },
+    ]
 
-    test('XZ', async ({ page, homePage }) => {
-      await sketchOnPlaneAndBackSideTest(page, homePage, '-XZ', {
-        x: 700,
-        y: 80,
-      }) // blue plane
-    })
-
-    test('-XY', async ({ page, homePage }) => {
-      await sketchOnPlaneAndBackSideTest(page, homePage, '-XY', {
-        x: 600,
-        y: 118,
-      }) // back of red plane
-    })
-
-    test('-YZ', async ({ page, homePage }) => {
-      await sketchOnPlaneAndBackSideTest(page, homePage, '-YZ', {
-        x: 700,
-        y: 219,
-      }) // back of green plan
-    })
-
-    test('-XZ', async ({ page, homePage }) => {
-      await sketchOnPlaneAndBackSideTest(page, homePage, 'XZ', {
-        x: 700,
-        y: 427,
-      }) // back of blue plane
-    })
+    for (const config of planeConfigs) {
+      test(config.name, async ({ page, homePage, scene }) => {
+        await sketchOnPlaneAndBackSideTest(
+          page,
+          homePage,
+          scene,
+          config.plane,
+          config.coords
+        )
+      })
+    }
   }
 )
