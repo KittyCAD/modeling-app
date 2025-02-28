@@ -9,7 +9,13 @@ Blend a transitional edge along a tagged path, smoothing the sharp edge.
 Fillet is similar in function and use to a chamfer, except a chamfer will cut a sharp transition along an edge while fillet will smoothly blend the transition.
 
 ```js
-fillet(solid: Solid, radius: number, tags: [EdgeReference], tolerance?: number, tag?: TagDeclarator) -> Solid
+fillet(
+  solid: Solid,
+  radius: number,
+  tags: [EdgeReference],
+  tolerance?: number,
+  tag?: TagDeclarator,
+) -> Solid
 ```
 
 

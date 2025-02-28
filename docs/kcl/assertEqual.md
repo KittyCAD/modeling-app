@@ -9,7 +9,12 @@ Check that a numerical value equals another at runtime,
 otherwise raise an error.
 
 ```js
-assertEqual(left: number, right: number, epsilon: number, message: string) -> ()
+assertEqual(
+  left: number,
+  right: number,
+  epsilon: number,
+  message: string,
+) -> ()
 ```
 
 

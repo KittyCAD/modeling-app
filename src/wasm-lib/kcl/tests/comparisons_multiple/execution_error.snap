@@ -7,5 +7,6 @@ KCL Semantic error
   × semantic: Expected a number, but found a boolean (true/false value)
    ╭────
  1 │ assert(3 == 3 == 3, "this should not compile")
-   ·        ──────
+   ·        ───┬──
+   ·           ╰── tests/comparisons_multiple/input.kcl
    ╰────

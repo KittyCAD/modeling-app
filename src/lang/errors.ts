@@ -159,7 +159,7 @@ export class KCLTypeError extends KCLError {
   }
 }
 
-export class KCLUnimplementedError extends KCLError {
+export class KCLIoError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
@@ -169,7 +169,7 @@ export class KCLUnimplementedError extends KCLError {
     filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
-      'unimplemented',
+      'io',
       msg,
       sourceRange,
       operations,
@@ -177,7 +177,7 @@ export class KCLUnimplementedError extends KCLError {
       artifactGraph,
       filenames
     )
-    Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
+    Object.setPrototypeOf(this, KCLIoError.prototype)
   }
 }
 
@@ -351,16 +351,16 @@ export function kclErrorsByFilename(
     const sourceRange: SourceRange = error.sourceRange
     const fileIndex = sourceRange[2]
     const modulePath: ModulePath | undefined = filenames[fileIndex]
-    if (modulePath) {
-      let stdOrLocalPath = modulePath.value
-      if (stdOrLocalPath) {
+    if (modulePath && modulePath.type === 'Local') {
+      let localPath = modulePath.value
+      if (localPath) {
         // Build up an array of errors per file name
-        const value = fileNameToError.get(stdOrLocalPath)
+        const value = fileNameToError.get(localPath)
         if (!value) {
-          fileNameToError.set(stdOrLocalPath, [error])
+          fileNameToError.set(localPath, [error])
         } else {
           value.push(error)
-          fileNameToError.set(stdOrLocalPath, [error])
+          fileNameToError.set(localPath, [error])
         }
       }
     }

@@ -8,6 +8,7 @@ KCL Semantic error
    ╭─[6:10]
  5 │ 
  6 │ answer = %
-   ·          ─
+   ·          ┬
+   ·          ╰── tests/pipe_substitution_inside_function_called_from_pipeline/input.kcl
  7 │   |> f(%)
    ╰────

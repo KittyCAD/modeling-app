@@ -2,4 +2,51 @@
 source: kcl/src/simulation_tests.rs
 description: Operations executed assembly_non_default_units.kcl
 ---
-[]
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
+        "sourceRange": [
+          186,
+          190,
+          3
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      172,
+      191,
+      3
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
+        "sourceRange": [
+          103,
+          107,
+          4
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      89,
+      108,
+      4
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

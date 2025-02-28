@@ -56,7 +56,12 @@ export type ToolbarItemResolved = Omit<
 export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   modeling: {
     check: (state) =>
-      !(state.matches('Sketch') || state.matches('Sketch no face')),
+      !(
+        state.matches('Sketch') ||
+        state.matches('Sketch no face') ||
+        state.matches('animating to existing sketch') ||
+        state.matches('animating to plane')
+      ),
     items: [
       {
         id: 'sketch',
@@ -197,15 +202,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         description: 'Hollow out a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/shell' }],
       },
-      {
-        id: 'hole',
-        onClick: () => console.error('Hole not yet implemented'),
-        icon: 'hole',
-        status: 'unavailable',
-        title: 'Hole',
-        description: 'Create a hole in a 3D solid.',
-        links: [],
-      },
       'break',
       [
         {
@@ -339,7 +335,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   },
   sketching: {
     check: (state) =>
-      state.matches('Sketch') || state.matches('Sketch no face'),
+      state.matches('Sketch') ||
+      state.matches('Sketch no face') ||
+      state.matches('animating to existing sketch') ||
+      state.matches('animating to plane'),
     items: [
       {
         id: 'sketch-exit',

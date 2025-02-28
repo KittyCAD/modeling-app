@@ -125,6 +125,12 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
+    await test.step(`Pressing backspace in the command selection step does not dismiss`, async () => {
+      await page.keyboard.press('Backspace')
+      await expect(cmdSearchBar).toBeVisible()
+      await expect(cmdSearchBar).toBeFocused()
+    })
+
     // Try typing in the command bar
     await cmdSearchBar.fill(commandName)
     await expect(commandOption).toBeVisible()

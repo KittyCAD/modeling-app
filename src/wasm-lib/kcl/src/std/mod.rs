@@ -23,6 +23,7 @@ pub mod shapes;
 pub mod shell;
 pub mod sketch;
 pub mod sweep;
+pub mod transform;
 pub mod types;
 pub mod units;
 pub mod utils;
@@ -156,6 +157,9 @@ lazy_static! {
         Box::new(crate::std::assert::AssertGreaterThan),
         Box::new(crate::std::assert::AssertLessThanOrEq),
         Box::new(crate::std::assert::AssertGreaterThanOrEq),
+        Box::new(crate::std::transform::Scale),
+        Box::new(crate::std::transform::Translate),
+        Box::new(crate::std::transform::Rotate),
     ];
 }
 

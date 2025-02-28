@@ -9,7 +9,11 @@ Draw a line segment relative to the current origin using the polar
 measure of some angle and distance.
 
 ```js
-angledLine(data: AngledLineData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+angledLine(
+  data: AngledLineData,
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 
@@ -29,7 +33,7 @@ angledLine(data: AngledLineData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> yLineTo(15, %)
   |> angledLine({ angle = 30, length = 15 }, %)
