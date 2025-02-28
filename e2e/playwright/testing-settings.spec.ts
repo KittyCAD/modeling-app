@@ -62,7 +62,7 @@ test.describe('Testing settings', () => {
         name: 'Settings',
         exact: true,
       })
-      const inputLocator = page.locator('input[name="modeling-showDebugPanel"]')
+      const inputLocator = page.locator('input[name="app-showDebugPanel"]')
 
       await test.step('Open settings dialog and set "Show debug panel" to on', async () => {
         await page.keyboard.press('ControlOrMeta+,')
@@ -125,7 +125,7 @@ test.describe('Testing settings', () => {
       // Check that the project setting did not change
       await page.getByRole('radio', { name: 'Project' }).click()
       await expect(
-        page.locator('input[name="modeling-showDebugPanel"]')
+        page.locator('input[name="app-showDebugPanel"]')
       ).not.toBeChecked()
     }
   )
@@ -833,7 +833,8 @@ test.describe('Testing settings', () => {
       // but "show debug panel" set to false
       appSettings: {
         ...TEST_SETTINGS,
-        modeling: { ...TEST_SETTINGS.modeling, showDebugPanel: false },
+        app: { ...TEST_SETTINGS.app, showDebugPanel: false },
+        modeling: { ...TEST_SETTINGS.modeling },
       },
     },
     async ({ context, page, homePage }) => {

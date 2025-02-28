@@ -11,12 +11,12 @@ export const TEST_SETTINGS = {
     onboardingStatus: 'dismissed',
     projectDirectory: '',
     enableSSAO: false,
+    showDebugPanel: true,
   },
   modeling: {
     defaultUnit: 'in',
     mouseControls: 'Zoo',
     cameraProjection: 'perspective',
-    showDebugPanel: true,
   },
   projects: {
     defaultProjectName: 'project-$nnn',
@@ -59,12 +59,12 @@ export const TEST_SETTINGS_CORRUPTED = {
     theme: Themes.Dark,
     onboardingStatus: 'dismissed',
     projectDirectory: 123 as any,
+    showDebugPanel: true,
   },
   modeling: {
     defaultUnit: 'invalid' as any,
     mouseControls: `() => alert('hack the planet')` as any,
     cameraProjection: 'perspective',
-    showDebugPanel: true,
   },
   projects: {
     defaultProjectName: false as any,

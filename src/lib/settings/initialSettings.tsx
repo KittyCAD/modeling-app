@@ -182,6 +182,18 @@ export function createSettings() {
         hideOnPlatform: 'both', //for now
       }),
       /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showDebugPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<boolean>({
@@ -434,18 +446,6 @@ export function createSettings() {
           inputType: 'boolean',
         },
         hideOnLevel: 'project',
-      }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       /**
        * TODO: This setting is not yet implemented.

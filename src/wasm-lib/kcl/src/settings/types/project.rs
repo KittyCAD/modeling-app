@@ -285,6 +285,7 @@ color = 1567.4"#;
                     enable_ssao: None,
                     stream_idle_mode: false,
                     allow_orbit_in_sketch_mode: false,
+                    show_debug_panel: true,
                     named_views: IndexMap::from([
                         (
                             uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
@@ -324,7 +325,7 @@ color = 1567.4"#;
                     camera_orbit: Default::default(),
                     mouse_controls: Default::default(),
                     highlight_edges: Default::default(),
-                    show_debug_panel: true,
+                    show_debug_panel: Default::default(),
                     enable_ssao: true.into(),
                     show_scale_grid: false,
                 },
@@ -338,7 +339,10 @@ color = 1567.4"#;
             },
         };
         let serialized = toml::to_string(&conf).unwrap();
-        let old_project_file = r#"[settings.app.appearance]
+        let old_project_file = r#"[settings.app]
+show_debug_panel = true
+
+[settings.app.appearance]
 theme = "dark"
 color = 138.0
 
@@ -368,7 +372,6 @@ version = 1.0
 
 [settings.modeling]
 base_unit = "yd"
-show_debug_panel = true
 
 [settings.text_editor]
 text_wrapping = false
