@@ -105,6 +105,7 @@ themeColor = "138"
 [settings.textEditor]
 textWrapping = false
 blinkingCursor = false
+showDebugPanel = true
 
 [settings.commandBar]
 includeSettings = false
