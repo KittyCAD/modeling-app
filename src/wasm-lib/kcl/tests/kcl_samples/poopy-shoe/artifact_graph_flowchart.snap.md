@@ -297,6 +297,9 @@ flowchart LR
   279["SweepEdge Adjacent"]
   280["SweepEdge Opposite"]
   281["SweepEdge Adjacent"]
+  282["StartSketchOnFace<br>[2097, 2128, 0]"]
+  283["StartSketchOnFace<br>[3395, 3426, 0]"]
+  284["StartSketchOnFace<br>[3621, 3652, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -750,4 +753,7 @@ flowchart LR
   267 --- 279
   267 --- 280
   267 --- 281
+  90 <--x 282
+  202 <--x 283
+  163 <--x 284
 ```

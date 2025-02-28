@@ -66,6 +66,9 @@ flowchart LR
   52["SweepEdge Adjacent"]
   53["SweepEdge Adjacent"]
   54["SweepEdge Adjacent"]
+  55["StartSketchOnPlane<br>[530, 580, 0]"]
+  56["StartSketchOnPlane<br>[530, 580, 0]"]
+  57["StartSketchOnPlane<br>[530, 580, 0]"]
   1 --- 2
   1 --- 11
   2 --- 3
@@ -143,4 +146,7 @@ flowchart LR
   40 --- 52
   40 --- 53
   40 --- 54
+  1 <--x 55
+  14 <--x 56
+  27 <--x 57
 ```

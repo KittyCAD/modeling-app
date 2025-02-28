@@ -101,6 +101,8 @@ flowchart LR
   93["SweepEdge Adjacent"]
   94["SweepEdge Opposite"]
   95["SweepEdge Adjacent"]
+  96["StartSketchOnFace<br>[1327, 1361, 0]"]
+  97["StartSketchOnFace<br>[1947, 1981, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -252,4 +254,6 @@ flowchart LR
   81 --- 93
   81 --- 94
   81 --- 95
+  29 <--x 96
+  29 <--x 97
 ```

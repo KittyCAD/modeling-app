@@ -482,6 +482,11 @@ flowchart LR
   434["SweepEdge Adjacent"]
   435["SweepEdge Adjacent"]
   436["SweepEdge Adjacent"]
+  437["StartSketchOnFace<br>[2577, 2606, 4]"]
+  438["StartSketchOnFace<br>[3041, 3074, 4]"]
+  439["StartSketchOnFace<br>[659, 688, 3]"]
+  440["StartSketchOnFace<br>[973, 1007, 3]"]
+  441["StartSketchOnFace<br>[1335, 1364, 3]"]
   1 --- 2
   1 --- 5
   2 --- 3
@@ -1193,4 +1198,9 @@ flowchart LR
   408 --- 435
   408 <--x 406
   408 --- 436
+  10 <--x 437
+  37 <--x 438
+  102 <--x 439
+  114 <--x 440
+  102 <--x 441
 ```

@@ -56,6 +56,8 @@ flowchart LR
   48["Cap End"]
   49["SweepEdge Opposite"]
   50["SweepEdge Adjacent"]
+  51["StartSketchOnFace<br>[1264, 1295, 0]"]
+  52["StartSketchOnFace<br>[2073, 2106, 0]"]
   1 --- 2
   2 --- 3
   2 ---- 5
@@ -132,4 +134,6 @@ flowchart LR
   46 --- 48
   46 --- 49
   46 --- 50
+  8 <--x 51
+  7 <--x 52
 ```

@@ -306,6 +306,12 @@ flowchart LR
   278["SweepEdge Adjacent"]
   279["SweepEdge Opposite"]
   280["SweepEdge Adjacent"]
+  281["StartSketchOnPlane<br>[2318, 2362, 0]"]
+  282["StartSketchOnFace<br>[2516, 2548, 0]"]
+  283["StartSketchOnPlane<br>[3831, 3878, 0]"]
+  284["StartSketchOnFace<br>[4128, 4160, 0]"]
+  285["StartSketchOnFace<br>[4445, 4477, 0]"]
+  286["StartSketchOnPlane<br>[5574, 5636, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -757,4 +763,10 @@ flowchart LR
   242 --- 278
   242 --- 279
   242 --- 280
+  88 <--x 281
+  95 <--x 282
+  163 <--x 283
+  173 <--x 284
+  173 <--x 285
+  226 <--x 286
 ```

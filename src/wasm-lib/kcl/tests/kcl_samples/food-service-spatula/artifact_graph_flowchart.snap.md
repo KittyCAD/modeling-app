@@ -158,6 +158,8 @@ flowchart LR
   142["EdgeCut Fillet<br>[2424, 2564, 0]"]
   143["EdgeCut Fillet<br>[3234, 3364, 0]"]
   144["EdgeCut Fillet<br>[3234, 3364, 0]"]
+  145["StartSketchOnPlane<br>[2644, 2703, 0]"]
+  146["StartSketchOnFace<br>[4589, 4621, 0]"]
   1 --- 2
   1 --- 9
   1 --- 16
@@ -371,4 +373,6 @@ flowchart LR
   39 <--x 142
   69 <--x 143
   75 <--x 144
+  48 <--x 145
+  101 <--x 146
 ```

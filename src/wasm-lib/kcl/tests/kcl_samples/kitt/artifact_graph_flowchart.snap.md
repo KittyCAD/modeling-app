@@ -1061,6 +1061,46 @@ flowchart LR
   973["SweepEdge Adjacent"]
   974["SweepEdge Opposite"]
   975["SweepEdge Adjacent"]
+  976["StartSketchOnFace<br>[183, 220, 0]"]
+  977["StartSketchOnFace<br>[1463, 1492, 0]"]
+  978["StartSketchOnFace<br>[183, 220, 0]"]
+  979["StartSketchOnFace<br>[183, 220, 0]"]
+  980["StartSketchOnFace<br>[183, 220, 0]"]
+  981["StartSketchOnFace<br>[183, 220, 0]"]
+  982["StartSketchOnFace<br>[2845, 2876, 0]"]
+  983["StartSketchOnFace<br>[183, 220, 0]"]
+  984["StartSketchOnFace<br>[183, 220, 0]"]
+  985["StartSketchOnFace<br>[183, 220, 0]"]
+  986["StartSketchOnFace<br>[183, 220, 0]"]
+  987["StartSketchOnFace<br>[183, 220, 0]"]
+  988["StartSketchOnFace<br>[183, 220, 0]"]
+  989["StartSketchOnFace<br>[183, 220, 0]"]
+  990["StartSketchOnFace<br>[183, 220, 0]"]
+  991["StartSketchOnFace<br>[183, 220, 0]"]
+  992["StartSketchOnFace<br>[183, 220, 0]"]
+  993["StartSketchOnFace<br>[183, 220, 0]"]
+  994["StartSketchOnFace<br>[183, 220, 0]"]
+  995["StartSketchOnFace<br>[183, 220, 0]"]
+  996["StartSketchOnFace<br>[183, 220, 0]"]
+  997["StartSketchOnFace<br>[183, 220, 0]"]
+  998["StartSketchOnFace<br>[183, 220, 0]"]
+  999["StartSketchOnFace<br>[183, 220, 0]"]
+  1000["StartSketchOnFace<br>[183, 220, 0]"]
+  1001["StartSketchOnFace<br>[183, 220, 0]"]
+  1002["StartSketchOnFace<br>[183, 220, 0]"]
+  1003["StartSketchOnFace<br>[183, 220, 0]"]
+  1004["StartSketchOnFace<br>[183, 220, 0]"]
+  1005["StartSketchOnFace<br>[183, 220, 0]"]
+  1006["StartSketchOnFace<br>[183, 220, 0]"]
+  1007["StartSketchOnFace<br>[183, 220, 0]"]
+  1008["StartSketchOnFace<br>[183, 220, 0]"]
+  1009["StartSketchOnFace<br>[183, 220, 0]"]
+  1010["StartSketchOnFace<br>[183, 220, 0]"]
+  1011["StartSketchOnFace<br>[183, 220, 0]"]
+  1012["StartSketchOnFace<br>[183, 220, 0]"]
+  1013["StartSketchOnFace<br>[183, 220, 0]"]
+  1014["StartSketchOnFace<br>[183, 220, 0]"]
+  1015["StartSketchOnFace<br>[183, 220, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -2597,4 +2637,44 @@ flowchart LR
   962 --- 973
   962 --- 974
   962 --- 975
+  15 <--x 976
+  36 <--x 977
+  73 <--x 978
+  73 <--x 979
+  73 <--x 980
+  73 <--x 981
+  73 <--x 982
+  73 <--x 983
+  73 <--x 984
+  73 <--x 985
+  73 <--x 986
+  15 <--x 987
+  333 <--x 988
+  333 <--x 989
+  333 <--x 990
+  333 <--x 991
+  15 <--x 992
+  333 <--x 993
+  333 <--x 994
+  333 <--x 995
+  524 <--x 996
+  568 <--x 997
+  12 <--x 998
+  610 <--x 999
+  631 <--x 1000
+  652 <--x 1001
+  12 <--x 1002
+  694 <--x 1003
+  715 <--x 1004
+  736 <--x 1005
+  11 <--x 1006
+  11 <--x 1007
+  11 <--x 1008
+  11 <--x 1009
+  11 <--x 1010
+  11 <--x 1011
+  11 <--x 1012
+  11 <--x 1013
+  11 <--x 1014
+  11 <--x 1015
 ```

@@ -402,6 +402,17 @@ flowchart LR
   360["SweepEdge Adjacent"]
   361["SweepEdge Adjacent"]
   362["SweepEdge Adjacent"]
+  363["StartSketchOnFace<br>[813, 846, 3]"]
+  364["StartSketchOnFace<br>[1789, 1823, 3]"]
+  365["StartSketchOnFace<br>[2146, 2180, 3]"]
+  366["StartSketchOnPlane<br>[1305, 1349, 5]"]
+  367["StartSketchOnPlane<br>[429, 455, 5]"]
+  368["StartSketchOnPlane<br>[906, 926, 5]"]
+  369["StartSketchOnPlane<br>[869, 893, 4]"]
+  370["StartSketchOnPlane<br>[286, 306, 8]"]
+  371["StartSketchOnPlane<br>[286, 306, 8]"]
+  372["StartSketchOnPlane<br>[286, 306, 8]"]
+  373["StartSketchOnPlane<br>[286, 306, 8]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -436,9 +447,9 @@ flowchart LR
   8 --- 21
   8 --- 22
   14 --- 27
-  18 <--x 23
+  22 <--x 23
   20 <--x 24
-  22 <--x 25
+  18 <--x 25
   16 <--x 26
   27 --- 28
   27 --- 29
@@ -885,14 +896,14 @@ flowchart LR
   318 --- 330
   318 --- 331
   318 --- 332
-  240 <--x 333
-  238 <--x 334
+  238 <--x 333
+  240 <--x 334
   260 <--x 335
   262 <--x 336
-  284 <--x 337
-  282 <--x 338
-  306 <--x 339
-  304 <--x 340
+  282 <--x 337
+  284 <--x 338
+  304 <--x 339
+  306 <--x 340
   332 <--x 341
   330 <--x 342
   328 <--x 343
@@ -929,4 +940,15 @@ flowchart LR
   353 --- 361
   353 <--x 351
   353 --- 362
+  14 <--x 363
+  46 <--x 364
+  46 <--x 365
+  105 <--x 366
+  104 <--x 367
+  104 <--x 368
+  205 <--x 369
+  223 <--x 370
+  245 <--x 371
+  267 <--x 372
+  289 <--x 373
 ```

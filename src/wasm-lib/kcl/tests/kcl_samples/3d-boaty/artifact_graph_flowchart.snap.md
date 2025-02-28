@@ -753,6 +753,18 @@ flowchart LR
   719["SweepEdge Adjacent"]
   720["SweepEdge Opposite"]
   721["SweepEdge Adjacent"]
+  722["StartSketchOnPlane<br>[333, 353, 3]"]
+  723["StartSketchOnPlane<br>[333, 353, 3]"]
+  724["StartSketchOnPlane<br>[333, 353, 3]"]
+  725["StartSketchOnPlane<br>[333, 353, 3]"]
+  726["StartSketchOnPlane<br>[1645, 1665, 3]"]
+  727["StartSketchOnPlane<br>[1645, 1665, 3]"]
+  728["StartSketchOnPlane<br>[2083, 2103, 3]"]
+  729["StartSketchOnPlane<br>[2592, 2612, 3]"]
+  730["StartSketchOnPlane<br>[3112, 3132, 3]"]
+  731["StartSketchOnPlane<br>[3358, 3378, 3]"]
+  732["StartSketchOnPlane<br>[3112, 3132, 3]"]
+  733["StartSketchOnPlane<br>[3358, 3378, 3]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -1937,4 +1949,16 @@ flowchart LR
   698 --- 719
   698 --- 720
   698 --- 721
+  175 <--x 722
+  175 <--x 723
+  348 <--x 724
+  348 <--x 725
+  521 <--x 726
+  521 <--x 727
+  584 <--x 728
+  615 <--x 729
+  646 <--x 730
+  650 <--x 731
+  684 <--x 732
+  688 <--x 733
 ```
