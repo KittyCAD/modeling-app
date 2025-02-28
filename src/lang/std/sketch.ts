@@ -629,8 +629,8 @@ export const lineTo: SketchLineHelperKw = {
     const { node: callExpression } = nodeMeta
 
     const toArrExp = createArrayExpression([
-      createLiteral(roundOff(to[0] - from[0], 2)),
-      createLiteral(roundOff(to[1] - from[1], 2)),
+      createLiteral(roundOff(to[0], 2)),
+      createLiteral(roundOff(to[1], 2)),
     ])
 
     mutateKwArg(ARG_END_ABSOLUTE, callExpression, toArrExp)
