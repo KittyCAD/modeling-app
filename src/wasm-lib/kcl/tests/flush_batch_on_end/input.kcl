@@ -1,0 +1,24 @@
+width = 20
+length = 10
+thickness = 1
+filletRadius = 2
+
+mountingPlateSketch = startSketchOn("XY")
+  |> startProfileAt([-width / 2, -length / 2], %)
+  |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
+  |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
+  |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
+  |> close(tag = $edge4)
+
+mountingPlate = extrude(mountingPlateSketch, length = thickness)
+  |> fillet(
+       radius = filletRadius,
+       tags = [
+         getNextAdjacentEdge(edge1),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge4)
+       ],
+     )
+
+// We end on fillet specifically for this test DO NOT REMOVE

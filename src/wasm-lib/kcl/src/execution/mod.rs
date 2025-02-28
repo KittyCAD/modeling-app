@@ -738,29 +738,6 @@ impl ExecutorContext {
                 )
             })?;
 
-        // Flush the batch with all the end commands.
-        // If we don't do this then some programs might not fully finish executing.
-        self.engine
-            .flush_batch(true, SourceRange::default())
-            .await
-            .map_err(|e| {
-                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                    .global
-                    .path_to_source_id
-                    .iter()
-                    .map(|(k, v)| ((*v), k.clone()))
-                    .collect();
-
-                KclErrorWithOutputs::new(
-                    e,
-                    exec_state.global.operations.clone(),
-                    exec_state.global.artifact_commands.clone(),
-                    exec_state.global.artifact_graph.clone(),
-                    module_id_to_module_path,
-                    exec_state.global.id_to_source.clone(),
-                )
-            })?;
-
         if !self.is_mock() {
             let mut mem = exec_state.memory().clone();
             mem.restore_env(env_ref);
@@ -798,6 +775,12 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
+
+        // Flush the batch with all the end commands.
+        // If we don't do this then some programs might not fully finish executing.
+        self.engine
+            .flush_batch(true, SourceRange::new(program.end, program.end, ModuleId::default()))
+            .await?;
 
         // Move the artifact commands and responses to simplify cache management
         // and error creation.
