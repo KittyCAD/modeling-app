@@ -635,7 +635,6 @@ extrude001 = extrude(sketch001, length = 50)
     homePage,
     toolbar,
   }) => {
-
     await test.step('Load an empty file', async () => {
       await page.addInitScript(async () => {
         localStorage.setItem('persistCode', '')
@@ -657,7 +656,7 @@ extrude001 = extrude(sketch001, length = 50)
 
       // Check that the modeling toolbar doesn't appear during the animation
       // The animation typically takes around 500ms, so we'll check for a second
-        await expect.poll(toolBarMode, {timeout: 1000}).not.toEqual('modeling')
+      await expect.poll(toolBarMode, { timeout: 1000 }).not.toEqual('modeling')
 
       // After animation completes, we should see the sketching toolbar
       await expect.poll(toolBarMode).toEqual('sketching')
