@@ -372,13 +372,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sectional: {
         inputType: 'options',
         required: true,
-        skip: true,
-        defaultValue: false,
         options: [
-          { name: 'True', value: true },
           { name: 'False', value: false },
+          { name: 'True', value: true },
         ],
-        // validation: sweepValidator,
+        // No validation possible here until we have rollback
       },
     },
   },

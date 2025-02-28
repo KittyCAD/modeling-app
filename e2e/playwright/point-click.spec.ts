@@ -1334,7 +1334,7 @@ loft001 = loft([sketch001, sketch002])
     })
   })
 
-  test(`Sweep point-and-click`, async ({
+  test(`Sweep point-and-click base`, async ({
     context,
     page,
     homePage,
@@ -1369,6 +1369,8 @@ sketch002 = startSketchOn('XZ')
     )
     const sweepDeclaration =
       'sweep001 = sweep(sketch001, path = sketch002, sectional = false)'
+    const editedSweepDeclaration =
+      'sweep001 = sweep(sketch001, path = sketch002, sectional = true)'
 
     await test.step(`Look for sketch001`, async () => {
       await toolbar.closePane('code')
@@ -1404,6 +1406,16 @@ sketch002 = startSketchOn('XZ')
       })
       await clickOnSketch2()
       await page.waitForTimeout(500)
+      await cmdBar.selectOption({ name: 'False' }).click()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        headerArguments: {
+          Target: '1 face',
+          Trajectory: '1 segment',
+          Sectional: '',
+        },
+        stage: 'review',
+      })
       await cmdBar.progressCmdBar()
       await toolbar.openPane('code')
       await page.waitForTimeout(500)
@@ -1418,6 +1430,31 @@ sketch002 = startSketchOn('XZ')
         highlightedCode: '',
       })
       await toolbar.closePane('code')
+    })
+
+    await test.step('Edit sweep via feature tree selection works', async () => {
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation('Sweep', 0)
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.selectOption({ name: 'True' }).click()
+      await cmdBar.expectState({
+        commandName: 'Sweep',
+        headerArguments: {
+          Target: '1 face',
+          Trajectory: '1 segment',
+          Sectional: '',
+        },
+        stage: 'review',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(editedSweepDeclaration)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [editedSweepDeclaration],
+        highlightedCode: '',
+      })
     })
 
     await test.step('Delete sweep via feature tree selection', async () => {
