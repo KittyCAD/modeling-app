@@ -46,7 +46,7 @@ jobs:
         shell: bash
         run: |-
           cd "${{ matrix.dir }}"
-          cargo llvm-cov nextest --workspace --lcov --output-path lcov.info --test-threads=1 --retries=2 --no-fail-fast -P ci 2>&1 | tee /tmp/github-actions.log
+          cargo llvm-cov nextest --workspace --lcov --output-path lcov.info --retries=2 --no-fail-fast -P ci 2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_MIN_STACK: 10485760000
