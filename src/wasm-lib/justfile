@@ -42,7 +42,7 @@ overwrite-sim-test test_name:
     {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
 
 test:
-    export RUST_BRACKTRACE="full" && cargo nextest run --workspace --no-fail-fast --profile ci
+    export RUST_BRACKTRACE="full" && cargo nextest run --workspace --no-fail-fast
 
 publish-kcl version:
     git tag {{version}}
