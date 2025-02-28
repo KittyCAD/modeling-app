@@ -46,7 +46,7 @@ use crate::{
     errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
-        ast::types::{Expr, Node, VariableKind},
+        ast::types::{Expr, VariableKind},
         token::TokenStream,
         PIPE_OPERATOR,
     },
@@ -102,7 +102,7 @@ pub struct Backend {
     /// Token maps.
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
-    pub ast_map: DashMap<String, Node<crate::parsing::ast::types::Program>>,
+    pub ast_map: DashMap<String, crate::Program>,
     /// Current code.
     pub code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
@@ -327,11 +327,17 @@ impl crate::lsp::backend::Backend for Backend {
         // this if it backfires and only hork the LSP.
         ast.compute_digest();
 
+        // Save it as a program.
+        let ast = crate::Program {
+            ast,
+            original_file_contents: params.text.clone(),
+        };
+
         // Check if the ast changed.
         let ast_changed = match self.ast_map.get(&filename) {
             Some(old_ast) => {
                 // Check if the ast changed.
-                *old_ast != ast
+                *old_ast.ast != *ast.ast
             }
             None => true,
         };
@@ -346,7 +352,7 @@ impl crate::lsp::backend::Backend for Backend {
             // Update the symbols map.
             self.symbols_map.insert(
                 params.uri.to_string(),
-                ast.get_lsp_symbols(&params.text).unwrap_or_default(),
+                ast.ast.get_lsp_symbols(&params.text).unwrap_or_default(),
             );
 
             // Update our semantic tokens.
@@ -361,14 +367,14 @@ impl crate::lsp::backend::Backend for Backend {
             // Only send the notification if we can execute.
             // Otherwise it confuses the client.
             self.client
-                .send_notification::<custom_notifications::AstUpdated>(ast.clone())
+                .send_notification::<custom_notifications::AstUpdated>(ast.ast.clone())
                 .await;
         }
 
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
-        if self.execute(&params, &ast.into()).await.is_err() {
+        if self.execute(&params, &ast).await.is_err() {
             return;
         }
 
@@ -421,7 +427,7 @@ impl Backend {
             let token_modifiers_bitset = if let Some(ast) = self.ast_map.get(params.uri.as_str()) {
                 let token_index = Arc::new(Mutex::new(token_type_index));
                 let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
-                crate::walk::walk(&ast, |node: crate::walk::Node| {
+                crate::walk::walk(&ast.ast, |node: crate::walk::Node| {
                     let Ok(node_range): Result<SourceRange, _> = (&node).try_into() else {
                         return Ok(true);
                     };
@@ -1021,7 +1027,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = ast.get_hover_value_for_position(pos, current_code) else {
+        let Some(hover) = ast.ast.get_hover_value_for_position(pos, current_code) else {
             return Ok(None);
         };
 
@@ -1150,13 +1156,13 @@ impl LanguageServer for Backend {
         };
 
         let position = position_to_char_index(params.text_document_position.position, current_code);
-        if ast.get_non_code_meta_for_position(position).is_some() {
+        if ast.ast.get_non_code_meta_for_position(position).is_some() {
             // If we are in a code comment we don't want to show completions.
             return Ok(None);
         }
 
         // Get the completion items for the ast.
-        let Ok(variables) = ast.completion_items() else {
+        let Ok(variables) = ast.ast.completion_items() else {
             return Ok(Some(CompletionResponse::Array(completions)));
         };
 
@@ -1211,7 +1217,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(value) = ast.get_expr_for_position(pos) else {
+        let Some(value) = ast.ast.get_expr_for_position(pos) else {
             return Ok(None);
         };
 
@@ -1360,7 +1366,7 @@ impl LanguageServer for Backend {
         };
 
         // Get the folding ranges.
-        let folding_ranges = ast.get_lsp_folding_ranges();
+        let folding_ranges = ast.ast.get_lsp_folding_ranges();
 
         if folding_ranges.is_empty() {
             return Ok(None);

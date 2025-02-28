@@ -483,12 +483,26 @@ pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
     JsValue::from_serde(&settings).map_err(|e| e.to_string())
 }
 
-/// Serialize the project settings.
+/// Serialize the configuration settings.
 #[wasm_bindgen]
-pub fn serialize_project_settings(val: JsValue) -> Result<JsValue, String> {
+pub fn serialize_configuration(val: JsValue) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
     let config: kcl_lib::Configuration = val.into_serde().map_err(|e| e.to_string())?;
+
+    let toml_str = toml::to_string_pretty(&config).map_err(|e| e.to_string())?;
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    Ok(JsValue::from_str(&toml_str))
+}
+
+/// Serialize the project configuration settings.
+#[wasm_bindgen]
+pub fn serialize_project_configuration(val: JsValue) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let config: kcl_lib::ProjectConfiguration = val.into_serde().map_err(|e| e.to_string())?;
 
     let toml_str = toml::to_string_pretty(&config).map_err(|e| e.to_string())?;
 
@@ -561,7 +575,7 @@ pub fn change_kcl_settings(code: &str, settings_str: &str) -> Result<String, Str
     console_error_panic_hook::set_once();
 
     let settings: kcl_lib::MetaSettings = serde_json::from_str(settings_str).map_err(|e| e.to_string())?;
-    let mut program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
+    let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
     let new_program = program.change_meta_settings(settings).map_err(|e| e.to_string())?;
 

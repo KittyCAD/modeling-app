@@ -56,7 +56,12 @@ export type ToolbarItemResolved = Omit<
 export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   modeling: {
     check: (state) =>
-      !(state.matches('Sketch') || state.matches('Sketch no face')),
+      !(
+        state.matches('Sketch') ||
+        state.matches('Sketch no face') ||
+        state.matches('animating to existing sketch') ||
+        state.matches('animating to plane')
+      ),
     items: [
       {
         id: 'sketch',
@@ -330,7 +335,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   },
   sketching: {
     check: (state) =>
-      state.matches('Sketch') || state.matches('Sketch no face'),
+      state.matches('Sketch') ||
+      state.matches('Sketch no face') ||
+      state.matches('animating to existing sketch') ||
+      state.matches('animating to plane'),
     items: [
       {
         id: 'sketch-exit',
