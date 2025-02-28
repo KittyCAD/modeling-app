@@ -159,7 +159,7 @@ export class KCLTypeError extends KCLError {
   }
 }
 
-export class KCLUnimplementedError extends KCLError {
+export class KCLIoError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
@@ -169,7 +169,7 @@ export class KCLUnimplementedError extends KCLError {
     filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
-      'unimplemented',
+      'io',
       msg,
       sourceRange,
       operations,
@@ -177,7 +177,7 @@ export class KCLUnimplementedError extends KCLError {
       artifactGraph,
       filenames
     )
-    Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
+    Object.setPrototypeOf(this, KCLIoError.prototype)
   }
 }
 
