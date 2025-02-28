@@ -2026,7 +2026,7 @@ async fn kcl_test_error_no_auth_websocket() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_ensure_nothing_left_in_batch() {
+async fn kcl_test_ensure_nothing_left_in_batch_single_file() {
     let code = r#"@settings(defaultLengthUnit = in)
 // Set units in inches (in)
 
@@ -2047,6 +2047,29 @@ sketch000 = startSketchOn('XY')
         .unwrap();
     let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
+    ctx.run_with_ui_outputs(&program, &mut exec_state).await.unwrap();
+
+    // Ensure nothing is left in the batch
+    assert!(ctx.engine.batch().read().await.is_empty());
+    assert!(ctx.engine.batch_end().read().await.is_empty());
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
+    // Get the current working directory.
+    let current_dir = std::env::current_dir().unwrap();
+    // Get the code in the test directory we need.
+    let path = current_dir.join("kcl/tests/assembly_non_default_units/input.kcl");
+    let code = std::fs::read_to_string(&path).unwrap();
+
+    // Change the current working directory to the test directory.
+    std::env::set_current_dir(path.parent().unwrap()).unwrap();
+
+    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
+        .await
+        .unwrap();
+    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+    let program = kcl_lib::Program::parse_no_errs(&code).unwrap();
     ctx.run_with_ui_outputs(&program, &mut exec_state).await.unwrap();
 
     // Ensure nothing is left in the batch
