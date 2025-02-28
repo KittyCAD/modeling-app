@@ -132,9 +132,6 @@ export function projectConfigurationToSettingsPayload(
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
-      mouseControls: mouseControlsToCameraSystem(
-        configuration?.settings?.modeling?.mouse_controls
-      ),
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
     },
     textEditor: {
