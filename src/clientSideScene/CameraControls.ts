@@ -287,12 +287,14 @@ export class CameraControls {
         camSettings.up.y,
         camSettings.up.z
       )
+
       this.camera.quaternion.set(
         orientation.x,
         orientation.y,
         orientation.z,
         orientation.w
       )
+
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {

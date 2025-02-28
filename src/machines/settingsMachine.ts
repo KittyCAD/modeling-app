@@ -35,6 +35,7 @@ import {
   saveSettings,
   setSettingsAtLevel,
 } from 'lib/settings/settingsUtils'
+import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
 import {
   codeManager,
   engineCommandManager,
@@ -77,6 +78,7 @@ export const settingsMachine = setup({
           level: SettingsLevel
         }
       | { type: 'Set all settings'; settings: typeof settings }
+      | { type: 'set.app.namedViews'; value: NamedView }
       | { type: 'load.project'; project?: Project }
       | { type: 'clear.project' }
     ) & { doNotPersist?: boolean },
@@ -151,6 +153,7 @@ export const settingsMachine = setup({
           type: 'Add commands',
           data: { commands: commands },
         })
+
       const removeCommands = () =>
         commandBarActor.send({
           type: 'Remove commands',
@@ -389,6 +392,12 @@ export const settingsMachine = setup({
               }
             }),
           ],
+        },
+
+        'set.app.namedViews': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel'],
         },
 
         'set.app.onboardingStatus': {
