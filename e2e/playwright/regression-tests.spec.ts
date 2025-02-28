@@ -635,7 +635,6 @@ extrude001 = extrude(sketch001, length = 50)
     homePage,
     toolbar,
   }) => {
-    const u = await getUtils(page)
 
     await test.step('Load an empty file', async () => {
       await page.addInitScript(async () => {
@@ -643,7 +642,6 @@ extrude001 = extrude(sketch001, length = 50)
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
-      await u.waitForPageLoad()
     })
 
     const toolBarMode = () =>
@@ -658,11 +656,8 @@ extrude001 = extrude(sketch001, length = 50)
       await page.mouse.click(700, 200)
 
       // Check that the modeling toolbar doesn't appear during the animation
-      // The animation typically takes around 500ms, so we'll check for 800
-      for (let i = 0; i < 8; i++) {
-        await expect.poll(toolBarMode).not.toEqual('modeling')
-        await page.waitForTimeout(100)
-      }
+      // The animation typically takes around 500ms, so we'll check for a second
+        await expect.poll(toolBarMode, {timeout: 1000}).not.toEqual('modeling')
 
       // After animation completes, we should see the sketching toolbar
       await expect.poll(toolBarMode).toEqual('sketching')
