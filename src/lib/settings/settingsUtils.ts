@@ -4,7 +4,8 @@ import {
   initPromise,
   parseAppSettings,
   parseProjectSettings,
-  tomlStringify,
+  serializeConfiguration,
+  serializeProjectConfiguration,
 } from 'lang/wasm'
 import { mouseControlsToCameraSystem } from 'lib/cameraControls'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
@@ -131,7 +132,7 @@ export function readLocalStorageAppSettingsFile():
   } catch (e) {
     const settings = defaultAppSettings()
     if (err(settings)) return settings
-    const tomlStr = tomlStringify(settings)
+    const tomlStr = serializeConfiguration(settings)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
@@ -152,7 +153,7 @@ function readLocalStorageProjectSettingsFile():
   const projectSettings = parseProjectSettings(stored)
   if (err(projectSettings)) {
     const settings = defaultProjectSettings()
-    const tomlStr = tomlStringify(settings)
+    const tomlStr = serializeProjectConfiguration(settings)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
@@ -229,7 +230,7 @@ export async function saveSettings(
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
-  const appTomlString = tomlStringify({ settings: jsAppSettings })
+  const appTomlString = serializeConfiguration({ settings: jsAppSettings })
   if (err(appTomlString)) return
 
   // Write the app settings.
@@ -246,7 +247,9 @@ export async function saveSettings(
 
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
-  const projectTomlString = tomlStringify({ settings: jsProjectSettings })
+  const projectTomlString = serializeProjectConfiguration({
+    settings: jsProjectSettings,
+  })
   if (err(projectTomlString)) return
 
   // Write the project settings.
