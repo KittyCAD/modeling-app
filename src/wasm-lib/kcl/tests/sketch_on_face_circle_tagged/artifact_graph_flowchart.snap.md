@@ -35,6 +35,7 @@ flowchart LR
   29["Cap End"]
   30["SweepEdge Opposite"]
   31["SweepEdge Adjacent"]
+  32["StartSketchOnFace<br>[263, 292, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -80,4 +81,5 @@ flowchart LR
   26 --- 29
   26 --- 30
   26 --- 31
+  14 <--x 32
 ```
