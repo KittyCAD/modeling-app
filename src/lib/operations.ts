@@ -122,7 +122,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
   }
 
 /**
- * Gather up the argument values for the Extrude command
+ * Gather up the argument values for the Shell command
  * to be used in the command bar edit flow.
  */
 const prepareToEditShell: PrepareToEditCallback =

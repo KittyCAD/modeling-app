@@ -2035,7 +2035,7 @@ export const modelingMachine = setup({
             engineCommandManager.artifactGraph
           )
           // TODO: this one returns empty paths on edit after creation in the cap e2e tests
-          // and *sometimes* when trying in the app manually. Not idea why.
+          // and *sometimes* when trying in the app manually. No idea why.
           console.log(
             'extrudeLookupResult',
             JSON.stringify(extrudeLookupResult)
