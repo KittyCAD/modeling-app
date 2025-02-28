@@ -288,7 +288,6 @@ export async function saveSettings(
 
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
-  console.log(allSettings, jsProjectSettings, 'nice')
   const projectTomlString = serializeProjectConfiguration({
     settings: jsProjectSettings,
   })

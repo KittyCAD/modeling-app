@@ -105,5 +105,5 @@ path = "tests/modify/main.rs"
 #kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
 
 # Local development only. Placeholder to speed up development cycle
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = false
+#[package.metadata.wasm-pack.profile.release]
+#wasm-opt = false
