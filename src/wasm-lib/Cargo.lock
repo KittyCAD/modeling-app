@@ -1858,9 +1858,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.99"
+version = "0.2.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "828a0c74476533e6258ea7dd70cfc7d63a5df4b37753d30ef198e0689eaac4eb"
+checksum = "fb5a824cb9bb4c602962ecbaca5ce71225938aa1abc24103bf46c222f468dd26"
 dependencies = [
  "anyhow",
  "chrono",
@@ -4374,6 +4374,7 @@ dependencies = [
  "bson",
  "console_error_panic_hook",
  "data-encoding",
+ "expectorate",
  "futures",
  "getrandom 0.2.15",
  "gloo-utils",

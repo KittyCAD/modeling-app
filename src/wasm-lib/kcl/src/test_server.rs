@@ -129,3 +129,67 @@ pub async fn new_context(
         .map_err(ConnectionError::Establishing)?;
     Ok(ctx)
 }
+
+pub async fn execute_and_export_step(
+    code: &str,
+    units: UnitLength,
+    current_file: Option<PathBuf>,
+) -> Result<
+    (
+        ExecState,
+        EnvironmentRef,
+        Vec<kittycad_modeling_cmds::websocket::RawFile>,
+    ),
+    ExecErrorWithState,
+> {
+    let ctx = new_context(units, true, current_file).await?;
+    let mut exec_state = ExecState::new(&ctx.settings);
+    let program = Program::parse_no_errs(code)
+        .map_err(|err| ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone()))?;
+    let result = ctx
+        .run_with_ui_outputs(&program, &mut exec_state)
+        .await
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
+    for e in exec_state.errors() {
+        if e.severity.is_err() {
+            return Err(ExecErrorWithState::new(
+                KclErrorWithOutputs::no_outputs(KclError::Semantic(e.clone().into())).into(),
+                exec_state.clone(),
+            ));
+        }
+    }
+
+    let resp = ctx
+        .engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
+                entity_ids: vec![],
+                format: kittycad_modeling_cmds::format::OutputFormat3d::Step(
+                    kittycad_modeling_cmds::format::step::export::Options {
+                        coords: *kittycad_modeling_cmds::coord::KITTYCAD,
+                        // We want all to have the same timestamp.
+                        created: Some(
+                            chrono::DateTime::parse_from_rfc3339("2021-01-01T00:00:00Z")
+                                .unwrap()
+                                .into(),
+                        ),
+                    },
+                ),
+            }),
+        )
+        .await
+        .map_err(|err| ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone()))?;
+
+    let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
+        return Err(ExecErrorWithState::new(
+            ExecError::BadExport(format!("Expected export response, got: {:?}", resp)),
+            exec_state.clone(),
+        ));
+    };
+
+    ctx.close().await;
+
+    Ok((exec_state, result.0, files))
+}

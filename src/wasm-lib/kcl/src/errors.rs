@@ -20,6 +20,8 @@ pub enum ExecError {
     Connection(#[from] ConnectionError),
     #[error("PNG snapshot could not be decoded: {0}")]
     BadPng(String),
+    #[error("Bad export: {0}")]
+    BadExport(String),
 }
 
 impl From<KclErrorWithOutputs> for ExecError {

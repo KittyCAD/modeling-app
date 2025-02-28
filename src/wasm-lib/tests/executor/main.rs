@@ -1,7 +1,7 @@
 mod cache;
 
 use kcl_lib::{
-    test_server::{execute_and_snapshot, execute_and_snapshot_no_auth},
+    test_server::{execute_and_export_step, execute_and_snapshot, execute_and_snapshot_no_auth},
     ExecError, UnitLength,
 };
 
@@ -2023,4 +2023,18 @@ async fn kcl_test_error_no_auth_websocket() {
         .unwrap()
         .to_string()
         .contains("Please send the following object over this websocket"));
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_exporting_step_file() {
+    // This tests export like how we do it in cli and kcl.py.
+    let code = kcl_input!("helix_defaults_negative_extrude");
+
+    let (_, _, files) = execute_and_export_step(code, UnitLength::Mm, None).await.unwrap();
+    for file in files {
+        expectorate::assert_contents(
+            format!("tests/executor/outputs/helix_defaults_negative_extrude_{}", file.name),
+            std::str::from_utf8(&file.contents).unwrap(),
+        );
+    }
 }

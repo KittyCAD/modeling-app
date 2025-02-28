@@ -24,6 +24,7 @@ wasm-bindgen-futures = "0.4.49"
 
 [dev-dependencies]
 anyhow = "1"
+expectorate = "1.1.0"
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 kittycad = { workspace = true, default-features = true }
 kittycad-modeling-cmds = { workspace = true }
@@ -80,7 +81,7 @@ members = [
 [workspace.dependencies]
 http = "1"
 kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.99", features = [
+kittycad-modeling-cmds = { version = "0.2.100", features = [
   "ts-rs",
   "websocket",
 ] }
