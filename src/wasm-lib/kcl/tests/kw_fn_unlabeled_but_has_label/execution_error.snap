@@ -9,8 +9,21 @@ KCL Semantic error
    ╭─[1:7]
  1 │ ╭─▶ fn add(@x) {
  2 │ │     return x + 1
- 3 │ ╰─▶ }
+ 3 │ ├─▶ }
+   · ╰──── tests/kw_fn_unlabeled_but_has_label/input.kcl
  4 │     
  5 │     two = add(x = 1)
-   ·           ──────────
+   ·           ─────┬────
+   ·                ╰── tests/kw_fn_unlabeled_but_has_label/input.kcl
    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The function does declare a parameter named 'x', but this
+        │ parameter doesn't use a label. Try removing the `x:`
+         ╭─[1:7]
+       1 │ ╭─▶ fn add(@x) {
+       2 │ │     return x + 1
+       3 │ ├─▶ }
+         · ╰──── tests/kw_fn_unlabeled_but_has_label/input.kcl
+       4 │
+         ╰────

@@ -9,7 +9,12 @@ Just like patternTransform, but works on 2D sketches not 3D solids.
 
 
 ```js
-patternTransform2d(sketchSet: SketchSet, instances: integer, transform: FunctionSource, useOriginal?: bool) -> [Sketch]
+patternTransform2d(
+  sketchSet: SketchSet,
+  instances: integer,
+  transform: FunctionSource,
+  useOriginal?: bool,
+) -> [Sketch]
 ```
 
 

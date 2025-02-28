@@ -9,7 +9,11 @@ Create a line segment from the current 2-dimensional sketch origin
 along some angle (in degrees) for some relative length in the 'y' dimension.
 
 ```js
-angledLineOfYLength(data: AngledLineData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+angledLineOfYLength(
+  data: AngledLineData,
+  sketch: Sketch,
+  tag?: TagDeclarator,
+) -> Sketch
 ```
 
 
@@ -29,7 +33,7 @@ angledLineOfYLength(data: AngledLineData, sketch: Sketch, tag?: TagDeclarator) -
 ### Examples
 
 ```js
-exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [10, 0])
   |> angledLineOfYLength({ angle = 45, length = 10 }, %)

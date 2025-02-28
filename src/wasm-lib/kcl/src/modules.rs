@@ -122,6 +122,8 @@ pub enum ModuleRepr {
 #[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash, ts_rs::TS)]
 #[serde(tag = "type")]
 pub enum ModulePath {
+    // The main file of the project.
+    Main,
     Local { value: PathBuf },
     Std { value: String },
 }
@@ -136,22 +138,29 @@ impl ModulePath {
 
     pub(crate) fn std_path(&self) -> Option<String> {
         match self {
-            ModulePath::Local { value: _ } => None,
             ModulePath::Std { value: p } => Some(p.clone()),
+            _ => None,
         }
     }
 
-    pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<String, KclError> {
+    pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<ModuleSource, KclError> {
         match self {
-            ModulePath::Local { value: p } => fs.read_to_string(p, source_range).await,
-            ModulePath::Std { value: name } => read_std(name)
-                .ok_or_else(|| {
-                    KclError::Semantic(KclErrorDetails {
-                        message: format!("Cannot find standard library module to import: std::{name}."),
-                        source_ranges: vec![source_range],
+            ModulePath::Local { value: p } => Ok(ModuleSource {
+                source: fs.read_to_string(p, source_range).await?,
+                path: self.clone(),
+            }),
+            ModulePath::Std { value: name } => Ok(ModuleSource {
+                source: read_std(name)
+                    .ok_or_else(|| {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!("Cannot find standard library module to import: std::{name}."),
+                            source_ranges: vec![source_range],
+                        })
                     })
-                })
-                .map(str::to_owned),
+                    .map(str::to_owned)?,
+                path: self.clone(),
+            }),
+            ModulePath::Main => unreachable!(),
         }
     }
 
@@ -179,8 +188,15 @@ impl ModulePath {
 impl fmt::Display for ModulePath {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            ModulePath::Main => write!(f, "main"),
             ModulePath::Local { value: path } => path.display().fmt(f),
             ModulePath::Std { value: s } => write!(f, "std::{s}"),
         }
     }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+pub struct ModuleSource {
+    pub path: ModulePath,
+    pub source: String,
 }

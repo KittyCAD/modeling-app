@@ -9,7 +9,13 @@ Create a 3D surface or solid by interpolating between two or more sketches.
 The sketches need to closed and on the same plane.
 
 ```js
-loft(sketches: [Sketch], vDegree: NonZeroU32, bezApproximateRational: bool, baseCurveIndex?: integer, tolerance?: number) -> Solid
+loft(
+  sketches: [Sketch],
+  vDegree: NonZeroU32,
+  bezApproximateRational: bool,
+  baseCurveIndex?: integer,
+  tolerance?: number,
+) -> Solid
 ```
 
 

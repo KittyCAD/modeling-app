@@ -9,7 +9,10 @@ Compute the number to a power.
 
 
 ```js
-pow(num: number, pow: number) -> number
+pow(
+  num: number,
+  pow: number,
+) -> number
 ```
 
 ### Tags

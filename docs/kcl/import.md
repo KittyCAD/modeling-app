@@ -15,7 +15,10 @@ For formats lacking unit data (such as STL, OBJ, or PLY files), the default unit
 Note: The import command currently only works when using the native Modeling App.
 
 ```js
-import(filePath: String, options?: ImportFormat) -> ImportedGeometry
+import(
+  filePath: String,
+  options?: ImportFormat,
+) -> ImportedGeometry
 ```
 
 
