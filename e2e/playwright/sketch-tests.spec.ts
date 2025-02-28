@@ -1388,7 +1388,9 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
         await toolbar.circleBtn.click()
         await page.waitForTimeout(100)
         await circlePoint1()
-        await editor.expectEditor.toContain('profile003 = circle(sketch001, center = [')
+        await editor.expectEditor.toContain(
+          'profile003 = circle(sketch001, center = ['
+        )
       })
 
       await test.step('equip line tool and verify circle code is removed', async () => {

@@ -16,7 +16,7 @@ import {
   VariableMap,
 } from 'lang/wasm'
 import {
-    ARG_INDEX_FIELD,
+  ARG_INDEX_FIELD,
   getNodeFromPath,
   getNodeFromPathCurry,
   getObjExprProperty,
