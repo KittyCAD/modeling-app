@@ -123,7 +123,11 @@ impl ExecutorContext {
         };
         std::mem::swap(&mut exec_state.mod_local, &mut local_state);
 
-        if !exec_kind.is_isolated() && new_units != old_units {
+        // We only need to reset the units if we are not on the Main path.
+        // If we reset at the end of the main path, then we just add on an extra
+        // command and we'd need to flush the batch again.
+        // This avoids that.
+        if !exec_kind.is_isolated() && new_units != old_units && *path != ModulePath::Main {
             self.engine.set_units(old_units.into(), Default::default()).await?;
         }
         self.engine.replace_execution_kind(original_execution).await;

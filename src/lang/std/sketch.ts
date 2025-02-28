@@ -629,8 +629,8 @@ export const lineTo: SketchLineHelperKw = {
     const { node: callExpression } = nodeMeta
 
     const toArrExp = createArrayExpression([
-      createLiteral(roundOff(to[0] - from[0], 2)),
-      createLiteral(roundOff(to[1] - from[1], 2)),
+      createLiteral(roundOff(to[0], 2)),
+      createLiteral(roundOff(to[1], 2)),
     ])
 
     mutateKwArg(ARG_END_ABSOLUTE, callExpression, toArrExp)
@@ -2348,7 +2348,7 @@ export function changeSketchArguments(
   if (fnName in sketchLineHelperMapKw) {
     const isAbsolute =
       callExpression.type === 'CallExpressionKw' &&
-      findKwArg('endAbsolute', callExpression) !== undefined
+      findKwArg(ARG_END_ABSOLUTE, callExpression) !== undefined
     const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
     const { updateArgs } = sketchLineHelperMapKw[correctFnName]
     if (!updateArgs) {
@@ -2391,7 +2391,7 @@ export function getConstraintInfoKw(
   const fnName = callExpression?.callee?.name || ''
   const isAbsolute =
     fnName === 'circleThreePoint' ||
-    findKwArg('endAbsolute', callExpression) !== undefined
+    findKwArg(ARG_END_ABSOLUTE, callExpression) !== undefined
   if (!(fnName in sketchLineHelperMapKw)) return []
   const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
   return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
