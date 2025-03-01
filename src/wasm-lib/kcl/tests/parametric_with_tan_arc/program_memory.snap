@@ -159,7 +159,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             },
             "ccw": true,
             "center": [
-              -0.7236272269866327,
+              -0.7236,
               8.0
             ],
             "from": [
@@ -256,7 +256,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             },
             "ccw": false,
             "center": [
-              -0.7236272269866326,
+              -0.7236,
               8.0
             ],
             "from": [
@@ -428,7 +428,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   },
   "filletR": {
     "type": "Number",
-    "value": 0.7236272269866327,
+    "value": 0.7236,
     "ty": {
       "type": "Unknown"
     },
@@ -517,7 +517,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
   },
   "thickness": {
     "type": "Number",
-    "value": 0.36181361349331637,
+    "value": 0.3618,
     "ty": {
       "type": "Unknown"
     },

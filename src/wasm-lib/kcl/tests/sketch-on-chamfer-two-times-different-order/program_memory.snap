@@ -431,7 +431,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   ]
                 },
                 "from": [
-                  75.80000000000001,
+                  75.8,
                   99.94
                 ],
                 "tag": {
@@ -1260,7 +1260,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                         ]
                       },
                       "from": [
-                        75.80000000000001,
+                        75.8,
                         99.94
                       ],
                       "tag": {
@@ -1849,7 +1849,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "value": "rectangleSegmentA003"
         },
         "to": [
-          -27.619999999999997,
+          -27.62,
           277.34
         ],
         "type": "ToPoint",
@@ -1950,7 +1950,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           ]
         },
         "from": [
-          -27.619999999999997,
+          -27.62,
           277.34
         ],
         "tag": {
@@ -1960,8 +1960,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "value": "rectangleSegmentB002"
         },
         "to": [
-          -27.61999999999999,
-          172.53999999999996
+          -27.62,
+          172.54
         ],
         "type": "ToPoint",
         "units": {
@@ -2061,8 +2061,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           ]
         },
         "from": [
-          -27.61999999999999,
-          172.53999999999996
+          -27.62,
+          172.54
         ],
         "tag": {
           "end": 1028,
@@ -2072,7 +2072,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         },
         "to": [
           -69.1,
-          172.53999999999996
+          172.54
         ],
         "type": "ToPoint",
         "units": {
@@ -2172,7 +2172,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           ]
         },
         "from": [
-          75.80000000000001,
+          75.8,
           99.94
         ],
         "tag": {
@@ -2620,7 +2620,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 ]
               },
               "from": [
-                75.80000000000001,
+                75.8,
                 99.94
               ],
               "tag": {
@@ -3335,7 +3335,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                       ]
                     },
                     "from": [
-                      75.80000000000001,
+                      75.8,
                       99.94
                     ],
                     "tag": {
@@ -4337,7 +4337,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                       ]
                     },
                     "from": [
-                      75.80000000000001,
+                      75.8,
                       99.94
                     ],
                     "tag": {
@@ -4580,7 +4580,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "value": "rectangleSegmentA003"
               },
               "to": [
-                -27.619999999999997,
+                -27.62,
                 277.34
               ],
               "type": "ToPoint",
@@ -4617,7 +4617,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 ]
               },
               "from": [
-                -27.619999999999997,
+                -27.62,
                 277.34
               ],
               "tag": {
@@ -4627,8 +4627,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "value": "rectangleSegmentB002"
               },
               "to": [
-                -27.61999999999999,
-                172.53999999999996
+                -27.62,
+                172.54
               ],
               "type": "ToPoint",
               "units": {
@@ -4664,8 +4664,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 ]
               },
               "from": [
-                -27.61999999999999,
-                172.53999999999996
+                -27.62,
+                172.54
               ],
               "tag": {
                 "end": 1028,
@@ -4675,7 +4675,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               },
               "to": [
                 -69.1,
-                172.53999999999996
+                172.54
               ],
               "type": "ToPoint",
               "units": {

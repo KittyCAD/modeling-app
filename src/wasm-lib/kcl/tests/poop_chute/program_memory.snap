@@ -747,7 +747,7 @@ description: Variables in memory after executing poop_chute.kcl
                 },
                 "to": [
                   2.0,
-                  0.9374999999999999
+                  0.9375
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -843,7 +843,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         "to": [
           2.0,
-          0.9374999999999999
+          0.9375
         ],
         "type": "ToPoint",
         "units": {
@@ -906,7 +906,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         "to": [
           2.0,
-          0.9374999999999999
+          0.9375
         ],
         "type": "ToPoint",
         "units": {
@@ -1332,7 +1332,7 @@ description: Variables in memory after executing poop_chute.kcl
               },
               "to": [
                 2.0,
-                0.9374999999999999
+                0.9375
               ],
               "type": "ToPoint",
               "units": {
@@ -1929,7 +1929,7 @@ description: Variables in memory after executing poop_chute.kcl
                 },
                 "to": [
                   2.0,
-                  0.9374999999999999
+                  0.9375
                 ],
                 "type": "ToPoint",
                 "units": {

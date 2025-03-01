@@ -301,7 +301,7 @@ description: Variables in memory after executing angled_line.kcl
                 },
                 "from": [
                   19.93,
-                  15.040000000000001
+                  15.04
                 ],
                 "tag": {
                   "end": 141,
@@ -311,7 +311,7 @@ description: Variables in memory after executing angled_line.kcl
                 },
                 "to": [
                   23.08,
-                  5.190000000000001
+                  5.19
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -397,7 +397,7 @@ description: Variables in memory after executing angled_line.kcl
         },
         "from": [
           19.93,
-          15.040000000000001
+          15.04
         ],
         "tag": {
           "end": 141,
@@ -407,7 +407,7 @@ description: Variables in memory after executing angled_line.kcl
         },
         "to": [
           23.08,
-          5.190000000000001
+          5.19
         ],
         "type": "ToPoint",
         "units": {
