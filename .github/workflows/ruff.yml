@@ -19,6 +19,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/ruff-action@v3
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           src: >-
             **.py
 
