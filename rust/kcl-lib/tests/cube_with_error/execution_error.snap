@@ -4,5 +4,30 @@ description: Error from executing cube_with_error.kcl
 ---
 KCL UndefinedValue error
 
-  × undefined value: memory item key `foo` is not defined
-  [Failed to read contents for label `tests/cube_with_error/input.kcl` (offset: 465, length: 3): OutOfBounds]
+  × undefined value: memory item key `startSketchAt` is not defined
+    ╭─[10:10]
+  9 │ 
+ 10 │   return startSketchOn(XY)
+    ·          ────────┬────────
+    ·                  ╰── tests/cube_with_error/input.kcl
+ 11 │     |> startProfileAt(p0, %)
+ 12 │     |> line(endAbsolute = p1)
+ 13 │     |> line(endAbsolute = p2)
+ 14 │     |> line(endAbsolute = p3)
+ 15 │     |> line(endAbsolute = p0)
+ 16 │     |> close()
+ 17 │     |> extrude(length = length)
+    ·                ────────┬───────
+    ·                        ╰── tests/cube_with_error/input.kcl
+ 18 │ }
+    ╰────
+  ╰─▶ KCL UndefinedValue error
+      
+        × undefined value: memory item key `startSketchAt` is not defined
+          ╭─[10:10]
+        9 │
+       10 │   return startSketchOn(XY)
+          ·          ────────┬────────
+          ·                  ╰── tests/cube_with_error/input.kcl
+       11 │     |> startProfileAt(p0, %)
+          ╰────
