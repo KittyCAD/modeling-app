@@ -1,4 +1,4 @@
-import { deserialize_files } from 'wasm-lib/pkg/wasm_lib'
+import { deserialize_files } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
 import { components } from './machine-api'

@@ -31,12 +31,12 @@ import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   EntityType_type,
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 interface ExecuteArgs {

@@ -58,7 +58,7 @@ import {
   getSketchSegmentFromSourceRange,
 } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle, isArray } from '../../lib/utils'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { findKwArg, findKwArgAny } from 'lang/util'
 
 export type LineInputsType =

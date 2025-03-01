@@ -1,4 +1,4 @@
-import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import { Command, CommandArgumentOption } from '../commandTypes'
 import toast from 'react-hot-toast'
 import { engineCommandManager } from 'lib/singletons'

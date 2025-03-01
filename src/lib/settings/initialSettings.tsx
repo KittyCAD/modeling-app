@@ -18,10 +18,10 @@ import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { isArray, toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
-import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
-import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
-import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
+import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 /**
  * A setting that can be set at the user or project level

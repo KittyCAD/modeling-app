@@ -1,1 +1,1 @@
-copy src\wasm-lib\pkg\wasm_lib_bg.wasm public
+copy rust\kcl-wasm-lib\pkg\kcl_wasm_lib_bg.wasm public

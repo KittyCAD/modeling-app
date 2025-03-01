@@ -5,7 +5,7 @@ import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandBarContext } from 'machines/commandBarMachine'
 type Icon = CustomIconName

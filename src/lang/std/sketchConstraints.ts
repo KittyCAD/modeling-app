@@ -1,6 +1,6 @@
 import { getNodeFromPath } from 'lang/queryAst'
 import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   Program,
   VariableDeclarator,

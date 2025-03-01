@@ -26,8 +26,8 @@ import {
   StartSketchOnFace,
   StartSketchOnPlane,
   Wall,
-} from 'wasm-lib/kcl/bindings/Artifact'
-import { CapSubType } from 'wasm-lib/kcl/bindings/Artifact'
+} from '@rust/kcl-lib/bindings/Artifact'
+import { CapSubType } from '@rust/kcl-lib/bindings/Artifact'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from 'lang/wasm'
 

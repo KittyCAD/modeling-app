@@ -6,7 +6,7 @@ import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 import { err } from 'lib/trap'
 import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
 import { DeepPartial } from './types'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { PlatformPath } from 'path'
 
 const prependRoutes =
