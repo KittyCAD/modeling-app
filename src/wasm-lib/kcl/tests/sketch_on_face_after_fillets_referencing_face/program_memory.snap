@@ -395,7 +395,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 },
                 "from": [
                   -8.0,
-                  5.679286509705091
+                  5.6793
                 ],
                 "tag": {
                   "end": 1238,
@@ -404,8 +404,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                   "value": "innerEdge"
                 },
                 "to": [
-                  -0.32071349029490914,
-                  5.679286509705091
+                  -0.3207,
+                  5.6793
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -653,7 +653,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         },
         "from": [
           -8.0,
-          5.679286509705091
+          5.6793
         ],
         "tag": {
           "end": 1238,
@@ -662,8 +662,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "value": "innerEdge"
         },
         "to": [
-          -0.32071349029490914,
-          5.679286509705091
+          -0.3207,
+          5.6793
         ],
         "type": "ToPoint",
         "units": {
@@ -1397,7 +1397,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                       },
                       "from": [
                         -8.0,
-                        5.679286509705091
+                        5.6793
                       ],
                       "tag": {
                         "end": 1238,
@@ -1406,8 +1406,8 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                         "value": "innerEdge"
                       },
                       "to": [
-                        -0.32071349029490914,
-                        5.679286509705091
+                        -0.3207,
+                        5.6793
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1682,7 +1682,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
   },
   "thickness": {
     "type": "Number",
-    "value": 0.32071349029490925,
+    "value": 0.3207,
     "ty": {
       "type": "Unknown"
     },

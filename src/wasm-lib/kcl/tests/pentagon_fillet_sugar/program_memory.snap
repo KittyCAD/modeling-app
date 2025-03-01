@@ -31,8 +31,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "value": "a"
         },
         "to": [
-          250.00000000000006,
-          433.0127018922193
+          250.0,
+          433.0127
         ],
         "type": "ToPoint",
         "units": {
@@ -101,7 +101,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         },
         "to": [
           280.0,
-          99.99999999999999
+          100.0
         ],
         "type": "Arc",
         "units": {
@@ -153,8 +153,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ]
         },
         "from": [
-          250.00000000000006,
-          433.0127018922193
+          250.0,
+          433.0127
         ],
         "tag": {
           "end": 310,
@@ -163,8 +163,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "value": "b"
         },
         "to": [
-          -249.99999999999994,
-          433.01270189221935
+          -250.0,
+          433.0127
         ],
         "type": "ToPoint",
         "units": {
@@ -216,8 +216,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ]
         },
         "from": [
-          -249.99999999999994,
-          433.01270189221935
+          -250.0,
+          433.0127
         ],
         "tag": {
           "end": 372,
@@ -226,8 +226,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "value": "c"
         },
         "to": [
-          0.00000000000011368683772161603,
-          0.00000000000005684341886080802
+          0.0,
+          0.0
         ],
         "type": "ToPoint",
         "units": {
@@ -568,8 +568,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       "value": "a"
                     },
                     "to": [
-                      250.00000000000006,
-                      433.0127018922193
+                      250.0,
+                      433.0127
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -620,8 +620,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       ]
                     },
                     "from": [
-                      250.00000000000006,
-                      433.0127018922193
+                      250.0,
+                      433.0127
                     ],
                     "tag": {
                       "end": 310,
@@ -630,8 +630,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       "value": "b"
                     },
                     "to": [
-                      -249.99999999999994,
-                      433.01270189221935
+                      -250.0,
+                      433.0127
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -682,8 +682,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       ]
                     },
                     "from": [
-                      -249.99999999999994,
-                      433.01270189221935
+                      -250.0,
+                      433.0127
                     ],
                     "tag": {
                       "end": 372,
@@ -692,8 +692,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       "value": "c"
                     },
                     "to": [
-                      0.00000000000011368683772161603,
-                      0.00000000000005684341886080802
+                      0.0,
+                      0.0
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -829,7 +829,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               },
               "to": [
                 -120.0,
-                99.99999999999999
+                100.0
               ],
               "type": "Arc",
               "units": {
@@ -1187,8 +1187,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       "value": "a"
                     },
                     "to": [
-                      250.00000000000006,
-                      433.0127018922193
+                      250.0,
+                      433.0127
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -1239,8 +1239,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       ]
                     },
                     "from": [
-                      250.00000000000006,
-                      433.0127018922193
+                      250.0,
+                      433.0127
                     ],
                     "tag": {
                       "end": 310,
@@ -1249,8 +1249,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       "value": "b"
                     },
                     "to": [
-                      -249.99999999999994,
-                      433.01270189221935
+                      -250.0,
+                      433.0127
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -1301,8 +1301,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       ]
                     },
                     "from": [
-                      -249.99999999999994,
-                      433.01270189221935
+                      -250.0,
+                      433.0127
                     ],
                     "tag": {
                       "end": 372,
@@ -1311,8 +1311,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                       "value": "c"
                     },
                     "to": [
-                      0.00000000000011368683772161603,
-                      0.00000000000005684341886080802
+                      0.0,
+                      0.0
                     ],
                     "type": "ToPoint",
                     "units": {
@@ -1448,7 +1448,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               },
               "to": [
                 280.0,
-                99.99999999999999
+                100.0
               ],
               "type": "Arc",
               "units": {
@@ -1816,8 +1816,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "value": "a"
                 },
                 "to": [
-                  250.00000000000006,
-                  433.0127018922193
+                  250.0,
+                  433.0127
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1868,8 +1868,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   ]
                 },
                 "from": [
-                  250.00000000000006,
-                  433.0127018922193
+                  250.0,
+                  433.0127
                 ],
                 "tag": {
                   "end": 310,
@@ -1878,8 +1878,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "value": "b"
                 },
                 "to": [
-                  -249.99999999999994,
-                  433.01270189221935
+                  -250.0,
+                  433.0127
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -1930,8 +1930,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   ]
                 },
                 "from": [
-                  -249.99999999999994,
-                  433.01270189221935
+                  -250.0,
+                  433.0127
                 ],
                 "tag": {
                   "end": 372,
@@ -1940,8 +1940,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "value": "c"
                 },
                 "to": [
-                  0.00000000000011368683772161603,
-                  0.00000000000005684341886080802
+                  0.0,
+                  0.0
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -2337,8 +2337,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         "value": "a"
                       },
                       "to": [
-                        250.00000000000006,
-                        433.0127018922193
+                        250.0,
+                        433.0127
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2389,8 +2389,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         ]
                       },
                       "from": [
-                        250.00000000000006,
-                        433.0127018922193
+                        250.0,
+                        433.0127
                       ],
                       "tag": {
                         "end": 310,
@@ -2399,8 +2399,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         "value": "b"
                       },
                       "to": [
-                        -249.99999999999994,
-                        433.01270189221935
+                        -250.0,
+                        433.0127
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2451,8 +2451,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         ]
                       },
                       "from": [
-                        -249.99999999999994,
-                        433.01270189221935
+                        -250.0,
+                        433.0127
                       ],
                       "tag": {
                         "end": 372,
@@ -2461,8 +2461,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         "value": "c"
                       },
                       "to": [
-                        0.00000000000011368683772161603,
-                        0.00000000000005684341886080802
+                        0.0,
+                        0.0
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2598,7 +2598,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "to": [
                   280.0,
-                  99.99999999999999
+                  100.0
                 ],
                 "type": "Arc",
                 "units": {
@@ -3010,8 +3010,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         "value": "a"
                       },
                       "to": [
-                        250.00000000000006,
-                        433.0127018922193
+                        250.0,
+                        433.0127
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3062,8 +3062,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         ]
                       },
                       "from": [
-                        250.00000000000006,
-                        433.0127018922193
+                        250.0,
+                        433.0127
                       ],
                       "tag": {
                         "end": 310,
@@ -3072,8 +3072,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         "value": "b"
                       },
                       "to": [
-                        -249.99999999999994,
-                        433.01270189221935
+                        -250.0,
+                        433.0127
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3124,8 +3124,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         ]
                       },
                       "from": [
-                        -249.99999999999994,
-                        433.01270189221935
+                        -250.0,
+                        433.0127
                       ],
                       "tag": {
                         "end": 372,
@@ -3134,8 +3134,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                         "value": "c"
                       },
                       "to": [
-                        0.00000000000011368683772161603,
-                        0.00000000000005684341886080802
+                        0.0,
+                        0.0
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3271,7 +3271,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 },
                 "to": [
                   -120.0,
-                  99.99999999999999
+                  100.0
                 ],
                 "type": "Arc",
                 "units": {

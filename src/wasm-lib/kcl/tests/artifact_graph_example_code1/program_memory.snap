@@ -275,7 +275,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "value": "seg01"
                 },
                 "to": [
-                  5.550000000000001,
+                  5.55,
                   5.0
                 ],
                 "type": "ToPoint",
@@ -327,7 +327,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   ]
                 },
                 "from": [
-                  5.550000000000001,
+                  5.55,
                   5.0
                 ],
                 "tag": {
@@ -337,7 +337,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "value": "seg02"
                 },
                 "to": [
-                  5.550000000000001,
+                  5.55,
                   -5.0
                 ],
                 "type": "ToPoint",
@@ -842,7 +842,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                         "value": "seg01"
                       },
                       "to": [
-                        5.550000000000001,
+                        5.55,
                         5.0
                       ],
                       "type": "ToPoint",
@@ -894,7 +894,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                         ]
                       },
                       "from": [
-                        5.550000000000001,
+                        5.55,
                         5.0
                       ],
                       "tag": {
@@ -904,7 +904,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                         "value": "seg02"
                       },
                       "to": [
-                        5.550000000000001,
+                        5.55,
                         -5.0
                       ],
                       "type": "ToPoint",
@@ -1075,7 +1075,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "value": "seg01"
         },
         "to": [
-          5.550000000000001,
+          5.55,
           5.0
         ],
         "type": "ToPoint",
@@ -1128,7 +1128,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           ]
         },
         "from": [
-          5.550000000000001,
+          5.55,
           5.0
         ],
         "tag": {
@@ -1138,7 +1138,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "value": "seg02"
         },
         "to": [
-          5.550000000000001,
+          5.55,
           -5.0
         ],
         "type": "ToPoint",
@@ -1385,7 +1385,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "value": "seg01"
               },
               "to": [
-                5.550000000000001,
+                5.55,
                 5.0
               ],
               "type": "ToPoint",
@@ -1437,7 +1437,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 ]
               },
               "from": [
-                5.550000000000001,
+                5.55,
                 5.0
               ],
               "tag": {
@@ -1447,7 +1447,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "value": "seg02"
               },
               "to": [
-                5.550000000000001,
+                5.55,
                 -5.0
               ],
               "type": "ToPoint",
@@ -1888,7 +1888,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                       "value": "seg01"
                     },
                     "to": [
-                      5.550000000000001,
+                      5.55,
                       5.0
                     ],
                     "type": "ToPoint",
@@ -1940,7 +1940,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                       ]
                     },
                     "from": [
-                      5.550000000000001,
+                      5.55,
                       5.0
                     ],
                     "tag": {
@@ -1950,7 +1950,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                       "value": "seg02"
                     },
                     "to": [
-                      5.550000000000001,
+                      5.55,
                       -5.0
                     ],
                     "type": "ToPoint",

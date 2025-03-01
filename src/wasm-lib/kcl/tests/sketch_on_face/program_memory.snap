@@ -32,7 +32,7 @@ description: Variables in memory after executing sketch_on_face.kcl
         },
         "to": [
           39.86,
-          15.100000000000001
+          15.1
         ],
         "type": "ToPoint",
         "units": {
@@ -306,7 +306,7 @@ description: Variables in memory after executing sketch_on_face.kcl
                 },
                 "to": [
                   39.86,
-                  15.100000000000001
+                  15.1
                 ],
                 "type": "ToPoint",
                 "units": {
@@ -780,7 +780,7 @@ description: Variables in memory after executing sketch_on_face.kcl
                       },
                       "to": [
                         39.86,
-                        15.100000000000001
+                        15.1
                       ],
                       "type": "ToPoint",
                       "units": {
