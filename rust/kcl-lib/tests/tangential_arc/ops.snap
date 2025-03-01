@@ -1,8 +1,31 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed tangential_arc.kcl
 ---
 [
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          26,
+          28,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      12,
+      29,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
   {
     "labeledArgs": {
       "length": {
@@ -20,16 +43,16 @@ description: Operations executed tangential_arc.kcl
           }
         },
         "sourceRange": [
-          158,
-          160,
+          185,
+          187,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      141,
-      161,
+      168,
+      188,
       0
     ],
     "type": "StdLibCall",

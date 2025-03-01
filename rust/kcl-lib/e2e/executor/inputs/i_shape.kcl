@@ -7,7 +7,8 @@ let corner_radius = 5.0
 // At first I thought this was going to be symmetric,
 // but I measured intentionally to not be symmetric,
 // because your wrist isn't a perfect cylindrical surface
-let brace_base = startSketchAt([corner_radius, 0])
+let brace_base = startSketchOn(XY)
+  |> startProfileAt([corner_radius, 0], %)
   |> line(end = [width - corner_radius, 0.0])
   |> tangentialArcToRelative([corner_radius, corner_radius], %)
   |> yLine(25.0 - corner_radius, %)
@@ -34,7 +35,8 @@ let brace_base = startSketchAt([corner_radius, 0])
   |> tangentialArcToRelative([corner_radius, -corner_radius], %)
   |> close()
 
-let inner = startSketchAt([0, 0])
+let inner = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
   |> xLine(1.0, %)
   |> tangentialArcToRelative([corner_radius, corner_radius], %)
   |> yLine(25.0 - (corner_radius * 2), %)

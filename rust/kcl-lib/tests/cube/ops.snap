@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed cube.kcl
 ---
 [
@@ -8,7 +8,7 @@ description: Operations executed cube.kcl
     "name": "cube",
     "functionSourceRange": [
       7,
-      375,
+      404,
       0
     ],
     "unlabeledArg": null,
@@ -46,8 +46,8 @@ description: Operations executed cube.kcl
           ]
         },
         "sourceRange": [
-          417,
-          423,
+          446,
+          452,
           0
         ]
       },
@@ -66,17 +66,40 @@ description: Operations executed cube.kcl
           }
         },
         "sourceRange": [
-          404,
-          406,
+          433,
+          435,
           0
         ]
       }
     },
     "sourceRange": [
-      386,
-      424,
+      415,
+      453,
       0
     ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          199,
+          201,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      185,
+      202,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -95,16 +118,16 @@ description: Operations executed cube.kcl
           }
         },
         "sourceRange": [
-          362,
-          372,
+          391,
+          401,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "type": "StdLibCall",

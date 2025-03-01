@@ -7,7 +7,8 @@ fn cube = (length, center) => {
   let p2 = [ l + x,  l + y]
   let p3 = [ l + x, -l + y]
 
-  return startSketchAt(p0)
+  return startSketchOn(XY)
+  |> startProfileAt(p0, %)
   |> line(endAbsolute = p1)
   |> line(endAbsolute = p2)
   |> line(endAbsolute = p3)

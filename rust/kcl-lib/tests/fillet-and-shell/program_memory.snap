@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing fillet-and-shell.kcl
 ---
 {
@@ -36,13 +36,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            833,
-            881,
+            860,
+            908,
             0
           ],
           "tag": {
-            "end": 880,
-            "start": 874,
+            "end": 907,
+            "start": 901,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -52,13 +52,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            887,
-            944,
+            914,
+            971,
             0
           ],
           "tag": {
-            "end": 943,
-            "start": 937,
+            "end": 970,
+            "start": 964,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -68,13 +68,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            950,
-            999,
+            977,
+            1026,
             0
           ],
           "tag": {
-            "end": 998,
-            "start": 992,
+            "end": 1025,
+            "start": 1019,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -84,13 +84,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1005,
-            1024,
+            1032,
+            1051,
             0
           ],
           "tag": {
-            "end": 1023,
-            "start": 1017,
+            "end": 1050,
+            "start": 1044,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -105,8 +105,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                833,
-                881,
+                860,
+                908,
                 0
               ]
             },
@@ -115,8 +115,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "tag": {
-              "end": 880,
-              "start": 874,
+              "end": 907,
+              "start": 901,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -133,8 +133,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                887,
-                944,
+                914,
+                971,
                 0
               ]
             },
@@ -143,8 +143,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "tag": {
-              "end": 943,
-              "start": 937,
+              "end": 970,
+              "start": 964,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -161,8 +161,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                950,
-                999,
+                977,
+                1026,
                 0
               ]
             },
@@ -171,8 +171,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "tag": {
-              "end": 998,
-              "start": 992,
+              "end": 1025,
+              "start": 1019,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -189,8 +189,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1005,
-                1024,
+                1032,
+                1051,
                 0
               ]
             },
@@ -199,8 +199,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "tag": {
-              "end": 1023,
-              "start": 1017,
+              "end": 1050,
+              "start": 1044,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -260,8 +260,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              802,
-              827,
+              829,
+              854,
               0
             ]
           }
@@ -278,8 +278,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    833,
-                    881,
+                    860,
+                    908,
                     0
                   ]
                 },
@@ -288,8 +288,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 880,
-                  "start": 874,
+                  "end": 907,
+                  "start": 901,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -306,13 +306,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  833,
-                  881,
+                  860,
+                  908,
                   0
                 ],
                 "tag": {
-                  "end": 880,
-                  "start": 874,
+                  "end": 907,
+                  "start": 901,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -322,8 +322,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  874,
-                  880,
+                  901,
+                  907,
                   0
                 ]
               }
@@ -340,8 +340,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    887,
-                    944,
+                    914,
+                    971,
                     0
                   ]
                 },
@@ -350,8 +350,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 943,
-                  "start": 937,
+                  "end": 970,
+                  "start": 964,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -368,13 +368,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  887,
-                  944,
+                  914,
+                  971,
                   0
                 ],
                 "tag": {
-                  "end": 943,
-                  "start": 937,
+                  "end": 970,
+                  "start": 964,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -384,8 +384,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  937,
-                  943,
+                  964,
+                  970,
                   0
                 ]
               }
@@ -402,8 +402,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    950,
-                    999,
+                    977,
+                    1026,
                     0
                   ]
                 },
@@ -412,8 +412,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   73.0
                 ],
                 "tag": {
-                  "end": 998,
-                  "start": 992,
+                  "end": 1025,
+                  "start": 1019,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -430,13 +430,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  950,
-                  999,
+                  977,
+                  1026,
                   0
                 ],
                 "tag": {
-                  "end": 998,
-                  "start": 992,
+                  "end": 1025,
+                  "start": 1019,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -446,8 +446,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  992,
-                  998,
+                  1019,
+                  1025,
                   0
                 ]
               }
@@ -464,8 +464,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1005,
-                    1024,
+                    1032,
+                    1051,
                     0
                   ]
                 },
@@ -474,8 +474,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
                   73.0
                 ],
                 "tag": {
-                  "end": 1023,
-                  "start": 1017,
+                  "end": 1050,
+                  "start": 1044,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -492,13 +492,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1005,
-                  1024,
+                  1032,
+                  1051,
                   0
                 ],
                 "tag": {
-                  "end": 1023,
-                  "start": 1017,
+                  "end": 1050,
+                  "start": 1044,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -508,8 +508,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  1017,
-                  1023,
+                  1044,
+                  1050,
                   0
                 ]
               }
@@ -524,8 +524,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__meta": [
           {
             "sourceRange": [
-              802,
-              827,
+              829,
+              854,
               0
             ]
           }
@@ -570,8 +570,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "__meta": [
         {
           "sourceRange": [
-            802,
-            827,
+            829,
+            854,
             0
           ]
         }
@@ -716,8 +716,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            833,
-            881,
+            860,
+            908,
             0
           ]
         },
@@ -726,8 +726,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           0.0
         ],
         "tag": {
-          "end": 880,
-          "start": 874,
+          "end": 907,
+          "start": 901,
           "type": "TagDeclarator",
           "value": "edge1"
         },
@@ -744,13 +744,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          833,
-          881,
+          860,
+          908,
           0
         ],
         "tag": {
-          "end": 880,
-          "start": 874,
+          "end": 907,
+          "start": 901,
           "type": "TagDeclarator",
           "value": "edge1"
         },
@@ -760,8 +760,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          874,
-          880,
+          901,
+          907,
           0
         ]
       }
@@ -779,8 +779,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            887,
-            944,
+            914,
+            971,
             0
           ]
         },
@@ -789,8 +789,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           0.0
         ],
         "tag": {
-          "end": 943,
-          "start": 937,
+          "end": 970,
+          "start": 964,
           "type": "TagDeclarator",
           "value": "edge2"
         },
@@ -807,13 +807,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          887,
-          944,
+          914,
+          971,
           0
         ],
         "tag": {
-          "end": 943,
-          "start": 937,
+          "end": 970,
+          "start": 964,
           "type": "TagDeclarator",
           "value": "edge2"
         },
@@ -823,8 +823,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          937,
-          943,
+          964,
+          970,
           0
         ]
       }
@@ -842,8 +842,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            950,
-            999,
+            977,
+            1026,
             0
           ]
         },
@@ -852,8 +852,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           73.0
         ],
         "tag": {
-          "end": 998,
-          "start": 992,
+          "end": 1025,
+          "start": 1019,
           "type": "TagDeclarator",
           "value": "edge3"
         },
@@ -870,13 +870,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          950,
-          999,
+          977,
+          1026,
           0
         ],
         "tag": {
-          "end": 998,
-          "start": 992,
+          "end": 1025,
+          "start": 1019,
           "type": "TagDeclarator",
           "value": "edge3"
         },
@@ -886,8 +886,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          992,
-          998,
+          1019,
+          1025,
           0
         ]
       }
@@ -905,8 +905,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1005,
-            1024,
+            1032,
+            1051,
             0
           ]
         },
@@ -915,8 +915,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           73.0
         ],
         "tag": {
-          "end": 1023,
-          "start": 1017,
+          "end": 1050,
+          "start": 1044,
           "type": "TagDeclarator",
           "value": "edge4"
         },
@@ -933,13 +933,13 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          1005,
-          1024,
+          1032,
+          1051,
           0
         ],
         "tag": {
-          "end": 1023,
-          "start": 1017,
+          "end": 1050,
+          "start": 1044,
           "type": "TagDeclarator",
           "value": "edge4"
         },
@@ -949,8 +949,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          1017,
-          1023,
+          1044,
+          1050,
           0
         ]
       }
@@ -984,8 +984,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "__meta": [
       {
         "sourceRange": [
-          1283,
-          1511,
+          1310,
+          1538,
           0
         ]
       }
@@ -1089,8 +1089,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              467,
-              558,
+              494,
+              585,
               0
             ]
           },
@@ -1112,8 +1112,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              564,
-              655,
+              591,
+              682,
               0
             ]
           },
@@ -1135,8 +1135,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              661,
-              754,
+              688,
+              781,
               0
             ]
           },
@@ -1158,8 +1158,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              760,
-              768,
+              787,
+              795,
               0
             ]
           },
@@ -1224,8 +1224,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            373,
-            461,
+            396,
+            488,
             0
           ]
         }
@@ -1238,8 +1238,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "__meta": [
         {
           "sourceRange": [
-            373,
-            461,
+            396,
+            488,
             0
           ]
         }

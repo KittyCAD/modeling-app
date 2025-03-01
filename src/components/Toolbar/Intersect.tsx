@@ -101,7 +101,6 @@ export function intersectInfo({
       (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
       [
         ...toolTips,
-        'startSketchAt', // TODO probably a better place for this to live
       ].includes(node.callee.name as any)
   )
 

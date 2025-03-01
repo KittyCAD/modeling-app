@@ -20,7 +20,8 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
       localStorage.setItem(
         'persistCode',
         `sketch2 = startSketchOn("XY")
-  sketch001 = startSketchAt([-0, -0])
+  sketch001 = startSketchOn("XY")
+    |> startProfileAt([-0, -0], %)
     |> line(end = [0, 0])
     |> line(end = [-4.84, -5.29])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])

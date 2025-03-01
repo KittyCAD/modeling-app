@@ -1,8 +1,31 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed parametric_with_tan_arc.kcl
 ---
 [
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          253,
+          255,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      239,
+      256,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
   {
     "labeledArgs": {
       "length": {
@@ -20,16 +43,16 @@ description: Operations executed parametric_with_tan_arc.kcl
           }
         },
         "sourceRange": [
-          612,
-          617,
+          639,
+          644,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      595,
-      618,
+      622,
+      645,
       0
     ],
     "type": "StdLibCall",

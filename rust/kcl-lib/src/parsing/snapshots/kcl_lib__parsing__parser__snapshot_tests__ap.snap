@@ -1,12 +1,12 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
       "declaration": {
-        "end": 31,
+        "end": 56,
         "id": {
           "end": 8,
           "name": "mySketch",
@@ -14,59 +14,94 @@ expression: actual
           "type": "Identifier"
         },
         "init": {
-          "arguments": [
+          "body": [
             {
-              "elements": [
+              "arguments": [
                 {
                   "end": 27,
-                  "raw": "0",
-                  "start": 26,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 0.0,
-                    "suffix": "None"
-                  }
-                },
-                {
-                  "end": 29,
-                  "raw": "0",
-                  "start": 28,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 0.0,
-                    "suffix": "None"
-                  }
+                  "name": "XY",
+                  "start": 25,
+                  "type": "Identifier",
+                  "type": "Identifier"
                 }
               ],
-              "end": 30,
-              "start": 25,
-              "type": "ArrayExpression",
-              "type": "ArrayExpression"
+              "callee": {
+                "end": 24,
+                "name": "startSketchOn",
+                "start": 11,
+                "type": "Identifier"
+              },
+              "end": 28,
+              "start": 11,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "elements": [
+                    {
+                      "end": 49,
+                      "raw": "0",
+                      "start": 48,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 51,
+                      "raw": "0",
+                      "start": 50,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 52,
+                  "start": 47,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                },
+                {
+                  "end": 55,
+                  "start": 54,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "end": 46,
+                "name": "startProfileAt",
+                "start": 32,
+                "type": "Identifier"
+              },
+              "end": 56,
+              "start": 32,
+              "type": "CallExpression",
+              "type": "CallExpression"
             }
           ],
-          "callee": {
-            "end": 24,
-            "name": "startSketchAt",
-            "start": 11,
-            "type": "Identifier"
-          },
-          "end": 31,
+          "end": 56,
           "start": 11,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "PipeExpression",
+          "type": "PipeExpression"
         },
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 31,
+      "end": 56,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 31,
+  "end": 56,
   "start": 0
 }

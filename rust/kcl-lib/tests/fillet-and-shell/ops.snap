@@ -1,8 +1,31 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed fillet-and-shell.kcl
 ---
 [
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          387,
+          389,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      373,
+      390,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
   {
     "labeledArgs": {
       "data": {
@@ -11,16 +34,16 @@ description: Operations executed fillet-and-shell.kcl
           "value": "XY"
         },
         "sourceRange": [
-          791,
-          795,
+          818,
+          822,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      777,
-      796,
+      804,
+      823,
       0
     ],
     "type": "StdLibCall",
@@ -43,16 +66,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1047,
-          1057,
+          1074,
+          1084,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "type": "StdLibCall",
@@ -87,8 +110,8 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1088,
-          1089,
+          1115,
+          1116,
           0
         ]
       },
@@ -115,16 +138,16 @@ description: Operations executed fillet-and-shell.kcl
           ]
         },
         "sourceRange": [
-          1105,
-          1262,
+          1132,
+          1289,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      1064,
-      1270,
+      1091,
+      1297,
       0
     ],
     "type": "StdLibCall",
@@ -146,15 +169,15 @@ description: Operations executed fillet-and-shell.kcl
     "type": "UserDefinedFunctionCall",
     "name": "m25Screw",
     "functionSourceRange": [
-      1283,
-      1511,
+      1310,
+      1538,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1513,
-      1642,
+      1540,
+      1669,
       0
     ]
   },
@@ -166,16 +189,16 @@ description: Operations executed fillet-and-shell.kcl
           "value": "XY"
         },
         "sourceRange": [
-          1324,
-          1328,
+          1351,
+          1355,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1310,
-      1329,
+      1337,
+      1356,
       0
     ],
     "type": "StdLibCall",
@@ -191,8 +214,8 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1420,
-          1458,
+          1447,
+          1485,
           0
         ]
       },
@@ -204,16 +227,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1460,
-          1461,
+          1487,
+          1488,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "type": "StdLibCall",
@@ -236,16 +259,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1487,
-          1493,
+          1514,
+          1520,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "type": "StdLibCall",
@@ -270,15 +293,15 @@ description: Operations executed fillet-and-shell.kcl
     "type": "UserDefinedFunctionCall",
     "name": "m25Screw",
     "functionSourceRange": [
-      1283,
-      1511,
+      1310,
+      1538,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1644,
-      1771,
+      1671,
+      1798,
       0
     ]
   },
@@ -290,16 +313,16 @@ description: Operations executed fillet-and-shell.kcl
           "value": "XY"
         },
         "sourceRange": [
-          1324,
-          1328,
+          1351,
+          1355,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1310,
-      1329,
+      1337,
+      1356,
       0
     ],
     "type": "StdLibCall",
@@ -315,8 +338,8 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1420,
-          1458,
+          1447,
+          1485,
           0
         ]
       },
@@ -328,16 +351,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1460,
-          1461,
+          1487,
+          1488,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "type": "StdLibCall",
@@ -360,16 +383,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1487,
-          1493,
+          1514,
+          1520,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "type": "StdLibCall",
@@ -394,15 +417,15 @@ description: Operations executed fillet-and-shell.kcl
     "type": "UserDefinedFunctionCall",
     "name": "m25Screw",
     "functionSourceRange": [
-      1283,
-      1511,
+      1310,
+      1538,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1773,
-      1898,
+      1800,
+      1925,
       0
     ]
   },
@@ -414,16 +437,16 @@ description: Operations executed fillet-and-shell.kcl
           "value": "XY"
         },
         "sourceRange": [
-          1324,
-          1328,
+          1351,
+          1355,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1310,
-      1329,
+      1337,
+      1356,
       0
     ],
     "type": "StdLibCall",
@@ -439,8 +462,8 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1420,
-          1458,
+          1447,
+          1485,
           0
         ]
       },
@@ -452,16 +475,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1460,
-          1461,
+          1487,
+          1488,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "type": "StdLibCall",
@@ -484,16 +507,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1487,
-          1493,
+          1514,
+          1520,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "type": "StdLibCall",
@@ -518,15 +541,15 @@ description: Operations executed fillet-and-shell.kcl
     "type": "UserDefinedFunctionCall",
     "name": "m25Screw",
     "functionSourceRange": [
-      1283,
-      1511,
+      1310,
+      1538,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1900,
-      2027,
+      1927,
+      2054,
       0
     ]
   },
@@ -538,16 +561,16 @@ description: Operations executed fillet-and-shell.kcl
           "value": "XY"
         },
         "sourceRange": [
-          1324,
-          1328,
+          1351,
+          1355,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1310,
-      1329,
+      1337,
+      1356,
       0
     ],
     "type": "StdLibCall",
@@ -563,8 +586,8 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1420,
-          1458,
+          1447,
+          1485,
           0
         ]
       },
@@ -576,16 +599,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1460,
-          1461,
+          1487,
+          1488,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "type": "StdLibCall",
@@ -608,16 +631,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          1487,
-          1493,
+          1514,
+          1520,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "type": "StdLibCall",
@@ -651,8 +674,8 @@ description: Operations executed fillet-and-shell.kcl
           ]
         },
         "sourceRange": [
-          2049,
-          2056,
+          2076,
+          2083,
           0
         ]
       },
@@ -671,16 +694,16 @@ description: Operations executed fillet-and-shell.kcl
           }
         },
         "sourceRange": [
-          2070,
-          2083,
+          2097,
+          2110,
           0
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      2029,
-      2084,
+      2056,
+      2111,
       0
     ],
     "type": "StdLibCall",
@@ -692,8 +715,8 @@ description: Operations executed fillet-and-shell.kcl
         }
       },
       "sourceRange": [
-        2035,
-        2039,
+        2062,
+        2066,
         0
       ]
     }

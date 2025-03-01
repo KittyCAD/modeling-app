@@ -894,59 +894,6 @@ async fn inner_angled_line_that_intersects(
     Ok(new_sketch)
 }
 
-/// Start a sketch at a given point.
-pub async fn start_sketch_at(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let data: [f64; 2] = args.get_data()?;
-
-    let sketch = inner_start_sketch_at(data, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(sketch),
-    })
-}
-
-/// Start a new 2-dimensional sketch at a given point on the 'XY' plane.
-///
-/// ```no_run
-/// exampleSketch = startSketchAt([0, 0])
-///   |> line(end = [10, 0])
-///   |> line(end = [0, 10])
-///   |> line(end = [-10, 0])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchAt([10, 10])
-///   |> line(end = [10, 0])
-///   |> line(end = [0, 10])
-///   |> line(end = [-10, 0])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-///
-/// ```no_run
-/// exampleSketch = startSketchAt([-10, 23])
-///   |> line(end = [10, 0])
-///   |> line(end = [0, 10])
-///   |> line(end = [-10, 0])
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "startSketchAt",
-    deprecated = true,
-}]
-async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args: Args) -> Result<Sketch, KclError> {
-    // Let's assume it's the XY plane for now, this is just for backwards compatibility.
-    let xy_plane = PlaneData::XY;
-    let sketch_surface = inner_start_sketch_on(SketchData::PlaneOrientation(xy_plane), None, exec_state, &args).await?;
-    let sketch = inner_start_profile_at(data, sketch_surface, None, exec_state, args).await?;
-    Ok(sketch)
-}
-
 /// Data for start sketch on.
 /// You can start a sketch on a plane or an solid.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

@@ -127,7 +127,7 @@ export function createFirstArg(
       })
   } else {
     if (
-      ['startSketchAt', 'xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(
+      ['xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(
         sketchFn
       )
     )
@@ -2942,7 +2942,7 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
     return { val: firstArg }
   }
   const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-  const secondArgName = ['xLineTo', 'yLineTo', 'startSketchAt'].includes(
+  const secondArgName = ['xLineTo', 'yLineTo'].includes(
     // const secondArgName = ['xLineTo', 'yLineTo', 'angledLineToX', 'angledLineToY'].includes(
     callExpression?.callee?.name
   )
@@ -3080,9 +3080,6 @@ export function getFirstArg(callExp: CallExpression):
     return getFirstArgValuesForAngleFns(callExp)
   }
   if (['xLine', 'yLine', 'xLineTo', 'yLineTo'].includes(name)) {
-    return getFirstArgValuesForXYLineFns(callExp)
-  }
-  if (['startSketchAt'].includes(name)) {
     return getFirstArgValuesForXYLineFns(callExp)
   }
   if (['angledLineThatIntersects'].includes(name)) {

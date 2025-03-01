@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed pipe_as_arg.kcl
 ---
 [
@@ -7,15 +7,15 @@ description: Operations executed pipe_as_arg.kcl
     "type": "UserDefinedFunctionCall",
     "name": "double",
     "functionSourceRange": [
-      375,
-      397,
+      404,
+      426,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      450,
-      459,
+      479,
+      488,
       0
     ]
   },
@@ -27,16 +27,39 @@ description: Operations executed pipe_as_arg.kcl
     "name": "cube",
     "functionSourceRange": [
       7,
-      364,
+      393,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      436,
-      468,
+      465,
+      497,
       0
     ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          191,
+          193,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      177,
+      194,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -49,16 +72,16 @@ description: Operations executed pipe_as_arg.kcl
           }
         },
         "sourceRange": [
-          355,
-          361,
+          384,
+          390,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      338,
-      362,
+      367,
+      391,
       0
     ],
     "type": "StdLibCall",

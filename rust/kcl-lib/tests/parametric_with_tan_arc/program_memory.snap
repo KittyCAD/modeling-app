@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing parametric_with_tan_arc.kcl
 ---
 {
@@ -36,8 +36,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            266,
             293,
+            320,
             0
           ],
           "tag": null,
@@ -47,8 +47,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            299,
-            350,
+            326,
+            377,
             0
           ],
           "tag": null,
@@ -58,8 +58,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            356,
-            385,
+            383,
+            412,
             0
           ],
           "tag": null,
@@ -69,8 +69,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            391,
             418,
+            445,
             0
           ],
           "tag": null,
@@ -80,8 +80,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            424,
-            452,
+            451,
+            479,
             0
           ],
           "tag": null,
@@ -91,8 +91,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            458,
-            541,
+            485,
+            568,
             0
           ],
           "tag": null,
@@ -102,8 +102,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            547,
-            575,
+            574,
+            602,
             0
           ],
           "tag": null,
@@ -113,8 +113,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            581,
-            589,
+            608,
+            616,
             0
           ],
           "tag": null,
@@ -129,8 +129,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                266,
                 293,
+                320,
                 0
               ]
             },
@@ -152,8 +152,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                299,
-                350,
+                326,
+                377,
                 0
               ]
             },
@@ -180,8 +180,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                356,
-                385,
+                383,
+                412,
                 0
               ]
             },
@@ -203,8 +203,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                391,
                 418,
+                445,
                 0
               ]
             },
@@ -226,8 +226,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                424,
-                452,
+                451,
+                479,
                 0
               ]
             },
@@ -249,8 +249,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                458,
-                541,
+                485,
+                568,
                 0
               ]
             },
@@ -277,8 +277,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                547,
-                575,
+                574,
+                602,
                 0
               ]
             },
@@ -300,8 +300,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                581,
-                589,
+                608,
+                616,
                 0
               ]
             },
@@ -366,8 +366,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              239,
-              260,
+              262,
+              287,
               0
             ]
           }
@@ -380,8 +380,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
         "__meta": [
           {
             "sourceRange": [
-              239,
-              260,
+              262,
+              287,
               0
             ]
           }
@@ -396,8 +396,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "__meta": [
         {
           "sourceRange": [
-            239,
-            260,
+            262,
+            287,
             0
           ]
         }

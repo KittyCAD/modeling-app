@@ -1,8 +1,54 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed i_shape.kcl
 ---
 [
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          413,
+          415,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      399,
+      416,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          1940,
+          1942,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      1926,
+      1943,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
   {
     "labeledArgs": {
       "holeSketch": {
@@ -13,8 +59,8 @@ description: Operations executed i_shape.kcl
           }
         },
         "sourceRange": [
-          2351,
-          2356,
+          2405,
+          2410,
           0
         ]
       },
@@ -26,16 +72,16 @@ description: Operations executed i_shape.kcl
           }
         },
         "sourceRange": [
-          2358,
-          2359,
+          2412,
+          2413,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2346,
-      2360,
+      2400,
+      2414,
       0
     ],
     "type": "StdLibCall",
@@ -58,16 +104,16 @@ description: Operations executed i_shape.kcl
           }
         },
         "sourceRange": [
-          2383,
-          2386,
+          2437,
+          2440,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2366,
-      2387,
+      2420,
+      2441,
       0
     ],
     "type": "StdLibCall",
