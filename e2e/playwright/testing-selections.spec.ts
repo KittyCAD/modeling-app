@@ -320,10 +320,11 @@ part009 = startSketchOn('XY')
   |> close()
 rev = revolve({ axis = 'y' }, part009)
 sketch006 = startSketchOn('XY')
-profile001 = circle({
+profile001 = circle(
+  sketch006,
   center = [42.91, -70.42],
   radius = 17.96
-}, sketch006)
+)
 profile002 = startProfileAt([86.92, -63.81], sketch006)
   |> angledLine([0, 63.81], %, $rectangleSegmentA001)
   |> angledLine([

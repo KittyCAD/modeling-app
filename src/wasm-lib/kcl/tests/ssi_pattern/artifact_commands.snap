@@ -700,7 +700,7 @@ description: Artifact commands ssi_pattern.kcl
     "cmdId": "[uuid]",
     "range": [
       370,
-      421,
+      414,
       0
     ],
     "command": {
@@ -716,7 +716,7 @@ description: Artifact commands ssi_pattern.kcl
     "cmdId": "[uuid]",
     "range": [
       370,
-      421,
+      414,
       0
     ],
     "command": {
@@ -727,7 +727,7 @@ description: Artifact commands ssi_pattern.kcl
     "cmdId": "[uuid]",
     "range": [
       370,
-      421,
+      414,
       0
     ],
     "command": {
@@ -744,7 +744,7 @@ description: Artifact commands ssi_pattern.kcl
     "cmdId": "[uuid]",
     "range": [
       370,
-      421,
+      414,
       0
     ],
     "command": {
@@ -773,7 +773,7 @@ description: Artifact commands ssi_pattern.kcl
     "cmdId": "[uuid]",
     "range": [
       370,
-      421,
+      414,
       0
     ],
     "command": {
@@ -784,8 +784,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      427,
-      486,
+      420,
+      479,
       0
     ],
     "command": {
@@ -915,8 +915,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      545,
-      605,
+      538,
+      598,
       0
     ],
     "command": {
@@ -1075,8 +1075,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      545,
-      605,
+      538,
+      598,
       0
     ],
     "command": {
@@ -1235,8 +1235,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      545,
-      605,
+      538,
+      598,
       0
     ],
     "command": {
@@ -1395,8 +1395,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      545,
-      605,
+      538,
+      598,
       0
     ],
     "command": {
@@ -1555,8 +1555,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      545,
-      605,
+      538,
+      598,
       0
     ],
     "command": {
@@ -1715,8 +1715,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1731,8 +1731,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1745,8 +1745,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1756,8 +1756,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1768,8 +1768,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1781,8 +1781,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1795,8 +1795,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1809,8 +1809,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1825,8 +1825,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1839,8 +1839,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1850,8 +1850,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1862,8 +1862,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1875,8 +1875,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1889,8 +1889,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1903,8 +1903,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1919,8 +1919,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1933,8 +1933,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1944,8 +1944,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1956,8 +1956,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1969,8 +1969,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1983,8 +1983,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -1997,8 +1997,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2013,8 +2013,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2027,8 +2027,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2038,8 +2038,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2050,8 +2050,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2063,8 +2063,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2077,8 +2077,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2091,8 +2091,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2107,8 +2107,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2121,8 +2121,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2132,8 +2132,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2144,8 +2144,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2157,8 +2157,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2171,8 +2171,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2185,8 +2185,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2201,8 +2201,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2215,8 +2215,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2226,8 +2226,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2238,8 +2238,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2251,8 +2251,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2265,8 +2265,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2279,8 +2279,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2295,8 +2295,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2309,8 +2309,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2320,8 +2320,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2332,8 +2332,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2345,8 +2345,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2359,8 +2359,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2373,8 +2373,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2389,8 +2389,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2403,8 +2403,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2414,8 +2414,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2426,8 +2426,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2439,8 +2439,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2453,8 +2453,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2467,8 +2467,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2483,8 +2483,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2497,8 +2497,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2508,8 +2508,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2520,8 +2520,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2533,8 +2533,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2547,8 +2547,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2561,8 +2561,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2577,8 +2577,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2591,8 +2591,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2602,8 +2602,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2614,8 +2614,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2627,8 +2627,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2641,8 +2641,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2655,8 +2655,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2671,8 +2671,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2685,8 +2685,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2696,8 +2696,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2708,8 +2708,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2721,8 +2721,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2735,8 +2735,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2749,8 +2749,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2765,8 +2765,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2779,8 +2779,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2790,8 +2790,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2802,8 +2802,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2815,8 +2815,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2829,8 +2829,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2843,8 +2843,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2859,8 +2859,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2873,8 +2873,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2884,8 +2884,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2896,8 +2896,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2909,8 +2909,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2923,8 +2923,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2937,8 +2937,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2953,8 +2953,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2967,8 +2967,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2978,8 +2978,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -2990,8 +2990,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3003,8 +3003,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3017,8 +3017,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3031,8 +3031,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3047,8 +3047,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3061,8 +3061,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3072,8 +3072,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3084,8 +3084,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3097,8 +3097,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3111,8 +3111,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3125,8 +3125,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3141,8 +3141,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3155,8 +3155,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3166,8 +3166,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3178,8 +3178,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3191,8 +3191,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3205,8 +3205,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3219,8 +3219,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3235,8 +3235,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3249,8 +3249,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3260,8 +3260,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3272,8 +3272,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3285,8 +3285,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3299,8 +3299,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3313,8 +3313,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3329,8 +3329,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3343,8 +3343,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3354,8 +3354,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3366,8 +3366,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3379,8 +3379,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3393,8 +3393,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3407,8 +3407,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3423,8 +3423,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3437,8 +3437,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3448,8 +3448,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3460,8 +3460,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3473,8 +3473,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3487,8 +3487,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3501,8 +3501,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3517,8 +3517,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3531,8 +3531,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3542,8 +3542,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3554,8 +3554,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3567,8 +3567,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3581,8 +3581,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3595,8 +3595,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3611,8 +3611,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3625,8 +3625,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3636,8 +3636,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3648,8 +3648,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3661,8 +3661,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3675,8 +3675,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3689,8 +3689,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3705,8 +3705,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3719,8 +3719,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3730,8 +3730,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3742,8 +3742,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3755,8 +3755,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3769,8 +3769,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3783,8 +3783,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3799,8 +3799,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3813,8 +3813,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3824,8 +3824,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3836,8 +3836,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3849,8 +3849,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3863,8 +3863,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3877,8 +3877,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3893,8 +3893,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3907,8 +3907,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3918,8 +3918,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3930,8 +3930,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3943,8 +3943,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3957,8 +3957,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3971,8 +3971,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -3987,8 +3987,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4001,8 +4001,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4012,8 +4012,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4024,8 +4024,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4037,8 +4037,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4051,8 +4051,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4065,8 +4065,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4081,8 +4081,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4095,8 +4095,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4106,8 +4106,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4118,8 +4118,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4131,8 +4131,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4145,8 +4145,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4159,8 +4159,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4175,8 +4175,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4189,8 +4189,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4200,8 +4200,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4212,8 +4212,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4225,8 +4225,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4239,8 +4239,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4253,8 +4253,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4269,8 +4269,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4283,8 +4283,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4294,8 +4294,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4306,8 +4306,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4319,8 +4319,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4333,8 +4333,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4347,8 +4347,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4363,8 +4363,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4377,8 +4377,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4388,8 +4388,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4400,8 +4400,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4413,8 +4413,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4427,8 +4427,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4441,8 +4441,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4457,8 +4457,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4471,8 +4471,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4482,8 +4482,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4494,8 +4494,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4507,8 +4507,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {
@@ -4521,8 +4521,8 @@ description: Artifact commands ssi_pattern.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "command": {

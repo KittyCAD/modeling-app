@@ -91,7 +91,7 @@ bottom = startSketchOn("XY")
 
 ```js
 circSketch = startSketchOn("XY")
-  |> circle({ center = [0, 0], radius = 3 }, %, $circ)
+  |> circle(center = [0, 0], radius = 3, tag = $circ)
 
 triangleSketch = startSketchOn("XY")
   |> startProfileAt([-5, 0], %)

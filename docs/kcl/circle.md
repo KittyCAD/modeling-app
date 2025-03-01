@@ -10,8 +10,9 @@ the provided (x, y) origin point.
 
 ```js
 circle(
-  data: CircleData,
-  sketchSurfaceOrGroup: SketchOrSurface,
+  sketchOrSurface: SketchOrSurface,
+  center: [number],
+  radius: number,
   tag?: TagDeclarator,
 ) -> Sketch
 ```
@@ -21,9 +22,10 @@ circle(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`CircleData`](/docs/kcl/types/CircleData) | Data for drawing an circle | Yes |
-| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `sketchOrSurface` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on. | Yes |
+| `center` | `[number]` | The center of the circle. | Yes |
+| `radius` | `number` | The radius of the circle. | Yes |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this circle | No |
 
 ### Returns
 
@@ -34,7 +36,7 @@ circle(
 
 ```js
 exampleSketch = startSketchOn("-XZ")
-  |> circle({ center = [0, 0], radius = 10 }, %)
+  |> circle(center = [0, 0], radius = 10)
 
 example = extrude(exampleSketch, length = 5)
 ```
@@ -48,7 +50,7 @@ exampleSketch = startSketchOn("XZ")
   |> line(end = [0, 30])
   |> line(end = [-30, 0])
   |> close()
-  |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
+  |> hole(circle(center = [0, 15], radius = 5), %)
 
 example = extrude(exampleSketch, length = 5)
 ```

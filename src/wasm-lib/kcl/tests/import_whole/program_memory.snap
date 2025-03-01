@@ -15,7 +15,7 @@ description: Variables in memory after executing import_whole.kcl
           "id": "[uuid]",
           "sourceRange": [
             61,
-            104,
+            97,
             3
           ],
           "tag": null,
@@ -31,7 +31,7 @@ description: Variables in memory after executing import_whole.kcl
               "id": "[uuid]",
               "sourceRange": [
                 61,
-                104,
+                97,
                 3
               ]
             },
@@ -103,7 +103,7 @@ description: Variables in memory after executing import_whole.kcl
             "id": "[uuid]",
             "sourceRange": [
               61,
-              104,
+              97,
               3
             ]
           }
@@ -117,7 +117,7 @@ description: Variables in memory after executing import_whole.kcl
           {
             "sourceRange": [
               61,
-              104,
+              97,
               3
             ]
           }
@@ -133,7 +133,7 @@ description: Variables in memory after executing import_whole.kcl
         {
           "sourceRange": [
             61,
-            104,
+            97,
             3
           ]
         }

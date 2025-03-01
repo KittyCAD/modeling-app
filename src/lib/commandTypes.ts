@@ -119,6 +119,8 @@ export type CommandArgumentConfig<
         machineContext?: C
       ) => boolean)
   warningMessage?: string
+  /** If `true`, arg is used as passed-through data, never for user input */
+  hidden?: boolean
   skip?: boolean
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
@@ -233,6 +235,8 @@ export type CommandArgument<
         commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
         machineContext?: ContextFrom<T>
       ) => boolean)
+  /** If `true`, arg is used as passed-through data, never for user input */
+  hidden?: boolean
   skip?: boolean
   machineActor?: Actor<T>
   warningMessage?: string

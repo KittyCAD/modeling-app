@@ -132,14 +132,15 @@ export const commandBarMachine = setup({
 
         // Find the first argument that is not to be skipped:
         // that is, the first argument that is not already in the argumentsToSubmit
-        // or that is not undefined, or that is not marked as "skippable".
+        // or hidden, or that is not undefined, or that is not marked as "skippable".
         // TODO validate the type of the existing arguments
+        const nonHiddenArgs = Object.entries(selectedCommand.args).filter(
+          (a) => !a[1].hidden
+        )
         let argIndex = 0
 
-        while (argIndex < Object.keys(selectedCommand.args).length) {
-          const [argName, argConfig] = Object.entries(selectedCommand.args)[
-            argIndex
-          ]
+        while (argIndex < nonHiddenArgs.length) {
+          const [argName, argConfig] = nonHiddenArgs[argIndex]
           const argIsRequired =
             typeof argConfig.required === 'function'
               ? argConfig.required(context)
@@ -155,7 +156,7 @@ export const commandBarMachine = setup({
 
           if (
             mustNotSkipArg === true ||
-            argIndex + 1 === Object.keys(selectedCommand.args).length
+            argIndex + 1 === Object.keys(nonHiddenArgs).length
           ) {
             // If we have reached the end of the arguments and none are skippable,
             // return the last argument.
@@ -259,7 +260,7 @@ export const commandBarMachine = setup({
     },
     'All arguments are skippable': ({ context }) => {
       return Object.values(context.selectedCommand!.args!).every(
-        (argConfig) => argConfig.skip
+        (argConfig) => argConfig.skip || argConfig.hidden
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,

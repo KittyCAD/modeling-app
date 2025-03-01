@@ -1607,15 +1607,15 @@ export class SceneEntities {
     const varName = findUniqueName(_ast, 'profile')
     const newExpression = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('circle', [
-        createObjectExpression({
-          center: createArrayExpression([
+      createCallExpressionStdLibKw('circle', varDec.node.id, [
+        createLabeledArg(
+          'center',
+          createArrayExpression([
             createLiteral(roundOff(circleCenter[0])),
             createLiteral(roundOff(circleCenter[1])),
-          ]),
-          radius: createLiteral(1),
-        }),
-        createIdentifier(varDec.node.id.name),
+          ])
+        ),
+        createLabeledArg('radius', createLiteral(1)),
       ])
     )
 
@@ -1666,7 +1666,7 @@ export class SceneEntities {
         const x = (args.intersectionPoint.twoD.x || 0) - circleCenter[0]
         const y = (args.intersectionPoint.twoD.y || 0) - circleCenter[1]
 
-        if (sketchInit.type === 'CallExpression') {
+        if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
             kclManager.variables,
@@ -1731,7 +1731,7 @@ export class SceneEntities {
         const sketchInit = _node.node?.declaration.init
 
         let modded = structuredClone(_ast)
-        if (sketchInit.type === 'CallExpression') {
+        if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
             kclManager.variables,

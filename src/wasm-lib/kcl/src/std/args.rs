@@ -444,19 +444,6 @@ impl Args {
         Ok((a.n, b.n, ty))
     }
 
-    pub(crate) fn get_circle_args(
-        &self,
-    ) -> Result<
-        (
-            crate::std::shapes::CircleData,
-            crate::std::shapes::SketchOrSurface,
-            Option<TagNode>,
-        ),
-        KclError,
-    > {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_sketches(&self) -> Result<(SketchSet, Sketch), KclError> {
         FromArgs::from_args(self, 0)
     }
@@ -1077,15 +1064,6 @@ impl<'a> FromKclValue<'a> for super::revolve::RevolveData {
         let tolerance = obj.get("tolerance").and_then(|x| x.as_f64());
         let_field_of!(obj, axis);
         Some(Self { angle, axis, tolerance })
-    }
-}
-
-impl<'a> FromKclValue<'a> for super::shapes::CircleData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, center);
-        let_field_of!(obj, radius);
-        Some(Self { center, radius })
     }
 }
 

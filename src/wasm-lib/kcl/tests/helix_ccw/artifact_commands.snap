@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands helix_ccw.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -315,7 +314,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       35,
-      78,
+      71,
       0
     ],
     "command": {
@@ -335,7 +334,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       35,
-      78,
+      71,
       0
     ],
     "command": {
@@ -346,7 +345,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       35,
-      78,
+      71,
       0
     ],
     "command": {
@@ -363,7 +362,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       35,
-      78,
+      71,
       0
     ],
     "command": {
@@ -392,7 +391,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       35,
-      78,
+      71,
       0
     ],
     "command": {
@@ -403,8 +402,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      84,
-      104,
+      77,
+      97,
       0
     ],
     "command": {
@@ -423,8 +422,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      84,
-      104,
+      77,
+      97,
       0
     ],
     "command": {
@@ -437,8 +436,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      84,
-      104,
+      77,
+      97,
       0
     ],
     "command": {
@@ -448,8 +447,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      84,
-      104,
+      77,
+      97,
       0
     ],
     "command": {
@@ -460,8 +459,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      84,
-      104,
+      77,
+      97,
       0
     ],
     "command": {
@@ -473,8 +472,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      84,
-      104,
+      77,
+      97,
       0
     ],
     "command": {
@@ -487,8 +486,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      84,
-      104,
+      77,
+      97,
       0
     ],
     "command": {
@@ -501,8 +500,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      110,
-      205,
+      103,
+      198,
       0
     ],
     "command": {

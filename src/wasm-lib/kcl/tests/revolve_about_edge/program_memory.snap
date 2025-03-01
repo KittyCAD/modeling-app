@@ -215,7 +215,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
           "id": "[uuid]",
           "sourceRange": [
             145,
-            190,
+            183,
             0
           ],
           "tag": null,
@@ -231,7 +231,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
               "id": "[uuid]",
               "sourceRange": [
                 145,
-                190,
+                183,
                 0
               ]
             },
@@ -303,7 +303,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
             "id": "[uuid]",
             "sourceRange": [
               145,
-              190,
+              183,
               0
             ]
           }
@@ -317,7 +317,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
           {
             "sourceRange": [
               145,
-              190,
+              183,
               0
             ]
           }
@@ -333,7 +333,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
         {
           "sourceRange": [
             145,
-            190,
+            183,
             0
           ]
         }

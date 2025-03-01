@@ -42,7 +42,7 @@ fn transform(id) {
 
 // Sketch 4 circles.
 sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> patternTransform2d(instances = 4, transform = transform)
 ```
 

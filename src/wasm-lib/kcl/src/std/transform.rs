@@ -57,16 +57,16 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a hole for the pipe.
 /// pipeHole = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
-///     }, %)
+///     )
 ///
 /// sweepSketch = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         }, %)              
+///         )              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
 ///     |> scale(
@@ -150,16 +150,16 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// // Create a hole for the pipe.
 /// pipeHole = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
-///     }, %)
+///     )
 ///
 /// sweepSketch = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         }, %)              
+///         )              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
 ///     |> translate(
@@ -369,16 +369,16 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// // Create a hole for the pipe.
 /// pipeHole = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
-///     }, %)
+///     )
 ///
 /// sweepSketch = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         }, %)              
+///         )              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
@@ -408,16 +408,16 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// // Create a hole for the pipe.
 /// pipeHole = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
-///     }, %)
+///    )
 ///
 /// sweepSketch = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         }, %)              
+///         )              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
@@ -527,15 +527,15 @@ mod tests {
 
 // Create a hole for the pipe.
 pipeHole = startSketchOn('XY')
-    |> circle({
+    |> circle(
         center = [0, 0],
         radius = 1.5,
-    }, %)
+    )
 sweepSketch = startSketchOn('XY')
-    |> circle({
+    |> circle(
         center = [0, 0],
         radius = 2,
-        }, %)              
+        )              
     |> hole(pipeHole, %)
     |> sweep(
         path = sweepPath,
@@ -550,8 +550,8 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 638, 0])], message: "Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided." }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided."#.to_string()
         );
     }
 
@@ -566,8 +566,8 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 668, 0])], message: "Expected `angle` to be provided when `axis` is provided." }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected `angle` to be provided when `axis` is provided."#.to_string()
         );
     }
 
@@ -582,8 +582,8 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 659, 0])], message: "Expected `axis` to be provided when `angle` is provided." }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected `axis` to be provided when `angle` is provided."#.to_string()
         );
     }
 
@@ -599,8 +599,8 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 685, 0])], message: "Expected angle to be between -360 and 360, found `900`" }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected angle to be between -360 and 360, found `900`"#.to_string()
         );
     }
 
@@ -617,8 +617,8 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 697, 0])], message: "Expected `roll` to be provided when `pitch` or `yaw` is provided." }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected `roll` to be provided when `pitch` or `yaw` is provided."#.to_string()
         );
     }
 
@@ -633,8 +633,8 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 657, 0])], message: "Expected `roll` to be provided when `pitch` or `yaw` is provided." }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected `roll` to be provided when `pitch` or `yaw` is provided."#.to_string()
         );
     }
 
@@ -651,8 +651,8 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 689, 0])], message: "Expected yaw to be between -360 and 360, found `900`" }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected yaw to be between -360 and 360, found `900`"#.to_string()
         );
     }
 
@@ -669,8 +669,8 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 689, 0])], message: "Expected roll to be between -360 and 360, found `900`" }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected roll to be between -360 and 360, found `900`"#.to_string()
         );
     }
 
@@ -687,8 +687,8 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 689, 0])], message: "Expected pitch to be between -360 and 360, found `900`" }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected pitch to be between -360 and 360, found `900`"#.to_string()
         );
     }
 
@@ -706,8 +706,9 @@ sweepSketch = startSketchOn('XY')
         let result = parse_execute(&ast).await;
         assert!(result.is_err());
         assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [SourceRange([630, 704, 0])], message: "Expected `axis` and `angle` to not be provided when `roll`, `pitch`, and `yaw` are provided." }"#.to_string()
+            result.unwrap_err().message(),
+            r#"Expected `axis` and `angle` to not be provided when `roll`, `pitch`, and `yaw` are provided."#
+                .to_string()
         );
     }
 }

@@ -142,16 +142,16 @@ description: Operations executed sketch_on_face_circle_tagged.kcl
           }
         },
         "sourceRange": [
+          373,
           374,
-          375,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      357,
-      376,
+      356,
+      375,
       0
     ],
     "type": "StdLibCall",

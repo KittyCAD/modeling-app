@@ -162,6 +162,7 @@ export function buildCommandArgument<
   const baseCommandArgument = {
     description: arg.description,
     required: arg.required,
+    hidden: arg.hidden,
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,

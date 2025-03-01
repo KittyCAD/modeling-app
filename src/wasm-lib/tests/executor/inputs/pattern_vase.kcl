@@ -14,7 +14,7 @@ fn transform = (replicaId) => {
 // Each layer is just a pretty thin cylinder with a fillet.
 fn layer = () => {
   return startSketchOn("XY") // or some other plane idk
-    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
+    |> circle(center = [0, 0], radius = 1, tag = $tag1)
     |> extrude(length = h)
     // |> fillet(
     //        radius = h / 2.01,

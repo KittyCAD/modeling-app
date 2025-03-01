@@ -124,16 +124,16 @@ description: Operations executed ssi_pattern.kcl
           }
         },
         "sourceRange": [
-          628,
-          631,
+          621,
+          624,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      611,
-      632,
+      604,
+      625,
       0
     ],
     "type": "StdLibCall",

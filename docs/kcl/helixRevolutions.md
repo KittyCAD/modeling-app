@@ -32,7 +32,7 @@ helixRevolutions(
 
 ```js
 part001 = startSketchOn('XY')
-  |> circle({ center = [5, 5], radius = 10 }, %)
+  |> circle(center = [5, 5], radius = 10)
   |> extrude(length = 10)
   |> helixRevolutions({
        angleStart = 0,

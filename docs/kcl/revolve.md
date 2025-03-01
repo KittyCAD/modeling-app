@@ -51,7 +51,7 @@ part001 = startSketchOn('XY')
 ```js
 // A donut shape.
 sketch001 = startSketchOn('XY')
-  |> circle({ center = [15, 0], radius = 5 }, %)
+  |> circle(center = [15, 0], radius = 5)
   |> revolve({ angle = 360, axis = 'y' }, %)
 ```
 
@@ -106,7 +106,7 @@ box = startSketchOn('XY')
   |> extrude(length = 20)
 
 sketch001 = startSketchOn(box, "END")
-  |> circle({ center = [10, 10], radius = 4 }, %)
+  |> circle(center = [10, 10], radius = 4)
   |> revolve({ angle = -90, axis = 'y' }, %)
 ```
 
@@ -122,7 +122,7 @@ box = startSketchOn('XY')
   |> extrude(length = 20)
 
 sketch001 = startSketchOn(box, "END")
-  |> circle({ center = [10, 10], radius = 4 }, %)
+  |> circle(center = [10, 10], radius = 4)
   |> revolve({
        angle = 90,
        axis = getOppositeEdge(revolveAxis)
@@ -141,7 +141,7 @@ box = startSketchOn('XY')
   |> extrude(length = 20)
 
 sketch001 = startSketchOn(box, "END")
-  |> circle({ center = [10, 10], radius = 4 }, %)
+  |> circle(center = [10, 10], radius = 4)
   |> revolve({
        angle = 90,
        axis = getOppositeEdge(revolveAxis),

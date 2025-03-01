@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 188
 description: Artifact graph flowchart import_whole.kcl
 extension: md
 snapshot_kind: binary

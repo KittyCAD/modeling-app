@@ -61,8 +61,8 @@ const case = startSketchOn('XY')
 fn m25Screw = (x, y, height) => {
   const screw = startSketchOn("XY")
     |> startProfileAt([0, 0], %)
-    |> circle({ center: [x, y], radius: 2.5 }, %)
-    |> hole(circle({ center: [x, y], radius: 1.25 }, %), %)
+    |> circle(center= [x, y], radius=2.5)
+    |> hole(circle(center= [x, y], radius = 1.25), %)
     |> extrude(length = height)
   return screw
 }

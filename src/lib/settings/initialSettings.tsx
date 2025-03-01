@@ -174,12 +174,17 @@ export function createSettings() {
           </div>
         ),
       }),
-      enableSSAO: new Setting<boolean>({
-        defaultValue: true,
-        description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+      /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showDebugPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool',
         validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
       /**
        * Stream resource saving behavior toggle
@@ -296,6 +301,13 @@ export function createSettings() {
                 ],
             })),
         },
+      }),
+      enableSSAO: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'both', //for now
       }),
       /**
        * The controls for how to navigate the 3D view
@@ -434,18 +446,6 @@ export function createSettings() {
           inputType: 'boolean',
         },
         hideOnLevel: 'project',
-      }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       /**
        * TODO: This setting is not yet implemented.

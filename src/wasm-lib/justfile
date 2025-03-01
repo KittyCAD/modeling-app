@@ -3,7 +3,7 @@ cita := "cargo insta test --accept"
 
 # Run the same lint checks we run in CI.
 lint:
-    cargo clippy --workspace --all-targets -- -D warnings
+    cargo clippy --workspace --all-targets --tests --all-features --examples --benches -- -D warnings
 
 # Run the stdlib docs generation
 redo-kcl-stdlib-docs-no-imgs:
@@ -40,9 +40,9 @@ overwrite-sim-test test_name:
     EXPECTORATE=overwrite {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::parse
     EXPECTORATE=overwrite {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::unparse
     {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
-  
+
 test:
-    export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
+    export RUST_BRACKTRACE="full" && cargo nextest run --workspace --no-fail-fast
 
 publish-kcl version:
     git tag {{version}}

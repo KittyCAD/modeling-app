@@ -28,7 +28,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "id": "[uuid]",
           "sourceRange": [
             298,
-            351,
+            350,
             0
           ]
         },
@@ -43,8 +43,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         ],
         "radius": 5.0,
         "tag": {
-          "end": 350,
-          "start": 341,
+          "end": 349,
+          "start": 340,
           "type": "TagDeclarator",
           "value": "myCircle"
         },
@@ -62,12 +62,12 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         "id": "[uuid]",
         "sourceRange": [
           298,
-          351,
+          350,
           0
         ],
         "tag": {
-          "end": 350,
-          "start": 341,
+          "end": 349,
+          "start": 340,
           "type": "TagDeclarator",
           "value": "myCircle"
         },
@@ -77,8 +77,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
     "__meta": [
       {
         "sourceRange": [
-          341,
-          350,
+          340,
+          349,
           0
         ]
       }
@@ -329,12 +329,12 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "id": "[uuid]",
           "sourceRange": [
             298,
-            351,
+            350,
             0
           ],
           "tag": {
-            "end": 350,
-            "start": 341,
+            "end": 349,
+            "start": 340,
             "type": "TagDeclarator",
             "value": "myCircle"
           },
@@ -350,7 +350,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               "id": "[uuid]",
               "sourceRange": [
                 298,
-                351,
+                350,
                 0
               ]
             },
@@ -365,8 +365,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             ],
             "radius": 5.0,
             "tag": {
-              "end": 350,
-              "start": 341,
+              "end": 349,
+              "start": 340,
               "type": "TagDeclarator",
               "value": "myCircle"
             },
@@ -660,7 +660,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             "id": "[uuid]",
             "sourceRange": [
               298,
-              351,
+              350,
               0
             ]
           }
@@ -678,7 +678,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                   "id": "[uuid]",
                   "sourceRange": [
                     298,
-                    351,
+                    350,
                     0
                   ]
                 },
@@ -693,8 +693,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "end": 350,
-                  "start": 341,
+                  "end": 349,
+                  "start": 340,
                   "type": "TagDeclarator",
                   "value": "myCircle"
                 },
@@ -712,12 +712,12 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                 "id": "[uuid]",
                 "sourceRange": [
                   298,
-                  351,
+                  350,
                   0
                 ],
                 "tag": {
-                  "end": 350,
-                  "start": 341,
+                  "end": 349,
+                  "start": 340,
                   "type": "TagDeclarator",
                   "value": "myCircle"
                 },
@@ -727,8 +727,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             "__meta": [
               {
                 "sourceRange": [
-                  341,
-                  350,
+                  340,
+                  349,
                   0
                 ]
               }
@@ -744,7 +744,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           {
             "sourceRange": [
               298,
-              351,
+              350,
               0
             ]
           }
@@ -760,7 +760,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         {
           "sourceRange": [
             298,
-            351,
+            350,
             0
           ]
         }

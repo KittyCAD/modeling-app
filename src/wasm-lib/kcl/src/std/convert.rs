@@ -25,7 +25,7 @@ pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// assertEqual(n, 3, 0.0001, "5/2 = 2.5, rounded up makes 3")
 /// // Draw n cylinders.
 /// startSketchOn('XZ')
-///   |> circle({ center = [0, 0], radius = 2 }, %)
+///   |> circle(center = [0, 0], radius = 2 )
 ///   |> extrude(length = 5)
 ///   |> patternTransform(instances = n, transform = fn(id) {
 ///   return { translate = [4 * id, 0, 0] }

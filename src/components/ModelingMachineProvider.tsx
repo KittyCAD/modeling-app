@@ -132,13 +132,14 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const {
-    app: { theme, enableSSAO, allowOrbitInSketchMode },
+    app: { theme, allowOrbitInSketchMode },
     modeling: {
       defaultUnit,
       cameraProjection,
       highlightEdges,
       showScaleGrid,
       cameraOrbit,
+      enableSSAO,
     },
   } = useSettings()
   const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)

@@ -1,5 +1,5 @@
 import { CustomIcon } from '../CustomIcon'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { ActionButton } from '../ActionButton'
 import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -13,6 +13,14 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
   } = commandBarState
+  const nonHiddenArgs = useMemo(() => {
+    if (!selectedCommand?.args) return undefined
+    const s = { ...selectedCommand.args }
+    for (const [name, arg] of Object.entries(s)) {
+      if (arg.hidden) delete s[name]
+    }
+    return s
+  }, [selectedCommand])
   const isReviewing = commandBarState.matches('Review')
   const [showShortcuts, setShowShortcuts] = useState(false)
 
@@ -43,11 +51,9 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
     ],
     (_, b) => {
       if (b.keys && !Number.isNaN(parseInt(b.keys[0], 10))) {
-        if (!selectedCommand?.args) return
-        const argName = Object.keys(selectedCommand.args)[
-          parseInt(b.keys[0], 10) - 1
-        ]
-        const arg = selectedCommand?.args[argName]
+        if (!nonHiddenArgs) return
+        const argName = Object.keys(nonHiddenArgs)[parseInt(b.keys[0], 10) - 1]
+        const arg = nonHiddenArgs[argName]
         if (!argName || !arg) return
         commandBarActor.send({
           type: 'Change current argument',
@@ -78,7 +84,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
             </p>
-            {Object.entries(selectedCommand?.args || {})
+            {Object.entries(nonHiddenArgs || {})
               .filter(([_, argConfig]) =>
                 typeof argConfig.required === 'function'
                   ? argConfig.required(commandBarState.context)

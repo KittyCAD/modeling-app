@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands sketch_on_face_circle_tagged.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -631,7 +630,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       298,
-      351,
+      350,
       0
     ],
     "command": {
@@ -647,7 +646,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       298,
-      351,
+      350,
       0
     ],
     "command": {
@@ -658,7 +657,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       298,
-      351,
+      350,
       0
     ],
     "command": {
@@ -675,7 +674,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       298,
-      351,
+      350,
       0
     ],
     "command": {
@@ -704,7 +703,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       298,
-      351,
+      350,
       0
     ],
     "command": {
@@ -715,8 +714,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      357,
-      376,
+      356,
+      375,
       0
     ],
     "command": {
@@ -731,8 +730,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      357,
-      376,
+      356,
+      375,
       0
     ],
     "command": {
@@ -745,8 +744,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      357,
-      376,
+      356,
+      375,
       0
     ],
     "command": {
@@ -756,8 +755,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      357,
-      376,
+      356,
+      375,
       0
     ],
     "command": {
@@ -768,8 +767,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      357,
-      376,
+      356,
+      375,
       0
     ],
     "command": {
@@ -781,8 +780,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      357,
-      376,
+      356,
+      375,
       0
     ],
     "command": {
@@ -795,8 +794,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      357,
-      376,
+      356,
+      375,
       0
     ],
     "command": {

@@ -75,7 +75,6 @@ jobs:
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
-    - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
       shell: bash
       run: yarn

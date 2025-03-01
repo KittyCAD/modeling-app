@@ -64,17 +64,11 @@ case = startSketchOn('XY')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
   // We pass in the "case" here since we want to pattern the whole sketch.
@@ -101,10 +95,7 @@ case = startSketchOn('XY')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 // We pass in `thing1` here with `useOriginal` since we want to pattern just this object on the face.
