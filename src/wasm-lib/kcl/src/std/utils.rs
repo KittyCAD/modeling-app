@@ -1,6 +1,5 @@
-use std::f64::consts::PI;
+use std::{collections::HashSet, f64::consts::PI};
 
-use indexmap::IndexSet;
 use kittycad_modeling_cmds::shared::Angle;
 
 use crate::{
@@ -9,16 +8,14 @@ use crate::{
     source_range::SourceRange,
 };
 
-/// Deduplicate items in a `Vec` in O(n) time.  If there are multiple instances
-/// that compare equal, the last one will be kept.
-#[must_use]
-pub(crate) fn dedup_vec<T: Eq + std::hash::Hash>(vec: Vec<T>) -> Vec<T> {
-    // Add to a set, preserving order.
-    let mut set = IndexSet::with_capacity(vec.len());
+/// Count the number of unique items in a `Vec` in O(n) time.
+pub(crate) fn unique_count<T: Eq + std::hash::Hash>(vec: Vec<T>) -> usize {
+    // Add to a set.
+    let mut set = HashSet::with_capacity(vec.len());
     for item in vec {
         set.insert(item);
     }
-    set.into_iter().collect()
+    set.len()
 }
 
 /// Get the distance between two points.
@@ -690,8 +687,8 @@ mod get_tangential_arc_to_info_tests {
     }
 
     #[test]
-    fn test_dedup_vec() {
-        assert_eq!(dedup_vec(vec![1, 2, 2, 3, 2]), vec![1, 2, 3]);
+    fn test_unique_count() {
+        assert_eq!(unique_count(vec![1, 2, 2, 3, 2]), 3);
     }
 
     #[test]
