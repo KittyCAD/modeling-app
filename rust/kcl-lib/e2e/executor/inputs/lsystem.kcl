@@ -100,6 +100,8 @@ fn F = (state, F) => {
 }
 
 fn LSystem = (args, axioms) => {
+    myThing = startSketchOn(XY)
+    |> startProfileAt([0, 0], %)
   return axioms({
     depthMax: args.iterations,
     depth: 0,
@@ -107,8 +109,7 @@ fn LSystem = (args, axioms) => {
     factor: args.factor,
     currentAngle: 0,
     angle: args.angle,
-    q =  startSketchOn(XY)
-    |> startProfileAt([0, 0]),
+    q = myThing,
   })
 }
 
