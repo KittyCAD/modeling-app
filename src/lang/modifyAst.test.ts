@@ -31,7 +31,7 @@ import { findUsesOfTagInPipe } from './queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { err } from 'lib/trap'
 import { SimplifiedArgDetails } from './std/stdTypes'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Artifact, codeRefFromRange } from './std/artifactGraph'
 
 beforeAll(async () => {

@@ -45,7 +45,7 @@ export class AuthenticatedApp {
   }
   getInputFile = (fileName: string) => {
     return fsp.readFile(
-      join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName),
+      join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName),
       'utf-8'
     )
   }

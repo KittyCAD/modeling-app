@@ -8,7 +8,7 @@ import {
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import toast from 'react-hot-toast'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { assign, fromPromise, setup } from 'xstate'
 import { commandBarActor } from './commandBarMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'

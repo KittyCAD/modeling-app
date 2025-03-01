@@ -38,9 +38,9 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: './src/wasm-lib'
+          workspaces: './rust'
 
-      # TODO: see if we can fetch from main instead if no diff at src/wasm-lib
+      # TODO: see if we can fetch from main instead if no diff at rust
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:
           tool: wasm-pack
@@ -67,7 +67,7 @@ jobs:
           path: |
             package.json
             electron-builder.yml
-            src/wasm-lib/pkg/wasm_lib*
+            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
             release-notes.md
             assets/icon.ico
             assets/icon.png
@@ -117,9 +117,9 @@ jobs:
           ls -R prepared-files
           cp prepared-files/package.json package.json
           cp prepared-files/electron-builder.yml electron-builder.yml
-          cp prepared-files/src/wasm-lib/pkg/wasm_lib_bg.wasm public
-          mkdir src/wasm-lib/pkg
-          cp prepared-files/src/wasm-lib/pkg/wasm_lib* src/wasm-lib/pkg
+          cp prepared-files/rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-files/rust/kcl-wasm-lib/pkg/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
           cp prepared-files/release-notes.md release-notes.md
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png

@@ -21,7 +21,7 @@ jobs:
       - name: Cache wasm
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: './src/wasm-lib'
+          workspaces: './rust'
       - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
         with:
           tool: wasm-pack
@@ -33,4 +33,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: wasm-bundle
-          path: src/wasm-lib/pkg
+          path: rust/kcl-wasm-lib/pkg

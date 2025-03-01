@@ -21,9 +21,9 @@ import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { appThemeToTheme } from 'lib/theme'
 import { err } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 
 /**

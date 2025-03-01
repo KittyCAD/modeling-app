@@ -31,10 +31,10 @@ import {
   languageId,
 } from '@kittycad/codemirror-lsp-client'
 import { deferExecution } from 'lib/utils'
-import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
-import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
-import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
-import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
+import { CopilotLspCompletionParams } from '@rust/kcl-lib/bindings/CopilotLspCompletionParams'
+import { CopilotCompletionResponse } from '@rust/kcl-lib/bindings/CopilotCompletionResponse'
+import { CopilotAcceptCompletionParams } from '@rust/kcl-lib/bindings/CopilotAcceptCompletionParams'
+import { CopilotRejectCompletionParams } from '@rust/kcl-lib/bindings/CopilotRejectCompletionParams'
 import { editorManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
 

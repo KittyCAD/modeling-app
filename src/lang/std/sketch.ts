@@ -65,9 +65,9 @@ import {
 import { roundOff, getLength, getAngle, isArray } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
-import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
+import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 import { EdgeCutInfo } from 'machines/modelingMachine'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   findKwArg,
   findKwArgWithIndex,

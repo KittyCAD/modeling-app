@@ -1,4 +1,4 @@
-import { MouseControlType } from 'wasm-lib/kcl/bindings/MouseControlType'
+import { MouseControlType } from '@rust/kcl-lib/bindings/MouseControlType'
 import { platform } from './utils'
 
 const PLATFORM = platform()

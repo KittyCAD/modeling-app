@@ -556,7 +556,7 @@ test(
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
       await fsp.copyFile(
-        'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
         `${dir}/router-template-slate/main.kcl`
       )
       const _1975 = new Date('1975-01-01T00:01:11')
@@ -564,7 +564,7 @@ test(
 
       await fsp.mkdir(`${dir}/bracket`, { recursive: true })
       await fsp.copyFile(
-        'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
         `${dir}/bracket/main.kcl`
       )
       const _1985 = new Date('1985-01-01T00:02:22')
@@ -573,7 +573,7 @@ test(
       await new Promise((r) => setTimeout(r, 1_000))
       await fsp.mkdir(`${dir}/lego`, { recursive: true })
       await fsp.copyFile(
-        'src/wasm-lib/tests/executor/inputs/lego.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/lego.kcl',
         `${dir}/lego/main.kcl`
       )
       const _1995 = new Date('1995-01-01T00:03:33')
@@ -755,7 +755,7 @@ test(
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
       await fsp.copyFile(
-        'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
         `${dir}/router-template-slate/main.kcl`
       )
     })
@@ -785,7 +785,7 @@ test.describe(`Project management commands`, () => {
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
           `${dir}/${projectName}/main.kcl`
         )
       })
@@ -846,7 +846,7 @@ test.describe(`Project management commands`, () => {
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
           `${dir}/${projectName}/main.kcl`
         )
       })
@@ -897,7 +897,7 @@ test.describe(`Project management commands`, () => {
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
           `${dir}/${projectName}/main.kcl`
         )
       })
@@ -952,7 +952,7 @@ test.describe(`Project management commands`, () => {
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
         await fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
           `${dir}/${projectName}/main.kcl`
         )
       })
@@ -1123,11 +1123,11 @@ test(
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
       await fsp.copyFile(
-        'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
         `${dir}/${projectName}/main.kcl`
       )
       await fsp.copyFile(
-        'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
         `${dir}/${projectName}/otherThingToClickOn.kcl`
       )
     })
@@ -1540,9 +1540,9 @@ test(
       })
       await fsp.copyFile(
         path.join(
-          'src',
-          'wasm-lib',
-          'tests',
+          'rust',
+          'kcl-lib',
+          'e2e',
           'executor',
           'inputs',
           'router-template-slate.kcl'
@@ -1552,9 +1552,9 @@ test(
       await fsp.mkdir(path.join(dir, 'bracket'), { recursive: true })
       await fsp.copyFile(
         path.join(
-          'src',
-          'wasm-lib',
-          'tests',
+          'rust',
+          'kcl-lib',
+          'e2e',
           'executor',
           'inputs',
           'focusrite_scarlett_mounting_braket.kcl'
@@ -1673,11 +1673,11 @@ test(
       ])
       await Promise.all([
         fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
           `${dir}/router-template-slate/main.kcl`
         ),
         fsp.copyFile(
-          'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+          'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
           `${dir}/bracket/main.kcl`
         ),
       ])
@@ -1928,7 +1928,7 @@ test(
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
-      // src/wasm-lib/tests/executor/inputs/mike_stress_test.kcl
+      // rust/kcl-lib/e2e/executor/inputs/mike_stress_test.kcl
       const name = 'mike_stress_test'
       const testDir = path.join(dir, name)
       await fsp.mkdir(testDir, { recursive: true })

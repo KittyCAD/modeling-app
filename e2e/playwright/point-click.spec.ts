@@ -22,7 +22,7 @@ test.describe('Point-and-click tests', () => {
       path.resolve(
         __dirname,
         '../../',
-        './src/wasm-lib/tests/executor/inputs/test-circle-extrude.kcl'
+        './rust/kcl-lib/e2e/executor/inputs/test-circle-extrude.kcl'
       ),
       'utf-8'
     )
@@ -191,7 +191,7 @@ test.describe('Point-and-click tests', () => {
         path.resolve(
           __dirname,
           '../../',
-          './src/wasm-lib/tests/executor/inputs/e2e-can-sketch-on-chamfer.kcl'
+          './rust/kcl-lib/e2e/executor/inputs/e2e-can-sketch-on-chamfer.kcl'
         ),
         'utf-8'
       )
@@ -379,7 +379,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         path.resolve(
           __dirname,
           '../../',
-          './src/wasm-lib/tests/executor/inputs/e2e-can-sketch-on-chamfer-no-pipeExpr.kcl'
+          './rust/kcl-lib/e2e/executor/inputs/e2e-can-sketch-on-chamfer-no-pipeExpr.kcl'
         ),
         'utf-8'
       )

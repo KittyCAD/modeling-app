@@ -14,7 +14,7 @@ import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
 import { normalizeLineEndings } from 'lib/codeEditor'
-import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { getSettings, settingsActor } from 'machines/appMachine'
 
 export const telemetryLoader: LoaderFunction = async ({

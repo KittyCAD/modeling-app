@@ -18,7 +18,7 @@ import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 

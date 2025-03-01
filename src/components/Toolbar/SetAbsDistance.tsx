@@ -20,7 +20,7 @@ import {
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
