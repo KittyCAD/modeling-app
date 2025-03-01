@@ -1745,6 +1745,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-python-bindings"
+version = "0.3.45"
+dependencies = [
+ "anyhow",
+ "kcl-lib",
+ "kittycad-modeling-cmds",
+ "miette",
+ "pyo3",
+ "serde",
+ "serde_json",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "kcl-test-server"
 version = "0.1.45"
 dependencies = [
@@ -1833,9 +1848,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.99"
+version = "0.2.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "828a0c74476533e6258ea7dd70cfc7d63a5df4b37753d30ef198e0689eaac4eb"
+checksum = "fb5a824cb9bb4c602962ecbaca5ce71225938aa1abc24103bf46c222f468dd26"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2530,6 +2545,7 @@ dependencies = [
  "pyo3-build-config",
  "pyo3-ffi",
  "pyo3-macros",
+ "serde",
  "unindent",
 ]
 

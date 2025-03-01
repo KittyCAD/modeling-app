@@ -68,3 +68,8 @@ venv
 
 # electron
 out/
+
+# python
+__pycache__/
+uv.lock
+rust/kcl-python-bindings/dist
