@@ -18,7 +18,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/ruff-action@v3
-        with:
-          version: "latest"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
 
