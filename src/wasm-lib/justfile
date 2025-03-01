@@ -45,8 +45,8 @@ test:
     export RUST_BRACKTRACE="full" && cargo nextest run --workspace --no-fail-fast
 
 publish-kcl version:
-    git tag {{version}}
-    git push --tags
+    git tag kcl-{{version}}
+    git push origin kcl-{{version}}
     cargo publish -p derive-docs
     cargo publish -p kcl-lib
     cargo publish -p kcl-test-server
