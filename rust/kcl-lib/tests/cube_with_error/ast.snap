@@ -7,7 +7,7 @@ description: Result of parsing cube_with_error.kcl
     "body": [
       {
         "declaration": {
-          "end": 363,
+          "end": 392,
           "id": {
             "end": 7,
             "name": "cube",
@@ -453,7 +453,7 @@ description: Result of parsing cube_with_error.kcl
                         "arguments": [
                           {
                             "end": 193,
-                            "name": "p0",
+                            "name": "XY",
                             "start": 191,
                             "type": "Identifier",
                             "type": "Identifier"
@@ -461,12 +461,39 @@ description: Result of parsing cube_with_error.kcl
                         ],
                         "callee": {
                           "end": 190,
-                          "name": "startSketchAt",
+                          "name": "startSketchOn",
                           "start": 177,
                           "type": "Identifier"
                         },
                         "end": 194,
                         "start": 177,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "end": 219,
+                            "name": "p0",
+                            "start": 217,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          {
+                            "end": 222,
+                            "start": 221,
+                            "type": "PipeSubstitution",
+                            "type": "PipeSubstitution"
+                          }
+                        ],
+                        "callee": {
+                          "end": 216,
+                          "name": "startProfileAt",
+                          "start": 202,
+                          "type": "Identifier"
+                        },
+                        "end": 223,
+                        "start": 202,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -479,22 +506,22 @@ description: Result of parsing cube_with_error.kcl
                               "name": "endAbsolute"
                             },
                             "arg": {
-                              "end": 223,
+                              "end": 252,
                               "name": "p1",
-                              "start": 221,
+                              "start": 250,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 206,
+                          "end": 235,
                           "name": "line",
-                          "start": 202,
+                          "start": 231,
                           "type": "Identifier"
                         },
-                        "end": 224,
-                        "start": 202,
+                        "end": 253,
+                        "start": 231,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -508,22 +535,22 @@ description: Result of parsing cube_with_error.kcl
                               "name": "endAbsolute"
                             },
                             "arg": {
-                              "end": 253,
+                              "end": 282,
                               "name": "p2",
-                              "start": 251,
+                              "start": 280,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 236,
+                          "end": 265,
                           "name": "line",
-                          "start": 232,
+                          "start": 261,
                           "type": "Identifier"
                         },
-                        "end": 254,
-                        "start": 232,
+                        "end": 283,
+                        "start": 261,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -537,22 +564,22 @@ description: Result of parsing cube_with_error.kcl
                               "name": "endAbsolute"
                             },
                             "arg": {
-                              "end": 283,
+                              "end": 312,
                               "name": "p3",
-                              "start": 281,
+                              "start": 310,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 266,
+                          "end": 295,
                           "name": "line",
-                          "start": 262,
+                          "start": 291,
                           "type": "Identifier"
                         },
-                        "end": 284,
-                        "start": 262,
+                        "end": 313,
+                        "start": 291,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -566,22 +593,22 @@ description: Result of parsing cube_with_error.kcl
                               "name": "endAbsolute"
                             },
                             "arg": {
-                              "end": 313,
+                              "end": 342,
                               "name": "p0",
-                              "start": 311,
+                              "start": 340,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 296,
+                          "end": 325,
                           "name": "line",
-                          "start": 292,
+                          "start": 321,
                           "type": "Identifier"
                         },
-                        "end": 314,
-                        "start": 292,
+                        "end": 343,
+                        "start": 321,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -589,13 +616,13 @@ description: Result of parsing cube_with_error.kcl
                       {
                         "arguments": [],
                         "callee": {
-                          "end": 327,
+                          "end": 356,
                           "name": "close",
-                          "start": 322,
+                          "start": 351,
                           "type": "Identifier"
                         },
-                        "end": 329,
-                        "start": 322,
+                        "end": 358,
+                        "start": 351,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -608,39 +635,39 @@ description: Result of parsing cube_with_error.kcl
                               "name": "length"
                             },
                             "arg": {
-                              "end": 360,
+                              "end": 389,
                               "name": "length",
-                              "start": 354,
+                              "start": 383,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 344,
+                          "end": 373,
                           "name": "extrude",
-                          "start": 337,
+                          "start": 366,
                           "type": "Identifier"
                         },
-                        "end": 361,
-                        "start": 337,
+                        "end": 390,
+                        "start": 366,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
                       }
                     ],
-                    "end": 361,
+                    "end": 390,
                     "start": 177,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 361,
+                  "end": 390,
                   "start": 170,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 363,
+              "end": 392,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "6": [
@@ -658,7 +685,7 @@ description: Result of parsing cube_with_error.kcl
               },
               "start": 24
             },
-            "end": 363,
+            "end": 392,
             "params": [
               {
                 "type": "Parameter",
@@ -686,7 +713,7 @@ description: Result of parsing cube_with_error.kcl
           "start": 3,
           "type": "VariableDeclarator"
         },
-        "end": 363,
+        "end": 392,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
@@ -694,19 +721,19 @@ description: Result of parsing cube_with_error.kcl
       },
       {
         "declaration": {
-          "end": 390,
+          "end": 419,
           "id": {
-            "end": 371,
+            "end": 400,
             "name": "myCube",
-            "start": 365,
+            "start": 394,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 381,
+                "end": 410,
                 "raw": "40",
-                "start": 379,
+                "start": 408,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -717,9 +744,9 @@ description: Result of parsing cube_with_error.kcl
               {
                 "elements": [
                   {
-                    "end": 385,
+                    "end": 414,
                     "raw": "0",
-                    "start": 384,
+                    "start": 413,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -728,9 +755,9 @@ description: Result of parsing cube_with_error.kcl
                     }
                   },
                   {
-                    "end": 388,
+                    "end": 417,
                     "raw": "0",
-                    "start": 387,
+                    "start": 416,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -739,53 +766,53 @@ description: Result of parsing cube_with_error.kcl
                     }
                   }
                 ],
-                "end": 389,
-                "start": 383,
+                "end": 418,
+                "start": 412,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
             ],
             "callee": {
-              "end": 378,
+              "end": 407,
               "name": "cube",
-              "start": 374,
+              "start": 403,
               "type": "Identifier"
             },
-            "end": 390,
-            "start": 374,
+            "end": 419,
+            "start": 403,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 365,
+          "start": 394,
           "type": "VariableDeclarator"
         },
-        "end": 390,
+        "end": 419,
         "kind": "const",
-        "start": 365,
+        "start": 394,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 439,
+        "end": 468,
         "expression": {
-          "end": 439,
+          "end": 468,
           "name": "foo",
-          "start": 436,
+          "start": 465,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 436,
+        "start": 465,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 440,
+    "end": 469,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 365,
-            "start": 363,
+            "end": 394,
+            "start": 392,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -794,8 +821,8 @@ description: Result of parsing cube_with_error.kcl
         ],
         "1": [
           {
-            "end": 435,
-            "start": 390,
+            "end": 464,
+            "start": 419,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
