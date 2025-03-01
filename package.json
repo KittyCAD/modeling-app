@@ -110,6 +110,7 @@
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
     "make:dev": "make dev",
     "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts",
+    "generate:samples-manifest": "cd public/kcl-samples && node generate-manifest.js",
     "tron:start": "electron-forge start",
     "chrome:test": "PLATFORM=web NODE_ENV=development yarn playwright test --config=playwright.config.ts --project='Google Chrome' --grep-invert='@snapshot'",
     "tronb:vite:dev": "vite build -c vite.main.config.ts -m development && vite build -c vite.preload.config.ts -m development && vite build -c vite.renderer.config.ts -m development",
