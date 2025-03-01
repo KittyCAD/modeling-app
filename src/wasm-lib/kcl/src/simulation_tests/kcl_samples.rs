@@ -2,7 +2,10 @@
 //!
 //! Use the `KCL_SAMPLES_ONLY=gear` environment variable to run only a subset of
 //! the samples, in this case, all those that start with "gear".
-use std::path::{Path, PathBuf};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 use fnv::FnvHashSet;
 use tokio::task::JoinSet;
@@ -60,22 +63,37 @@ async fn kcl_test_execute() {
     let filter = filter_from_env();
     let tests = kcl_samples_inputs(filter.as_deref());
     let expected_outputs = kcl_samples_outputs(filter.as_deref());
-    // Note: This is unordered.
-    let mut tasks: JoinSet<()> = JoinSet::new();
 
     assert!(!tests.is_empty(), "No KCL samples found");
 
-    let input_names = FnvHashSet::from_iter(tests.iter().map(|t| t.name.clone()));
-
-    for test in tests {
-        tasks.spawn(async move {
+    // Note: This is unordered.
+    let mut tasks = JoinSet::new();
+    // Mapping from task ID to test index.
+    let mut id_to_index = HashMap::new();
+    // Spawn a task for each test.
+    for (index, test) in tests.iter().cloned().enumerate() {
+        let handle = tasks.spawn(async move {
             super::execute_test(&test, true).await;
         });
+        id_to_index.insert(handle.id(), index);
     }
 
-    tasks.join_all().await;
+    // Join all the tasks and collect the failures.  We cannot just join_all
+    // because insta's error messages don't clearly indicate which test failed.
+    let mut failed = vec![None; tests.len()];
+    while let Some(result) = tasks.join_next().await {
+        let Err(err) = result else {
+            continue;
+        };
+        // When there's an error, store the test name and error message.
+        let index = *id_to_index.get(&err.id()).unwrap();
+        failed[index] = Some(format!("{}: {err}", &tests[index].name));
+    }
+    let failed = failed.into_iter().flatten().collect::<Vec<_>>();
+    assert!(failed.is_empty(), "Failed tests: {}", failed.join("\n"));
 
     // Ensure that inputs aren't missing.
+    let input_names = FnvHashSet::from_iter(tests.iter().map(|t| t.name.clone()));
     let missing = expected_outputs
         .into_iter()
         .filter(|name| !input_names.contains(name))

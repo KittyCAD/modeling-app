@@ -13,7 +13,7 @@ use crate::{
 mod kcl_samples;
 
 /// A simulation test.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Test {
     /// The name of the test.
     name: String,
