@@ -115,11 +115,14 @@ async fn execute(test_name: &str, render_to_png: bool) {
             );
             assert_snapshot(test_name, "Variables in memory after executing", || {
                 insta::assert_json_snapshot!("program_memory", outcome.variables, {
-                        ".**[].from[]" => rounded_redaction(4),
-                        ".**[].to[]" => rounded_redaction(4),
-                        ".**[].x[]" => rounded_redaction(4),
-                        ".**[].y[]" => rounded_redaction(4),
-                        ".**[].z[]" => rounded_redaction(4),
+                    ".**.value" => rounded_redaction(4),
+                    ".**[].value" => rounded_redaction(4),
+                    ".**.from[]" => rounded_redaction(4),
+                    ".**.to[]" => rounded_redaction(4),
+                    ".**.center[]" => rounded_redaction(4),
+                    ".**[].x[]" => rounded_redaction(4),
+                    ".**[].y[]" => rounded_redaction(4),
+                    ".**[].z[]" => rounded_redaction(4),
                 })
             });
         }
