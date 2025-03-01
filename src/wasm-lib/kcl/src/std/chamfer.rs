@@ -110,8 +110,8 @@ async fn inner_chamfer(
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
     // Check if tags contains any duplicate values.
-    let tags = dedup_vec(tags.clone());
-    if tags.len() != tags.len() {
+    let unique_tags = dedup_vec(tags.clone());
+    if unique_tags.len() != tags.len() {
         return Err(KclError::Type(KclErrorDetails {
             message: "Duplicate tags are not allowed.".to_string(),
             source_ranges: vec![args.source_range],
