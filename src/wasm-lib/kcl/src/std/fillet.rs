@@ -11,6 +11,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use super::utils::unique_count;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier},
@@ -20,7 +21,7 @@ use crate::{
 };
 
 /// A tag or a uuid of an edge.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Hash)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum EdgeReference {
@@ -129,10 +130,8 @@ async fn inner_fillet(
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
     // Check if tags contains any duplicate values.
-    let mut unique_tags = tags.clone();
-    unique_tags.sort();
-    unique_tags.dedup();
-    if unique_tags.len() != tags.len() {
+    let unique_tags = unique_count(tags.clone());
+    if unique_tags != tags.len() {
         return Err(KclError::Type(KclErrorDetails {
             message: "Duplicate tags are not allowed.".to_string(),
             source_ranges: vec![args.source_range],

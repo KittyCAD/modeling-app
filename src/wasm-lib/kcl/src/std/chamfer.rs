@@ -5,6 +5,7 @@ use derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
+use super::utils::unique_count;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
@@ -109,10 +110,8 @@ async fn inner_chamfer(
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
     // Check if tags contains any duplicate values.
-    let mut tags = tags.clone();
-    tags.sort();
-    tags.dedup();
-    if tags.len() != tags.len() {
+    let unique_tags = unique_count(tags.clone());
+    if unique_tags != tags.len() {
         return Err(KclError::Type(KclErrorDetails {
             message: "Duplicate tags are not allowed.".to_string(),
             source_ranges: vec![args.source_range],
