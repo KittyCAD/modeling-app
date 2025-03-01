@@ -26,7 +26,6 @@ on:
       - 'rust/kcl-python-bindings/**'
       - '**.rs'
       - .github/workflows/kcl-python-bindings.yml
-  pull_request:
   workflow_dispatch:
 
 permissions:
