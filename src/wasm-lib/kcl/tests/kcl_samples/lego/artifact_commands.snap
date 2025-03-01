@@ -939,7 +939,7 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [
       2331,
-      2482,
+      2477,
       0
     ],
     "command": {
@@ -955,7 +955,7 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [
       2331,
-      2482,
+      2477,
       0
     ],
     "command": {
@@ -966,7 +966,7 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [
       2331,
-      2482,
+      2477,
       0
     ],
     "command": {
@@ -983,7 +983,7 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [
       2331,
-      2482,
+      2477,
       0
     ],
     "command": {
@@ -1012,7 +1012,7 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [
       2331,
-      2482,
+      2477,
       0
     ],
     "command": {
@@ -1023,8 +1023,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2488,
-      2584,
+      2483,
+      2579,
       0
     ],
     "command": {
@@ -1096,8 +1096,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2590,
-      2686,
+      2585,
+      2681,
       0
     ],
     "command": {
@@ -1227,8 +1227,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2590,
-      2686,
+      2585,
+      2681,
       0
     ],
     "command": {
@@ -1358,8 +1358,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2590,
-      2686,
+      2585,
+      2681,
       0
     ],
     "command": {
@@ -1489,8 +1489,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1505,8 +1505,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1519,8 +1519,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1530,8 +1530,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1542,8 +1542,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1555,8 +1555,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1569,8 +1569,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1583,8 +1583,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1599,8 +1599,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1613,8 +1613,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1624,8 +1624,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1636,8 +1636,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1649,8 +1649,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1663,8 +1663,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1677,8 +1677,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1693,8 +1693,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1707,8 +1707,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1718,8 +1718,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1730,8 +1730,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1743,8 +1743,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1757,8 +1757,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1771,8 +1771,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1787,8 +1787,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1801,8 +1801,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1812,8 +1812,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1824,8 +1824,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1837,8 +1837,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1851,8 +1851,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1865,8 +1865,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1881,8 +1881,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1895,8 +1895,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1906,8 +1906,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1918,8 +1918,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1931,8 +1931,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1945,8 +1945,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1959,8 +1959,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1975,8 +1975,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -1989,8 +1989,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2000,8 +2000,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2012,8 +2012,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2025,8 +2025,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2039,8 +2039,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2053,8 +2053,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2069,8 +2069,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2083,8 +2083,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2094,8 +2094,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2106,8 +2106,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2119,8 +2119,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2133,8 +2133,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2147,8 +2147,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2163,8 +2163,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2177,8 +2177,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2188,8 +2188,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2200,8 +2200,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2213,8 +2213,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2227,8 +2227,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2241,8 +2241,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2257,8 +2257,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2271,8 +2271,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2282,8 +2282,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2294,8 +2294,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2307,8 +2307,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2321,8 +2321,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2335,8 +2335,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2351,8 +2351,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2365,8 +2365,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2376,8 +2376,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2388,8 +2388,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2401,8 +2401,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2415,8 +2415,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2429,8 +2429,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2445,8 +2445,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2459,8 +2459,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2470,8 +2470,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2482,8 +2482,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2495,8 +2495,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2509,8 +2509,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2523,8 +2523,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2539,8 +2539,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2553,8 +2553,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2564,8 +2564,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2576,8 +2576,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2589,8 +2589,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2603,8 +2603,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2617,8 +2617,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2633,8 +2633,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2647,8 +2647,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2658,8 +2658,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2670,8 +2670,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2683,8 +2683,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2697,8 +2697,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2711,8 +2711,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2727,8 +2727,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2741,8 +2741,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2752,8 +2752,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2764,8 +2764,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2777,8 +2777,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2791,8 +2791,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2805,8 +2805,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2821,8 +2821,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2835,8 +2835,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2846,8 +2846,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2858,8 +2858,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2871,8 +2871,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2885,8 +2885,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "command": {
@@ -2899,8 +2899,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2781,
-      2804,
+      2776,
+      2799,
       0
     ],
     "command": {
@@ -2928,8 +2928,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2810,
-      2989,
+      2805,
+      2979,
       0
     ],
     "command": {
@@ -2948,8 +2948,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2810,
-      2989,
+      2805,
+      2979,
       0
     ],
     "command": {
@@ -2959,8 +2959,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2810,
-      2989,
+      2805,
+      2979,
       0
     ],
     "command": {
@@ -2976,8 +2976,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2810,
-      2989,
+      2805,
+      2979,
       0
     ],
     "command": {
@@ -3005,8 +3005,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2810,
-      2989,
+      2805,
+      2979,
       0
     ],
     "command": {
@@ -3017,8 +3017,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2995,
-      3095,
+      2985,
+      3085,
       0
     ],
     "command": {
@@ -3061,8 +3061,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3101,
-      3201,
+      3091,
+      3191,
       0
     ],
     "command": {
@@ -3163,8 +3163,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3101,
-      3201,
+      3091,
+      3191,
       0
     ],
     "command": {
@@ -3265,8 +3265,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3285,8 +3285,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3299,8 +3299,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3310,8 +3310,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3322,8 +3322,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3335,8 +3335,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3349,8 +3349,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3363,8 +3363,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3383,8 +3383,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3397,8 +3397,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3408,8 +3408,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3420,8 +3420,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3433,8 +3433,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3447,8 +3447,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3461,8 +3461,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3481,8 +3481,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3495,8 +3495,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3506,8 +3506,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3518,8 +3518,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3531,8 +3531,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3545,8 +3545,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3559,8 +3559,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3579,8 +3579,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3593,8 +3593,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3604,8 +3604,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3616,8 +3616,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3629,8 +3629,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3643,8 +3643,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3657,8 +3657,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3677,8 +3677,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3691,8 +3691,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3702,8 +3702,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3714,8 +3714,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3727,8 +3727,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3741,8 +3741,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3755,8 +3755,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3775,8 +3775,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3789,8 +3789,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3800,8 +3800,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3812,8 +3812,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3825,8 +3825,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3839,8 +3839,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3853,8 +3853,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3873,8 +3873,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3887,8 +3887,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3898,8 +3898,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3910,8 +3910,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3923,8 +3923,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3937,8 +3937,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3951,8 +3951,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3971,8 +3971,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3985,8 +3985,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -3996,8 +3996,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -4008,8 +4008,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -4021,8 +4021,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -4035,8 +4035,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "command": {
@@ -4049,8 +4049,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2810,
-      2989,
+      2805,
+      2979,
       0
     ],
     "command": {

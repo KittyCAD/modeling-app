@@ -4080,7 +4080,7 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
       },
       {
         "declaration": {
-          "end": 5038,
+          "end": 5033,
           "id": {
             "end": 4699,
             "name": "magnetsSketch",
@@ -4114,101 +4114,27 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "arguments": [
                   {
-                    "end": 4829,
-                    "properties": [
-                      {
-                        "end": 4788,
-                        "key": {
-                          "end": 4749,
-                          "name": "center",
-                          "start": 4743,
-                          "type": "Identifier"
-                        },
-                        "start": 4743,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "end": 4769,
-                              "left": {
-                                "end": 4765,
-                                "name": "cornerRadius",
-                                "start": 4753,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "operator": "*",
-                              "right": {
-                                "end": 4769,
-                                "raw": "2",
-                                "start": 4768,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 2.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "start": 4753,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            {
-                              "end": 4787,
-                              "left": {
-                                "end": 4783,
-                                "name": "cornerRadius",
-                                "start": 4771,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "operator": "*",
-                              "right": {
-                                "end": 4787,
-                                "raw": "2",
-                                "start": 4786,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 2.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "start": 4771,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          ],
-                          "end": 4788,
-                          "start": 4752,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "end": 4822,
-                        "key": {
-                          "end": 4803,
-                          "name": "radius",
-                          "start": 4797,
-                          "type": "Identifier"
-                        },
-                        "start": 4797,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 4822,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "center"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 4768,
                           "left": {
-                            "end": 4818,
-                            "name": "magOuterDiam",
-                            "start": 4806,
+                            "end": 4764,
+                            "name": "cornerRadius",
+                            "start": 4752,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "operator": "/",
+                          "operator": "*",
                           "right": {
-                            "end": 4822,
+                            "end": 4768,
                             "raw": "2",
-                            "start": 4821,
+                            "start": 4767,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -4216,21 +4142,73 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 4806,
+                          "start": 4752,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        {
+                          "end": 4786,
+                          "left": {
+                            "end": 4782,
+                            "name": "cornerRadius",
+                            "start": 4770,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "*",
+                          "right": {
+                            "end": 4786,
+                            "raw": "2",
+                            "start": 4785,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 4770,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
-                      }
-                    ],
-                    "start": 4734,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                      ],
+                      "end": 4787,
+                      "start": 4751,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   },
                   {
-                    "end": 4832,
-                    "start": 4831,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 4821,
+                      "left": {
+                        "end": 4817,
+                        "name": "magOuterDiam",
+                        "start": 4805,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 4821,
+                        "raw": "2",
+                        "start": 4820,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 4805,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -4239,10 +4217,11 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "start": 4727,
                   "type": "Identifier"
                 },
-                "end": 4833,
+                "end": 4828,
                 "start": 4727,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -4255,19 +4234,19 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     "arg": {
                       "elements": [
                         {
-                          "end": 4888,
+                          "end": 4883,
                           "left": {
-                            "end": 4884,
+                            "end": 4879,
                             "name": "binLength",
-                            "start": 4875,
+                            "start": 4870,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 4888,
+                            "end": 4883,
                             "raw": "2",
-                            "start": 4887,
+                            "start": 4882,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -4275,24 +4254,24 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 4875,
+                          "start": 4870,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 4903,
+                          "end": 4898,
                           "left": {
-                            "end": 4899,
+                            "end": 4894,
                             "name": "binLength",
-                            "start": 4890,
+                            "start": 4885,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 4903,
+                            "end": 4898,
                             "raw": "2",
-                            "start": 4902,
+                            "start": 4897,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -4300,13 +4279,13 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 4890,
+                          "start": 4885,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 4904,
-                      "start": 4874,
+                      "end": 4899,
+                      "start": 4869,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -4318,9 +4297,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "name": "instances"
                     },
                     "arg": {
-                      "end": 4926,
+                      "end": 4921,
                       "raw": "4",
-                      "start": 4925,
+                      "start": 4920,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -4336,9 +4315,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "name": "arcDegrees"
                     },
                     "arg": {
-                      "end": 4951,
+                      "end": 4946,
                       "raw": "360",
-                      "start": 4948,
+                      "start": 4943,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -4354,9 +4333,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "name": "rotateDuplicates"
                     },
                     "arg": {
-                      "end": 4983,
+                      "end": 4978,
                       "raw": "true",
-                      "start": 4979,
+                      "start": 4974,
                       "type": "Literal",
                       "type": "Literal",
                       "value": true
@@ -4364,25 +4343,25 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   }
                 ],
                 "callee": {
-                  "end": 4856,
+                  "end": 4851,
                   "name": "patternCircular2d",
-                  "start": 4839,
+                  "start": 4834,
                   "type": "Identifier"
                 },
-                "end": 4990,
-                "start": 4839,
+                "end": 4985,
+                "start": 4834,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 5038,
+            "end": 5033,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
-                    "end": 5038,
-                    "start": 4990,
+                    "end": 5033,
+                    "start": 4985,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -4401,7 +4380,7 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
           "start": 4686,
           "type": "VariableDeclarator"
         },
-        "end": 5038,
+        "end": 5033,
         "kind": "const",
         "start": 4686,
         "type": "VariableDeclaration",
@@ -4409,11 +4388,11 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
       },
       {
         "declaration": {
-          "end": 5155,
+          "end": 5150,
           "id": {
-            "end": 5052,
+            "end": 5047,
             "name": "magnetProfile",
-            "start": 5039,
+            "start": 5034,
             "type": "Identifier"
           },
           "init": {
@@ -4421,60 +4400,60 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "arguments": [
                   {
-                    "end": 5070,
+                    "end": 5065,
                     "raw": "\"XY\"",
-                    "start": 5066,
+                    "start": 5061,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 5065,
+                  "end": 5060,
                   "name": "magnetBase",
-                  "start": 5055,
+                  "start": 5050,
                   "type": "Identifier"
                 },
-                "end": 5071,
-                "start": 5055,
+                "end": 5066,
+                "start": 5050,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 5095,
+                    "end": 5090,
                     "name": "magnetsSketch",
-                    "start": 5082,
+                    "start": 5077,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 5098,
-                    "start": 5097,
+                    "end": 5093,
+                    "start": 5092,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 5081,
+                  "end": 5076,
                   "name": "hole",
-                  "start": 5077,
+                  "start": 5072,
                   "type": "Identifier"
                 },
-                "end": 5099,
-                "start": 5077,
+                "end": 5094,
+                "start": 5072,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 5155,
+            "end": 5150,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 5155,
-                    "start": 5099,
+                    "end": 5150,
+                    "start": 5094,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -4486,26 +4465,26 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               },
               "startNodes": []
             },
-            "start": 5055,
+            "start": 5050,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 5039,
+          "start": 5034,
           "type": "VariableDeclarator"
         },
-        "end": 5155,
+        "end": 5150,
         "kind": "const",
-        "start": 5039,
+        "start": 5034,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 5219,
+          "end": 5214,
           "id": {
-            "end": 5174,
+            "end": 5169,
             "name": "magnetHolesExtrude",
-            "start": 5156,
+            "start": 5151,
             "type": "Identifier"
           },
           "init": {
@@ -4518,54 +4497,54 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 },
                 "arg": {
                   "argument": {
-                    "end": 5218,
+                    "end": 5213,
                     "name": "magDepth",
-                    "start": 5210,
+                    "start": 5205,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 5218,
+                  "end": 5213,
                   "operator": "-",
-                  "start": 5209,
+                  "start": 5204,
                   "type": "UnaryExpression",
                   "type": "UnaryExpression"
                 }
               }
             ],
             "callee": {
-              "end": 5184,
+              "end": 5179,
               "name": "extrude",
-              "start": 5177,
+              "start": 5172,
               "type": "Identifier"
             },
-            "end": 5219,
-            "start": 5177,
+            "end": 5214,
+            "start": 5172,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 5198,
+              "end": 5193,
               "name": "magnetProfile",
-              "start": 5185,
+              "start": 5180,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 5156,
+          "start": 5151,
           "type": "VariableDeclarator"
         },
-        "end": 5219,
+        "end": 5214,
         "kind": "const",
-        "start": 5156,
+        "start": 5151,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 5620,
+          "end": 5615,
           "id": {
-            "end": 5279,
+            "end": 5274,
             "name": "magnetHolesExtrudeFillets",
-            "start": 5254,
+            "start": 5249,
             "type": "Identifier"
           },
           "init": {
@@ -4577,9 +4556,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "name": "radius"
                 },
                 "arg": {
-                  "end": 5335,
+                  "end": 5330,
                   "name": "cornerRadius",
-                  "start": 5323,
+                  "start": 5318,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
@@ -4596,62 +4575,62 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "arguments": [
                         {
                           "computed": false,
-                          "end": 5410,
+                          "end": 5405,
                           "object": {
                             "computed": false,
-                            "end": 5402,
+                            "end": 5397,
                             "object": {
                               "computed": false,
+                              "end": 5392,
+                              "object": {
+                                "end": 5385,
+                                "name": "magnetHolesExtrude",
+                                "start": 5367,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "property": {
+                                "end": 5392,
+                                "name": "sketch",
+                                "start": 5386,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 5367,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            },
+                            "property": {
                               "end": 5397,
-                              "object": {
-                                "end": 5390,
-                                "name": "magnetHolesExtrude",
-                                "start": 5372,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "end": 5397,
-                                "name": "sketch",
-                                "start": 5391,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 5372,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "end": 5402,
                               "name": "tags",
-                              "start": 5398,
+                              "start": 5393,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 5372,
+                            "start": 5367,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 5410,
+                            "end": 5405,
                             "name": "line001",
-                            "start": 5403,
+                            "start": 5398,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 5372,
+                          "start": 5367,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         }
                       ],
                       "callee": {
-                        "end": 5371,
+                        "end": 5366,
                         "name": "getNextAdjacentEdge",
-                        "start": 5352,
+                        "start": 5347,
                         "type": "Identifier"
                       },
-                      "end": 5411,
-                      "start": 5352,
+                      "end": 5406,
+                      "start": 5347,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
@@ -4659,62 +4638,62 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "arguments": [
                         {
                           "computed": false,
-                          "end": 5479,
+                          "end": 5474,
                           "object": {
                             "computed": false,
-                            "end": 5471,
+                            "end": 5466,
                             "object": {
                               "computed": false,
+                              "end": 5461,
+                              "object": {
+                                "end": 5454,
+                                "name": "magnetHolesExtrude",
+                                "start": 5436,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "property": {
+                                "end": 5461,
+                                "name": "sketch",
+                                "start": 5455,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 5436,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            },
+                            "property": {
                               "end": 5466,
-                              "object": {
-                                "end": 5459,
-                                "name": "magnetHolesExtrude",
-                                "start": 5441,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "end": 5466,
-                                "name": "sketch",
-                                "start": 5460,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 5441,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "end": 5471,
                               "name": "tags",
-                              "start": 5467,
+                              "start": 5462,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 5441,
+                            "start": 5436,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 5479,
+                            "end": 5474,
                             "name": "line001",
-                            "start": 5472,
+                            "start": 5467,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 5441,
+                          "start": 5436,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         }
                       ],
                       "callee": {
-                        "end": 5440,
+                        "end": 5435,
                         "name": "getPreviousAdjacentEdge",
-                        "start": 5417,
+                        "start": 5412,
                         "type": "Identifier"
                       },
-                      "end": 5480,
-                      "start": 5417,
+                      "end": 5475,
+                      "start": 5412,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
@@ -4722,62 +4701,62 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "arguments": [
                         {
                           "computed": false,
-                          "end": 5544,
+                          "end": 5539,
                           "object": {
                             "computed": false,
-                            "end": 5536,
+                            "end": 5531,
                             "object": {
                               "computed": false,
+                              "end": 5526,
+                              "object": {
+                                "end": 5519,
+                                "name": "magnetHolesExtrude",
+                                "start": 5501,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "property": {
+                                "end": 5526,
+                                "name": "sketch",
+                                "start": 5520,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 5501,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            },
+                            "property": {
                               "end": 5531,
-                              "object": {
-                                "end": 5524,
-                                "name": "magnetHolesExtrude",
-                                "start": 5506,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "end": 5531,
-                                "name": "sketch",
-                                "start": 5525,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 5506,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "end": 5536,
                               "name": "tags",
-                              "start": 5532,
+                              "start": 5527,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 5506,
+                            "start": 5501,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 5544,
+                            "end": 5539,
                             "name": "line003",
-                            "start": 5537,
+                            "start": 5532,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 5506,
+                          "start": 5501,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         }
                       ],
                       "callee": {
-                        "end": 5505,
+                        "end": 5500,
                         "name": "getNextAdjacentEdge",
-                        "start": 5486,
+                        "start": 5481,
                         "type": "Identifier"
                       },
-                      "end": 5545,
-                      "start": 5486,
+                      "end": 5540,
+                      "start": 5481,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
@@ -4785,107 +4764,107 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "arguments": [
                         {
                           "computed": false,
-                          "end": 5613,
+                          "end": 5608,
                           "object": {
                             "computed": false,
-                            "end": 5605,
+                            "end": 5600,
                             "object": {
                               "computed": false,
-                              "end": 5600,
+                              "end": 5595,
                               "object": {
-                                "end": 5593,
+                                "end": 5588,
                                 "name": "magnetHolesExtrude",
-                                "start": 5575,
+                                "start": 5570,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "property": {
-                                "end": 5600,
+                                "end": 5595,
                                 "name": "sketch",
-                                "start": 5594,
+                                "start": 5589,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 5575,
+                              "start": 5570,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
-                              "end": 5605,
+                              "end": 5600,
                               "name": "tags",
-                              "start": 5601,
+                              "start": 5596,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 5575,
+                            "start": 5570,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 5613,
+                            "end": 5608,
                             "name": "line003",
-                            "start": 5606,
+                            "start": 5601,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 5575,
+                          "start": 5570,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         }
                       ],
                       "callee": {
-                        "end": 5574,
+                        "end": 5569,
                         "name": "getPreviousAdjacentEdge",
-                        "start": 5551,
+                        "start": 5546,
                         "type": "Identifier"
                       },
-                      "end": 5614,
-                      "start": 5551,
+                      "end": 5609,
+                      "start": 5546,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     }
                   ],
-                  "end": 5618,
-                  "start": 5346,
+                  "end": 5613,
+                  "start": 5341,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
               }
             ],
             "callee": {
-              "end": 5288,
+              "end": 5283,
               "name": "fillet",
-              "start": 5282,
+              "start": 5277,
               "type": "Identifier"
             },
-            "end": 5620,
-            "start": 5282,
+            "end": 5615,
+            "start": 5277,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 5310,
+              "end": 5305,
               "name": "magnetHolesExtrude",
-              "start": 5292,
+              "start": 5287,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 5254,
+          "start": 5249,
           "type": "VariableDeclarator"
         },
-        "end": 5620,
+        "end": 5615,
         "kind": "const",
-        "start": 5254,
+        "start": 5249,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 5750,
+          "end": 5745,
           "id": {
-            "end": 5698,
+            "end": 5693,
             "name": "magnetProfileNoMagnets",
-            "start": 5676,
+            "start": 5671,
             "type": "Identifier"
           },
           "init": {
@@ -4900,34 +4879,34 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     },
                     "arg": {
                       "argument": {
-                        "end": 5748,
+                        "end": 5743,
                         "name": "magDepth",
-                        "start": 5740,
+                        "start": 5735,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 5748,
+                      "end": 5743,
                       "operator": "-",
-                      "start": 5739,
+                      "start": 5734,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 5723,
+                  "end": 5718,
                   "name": "offsetPlane",
-                  "start": 5712,
+                  "start": 5707,
                   "type": "Identifier"
                 },
-                "end": 5749,
-                "start": 5712,
+                "end": 5744,
+                "start": 5707,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "end": 5728,
+                  "end": 5723,
                   "raw": "\"XY\"",
-                  "start": 5724,
+                  "start": 5719,
                   "type": "Literal",
                   "type": "Literal",
                   "value": "XY"
@@ -4935,32 +4914,32 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               }
             ],
             "callee": {
-              "end": 5711,
+              "end": 5706,
               "name": "magnetBase",
-              "start": 5701,
+              "start": 5696,
               "type": "Identifier"
             },
-            "end": 5750,
-            "start": 5701,
+            "end": 5745,
+            "start": 5696,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 5676,
+          "start": 5671,
           "type": "VariableDeclarator"
         },
-        "end": 5750,
+        "end": 5745,
         "kind": "const",
-        "start": 5676,
+        "start": 5671,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 5883,
+          "end": 5878,
           "id": {
-            "end": 5829,
+            "end": 5824,
             "name": "magnetCutoutExtrude",
-            "start": 5810,
+            "start": 5805,
             "type": "Identifier"
           },
           "init": {
@@ -4973,54 +4952,54 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 },
                 "arg": {
                   "argument": {
-                    "end": 5882,
+                    "end": 5877,
                     "name": "magDepth",
-                    "start": 5874,
+                    "start": 5869,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 5882,
+                  "end": 5877,
                   "operator": "-",
-                  "start": 5873,
+                  "start": 5868,
                   "type": "UnaryExpression",
                   "type": "UnaryExpression"
                 }
               }
             ],
             "callee": {
-              "end": 5839,
+              "end": 5834,
               "name": "extrude",
-              "start": 5832,
+              "start": 5827,
               "type": "Identifier"
             },
-            "end": 5883,
-            "start": 5832,
+            "end": 5878,
+            "start": 5827,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 5862,
+              "end": 5857,
               "name": "magnetProfileNoMagnets",
-              "start": 5840,
+              "start": 5835,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 5810,
+          "start": 5805,
           "type": "VariableDeclarator"
         },
-        "end": 5883,
+        "end": 5878,
         "kind": "const",
-        "start": 5810,
+        "start": 5805,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 6290,
+          "end": 6285,
           "id": {
-            "end": 5944,
+            "end": 5939,
             "name": "magnetCutoutExtrudeFillets",
-            "start": 5918,
+            "start": 5913,
             "type": "Identifier"
           },
           "init": {
@@ -5032,9 +5011,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "name": "radius"
                 },
                 "arg": {
-                  "end": 6001,
+                  "end": 5996,
                   "name": "cornerRadius",
-                  "start": 5989,
+                  "start": 5984,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
@@ -5051,62 +5030,62 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "arguments": [
                         {
                           "computed": false,
-                          "end": 6077,
+                          "end": 6072,
                           "object": {
                             "computed": false,
-                            "end": 6069,
+                            "end": 6064,
                             "object": {
                               "computed": false,
+                              "end": 6059,
+                              "object": {
+                                "end": 6052,
+                                "name": "magnetCutoutExtrude",
+                                "start": 6033,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "property": {
+                                "end": 6059,
+                                "name": "sketch",
+                                "start": 6053,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 6033,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            },
+                            "property": {
                               "end": 6064,
-                              "object": {
-                                "end": 6057,
-                                "name": "magnetCutoutExtrude",
-                                "start": 6038,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "end": 6064,
-                                "name": "sketch",
-                                "start": 6058,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 6038,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "end": 6069,
                               "name": "tags",
-                              "start": 6065,
+                              "start": 6060,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 6038,
+                            "start": 6033,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 6077,
+                            "end": 6072,
                             "name": "line001",
-                            "start": 6070,
+                            "start": 6065,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 6038,
+                          "start": 6033,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         }
                       ],
                       "callee": {
-                        "end": 6037,
+                        "end": 6032,
                         "name": "getNextAdjacentEdge",
-                        "start": 6018,
+                        "start": 6013,
                         "type": "Identifier"
                       },
-                      "end": 6078,
-                      "start": 6018,
+                      "end": 6073,
+                      "start": 6013,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
@@ -5114,62 +5093,62 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "arguments": [
                         {
                           "computed": false,
-                          "end": 6147,
+                          "end": 6142,
                           "object": {
                             "computed": false,
-                            "end": 6139,
+                            "end": 6134,
                             "object": {
                               "computed": false,
+                              "end": 6129,
+                              "object": {
+                                "end": 6122,
+                                "name": "magnetCutoutExtrude",
+                                "start": 6103,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "property": {
+                                "end": 6129,
+                                "name": "sketch",
+                                "start": 6123,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 6103,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            },
+                            "property": {
                               "end": 6134,
-                              "object": {
-                                "end": 6127,
-                                "name": "magnetCutoutExtrude",
-                                "start": 6108,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "end": 6134,
-                                "name": "sketch",
-                                "start": 6128,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 6108,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "end": 6139,
                               "name": "tags",
-                              "start": 6135,
+                              "start": 6130,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 6108,
+                            "start": 6103,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 6147,
+                            "end": 6142,
                             "name": "line001",
-                            "start": 6140,
+                            "start": 6135,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 6108,
+                          "start": 6103,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         }
                       ],
                       "callee": {
-                        "end": 6107,
+                        "end": 6102,
                         "name": "getPreviousAdjacentEdge",
-                        "start": 6084,
+                        "start": 6079,
                         "type": "Identifier"
                       },
-                      "end": 6148,
-                      "start": 6084,
+                      "end": 6143,
+                      "start": 6079,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
@@ -5177,62 +5156,62 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "arguments": [
                         {
                           "computed": false,
-                          "end": 6213,
+                          "end": 6208,
                           "object": {
                             "computed": false,
-                            "end": 6205,
+                            "end": 6200,
                             "object": {
                               "computed": false,
+                              "end": 6195,
+                              "object": {
+                                "end": 6188,
+                                "name": "magnetCutoutExtrude",
+                                "start": 6169,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "property": {
+                                "end": 6195,
+                                "name": "sketch",
+                                "start": 6189,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 6169,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            },
+                            "property": {
                               "end": 6200,
-                              "object": {
-                                "end": 6193,
-                                "name": "magnetCutoutExtrude",
-                                "start": 6174,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "end": 6200,
-                                "name": "sketch",
-                                "start": 6194,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 6174,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "end": 6205,
                               "name": "tags",
-                              "start": 6201,
+                              "start": 6196,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 6174,
+                            "start": 6169,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 6213,
+                            "end": 6208,
                             "name": "line003",
-                            "start": 6206,
+                            "start": 6201,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 6174,
+                          "start": 6169,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         }
                       ],
                       "callee": {
-                        "end": 6173,
+                        "end": 6168,
                         "name": "getNextAdjacentEdge",
-                        "start": 6154,
+                        "start": 6149,
                         "type": "Identifier"
                       },
-                      "end": 6214,
-                      "start": 6154,
+                      "end": 6209,
+                      "start": 6149,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
@@ -5240,102 +5219,102 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       "arguments": [
                         {
                           "computed": false,
-                          "end": 6283,
+                          "end": 6278,
                           "object": {
                             "computed": false,
-                            "end": 6275,
+                            "end": 6270,
                             "object": {
                               "computed": false,
-                              "end": 6270,
+                              "end": 6265,
                               "object": {
-                                "end": 6263,
+                                "end": 6258,
                                 "name": "magnetCutoutExtrude",
-                                "start": 6244,
+                                "start": 6239,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "property": {
-                                "end": 6270,
+                                "end": 6265,
                                 "name": "sketch",
-                                "start": 6264,
+                                "start": 6259,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 6244,
+                              "start": 6239,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             "property": {
-                              "end": 6275,
+                              "end": 6270,
                               "name": "tags",
-                              "start": 6271,
+                              "start": 6266,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 6244,
+                            "start": 6239,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 6283,
+                            "end": 6278,
                             "name": "line003",
-                            "start": 6276,
+                            "start": 6271,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 6244,
+                          "start": 6239,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         }
                       ],
                       "callee": {
-                        "end": 6243,
+                        "end": 6238,
                         "name": "getPreviousAdjacentEdge",
-                        "start": 6220,
+                        "start": 6215,
                         "type": "Identifier"
                       },
-                      "end": 6284,
-                      "start": 6220,
+                      "end": 6279,
+                      "start": 6215,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     }
                   ],
-                  "end": 6288,
-                  "start": 6012,
+                  "end": 6283,
+                  "start": 6007,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
               }
             ],
             "callee": {
-              "end": 5953,
+              "end": 5948,
               "name": "fillet",
-              "start": 5947,
+              "start": 5942,
               "type": "Identifier"
             },
-            "end": 6290,
-            "start": 5947,
+            "end": 6285,
+            "start": 5942,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 5976,
+              "end": 5971,
               "name": "magnetCutoutExtrude",
-              "start": 5957,
+              "start": 5952,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 5918,
+          "start": 5913,
           "type": "VariableDeclarator"
         },
-        "end": 6290,
+        "end": 6285,
         "kind": "const",
-        "start": 5918,
+        "start": 5913,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 6651,
+        "end": 6646,
         "expression": {
           "body": [
             {
@@ -5349,13 +5328,24 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "arg": {
                     "elements": [
                       {
-                        "end": 6402,
+                        "end": 6397,
                         "raw": "1.0",
-                        "start": 6399,
+                        "start": 6394,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 1.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 6402,
+                        "raw": "0.0",
+                        "start": 6399,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
                           "suffix": "None"
                         }
                       },
@@ -5369,21 +5359,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           "value": 0.0,
                           "suffix": "None"
                         }
-                      },
-                      {
-                        "end": 6412,
-                        "raw": "0.0",
-                        "start": 6409,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
                       }
                     ],
-                    "end": 6413,
-                    "start": 6398,
+                    "end": 6408,
+                    "start": 6393,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   }
@@ -5395,9 +5374,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     "name": "instances"
                   },
                   "arg": {
-                    "end": 6447,
+                    "end": 6442,
                     "name": "countBinWidth",
-                    "start": 6434,
+                    "start": 6429,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
@@ -5409,28 +5388,28 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     "name": "distance"
                   },
                   "arg": {
-                    "end": 6476,
+                    "end": 6471,
                     "name": "binLength",
-                    "start": 6467,
+                    "start": 6462,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 }
               ],
               "callee": {
-                "end": 6348,
+                "end": 6343,
                 "name": "patternLinear3d",
-                "start": 6333,
+                "start": 6328,
                 "type": "Identifier"
               },
-              "end": 6483,
-              "start": 6333,
+              "end": 6478,
+              "start": 6328,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "end": 6382,
+                "end": 6377,
                 "name": "magnetHolesExtrudeFillets",
-                "start": 6357,
+                "start": 6352,
                 "type": "Identifier",
                 "type": "Identifier"
               }
@@ -5446,9 +5425,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "arg": {
                     "elements": [
                       {
-                        "end": 6524,
+                        "end": 6519,
                         "raw": "0.0",
-                        "start": 6521,
+                        "start": 6516,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -5457,9 +5436,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                         }
                       },
                       {
-                        "end": 6529,
+                        "end": 6524,
                         "raw": "1.0",
-                        "start": 6526,
+                        "start": 6521,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -5468,9 +5447,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                         }
                       },
                       {
-                        "end": 6534,
+                        "end": 6529,
                         "raw": "0.0",
-                        "start": 6531,
+                        "start": 6526,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -5479,8 +5458,8 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                         }
                       }
                     ],
-                    "end": 6535,
-                    "start": 6520,
+                    "end": 6530,
+                    "start": 6515,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   }
@@ -5492,9 +5471,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     "name": "instances"
                   },
                   "arg": {
-                    "end": 6570,
+                    "end": 6565,
                     "name": "countBinLength",
-                    "start": 6556,
+                    "start": 6551,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
@@ -5506,34 +5485,34 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     "name": "distance"
                   },
                   "arg": {
-                    "end": 6599,
+                    "end": 6594,
                     "name": "binLength",
-                    "start": 6590,
+                    "start": 6585,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 }
               ],
               "callee": {
-                "end": 6504,
+                "end": 6499,
                 "name": "patternLinear3d",
-                "start": 6489,
+                "start": 6484,
                 "type": "Identifier"
               },
-              "end": 6606,
-              "start": 6489,
+              "end": 6601,
+              "start": 6484,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 6651,
+          "end": 6646,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
-                  "end": 6651,
-                  "start": 6606,
+                  "end": 6646,
+                  "start": 6601,
                   "type": "NonCodeNode",
                   "value": {
                     "type": "newLineBlockComment",
@@ -5545,16 +5524,16 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
             },
             "startNodes": []
           },
-          "start": 6333,
+          "start": 6328,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 6333,
+        "start": 6328,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 6926,
+        "end": 6921,
         "expression": {
           "body": [
             {
@@ -5568,13 +5547,24 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "arg": {
                     "elements": [
                       {
-                        "end": 6722,
+                        "end": 6717,
                         "raw": "1.0",
-                        "start": 6719,
+                        "start": 6714,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
                           "value": 1.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 6722,
+                        "raw": "0.0",
+                        "start": 6719,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
                           "suffix": "None"
                         }
                       },
@@ -5588,21 +5578,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                           "value": 0.0,
                           "suffix": "None"
                         }
-                      },
-                      {
-                        "end": 6732,
-                        "raw": "0.0",
-                        "start": 6729,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
                       }
                     ],
-                    "end": 6733,
-                    "start": 6718,
+                    "end": 6728,
+                    "start": 6713,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   }
@@ -5614,9 +5593,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     "name": "instances"
                   },
                   "arg": {
-                    "end": 6767,
+                    "end": 6762,
                     "name": "countBinWidth",
-                    "start": 6754,
+                    "start": 6749,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
@@ -5628,28 +5607,28 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     "name": "distance"
                   },
                   "arg": {
-                    "end": 6796,
+                    "end": 6791,
                     "name": "binLength",
-                    "start": 6787,
+                    "start": 6782,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 }
               ],
               "callee": {
-                "end": 6667,
+                "end": 6662,
                 "name": "patternLinear3d",
-                "start": 6652,
+                "start": 6647,
                 "type": "Identifier"
               },
-              "end": 6803,
-              "start": 6652,
+              "end": 6798,
+              "start": 6647,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
-                "end": 6702,
+                "end": 6697,
                 "name": "magnetCutoutExtrudeFillets",
-                "start": 6676,
+                "start": 6671,
                 "type": "Identifier",
                 "type": "Identifier"
               }
@@ -5665,9 +5644,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   "arg": {
                     "elements": [
                       {
-                        "end": 6844,
+                        "end": 6839,
                         "raw": "0.0",
-                        "start": 6841,
+                        "start": 6836,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -5676,9 +5655,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                         }
                       },
                       {
-                        "end": 6849,
+                        "end": 6844,
                         "raw": "1.0",
-                        "start": 6846,
+                        "start": 6841,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -5687,9 +5666,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                         }
                       },
                       {
-                        "end": 6854,
+                        "end": 6849,
                         "raw": "0.0",
-                        "start": 6851,
+                        "start": 6846,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -5698,8 +5677,8 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                         }
                       }
                     ],
-                    "end": 6855,
-                    "start": 6840,
+                    "end": 6850,
+                    "start": 6835,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   }
@@ -5711,9 +5690,9 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     "name": "instances"
                   },
                   "arg": {
-                    "end": 6890,
+                    "end": 6885,
                     "name": "countBinLength",
-                    "start": 6876,
+                    "start": 6871,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
@@ -5725,38 +5704,38 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     "name": "distance"
                   },
                   "arg": {
-                    "end": 6919,
+                    "end": 6914,
                     "name": "binLength",
-                    "start": 6910,
+                    "start": 6905,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 }
               ],
               "callee": {
-                "end": 6824,
+                "end": 6819,
                 "name": "patternLinear3d",
-                "start": 6809,
+                "start": 6804,
                 "type": "Identifier"
               },
-              "end": 6926,
-              "start": 6809,
+              "end": 6921,
+              "start": 6804,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 6926,
-          "start": 6652,
+          "end": 6921,
+          "start": 6647,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 6652,
+        "start": 6647,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 6927,
+    "end": 6922,
     "innerAttrs": [
       {
         "end": 417,
@@ -5926,8 +5905,8 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
         ],
         "23": [
           {
-            "end": 5253,
-            "start": 5219,
+            "end": 5248,
+            "start": 5214,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -5938,8 +5917,8 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
         ],
         "24": [
           {
-            "end": 5675,
-            "start": 5620,
+            "end": 5670,
+            "start": 5615,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -5950,8 +5929,8 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
         ],
         "25": [
           {
-            "end": 5809,
-            "start": 5750,
+            "end": 5804,
+            "start": 5745,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -5962,8 +5941,8 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
         ],
         "26": [
           {
-            "end": 5917,
-            "start": 5883,
+            "end": 5912,
+            "start": 5878,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -5974,8 +5953,8 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
         ],
         "27": [
           {
-            "end": 6332,
-            "start": 6290,
+            "end": 6327,
+            "start": 6285,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",

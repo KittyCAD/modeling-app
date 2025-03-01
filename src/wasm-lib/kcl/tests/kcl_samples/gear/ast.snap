@@ -1132,7 +1132,7 @@ description: Result of parsing gear.kcl
       },
       {
         "declaration": {
-          "end": 1438,
+          "end": 1433,
           "id": {
             "end": 1300,
             "name": "body",
@@ -1166,95 +1166,73 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "end": 1400,
-                    "properties": [
-                      {
-                        "end": 1359,
-                        "key": {
-                          "end": 1350,
-                          "name": "center",
-                          "start": 1344,
-                          "type": "Identifier"
-                        },
-                        "start": 1344,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "end": 1355,
-                              "raw": "0",
-                              "start": 1354,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            },
-                            {
-                              "end": 1358,
-                              "raw": "0",
-                              "start": 1357,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          ],
-                          "end": 1359,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "center"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1354,
+                          "raw": "0",
                           "start": 1353,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "end": 1393,
-                        "key": {
-                          "end": 1374,
-                          "name": "radius",
-                          "start": 1368,
-                          "type": "Identifier"
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         },
-                        "start": 1368,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 1393,
-                          "left": {
-                            "end": 1389,
-                            "name": "baseDiameter",
-                            "start": 1377,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "/",
-                          "right": {
-                            "end": 1393,
-                            "raw": "2",
-                            "start": 1392,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 2.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "start": 1377,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
+                        {
+                          "end": 1357,
+                          "raw": "0",
+                          "start": 1356,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         }
-                      }
-                    ],
-                    "start": 1335,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                      ],
+                      "end": 1358,
+                      "start": 1352,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   },
                   {
-                    "end": 1403,
-                    "start": 1402,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 1392,
+                      "left": {
+                        "end": 1388,
+                        "name": "baseDiameter",
+                        "start": 1376,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1392,
+                        "raw": "2",
+                        "start": 1391,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1376,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -1263,10 +1241,11 @@ description: Result of parsing gear.kcl
                   "start": 1328,
                   "type": "Identifier"
                 },
-                "end": 1404,
+                "end": 1399,
                 "start": 1328,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -1277,28 +1256,28 @@ description: Result of parsing gear.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 1437,
+                      "end": 1432,
                       "name": "gearHeight",
-                      "start": 1427,
+                      "start": 1422,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1417,
+                  "end": 1412,
                   "name": "extrude",
-                  "start": 1410,
+                  "start": 1405,
                   "type": "Identifier"
                 },
-                "end": 1438,
-                "start": 1410,
+                "end": 1433,
+                "start": 1405,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1438,
+            "end": 1433,
             "start": 1303,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1306,7 +1285,7 @@ description: Result of parsing gear.kcl
           "start": 1296,
           "type": "VariableDeclarator"
         },
-        "end": 1438,
+        "end": 1433,
         "kind": "const",
         "start": 1296,
         "type": "VariableDeclaration",
@@ -1314,21 +1293,21 @@ description: Result of parsing gear.kcl
       },
       {
         "declaration": {
-          "end": 1471,
+          "end": 1466,
           "id": {
-            "end": 1450,
+            "end": 1445,
             "name": "toothAngle",
-            "start": 1440,
+            "start": 1435,
             "type": "Identifier"
           },
           "init": {
-            "end": 1471,
+            "end": 1466,
             "left": {
-              "end": 1465,
+              "end": 1460,
               "left": {
-                "end": 1456,
+                "end": 1451,
                 "raw": "360",
-                "start": 1453,
+                "start": 1448,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1338,21 +1317,21 @@ description: Result of parsing gear.kcl
               },
               "operator": "/",
               "right": {
-                "end": 1465,
+                "end": 1460,
                 "name": "nTeeth",
-                "start": 1459,
+                "start": 1454,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 1453,
+              "start": 1448,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "/",
             "right": {
-              "end": 1471,
+              "end": 1466,
               "raw": "1.5",
-              "start": 1468,
+              "start": 1463,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -1360,26 +1339,26 @@ description: Result of parsing gear.kcl
                 "suffix": "None"
               }
             },
-            "start": 1453,
+            "start": 1448,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 1440,
+          "start": 1435,
           "type": "VariableDeclarator"
         },
-        "end": 1471,
+        "end": 1466,
         "kind": "const",
-        "start": 1440,
+        "start": 1435,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1609,
+          "end": 1604,
           "id": {
-            "end": 1515,
+            "end": 1510,
             "name": "leftInvolute",
-            "start": 1503,
+            "start": 1498,
             "type": "Identifier"
           },
           "init": {
@@ -1387,19 +1366,19 @@ description: Result of parsing gear.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1538,
+                    "end": 1533,
                     "id": {
-                      "end": 1528,
+                      "end": 1523,
                       "name": "j",
-                      "start": 1527,
+                      "start": 1522,
                       "type": "Identifier"
                     },
                     "init": {
-                      "end": 1538,
+                      "end": 1533,
                       "left": {
-                        "end": 1534,
+                        "end": 1529,
                         "raw": "100",
-                        "start": 1531,
+                        "start": 1526,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1409,22 +1388,22 @@ description: Result of parsing gear.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "end": 1538,
+                        "end": 1533,
                         "name": "i",
-                        "start": 1537,
+                        "start": 1532,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 1531,
+                      "start": 1526,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "start": 1527,
+                    "start": 1522,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1538,
+                  "end": 1533,
                   "kind": "const",
-                  "start": 1527,
+                  "start": 1522,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
@@ -1441,85 +1420,85 @@ description: Result of parsing gear.kcl
                           "elements": [
                             {
                               "computed": true,
-                              "end": 1598,
+                              "end": 1593,
                               "object": {
-                                "end": 1595,
+                                "end": 1590,
                                 "name": "xs",
-                                "start": 1593,
+                                "start": 1588,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "property": {
-                                "end": 1597,
+                                "end": 1592,
                                 "name": "j",
-                                "start": 1596,
+                                "start": 1591,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1593,
+                              "start": 1588,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             },
                             {
                               "computed": true,
-                              "end": 1605,
+                              "end": 1600,
                               "object": {
-                                "end": 1602,
+                                "end": 1597,
                                 "name": "ys",
-                                "start": 1600,
+                                "start": 1595,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "property": {
-                                "end": 1604,
+                                "end": 1599,
                                 "name": "j",
-                                "start": 1603,
+                                "start": 1598,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1600,
+                              "start": 1595,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
-                          "end": 1606,
-                          "start": 1592,
+                          "end": 1601,
+                          "start": 1587,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1573,
+                      "end": 1568,
                       "name": "line",
-                      "start": 1569,
+                      "start": 1564,
                       "type": "Identifier"
                     },
-                    "end": 1607,
-                    "start": 1569,
+                    "end": 1602,
+                    "start": 1564,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": {
-                      "end": 1576,
+                      "end": 1571,
                       "name": "sg",
-                      "start": 1574,
+                      "start": 1569,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   },
-                  "end": 1607,
-                  "start": 1562,
+                  "end": 1602,
+                  "start": 1557,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1609,
+              "end": 1604,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "end": 1559,
-                      "start": 1538,
+                      "end": 1554,
+                      "start": 1533,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "inlineComment",
@@ -1531,49 +1510,49 @@ description: Result of parsing gear.kcl
                 },
                 "startNodes": []
               },
-              "start": 1523
+              "start": 1518
             },
-            "end": 1609,
+            "end": 1604,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1517,
+                  "end": 1512,
                   "name": "i",
-                  "start": 1516,
+                  "start": 1511,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1521,
+                  "end": 1516,
                   "name": "sg",
-                  "start": 1519,
+                  "start": 1514,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 1515,
+            "start": 1510,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 1503,
+          "start": 1498,
           "type": "VariableDeclarator"
         },
-        "end": 1609,
+        "end": 1604,
         "kind": "fn",
-        "start": 1500,
+        "start": 1495,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1829,
+          "end": 1824,
           "id": {
-            "end": 1627,
+            "end": 1622,
             "name": "rightInvolute",
-            "start": 1614,
+            "start": 1609,
             "type": "Identifier"
           },
           "init": {
@@ -1581,33 +1560,33 @@ description: Result of parsing gear.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1711,
+                    "end": 1706,
                     "id": {
-                      "end": 1640,
+                      "end": 1635,
                       "name": "x",
-                      "start": 1639,
+                      "start": 1634,
                       "type": "Identifier"
                     },
                     "init": {
-                      "end": 1711,
+                      "end": 1706,
                       "left": {
                         "computed": true,
-                        "end": 1648,
+                        "end": 1643,
                         "object": {
-                          "end": 1645,
+                          "end": 1640,
                           "name": "rs",
-                          "start": 1643,
+                          "start": 1638,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "property": {
-                          "end": 1647,
+                          "end": 1642,
                           "name": "i",
-                          "start": 1646,
+                          "start": 1641,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 1643,
+                        "start": 1638,
                         "type": "MemberExpression",
                         "type": "MemberExpression"
                       },
@@ -1617,18 +1596,18 @@ description: Result of parsing gear.kcl
                           {
                             "arguments": [
                               {
-                                "end": 1709,
+                                "end": 1704,
                                 "left": {
                                   "argument": {
-                                    "end": 1676,
+                                    "end": 1671,
                                     "name": "toothAngle",
-                                    "start": 1666,
+                                    "start": 1661,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "end": 1676,
+                                  "end": 1671,
                                   "operator": "-",
-                                  "start": 1665,
+                                  "start": 1660,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
@@ -1638,155 +1617,155 @@ description: Result of parsing gear.kcl
                                     {
                                       "arguments": [
                                         {
-                                          "end": 1707,
+                                          "end": 1702,
                                           "left": {
                                             "computed": true,
-                                            "end": 1699,
+                                            "end": 1694,
                                             "object": {
-                                              "end": 1696,
+                                              "end": 1691,
                                               "name": "ys",
-                                              "start": 1694,
+                                              "start": 1689,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             },
                                             "property": {
-                                              "end": 1698,
+                                              "end": 1693,
                                               "name": "i",
-                                              "start": 1697,
+                                              "start": 1692,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             },
-                                            "start": 1694,
+                                            "start": 1689,
                                             "type": "MemberExpression",
                                             "type": "MemberExpression"
                                           },
                                           "operator": "/",
                                           "right": {
                                             "computed": true,
-                                            "end": 1707,
+                                            "end": 1702,
                                             "object": {
-                                              "end": 1704,
+                                              "end": 1699,
                                               "name": "xs",
-                                              "start": 1702,
+                                              "start": 1697,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             },
                                             "property": {
-                                              "end": 1706,
+                                              "end": 1701,
                                               "name": "i",
-                                              "start": 1705,
+                                              "start": 1700,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             },
-                                            "start": 1702,
+                                            "start": 1697,
                                             "type": "MemberExpression",
                                             "type": "MemberExpression"
                                           },
-                                          "start": 1694,
+                                          "start": 1689,
                                           "type": "BinaryExpression",
                                           "type": "BinaryExpression"
                                         }
                                       ],
                                       "callee": {
-                                        "end": 1693,
+                                        "end": 1688,
                                         "name": "atan",
-                                        "start": 1689,
+                                        "start": 1684,
                                         "type": "Identifier"
                                       },
-                                      "end": 1708,
-                                      "start": 1689,
+                                      "end": 1703,
+                                      "start": 1684,
                                       "type": "CallExpression",
                                       "type": "CallExpression"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 1688,
+                                    "end": 1683,
                                     "name": "toDegrees",
-                                    "start": 1679,
+                                    "start": 1674,
                                     "type": "Identifier"
                                   },
-                                  "end": 1709,
-                                  "start": 1679,
+                                  "end": 1704,
+                                  "start": 1674,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
-                                "start": 1665,
+                                "start": 1660,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             ],
                             "callee": {
-                              "end": 1664,
+                              "end": 1659,
                               "name": "toRadians",
-                              "start": 1655,
+                              "start": 1650,
                               "type": "Identifier"
                             },
-                            "end": 1710,
-                            "start": 1655,
+                            "end": 1705,
+                            "start": 1650,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           }
                         ],
                         "callee": {
-                          "end": 1654,
+                          "end": 1649,
                           "name": "cos",
-                          "start": 1651,
+                          "start": 1646,
                           "type": "Identifier"
                         },
-                        "end": 1711,
-                        "start": 1651,
+                        "end": 1706,
+                        "start": 1646,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "start": 1643,
+                      "start": 1638,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "start": 1639,
+                    "start": 1634,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1711,
+                  "end": 1706,
                   "kind": "const",
-                  "start": 1639,
+                  "start": 1634,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 1787,
+                    "end": 1782,
                     "id": {
-                      "end": 1715,
+                      "end": 1710,
                       "name": "y",
-                      "start": 1714,
+                      "start": 1709,
                       "type": "Identifier"
                     },
                     "init": {
-                      "end": 1787,
+                      "end": 1782,
                       "left": {
                         "argument": {
                           "computed": true,
-                          "end": 1724,
+                          "end": 1719,
                           "object": {
-                            "end": 1721,
+                            "end": 1716,
                             "name": "rs",
-                            "start": 1719,
+                            "start": 1714,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "property": {
-                            "end": 1723,
+                            "end": 1718,
                             "name": "i",
-                            "start": 1722,
+                            "start": 1717,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 1719,
+                          "start": 1714,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
-                        "end": 1724,
+                        "end": 1719,
                         "operator": "-",
-                        "start": 1718,
+                        "start": 1713,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
@@ -1796,18 +1775,18 @@ description: Result of parsing gear.kcl
                           {
                             "arguments": [
                               {
-                                "end": 1785,
+                                "end": 1780,
                                 "left": {
                                   "argument": {
-                                    "end": 1752,
+                                    "end": 1747,
                                     "name": "toothAngle",
-                                    "start": 1742,
+                                    "start": 1737,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "end": 1752,
+                                  "end": 1747,
                                   "operator": "-",
-                                  "start": 1741,
+                                  "start": 1736,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
@@ -1817,116 +1796,116 @@ description: Result of parsing gear.kcl
                                     {
                                       "arguments": [
                                         {
-                                          "end": 1783,
+                                          "end": 1778,
                                           "left": {
                                             "computed": true,
-                                            "end": 1775,
+                                            "end": 1770,
                                             "object": {
-                                              "end": 1772,
+                                              "end": 1767,
                                               "name": "ys",
-                                              "start": 1770,
+                                              "start": 1765,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             },
                                             "property": {
-                                              "end": 1774,
+                                              "end": 1769,
                                               "name": "i",
-                                              "start": 1773,
+                                              "start": 1768,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             },
-                                            "start": 1770,
+                                            "start": 1765,
                                             "type": "MemberExpression",
                                             "type": "MemberExpression"
                                           },
                                           "operator": "/",
                                           "right": {
                                             "computed": true,
-                                            "end": 1783,
+                                            "end": 1778,
                                             "object": {
-                                              "end": 1780,
+                                              "end": 1775,
                                               "name": "xs",
-                                              "start": 1778,
+                                              "start": 1773,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             },
                                             "property": {
-                                              "end": 1782,
+                                              "end": 1777,
                                               "name": "i",
-                                              "start": 1781,
+                                              "start": 1776,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             },
-                                            "start": 1778,
+                                            "start": 1773,
                                             "type": "MemberExpression",
                                             "type": "MemberExpression"
                                           },
-                                          "start": 1770,
+                                          "start": 1765,
                                           "type": "BinaryExpression",
                                           "type": "BinaryExpression"
                                         }
                                       ],
                                       "callee": {
-                                        "end": 1769,
+                                        "end": 1764,
                                         "name": "atan",
-                                        "start": 1765,
+                                        "start": 1760,
                                         "type": "Identifier"
                                       },
-                                      "end": 1784,
-                                      "start": 1765,
+                                      "end": 1779,
+                                      "start": 1760,
                                       "type": "CallExpression",
                                       "type": "CallExpression"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 1764,
+                                    "end": 1759,
                                     "name": "toDegrees",
-                                    "start": 1755,
+                                    "start": 1750,
                                     "type": "Identifier"
                                   },
-                                  "end": 1785,
-                                  "start": 1755,
+                                  "end": 1780,
+                                  "start": 1750,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
-                                "start": 1741,
+                                "start": 1736,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             ],
                             "callee": {
-                              "end": 1740,
+                              "end": 1735,
                               "name": "toRadians",
-                              "start": 1731,
+                              "start": 1726,
                               "type": "Identifier"
                             },
-                            "end": 1786,
-                            "start": 1731,
+                            "end": 1781,
+                            "start": 1726,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           }
                         ],
                         "callee": {
-                          "end": 1730,
+                          "end": 1725,
                           "name": "sin",
-                          "start": 1727,
+                          "start": 1722,
                           "type": "Identifier"
                         },
-                        "end": 1787,
-                        "start": 1727,
+                        "end": 1782,
+                        "start": 1722,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "start": 1718,
+                      "start": 1713,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "start": 1714,
+                    "start": 1709,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1787,
+                  "end": 1782,
                   "kind": "const",
-                  "start": 1714,
+                  "start": 1709,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
@@ -1942,95 +1921,95 @@ description: Result of parsing gear.kcl
                         "arg": {
                           "elements": [
                             {
-                              "end": 1822,
+                              "end": 1817,
                               "name": "x",
-                              "start": 1821,
+                              "start": 1816,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             {
-                              "end": 1825,
+                              "end": 1820,
                               "name": "y",
-                              "start": 1824,
+                              "start": 1819,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
-                          "end": 1826,
-                          "start": 1820,
+                          "end": 1821,
+                          "start": 1815,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1801,
+                      "end": 1796,
                       "name": "line",
-                      "start": 1797,
+                      "start": 1792,
                       "type": "Identifier"
                     },
-                    "end": 1827,
-                    "start": 1797,
+                    "end": 1822,
+                    "start": 1792,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": {
-                      "end": 1804,
+                      "end": 1799,
                       "name": "sg",
-                      "start": 1802,
+                      "start": 1797,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   },
-                  "end": 1827,
-                  "start": 1790,
+                  "end": 1822,
+                  "start": 1785,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1829,
-              "start": 1635
+              "end": 1824,
+              "start": 1630
             },
-            "end": 1829,
+            "end": 1824,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1629,
+                  "end": 1624,
                   "name": "i",
-                  "start": 1628,
+                  "start": 1623,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1633,
+                  "end": 1628,
                   "name": "sg",
-                  "start": 1631,
+                  "start": 1626,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 1627,
+            "start": 1622,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 1614,
+          "start": 1609,
           "type": "VariableDeclarator"
         },
-        "end": 1829,
+        "end": 1824,
         "kind": "fn",
-        "start": 1611,
+        "start": 1606,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1920,
+          "end": 1915,
           "id": {
-            "end": 1855,
+            "end": 1850,
             "name": "start",
-            "start": 1850,
+            "start": 1845,
             "type": "Identifier"
           },
           "init": {
@@ -2038,22 +2017,22 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "end": 1876,
+                    "end": 1871,
                     "raw": "'XY'",
-                    "start": 1872,
+                    "start": 1867,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 1871,
+                  "end": 1866,
                   "name": "startSketchOn",
-                  "start": 1858,
+                  "start": 1853,
                   "type": "Identifier"
                 },
-                "end": 1877,
-                "start": 1858,
+                "end": 1872,
+                "start": 1853,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2063,18 +2042,18 @@ description: Result of parsing gear.kcl
                     "elements": [
                       {
                         "computed": false,
-                        "end": 1906,
+                        "end": 1901,
                         "object": {
-                          "end": 1901,
+                          "end": 1896,
                           "name": "xs",
-                          "start": 1899,
+                          "start": 1894,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "property": {
-                          "end": 1905,
+                          "end": 1900,
                           "raw": "101",
-                          "start": 1902,
+                          "start": 1897,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2082,24 +2061,24 @@ description: Result of parsing gear.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 1899,
+                        "start": 1894,
                         "type": "MemberExpression",
                         "type": "MemberExpression"
                       },
                       {
                         "computed": false,
-                        "end": 1915,
+                        "end": 1910,
                         "object": {
-                          "end": 1910,
+                          "end": 1905,
                           "name": "ys",
-                          "start": 1908,
+                          "start": 1903,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "property": {
-                          "end": 1914,
+                          "end": 1909,
                           "raw": "101",
-                          "start": 1911,
+                          "start": 1906,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2107,56 +2086,56 @@ description: Result of parsing gear.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 1908,
+                        "start": 1903,
                         "type": "MemberExpression",
                         "type": "MemberExpression"
                       }
                     ],
-                    "end": 1916,
-                    "start": 1898,
+                    "end": 1911,
+                    "start": 1893,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1919,
-                    "start": 1918,
+                    "end": 1914,
+                    "start": 1913,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1897,
+                  "end": 1892,
                   "name": "startProfileAt",
-                  "start": 1883,
+                  "start": 1878,
                   "type": "Identifier"
                 },
-                "end": 1920,
-                "start": 1883,
+                "end": 1915,
+                "start": 1878,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1920,
-            "start": 1858,
+            "end": 1915,
+            "start": 1853,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1850,
+          "start": 1845,
           "type": "VariableDeclarator"
         },
-        "end": 1920,
+        "end": 1915,
         "kind": "const",
-        "start": 1850,
+        "start": 1845,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2384,
+          "end": 2379,
           "id": {
-            "end": 1926,
+            "end": 1921,
             "name": "teeth",
-            "start": 1921,
+            "start": 1916,
             "type": "Identifier"
           },
           "init": {
@@ -2164,11 +2143,11 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "end": 1944,
+                    "end": 1939,
                     "endElement": {
-                      "end": 1943,
+                      "end": 1938,
                       "raw": "100",
-                      "start": 1940,
+                      "start": 1935,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2177,11 +2156,11 @@ description: Result of parsing gear.kcl
                       }
                     },
                     "endInclusive": true,
-                    "start": 1936,
+                    "start": 1931,
                     "startElement": {
-                      "end": 1938,
+                      "end": 1933,
                       "raw": "0",
-                      "start": 1937,
+                      "start": 1932,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2193,50 +2172,50 @@ description: Result of parsing gear.kcl
                     "type": "ArrayRangeExpression"
                   },
                   {
-                    "end": 1951,
+                    "end": 1946,
                     "name": "start",
-                    "start": 1946,
+                    "start": 1941,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1965,
+                    "end": 1960,
                     "name": "leftInvolute",
-                    "start": 1953,
+                    "start": 1948,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 1935,
+                  "end": 1930,
                   "name": "reduce",
-                  "start": 1929,
+                  "start": 1924,
                   "type": "Identifier"
                 },
-                "end": 1966,
-                "start": 1929,
+                "end": 1961,
+                "start": 1924,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2070,
+                    "end": 2065,
                     "properties": [
                       {
-                        "end": 1999,
+                        "end": 1994,
                         "key": {
-                          "end": 1995,
+                          "end": 1990,
                           "name": "angleStart",
-                          "start": 1985,
+                          "start": 1980,
                           "type": "Identifier"
                         },
-                        "start": 1985,
+                        "start": 1980,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1999,
+                          "end": 1994,
                           "raw": "0",
-                          "start": 1998,
+                          "start": 1993,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2246,47 +2225,47 @@ description: Result of parsing gear.kcl
                         }
                       },
                       {
-                        "end": 2029,
+                        "end": 2024,
                         "key": {
-                          "end": 2016,
+                          "end": 2011,
                           "name": "angleEnd",
-                          "start": 2008,
+                          "start": 2003,
                           "type": "Identifier"
                         },
-                        "start": 2008,
+                        "start": 2003,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2029,
+                          "end": 2024,
                           "name": "toothAngle",
-                          "start": 2019,
+                          "start": 2014,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       },
                       {
-                        "end": 2063,
+                        "end": 2058,
                         "key": {
-                          "end": 2044,
+                          "end": 2039,
                           "name": "radius",
-                          "start": 2038,
+                          "start": 2033,
                           "type": "Identifier"
                         },
-                        "start": 2038,
+                        "start": 2033,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2063,
+                          "end": 2058,
                           "left": {
-                            "end": 2059,
+                            "end": 2054,
                             "name": "baseDiameter",
-                            "start": 2047,
+                            "start": 2042,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 2063,
+                            "end": 2058,
                             "raw": "2",
-                            "start": 2062,
+                            "start": 2057,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2294,42 +2273,42 @@ description: Result of parsing gear.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 2047,
+                          "start": 2042,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 1976,
+                    "start": 1971,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2073,
-                    "start": 2072,
+                    "end": 2068,
+                    "start": 2067,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1975,
+                  "end": 1970,
                   "name": "arc",
-                  "start": 1972,
+                  "start": 1967,
                   "type": "Identifier"
                 },
-                "end": 2074,
-                "start": 1972,
+                "end": 2069,
+                "start": 1967,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2095,
+                    "end": 2090,
                     "endElement": {
-                      "end": 2094,
+                      "end": 2089,
                       "raw": "101",
-                      "start": 2091,
+                      "start": 2086,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2338,11 +2317,11 @@ description: Result of parsing gear.kcl
                       }
                     },
                     "endInclusive": true,
-                    "start": 2087,
+                    "start": 2082,
                     "startElement": {
-                      "end": 2089,
+                      "end": 2084,
                       "raw": "1",
-                      "start": 2088,
+                      "start": 2083,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2354,40 +2333,40 @@ description: Result of parsing gear.kcl
                     "type": "ArrayRangeExpression"
                   },
                   {
-                    "end": 2098,
-                    "start": 2097,
+                    "end": 2093,
+                    "start": 2092,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 2113,
+                    "end": 2108,
                     "name": "rightInvolute",
-                    "start": 2100,
+                    "start": 2095,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 2086,
+                  "end": 2081,
                   "name": "reduce",
-                  "start": 2080,
+                  "start": 2075,
                   "type": "Identifier"
                 },
-                "end": 2114,
-                "start": 2080,
+                "end": 2109,
+                "start": 2075,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [],
                 "callee": {
-                  "end": 2125,
+                  "end": 2120,
                   "name": "close",
-                  "start": 2120,
+                  "start": 2115,
                   "type": "Identifier"
                 },
-                "end": 2127,
-                "start": 2120,
+                "end": 2122,
+                "start": 2115,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2400,22 +2379,22 @@ description: Result of parsing gear.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 2160,
+                      "end": 2155,
                       "name": "gearHeight",
-                      "start": 2150,
+                      "start": 2145,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2140,
+                  "end": 2135,
                   "name": "extrude",
-                  "start": 2133,
+                  "start": 2128,
                   "type": "Identifier"
                 },
-                "end": 2161,
-                "start": 2133,
+                "end": 2156,
+                "start": 2128,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2431,9 +2410,9 @@ description: Result of parsing gear.kcl
                     "arg": {
                       "elements": [
                         {
-                          "end": 2202,
+                          "end": 2197,
                           "raw": "0",
-                          "start": 2201,
+                          "start": 2196,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2442,9 +2421,9 @@ description: Result of parsing gear.kcl
                           }
                         },
                         {
-                          "end": 2205,
+                          "end": 2200,
                           "raw": "0",
-                          "start": 2204,
+                          "start": 2199,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2453,9 +2432,9 @@ description: Result of parsing gear.kcl
                           }
                         },
                         {
-                          "end": 2208,
+                          "end": 2203,
                           "raw": "1",
-                          "start": 2207,
+                          "start": 2202,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2464,8 +2443,8 @@ description: Result of parsing gear.kcl
                           }
                         }
                       ],
-                      "end": 2209,
-                      "start": 2200,
+                      "end": 2204,
+                      "start": 2195,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2479,9 +2458,9 @@ description: Result of parsing gear.kcl
                     "arg": {
                       "elements": [
                         {
-                          "end": 2229,
+                          "end": 2224,
                           "raw": "0",
-                          "start": 2228,
+                          "start": 2223,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2490,9 +2469,9 @@ description: Result of parsing gear.kcl
                           }
                         },
                         {
-                          "end": 2232,
+                          "end": 2227,
                           "raw": "0",
-                          "start": 2231,
+                          "start": 2226,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2501,9 +2480,9 @@ description: Result of parsing gear.kcl
                           }
                         },
                         {
-                          "end": 2235,
+                          "end": 2230,
                           "raw": "0",
-                          "start": 2234,
+                          "start": 2229,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2512,8 +2491,8 @@ description: Result of parsing gear.kcl
                           }
                         }
                       ],
-                      "end": 2236,
-                      "start": 2227,
+                      "end": 2231,
+                      "start": 2222,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2525,9 +2504,9 @@ description: Result of parsing gear.kcl
                       "name": "instances"
                     },
                     "arg": {
-                      "end": 2263,
+                      "end": 2258,
                       "name": "nTeeth",
-                      "start": 2257,
+                      "start": 2252,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -2539,9 +2518,9 @@ description: Result of parsing gear.kcl
                       "name": "arcDegrees"
                     },
                     "arg": {
-                      "end": 2288,
+                      "end": 2283,
                       "raw": "360",
-                      "start": 2285,
+                      "start": 2280,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2557,9 +2536,9 @@ description: Result of parsing gear.kcl
                       "name": "rotateDuplicates"
                     },
                     "arg": {
-                      "end": 2320,
+                      "end": 2315,
                       "raw": "true",
-                      "start": 2316,
+                      "start": 2311,
                       "type": "Literal",
                       "type": "Literal",
                       "value": true
@@ -2567,25 +2546,25 @@ description: Result of parsing gear.kcl
                   }
                 ],
                 "callee": {
-                  "end": 2184,
+                  "end": 2179,
                   "name": "patternCircular3d",
-                  "start": 2167,
+                  "start": 2162,
                   "type": "Identifier"
                 },
-                "end": 2327,
-                "start": 2167,
+                "end": 2322,
+                "start": 2162,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2384,
+            "end": 2379,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "5": [
                   {
-                    "end": 2384,
-                    "start": 2327,
+                    "end": 2379,
+                    "start": 2322,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -2597,32 +2576,32 @@ description: Result of parsing gear.kcl
               },
               "startNodes": []
             },
-            "start": 1929,
+            "start": 1924,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1921,
+          "start": 1916,
           "type": "VariableDeclarator"
         },
-        "end": 2384,
+        "end": 2379,
         "kind": "const",
-        "start": 1921,
+        "start": 1916,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2404,
+          "end": 2399,
           "id": {
-            "end": 2396,
+            "end": 2391,
             "name": "keywayWidth",
-            "start": 2385,
+            "start": 2380,
             "type": "Identifier"
           },
           "init": {
-            "end": 2404,
+            "end": 2399,
             "raw": "0.250",
-            "start": 2399,
+            "start": 2394,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -2630,38 +2609,38 @@ description: Result of parsing gear.kcl
               "suffix": "None"
             }
           },
-          "start": 2385,
+          "start": 2380,
           "type": "VariableDeclarator"
         },
-        "end": 2404,
+        "end": 2399,
         "kind": "const",
-        "start": 2385,
+        "start": 2380,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2434,
+          "end": 2429,
           "id": {
-            "end": 2416,
+            "end": 2411,
             "name": "keywayDepth",
-            "start": 2405,
+            "start": 2400,
             "type": "Identifier"
           },
           "init": {
-            "end": 2434,
+            "end": 2429,
             "left": {
-              "end": 2430,
+              "end": 2425,
               "name": "keywayWidth",
-              "start": 2419,
+              "start": 2414,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "/",
             "right": {
-              "end": 2434,
+              "end": 2429,
               "raw": "2",
-              "start": 2433,
+              "start": 2428,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -2669,32 +2648,32 @@ description: Result of parsing gear.kcl
                 "suffix": "None"
               }
             },
-            "start": 2419,
+            "start": 2414,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 2405,
+          "start": 2400,
           "type": "VariableDeclarator"
         },
-        "end": 2434,
+        "end": 2429,
         "kind": "const",
-        "start": 2405,
+        "start": 2400,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2447,
+          "end": 2442,
           "id": {
-            "end": 2443,
+            "end": 2438,
             "name": "holeDiam",
-            "start": 2435,
+            "start": 2430,
             "type": "Identifier"
           },
           "init": {
-            "end": 2447,
+            "end": 2442,
             "raw": "2",
-            "start": 2446,
+            "start": 2441,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -2702,28 +2681,28 @@ description: Result of parsing gear.kcl
               "suffix": "None"
             }
           },
-          "start": 2435,
+          "start": 2430,
           "type": "VariableDeclarator"
         },
-        "end": 2447,
+        "end": 2442,
         "kind": "const",
-        "start": 2435,
+        "start": 2430,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2462,
+          "end": 2457,
           "id": {
-            "end": 2458,
+            "end": 2453,
             "name": "holeRadius",
-            "start": 2448,
+            "start": 2443,
             "type": "Identifier"
           },
           "init": {
-            "end": 2462,
+            "end": 2457,
             "raw": "1",
-            "start": 2461,
+            "start": 2456,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -2731,42 +2710,42 @@ description: Result of parsing gear.kcl
               "suffix": "None"
             }
           },
-          "start": 2448,
+          "start": 2443,
           "type": "VariableDeclarator"
         },
-        "end": 2462,
+        "end": 2457,
         "kind": "const",
-        "start": 2448,
+        "start": 2443,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2510,
+          "end": 2505,
           "id": {
-            "end": 2473,
+            "end": 2468,
             "name": "startAngle",
-            "start": 2463,
+            "start": 2458,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 2509,
+                "end": 2504,
                 "left": {
-                  "end": 2496,
+                  "end": 2491,
                   "left": {
-                    "end": 2492,
+                    "end": 2487,
                     "name": "keywayWidth",
-                    "start": 2481,
+                    "start": 2476,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 2496,
+                    "end": 2491,
                     "raw": "2",
-                    "start": 2495,
+                    "start": 2490,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2774,50 +2753,50 @@ description: Result of parsing gear.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 2481,
+                  "start": 2476,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 2509,
+                  "end": 2504,
                   "name": "holeRadius",
-                  "start": 2499,
+                  "start": 2494,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
-                "start": 2481,
+                "start": 2476,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               }
             ],
             "callee": {
-              "end": 2480,
+              "end": 2475,
               "name": "asin",
-              "start": 2476,
+              "start": 2471,
               "type": "Identifier"
             },
-            "end": 2510,
-            "start": 2476,
+            "end": 2505,
+            "start": 2471,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 2463,
+          "start": 2458,
           "type": "VariableDeclarator"
         },
-        "end": 2510,
+        "end": 2505,
         "kind": "const",
-        "start": 2463,
+        "start": 2458,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 3074,
+          "end": 3069,
           "id": {
-            "end": 2567,
+            "end": 2562,
             "name": "keyWay",
-            "start": 2561,
+            "start": 2556,
             "type": "Identifier"
           },
           "init": {
@@ -2825,29 +2804,29 @@ description: Result of parsing gear.kcl
               {
                 "arguments": [
                   {
-                    "end": 2588,
+                    "end": 2583,
                     "name": "body",
-                    "start": 2584,
+                    "start": 2579,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2595,
+                    "end": 2590,
                     "raw": "'END'",
-                    "start": 2590,
+                    "start": 2585,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "END"
                   }
                 ],
                 "callee": {
-                  "end": 2583,
+                  "end": 2578,
                   "name": "startSketchOn",
-                  "start": 2570,
+                  "start": 2565,
                   "type": "Identifier"
                 },
-                "end": 2596,
-                "start": 2570,
+                "end": 2591,
+                "start": 2565,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2856,11 +2835,11 @@ description: Result of parsing gear.kcl
                   {
                     "elements": [
                       {
-                        "end": 2654,
+                        "end": 2649,
                         "left": {
-                          "end": 2636,
+                          "end": 2631,
                           "name": "holeRadius",
-                          "start": 2626,
+                          "start": 2621,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
@@ -2868,34 +2847,34 @@ description: Result of parsing gear.kcl
                         "right": {
                           "arguments": [
                             {
-                              "end": 2653,
+                              "end": 2648,
                               "name": "startAngle",
-                              "start": 2643,
+                              "start": 2638,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2642,
+                            "end": 2637,
                             "name": "cos",
-                            "start": 2639,
+                            "start": 2634,
                             "type": "Identifier"
                           },
-                          "end": 2654,
-                          "start": 2639,
+                          "end": 2649,
+                          "start": 2634,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "start": 2626,
+                        "start": 2621,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 2691,
+                        "end": 2686,
                         "left": {
-                          "end": 2673,
+                          "end": 2668,
                           "name": "holeRadius",
-                          "start": 2663,
+                          "start": 2658,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
@@ -2903,76 +2882,76 @@ description: Result of parsing gear.kcl
                         "right": {
                           "arguments": [
                             {
-                              "end": 2690,
+                              "end": 2685,
                               "name": "startAngle",
-                              "start": 2680,
+                              "start": 2675,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2679,
+                            "end": 2674,
                             "name": "sin",
-                            "start": 2676,
+                            "start": 2671,
                             "type": "Identifier"
                           },
-                          "end": 2691,
-                          "start": 2676,
+                          "end": 2686,
+                          "start": 2671,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "start": 2663,
+                        "start": 2658,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 2698,
-                    "start": 2617,
+                    "end": 2693,
+                    "start": 2612,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2701,
-                    "start": 2700,
+                    "end": 2696,
+                    "start": 2695,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2616,
+                  "end": 2611,
                   "name": "startProfileAt",
-                  "start": 2602,
+                  "start": 2597,
                   "type": "Identifier"
                 },
-                "end": 2702,
-                "start": 2602,
+                "end": 2697,
+                "start": 2597,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2725,
+                    "end": 2720,
                     "name": "keywayDepth",
-                    "start": 2714,
+                    "start": 2709,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2728,
-                    "start": 2727,
+                    "end": 2723,
+                    "start": 2722,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2713,
+                  "end": 2708,
                   "name": "xLine",
-                  "start": 2708,
+                  "start": 2703,
                   "type": "Identifier"
                 },
-                "end": 2729,
-                "start": 2708,
+                "end": 2724,
+                "start": 2703,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2980,33 +2959,33 @@ description: Result of parsing gear.kcl
                 "arguments": [
                   {
                     "argument": {
-                      "end": 2753,
+                      "end": 2748,
                       "name": "keywayWidth",
-                      "start": 2742,
+                      "start": 2737,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
-                    "end": 2753,
+                    "end": 2748,
                     "operator": "-",
-                    "start": 2741,
+                    "start": 2736,
                     "type": "UnaryExpression",
                     "type": "UnaryExpression"
                   },
                   {
-                    "end": 2756,
-                    "start": 2755,
+                    "end": 2751,
+                    "start": 2750,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2740,
+                  "end": 2735,
                   "name": "yLine",
-                  "start": 2735,
+                  "start": 2730,
                   "type": "Identifier"
                 },
-                "end": 2757,
-                "start": 2735,
+                "end": 2752,
+                "start": 2730,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3014,55 +2993,55 @@ description: Result of parsing gear.kcl
                 "arguments": [
                   {
                     "argument": {
-                      "end": 2781,
+                      "end": 2776,
                       "name": "keywayDepth",
-                      "start": 2770,
+                      "start": 2765,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
-                    "end": 2781,
+                    "end": 2776,
                     "operator": "-",
-                    "start": 2769,
+                    "start": 2764,
                     "type": "UnaryExpression",
                     "type": "UnaryExpression"
                   },
                   {
-                    "end": 2784,
-                    "start": 2783,
+                    "end": 2779,
+                    "start": 2778,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2768,
+                  "end": 2763,
                   "name": "xLine",
-                  "start": 2763,
+                  "start": 2758,
                   "type": "Identifier"
                 },
-                "end": 2785,
-                "start": 2763,
+                "end": 2780,
+                "start": 2758,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2907,
+                    "end": 2902,
                     "properties": [
                       {
-                        "end": 2818,
+                        "end": 2813,
                         "key": {
-                          "end": 2812,
+                          "end": 2807,
                           "name": "angleEnd",
-                          "start": 2804,
+                          "start": 2799,
                           "type": "Identifier"
                         },
-                        "start": 2804,
+                        "start": 2799,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2818,
+                          "end": 2813,
                           "raw": "180",
-                          "start": 2815,
+                          "start": 2810,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3072,28 +3051,28 @@ description: Result of parsing gear.kcl
                         }
                       },
                       {
-                        "end": 2872,
+                        "end": 2867,
                         "key": {
-                          "end": 2837,
+                          "end": 2832,
                           "name": "angleStart",
-                          "start": 2827,
+                          "start": 2822,
                           "type": "Identifier"
                         },
-                        "start": 2827,
+                        "start": 2822,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2872,
+                          "end": 2867,
                           "left": {
-                            "end": 2866,
+                            "end": 2861,
                             "left": {
-                              "end": 2853,
+                              "end": 2848,
                               "left": {
-                                "end": 2848,
+                                "end": 2843,
                                 "left": {
                                   "argument": {
-                                    "end": 2842,
+                                    "end": 2837,
                                     "raw": "1",
-                                    "start": 2841,
+                                    "start": 2836,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -3101,17 +3080,17 @@ description: Result of parsing gear.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "end": 2842,
+                                  "end": 2837,
                                   "operator": "-",
-                                  "start": 2840,
+                                  "start": 2835,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "end": 2848,
+                                  "end": 2843,
                                   "raw": "180",
-                                  "start": 2845,
+                                  "start": 2840,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -3119,39 +3098,39 @@ description: Result of parsing gear.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 2840,
+                                "start": 2835,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 2853,
+                                "end": 2848,
                                 "name": "PI",
-                                "start": 2851,
+                                "start": 2846,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 2840,
+                              "start": 2835,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "*",
                             "right": {
-                              "end": 2866,
+                              "end": 2861,
                               "name": "startAngle",
-                              "start": 2856,
+                              "start": 2851,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 2840,
+                            "start": 2835,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 2872,
+                            "end": 2867,
                             "raw": "360",
-                            "start": 2869,
+                            "start": 2864,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -3159,75 +3138,75 @@ description: Result of parsing gear.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 2840,
+                          "start": 2835,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       },
                       {
-                        "end": 2900,
+                        "end": 2895,
                         "key": {
-                          "end": 2887,
+                          "end": 2882,
                           "name": "radius",
-                          "start": 2881,
+                          "start": 2876,
                           "type": "Identifier"
                         },
-                        "start": 2881,
+                        "start": 2876,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2900,
+                          "end": 2895,
                           "name": "holeRadius",
-                          "start": 2890,
+                          "start": 2885,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
-                    "start": 2795,
+                    "start": 2790,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2910,
-                    "start": 2909,
+                    "end": 2905,
+                    "start": 2904,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2794,
+                  "end": 2789,
                   "name": "arc",
-                  "start": 2791,
+                  "start": 2786,
                   "type": "Identifier"
                 },
-                "end": 2911,
-                "start": 2791,
+                "end": 2906,
+                "start": 2786,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 3022,
+                    "end": 3017,
                     "properties": [
                       {
-                        "end": 2962,
+                        "end": 2957,
                         "key": {
-                          "end": 2938,
+                          "end": 2933,
                           "name": "angleEnd",
-                          "start": 2930,
+                          "start": 2925,
                           "type": "Identifier"
                         },
-                        "start": 2930,
+                        "start": 2925,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2962,
+                          "end": 2957,
                           "left": {
-                            "end": 2949,
+                            "end": 2944,
                             "left": {
-                              "end": 2944,
+                              "end": 2939,
                               "raw": "180",
-                              "start": 2941,
+                              "start": 2936,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -3237,43 +3216,43 @@ description: Result of parsing gear.kcl
                             },
                             "operator": "/",
                             "right": {
-                              "end": 2949,
+                              "end": 2944,
                               "name": "PI",
-                              "start": 2947,
+                              "start": 2942,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 2941,
+                            "start": 2936,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "*",
                           "right": {
-                            "end": 2962,
+                            "end": 2957,
                             "name": "startAngle",
-                            "start": 2952,
+                            "start": 2947,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 2941,
+                          "start": 2936,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       },
                       {
-                        "end": 2987,
+                        "end": 2982,
                         "key": {
-                          "end": 2981,
+                          "end": 2976,
                           "name": "angleStart",
-                          "start": 2971,
+                          "start": 2966,
                           "type": "Identifier"
                         },
-                        "start": 2971,
+                        "start": 2966,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2987,
+                          "end": 2982,
                           "raw": "180",
-                          "start": 2984,
+                          "start": 2979,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3283,56 +3262,56 @@ description: Result of parsing gear.kcl
                         }
                       },
                       {
-                        "end": 3015,
+                        "end": 3010,
                         "key": {
-                          "end": 3002,
+                          "end": 2997,
                           "name": "radius",
-                          "start": 2996,
+                          "start": 2991,
                           "type": "Identifier"
                         },
-                        "start": 2996,
+                        "start": 2991,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 3015,
+                          "end": 3010,
                           "name": "holeRadius",
-                          "start": 3005,
+                          "start": 3000,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
-                    "start": 2921,
+                    "start": 2916,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 3025,
-                    "start": 3024,
+                    "end": 3020,
+                    "start": 3019,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2920,
+                  "end": 2915,
                   "name": "arc",
-                  "start": 2917,
+                  "start": 2912,
                   "type": "Identifier"
                 },
-                "end": 3026,
-                "start": 2917,
+                "end": 3021,
+                "start": 2912,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [],
                 "callee": {
-                  "end": 3037,
+                  "end": 3032,
                   "name": "close",
-                  "start": 3032,
+                  "start": 3027,
                   "type": "Identifier"
                 },
-                "end": 3039,
-                "start": 3032,
+                "end": 3034,
+                "start": 3027,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3346,49 +3325,49 @@ description: Result of parsing gear.kcl
                     },
                     "arg": {
                       "argument": {
-                        "end": 3073,
+                        "end": 3068,
                         "name": "gearHeight",
-                        "start": 3063,
+                        "start": 3058,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 3073,
+                      "end": 3068,
                       "operator": "-",
-                      "start": 3062,
+                      "start": 3057,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3052,
+                  "end": 3047,
                   "name": "extrude",
-                  "start": 3045,
+                  "start": 3040,
                   "type": "Identifier"
                 },
-                "end": 3074,
-                "start": 3045,
+                "end": 3069,
+                "start": 3040,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 3074,
-            "start": 2570,
+            "end": 3069,
+            "start": 2565,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2561,
+          "start": 2556,
           "type": "VariableDeclarator"
         },
-        "end": 3074,
+        "end": 3069,
         "kind": "const",
-        "start": 2561,
+        "start": 2556,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 3075,
+    "end": 3070,
     "innerAttrs": [
       {
         "end": 472,
@@ -3496,8 +3475,8 @@ description: Result of parsing gear.kcl
         ],
         "15": [
           {
-            "end": 1440,
-            "start": 1438,
+            "end": 1435,
+            "start": 1433,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -3506,8 +3485,8 @@ description: Result of parsing gear.kcl
         ],
         "16": [
           {
-            "end": 1499,
-            "start": 1471,
+            "end": 1494,
+            "start": 1466,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -3518,8 +3497,8 @@ description: Result of parsing gear.kcl
         ],
         "17": [
           {
-            "end": 1611,
-            "start": 1609,
+            "end": 1606,
+            "start": 1604,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -3528,8 +3507,8 @@ description: Result of parsing gear.kcl
         ],
         "18": [
           {
-            "end": 1849,
-            "start": 1829,
+            "end": 1844,
+            "start": 1824,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -3540,8 +3519,8 @@ description: Result of parsing gear.kcl
         ],
         "25": [
           {
-            "end": 2560,
-            "start": 2510,
+            "end": 2555,
+            "start": 2505,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",

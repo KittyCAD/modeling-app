@@ -795,7 +795,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1137,
-      1195,
+      1194,
       3
     ],
     "command": {
@@ -811,7 +811,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1137,
-      1195,
+      1194,
       3
     ],
     "command": {
@@ -822,7 +822,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1137,
-      1195,
+      1194,
       3
     ],
     "command": {
@@ -839,7 +839,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1137,
-      1195,
+      1194,
       3
     ],
     "command": {
@@ -868,7 +868,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1137,
-      1195,
+      1194,
       3
     ],
     "command": {
@@ -879,8 +879,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1209,
-      1275,
+      1208,
+      1274,
       3
     ],
     "command": {
@@ -895,8 +895,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1209,
-      1275,
+      1208,
+      1274,
       3
     ],
     "command": {
@@ -909,8 +909,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1209,
-      1275,
+      1208,
+      1274,
       3
     ],
     "command": {
@@ -920,8 +920,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1209,
-      1275,
+      1208,
+      1274,
       3
     ],
     "command": {
@@ -932,8 +932,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1209,
-      1275,
+      1208,
+      1274,
       3
     ],
     "command": {
@@ -945,8 +945,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1209,
-      1275,
+      1208,
+      1274,
       3
     ],
     "command": {
@@ -959,8 +959,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1209,
-      1275,
+      1208,
+      1274,
       3
     ],
     "command": {
@@ -973,8 +973,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1325,
-      1355,
+      1324,
+      1354,
       3
     ],
     "command": {
@@ -987,8 +987,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1281,
-      1363,
+      1280,
+      1362,
       3
     ],
     "command": {
@@ -1003,8 +1003,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1414,
-      1458,
+      1413,
+      1450,
       3
     ],
     "command": {
@@ -1019,8 +1019,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1414,
-      1458,
+      1413,
+      1450,
       3
     ],
     "command": {
@@ -1030,8 +1030,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1414,
-      1458,
+      1413,
+      1450,
       3
     ],
     "command": {
@@ -1047,8 +1047,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1414,
-      1458,
+      1413,
+      1450,
       3
     ],
     "command": {
@@ -1076,8 +1076,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1414,
-      1458,
+      1413,
+      1450,
       3
     ],
     "command": {
@@ -1088,8 +1088,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1472,
-      1502,
+      1464,
+      1494,
       3
     ],
     "command": {
@@ -1104,8 +1104,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1472,
-      1502,
+      1464,
+      1494,
       3
     ],
     "command": {
@@ -1118,8 +1118,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1472,
-      1502,
+      1464,
+      1494,
       3
     ],
     "command": {
@@ -1129,8 +1129,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1472,
-      1502,
+      1464,
+      1494,
       3
     ],
     "command": {
@@ -1141,8 +1141,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1472,
-      1502,
+      1464,
+      1494,
       3
     ],
     "command": {
@@ -1154,8 +1154,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1472,
-      1502,
+      1464,
+      1494,
       3
     ],
     "command": {
@@ -1168,8 +1168,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1472,
-      1502,
+      1464,
+      1494,
       3
     ],
     "command": {
@@ -1182,8 +1182,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1590,
-      1734,
+      1582,
+      1721,
       3
     ],
     "command": {
@@ -1198,8 +1198,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1590,
-      1734,
+      1582,
+      1721,
       3
     ],
     "command": {
@@ -1209,8 +1209,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1590,
-      1734,
+      1582,
+      1721,
       3
     ],
     "command": {
@@ -1226,8 +1226,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1590,
-      1734,
+      1582,
+      1721,
       3
     ],
     "command": {
@@ -1255,8 +1255,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1590,
-      1734,
+      1582,
+      1721,
       3
     ],
     "command": {
@@ -1267,8 +1267,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1740,
-      1867,
+      1727,
+      1854,
       3
     ],
     "command": {
@@ -1292,8 +1292,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1308,8 +1308,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1322,8 +1322,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1333,8 +1333,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1345,8 +1345,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1358,8 +1358,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1372,8 +1372,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1386,8 +1386,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1402,8 +1402,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1416,8 +1416,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1427,8 +1427,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1439,8 +1439,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1452,8 +1452,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1466,8 +1466,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1480,8 +1480,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1496,8 +1496,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1510,8 +1510,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1521,8 +1521,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1533,8 +1533,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1546,8 +1546,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1560,8 +1560,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1574,8 +1574,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1590,8 +1590,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1604,8 +1604,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1615,8 +1615,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1627,8 +1627,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1640,8 +1640,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1654,8 +1654,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      1928,
+      1868,
+      1915,
       3
     ],
     "command": {
@@ -1668,8 +1668,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2123,
+      1966,
+      2105,
       3
     ],
     "command": {
@@ -1684,8 +1684,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2123,
+      1966,
+      2105,
       3
     ],
     "command": {
@@ -1695,8 +1695,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2123,
+      1966,
+      2105,
       3
     ],
     "command": {
@@ -1712,8 +1712,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2123,
+      1966,
+      2105,
       3
     ],
     "command": {
@@ -1741,8 +1741,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2123,
+      1966,
+      2105,
       3
     ],
     "command": {
@@ -1753,8 +1753,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2129,
-      2256,
+      2111,
+      2238,
       3
     ],
     "command": {
@@ -1778,8 +1778,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1794,8 +1794,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1808,8 +1808,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1819,8 +1819,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1831,8 +1831,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1844,8 +1844,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1858,8 +1858,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1872,8 +1872,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1888,8 +1888,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1902,8 +1902,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1913,8 +1913,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1925,8 +1925,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1938,8 +1938,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1952,8 +1952,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1966,8 +1966,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1982,8 +1982,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -1996,8 +1996,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2007,8 +2007,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2019,8 +2019,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2032,8 +2032,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2046,8 +2046,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2060,8 +2060,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2076,8 +2076,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2090,8 +2090,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2101,8 +2101,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2113,8 +2113,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2126,8 +2126,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2140,8 +2140,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2258,
-      2305,
+      2240,
+      2287,
       3
     ],
     "command": {
@@ -2154,8 +2154,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2311,
-      2372,
+      2293,
+      2354,
       3
     ],
     "command": {
@@ -2175,8 +2175,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2311,
-      2372,
+      2293,
+      2354,
       3
     ],
     "command": {
@@ -2196,8 +2196,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2311,
-      2372,
+      2293,
+      2354,
       3
     ],
     "command": {
@@ -2217,8 +2217,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2311,
-      2372,
+      2293,
+      2354,
       3
     ],
     "command": {
@@ -2280,7 +2280,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       205,
-      266,
+      265,
       4
     ],
     "command": {
@@ -2300,7 +2300,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       205,
-      266,
+      265,
       4
     ],
     "command": {
@@ -2311,7 +2311,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       205,
-      266,
+      265,
       4
     ],
     "command": {
@@ -2328,7 +2328,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       205,
-      266,
+      265,
       4
     ],
     "command": {
@@ -2357,7 +2357,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       205,
-      266,
+      265,
       4
     ],
     "command": {
@@ -2368,8 +2368,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      280,
-      318,
+      279,
+      317,
       4
     ],
     "command": {
@@ -2388,8 +2388,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      280,
-      318,
+      279,
+      317,
       4
     ],
     "command": {
@@ -2402,8 +2402,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      280,
-      318,
+      279,
+      317,
       4
     ],
     "command": {
@@ -2413,8 +2413,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      280,
-      318,
+      279,
+      317,
       4
     ],
     "command": {
@@ -2425,8 +2425,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      280,
-      318,
+      279,
+      317,
       4
     ],
     "command": {
@@ -2438,8 +2438,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      280,
-      318,
+      279,
+      317,
       4
     ],
     "command": {
@@ -2452,8 +2452,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      280,
-      318,
+      279,
+      317,
       4
     ],
     "command": {
@@ -2466,8 +2466,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      368,
-      399,
+      367,
+      398,
       4
     ],
     "command": {
@@ -2480,8 +2480,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      413,
-      474,
+      412,
+      473,
       4
     ],
     "command": {
@@ -2501,8 +2501,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      488,
-      511,
+      487,
+      510,
       4
     ],
     "command": {
@@ -2530,8 +2530,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      517,
-      553,
+      516,
+      552,
       4
     ],
     "command": {
@@ -2550,8 +2550,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      517,
-      553,
+      516,
+      552,
       4
     ],
     "command": {
@@ -2561,8 +2561,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      517,
-      553,
+      516,
+      552,
       4
     ],
     "command": {
@@ -2578,8 +2578,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      559,
-      603,
+      558,
+      602,
       4
     ],
     "command": {
@@ -2599,8 +2599,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      609,
-      697,
+      608,
+      696,
       4
     ],
     "command": {
@@ -2628,8 +2628,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      703,
-      752,
+      702,
+      751,
       4
     ],
     "command": {
@@ -2649,8 +2649,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      758,
-      814,
+      757,
+      813,
       4
     ],
     "command": {
@@ -2670,8 +2670,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      820,
-      827,
+      819,
+      826,
       4
     ],
     "command": {
@@ -2682,8 +2682,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      820,
-      827,
+      819,
+      826,
       4
     ],
     "command": {
@@ -2693,8 +2693,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2713,8 +2713,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2727,8 +2727,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2738,8 +2738,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2750,8 +2750,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2763,8 +2763,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2777,8 +2777,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2791,8 +2791,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2805,8 +2805,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2819,8 +2819,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2833,8 +2833,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2847,8 +2847,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2861,8 +2861,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      842,
-      872,
+      841,
+      871,
       4
     ],
     "command": {
@@ -2875,8 +2875,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      924,
-      1090,
+      923,
+      1091,
       4
     ],
     "command": {
@@ -2891,8 +2891,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      924,
-      1090,
+      923,
+      1091,
       4
     ],
     "command": {
@@ -2902,8 +2902,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      924,
-      1090,
+      923,
+      1091,
       4
     ],
     "command": {
@@ -2919,8 +2919,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      924,
-      1090,
+      923,
+      1091,
       4
     ],
     "command": {
@@ -2948,8 +2948,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      924,
-      1090,
+      923,
+      1091,
       4
     ],
     "command": {
@@ -2960,8 +2960,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1104,
-      1136,
+      1105,
+      1137,
       4
     ],
     "command": {
@@ -2976,8 +2976,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1104,
-      1136,
+      1105,
+      1137,
       4
     ],
     "command": {
@@ -2990,8 +2990,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1104,
-      1136,
+      1105,
+      1137,
       4
     ],
     "command": {
@@ -3001,8 +3001,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1104,
-      1136,
+      1105,
+      1137,
       4
     ],
     "command": {
@@ -3013,8 +3013,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1104,
-      1136,
+      1105,
+      1137,
       4
     ],
     "command": {
@@ -3026,8 +3026,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1104,
-      1136,
+      1105,
+      1137,
       4
     ],
     "command": {
@@ -3040,8 +3040,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1104,
-      1136,
+      1105,
+      1137,
       4
     ],
     "command": {
@@ -3054,8 +3054,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1186,
-      1217,
+      1187,
+      1218,
       4
     ],
     "command": {
@@ -3068,8 +3068,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1142,
-      1225,
+      1143,
+      1226,
       4
     ],
     "command": {
@@ -3084,8 +3084,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1315,
-      1466,
+      1316,
+      1462,
       4
     ],
     "command": {
@@ -3100,8 +3100,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1315,
-      1466,
+      1316,
+      1462,
       4
     ],
     "command": {
@@ -3111,8 +3111,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1315,
-      1466,
+      1316,
+      1462,
       4
     ],
     "command": {
@@ -3128,8 +3128,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1315,
-      1466,
+      1316,
+      1462,
       4
     ],
     "command": {
@@ -3157,8 +3157,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1315,
-      1466,
+      1316,
+      1462,
       4
     ],
     "command": {
@@ -3169,8 +3169,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1472,
-      1684,
+      1468,
+      1680,
       4
     ],
     "command": {
@@ -3194,8 +3194,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3210,8 +3210,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3224,8 +3224,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3235,8 +3235,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3247,8 +3247,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3260,8 +3260,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3274,8 +3274,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3288,8 +3288,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3304,8 +3304,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3318,8 +3318,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3329,8 +3329,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3341,8 +3341,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3354,8 +3354,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3368,8 +3368,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3382,8 +3382,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3398,8 +3398,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3412,8 +3412,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3423,8 +3423,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3435,8 +3435,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3448,8 +3448,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3462,8 +3462,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3476,8 +3476,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3492,8 +3492,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3506,8 +3506,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3517,8 +3517,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3529,8 +3529,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3542,8 +3542,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3556,8 +3556,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1698,
-      1730,
+      1694,
+      1726,
       4
     ],
     "command": {
@@ -3570,8 +3570,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1782,
-      1947,
+      1778,
+      1943,
       4
     ],
     "command": {
@@ -3586,8 +3586,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1782,
-      1947,
+      1778,
+      1943,
       4
     ],
     "command": {
@@ -3597,8 +3597,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1782,
-      1947,
+      1778,
+      1943,
       4
     ],
     "command": {
@@ -3614,8 +3614,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1782,
-      1947,
+      1778,
+      1943,
       4
     ],
     "command": {
@@ -3643,8 +3643,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1782,
-      1947,
+      1778,
+      1943,
       4
     ],
     "command": {
@@ -3655,8 +3655,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1961,
-      1994,
+      1957,
+      1990,
       4
     ],
     "command": {
@@ -3671,8 +3671,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1961,
-      1994,
+      1957,
+      1990,
       4
     ],
     "command": {
@@ -3685,8 +3685,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1961,
-      1994,
+      1957,
+      1990,
       4
     ],
     "command": {
@@ -3696,8 +3696,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1961,
-      1994,
+      1957,
+      1990,
       4
     ],
     "command": {
@@ -3708,8 +3708,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1961,
-      1994,
+      1957,
+      1990,
       4
     ],
     "command": {
@@ -3721,8 +3721,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1961,
-      1994,
+      1957,
+      1990,
       4
     ],
     "command": {
@@ -3735,8 +3735,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1961,
-      1994,
+      1957,
+      1990,
       4
     ],
     "command": {
@@ -3749,8 +3749,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2044,
-      2075,
+      2040,
+      2071,
       4
     ],
     "command": {
@@ -3763,8 +3763,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2089,
-      2150,
+      2085,
+      2146,
       4
     ],
     "command": {
@@ -3784,8 +3784,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2164,
-      2187,
+      2160,
+      2183,
       4
     ],
     "command": {
@@ -3813,8 +3813,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2193,
-      2240,
+      2189,
+      2229,
       4
     ],
     "command": {
@@ -3833,8 +3833,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2193,
-      2240,
+      2189,
+      2229,
       4
     ],
     "command": {
@@ -3844,8 +3844,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2193,
-      2240,
+      2189,
+      2229,
       4
     ],
     "command": {
@@ -3861,8 +3861,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2193,
-      2240,
+      2189,
+      2229,
       4
     ],
     "command": {
@@ -3890,8 +3890,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2193,
-      2240,
+      2189,
+      2229,
       4
     ],
     "command": {
@@ -3902,8 +3902,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2242,
-      2273,
+      2231,
+      2262,
       4
     ],
     "command": {
@@ -3922,8 +3922,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2242,
-      2273,
+      2231,
+      2262,
       4
     ],
     "command": {
@@ -3936,8 +3936,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2242,
-      2273,
+      2231,
+      2262,
       4
     ],
     "command": {
@@ -3947,8 +3947,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2242,
-      2273,
+      2231,
+      2262,
       4
     ],
     "command": {
@@ -3959,8 +3959,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2242,
-      2273,
+      2231,
+      2262,
       4
     ],
     "command": {
@@ -3972,8 +3972,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2242,
-      2273,
+      2231,
+      2262,
       4
     ],
     "command": {
@@ -3986,8 +3986,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2242,
-      2273,
+      2231,
+      2262,
       4
     ],
     "command": {
@@ -4001,7 +4001,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       205,
-      266,
+      265,
       4
     ],
     "command": {
@@ -4013,8 +4013,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      324,
-      407,
+      323,
+      406,
       4
     ],
     "command": {
@@ -4029,8 +4029,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      517,
-      553,
+      516,
+      552,
       4
     ],
     "command": {
@@ -4042,8 +4042,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2000,
-      2083,
+      1996,
+      2079,
       4
     ],
     "command": {
@@ -4058,8 +4058,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2193,
-      2240,
+      2189,
+      2229,
       4
     ],
     "command": {
@@ -4466,7 +4466,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       915,
-      980,
+      979,
       5
     ],
     "command": {
@@ -4482,7 +4482,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       915,
-      980,
+      979,
       5
     ],
     "command": {
@@ -4493,7 +4493,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       915,
-      980,
+      979,
       5
     ],
     "command": {
@@ -4510,7 +4510,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       915,
-      980,
+      979,
       5
     ],
     "command": {
@@ -4539,7 +4539,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       915,
-      980,
+      979,
       5
     ],
     "command": {
@@ -4550,8 +4550,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      995,
-      1028,
+      994,
+      1027,
       5
     ],
     "command": {
@@ -4566,8 +4566,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      995,
-      1028,
+      994,
+      1027,
       5
     ],
     "command": {
@@ -4580,8 +4580,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      995,
-      1028,
+      994,
+      1027,
       5
     ],
     "command": {
@@ -4591,8 +4591,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      995,
-      1028,
+      994,
+      1027,
       5
     ],
     "command": {
@@ -4603,8 +4603,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      995,
-      1028,
+      994,
+      1027,
       5
     ],
     "command": {
@@ -4616,8 +4616,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      995,
-      1028,
+      994,
+      1027,
       5
     ],
     "command": {
@@ -4630,8 +4630,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      995,
-      1028,
+      994,
+      1027,
       5
     ],
     "command": {
@@ -4644,8 +4644,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1078,
-      1109,
+      1077,
+      1108,
       5
     ],
     "command": {
@@ -4658,8 +4658,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1034,
-      1117,
+      1033,
+      1116,
       5
     ],
     "command": {
@@ -4674,8 +4674,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1170,
-      1369,
+      1169,
+      1364,
       5
     ],
     "command": {
@@ -4690,8 +4690,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1170,
-      1369,
+      1169,
+      1364,
       5
     ],
     "command": {
@@ -4701,8 +4701,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1170,
-      1369,
+      1169,
+      1364,
       5
     ],
     "command": {
@@ -4718,8 +4718,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1170,
-      1369,
+      1169,
+      1364,
       5
     ],
     "command": {
@@ -4747,8 +4747,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1170,
-      1369,
+      1169,
+      1364,
       5
     ],
     "command": {
@@ -4759,8 +4759,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1384,
-      1414,
+      1379,
+      1409,
       5
     ],
     "command": {
@@ -4775,8 +4775,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1384,
-      1414,
+      1379,
+      1409,
       5
     ],
     "command": {
@@ -4789,8 +4789,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1384,
-      1414,
+      1379,
+      1409,
       5
     ],
     "command": {
@@ -4800,8 +4800,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1384,
-      1414,
+      1379,
+      1409,
       5
     ],
     "command": {
@@ -4812,8 +4812,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1384,
-      1414,
+      1379,
+      1409,
       5
     ],
     "command": {
@@ -4825,8 +4825,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1384,
-      1414,
+      1379,
+      1409,
       5
     ],
     "command": {
@@ -4839,8 +4839,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1384,
-      1414,
+      1379,
+      1409,
       5
     ],
     "command": {
@@ -4853,8 +4853,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1464,
-      1495,
+      1459,
+      1490,
       5
     ],
     "command": {
@@ -4867,8 +4867,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1503,
+      1415,
+      1498,
       5
     ],
     "command": {
@@ -4883,8 +4883,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1644,
+      1588,
+      1632,
       5
     ],
     "command": {
@@ -4899,8 +4899,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1644,
+      1588,
+      1632,
       5
     ],
     "command": {
@@ -4910,8 +4910,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1644,
+      1588,
+      1632,
       5
     ],
     "command": {
@@ -4927,8 +4927,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1644,
+      1588,
+      1632,
       5
     ],
     "command": {
@@ -4956,8 +4956,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1644,
+      1588,
+      1632,
       5
     ],
     "command": {
@@ -4968,8 +4968,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1650,
-      1781,
+      1638,
+      1769,
       5
     ],
     "command": {
@@ -4993,8 +4993,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5009,8 +5009,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5023,8 +5023,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5034,8 +5034,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5046,8 +5046,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5059,8 +5059,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5073,8 +5073,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5087,8 +5087,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5103,8 +5103,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5117,8 +5117,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5128,8 +5128,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5140,8 +5140,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5153,8 +5153,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5167,8 +5167,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5181,8 +5181,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5197,8 +5197,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5211,8 +5211,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5222,8 +5222,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5234,8 +5234,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5247,8 +5247,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5261,8 +5261,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5275,8 +5275,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5291,8 +5291,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5305,8 +5305,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5316,8 +5316,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5328,8 +5328,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5341,8 +5341,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5355,8 +5355,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5369,8 +5369,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5385,8 +5385,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5399,8 +5399,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5410,8 +5410,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5422,8 +5422,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5435,8 +5435,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5449,8 +5449,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5463,8 +5463,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5479,8 +5479,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5493,8 +5493,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5504,8 +5504,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5516,8 +5516,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5529,8 +5529,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5543,8 +5543,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5557,8 +5557,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5573,8 +5573,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5587,8 +5587,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5598,8 +5598,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5610,8 +5610,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5623,8 +5623,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5637,8 +5637,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5651,8 +5651,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5667,8 +5667,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5681,8 +5681,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5692,8 +5692,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5704,8 +5704,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5717,8 +5717,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5731,8 +5731,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1796,
-      1829,
+      1784,
+      1817,
       5
     ],
     "command": {
@@ -5745,8 +5745,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      2077,
+      1869,
+      2060,
       5
     ],
     "command": {
@@ -5761,8 +5761,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      2077,
+      1869,
+      2060,
       5
     ],
     "command": {
@@ -5772,8 +5772,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      2077,
+      1869,
+      2060,
       5
     ],
     "command": {
@@ -5789,8 +5789,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      2077,
+      1869,
+      2060,
       5
     ],
     "command": {
@@ -5818,8 +5818,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1881,
-      2077,
+      1869,
+      2060,
       5
     ],
     "command": {
@@ -5830,8 +5830,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2083,
-      2329,
+      2066,
+      2312,
       5
     ],
     "command": {
@@ -5855,8 +5855,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5871,8 +5871,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5885,8 +5885,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5896,8 +5896,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5908,8 +5908,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5921,8 +5921,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5935,8 +5935,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5949,8 +5949,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5965,8 +5965,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5979,8 +5979,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -5990,8 +5990,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6002,8 +6002,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6015,8 +6015,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6029,8 +6029,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6043,8 +6043,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6059,8 +6059,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6073,8 +6073,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6084,8 +6084,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6096,8 +6096,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6109,8 +6109,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6123,8 +6123,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6137,8 +6137,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6153,8 +6153,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6167,8 +6167,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6178,8 +6178,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6190,8 +6190,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6203,8 +6203,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6217,8 +6217,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2344,
-      2377,
+      2327,
+      2360,
       5
     ],
     "command": {
@@ -6231,8 +6231,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2608,
+      2412,
+      2586,
       5
     ],
     "command": {
@@ -6247,8 +6247,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2608,
+      2412,
+      2586,
       5
     ],
     "command": {
@@ -6258,8 +6258,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2608,
+      2412,
+      2586,
       5
     ],
     "command": {
@@ -6275,8 +6275,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2608,
+      2412,
+      2586,
       5
     ],
     "command": {
@@ -6304,8 +6304,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2608,
+      2412,
+      2586,
       5
     ],
     "command": {
@@ -6316,8 +6316,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2610,
-      2640,
+      2588,
+      2618,
       5
     ],
     "command": {
@@ -6332,8 +6332,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2610,
-      2640,
+      2588,
+      2618,
       5
     ],
     "command": {
@@ -6346,8 +6346,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2610,
-      2640,
+      2588,
+      2618,
       5
     ],
     "command": {
@@ -6357,8 +6357,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2610,
-      2640,
+      2588,
+      2618,
       5
     ],
     "command": {
@@ -6369,8 +6369,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2610,
-      2640,
+      2588,
+      2618,
       5
     ],
     "command": {
@@ -6382,8 +6382,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2610,
-      2640,
+      2588,
+      2618,
       5
     ],
     "command": {
@@ -6396,8 +6396,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2610,
-      2640,
+      2588,
+      2618,
       5
     ],
     "command": {
@@ -6410,8 +6410,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2646,
-      2707,
+      2624,
+      2685,
       5
     ],
     "command": {
@@ -7048,7 +7048,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1471,
-      1664,
+      1659,
       6
     ],
     "command": {
@@ -7064,7 +7064,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1471,
-      1664,
+      1659,
       6
     ],
     "command": {
@@ -7075,7 +7075,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1471,
-      1664,
+      1659,
       6
     ],
     "command": {
@@ -7092,7 +7092,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1471,
-      1664,
+      1659,
       6
     ],
     "command": {
@@ -7121,7 +7121,7 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [
       1471,
-      1664,
+      1659,
       6
     ],
     "command": {
@@ -7132,8 +7132,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1670,
-      1913,
+      1665,
+      1908,
       6
     ],
     "command": {
@@ -7157,8 +7157,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7173,8 +7173,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7187,8 +7187,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7198,8 +7198,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7210,8 +7210,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7223,8 +7223,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7237,8 +7237,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7251,8 +7251,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7267,8 +7267,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7281,8 +7281,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7292,8 +7292,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7304,8 +7304,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7317,8 +7317,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7331,8 +7331,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7345,8 +7345,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7361,8 +7361,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7375,8 +7375,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7386,8 +7386,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7398,8 +7398,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7411,8 +7411,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7425,8 +7425,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7439,8 +7439,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7455,8 +7455,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7469,8 +7469,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7480,8 +7480,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7492,8 +7492,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7505,8 +7505,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7519,8 +7519,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7533,8 +7533,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7549,8 +7549,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7563,8 +7563,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7574,8 +7574,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7586,8 +7586,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7599,8 +7599,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7613,8 +7613,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7627,8 +7627,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7643,8 +7643,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7657,8 +7657,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7668,8 +7668,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7680,8 +7680,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7693,8 +7693,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7707,8 +7707,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7721,8 +7721,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7737,8 +7737,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7751,8 +7751,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7762,8 +7762,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7774,8 +7774,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7787,8 +7787,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7801,8 +7801,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7815,8 +7815,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7831,8 +7831,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7845,8 +7845,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7856,8 +7856,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7868,8 +7868,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7881,8 +7881,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7895,8 +7895,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1961,
+      1923,
+      1956,
       6
     ],
     "command": {
@@ -7909,8 +7909,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2084,
-      2374,
+      2079,
+      2364,
       6
     ],
     "command": {
@@ -7925,8 +7925,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2084,
-      2374,
+      2079,
+      2364,
       6
     ],
     "command": {
@@ -7936,8 +7936,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2084,
-      2374,
+      2079,
+      2364,
       6
     ],
     "command": {
@@ -7953,8 +7953,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2084,
-      2374,
+      2079,
+      2364,
       6
     ],
     "command": {
@@ -7982,8 +7982,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2084,
-      2374,
+      2079,
+      2364,
       6
     ],
     "command": {
@@ -7994,8 +7994,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2388,
-      2421,
+      2378,
+      2411,
       6
     ],
     "command": {
@@ -8010,8 +8010,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2388,
-      2421,
+      2378,
+      2411,
       6
     ],
     "command": {
@@ -8024,8 +8024,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2388,
-      2421,
+      2378,
+      2411,
       6
     ],
     "command": {
@@ -8035,8 +8035,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2388,
-      2421,
+      2378,
+      2411,
       6
     ],
     "command": {
@@ -8047,8 +8047,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2388,
-      2421,
+      2378,
+      2411,
       6
     ],
     "command": {
@@ -8060,8 +8060,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2388,
-      2421,
+      2378,
+      2411,
       6
     ],
     "command": {
@@ -8074,8 +8074,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2388,
-      2421,
+      2378,
+      2411,
       6
     ],
     "command": {
@@ -8088,8 +8088,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2473,
-      2761,
+      2463,
+      2746,
       6
     ],
     "command": {
@@ -8104,8 +8104,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2473,
-      2761,
+      2463,
+      2746,
       6
     ],
     "command": {
@@ -8115,8 +8115,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2473,
-      2761,
+      2463,
+      2746,
       6
     ],
     "command": {
@@ -8132,8 +8132,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2473,
-      2761,
+      2463,
+      2746,
       6
     ],
     "command": {
@@ -8161,8 +8161,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2473,
-      2761,
+      2463,
+      2746,
       6
     ],
     "command": {
@@ -8173,8 +8173,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2776,
-      2809,
+      2761,
+      2794,
       6
     ],
     "command": {
@@ -8189,8 +8189,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2776,
-      2809,
+      2761,
+      2794,
       6
     ],
     "command": {
@@ -8203,8 +8203,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2776,
-      2809,
+      2761,
+      2794,
       6
     ],
     "command": {
@@ -8214,8 +8214,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2776,
-      2809,
+      2761,
+      2794,
       6
     ],
     "command": {
@@ -8226,8 +8226,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2776,
-      2809,
+      2761,
+      2794,
       6
     ],
     "command": {
@@ -8239,8 +8239,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2776,
-      2809,
+      2761,
+      2794,
       6
     ],
     "command": {
@@ -8253,8 +8253,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2776,
-      2809,
+      2761,
+      2794,
       6
     ],
     "command": {
@@ -8267,8 +8267,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2915,
-      2960,
+      2900,
+      2938,
       6
     ],
     "command": {
@@ -8283,8 +8283,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2915,
-      2960,
+      2900,
+      2938,
       6
     ],
     "command": {
@@ -8294,8 +8294,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2915,
-      2960,
+      2900,
+      2938,
       6
     ],
     "command": {
@@ -8311,8 +8311,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2915,
-      2960,
+      2900,
+      2938,
       6
     ],
     "command": {
@@ -8340,8 +8340,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2915,
-      2960,
+      2900,
+      2938,
       6
     ],
     "command": {
@@ -8352,8 +8352,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2975,
-      3009,
+      2953,
+      2987,
       6
     ],
     "command": {
@@ -8368,8 +8368,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2975,
-      3009,
+      2953,
+      2987,
       6
     ],
     "command": {
@@ -8382,8 +8382,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2975,
-      3009,
+      2953,
+      2987,
       6
     ],
     "command": {
@@ -8393,8 +8393,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2975,
-      3009,
+      2953,
+      2987,
       6
     ],
     "command": {
@@ -8405,8 +8405,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2975,
-      3009,
+      2953,
+      2987,
       6
     ],
     "command": {
@@ -8418,8 +8418,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2975,
-      3009,
+      2953,
+      2987,
       6
     ],
     "command": {
@@ -8432,8 +8432,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2975,
-      3009,
+      2953,
+      2987,
       6
     ],
     "command": {
@@ -8446,8 +8446,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3090,
-      3315,
+      3068,
+      3293,
       6
     ],
     "command": {
@@ -8462,8 +8462,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3090,
-      3315,
+      3068,
+      3293,
       6
     ],
     "command": {
@@ -8473,8 +8473,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3090,
-      3315,
+      3068,
+      3293,
       6
     ],
     "command": {
@@ -8490,8 +8490,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3321,
-      3415,
+      3299,
+      3393,
       6
     ],
     "command": {
@@ -8511,8 +8511,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3421,
-      3564,
+      3399,
+      3542,
       6
     ],
     "command": {
@@ -8540,8 +8540,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3570,
-      3664,
+      3548,
+      3642,
       6
     ],
     "command": {
@@ -8561,8 +8561,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3670,
-      3772,
+      3648,
+      3750,
       6
     ],
     "command": {
@@ -8582,8 +8582,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3778,
-      3880,
+      3756,
+      3858,
       6
     ],
     "command": {
@@ -8603,8 +8603,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3886,
-      3986,
+      3864,
+      3964,
       6
     ],
     "command": {
@@ -8624,8 +8624,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3992,
-      4048,
+      3970,
+      4026,
       6
     ],
     "command": {
@@ -8645,8 +8645,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4054,
-      4061,
+      4032,
+      4039,
       6
     ],
     "command": {
@@ -8657,8 +8657,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8673,8 +8673,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8687,8 +8687,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8698,8 +8698,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8710,8 +8710,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8723,8 +8723,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8737,8 +8737,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8751,8 +8751,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8765,8 +8765,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8779,8 +8779,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8793,8 +8793,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8807,8 +8807,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8821,8 +8821,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8835,8 +8835,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8849,8 +8849,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8863,8 +8863,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8877,8 +8877,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8891,8 +8891,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8905,8 +8905,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4076,
-      4109,
+      4054,
+      4087,
       6
     ],
     "command": {
@@ -8919,8 +8919,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4190,
-      4415,
+      4168,
+      4393,
       6
     ],
     "command": {
@@ -8935,8 +8935,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4190,
-      4415,
+      4168,
+      4393,
       6
     ],
     "command": {
@@ -8946,8 +8946,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4190,
-      4415,
+      4168,
+      4393,
       6
     ],
     "command": {
@@ -8963,8 +8963,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4421,
-      4517,
+      4399,
+      4495,
       6
     ],
     "command": {
@@ -8984,8 +8984,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4523,
-      4671,
+      4501,
+      4649,
       6
     ],
     "command": {
@@ -9013,8 +9013,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4677,
-      4773,
+      4655,
+      4751,
       6
     ],
     "command": {
@@ -9034,8 +9034,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4779,
-      4883,
+      4757,
+      4861,
       6
     ],
     "command": {
@@ -9055,8 +9055,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4889,
-      4993,
+      4867,
+      4971,
       6
     ],
     "command": {
@@ -9076,8 +9076,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4999,
-      5101,
+      4977,
+      5079,
       6
     ],
     "command": {
@@ -9097,8 +9097,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5107,
-      5163,
+      5085,
+      5141,
       6
     ],
     "command": {
@@ -9118,8 +9118,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5169,
-      5176,
+      5147,
+      5154,
       6
     ],
     "command": {
@@ -9130,8 +9130,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9146,8 +9146,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9160,8 +9160,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9171,8 +9171,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9183,8 +9183,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9196,8 +9196,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9210,8 +9210,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9224,8 +9224,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9238,8 +9238,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9252,8 +9252,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9266,8 +9266,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9280,8 +9280,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9294,8 +9294,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9308,8 +9308,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9322,8 +9322,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9336,8 +9336,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9350,8 +9350,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9364,8 +9364,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9378,8 +9378,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5178,
-      5211,
+      5156,
+      5189,
       6
     ],
     "command": {
@@ -9392,8 +9392,8 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5217,
-      5278,
+      5195,
+      5256,
       6
     ],
     "command": {

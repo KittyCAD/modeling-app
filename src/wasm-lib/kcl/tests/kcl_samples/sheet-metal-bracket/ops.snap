@@ -584,7 +584,7 @@ description: Operations executed sheet-metal-bracket.kcl
         },
         "sourceRange": [
           2289,
-          2360,
+          2355,
           0
         ]
       },
@@ -596,8 +596,8 @@ description: Operations executed sheet-metal-bracket.kcl
           }
         },
         "sourceRange": [
-          2362,
-          2363,
+          2357,
+          2358,
           0
         ]
       }
@@ -605,7 +605,7 @@ description: Operations executed sheet-metal-bracket.kcl
     "name": "hole",
     "sourceRange": [
       2284,
-      2364,
+      2359,
       0
     ],
     "type": "StdLibCall",
@@ -621,8 +621,8 @@ description: Operations executed sheet-metal-bracket.kcl
           }
         },
         "sourceRange": [
-          2375,
-          2446,
+          2370,
+          2436,
           0
         ]
       },
@@ -634,16 +634,16 @@ description: Operations executed sheet-metal-bracket.kcl
           }
         },
         "sourceRange": [
-          2448,
-          2449,
+          2438,
+          2439,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2370,
-      2450,
+      2365,
+      2440,
       0
     ],
     "type": "StdLibCall",
@@ -666,16 +666,16 @@ description: Operations executed sheet-metal-bracket.kcl
           }
         },
         "sourceRange": [
-          2473,
-          2482,
+          2463,
+          2472,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "type": "StdLibCall",
@@ -710,8 +710,8 @@ description: Operations executed sheet-metal-bracket.kcl
           }
         },
         "sourceRange": [
-          2513,
-          2516,
+          2503,
+          2506,
           0
         ]
       },
@@ -730,16 +730,16 @@ description: Operations executed sheet-metal-bracket.kcl
           ]
         },
         "sourceRange": [
-          2532,
-          2611,
+          2522,
+          2601,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      2489,
-      2618,
+      2479,
+      2608,
       0
     ],
     "type": "StdLibCall",
@@ -765,16 +765,16 @@ description: Operations executed sheet-metal-bracket.kcl
           "value": "XY"
         },
         "sourceRange": [
-          2644,
-          2648,
+          2634,
+          2638,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2630,
-      2649,
+      2620,
+      2639,
       0
     ],
     "type": "StdLibCall",
@@ -790,8 +790,46 @@ description: Operations executed sheet-metal-bracket.kcl
           }
         },
         "sourceRange": [
-          2827,
+          2817,
+          2884,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          2886,
+          2887,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      2812,
+      2888,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
           2899,
+          2966,
           0
         ]
       },
@@ -803,54 +841,16 @@ description: Operations executed sheet-metal-bracket.kcl
           }
         },
         "sourceRange": [
-          2901,
-          2902,
+          2968,
+          2969,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2822,
-      2903,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          2914,
-          2986,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          2988,
-          2989,
-          0
-        ]
-      }
-    },
-    "name": "hole",
-    "sourceRange": [
-      2909,
-      2990,
+      2894,
+      2970,
       0
     ],
     "type": "StdLibCall",
@@ -873,16 +873,16 @@ description: Operations executed sheet-metal-bracket.kcl
           }
         },
         "sourceRange": [
-          3013,
-          3022,
+          2993,
+          3002,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "type": "StdLibCall",
@@ -917,8 +917,8 @@ description: Operations executed sheet-metal-bracket.kcl
           }
         },
         "sourceRange": [
-          3053,
-          3057,
+          3033,
+          3037,
           0
         ]
       },
@@ -937,16 +937,16 @@ description: Operations executed sheet-metal-bracket.kcl
           ]
         },
         "sourceRange": [
-          3073,
-          3152,
+          3053,
+          3132,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      3029,
-      3159,
+      3009,
+      3139,
       0
     ],
     "type": "StdLibCall",

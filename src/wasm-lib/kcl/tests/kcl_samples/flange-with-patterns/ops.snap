@@ -34,16 +34,16 @@ description: Operations executed flange-with-patterns.kcl
           "value": "XY"
         },
         "sourceRange": [
-          1232,
-          1236,
+          1227,
+          1231,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1218,
-      1237,
+      1213,
+      1232,
       0
     ],
     "type": "StdLibCall",
@@ -70,8 +70,8 @@ description: Operations executed flange-with-patterns.kcl
           ]
         },
         "sourceRange": [
-          1325,
-          1332,
+          1315,
+          1322,
           0
         ]
       },
@@ -83,16 +83,16 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          1334,
-          1335,
+          1324,
+          1325,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1320,
-      1336,
+      1310,
+      1326,
       0
     ],
     "type": "StdLibCall",
@@ -108,8 +108,8 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          1347,
-          1418,
+          1337,
+          1403,
           0
         ]
       },
@@ -121,16 +121,16 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          1420,
-          1421,
+          1405,
+          1406,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1342,
-      1422,
+      1332,
+      1407,
       0
     ],
     "type": "StdLibCall",
@@ -153,16 +153,16 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          1445,
-          1458,
+          1430,
+          1443,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "type": "StdLibCall",
@@ -370,16 +370,16 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          1762,
-          1774,
+          1747,
+          1759,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1748,
-      1775,
+      1733,
+      1760,
       0
     ],
     "type": "StdLibCall",
@@ -395,8 +395,8 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          1872,
-          1943,
+          1852,
+          1918,
           0
         ]
       },
@@ -408,16 +408,16 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          1945,
-          1946,
+          1920,
+          1921,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1867,
-      1947,
+      1847,
+      1922,
       0
     ],
     "type": "StdLibCall",
@@ -440,16 +440,16 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          1970,
-          1987,
+          1945,
+          1962,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "type": "StdLibCall",
@@ -475,16 +475,16 @@ description: Operations executed flange-with-patterns.kcl
           "value": "XY"
         },
         "sourceRange": [
-          2079,
-          2083,
+          2054,
+          2058,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2065,
-      2084,
+      2040,
+      2059,
       0
     ],
     "type": "StdLibCall",
@@ -500,8 +500,8 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          2184,
-          2255,
+          2154,
+          2220,
           0
         ]
       },
@@ -513,16 +513,16 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          2257,
-          2258,
+          2222,
+          2223,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2179,
-      2259,
+      2149,
+      2224,
       0
     ],
     "type": "StdLibCall",
@@ -545,16 +545,16 @@ description: Operations executed flange-with-patterns.kcl
           }
         },
         "sourceRange": [
-          2282,
-          2298,
+          2247,
+          2263,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "type": "StdLibCall",

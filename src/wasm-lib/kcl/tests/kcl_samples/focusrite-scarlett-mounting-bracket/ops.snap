@@ -547,7 +547,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         },
         "sourceRange": [
           2703,
-          2870,
+          2865,
           0
         ]
       },
@@ -559,8 +559,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          2872,
-          2873,
+          2867,
+          2868,
           0
         ]
       }
@@ -568,7 +568,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
     "name": "hole",
     "sourceRange": [
       2698,
-      2874,
+      2869,
       0
     ],
     "type": "StdLibCall",
@@ -591,16 +591,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          2897,
-          2904,
+          2892,
+          2899,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2880,
-      2905,
+      2875,
+      2900,
       0
     ],
     "type": "StdLibCall",
@@ -629,8 +629,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          2935,
-          2947,
+          2930,
+          2942,
           0
         ]
       },
@@ -649,16 +649,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           ]
         },
         "sourceRange": [
-          2963,
-          3048,
+          2958,
+          3043,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      2911,
-      3055,
+      2906,
+      3050,
       0
     ],
     "type": "StdLibCall",
@@ -724,8 +724,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           ]
         },
         "sourceRange": [
-          3092,
-          3102,
+          3087,
+          3097,
           0
         ]
       },
@@ -738,8 +738,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          3144,
-          3181,
+          3139,
+          3176,
           0
         ]
       },
@@ -758,16 +758,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          3123,
-          3124,
+          3118,
+          3119,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      3061,
-      3189,
+      3056,
+      3184,
       0
     ],
     "type": "StdLibCall",
@@ -975,16 +975,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          3267,
-          3275,
+          3262,
+          3270,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3253,
-      3276,
+      3248,
+      3271,
       0
     ],
     "type": "StdLibCall",
@@ -1000,8 +1000,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          3549,
-          3719,
+          3544,
+          3709,
           0
         ]
       },
@@ -1013,16 +1013,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          3721,
-          3722,
+          3711,
+          3712,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3544,
-      3723,
+      3539,
+      3713,
       0
     ],
     "type": "StdLibCall",
@@ -1045,16 +1045,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          3746,
-          3753,
+          3736,
+          3743,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3729,
-      3754,
+      3719,
+      3744,
       0
     ],
     "type": "StdLibCall",
@@ -1083,8 +1083,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          3784,
-          3796,
+          3774,
+          3786,
           0
         ]
       },
@@ -1103,16 +1103,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           ]
         },
         "sourceRange": [
-          3812,
-          3897,
+          3802,
+          3887,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      3760,
-      3904,
+      3750,
+      3894,
       0
     ],
     "type": "StdLibCall",
@@ -1178,8 +1178,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           ]
         },
         "sourceRange": [
+          3931,
           3941,
-          3951,
           0
         ]
       },
@@ -1192,8 +1192,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          3993,
-          4030,
+          3983,
+          4020,
           0
         ]
       },
@@ -1212,16 +1212,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          3972,
-          3973,
+          3962,
+          3963,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      3910,
-      4038,
+      3900,
+      4028,
       0
     ],
     "type": "StdLibCall",
@@ -1423,16 +1423,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          4338,
-          4346,
+          4328,
+          4336,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4324,
-      4347,
+      4314,
+      4337,
       0
     ],
     "type": "StdLibCall",
@@ -1455,16 +1455,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
+          4475,
           4485,
-          4495,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4468,
-      4496,
+      4458,
+      4486,
       0
     ],
     "type": "StdLibCall",
@@ -1666,16 +1666,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
-          4562,
-          4570,
+          4552,
+          4560,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4548,
-      4571,
+      4538,
+      4561,
       0
     ],
     "type": "StdLibCall",
@@ -1698,16 +1698,16 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           }
         },
         "sourceRange": [
+          4723,
           4733,
-          4743,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4716,
-      4744,
+      4706,
+      4734,
       0
     ],
     "type": "StdLibCall",

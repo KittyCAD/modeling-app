@@ -460,7 +460,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
     "cmdId": "[uuid]",
     "range": [
       1183,
-      1336,
+      1331,
       0
     ],
     "command": {
@@ -480,7 +480,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
     "cmdId": "[uuid]",
     "range": [
       1183,
-      1336,
+      1331,
       0
     ],
     "command": {
@@ -491,7 +491,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
     "cmdId": "[uuid]",
     "range": [
       1183,
-      1336,
+      1331,
       0
     ],
     "command": {
@@ -508,7 +508,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
     "cmdId": "[uuid]",
     "range": [
       1183,
-      1336,
+      1331,
       0
     ],
     "command": {
@@ -537,7 +537,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
     "cmdId": "[uuid]",
     "range": [
       1183,
-      1336,
+      1331,
       0
     ],
     "command": {
@@ -549,7 +549,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
     "cmdId": "[uuid]",
     "range": [
       1178,
-      1340,
+      1335,
       0
     ],
     "command": {
@@ -562,7 +562,7 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
     "cmdId": "[uuid]",
     "range": [
       1178,
-      1340,
+      1335,
       0
     ],
     "command": {
@@ -574,8 +574,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1351,
-      1501,
+      1346,
+      1491,
       0
     ],
     "command": {
@@ -594,8 +594,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1351,
-      1501,
+      1346,
+      1491,
       0
     ],
     "command": {
@@ -605,8 +605,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1351,
-      1501,
+      1346,
+      1491,
       0
     ],
     "command": {
@@ -622,8 +622,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1351,
-      1501,
+      1346,
+      1491,
       0
     ],
     "command": {
@@ -651,8 +651,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1351,
-      1501,
+      1346,
+      1491,
       0
     ],
     "command": {
@@ -663,8 +663,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1346,
-      1505,
+      1341,
+      1495,
       0
     ],
     "command": {
@@ -676,8 +676,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1346,
-      1505,
+      1341,
+      1495,
       0
     ],
     "command": {
@@ -689,8 +689,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1516,
-      1663,
+      1506,
+      1648,
       0
     ],
     "command": {
@@ -709,8 +709,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1516,
-      1663,
+      1506,
+      1648,
       0
     ],
     "command": {
@@ -720,8 +720,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1516,
-      1663,
+      1506,
+      1648,
       0
     ],
     "command": {
@@ -737,8 +737,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1516,
-      1663,
+      1506,
+      1648,
       0
     ],
     "command": {
@@ -766,8 +766,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1516,
-      1663,
+      1506,
+      1648,
       0
     ],
     "command": {
@@ -778,8 +778,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1511,
-      1667,
+      1501,
+      1652,
       0
     ],
     "command": {
@@ -791,8 +791,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1511,
-      1667,
+      1501,
+      1652,
       0
     ],
     "command": {
@@ -804,8 +804,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1678,
-      1828,
+      1663,
+      1808,
       0
     ],
     "command": {
@@ -824,8 +824,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1678,
-      1828,
+      1663,
+      1808,
       0
     ],
     "command": {
@@ -835,8 +835,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1678,
-      1828,
+      1663,
+      1808,
       0
     ],
     "command": {
@@ -852,8 +852,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1678,
-      1828,
+      1663,
+      1808,
       0
     ],
     "command": {
@@ -881,8 +881,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1678,
-      1828,
+      1663,
+      1808,
       0
     ],
     "command": {
@@ -893,8 +893,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1832,
+      1658,
+      1812,
       0
     ],
     "command": {
@@ -906,8 +906,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1832,
+      1658,
+      1812,
       0
     ],
     "command": {
@@ -919,8 +919,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1843,
-      1917,
+      1823,
+      1892,
       0
     ],
     "command": {
@@ -939,8 +939,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1843,
-      1917,
+      1823,
+      1892,
       0
     ],
     "command": {
@@ -950,8 +950,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1843,
-      1917,
+      1823,
+      1892,
       0
     ],
     "command": {
@@ -967,8 +967,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1843,
-      1917,
+      1823,
+      1892,
       0
     ],
     "command": {
@@ -996,8 +996,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1843,
-      1917,
+      1823,
+      1892,
       0
     ],
     "command": {
@@ -1008,8 +1008,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1838,
-      1921,
+      1818,
+      1896,
       0
     ],
     "command": {
@@ -1021,8 +1021,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1838,
-      1921,
+      1818,
+      1896,
       0
     ],
     "command": {
@@ -1034,8 +1034,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1054,8 +1054,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1068,8 +1068,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1079,8 +1079,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1091,8 +1091,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1104,8 +1104,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1118,8 +1118,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1132,8 +1132,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1146,8 +1146,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1160,8 +1160,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1174,8 +1174,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1188,8 +1188,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1202,8 +1202,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1216,8 +1216,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1230,8 +1230,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1244,8 +1244,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1258,8 +1258,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1272,8 +1272,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1286,8 +1286,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1300,8 +1300,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1314,8 +1314,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1328,8 +1328,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1342,8 +1342,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "command": {
@@ -1356,8 +1356,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2242,
-      2474,
+      2217,
+      2449,
       0
     ],
     "command": {
@@ -1385,8 +1385,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2480,
-      2524,
+      2455,
+      2499,
       0
     ],
     "command": {
@@ -1405,8 +1405,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2480,
-      2524,
+      2455,
+      2499,
       0
     ],
     "command": {
@@ -1416,8 +1416,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2480,
-      2524,
+      2455,
+      2499,
       0
     ],
     "command": {
@@ -1433,8 +1433,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2530,
-      2574,
+      2505,
+      2549,
       0
     ],
     "command": {
@@ -1454,8 +1454,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2623,
+      2555,
+      2598,
       0
     ],
     "command": {
@@ -1475,8 +1475,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2629,
-      2673,
+      2604,
+      2648,
       0
     ],
     "command": {
@@ -1496,8 +1496,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2679,
-      2686,
+      2654,
+      2661,
       0
     ],
     "command": {
@@ -1508,8 +1508,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2679,
-      2686,
+      2654,
+      2661,
       0
     ],
     "command": {
@@ -1519,8 +1519,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2697,
-      2848,
+      2672,
+      2818,
       0
     ],
     "command": {
@@ -1539,8 +1539,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2697,
-      2848,
+      2672,
+      2818,
       0
     ],
     "command": {
@@ -1550,8 +1550,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2697,
-      2848,
+      2672,
+      2818,
       0
     ],
     "command": {
@@ -1567,8 +1567,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2697,
-      2848,
+      2672,
+      2818,
       0
     ],
     "command": {
@@ -1596,8 +1596,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2697,
-      2848,
+      2672,
+      2818,
       0
     ],
     "command": {
@@ -1608,8 +1608,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2852,
+      2667,
+      2822,
       0
     ],
     "command": {
@@ -1621,8 +1621,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2692,
-      2852,
+      2667,
+      2822,
       0
     ],
     "command": {
@@ -1634,8 +1634,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2863,
-      3011,
+      2833,
+      2976,
       0
     ],
     "command": {
@@ -1654,8 +1654,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2863,
-      3011,
+      2833,
+      2976,
       0
     ],
     "command": {
@@ -1665,8 +1665,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2863,
-      3011,
+      2833,
+      2976,
       0
     ],
     "command": {
@@ -1682,8 +1682,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2863,
-      3011,
+      2833,
+      2976,
       0
     ],
     "command": {
@@ -1711,8 +1711,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2863,
-      3011,
+      2833,
+      2976,
       0
     ],
     "command": {
@@ -1723,8 +1723,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2858,
-      3015,
+      2828,
+      2980,
       0
     ],
     "command": {
@@ -1736,8 +1736,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2858,
-      3015,
+      2828,
+      2980,
       0
     ],
     "command": {
@@ -1749,8 +1749,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3171,
+      2991,
+      3131,
       0
     ],
     "command": {
@@ -1769,8 +1769,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3171,
+      2991,
+      3131,
       0
     ],
     "command": {
@@ -1780,8 +1780,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3171,
+      2991,
+      3131,
       0
     ],
     "command": {
@@ -1797,8 +1797,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3171,
+      2991,
+      3131,
       0
     ],
     "command": {
@@ -1826,8 +1826,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3171,
+      2991,
+      3131,
       0
     ],
     "command": {
@@ -1838,8 +1838,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3021,
-      3175,
+      2986,
+      3135,
       0
     ],
     "command": {
@@ -1851,8 +1851,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3021,
-      3175,
+      2986,
+      3135,
       0
     ],
     "command": {
@@ -1864,8 +1864,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3186,
-      3334,
+      3146,
+      3289,
       0
     ],
     "command": {
@@ -1884,8 +1884,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3186,
-      3334,
+      3146,
+      3289,
       0
     ],
     "command": {
@@ -1895,8 +1895,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3186,
-      3334,
+      3146,
+      3289,
       0
     ],
     "command": {
@@ -1912,8 +1912,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3186,
-      3334,
+      3146,
+      3289,
       0
     ],
     "command": {
@@ -1941,8 +1941,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3186,
-      3334,
+      3146,
+      3289,
       0
     ],
     "command": {
@@ -1953,8 +1953,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3181,
-      3338,
+      3141,
+      3293,
       0
     ],
     "command": {
@@ -1966,8 +1966,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3181,
-      3338,
+      3141,
+      3293,
       0
     ],
     "command": {
@@ -1979,8 +1979,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3349,
-      3423,
+      3304,
+      3373,
       0
     ],
     "command": {
@@ -1999,8 +1999,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3349,
-      3423,
+      3304,
+      3373,
       0
     ],
     "command": {
@@ -2010,8 +2010,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3349,
-      3423,
+      3304,
+      3373,
       0
     ],
     "command": {
@@ -2027,8 +2027,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3349,
-      3423,
+      3304,
+      3373,
       0
     ],
     "command": {
@@ -2056,8 +2056,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3349,
-      3423,
+      3304,
+      3373,
       0
     ],
     "command": {
@@ -2068,8 +2068,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3344,
-      3427,
+      3299,
+      3377,
       0
     ],
     "command": {
@@ -2081,8 +2081,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3344,
-      3427,
+      3299,
+      3377,
       0
     ],
     "command": {
@@ -2094,8 +2094,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2114,8 +2114,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2128,8 +2128,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2139,8 +2139,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2151,8 +2151,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2164,8 +2164,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2178,8 +2178,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2192,8 +2192,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2206,8 +2206,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2220,8 +2220,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2234,8 +2234,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2248,8 +2248,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2262,8 +2262,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2276,8 +2276,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2290,8 +2290,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2304,8 +2304,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2318,8 +2318,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2332,8 +2332,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2346,8 +2346,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2360,8 +2360,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2374,8 +2374,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2388,8 +2388,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2402,8 +2402,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "command": {
@@ -2416,8 +2416,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2480,
-      2524,
+      2455,
+      2499,
       0
     ],
     "command": {
@@ -2429,8 +2429,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2697,
-      2848,
+      2672,
+      2818,
       0
     ],
     "command": {
@@ -2442,8 +2442,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2863,
-      3011,
+      2833,
+      2976,
       0
     ],
     "command": {
@@ -2455,8 +2455,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3171,
+      2991,
+      3131,
       0
     ],
     "command": {
@@ -2468,8 +2468,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3186,
-      3334,
+      3146,
+      3289,
       0
     ],
     "command": {
@@ -2481,8 +2481,8 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3349,
-      3423,
+      3304,
+      3373,
       0
     ],
     "command": {

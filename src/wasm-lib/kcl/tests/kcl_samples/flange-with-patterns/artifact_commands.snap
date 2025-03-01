@@ -326,7 +326,7 @@ description: Artifact commands flange-with-patterns.kcl
     "cmdId": "[uuid]",
     "range": [
       894,
-      1005,
+      1000,
       0
     ],
     "command": {
@@ -346,7 +346,7 @@ description: Artifact commands flange-with-patterns.kcl
     "cmdId": "[uuid]",
     "range": [
       894,
-      1005,
+      1000,
       0
     ],
     "command": {
@@ -357,7 +357,7 @@ description: Artifact commands flange-with-patterns.kcl
     "cmdId": "[uuid]",
     "range": [
       894,
-      1005,
+      1000,
       0
     ],
     "command": {
@@ -374,7 +374,7 @@ description: Artifact commands flange-with-patterns.kcl
     "cmdId": "[uuid]",
     "range": [
       894,
-      1005,
+      1000,
       0
     ],
     "command": {
@@ -403,7 +403,7 @@ description: Artifact commands flange-with-patterns.kcl
     "cmdId": "[uuid]",
     "range": [
       894,
-      1005,
+      1000,
       0
     ],
     "command": {
@@ -414,8 +414,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1011,
-      1143,
+      1006,
+      1138,
       0
     ],
     "command": {
@@ -439,8 +439,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1218,
-      1237,
+      1213,
+      1232,
       0
     ],
     "command": {
@@ -468,8 +468,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1243,
-      1314,
+      1238,
+      1304,
       0
     ],
     "command": {
@@ -488,8 +488,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1243,
-      1314,
+      1238,
+      1304,
       0
     ],
     "command": {
@@ -499,8 +499,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1243,
-      1314,
+      1238,
+      1304,
       0
     ],
     "command": {
@@ -516,8 +516,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1243,
-      1314,
+      1238,
+      1304,
       0
     ],
     "command": {
@@ -545,8 +545,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1243,
-      1314,
+      1238,
+      1304,
       0
     ],
     "command": {
@@ -557,8 +557,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1320,
-      1336,
+      1310,
+      1326,
       0
     ],
     "command": {
@@ -570,8 +570,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1320,
-      1336,
+      1310,
+      1326,
       0
     ],
     "command": {
@@ -583,8 +583,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1320,
-      1336,
+      1310,
+      1326,
       0
     ],
     "command": {
@@ -596,8 +596,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1320,
-      1336,
+      1310,
+      1326,
       0
     ],
     "command": {
@@ -609,8 +609,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1320,
-      1336,
+      1310,
+      1326,
       0
     ],
     "command": {
@@ -622,8 +622,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1320,
-      1336,
+      1310,
+      1326,
       0
     ],
     "command": {
@@ -635,8 +635,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1320,
-      1336,
+      1310,
+      1326,
       0
     ],
     "command": {
@@ -648,8 +648,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1320,
-      1336,
+      1310,
+      1326,
       0
     ],
     "command": {
@@ -661,8 +661,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1347,
-      1418,
+      1337,
+      1403,
       0
     ],
     "command": {
@@ -681,8 +681,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1347,
-      1418,
+      1337,
+      1403,
       0
     ],
     "command": {
@@ -692,8 +692,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1347,
-      1418,
+      1337,
+      1403,
       0
     ],
     "command": {
@@ -709,8 +709,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1347,
-      1418,
+      1337,
+      1403,
       0
     ],
     "command": {
@@ -738,8 +738,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1347,
-      1418,
+      1337,
+      1403,
       0
     ],
     "command": {
@@ -750,8 +750,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1342,
-      1422,
+      1332,
+      1407,
       0
     ],
     "command": {
@@ -763,8 +763,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1342,
-      1422,
+      1332,
+      1407,
       0
     ],
     "command": {
@@ -776,8 +776,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -796,8 +796,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -810,8 +810,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -821,8 +821,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -833,8 +833,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -846,8 +846,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -860,8 +860,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -874,8 +874,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -888,8 +888,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -902,8 +902,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -916,8 +916,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -930,8 +930,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -944,8 +944,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -958,8 +958,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -972,8 +972,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -986,8 +986,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -1000,8 +1000,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1428,
-      1459,
+      1413,
+      1444,
       0
     ],
     "command": {
@@ -1014,8 +1014,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1748,
-      1775,
+      1733,
+      1760,
       0
     ],
     "command": {
@@ -1043,8 +1043,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1781,
-      1861,
+      1766,
+      1841,
       0
     ],
     "command": {
@@ -1063,8 +1063,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1781,
-      1861,
+      1766,
+      1841,
       0
     ],
     "command": {
@@ -1074,8 +1074,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1781,
-      1861,
+      1766,
+      1841,
       0
     ],
     "command": {
@@ -1091,8 +1091,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1781,
-      1861,
+      1766,
+      1841,
       0
     ],
     "command": {
@@ -1120,8 +1120,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1781,
-      1861,
+      1766,
+      1841,
       0
     ],
     "command": {
@@ -1132,8 +1132,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1872,
-      1943,
+      1852,
+      1918,
       0
     ],
     "command": {
@@ -1152,8 +1152,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1872,
-      1943,
+      1852,
+      1918,
       0
     ],
     "command": {
@@ -1163,8 +1163,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1872,
-      1943,
+      1852,
+      1918,
       0
     ],
     "command": {
@@ -1180,8 +1180,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1872,
-      1943,
+      1852,
+      1918,
       0
     ],
     "command": {
@@ -1209,8 +1209,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1872,
-      1943,
+      1852,
+      1918,
       0
     ],
     "command": {
@@ -1221,8 +1221,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1867,
-      1947,
+      1847,
+      1922,
       0
     ],
     "command": {
@@ -1234,8 +1234,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1867,
-      1947,
+      1847,
+      1922,
       0
     ],
     "command": {
@@ -1247,8 +1247,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "command": {
@@ -1267,8 +1267,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "command": {
@@ -1281,8 +1281,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "command": {
@@ -1292,8 +1292,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "command": {
@@ -1304,8 +1304,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "command": {
@@ -1317,8 +1317,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "command": {
@@ -1331,8 +1331,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "command": {
@@ -1345,8 +1345,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "command": {
@@ -1359,8 +1359,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1953,
-      1988,
+      1928,
+      1963,
       0
     ],
     "command": {
@@ -1373,8 +1373,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2065,
-      2084,
+      2040,
+      2059,
       0
     ],
     "command": {
@@ -1402,8 +1402,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2090,
-      2173,
+      2065,
+      2143,
       0
     ],
     "command": {
@@ -1422,8 +1422,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2090,
-      2173,
+      2065,
+      2143,
       0
     ],
     "command": {
@@ -1433,8 +1433,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2090,
-      2173,
+      2065,
+      2143,
       0
     ],
     "command": {
@@ -1450,8 +1450,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2090,
-      2173,
+      2065,
+      2143,
       0
     ],
     "command": {
@@ -1479,8 +1479,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2090,
-      2173,
+      2065,
+      2143,
       0
     ],
     "command": {
@@ -1491,8 +1491,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2184,
-      2255,
+      2154,
+      2220,
       0
     ],
     "command": {
@@ -1511,8 +1511,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2184,
-      2255,
+      2154,
+      2220,
       0
     ],
     "command": {
@@ -1522,8 +1522,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2184,
-      2255,
+      2154,
+      2220,
       0
     ],
     "command": {
@@ -1539,8 +1539,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2184,
-      2255,
+      2154,
+      2220,
       0
     ],
     "command": {
@@ -1568,8 +1568,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2184,
-      2255,
+      2154,
+      2220,
       0
     ],
     "command": {
@@ -1580,8 +1580,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2179,
-      2259,
+      2149,
+      2224,
       0
     ],
     "command": {
@@ -1593,8 +1593,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2179,
-      2259,
+      2149,
+      2224,
       0
     ],
     "command": {
@@ -1606,8 +1606,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "command": {
@@ -1626,8 +1626,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "command": {
@@ -1640,8 +1640,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "command": {
@@ -1651,8 +1651,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "command": {
@@ -1663,8 +1663,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "command": {
@@ -1676,8 +1676,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "command": {
@@ -1690,8 +1690,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "command": {
@@ -1704,8 +1704,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "command": {
@@ -1718,8 +1718,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2265,
-      2299,
+      2230,
+      2264,
       0
     ],
     "command": {
@@ -1732,8 +1732,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1781,
-      1861,
+      1766,
+      1841,
       0
     ],
     "command": {
@@ -1745,8 +1745,8 @@ description: Artifact commands flange-with-patterns.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1872,
-      1943,
+      1852,
+      1918,
       0
     ],
     "command": {

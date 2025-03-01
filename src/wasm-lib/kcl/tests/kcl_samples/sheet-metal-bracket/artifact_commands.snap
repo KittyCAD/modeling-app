@@ -1309,7 +1309,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       2289,
-      2360,
+      2355,
       0
     ],
     "command": {
@@ -1329,7 +1329,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       2289,
-      2360,
+      2355,
       0
     ],
     "command": {
@@ -1340,7 +1340,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       2289,
-      2360,
+      2355,
       0
     ],
     "command": {
@@ -1357,7 +1357,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       2289,
-      2360,
+      2355,
       0
     ],
     "command": {
@@ -1386,7 +1386,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       2289,
-      2360,
+      2355,
       0
     ],
     "command": {
@@ -1398,7 +1398,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       2284,
-      2364,
+      2359,
       0
     ],
     "command": {
@@ -1411,7 +1411,7 @@ description: Artifact commands sheet-metal-bracket.kcl
     "cmdId": "[uuid]",
     "range": [
       2284,
-      2364,
+      2359,
       0
     ],
     "command": {
@@ -1423,8 +1423,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2375,
-      2446,
+      2370,
+      2436,
       0
     ],
     "command": {
@@ -1443,8 +1443,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2375,
-      2446,
+      2370,
+      2436,
       0
     ],
     "command": {
@@ -1454,8 +1454,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2375,
-      2446,
+      2370,
+      2436,
       0
     ],
     "command": {
@@ -1471,8 +1471,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2375,
-      2446,
+      2370,
+      2436,
       0
     ],
     "command": {
@@ -1500,8 +1500,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2375,
-      2446,
+      2370,
+      2436,
       0
     ],
     "command": {
@@ -1512,8 +1512,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2370,
-      2450,
+      2365,
+      2440,
       0
     ],
     "command": {
@@ -1525,8 +1525,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2370,
-      2450,
+      2365,
+      2440,
       0
     ],
     "command": {
@@ -1538,8 +1538,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1558,8 +1558,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1572,8 +1572,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1583,8 +1583,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1595,8 +1595,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1608,8 +1608,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1622,8 +1622,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1636,8 +1636,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1650,8 +1650,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1664,8 +1664,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1678,8 +1678,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1692,8 +1692,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1706,8 +1706,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1720,8 +1720,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1734,8 +1734,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1748,8 +1748,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1762,8 +1762,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2456,
-      2483,
+      2446,
+      2473,
       0
     ],
     "command": {
@@ -1776,8 +1776,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2543,
-      2567,
+      2533,
+      2557,
       0
     ],
     "command": {
@@ -1790,8 +1790,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2578,
-      2602,
+      2568,
+      2592,
       0
     ],
     "command": {
@@ -1804,8 +1804,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2630,
-      2649,
+      2620,
+      2639,
       0
     ],
     "command": {
@@ -1833,8 +1833,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2655,
-      2681,
+      2645,
+      2671,
       0
     ],
     "command": {
@@ -1853,8 +1853,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2655,
-      2681,
+      2645,
+      2671,
       0
     ],
     "command": {
@@ -1864,8 +1864,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2655,
-      2681,
+      2645,
+      2671,
       0
     ],
     "command": {
@@ -1881,8 +1881,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2712,
+      2677,
+      2702,
       0
     ],
     "command": {
@@ -1902,8 +1902,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2718,
-      2759,
+      2708,
+      2749,
       0
     ],
     "command": {
@@ -1923,8 +1923,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2765,
-      2803,
+      2755,
+      2793,
       0
     ],
     "command": {
@@ -1944,8 +1944,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2809,
-      2816,
+      2799,
+      2806,
       0
     ],
     "command": {
@@ -1956,8 +1956,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2809,
-      2816,
+      2799,
+      2806,
       0
     ],
     "command": {
@@ -1967,8 +1967,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2827,
-      2899,
+      2817,
+      2884,
       0
     ],
     "command": {
@@ -1987,8 +1987,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2827,
-      2899,
+      2817,
+      2884,
       0
     ],
     "command": {
@@ -1998,8 +1998,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2827,
-      2899,
+      2817,
+      2884,
       0
     ],
     "command": {
@@ -2015,8 +2015,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2827,
-      2899,
+      2817,
+      2884,
       0
     ],
     "command": {
@@ -2044,8 +2044,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2827,
-      2899,
+      2817,
+      2884,
       0
     ],
     "command": {
@@ -2056,8 +2056,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2822,
-      2903,
+      2812,
+      2888,
       0
     ],
     "command": {
@@ -2069,8 +2069,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2822,
-      2903,
+      2812,
+      2888,
       0
     ],
     "command": {
@@ -2082,8 +2082,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2914,
-      2986,
+      2899,
+      2966,
       0
     ],
     "command": {
@@ -2102,8 +2102,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2914,
-      2986,
+      2899,
+      2966,
       0
     ],
     "command": {
@@ -2113,8 +2113,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2914,
-      2986,
+      2899,
+      2966,
       0
     ],
     "command": {
@@ -2130,8 +2130,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2914,
-      2986,
+      2899,
+      2966,
       0
     ],
     "command": {
@@ -2159,8 +2159,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2914,
-      2986,
+      2899,
+      2966,
       0
     ],
     "command": {
@@ -2171,8 +2171,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2909,
-      2990,
+      2894,
+      2970,
       0
     ],
     "command": {
@@ -2184,8 +2184,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2909,
-      2990,
+      2894,
+      2970,
       0
     ],
     "command": {
@@ -2197,8 +2197,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2217,8 +2217,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2231,8 +2231,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2242,8 +2242,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2254,8 +2254,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2267,8 +2267,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2281,8 +2281,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2295,8 +2295,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2309,8 +2309,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2323,8 +2323,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2337,8 +2337,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2351,8 +2351,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2365,8 +2365,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2379,8 +2379,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2393,8 +2393,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2407,8 +2407,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2421,8 +2421,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2996,
-      3023,
+      2976,
+      3003,
       0
     ],
     "command": {
@@ -2435,8 +2435,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3084,
-      3108,
+      3064,
+      3088,
       0
     ],
     "command": {
@@ -2449,8 +2449,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3119,
-      3143,
+      3099,
+      3123,
       0
     ],
     "command": {
@@ -2591,8 +2591,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2489,
-      2618,
+      2479,
+      2608,
       0
     ],
     "command": {
@@ -2607,8 +2607,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2489,
-      2618,
+      2479,
+      2608,
       0
     ],
     "command": {
@@ -2623,8 +2623,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3029,
-      3159,
+      3009,
+      3139,
       0
     ],
     "command": {
@@ -2639,8 +2639,8 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3029,
-      3159,
+      3009,
+      3139,
       0
     ],
     "command": {

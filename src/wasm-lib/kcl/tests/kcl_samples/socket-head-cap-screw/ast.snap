@@ -452,7 +452,7 @@ description: Result of parsing socket-head-cap-screw.kcl
       },
       {
         "declaration": {
-          "end": 2278,
+          "end": 2268,
           "id": {
             "end": 861,
             "name": "capScrew",
@@ -464,7 +464,7 @@ description: Result of parsing socket-head-cap-screw.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1118,
+                    "end": 1113,
                     "id": {
                       "end": 954,
                       "name": "screwHeadSketch",
@@ -498,137 +498,115 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1078,
-                              "properties": [
-                                {
-                                  "end": 1031,
-                                  "key": {
-                                    "end": 1008,
-                                    "name": "center",
-                                    "start": 1002,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1002,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "elements": [
-                                      {
-                                        "computed": false,
-                                        "end": 1020,
-                                        "object": {
-                                          "end": 1017,
-                                          "name": "start",
-                                          "start": 1012,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "property": {
-                                          "end": 1019,
-                                          "raw": "0",
-                                          "start": 1018,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 0.0,
-                                            "suffix": "None"
-                                          }
-                                        },
-                                        "start": 1012,
-                                        "type": "MemberExpression",
-                                        "type": "MemberExpression"
-                                      },
-                                      {
-                                        "computed": false,
-                                        "end": 1030,
-                                        "object": {
-                                          "end": 1027,
-                                          "name": "start",
-                                          "start": 1022,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "property": {
-                                          "end": 1029,
-                                          "raw": "1",
-                                          "start": 1028,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 1.0,
-                                            "suffix": "None"
-                                          }
-                                        },
-                                        "start": 1022,
-                                        "type": "MemberExpression",
-                                        "type": "MemberExpression"
-                                      }
-                                    ],
-                                    "end": 1031,
-                                    "start": 1011,
-                                    "type": "ArrayExpression",
-                                    "type": "ArrayExpression"
-                                  }
-                                },
-                                {
-                                  "end": 1069,
-                                  "key": {
-                                    "end": 1048,
-                                    "name": "radius",
-                                    "start": 1042,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1042,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "end": 1069,
-                                    "left": {
-                                      "end": 1065,
-                                      "left": {
-                                        "end": 1054,
-                                        "name": "dia",
-                                        "start": 1051,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "/",
-                                      "right": {
-                                        "end": 1065,
-                                        "name": "capRatio",
-                                        "start": 1057,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 1051,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "center"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "computed": false,
+                                    "end": 1019,
+                                    "object": {
+                                      "end": 1016,
+                                      "name": "start",
+                                      "start": 1011,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
                                     },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 1069,
-                                      "raw": "2",
-                                      "start": 1068,
+                                    "property": {
+                                      "end": 1018,
+                                      "raw": "0",
+                                      "start": 1017,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
-                                        "value": 2.0,
+                                        "value": 0.0,
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 1051,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
+                                    "start": 1011,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "computed": false,
+                                    "end": 1029,
+                                    "object": {
+                                      "end": 1026,
+                                      "name": "start",
+                                      "start": 1021,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "end": 1028,
+                                      "raw": "1",
+                                      "start": 1027,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 1021,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
                                   }
-                                }
-                              ],
-                              "start": 991,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                                ],
+                                "end": 1030,
+                                "start": 1010,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             },
                             {
-                              "end": 1081,
-                              "start": 1080,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "radius"
+                              },
+                              "arg": {
+                                "end": 1068,
+                                "left": {
+                                  "end": 1064,
+                                  "left": {
+                                    "end": 1053,
+                                    "name": "dia",
+                                    "start": 1050,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "end": 1064,
+                                    "name": "capRatio",
+                                    "start": 1056,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "start": 1050,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 1068,
+                                  "raw": "2",
+                                  "start": 1067,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 1050,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
                             }
                           ],
                           "callee": {
@@ -637,19 +615,20 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "start": 984,
                             "type": "Identifier"
                           },
-                          "end": 1082,
+                          "end": 1077,
                           "start": 984,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         }
                       ],
-                      "end": 1118,
+                      "end": 1113,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
                           "1": [
                             {
-                              "end": 1118,
-                              "start": 1084,
+                              "end": 1113,
+                              "start": 1079,
                               "type": "NonCodeNode",
                               "value": {
                                 "type": "newLineBlockComment",
@@ -668,7 +647,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                     "start": 939,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1118,
+                  "end": 1113,
                   "kind": "const",
                   "start": 939,
                   "type": "VariableDeclaration",
@@ -676,11 +655,11 @@ description: Result of parsing socket-head-cap-screw.kcl
                 },
                 {
                   "declaration": {
-                    "end": 1181,
+                    "end": 1176,
                     "id": {
-                      "end": 1130,
+                      "end": 1125,
                       "name": "screwHead",
-                      "start": 1121,
+                      "start": 1116,
                       "type": "Identifier"
                     },
                     "init": {
@@ -692,48 +671,48 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "name": "length"
                           },
                           "arg": {
-                            "end": 1180,
+                            "end": 1175,
                             "name": "capHeadLength",
-                            "start": 1167,
+                            "start": 1162,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         }
                       ],
                       "callee": {
-                        "end": 1140,
+                        "end": 1135,
                         "name": "extrude",
-                        "start": 1133,
+                        "start": 1128,
                         "type": "Identifier"
                       },
-                      "end": 1181,
-                      "start": 1133,
+                      "end": 1176,
+                      "start": 1128,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
-                        "end": 1156,
+                        "end": 1151,
                         "name": "screwHeadSketch",
-                        "start": 1141,
+                        "start": 1136,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
-                    "start": 1121,
+                    "start": 1116,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1181,
+                  "end": 1176,
                   "kind": "const",
-                  "start": 1121,
+                  "start": 1116,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 1981,
+                    "end": 1976,
                     "id": {
-                      "end": 1261,
+                      "end": 1256,
                       "name": "hexPatternSketch",
-                      "start": 1245,
+                      "start": 1240,
                       "type": "Identifier"
                     },
                     "init": {
@@ -741,29 +720,29 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1287,
+                              "end": 1282,
                               "name": "screwHead",
-                              "start": 1278,
+                              "start": 1273,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             {
-                              "end": 1294,
+                              "end": 1289,
                               "raw": "'end'",
-                              "start": 1289,
+                              "start": 1284,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "end"
                             }
                           ],
                           "callee": {
-                            "end": 1277,
+                            "end": 1272,
                             "name": "startSketchOn",
-                            "start": 1264,
+                            "start": 1259,
                             "type": "Identifier"
                           },
-                          "end": 1295,
-                          "start": 1264,
+                          "end": 1290,
+                          "start": 1259,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -772,19 +751,19 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 1336,
+                                  "end": 1331,
                                   "left": {
-                                    "end": 1332,
+                                    "end": 1327,
                                     "name": "hexWallToWall",
-                                    "start": 1319,
+                                    "start": 1314,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "end": 1336,
+                                    "end": 1331,
                                     "raw": "2",
-                                    "start": 1335,
+                                    "start": 1330,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -792,14 +771,14 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 1319,
+                                  "start": 1314,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "end": 1339,
+                                  "end": 1334,
                                   "raw": "0",
-                                  "start": 1338,
+                                  "start": 1333,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -808,52 +787,52 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   }
                                 }
                               ],
-                              "end": 1340,
-                              "start": 1318,
+                              "end": 1335,
+                              "start": 1313,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 1343,
-                              "start": 1342,
+                              "end": 1338,
+                              "start": 1337,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1317,
+                            "end": 1312,
                             "name": "startProfileAt",
-                            "start": 1303,
+                            "start": 1298,
                             "type": "Identifier"
                           },
-                          "end": 1344,
-                          "start": 1303,
+                          "end": 1339,
+                          "start": 1298,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1376,
+                              "end": 1371,
                               "left": {
                                 "argument": {
-                                  "end": 1372,
+                                  "end": 1367,
                                   "name": "hexWallLength",
-                                  "start": 1359,
+                                  "start": 1354,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "end": 1372,
+                                "end": 1367,
                                 "operator": "-",
-                                "start": 1358,
+                                "start": 1353,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 1376,
+                                "end": 1371,
                                 "raw": "2",
-                                "start": 1375,
+                                "start": 1370,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -861,201 +840,201 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 1358,
+                              "start": 1353,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             {
-                              "end": 1379,
-                              "start": 1378,
+                              "end": 1374,
+                              "start": 1373,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1357,
+                            "end": 1352,
                             "name": "yLine",
-                            "start": 1352,
+                            "start": 1347,
                             "type": "Identifier"
                           },
-                          "end": 1380,
-                          "start": 1352,
+                          "end": 1375,
+                          "start": 1347,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1476,
+                              "end": 1471,
                               "properties": [
                                 {
-                                  "end": 1434,
+                                  "end": 1429,
                                   "key": {
-                                    "end": 1415,
+                                    "end": 1410,
                                     "name": "angle",
-                                    "start": 1410,
+                                    "start": 1405,
                                     "type": "Identifier"
                                   },
-                                  "start": 1410,
+                                  "start": 1405,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1434,
+                                    "end": 1429,
                                     "name": "hexStartingAngle",
-                                    "start": 1418,
+                                    "start": 1413,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 },
                                 {
-                                  "end": 1467,
+                                  "end": 1462,
                                   "key": {
-                                    "end": 1451,
+                                    "end": 1446,
                                     "name": "length",
-                                    "start": 1445,
+                                    "start": 1440,
                                     "type": "Identifier"
                                   },
-                                  "start": 1445,
+                                  "start": 1440,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1467,
+                                    "end": 1462,
                                     "name": "hexWallLength",
-                                    "start": 1454,
+                                    "start": 1449,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1399,
+                              "start": 1394,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1479,
-                              "start": 1478,
+                              "end": 1474,
+                              "start": 1473,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1398,
+                            "end": 1393,
                             "name": "angledLine",
-                            "start": 1388,
+                            "start": 1383,
                             "type": "Identifier"
                           },
-                          "end": 1480,
-                          "start": 1388,
+                          "end": 1475,
+                          "start": 1383,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1593,
+                              "end": 1588,
                               "properties": [
                                 {
-                                  "end": 1551,
+                                  "end": 1546,
                                   "key": {
-                                    "end": 1515,
+                                    "end": 1510,
                                     "name": "angle",
-                                    "start": 1510,
+                                    "start": 1505,
                                     "type": "Identifier"
                                   },
-                                  "start": 1510,
+                                  "start": 1505,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1551,
+                                    "end": 1546,
                                     "left": {
-                                      "end": 1534,
+                                      "end": 1529,
                                       "name": "hexStartingAngle",
-                                      "start": 1518,
+                                      "start": 1513,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 1551,
+                                      "end": 1546,
                                       "name": "hexChangeAngle",
-                                      "start": 1537,
+                                      "start": 1532,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
-                                    "start": 1518,
+                                    "start": 1513,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 1584,
+                                  "end": 1579,
                                   "key": {
-                                    "end": 1568,
+                                    "end": 1563,
                                     "name": "length",
-                                    "start": 1562,
+                                    "start": 1557,
                                     "type": "Identifier"
                                   },
-                                  "start": 1562,
+                                  "start": 1557,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1584,
+                                    "end": 1579,
                                     "name": "hexWallLength",
-                                    "start": 1571,
+                                    "start": 1566,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1499,
+                              "start": 1494,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1596,
-                              "start": 1595,
+                              "end": 1591,
+                              "start": 1590,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1498,
+                            "end": 1493,
                             "name": "angledLine",
-                            "start": 1488,
+                            "start": 1483,
                             "type": "Identifier"
                           },
-                          "end": 1597,
-                          "start": 1488,
+                          "end": 1592,
+                          "start": 1483,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1716,
+                              "end": 1711,
                               "properties": [
                                 {
-                                  "end": 1673,
+                                  "end": 1668,
                                   "key": {
-                                    "end": 1632,
+                                    "end": 1627,
                                     "name": "angle",
-                                    "start": 1627,
+                                    "start": 1622,
                                     "type": "Identifier"
                                   },
-                                  "start": 1627,
+                                  "start": 1622,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1673,
+                                    "end": 1668,
                                     "left": {
-                                      "end": 1651,
+                                      "end": 1646,
                                       "name": "hexStartingAngle",
-                                      "start": 1635,
+                                      "start": 1630,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 1673,
+                                      "end": 1668,
                                       "left": {
-                                        "end": 1656,
+                                        "end": 1651,
                                         "raw": "2",
-                                        "start": 1655,
+                                        "start": 1650,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -1065,93 +1044,93 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       },
                                       "operator": "*",
                                       "right": {
-                                        "end": 1673,
+                                        "end": 1668,
                                         "name": "hexChangeAngle",
-                                        "start": 1659,
+                                        "start": 1654,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
-                                      "start": 1655,
+                                      "start": 1650,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 1635,
+                                    "start": 1630,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 1707,
+                                  "end": 1702,
                                   "key": {
-                                    "end": 1691,
+                                    "end": 1686,
                                     "name": "length",
-                                    "start": 1685,
+                                    "start": 1680,
                                     "type": "Identifier"
                                   },
-                                  "start": 1685,
+                                  "start": 1680,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1707,
+                                    "end": 1702,
                                     "name": "hexWallLength",
-                                    "start": 1694,
+                                    "start": 1689,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1616,
+                              "start": 1611,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1719,
-                              "start": 1718,
+                              "end": 1714,
+                              "start": 1713,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1615,
+                            "end": 1610,
                             "name": "angledLine",
-                            "start": 1605,
+                            "start": 1600,
                             "type": "Identifier"
                           },
-                          "end": 1720,
-                          "start": 1605,
+                          "end": 1715,
+                          "start": 1600,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1839,
+                              "end": 1834,
                               "properties": [
                                 {
-                                  "end": 1796,
+                                  "end": 1791,
                                   "key": {
-                                    "end": 1755,
+                                    "end": 1750,
                                     "name": "angle",
-                                    "start": 1750,
+                                    "start": 1745,
                                     "type": "Identifier"
                                   },
-                                  "start": 1750,
+                                  "start": 1745,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1796,
+                                    "end": 1791,
                                     "left": {
-                                      "end": 1774,
+                                      "end": 1769,
                                       "name": "hexStartingAngle",
-                                      "start": 1758,
+                                      "start": 1753,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 1796,
+                                      "end": 1791,
                                       "left": {
-                                        "end": 1779,
+                                        "end": 1774,
                                         "raw": "3",
-                                        "start": 1778,
+                                        "start": 1773,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -1161,93 +1140,93 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       },
                                       "operator": "*",
                                       "right": {
-                                        "end": 1796,
+                                        "end": 1791,
                                         "name": "hexChangeAngle",
-                                        "start": 1782,
+                                        "start": 1777,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
-                                      "start": 1778,
+                                      "start": 1773,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 1758,
+                                    "start": 1753,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 1830,
+                                  "end": 1825,
                                   "key": {
-                                    "end": 1814,
+                                    "end": 1809,
                                     "name": "length",
-                                    "start": 1808,
+                                    "start": 1803,
                                     "type": "Identifier"
                                   },
-                                  "start": 1808,
+                                  "start": 1803,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1830,
+                                    "end": 1825,
                                     "name": "hexWallLength",
-                                    "start": 1817,
+                                    "start": 1812,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1739,
+                              "start": 1734,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1842,
-                              "start": 1841,
+                              "end": 1837,
+                              "start": 1836,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1738,
+                            "end": 1733,
                             "name": "angledLine",
-                            "start": 1728,
+                            "start": 1723,
                             "type": "Identifier"
                           },
-                          "end": 1843,
-                          "start": 1728,
+                          "end": 1838,
+                          "start": 1723,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1962,
+                              "end": 1957,
                               "properties": [
                                 {
-                                  "end": 1919,
+                                  "end": 1914,
                                   "key": {
-                                    "end": 1878,
+                                    "end": 1873,
                                     "name": "angle",
-                                    "start": 1873,
+                                    "start": 1868,
                                     "type": "Identifier"
                                   },
-                                  "start": 1873,
+                                  "start": 1868,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1919,
+                                    "end": 1914,
                                     "left": {
-                                      "end": 1897,
+                                      "end": 1892,
                                       "name": "hexStartingAngle",
-                                      "start": 1881,
+                                      "start": 1876,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 1919,
+                                      "end": 1914,
                                       "left": {
-                                        "end": 1902,
+                                        "end": 1897,
                                         "raw": "4",
-                                        "start": 1901,
+                                        "start": 1896,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -1257,97 +1236,97 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       },
                                       "operator": "*",
                                       "right": {
-                                        "end": 1919,
+                                        "end": 1914,
                                         "name": "hexChangeAngle",
-                                        "start": 1905,
+                                        "start": 1900,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
-                                      "start": 1901,
+                                      "start": 1896,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 1881,
+                                    "start": 1876,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 },
                                 {
-                                  "end": 1953,
+                                  "end": 1948,
                                   "key": {
-                                    "end": 1937,
+                                    "end": 1932,
                                     "name": "length",
-                                    "start": 1931,
+                                    "start": 1926,
                                     "type": "Identifier"
                                   },
-                                  "start": 1931,
+                                  "start": 1926,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1953,
+                                    "end": 1948,
                                     "name": "hexWallLength",
-                                    "start": 1940,
+                                    "start": 1935,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1862,
+                              "start": 1857,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1965,
-                              "start": 1964,
+                              "end": 1960,
+                              "start": 1959,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1861,
+                            "end": 1856,
                             "name": "angledLine",
-                            "start": 1851,
+                            "start": 1846,
                             "type": "Identifier"
                           },
-                          "end": 1966,
-                          "start": 1851,
+                          "end": 1961,
+                          "start": 1846,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [],
                           "callee": {
-                            "end": 1979,
+                            "end": 1974,
                             "name": "close",
-                            "start": 1974,
+                            "start": 1969,
                             "type": "Identifier"
                           },
-                          "end": 1981,
-                          "start": 1974,
+                          "end": 1976,
+                          "start": 1969,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 1981,
-                      "start": 1264,
+                      "end": 1976,
+                      "start": 1259,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 1245,
+                    "start": 1240,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1981,
+                  "end": 1976,
                   "kind": "const",
-                  "start": 1245,
+                  "start": 1240,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 2051,
+                    "end": 2046,
                     "id": {
-                      "end": 1994,
+                      "end": 1989,
                       "name": "hexPattern",
-                      "start": 1984,
+                      "start": 1979,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1359,26 +1338,26 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "name": "length"
                           },
                           "arg": {
-                            "end": 2050,
+                            "end": 2045,
                             "left": {
                               "argument": {
-                                "end": 2043,
+                                "end": 2038,
                                 "name": "headLength",
-                                "start": 2033,
+                                "start": 2028,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "end": 2043,
+                              "end": 2038,
                               "operator": "-",
-                              "start": 2032,
+                              "start": 2027,
                               "type": "UnaryExpression",
                               "type": "UnaryExpression"
                             },
                             "operator": "*",
                             "right": {
-                              "end": 2050,
+                              "end": 2045,
                               "raw": "0.75",
-                              "start": 2046,
+                              "start": 2041,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1386,46 +1365,46 @@ description: Result of parsing socket-head-cap-screw.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 2032,
+                            "start": 2027,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           }
                         }
                       ],
                       "callee": {
-                        "end": 2004,
+                        "end": 1999,
                         "name": "extrude",
-                        "start": 1997,
+                        "start": 1992,
                         "type": "Identifier"
                       },
-                      "end": 2051,
-                      "start": 1997,
+                      "end": 2046,
+                      "start": 1992,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
-                        "end": 2021,
+                        "end": 2016,
                         "name": "hexPatternSketch",
-                        "start": 2005,
+                        "start": 2000,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
-                    "start": 1984,
+                    "start": 1979,
                     "type": "VariableDeclarator"
                   },
-                  "end": 2051,
+                  "end": 2046,
                   "kind": "const",
-                  "start": 1984,
+                  "start": 1979,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 2201,
+                    "end": 2191,
                     "id": {
-                      "end": 2070,
+                      "end": 2065,
                       "name": "screwBodySketch",
-                      "start": 2055,
+                      "start": 2050,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1433,187 +1412,166 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [
                             {
-                              "end": 2096,
+                              "end": 2091,
                               "name": "screwHead",
-                              "start": 2087,
+                              "start": 2082,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             {
-                              "end": 2105,
+                              "end": 2100,
                               "raw": "\"start\"",
-                              "start": 2098,
+                              "start": 2093,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "start"
                             }
                           ],
                           "callee": {
-                            "end": 2086,
+                            "end": 2081,
                             "name": "startSketchOn",
-                            "start": 2073,
+                            "start": 2068,
                             "type": "Identifier"
                           },
-                          "end": 2106,
-                          "start": 2073,
+                          "end": 2101,
+                          "start": 2068,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 2197,
-                              "properties": [
-                                {
-                                  "end": 2161,
-                                  "key": {
-                                    "end": 2138,
-                                    "name": "center",
-                                    "start": 2132,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 2132,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "elements": [
-                                      {
-                                        "computed": false,
-                                        "end": 2150,
-                                        "object": {
-                                          "end": 2147,
-                                          "name": "start",
-                                          "start": 2142,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "property": {
-                                          "end": 2149,
-                                          "raw": "0",
-                                          "start": 2148,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 0.0,
-                                            "suffix": "None"
-                                          }
-                                        },
-                                        "start": 2142,
-                                        "type": "MemberExpression",
-                                        "type": "MemberExpression"
-                                      },
-                                      {
-                                        "computed": false,
-                                        "end": 2160,
-                                        "object": {
-                                          "end": 2157,
-                                          "name": "start",
-                                          "start": 2152,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "property": {
-                                          "end": 2159,
-                                          "raw": "1",
-                                          "start": 2158,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 1.0,
-                                            "suffix": "None"
-                                          }
-                                        },
-                                        "start": 2152,
-                                        "type": "MemberExpression",
-                                        "type": "MemberExpression"
-                                      }
-                                    ],
-                                    "end": 2161,
-                                    "start": 2141,
-                                    "type": "ArrayExpression",
-                                    "type": "ArrayExpression"
-                                  }
-                                },
-                                {
-                                  "end": 2188,
-                                  "key": {
-                                    "end": 2178,
-                                    "name": "radius",
-                                    "start": 2172,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 2172,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "end": 2188,
-                                    "left": {
-                                      "end": 2184,
-                                      "name": "dia",
-                                      "start": 2181,
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "center"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "computed": false,
+                                    "end": 2144,
+                                    "object": {
+                                      "end": 2141,
+                                      "name": "start",
+                                      "start": 2136,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 2188,
-                                      "raw": "2",
-                                      "start": 2187,
+                                    "property": {
+                                      "end": 2143,
+                                      "raw": "0",
+                                      "start": 2142,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
-                                        "value": 2.0,
+                                        "value": 0.0,
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 2181,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
+                                    "start": 2136,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "computed": false,
+                                    "end": 2154,
+                                    "object": {
+                                      "end": 2151,
+                                      "name": "start",
+                                      "start": 2146,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "end": 2153,
+                                      "raw": "1",
+                                      "start": 2152,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 2146,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
                                   }
-                                }
-                              ],
-                              "start": 2121,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                                ],
+                                "end": 2155,
+                                "start": 2135,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             },
                             {
-                              "end": 2200,
-                              "start": 2199,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "radius"
+                              },
+                              "arg": {
+                                "end": 2182,
+                                "left": {
+                                  "end": 2178,
+                                  "name": "dia",
+                                  "start": 2175,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 2182,
+                                  "raw": "2",
+                                  "start": 2181,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 2175,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
                             }
                           ],
                           "callee": {
-                            "end": 2120,
+                            "end": 2115,
                             "name": "circle",
-                            "start": 2114,
+                            "start": 2109,
                             "type": "Identifier"
                           },
-                          "end": 2201,
-                          "start": 2114,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "end": 2191,
+                          "start": 2109,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         }
                       ],
-                      "end": 2201,
-                      "start": 2073,
+                      "end": 2191,
+                      "start": 2068,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 2055,
+                    "start": 2050,
                     "type": "VariableDeclarator"
                   },
-                  "end": 2201,
+                  "end": 2191,
                   "kind": "const",
-                  "start": 2055,
+                  "start": 2050,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 2257,
+                    "end": 2247,
                     "id": {
-                      "end": 2213,
+                      "end": 2203,
                       "name": "screwBody",
-                      "start": 2204,
+                      "start": 2194,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1625,62 +1583,62 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "name": "length"
                           },
                           "arg": {
-                            "end": 2256,
+                            "end": 2246,
                             "name": "length",
-                            "start": 2250,
+                            "start": 2240,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         }
                       ],
                       "callee": {
-                        "end": 2223,
+                        "end": 2213,
                         "name": "extrude",
-                        "start": 2216,
+                        "start": 2206,
                         "type": "Identifier"
                       },
-                      "end": 2257,
-                      "start": 2216,
+                      "end": 2247,
+                      "start": 2206,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
-                        "end": 2239,
+                        "end": 2229,
                         "name": "screwBodySketch",
-                        "start": 2224,
+                        "start": 2214,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
-                    "start": 2204,
+                    "start": 2194,
                     "type": "VariableDeclarator"
                   },
-                  "end": 2257,
+                  "end": 2247,
                   "kind": "const",
-                  "start": 2204,
+                  "start": 2194,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 2276,
+                    "end": 2266,
                     "name": "screwBody",
-                    "start": 2267,
+                    "start": 2257,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 2276,
-                  "start": 2260,
+                  "end": 2266,
+                  "start": 2250,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 2278,
+              "end": 2268,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "1": [
                     {
-                      "end": 1242,
-                      "start": 1183,
+                      "end": 1237,
+                      "start": 1178,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLineBlockComment",
@@ -1691,8 +1649,8 @@ description: Result of parsing socket-head-cap-screw.kcl
                   ],
                   "3": [
                     {
-                      "end": 2055,
-                      "start": 2051,
+                      "end": 2050,
+                      "start": 2046,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -1715,7 +1673,7 @@ description: Result of parsing socket-head-cap-screw.kcl
               },
               "start": 898
             },
-            "end": 2278,
+            "end": 2268,
             "params": [
               {
                 "type": "Parameter",
@@ -1761,22 +1719,22 @@ description: Result of parsing socket-head-cap-screw.kcl
           "start": 853,
           "type": "VariableDeclarator"
         },
-        "end": 2278,
+        "end": 2268,
         "kind": "fn",
         "start": 850,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 2339,
+        "end": 2329,
         "expression": {
           "arguments": [
             {
               "elements": [
                 {
-                  "end": 2291,
+                  "end": 2281,
                   "raw": "0",
-                  "start": 2290,
+                  "start": 2280,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1785,9 +1743,9 @@ description: Result of parsing socket-head-cap-screw.kcl
                   }
                 },
                 {
-                  "end": 2294,
+                  "end": 2284,
                   "raw": "0",
-                  "start": 2293,
+                  "start": 2283,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1796,50 +1754,50 @@ description: Result of parsing socket-head-cap-screw.kcl
                   }
                 }
               ],
-              "end": 2295,
-              "start": 2289,
+              "end": 2285,
+              "start": 2279,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             },
             {
-              "end": 2308,
+              "end": 2298,
               "name": "screwLength",
-              "start": 2297,
+              "start": 2287,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 2323,
+              "end": 2313,
               "name": "screwDiameter",
-              "start": 2310,
+              "start": 2300,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 2338,
+              "end": 2328,
               "name": "screwDiameter",
-              "start": 2325,
+              "start": 2315,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 2288,
+            "end": 2278,
             "name": "capScrew",
-            "start": 2280,
+            "start": 2270,
             "type": "Identifier"
           },
-          "end": 2339,
-          "start": 2280,
+          "end": 2329,
+          "start": 2270,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 2280,
+        "start": 2270,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 2340,
+    "end": 2330,
     "innerAttrs": [
       {
         "end": 404,
@@ -1901,8 +1859,8 @@ description: Result of parsing socket-head-cap-screw.kcl
         ],
         "11": [
           {
-            "end": 2280,
-            "start": 2278,
+            "end": 2270,
+            "start": 2268,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

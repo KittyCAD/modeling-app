@@ -173,92 +173,69 @@ description: Result of parsing pipe-with-bend.kcl
           "init": {
             "arguments": [
               {
-                "end": 496,
-                "properties": [
-                  {
-                    "end": 464,
-                    "key": {
-                      "end": 446,
-                      "name": "center",
-                      "start": 440,
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "center"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 472,
+                      "name": "bendRadius",
+                      "start": 462,
+                      "type": "Identifier",
                       "type": "Identifier"
                     },
-                    "start": 440,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "elements": [
-                        {
-                          "end": 460,
-                          "name": "bendRadius",
-                          "start": 450,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        {
-                          "end": 463,
-                          "raw": "0",
-                          "start": 462,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 464,
-                      "start": 449,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
+                    {
+                      "end": 475,
+                      "raw": "0",
+                      "start": 474,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     }
-                  },
-                  {
-                    "end": 494,
-                    "key": {
-                      "end": 474,
-                      "name": "radius",
-                      "start": 468,
-                      "type": "Identifier"
-                    },
-                    "start": 468,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 494,
-                      "left": {
-                        "end": 490,
-                        "name": "outerDiameter",
-                        "start": 477,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      },
-                      "operator": "/",
-                      "right": {
-                        "end": 494,
-                        "raw": "2",
-                        "start": 493,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 477,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    }
-                  }
-                ],
-                "start": 436,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
+                  ],
+                  "end": 476,
+                  "start": 461,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
               },
               {
-                "end": 507,
-                "name": "sketch000",
-                "start": 498,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "radius"
+                },
+                "arg": {
+                  "end": 506,
+                  "left": {
+                    "end": 502,
+                    "name": "outerDiameter",
+                    "start": 489,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 506,
+                    "raw": "2",
+                    "start": 505,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 489,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
               }
             ],
             "callee": {
@@ -269,8 +246,15 @@ description: Result of parsing pipe-with-bend.kcl
             },
             "end": 508,
             "start": 429,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 448,
+              "name": "sketch000",
+              "start": 439,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 414,
           "type": "VariableDeclarator"
@@ -293,92 +277,69 @@ description: Result of parsing pipe-with-bend.kcl
           "init": {
             "arguments": [
               {
-                "end": 635,
-                "properties": [
-                  {
-                    "end": 603,
-                    "key": {
-                      "end": 585,
-                      "name": "center",
-                      "start": 579,
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "center"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 611,
+                      "name": "bendRadius",
+                      "start": 601,
+                      "type": "Identifier",
                       "type": "Identifier"
                     },
-                    "start": 579,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "elements": [
-                        {
-                          "end": 599,
-                          "name": "bendRadius",
-                          "start": 589,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        {
-                          "end": 602,
-                          "raw": "0",
-                          "start": 601,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        }
-                      ],
-                      "end": 603,
-                      "start": 588,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
+                    {
+                      "end": 614,
+                      "raw": "0",
+                      "start": 613,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     }
-                  },
-                  {
-                    "end": 633,
-                    "key": {
-                      "end": 613,
-                      "name": "radius",
-                      "start": 607,
-                      "type": "Identifier"
-                    },
-                    "start": 607,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 633,
-                      "left": {
-                        "end": 629,
-                        "name": "innerDiameter",
-                        "start": 616,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      },
-                      "operator": "/",
-                      "right": {
-                        "end": 633,
-                        "raw": "2",
-                        "start": 632,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 616,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    }
-                  }
-                ],
-                "start": 575,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
+                  ],
+                  "end": 615,
+                  "start": 600,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
               },
               {
-                "end": 646,
-                "name": "sketch000",
-                "start": 637,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "radius"
+                },
+                "arg": {
+                  "end": 645,
+                  "left": {
+                    "end": 641,
+                    "name": "innerDiameter",
+                    "start": 628,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 645,
+                    "raw": "2",
+                    "start": 644,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 628,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
               }
             ],
             "callee": {
@@ -389,8 +350,15 @@ description: Result of parsing pipe-with-bend.kcl
             },
             "end": 647,
             "start": 568,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 587,
+              "name": "sketch000",
+              "start": 578,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 553,
           "type": "VariableDeclarator"

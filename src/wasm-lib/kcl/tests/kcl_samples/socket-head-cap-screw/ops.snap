@@ -27,14 +27,14 @@ description: Operations executed socket-head-cap-screw.kcl
     "name": "capScrew",
     "functionSourceRange": [
       861,
-      2278,
+      2268,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2280,
-      2339,
+      2270,
+      2329,
       0
     ]
   },
@@ -78,16 +78,16 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          1167,
-          1180,
+          1162,
+          1175,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1133,
-      1181,
+      1128,
+      1176,
       0
     ],
     "type": "StdLibCall",
@@ -99,8 +99,8 @@ description: Operations executed socket-head-cap-screw.kcl
         }
       },
       "sourceRange": [
-        1141,
-        1156,
+        1136,
+        1151,
         0
       ]
     }
@@ -115,8 +115,8 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          1278,
-          1287,
+          1273,
+          1282,
           0
         ]
       },
@@ -126,16 +126,16 @@ description: Operations executed socket-head-cap-screw.kcl
           "value": "end"
         },
         "sourceRange": [
+          1284,
           1289,
-          1294,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1264,
-      1295,
+      1259,
+      1290,
       0
     ],
     "type": "StdLibCall",
@@ -152,16 +152,16 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          2032,
-          2050,
+          2027,
+          2045,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1997,
-      2051,
+      1992,
+      2046,
       0
     ],
     "type": "StdLibCall",
@@ -173,8 +173,8 @@ description: Operations executed socket-head-cap-screw.kcl
         }
       },
       "sourceRange": [
-        2005,
-        2021,
+        2000,
+        2016,
         0
       ]
     }
@@ -189,8 +189,8 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          2087,
-          2096,
+          2082,
+          2091,
           0
         ]
       },
@@ -200,16 +200,16 @@ description: Operations executed socket-head-cap-screw.kcl
           "value": "start"
         },
         "sourceRange": [
-          2098,
-          2105,
+          2093,
+          2100,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2073,
-      2106,
+      2068,
+      2101,
       0
     ],
     "type": "StdLibCall",
@@ -232,16 +232,16 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          2250,
-          2256,
+          2240,
+          2246,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2216,
-      2257,
+      2206,
+      2247,
       0
     ],
     "type": "StdLibCall",
@@ -253,8 +253,8 @@ description: Operations executed socket-head-cap-screw.kcl
         }
       },
       "sourceRange": [
-        2224,
-        2239,
+        2214,
+        2229,
         0
       ]
     }

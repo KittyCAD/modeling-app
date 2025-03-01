@@ -8,14 +8,14 @@ description: Operations executed washer.kcl
     "name": "washer",
     "functionSourceRange": [
       711,
-      1067,
+      1057,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1069,
-      1125,
+      1059,
+      1115,
       0
     ]
   },
@@ -52,8 +52,8 @@ description: Operations executed washer.kcl
           }
         },
         "sourceRange": [
-          919,
-          997,
+          914,
+          987,
           0
         ]
       },
@@ -65,16 +65,16 @@ description: Operations executed washer.kcl
           }
         },
         "sourceRange": [
-          999,
-          1000,
+          989,
+          990,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      914,
-      1001,
+      909,
+      991,
       0
     ],
     "type": "StdLibCall",
@@ -97,16 +97,16 @@ description: Operations executed washer.kcl
           }
         },
         "sourceRange": [
-          1045,
-          1048,
+          1035,
+          1038,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1014,
-      1049,
+      1004,
+      1039,
       0
     ],
     "type": "StdLibCall",
@@ -118,8 +118,8 @@ description: Operations executed washer.kcl
         }
       },
       "sourceRange": [
-        1022,
-        1034,
+        1012,
+        1024,
         0
       ]
     }

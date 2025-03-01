@@ -12,8 +12,8 @@ flowchart LR
     10[Solid2d]
   end
   subgraph path11 [Path]
-    11["Path<br>[1398, 1486, 0]"]
-    12["Segment<br>[1398, 1486, 0]"]
+    11["Path<br>[1398, 1481, 0]"]
+    12["Segment<br>[1398, 1481, 0]"]
     13[Solid2d]
   end
   subgraph path15 [Path]
@@ -28,8 +28,8 @@ flowchart LR
     23[Solid2d]
   end
   subgraph path24 [Path]
-    24["Path<br>[1398, 1486, 0]"]
-    25["Segment<br>[1398, 1486, 0]"]
+    24["Path<br>[1398, 1481, 0]"]
+    25["Segment<br>[1398, 1481, 0]"]
     26[Solid2d]
   end
   subgraph path28 [Path]
@@ -38,8 +38,8 @@ flowchart LR
     36[Solid2d]
   end
   subgraph path37 [Path]
-    37["Path<br>[1398, 1486, 0]"]
-    38["Segment<br>[1398, 1486, 0]"]
+    37["Path<br>[1398, 1481, 0]"]
+    38["Segment<br>[1398, 1481, 0]"]
     39[Solid2d]
   end
   1["Plane<br>[544, 579, 0]"]
@@ -51,7 +51,7 @@ flowchart LR
   32["SweepEdge Opposite"]
   33["SweepEdge Opposite"]
   34["SweepEdge Opposite"]
-  40["Sweep Loft<br>[1616, 1705, 0]"]
+  40["Sweep Loft<br>[1611, 1700, 0]"]
   41[Wall]
   42[Wall]
   43[Wall]

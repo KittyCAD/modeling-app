@@ -853,16 +853,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          3312,
-          3321,
+          3307,
+          3316,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3295,
-      3322,
+      3290,
+      3317,
       0
     ],
     "type": "StdLibCall",
@@ -939,8 +939,8 @@ description: Operations executed gridfinity-bins.kcl
           ]
         },
         "sourceRange": [
-          3424,
-          3439,
+          3419,
+          3434,
           0
         ]
       },
@@ -953,8 +953,8 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          3493,
-          3515,
+          3488,
+          3510,
           0
         ]
       },
@@ -973,16 +973,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          3460,
-          3473,
+          3455,
+          3468,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      3379,
-      3522,
+      3374,
+      3517,
       0
     ],
     "type": "StdLibCall",
@@ -1005,8 +1005,8 @@ description: Operations executed gridfinity-bins.kcl
         ]
       },
       "sourceRange": [
+        3398,
         3403,
-        3408,
         0
       ]
     }
@@ -1059,8 +1059,8 @@ description: Operations executed gridfinity-bins.kcl
           ]
         },
         "sourceRange": [
-          3559,
-          3574,
+          3554,
+          3569,
           0
         ]
       },
@@ -1073,8 +1073,8 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          3629,
-          3651,
+          3624,
+          3646,
           0
         ]
       },
@@ -1093,16 +1093,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          3595,
-          3609,
+          3590,
+          3604,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      3528,
-      3658,
+      3523,
+      3653,
       0
     ],
     "type": "StdLibCall",
@@ -1191,8 +1191,8 @@ description: Operations executed gridfinity-bins.kcl
           ]
         },
         "sourceRange": [
-          3785,
-          3800,
+          3780,
+          3795,
           0
         ]
       },
@@ -1205,8 +1205,8 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          3854,
-          3876,
+          3849,
+          3871,
           0
         ]
       },
@@ -1225,16 +1225,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          3821,
-          3834,
+          3816,
+          3829,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      3738,
-      3883,
+      3733,
+      3878,
       0
     ],
     "type": "StdLibCall",
@@ -1257,8 +1257,8 @@ description: Operations executed gridfinity-bins.kcl
         ]
       },
       "sourceRange": [
-        3762,
-        3769,
+        3757,
+        3764,
         0
       ]
     }
@@ -1311,8 +1311,8 @@ description: Operations executed gridfinity-bins.kcl
           ]
         },
         "sourceRange": [
-          3920,
-          3935,
+          3915,
+          3930,
           0
         ]
       },
@@ -1325,8 +1325,8 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          3990,
-          4012,
+          3985,
+          4007,
           0
         ]
       },
@@ -1345,16 +1345,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          3956,
-          3970,
+          3951,
+          3965,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      3889,
-      4019,
+      3884,
+      4014,
       0
     ],
     "type": "StdLibCall",
@@ -1443,8 +1443,8 @@ description: Operations executed gridfinity-bins.kcl
           ]
         },
         "sourceRange": [
-          4140,
-          4155,
+          4135,
+          4150,
           0
         ]
       },
@@ -1457,8 +1457,8 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          4209,
-          4231,
+          4204,
+          4226,
           0
         ]
       },
@@ -1477,16 +1477,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          4176,
-          4189,
+          4171,
+          4184,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      4087,
-      4238,
+      4082,
+      4233,
       0
     ],
     "type": "StdLibCall",
@@ -1498,8 +1498,8 @@ description: Operations executed gridfinity-bins.kcl
         }
       },
       "sourceRange": [
-        4111,
-        4124,
+        4106,
+        4119,
         0
       ]
     }
@@ -1552,8 +1552,8 @@ description: Operations executed gridfinity-bins.kcl
           ]
         },
         "sourceRange": [
-          4275,
-          4290,
+          4270,
+          4285,
           0
         ]
       },
@@ -1566,8 +1566,8 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          4345,
-          4367,
+          4340,
+          4362,
           0
         ]
       },
@@ -1586,16 +1586,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          4311,
-          4325,
+          4306,
+          4320,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      4244,
-      4374,
+      4239,
+      4369,
       0
     ],
     "type": "StdLibCall",
@@ -1635,16 +1635,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          4455,
-          4461,
+          4450,
+          4456,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      4428,
-      4462,
+      4423,
+      4457,
       0
     ],
     "type": "StdLibCall",
@@ -1654,8 +1654,8 @@ description: Operations executed gridfinity-bins.kcl
         "value": "XY"
       },
       "sourceRange": [
-        4440,
-        4444,
+        4435,
+        4439,
         0
       ]
     }
@@ -1668,16 +1668,16 @@ description: Operations executed gridfinity-bins.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          4428,
-          4462,
+          4423,
+          4457,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4414,
-      4463,
+      4409,
+      4458,
       0
     ],
     "type": "StdLibCall",
@@ -1694,16 +1694,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          4721,
-          4747,
+          4716,
+          4742,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4704,
-      4748,
+      4699,
+      4743,
       0
     ],
     "type": "StdLibCall",
@@ -1738,8 +1738,8 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          4778,
-          4790,
+          4773,
+          4785,
           0
         ]
       },
@@ -1766,16 +1766,16 @@ description: Operations executed gridfinity-bins.kcl
           ]
         },
         "sourceRange": [
-          4806,
-          4979,
+          4801,
+          4974,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      4754,
-      4986,
+      4749,
+      4981,
       0
     ],
     "type": "StdLibCall",
@@ -1806,8 +1806,8 @@ description: Operations executed gridfinity-bins.kcl
           ]
         },
         "sourceRange": [
-          5006,
-          5013,
+          5001,
+          5008,
           0
         ]
       },
@@ -1826,16 +1826,16 @@ description: Operations executed gridfinity-bins.kcl
           }
         },
         "sourceRange": [
-          5027,
-          5033,
+          5022,
+          5028,
           0
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      4992,
-      5034,
+      4987,
+      5029,
       0
     ],
     "type": "StdLibCall",

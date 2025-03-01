@@ -97,7 +97,7 @@ description: Variables in memory after executing washer.kcl
       {
         "sourceRange": [
           711,
-          1067,
+          1057,
           0
         ]
       }

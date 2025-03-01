@@ -212,8 +212,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          1019,
-          1091,
+          1014,
+          1081,
           0
         ]
       },
@@ -225,16 +225,16 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          1093,
-          1094,
+          1083,
+          1084,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1014,
-      1095,
+      1009,
+      1085,
       0
     ],
     "type": "StdLibCall",
@@ -257,16 +257,16 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          1181,
-          1197,
+          1171,
+          1187,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1146,
-      1198,
+      1136,
+      1188,
       0
     ],
     "type": "StdLibCall",
@@ -278,8 +278,8 @@ description: Operations executed ball-bearing.kcl
         }
       },
       "sourceRange": [
-        1154,
-        1170,
+        1144,
+        1160,
         0
       ]
     }
@@ -292,16 +292,16 @@ description: Operations executed ball-bearing.kcl
           "value": "XY"
         },
         "sourceRange": [
-          1269,
-          1273,
+          1259,
+          1263,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1255,
-      1274,
+      1245,
+      1264,
       0
     ],
     "type": "StdLibCall",
@@ -320,8 +320,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          1537,
-          1551,
+          1527,
+          1541,
           0
         ]
       },
@@ -333,16 +333,16 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          1553,
-          1564,
+          1543,
+          1554,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      1529,
-      1565,
+      1519,
+      1555,
       0
     ],
     "type": "StdLibCall",
@@ -365,8 +365,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          1610,
-          1613,
+          1600,
+          1603,
           0
         ]
       },
@@ -416,8 +416,8 @@ description: Operations executed ball-bearing.kcl
           ]
         },
         "sourceRange": [
-          1629,
-          1638,
+          1619,
+          1628,
           0
         ]
       },
@@ -467,8 +467,8 @@ description: Operations executed ball-bearing.kcl
           ]
         },
         "sourceRange": [
-          1656,
-          1665,
+          1646,
+          1655,
           0
         ]
       },
@@ -487,8 +487,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          1686,
-          1692,
+          1676,
+          1682,
           0
         ]
       },
@@ -498,16 +498,16 @@ description: Operations executed ball-bearing.kcl
           "value": true
         },
         "sourceRange": [
-          1720,
-          1724,
+          1710,
+          1714,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      1571,
-      1731,
+      1561,
+      1721,
       0
     ],
     "type": "StdLibCall",
@@ -533,16 +533,16 @@ description: Operations executed ball-bearing.kcl
           "value": "XY"
         },
         "sourceRange": [
-          1813,
-          1817,
+          1803,
+          1807,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1799,
-      1818,
+      1789,
+      1808,
       0
     ],
     "type": "StdLibCall",
@@ -559,8 +559,8 @@ description: Operations executed ball-bearing.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1928,
-      1946,
+      1918,
+      1936,
       0
     ]
   },
@@ -580,8 +580,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          2190,
-          2204,
+          2180,
+          2194,
           0
         ]
       },
@@ -593,16 +593,16 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          2206,
-          2217,
+          2196,
+          2207,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      2182,
-      2218,
+      2172,
+      2208,
       0
     ],
     "type": "StdLibCall",
@@ -625,8 +625,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          2263,
-          2266,
+          2253,
+          2256,
           0
         ]
       },
@@ -676,8 +676,8 @@ description: Operations executed ball-bearing.kcl
           ]
         },
         "sourceRange": [
-          2282,
-          2291,
+          2272,
+          2281,
           0
         ]
       },
@@ -727,8 +727,8 @@ description: Operations executed ball-bearing.kcl
           ]
         },
         "sourceRange": [
-          2309,
-          2318,
+          2299,
+          2308,
           0
         ]
       },
@@ -747,8 +747,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          2339,
-          2345,
+          2329,
+          2335,
           0
         ]
       },
@@ -758,16 +758,16 @@ description: Operations executed ball-bearing.kcl
           "value": true
         },
         "sourceRange": [
-          2373,
-          2377,
+          2363,
+          2367,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      2224,
-      2384,
+      2214,
+      2374,
       0
     ],
     "type": "StdLibCall",
@@ -793,16 +793,16 @@ description: Operations executed ball-bearing.kcl
           "value": "XZ"
         },
         "sourceRange": [
-          2470,
-          2474,
+          2460,
+          2464,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2456,
-      2475,
+      2446,
+      2465,
       0
     ],
     "type": "StdLibCall",
@@ -828,8 +828,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          2678,
-          2714,
+          2663,
+          2699,
           0
         ]
       },
@@ -841,16 +841,16 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          2716,
-          2726,
+          2701,
+          2711,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      2670,
-      2727,
+      2655,
+      2712,
       0
     ],
     "type": "StdLibCall",
@@ -873,8 +873,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          2772,
-          2775,
+          2757,
+          2760,
           0
         ]
       },
@@ -924,8 +924,8 @@ description: Operations executed ball-bearing.kcl
           ]
         },
         "sourceRange": [
-          2791,
-          2800,
+          2776,
+          2785,
           0
         ]
       },
@@ -975,8 +975,8 @@ description: Operations executed ball-bearing.kcl
           ]
         },
         "sourceRange": [
-          2818,
-          2827,
+          2803,
+          2812,
           0
         ]
       },
@@ -995,8 +995,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          2848,
-          2854,
+          2833,
+          2839,
           0
         ]
       },
@@ -1006,16 +1006,16 @@ description: Operations executed ball-bearing.kcl
           "value": true
         },
         "sourceRange": [
-          2882,
-          2886,
+          2867,
+          2871,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      2733,
-      2893,
+      2718,
+      2878,
       0
     ],
     "type": "StdLibCall",
@@ -1217,16 +1217,16 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          2972,
-          2983,
+          2957,
+          2968,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2958,
-      2984,
+      2943,
+      2969,
       0
     ],
     "type": "StdLibCall",
@@ -1242,8 +1242,8 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          3080,
-          3180,
+          3060,
+          3155,
           0
         ]
       },
@@ -1255,16 +1255,16 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          3182,
-          3183,
+          3157,
+          3158,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3075,
-      3184,
+      3055,
+      3159,
       0
     ],
     "type": "StdLibCall",
@@ -1287,16 +1287,16 @@ description: Operations executed ball-bearing.kcl
           }
         },
         "sourceRange": [
-          3236,
-          3252,
+          3211,
+          3227,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3200,
-      3253,
+      3175,
+      3228,
       0
     ],
     "type": "StdLibCall",
@@ -1308,8 +1308,8 @@ description: Operations executed ball-bearing.kcl
         }
       },
       "sourceRange": [
-        3208,
-        3225,
+        3183,
+        3200,
         0
       ]
     }

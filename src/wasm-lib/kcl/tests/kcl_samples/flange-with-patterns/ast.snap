@@ -468,7 +468,7 @@ description: Result of parsing flange-with-patterns.kcl
       },
       {
         "declaration": {
-          "end": 1204,
+          "end": 1199,
           "id": {
             "end": 866,
             "name": "circles",
@@ -502,87 +502,27 @@ description: Result of parsing flange-with-patterns.kcl
               {
                 "arguments": [
                   {
-                    "end": 1001,
-                    "properties": [
-                      {
-                        "end": 957,
-                        "key": {
-                          "end": 916,
-                          "name": "center",
-                          "start": 910,
-                          "type": "Identifier"
-                        },
-                        "start": 910,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "end": 953,
-                              "left": {
-                                "end": 949,
-                                "name": "mountingHolePlacementDiameter",
-                                "start": 920,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "operator": "/",
-                              "right": {
-                                "end": 953,
-                                "raw": "2",
-                                "start": 952,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 2.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "start": 920,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            {
-                              "end": 956,
-                              "raw": "0",
-                              "start": 955,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          ],
-                          "end": 957,
-                          "start": 919,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "end": 994,
-                        "key": {
-                          "end": 972,
-                          "name": "radius",
-                          "start": 966,
-                          "type": "Identifier"
-                        },
-                        "start": 966,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 994,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "center"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 952,
                           "left": {
-                            "end": 990,
-                            "name": "mountingHoleDia",
-                            "start": 975,
+                            "end": 948,
+                            "name": "mountingHolePlacementDiameter",
+                            "start": 919,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 994,
+                            "end": 952,
                             "raw": "2",
-                            "start": 993,
+                            "start": 951,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -590,21 +530,59 @@ description: Result of parsing flange-with-patterns.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 975,
+                          "start": 919,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
+                        },
+                        {
+                          "end": 955,
+                          "raw": "0",
+                          "start": 954,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         }
-                      }
-                    ],
-                    "start": 901,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                      ],
+                      "end": 956,
+                      "start": 918,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   },
                   {
-                    "end": 1004,
-                    "start": 1003,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 993,
+                      "left": {
+                        "end": 989,
+                        "name": "mountingHoleDia",
+                        "start": 974,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 993,
+                        "raw": "2",
+                        "start": 992,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 974,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -613,10 +591,11 @@ description: Result of parsing flange-with-patterns.kcl
                   "start": 894,
                   "type": "Identifier"
                 },
-                "end": 1005,
+                "end": 1000,
                 "start": 894,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -627,9 +606,9 @@ description: Result of parsing flange-with-patterns.kcl
                       "name": "arcDegrees"
                     },
                     "arg": {
-                      "end": 1053,
+                      "end": 1048,
                       "raw": "360",
-                      "start": 1050,
+                      "start": 1045,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -647,9 +626,9 @@ description: Result of parsing flange-with-patterns.kcl
                     "arg": {
                       "elements": [
                         {
-                          "end": 1073,
+                          "end": 1068,
                           "raw": "0",
-                          "start": 1072,
+                          "start": 1067,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -658,9 +637,9 @@ description: Result of parsing flange-with-patterns.kcl
                           }
                         },
                         {
-                          "end": 1076,
+                          "end": 1071,
                           "raw": "0",
-                          "start": 1075,
+                          "start": 1070,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -669,8 +648,8 @@ description: Result of parsing flange-with-patterns.kcl
                           }
                         }
                       ],
-                      "end": 1077,
-                      "start": 1071,
+                      "end": 1072,
+                      "start": 1066,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -682,9 +661,9 @@ description: Result of parsing flange-with-patterns.kcl
                       "name": "instances"
                     },
                     "arg": {
-                      "end": 1104,
+                      "end": 1099,
                       "name": "nHoles",
-                      "start": 1098,
+                      "start": 1093,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -696,9 +675,9 @@ description: Result of parsing flange-with-patterns.kcl
                       "name": "rotateDuplicates"
                     },
                     "arg": {
-                      "end": 1136,
+                      "end": 1131,
                       "raw": "true",
-                      "start": 1132,
+                      "start": 1127,
                       "type": "Literal",
                       "type": "Literal",
                       "value": true
@@ -706,25 +685,25 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1028,
+                  "end": 1023,
                   "name": "patternCircular2d",
-                  "start": 1011,
+                  "start": 1006,
                   "type": "Identifier"
                 },
-                "end": 1143,
-                "start": 1011,
+                "end": 1138,
+                "start": 1006,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1204,
+            "end": 1199,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
-                    "end": 1204,
-                    "start": 1143,
+                    "end": 1199,
+                    "start": 1138,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -743,7 +722,7 @@ description: Result of parsing flange-with-patterns.kcl
           "start": 859,
           "type": "VariableDeclarator"
         },
-        "end": 1204,
+        "end": 1199,
         "kind": "const",
         "start": 859,
         "type": "VariableDeclaration",
@@ -751,11 +730,11 @@ description: Result of parsing flange-with-patterns.kcl
       },
       {
         "declaration": {
-          "end": 1482,
+          "end": 1467,
           "id": {
-            "end": 1215,
+            "end": 1210,
             "name": "flangeBase",
-            "start": 1205,
+            "start": 1200,
             "type": "Identifier"
           },
           "init": {
@@ -763,154 +742,133 @@ description: Result of parsing flange-with-patterns.kcl
               {
                 "arguments": [
                   {
-                    "end": 1236,
+                    "end": 1231,
                     "raw": "'XY'",
-                    "start": 1232,
+                    "start": 1227,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 1231,
+                  "end": 1226,
                   "name": "startSketchOn",
-                  "start": 1218,
+                  "start": 1213,
                   "type": "Identifier"
                 },
-                "end": 1237,
-                "start": 1218,
+                "end": 1232,
+                "start": 1213,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 1310,
-                    "properties": [
-                      {
-                        "end": 1274,
-                        "key": {
-                          "end": 1265,
-                          "name": "center",
-                          "start": 1259,
-                          "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "center"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1264,
+                          "raw": "0",
+                          "start": 1263,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         },
-                        "start": 1259,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "end": 1270,
-                              "raw": "0",
-                              "start": 1269,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            },
-                            {
-                              "end": 1273,
-                              "raw": "0",
-                              "start": 1272,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          ],
-                          "end": 1274,
-                          "start": 1268,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
+                        {
+                          "end": 1267,
+                          "raw": "0",
+                          "start": 1266,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         }
-                      },
-                      {
-                        "end": 1303,
-                        "key": {
-                          "end": 1289,
-                          "name": "radius",
-                          "start": 1283,
-                          "type": "Identifier"
-                        },
-                        "start": 1283,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 1303,
-                          "left": {
-                            "end": 1299,
-                            "name": "baseDia",
-                            "start": 1292,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "/",
-                          "right": {
-                            "end": 1303,
-                            "raw": "2",
-                            "start": 1302,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 2.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "start": 1292,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      }
-                    ],
-                    "start": 1250,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
+                      ],
+                      "end": 1268,
+                      "start": 1262,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   },
                   {
-                    "end": 1313,
-                    "start": 1312,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 1297,
+                      "left": {
+                        "end": 1293,
+                        "name": "baseDia",
+                        "start": 1286,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1297,
+                        "raw": "2",
+                        "start": 1296,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1286,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 1249,
+                  "end": 1244,
                   "name": "circle",
-                  "start": 1243,
+                  "start": 1238,
                   "type": "Identifier"
                 },
-                "end": 1314,
-                "start": 1243,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 1304,
+                "start": 1238,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "end": 1332,
+                    "end": 1322,
                     "name": "circles",
-                    "start": 1325,
+                    "start": 1315,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1335,
-                    "start": 1334,
+                    "end": 1325,
+                    "start": 1324,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1324,
+                  "end": 1314,
                   "name": "hole",
-                  "start": 1320,
+                  "start": 1310,
                   "type": "Identifier"
                 },
-                "end": 1336,
-                "start": 1320,
+                "end": 1326,
+                "start": 1310,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -919,123 +877,102 @@ description: Result of parsing flange-with-patterns.kcl
                   {
                     "arguments": [
                       {
-                        "end": 1414,
-                        "properties": [
-                          {
-                            "end": 1378,
-                            "key": {
-                              "end": 1369,
-                              "name": "center",
-                              "start": 1363,
-                              "type": "Identifier"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "center"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 1363,
+                              "raw": "0",
+                              "start": 1362,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
                             },
-                            "start": 1363,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "end": 1374,
-                                  "raw": "0",
-                                  "start": 1373,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 0.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                {
-                                  "end": 1377,
-                                  "raw": "0",
-                                  "start": 1376,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 0.0,
-                                    "suffix": "None"
-                                  }
-                                }
-                              ],
-                              "end": 1378,
-                              "start": 1372,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
+                            {
+                              "end": 1366,
+                              "raw": "0",
+                              "start": 1365,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
                             }
-                          },
-                          {
-                            "end": 1407,
-                            "key": {
-                              "end": 1393,
-                              "name": "radius",
-                              "start": 1387,
-                              "type": "Identifier"
-                            },
-                            "start": 1387,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 1407,
-                              "left": {
-                                "end": 1403,
-                                "name": "pipeDia",
-                                "start": 1396,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "operator": "/",
-                              "right": {
-                                "end": 1407,
-                                "raw": "2",
-                                "start": 1406,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 2.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "start": 1396,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          }
-                        ],
-                        "start": 1354,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                          ],
+                          "end": 1367,
+                          "start": 1361,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
                       },
                       {
-                        "end": 1417,
-                        "start": 1416,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "radius"
+                        },
+                        "arg": {
+                          "end": 1396,
+                          "left": {
+                            "end": 1392,
+                            "name": "pipeDia",
+                            "start": 1385,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "/",
+                          "right": {
+                            "end": 1396,
+                            "raw": "2",
+                            "start": 1395,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 1385,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
                       }
                     ],
                     "callee": {
-                      "end": 1353,
+                      "end": 1343,
                       "name": "circle",
-                      "start": 1347,
+                      "start": 1337,
                       "type": "Identifier"
                     },
-                    "end": 1418,
-                    "start": 1347,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
+                    "end": 1403,
+                    "start": 1337,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
                   },
                   {
-                    "end": 1421,
-                    "start": 1420,
+                    "end": 1406,
+                    "start": 1405,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1346,
+                  "end": 1336,
                   "name": "hole",
-                  "start": 1342,
+                  "start": 1332,
                   "type": "Identifier"
                 },
-                "end": 1422,
-                "start": 1342,
+                "end": 1407,
+                "start": 1332,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1048,34 +985,34 @@ description: Result of parsing flange-with-patterns.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 1458,
+                      "end": 1443,
                       "name": "baseThickness",
-                      "start": 1445,
+                      "start": 1430,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1435,
+                  "end": 1420,
                   "name": "extrude",
-                  "start": 1428,
+                  "start": 1413,
                   "type": "Identifier"
                 },
-                "end": 1459,
-                "start": 1428,
+                "end": 1444,
+                "start": 1413,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1482,
+            "end": 1467,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "4": [
                   {
-                    "end": 1482,
-                    "start": 1459,
+                    "end": 1467,
+                    "start": 1444,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1087,71 +1024,71 @@ description: Result of parsing flange-with-patterns.kcl
               },
               "startNodes": []
             },
-            "start": 1218,
+            "start": 1213,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1205,
+          "start": 1200,
           "type": "VariableDeclarator"
         },
-        "end": 1482,
+        "end": 1467,
         "kind": "const",
-        "start": 1205,
+        "start": 1200,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1677,
+          "end": 1662,
           "id": {
-            "end": 1495,
+            "end": 1480,
             "name": "topFacePlane",
-            "start": 1483,
+            "start": 1468,
             "type": "Identifier"
           },
           "init": {
-            "end": 1677,
+            "end": 1662,
             "properties": [
               {
-                "end": 1675,
+                "end": 1660,
                 "key": {
-                  "end": 1507,
+                  "end": 1492,
                   "name": "plane",
-                  "start": 1502,
+                  "start": 1487,
                   "type": "Identifier"
                 },
-                "start": 1502,
+                "start": 1487,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 1675,
+                  "end": 1660,
                   "properties": [
                     {
-                      "end": 1560,
+                      "end": 1545,
                       "key": {
-                        "end": 1522,
+                        "end": 1507,
                         "name": "origin",
-                        "start": 1516,
+                        "start": 1501,
                         "type": "Identifier"
                       },
-                      "start": 1516,
+                      "start": 1501,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 1560,
+                        "end": 1545,
                         "properties": [
                           {
-                            "end": 1532,
+                            "end": 1517,
                             "key": {
-                              "end": 1528,
+                              "end": 1513,
                               "name": "x",
-                              "start": 1527,
+                              "start": 1512,
                               "type": "Identifier"
                             },
-                            "start": 1527,
+                            "start": 1512,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1532,
+                              "end": 1517,
                               "raw": "0",
-                              "start": 1531,
+                              "start": 1516,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1161,19 +1098,19 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           },
                           {
-                            "end": 1539,
+                            "end": 1524,
                             "key": {
-                              "end": 1535,
+                              "end": 1520,
                               "name": "y",
-                              "start": 1534,
+                              "start": 1519,
                               "type": "Identifier"
                             },
-                            "start": 1534,
+                            "start": 1519,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1539,
+                              "end": 1524,
                               "raw": "0",
-                              "start": 1538,
+                              "start": 1523,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1183,56 +1120,56 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           },
                           {
-                            "end": 1558,
+                            "end": 1543,
                             "key": {
-                              "end": 1542,
+                              "end": 1527,
                               "name": "z",
-                              "start": 1541,
+                              "start": 1526,
                               "type": "Identifier"
                             },
-                            "start": 1541,
+                            "start": 1526,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1558,
+                              "end": 1543,
                               "name": "baseThickness",
-                              "start": 1545,
+                              "start": 1530,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
-                        "start": 1525,
+                        "start": 1510,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       }
                     },
                     {
-                      "end": 1597,
+                      "end": 1582,
                       "key": {
-                        "end": 1571,
+                        "end": 1556,
                         "name": "xAxis",
-                        "start": 1566,
+                        "start": 1551,
                         "type": "Identifier"
                       },
-                      "start": 1566,
+                      "start": 1551,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 1597,
+                        "end": 1582,
                         "properties": [
                           {
-                            "end": 1581,
+                            "end": 1566,
                             "key": {
-                              "end": 1577,
+                              "end": 1562,
                               "name": "x",
-                              "start": 1576,
+                              "start": 1561,
                               "type": "Identifier"
                             },
-                            "start": 1576,
+                            "start": 1561,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1581,
+                              "end": 1566,
                               "raw": "1",
-                              "start": 1580,
+                              "start": 1565,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1242,19 +1179,19 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           },
                           {
-                            "end": 1588,
+                            "end": 1573,
                             "key": {
-                              "end": 1584,
+                              "end": 1569,
                               "name": "y",
-                              "start": 1583,
+                              "start": 1568,
                               "type": "Identifier"
                             },
-                            "start": 1583,
+                            "start": 1568,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1588,
+                              "end": 1573,
                               "raw": "0",
-                              "start": 1587,
+                              "start": 1572,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1264,19 +1201,19 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           },
                           {
-                            "end": 1595,
+                            "end": 1580,
                             "key": {
-                              "end": 1591,
+                              "end": 1576,
                               "name": "z",
-                              "start": 1590,
+                              "start": 1575,
                               "type": "Identifier"
                             },
-                            "start": 1590,
+                            "start": 1575,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1595,
+                              "end": 1580,
                               "raw": "0",
-                              "start": 1594,
+                              "start": 1579,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1286,38 +1223,38 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           }
                         ],
-                        "start": 1574,
+                        "start": 1559,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       }
                     },
                     {
-                      "end": 1634,
+                      "end": 1619,
                       "key": {
-                        "end": 1608,
+                        "end": 1593,
                         "name": "yAxis",
-                        "start": 1603,
+                        "start": 1588,
                         "type": "Identifier"
                       },
-                      "start": 1603,
+                      "start": 1588,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 1634,
+                        "end": 1619,
                         "properties": [
                           {
-                            "end": 1618,
+                            "end": 1603,
                             "key": {
-                              "end": 1614,
+                              "end": 1599,
                               "name": "x",
-                              "start": 1613,
+                              "start": 1598,
                               "type": "Identifier"
                             },
-                            "start": 1613,
+                            "start": 1598,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1618,
+                              "end": 1603,
                               "raw": "0",
-                              "start": 1617,
+                              "start": 1602,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1327,19 +1264,19 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           },
                           {
-                            "end": 1625,
+                            "end": 1610,
                             "key": {
-                              "end": 1621,
+                              "end": 1606,
                               "name": "y",
-                              "start": 1620,
+                              "start": 1605,
                               "type": "Identifier"
                             },
-                            "start": 1620,
+                            "start": 1605,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1625,
+                              "end": 1610,
                               "raw": "1",
-                              "start": 1624,
+                              "start": 1609,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1349,19 +1286,19 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           },
                           {
-                            "end": 1632,
+                            "end": 1617,
                             "key": {
-                              "end": 1628,
+                              "end": 1613,
                               "name": "z",
-                              "start": 1627,
+                              "start": 1612,
                               "type": "Identifier"
                             },
-                            "start": 1627,
+                            "start": 1612,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1632,
+                              "end": 1617,
                               "raw": "0",
-                              "start": 1631,
+                              "start": 1616,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1371,38 +1308,38 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           }
                         ],
-                        "start": 1611,
+                        "start": 1596,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       }
                     },
                     {
-                      "end": 1671,
+                      "end": 1656,
                       "key": {
-                        "end": 1645,
+                        "end": 1630,
                         "name": "zAxis",
-                        "start": 1640,
+                        "start": 1625,
                         "type": "Identifier"
                       },
-                      "start": 1640,
+                      "start": 1625,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 1671,
+                        "end": 1656,
                         "properties": [
                           {
-                            "end": 1655,
+                            "end": 1640,
                             "key": {
-                              "end": 1651,
+                              "end": 1636,
                               "name": "x",
-                              "start": 1650,
+                              "start": 1635,
                               "type": "Identifier"
                             },
-                            "start": 1650,
+                            "start": 1635,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1655,
+                              "end": 1640,
                               "raw": "0",
-                              "start": 1654,
+                              "start": 1639,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1412,19 +1349,19 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           },
                           {
-                            "end": 1662,
+                            "end": 1647,
                             "key": {
-                              "end": 1658,
+                              "end": 1643,
                               "name": "y",
-                              "start": 1657,
+                              "start": 1642,
                               "type": "Identifier"
                             },
-                            "start": 1657,
+                            "start": 1642,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1662,
+                              "end": 1647,
                               "raw": "0",
-                              "start": 1661,
+                              "start": 1646,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1434,19 +1371,19 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           },
                           {
-                            "end": 1669,
+                            "end": 1654,
                             "key": {
-                              "end": 1665,
+                              "end": 1650,
                               "name": "z",
-                              "start": 1664,
+                              "start": 1649,
                               "type": "Identifier"
                             },
-                            "start": 1664,
+                            "start": 1649,
                             "type": "ObjectProperty",
                             "value": {
-                              "end": 1669,
+                              "end": 1654,
                               "raw": "1",
-                              "start": 1668,
+                              "start": 1653,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1456,38 +1393,38 @@ description: Result of parsing flange-with-patterns.kcl
                             }
                           }
                         ],
-                        "start": 1648,
+                        "start": 1633,
                         "type": "ObjectExpression",
                         "type": "ObjectExpression"
                       }
                     }
                   ],
-                  "start": 1510,
+                  "start": 1495,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 }
               }
             ],
-            "start": 1498,
+            "start": 1483,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "start": 1483,
+          "start": 1468,
           "type": "VariableDeclarator"
         },
-        "end": 1677,
+        "end": 1662,
         "kind": "const",
-        "start": 1483,
+        "start": 1468,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2046,
+          "end": 2021,
           "id": {
-            "end": 1745,
+            "end": 1730,
             "name": "topExtrusion",
-            "start": 1733,
+            "start": 1718,
             "type": "Identifier"
           },
           "init": {
@@ -1495,45 +1432,124 @@ description: Result of parsing flange-with-patterns.kcl
               {
                 "arguments": [
                   {
-                    "end": 1774,
+                    "end": 1759,
                     "name": "topFacePlane",
-                    "start": 1762,
+                    "start": 1747,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 1761,
+                  "end": 1746,
                   "name": "startSketchOn",
-                  "start": 1748,
+                  "start": 1733,
                   "type": "Identifier"
                 },
-                "end": 1775,
-                "start": 1748,
+                "end": 1760,
+                "start": 1733,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 1857,
-                    "properties": [
-                      {
-                        "end": 1812,
-                        "key": {
-                          "end": 1803,
-                          "name": "center",
-                          "start": 1797,
-                          "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "center"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1792,
+                          "raw": "0",
+                          "start": 1791,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         },
-                        "start": 1797,
-                        "type": "ObjectProperty",
+                        {
+                          "end": 1795,
+                          "raw": "0",
+                          "start": 1794,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 1796,
+                      "start": 1790,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 1834,
+                      "left": {
+                        "end": 1830,
+                        "name": "topTotalDiameter",
+                        "start": 1814,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1834,
+                        "raw": "2",
+                        "start": 1833,
+                        "type": "Literal",
+                        "type": "Literal",
                         "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1814,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1772,
+                  "name": "circle",
+                  "start": 1766,
+                  "type": "Identifier"
+                },
+                "end": 1841,
+                "start": 1766,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "center"
+                        },
+                        "arg": {
                           "elements": [
                             {
-                              "end": 1808,
+                              "end": 1878,
                               "raw": "0",
-                              "start": 1807,
+                              "start": 1877,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1542,9 +1558,9 @@ description: Result of parsing flange-with-patterns.kcl
                               }
                             },
                             {
-                              "end": 1811,
+                              "end": 1881,
                               "raw": "0",
-                              "start": 1810,
+                              "start": 1880,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1553,36 +1569,32 @@ description: Result of parsing flange-with-patterns.kcl
                               }
                             }
                           ],
-                          "end": 1812,
-                          "start": 1806,
+                          "end": 1882,
+                          "start": 1876,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       },
                       {
-                        "end": 1850,
-                        "key": {
-                          "end": 1827,
-                          "name": "radius",
-                          "start": 1821,
-                          "type": "Identifier"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "radius"
                         },
-                        "start": 1821,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 1850,
+                        "arg": {
+                          "end": 1911,
                           "left": {
-                            "end": 1846,
-                            "name": "topTotalDiameter",
-                            "start": 1830,
+                            "end": 1907,
+                            "name": "pipeDia",
+                            "start": 1900,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1850,
+                            "end": 1911,
                             "raw": "2",
-                            "start": 1849,
+                            "start": 1910,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1590,156 +1602,39 @@ description: Result of parsing flange-with-patterns.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1830,
+                          "start": 1900,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 1788,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
-                  },
-                  {
-                    "end": 1860,
-                    "start": 1859,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 1787,
-                  "name": "circle",
-                  "start": 1781,
-                  "type": "Identifier"
-                },
-                "end": 1861,
-                "start": 1781,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "end": 1939,
-                        "properties": [
-                          {
-                            "end": 1903,
-                            "key": {
-                              "end": 1894,
-                              "name": "center",
-                              "start": 1888,
-                              "type": "Identifier"
-                            },
-                            "start": 1888,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "end": 1899,
-                                  "raw": "0",
-                                  "start": 1898,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 0.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                {
-                                  "end": 1902,
-                                  "raw": "0",
-                                  "start": 1901,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 0.0,
-                                    "suffix": "None"
-                                  }
-                                }
-                              ],
-                              "end": 1903,
-                              "start": 1897,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            }
-                          },
-                          {
-                            "end": 1932,
-                            "key": {
-                              "end": 1918,
-                              "name": "radius",
-                              "start": 1912,
-                              "type": "Identifier"
-                            },
-                            "start": 1912,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 1932,
-                              "left": {
-                                "end": 1928,
-                                "name": "pipeDia",
-                                "start": 1921,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "operator": "/",
-                              "right": {
-                                "end": 1932,
-                                "raw": "2",
-                                "start": 1931,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 2.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "start": 1921,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          }
-                        ],
-                        "start": 1879,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      },
-                      {
-                        "end": 1942,
-                        "start": 1941,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
-                      }
-                    ],
                     "callee": {
-                      "end": 1878,
+                      "end": 1858,
                       "name": "circle",
-                      "start": 1872,
+                      "start": 1852,
                       "type": "Identifier"
                     },
-                    "end": 1943,
-                    "start": 1872,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
+                    "end": 1918,
+                    "start": 1852,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
                   },
                   {
-                    "end": 1946,
-                    "start": 1945,
+                    "end": 1921,
+                    "start": 1920,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1871,
+                  "end": 1851,
                   "name": "hole",
-                  "start": 1867,
+                  "start": 1847,
                   "type": "Identifier"
                 },
-                "end": 1947,
-                "start": 1867,
+                "end": 1922,
+                "start": 1847,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1752,34 +1647,34 @@ description: Result of parsing flange-with-patterns.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 1987,
+                      "end": 1962,
                       "name": "topTotalThickness",
-                      "start": 1970,
+                      "start": 1945,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1960,
+                  "end": 1935,
                   "name": "extrude",
-                  "start": 1953,
+                  "start": 1928,
                   "type": "Identifier"
                 },
-                "end": 1988,
-                "start": 1953,
+                "end": 1963,
+                "start": 1928,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2046,
+            "end": 2021,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "3": [
                   {
-                    "end": 2046,
-                    "start": 1988,
+                    "end": 2021,
+                    "start": 1963,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1791,26 +1686,26 @@ description: Result of parsing flange-with-patterns.kcl
               },
               "startNodes": []
             },
-            "start": 1748,
+            "start": 1733,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1733,
+          "start": 1718,
           "type": "VariableDeclarator"
         },
-        "end": 2046,
+        "end": 2021,
         "kind": "const",
-        "start": 1733,
+        "start": 1718,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2299,
+          "end": 2264,
           "id": {
-            "end": 2062,
+            "end": 2037,
             "name": "bottomExtrusion",
-            "start": 2047,
+            "start": 2022,
             "type": "Identifier"
           },
           "init": {
@@ -1818,46 +1713,125 @@ description: Result of parsing flange-with-patterns.kcl
               {
                 "arguments": [
                   {
-                    "end": 2083,
+                    "end": 2058,
                     "raw": "\"XY\"",
-                    "start": 2079,
+                    "start": 2054,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 2078,
+                  "end": 2053,
                   "name": "startSketchOn",
-                  "start": 2065,
+                  "start": 2040,
                   "type": "Identifier"
                 },
-                "end": 2084,
-                "start": 2065,
+                "end": 2059,
+                "start": 2040,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2169,
-                    "properties": [
-                      {
-                        "end": 2121,
-                        "key": {
-                          "end": 2112,
-                          "name": "center",
-                          "start": 2106,
-                          "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "center"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 2091,
+                          "raw": "0",
+                          "start": 2090,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         },
-                        "start": 2106,
-                        "type": "ObjectProperty",
+                        {
+                          "end": 2094,
+                          "raw": "0",
+                          "start": 2093,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 2095,
+                      "start": 2089,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 2136,
+                      "left": {
+                        "end": 2132,
+                        "name": "bottomTotalDiameter",
+                        "start": 2113,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 2136,
+                        "raw": "2",
+                        "start": 2135,
+                        "type": "Literal",
+                        "type": "Literal",
                         "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 2113,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2071,
+                  "name": "circle",
+                  "start": 2065,
+                  "type": "Identifier"
+                },
+                "end": 2143,
+                "start": 2065,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "center"
+                        },
+                        "arg": {
                           "elements": [
                             {
-                              "end": 2117,
+                              "end": 2180,
                               "raw": "0",
-                              "start": 2116,
+                              "start": 2179,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1866,9 +1840,9 @@ description: Result of parsing flange-with-patterns.kcl
                               }
                             },
                             {
-                              "end": 2120,
+                              "end": 2183,
                               "raw": "0",
-                              "start": 2119,
+                              "start": 2182,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1877,36 +1851,32 @@ description: Result of parsing flange-with-patterns.kcl
                               }
                             }
                           ],
-                          "end": 2121,
-                          "start": 2115,
+                          "end": 2184,
+                          "start": 2178,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       },
                       {
-                        "end": 2162,
-                        "key": {
-                          "end": 2136,
-                          "name": "radius",
-                          "start": 2130,
-                          "type": "Identifier"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "radius"
                         },
-                        "start": 2130,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 2162,
+                        "arg": {
+                          "end": 2213,
                           "left": {
-                            "end": 2158,
-                            "name": "bottomTotalDiameter",
-                            "start": 2139,
+                            "end": 2209,
+                            "name": "pipeDia",
+                            "start": 2202,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 2162,
+                            "end": 2213,
                             "raw": "2",
-                            "start": 2161,
+                            "start": 2212,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1914,156 +1884,39 @@ description: Result of parsing flange-with-patterns.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 2139,
+                          "start": 2202,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 2097,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
-                  },
-                  {
-                    "end": 2172,
-                    "start": 2171,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 2096,
-                  "name": "circle",
-                  "start": 2090,
-                  "type": "Identifier"
-                },
-                "end": 2173,
-                "start": 2090,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "end": 2251,
-                        "properties": [
-                          {
-                            "end": 2215,
-                            "key": {
-                              "end": 2206,
-                              "name": "center",
-                              "start": 2200,
-                              "type": "Identifier"
-                            },
-                            "start": 2200,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "end": 2211,
-                                  "raw": "0",
-                                  "start": 2210,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 0.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                {
-                                  "end": 2214,
-                                  "raw": "0",
-                                  "start": 2213,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 0.0,
-                                    "suffix": "None"
-                                  }
-                                }
-                              ],
-                              "end": 2215,
-                              "start": 2209,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            }
-                          },
-                          {
-                            "end": 2244,
-                            "key": {
-                              "end": 2230,
-                              "name": "radius",
-                              "start": 2224,
-                              "type": "Identifier"
-                            },
-                            "start": 2224,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 2244,
-                              "left": {
-                                "end": 2240,
-                                "name": "pipeDia",
-                                "start": 2233,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "operator": "/",
-                              "right": {
-                                "end": 2244,
-                                "raw": "2",
-                                "start": 2243,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 2.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "start": 2233,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          }
-                        ],
-                        "start": 2191,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      },
-                      {
-                        "end": 2254,
-                        "start": 2253,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
-                      }
-                    ],
                     "callee": {
-                      "end": 2190,
+                      "end": 2160,
                       "name": "circle",
-                      "start": 2184,
+                      "start": 2154,
                       "type": "Identifier"
                     },
-                    "end": 2255,
-                    "start": 2184,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
+                    "end": 2220,
+                    "start": 2154,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
                   },
                   {
-                    "end": 2258,
-                    "start": 2257,
+                    "end": 2223,
+                    "start": 2222,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2183,
+                  "end": 2153,
                   "name": "hole",
-                  "start": 2179,
+                  "start": 2149,
                   "type": "Identifier"
                 },
-                "end": 2259,
-                "start": 2179,
+                "end": 2224,
+                "start": 2149,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2077,49 +1930,49 @@ description: Result of parsing flange-with-patterns.kcl
                     },
                     "arg": {
                       "argument": {
-                        "end": 2298,
+                        "end": 2263,
                         "name": "bottomThickness",
-                        "start": 2283,
+                        "start": 2248,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 2298,
+                      "end": 2263,
                       "operator": "-",
-                      "start": 2282,
+                      "start": 2247,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2272,
+                  "end": 2237,
                   "name": "extrude",
-                  "start": 2265,
+                  "start": 2230,
                   "type": "Identifier"
                 },
-                "end": 2299,
-                "start": 2265,
+                "end": 2264,
+                "start": 2230,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2299,
-            "start": 2065,
+            "end": 2264,
+            "start": 2040,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2047,
+          "start": 2022,
           "type": "VariableDeclarator"
         },
-        "end": 2299,
+        "end": 2264,
         "kind": "const",
-        "start": 2047,
+        "start": 2022,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 2300,
+    "end": 2265,
     "innerAttrs": [
       {
         "end": 333,
@@ -2181,8 +2034,8 @@ description: Result of parsing flange-with-patterns.kcl
         ],
         "16": [
           {
-            "end": 1732,
-            "start": 1677,
+            "end": 1717,
+            "start": 1662,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",

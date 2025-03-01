@@ -37,7 +37,7 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
         },
         "sourceRange": [
           1183,
-          1336,
+          1331,
           0
         ]
       },
@@ -49,8 +49,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          1338,
-          1339,
+          1333,
+          1334,
           0
         ]
       }
@@ -58,7 +58,7 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
     "name": "hole",
     "sourceRange": [
       1178,
-      1340,
+      1335,
       0
     ],
     "type": "StdLibCall",
@@ -74,8 +74,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          1351,
-          1501,
+          1346,
+          1491,
           0
         ]
       },
@@ -87,16 +87,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          1503,
-          1504,
+          1493,
+          1494,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1346,
-      1505,
+      1341,
+      1495,
       0
     ],
     "type": "StdLibCall",
@@ -112,8 +112,46 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          1516,
+          1506,
+          1648,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1650,
+          1651,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      1501,
+      1652,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
           1663,
+          1808,
           0
         ]
       },
@@ -125,16 +163,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          1665,
-          1666,
+          1810,
+          1811,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1511,
-      1667,
+      1658,
+      1812,
       0
     ],
     "type": "StdLibCall",
@@ -150,8 +188,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          1678,
-          1828,
+          1823,
+          1892,
           0
         ]
       },
@@ -163,54 +201,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          1830,
-          1831,
+          1894,
+          1895,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1673,
-      1832,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1843,
-          1917,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1919,
-          1920,
-          0
-        ]
-      }
-    },
-    "name": "hole",
-    "sourceRange": [
-      1838,
-      1921,
+      1818,
+      1896,
       0
     ],
     "type": "StdLibCall",
@@ -233,16 +233,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          1944,
-          1960,
+          1919,
+          1935,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1927,
-      1961,
+      1902,
+      1936,
       0
     ],
     "type": "StdLibCall",
@@ -450,16 +450,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          2256,
-          2473,
+          2231,
+          2448,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2242,
-      2474,
+      2217,
+      2449,
       0
     ],
     "type": "StdLibCall",
@@ -475,8 +475,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          2697,
-          2848,
+          2672,
+          2818,
           0
         ]
       },
@@ -488,16 +488,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          2850,
-          2851,
+          2820,
+          2821,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2692,
-      2852,
+      2667,
+      2822,
       0
     ],
     "type": "StdLibCall",
@@ -513,8 +513,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          2863,
-          3011,
+          2833,
+          2976,
           0
         ]
       },
@@ -526,16 +526,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          3013,
-          3014,
+          2978,
+          2979,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2858,
-      3015,
+      2828,
+      2980,
       0
     ],
     "type": "StdLibCall",
@@ -551,8 +551,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          3026,
-          3171,
+          2991,
+          3131,
           0
         ]
       },
@@ -564,16 +564,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          3173,
-          3174,
+          3133,
+          3134,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3021,
-      3175,
+      2986,
+      3135,
       0
     ],
     "type": "StdLibCall",
@@ -589,8 +589,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          3186,
-          3334,
+          3146,
+          3289,
           0
         ]
       },
@@ -602,16 +602,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          3336,
-          3337,
+          3291,
+          3292,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3181,
-      3338,
+      3141,
+      3293,
       0
     ],
     "type": "StdLibCall",
@@ -627,8 +627,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          3349,
-          3423,
+          3304,
+          3373,
           0
         ]
       },
@@ -640,16 +640,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          3425,
-          3426,
+          3375,
+          3376,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3344,
-      3427,
+      3299,
+      3377,
       0
     ],
     "type": "StdLibCall",
@@ -672,16 +672,16 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           }
         },
         "sourceRange": [
-          3450,
-          3457,
+          3400,
+          3407,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3433,
-      3458,
+      3383,
+      3408,
       0
     ],
     "type": "StdLibCall",

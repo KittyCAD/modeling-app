@@ -7,7 +7,7 @@ description: Result of parsing 80-20-rail.kcl
     "body": [
       {
         "declaration": {
-          "end": 7123,
+          "end": 7118,
           "id": {
             "end": 214,
             "name": "rail8020",
@@ -19,7 +19,7 @@ description: Result of parsing 80-20-rail.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 7102,
+                    "end": 7097,
                     "id": {
                       "end": 295,
                       "name": "sketch001",
@@ -5826,205 +5826,183 @@ description: Result of parsing 80-20-rail.kcl
                             {
                               "arguments": [
                                 {
-                                  "end": 5635,
-                                  "properties": [
-                                    {
-                                      "end": 5585,
-                                      "key": {
-                                        "end": 5481,
-                                        "name": "center",
-                                        "start": 5475,
-                                        "type": "Identifier"
-                                      },
-                                      "start": 5475,
-                                      "type": "ObjectProperty",
-                                      "value": {
-                                        "elements": [
-                                          {
-                                            "end": 5529,
-                                            "left": {
-                                              "end": 5512,
-                                              "left": {
-                                                "end": 5499,
-                                                "raw": ".5",
-                                                "start": 5497,
-                                                "type": "Literal",
-                                                "type": "Literal",
-                                                "value": {
-                                                  "value": 0.5,
-                                                  "suffix": "None"
-                                                }
-                                              },
-                                              "operator": "*",
-                                              "right": {
-                                                "end": 5512,
-                                                "name": "railHeight",
-                                                "start": 5502,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              "start": 5497,
-                                              "type": "BinaryExpression",
-                                              "type": "BinaryExpression"
-                                            },
-                                            "operator": "+",
-                                            "right": {
-                                              "computed": false,
-                                              "end": 5529,
-                                              "object": {
-                                                "end": 5526,
-                                                "name": "originStart",
-                                                "start": 5515,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              "property": {
-                                                "end": 5528,
-                                                "raw": "0",
-                                                "start": 5527,
-                                                "type": "Literal",
-                                                "type": "Literal",
-                                                "value": {
-                                                  "value": 0.0,
-                                                  "suffix": "None"
-                                                }
-                                              },
-                                              "start": 5515,
-                                              "type": "MemberExpression",
-                                              "type": "MemberExpression"
-                                            },
-                                            "start": 5497,
-                                            "type": "BinaryExpression",
-                                            "type": "BinaryExpression"
-                                          },
-                                          {
-                                            "end": 5574,
-                                            "left": {
-                                              "end": 5557,
-                                              "left": {
-                                                "end": 5544,
-                                                "raw": ".5",
-                                                "start": 5542,
-                                                "type": "Literal",
-                                                "type": "Literal",
-                                                "value": {
-                                                  "value": 0.5,
-                                                  "suffix": "None"
-                                                }
-                                              },
-                                              "operator": "*",
-                                              "right": {
-                                                "end": 5557,
-                                                "name": "railHeight",
-                                                "start": 5547,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              "start": 5542,
-                                              "type": "BinaryExpression",
-                                              "type": "BinaryExpression"
-                                            },
-                                            "operator": "+",
-                                            "right": {
-                                              "computed": false,
-                                              "end": 5574,
-                                              "object": {
-                                                "end": 5571,
-                                                "name": "originStart",
-                                                "start": 5560,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              "property": {
-                                                "end": 5573,
-                                                "raw": "1",
-                                                "start": 5572,
-                                                "type": "Literal",
-                                                "type": "Literal",
-                                                "value": {
-                                                  "value": 1.0,
-                                                  "suffix": "None"
-                                                }
-                                              },
-                                              "start": 5560,
-                                              "type": "MemberExpression",
-                                              "type": "MemberExpression"
-                                            },
-                                            "start": 5542,
-                                            "type": "BinaryExpression",
-                                            "type": "BinaryExpression"
-                                          }
-                                        ],
-                                        "end": 5585,
-                                        "start": 5484,
-                                        "type": "ArrayExpression",
-                                        "type": "ArrayExpression"
-                                      }
-                                    },
-                                    {
-                                      "end": 5626,
-                                      "key": {
-                                        "end": 5602,
-                                        "name": "radius",
-                                        "start": 5596,
-                                        "type": "Identifier"
-                                      },
-                                      "start": 5596,
-                                      "type": "ObjectProperty",
-                                      "value": {
-                                        "end": 5626,
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "type": "Identifier",
+                                    "name": "center"
+                                  },
+                                  "arg": {
+                                    "elements": [
+                                      {
+                                        "end": 5528,
                                         "left": {
-                                          "end": 5622,
+                                          "end": 5511,
                                           "left": {
-                                            "end": 5609,
-                                            "raw": ".205",
-                                            "start": 5605,
+                                            "end": 5498,
+                                            "raw": ".5",
+                                            "start": 5496,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": {
-                                              "value": 0.205,
+                                              "value": 0.5,
                                               "suffix": "None"
                                             }
                                           },
                                           "operator": "*",
                                           "right": {
-                                            "end": 5622,
+                                            "end": 5511,
                                             "name": "railHeight",
-                                            "start": 5612,
+                                            "start": 5501,
                                             "type": "Identifier",
                                             "type": "Identifier"
                                           },
-                                          "start": 5605,
+                                          "start": 5496,
                                           "type": "BinaryExpression",
                                           "type": "BinaryExpression"
                                         },
-                                        "operator": "/",
+                                        "operator": "+",
                                         "right": {
-                                          "end": 5626,
-                                          "raw": "2",
-                                          "start": 5625,
-                                          "type": "Literal",
-                                          "type": "Literal",
-                                          "value": {
-                                            "value": 2.0,
-                                            "suffix": "None"
-                                          }
+                                          "computed": false,
+                                          "end": 5528,
+                                          "object": {
+                                            "end": 5525,
+                                            "name": "originStart",
+                                            "start": 5514,
+                                            "type": "Identifier",
+                                            "type": "Identifier"
+                                          },
+                                          "property": {
+                                            "end": 5527,
+                                            "raw": "0",
+                                            "start": 5526,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
+                                          },
+                                          "start": 5514,
+                                          "type": "MemberExpression",
+                                          "type": "MemberExpression"
                                         },
-                                        "start": 5605,
+                                        "start": 5496,
+                                        "type": "BinaryExpression",
+                                        "type": "BinaryExpression"
+                                      },
+                                      {
+                                        "end": 5573,
+                                        "left": {
+                                          "end": 5556,
+                                          "left": {
+                                            "end": 5543,
+                                            "raw": ".5",
+                                            "start": 5541,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.5,
+                                              "suffix": "None"
+                                            }
+                                          },
+                                          "operator": "*",
+                                          "right": {
+                                            "end": 5556,
+                                            "name": "railHeight",
+                                            "start": 5546,
+                                            "type": "Identifier",
+                                            "type": "Identifier"
+                                          },
+                                          "start": 5541,
+                                          "type": "BinaryExpression",
+                                          "type": "BinaryExpression"
+                                        },
+                                        "operator": "+",
+                                        "right": {
+                                          "computed": false,
+                                          "end": 5573,
+                                          "object": {
+                                            "end": 5570,
+                                            "name": "originStart",
+                                            "start": 5559,
+                                            "type": "Identifier",
+                                            "type": "Identifier"
+                                          },
+                                          "property": {
+                                            "end": 5572,
+                                            "raw": "1",
+                                            "start": 5571,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 1.0,
+                                              "suffix": "None"
+                                            }
+                                          },
+                                          "start": 5559,
+                                          "type": "MemberExpression",
+                                          "type": "MemberExpression"
+                                        },
+                                        "start": 5541,
                                         "type": "BinaryExpression",
                                         "type": "BinaryExpression"
                                       }
-                                    }
-                                  ],
-                                  "start": 5464,
-                                  "type": "ObjectExpression",
-                                  "type": "ObjectExpression"
+                                    ],
+                                    "end": 5584,
+                                    "start": 5483,
+                                    "type": "ArrayExpression",
+                                    "type": "ArrayExpression"
+                                  }
                                 },
                                 {
-                                  "end": 5638,
-                                  "start": 5637,
-                                  "type": "PipeSubstitution",
-                                  "type": "PipeSubstitution"
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "type": "Identifier",
+                                    "name": "radius"
+                                  },
+                                  "arg": {
+                                    "end": 5625,
+                                    "left": {
+                                      "end": 5621,
+                                      "left": {
+                                        "end": 5608,
+                                        "raw": ".205",
+                                        "start": 5604,
+                                        "type": "Literal",
+                                        "type": "Literal",
+                                        "value": {
+                                          "value": 0.205,
+                                          "suffix": "None"
+                                        }
+                                      },
+                                      "operator": "*",
+                                      "right": {
+                                        "end": 5621,
+                                        "name": "railHeight",
+                                        "start": 5611,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "start": 5604,
+                                      "type": "BinaryExpression",
+                                      "type": "BinaryExpression"
+                                    },
+                                    "operator": "/",
+                                    "right": {
+                                      "end": 5625,
+                                      "raw": "2",
+                                      "start": 5624,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 2.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 5604,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
                                 }
                               ],
                               "callee": {
@@ -6033,14 +6011,15 @@ description: Result of parsing 80-20-rail.kcl
                                 "start": 5457,
                                 "type": "Identifier"
                               },
-                              "end": 5639,
+                              "end": 5634,
                               "start": 5457,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
+                              "type": "CallExpressionKw",
+                              "type": "CallExpressionKw",
+                              "unlabeled": null
                             },
                             {
-                              "end": 5642,
-                              "start": 5641,
+                              "end": 5637,
+                              "start": 5636,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
@@ -6051,7 +6030,7 @@ description: Result of parsing 80-20-rail.kcl
                             "start": 5452,
                             "type": "Identifier"
                           },
-                          "end": 5643,
+                          "end": 5638,
                           "start": 5452,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -6065,22 +6044,22 @@ description: Result of parsing 80-20-rail.kcl
                                 "name": "length"
                               },
                               "arg": {
-                                "end": 5678,
+                                "end": 5673,
                                 "name": "railLength",
-                                "start": 5668,
+                                "start": 5663,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 5658,
+                            "end": 5653,
                             "name": "extrude",
-                            "start": 5651,
+                            "start": 5646,
                             "type": "Identifier"
                           },
-                          "end": 5679,
-                          "start": 5651,
+                          "end": 5674,
+                          "start": 5646,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -6094,9 +6073,9 @@ description: Result of parsing 80-20-rail.kcl
                                 "name": "radius"
                               },
                               "arg": {
-                                "end": 5717,
+                                "end": 5712,
                                 "raw": "0.06",
-                                "start": 5713,
+                                "start": 5708,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -6116,355 +6095,355 @@ description: Result of parsing 80-20-rail.kcl
                                   {
                                     "arguments": [
                                       {
-                                        "end": 5773,
+                                        "end": 5768,
                                         "name": "edge3",
-                                        "start": 5768,
+                                        "start": 5763,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 5767,
+                                      "end": 5762,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 5748,
+                                      "start": 5743,
                                       "type": "Identifier"
                                     },
-                                    "end": 5774,
-                                    "start": 5748,
+                                    "end": 5769,
+                                    "start": 5743,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 5812,
+                                        "end": 5807,
                                         "name": "edge4",
-                                        "start": 5807,
+                                        "start": 5802,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 5806,
+                                      "end": 5801,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 5787,
+                                      "start": 5782,
                                       "type": "Identifier"
                                     },
-                                    "end": 5813,
-                                    "start": 5787,
+                                    "end": 5808,
+                                    "start": 5782,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 5851,
+                                        "end": 5846,
                                         "name": "edge5",
-                                        "start": 5846,
+                                        "start": 5841,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 5845,
+                                      "end": 5840,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 5826,
+                                      "start": 5821,
                                       "type": "Identifier"
                                     },
-                                    "end": 5852,
-                                    "start": 5826,
+                                    "end": 5847,
+                                    "start": 5821,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 5890,
+                                        "end": 5885,
                                         "name": "edge6",
-                                        "start": 5885,
+                                        "start": 5880,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 5884,
+                                      "end": 5879,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 5865,
+                                      "start": 5860,
                                       "type": "Identifier"
                                     },
-                                    "end": 5891,
-                                    "start": 5865,
+                                    "end": 5886,
+                                    "start": 5860,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 5930,
+                                        "end": 5925,
                                         "name": "edge11",
-                                        "start": 5924,
+                                        "start": 5919,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 5923,
+                                      "end": 5918,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 5904,
+                                      "start": 5899,
                                       "type": "Identifier"
                                     },
-                                    "end": 5931,
-                                    "start": 5904,
+                                    "end": 5926,
+                                    "start": 5899,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 5970,
+                                        "end": 5965,
                                         "name": "edge12",
-                                        "start": 5964,
+                                        "start": 5959,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 5963,
+                                      "end": 5958,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 5944,
+                                      "start": 5939,
                                       "type": "Identifier"
                                     },
-                                    "end": 5971,
-                                    "start": 5944,
+                                    "end": 5966,
+                                    "start": 5939,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6010,
+                                        "end": 6005,
                                         "name": "edge13",
-                                        "start": 6004,
+                                        "start": 5999,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6003,
+                                      "end": 5998,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 5984,
+                                      "start": 5979,
                                       "type": "Identifier"
                                     },
-                                    "end": 6011,
-                                    "start": 5984,
+                                    "end": 6006,
+                                    "start": 5979,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6050,
+                                        "end": 6045,
                                         "name": "edge14",
-                                        "start": 6044,
+                                        "start": 6039,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6043,
+                                      "end": 6038,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6024,
+                                      "start": 6019,
                                       "type": "Identifier"
                                     },
-                                    "end": 6051,
-                                    "start": 6024,
+                                    "end": 6046,
+                                    "start": 6019,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6090,
+                                        "end": 6085,
                                         "name": "edge19",
-                                        "start": 6084,
+                                        "start": 6079,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6083,
+                                      "end": 6078,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6064,
+                                      "start": 6059,
                                       "type": "Identifier"
                                     },
-                                    "end": 6091,
-                                    "start": 6064,
+                                    "end": 6086,
+                                    "start": 6059,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6130,
+                                        "end": 6125,
                                         "name": "edge20",
-                                        "start": 6124,
+                                        "start": 6119,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6123,
+                                      "end": 6118,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6104,
+                                      "start": 6099,
                                       "type": "Identifier"
                                     },
-                                    "end": 6131,
-                                    "start": 6104,
+                                    "end": 6126,
+                                    "start": 6099,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6170,
+                                        "end": 6165,
                                         "name": "edge21",
-                                        "start": 6164,
+                                        "start": 6159,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6163,
+                                      "end": 6158,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6144,
+                                      "start": 6139,
                                       "type": "Identifier"
                                     },
-                                    "end": 6171,
-                                    "start": 6144,
+                                    "end": 6166,
+                                    "start": 6139,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6210,
+                                        "end": 6205,
                                         "name": "edge22",
-                                        "start": 6204,
+                                        "start": 6199,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6203,
+                                      "end": 6198,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6184,
+                                      "start": 6179,
                                       "type": "Identifier"
                                     },
-                                    "end": 6211,
-                                    "start": 6184,
+                                    "end": 6206,
+                                    "start": 6179,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6250,
+                                        "end": 6245,
                                         "name": "edge27",
-                                        "start": 6244,
+                                        "start": 6239,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6243,
+                                      "end": 6238,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6224,
+                                      "start": 6219,
                                       "type": "Identifier"
                                     },
-                                    "end": 6251,
-                                    "start": 6224,
+                                    "end": 6246,
+                                    "start": 6219,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6290,
+                                        "end": 6285,
                                         "name": "edge28",
-                                        "start": 6284,
+                                        "start": 6279,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6283,
+                                      "end": 6278,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6264,
+                                      "start": 6259,
                                       "type": "Identifier"
                                     },
-                                    "end": 6291,
-                                    "start": 6264,
+                                    "end": 6286,
+                                    "start": 6259,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6330,
+                                        "end": 6325,
                                         "name": "edge29",
-                                        "start": 6324,
+                                        "start": 6319,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6323,
+                                      "end": 6318,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6304,
+                                      "start": 6299,
                                       "type": "Identifier"
                                     },
-                                    "end": 6331,
-                                    "start": 6304,
+                                    "end": 6326,
+                                    "start": 6299,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6370,
+                                        "end": 6365,
                                         "name": "edge30",
-                                        "start": 6364,
+                                        "start": 6359,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6363,
+                                      "end": 6358,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6344,
+                                      "start": 6339,
                                       "type": "Identifier"
                                     },
-                                    "end": 6371,
-                                    "start": 6344,
+                                    "end": 6366,
+                                    "start": 6339,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "end": 6382,
-                                "start": 5735,
+                                "end": 6377,
+                                "start": 5730,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 5693,
+                            "end": 5688,
                             "name": "fillet",
-                            "start": 5687,
+                            "start": 5682,
                             "type": "Identifier"
                           },
-                          "end": 6391,
-                          "start": 5687,
+                          "end": 6386,
+                          "start": 5682,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -6478,9 +6457,9 @@ description: Result of parsing 80-20-rail.kcl
                                 "name": "radius"
                               },
                               "arg": {
-                                "end": 6429,
+                                "end": 6424,
                                 "raw": "0.03",
-                                "start": 6425,
+                                "start": 6420,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -6500,361 +6479,361 @@ description: Result of parsing 80-20-rail.kcl
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6485,
+                                        "end": 6480,
                                         "name": "edge1",
-                                        "start": 6480,
+                                        "start": 6475,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6479,
+                                      "end": 6474,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6460,
+                                      "start": 6455,
                                       "type": "Identifier"
                                     },
-                                    "end": 6486,
-                                    "start": 6460,
+                                    "end": 6481,
+                                    "start": 6455,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6524,
+                                        "end": 6519,
                                         "name": "edge2",
-                                        "start": 6519,
+                                        "start": 6514,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6518,
+                                      "end": 6513,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6499,
+                                      "start": 6494,
                                       "type": "Identifier"
                                     },
-                                    "end": 6525,
-                                    "start": 6499,
+                                    "end": 6520,
+                                    "start": 6494,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6563,
+                                        "end": 6558,
                                         "name": "edge7",
-                                        "start": 6558,
+                                        "start": 6553,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6557,
+                                      "end": 6552,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6538,
+                                      "start": 6533,
                                       "type": "Identifier"
                                     },
-                                    "end": 6564,
-                                    "start": 6538,
+                                    "end": 6559,
+                                    "start": 6533,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6602,
+                                        "end": 6597,
                                         "name": "edge8",
-                                        "start": 6597,
+                                        "start": 6592,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6596,
+                                      "end": 6591,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6577,
+                                      "start": 6572,
                                       "type": "Identifier"
                                     },
-                                    "end": 6603,
-                                    "start": 6577,
+                                    "end": 6598,
+                                    "start": 6572,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6641,
+                                        "end": 6636,
                                         "name": "edge9",
-                                        "start": 6636,
+                                        "start": 6631,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6635,
+                                      "end": 6630,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6616,
+                                      "start": 6611,
                                       "type": "Identifier"
                                     },
-                                    "end": 6642,
-                                    "start": 6616,
+                                    "end": 6637,
+                                    "start": 6611,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6681,
+                                        "end": 6676,
                                         "name": "edge10",
-                                        "start": 6675,
+                                        "start": 6670,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6674,
+                                      "end": 6669,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6655,
+                                      "start": 6650,
                                       "type": "Identifier"
                                     },
-                                    "end": 6682,
-                                    "start": 6655,
+                                    "end": 6677,
+                                    "start": 6650,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6721,
+                                        "end": 6716,
                                         "name": "edge15",
-                                        "start": 6715,
+                                        "start": 6710,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6714,
+                                      "end": 6709,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6695,
+                                      "start": 6690,
                                       "type": "Identifier"
                                     },
-                                    "end": 6722,
-                                    "start": 6695,
+                                    "end": 6717,
+                                    "start": 6690,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6761,
+                                        "end": 6756,
                                         "name": "edge16",
-                                        "start": 6755,
+                                        "start": 6750,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6754,
+                                      "end": 6749,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6735,
+                                      "start": 6730,
                                       "type": "Identifier"
                                     },
-                                    "end": 6762,
-                                    "start": 6735,
+                                    "end": 6757,
+                                    "start": 6730,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6801,
+                                        "end": 6796,
                                         "name": "edge17",
-                                        "start": 6795,
+                                        "start": 6790,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6794,
+                                      "end": 6789,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6775,
+                                      "start": 6770,
                                       "type": "Identifier"
                                     },
-                                    "end": 6802,
-                                    "start": 6775,
+                                    "end": 6797,
+                                    "start": 6770,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6841,
+                                        "end": 6836,
                                         "name": "edge18",
-                                        "start": 6835,
+                                        "start": 6830,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6834,
+                                      "end": 6829,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6815,
+                                      "start": 6810,
                                       "type": "Identifier"
                                     },
-                                    "end": 6842,
-                                    "start": 6815,
+                                    "end": 6837,
+                                    "start": 6810,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6881,
+                                        "end": 6876,
                                         "name": "edge23",
-                                        "start": 6875,
+                                        "start": 6870,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6874,
+                                      "end": 6869,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6855,
+                                      "start": 6850,
                                       "type": "Identifier"
                                     },
-                                    "end": 6882,
-                                    "start": 6855,
+                                    "end": 6877,
+                                    "start": 6850,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6921,
+                                        "end": 6916,
                                         "name": "edge24",
-                                        "start": 6915,
+                                        "start": 6910,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6914,
+                                      "end": 6909,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6895,
+                                      "start": 6890,
                                       "type": "Identifier"
                                     },
-                                    "end": 6922,
-                                    "start": 6895,
+                                    "end": 6917,
+                                    "start": 6890,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 6961,
+                                        "end": 6956,
                                         "name": "edge25",
-                                        "start": 6955,
+                                        "start": 6950,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6954,
+                                      "end": 6949,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6935,
+                                      "start": 6930,
                                       "type": "Identifier"
                                     },
-                                    "end": 6962,
-                                    "start": 6935,
+                                    "end": 6957,
+                                    "start": 6930,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 7001,
+                                        "end": 6996,
                                         "name": "edge26",
-                                        "start": 6995,
+                                        "start": 6990,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 6994,
+                                      "end": 6989,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 6975,
+                                      "start": 6970,
                                       "type": "Identifier"
                                     },
-                                    "end": 7002,
-                                    "start": 6975,
+                                    "end": 6997,
+                                    "start": 6970,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 7041,
+                                        "end": 7036,
                                         "name": "edge31",
-                                        "start": 7035,
+                                        "start": 7030,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 7034,
+                                      "end": 7029,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 7015,
+                                      "start": 7010,
                                       "type": "Identifier"
                                     },
-                                    "end": 7042,
-                                    "start": 7015,
+                                    "end": 7037,
+                                    "start": 7010,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 7081,
+                                        "end": 7076,
                                         "name": "edge32",
-                                        "start": 7075,
+                                        "start": 7070,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 7074,
+                                      "end": 7069,
                                       "name": "getNextAdjacentEdge",
-                                      "start": 7055,
+                                      "start": 7050,
                                       "type": "Identifier"
                                     },
-                                    "end": 7082,
-                                    "start": 7055,
+                                    "end": 7077,
+                                    "start": 7050,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "end": 7093,
-                                "start": 6447,
+                                "end": 7088,
+                                "start": 6442,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 6405,
+                            "end": 6400,
                             "name": "fillet",
-                            "start": 6399,
+                            "start": 6394,
                             "type": "Identifier"
                           },
-                          "end": 7102,
-                          "start": 6399,
+                          "end": 7097,
+                          "start": 6394,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 7102,
+                      "end": 7097,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
                           "18": [
@@ -6975,7 +6954,7 @@ description: Result of parsing 80-20-rail.kcl
                     "start": 286,
                     "type": "VariableDeclarator"
                   },
-                  "end": 7102,
+                  "end": 7097,
                   "kind": "const",
                   "start": 286,
                   "type": "VariableDeclaration",
@@ -6983,19 +6962,19 @@ description: Result of parsing 80-20-rail.kcl
                 },
                 {
                   "argument": {
-                    "end": 7121,
+                    "end": 7116,
                     "name": "sketch001",
-                    "start": 7112,
+                    "start": 7107,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 7121,
-                  "start": 7105,
+                  "end": 7116,
+                  "start": 7100,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 7123,
+              "end": 7118,
               "nonCodeMeta": {
                 "nonCodeNodes": {},
                 "startNodes": [
@@ -7013,7 +6992,7 @@ description: Result of parsing 80-20-rail.kcl
               },
               "start": 253
             },
-            "end": 7123,
+            "end": 7118,
             "params": [
               {
                 "type": "Parameter",
@@ -7050,22 +7029,22 @@ description: Result of parsing 80-20-rail.kcl
           "start": 206,
           "type": "VariableDeclarator"
         },
-        "end": 7123,
+        "end": 7118,
         "kind": "fn",
         "start": 203,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 7191,
+        "end": 7186,
         "expression": {
           "arguments": [
             {
               "elements": [
                 {
-                  "end": 7177,
+                  "end": 7172,
                   "raw": "0",
-                  "start": 7176,
+                  "start": 7171,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -7074,9 +7053,9 @@ description: Result of parsing 80-20-rail.kcl
                   }
                 },
                 {
-                  "end": 7180,
+                  "end": 7175,
                   "raw": "0",
-                  "start": 7179,
+                  "start": 7174,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -7085,15 +7064,15 @@ description: Result of parsing 80-20-rail.kcl
                   }
                 }
               ],
-              "end": 7181,
-              "start": 7175,
+              "end": 7176,
+              "start": 7170,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             },
             {
-              "end": 7186,
+              "end": 7181,
               "raw": "1.5",
-              "start": 7183,
+              "start": 7178,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -7102,9 +7081,9 @@ description: Result of parsing 80-20-rail.kcl
               }
             },
             {
-              "end": 7190,
+              "end": 7185,
               "raw": "48",
-              "start": 7188,
+              "start": 7183,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -7114,22 +7093,22 @@ description: Result of parsing 80-20-rail.kcl
             }
           ],
           "callee": {
-            "end": 7174,
+            "end": 7169,
             "name": "rail8020",
-            "start": 7166,
+            "start": 7161,
             "type": "Identifier"
           },
-          "end": 7191,
-          "start": 7166,
+          "end": 7186,
+          "start": 7161,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 7166,
+        "start": 7161,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 7192,
+    "end": 7187,
     "innerAttrs": [
       {
         "end": 182,
@@ -7167,8 +7146,8 @@ description: Result of parsing 80-20-rail.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "end": 7165,
-            "start": 7123,
+            "end": 7160,
+            "start": 7118,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",

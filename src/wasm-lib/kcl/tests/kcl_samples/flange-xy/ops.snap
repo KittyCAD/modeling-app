@@ -36,8 +36,8 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          998,
-          1109,
+          993,
+          1099,
           0
         ]
       },
@@ -49,16 +49,16 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          1111,
-          1112,
+          1101,
+          1102,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      993,
-      1113,
+      988,
+      1103,
       0
     ],
     "type": "StdLibCall",
@@ -74,8 +74,46 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          1124,
+          1114,
+          1220,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1222,
+          1223,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      1109,
+      1224,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
           1235,
+          1342,
           0
         ]
       },
@@ -87,16 +125,16 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          1237,
-          1238,
+          1344,
+          1345,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1119,
-      1239,
+      1230,
+      1346,
       0
     ],
     "type": "StdLibCall",
@@ -112,8 +150,8 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          1250,
-          1362,
+          1357,
+          1464,
           0
         ]
       },
@@ -125,16 +163,16 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          1364,
-          1365,
+          1466,
+          1467,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1245,
-      1366,
+      1352,
+      1468,
       0
     ],
     "type": "StdLibCall",
@@ -150,8 +188,8 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          1377,
-          1489,
+          1479,
+          1545,
           0
         ]
       },
@@ -163,54 +201,16 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          1491,
-          1492,
+          1547,
+          1548,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1372,
-      1493,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1504,
-          1575,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1577,
-          1578,
-          0
-        ]
-      }
-    },
-    "name": "hole",
-    "sourceRange": [
-      1499,
-      1579,
+      1474,
+      1549,
       0
     ],
     "type": "StdLibCall",
@@ -233,16 +233,16 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          1602,
-          1615,
+          1572,
+          1585,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1585,
-      1616,
+      1555,
+      1586,
       0
     ],
     "type": "StdLibCall",
@@ -450,8 +450,8 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          1919,
-          1931,
+          1889,
+          1901,
           0
         ]
       },
@@ -461,16 +461,16 @@ description: Operations executed flange-xy.kcl
           "value": "end"
         },
         "sourceRange": [
-          1933,
-          1938,
+          1903,
+          1908,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1905,
-      1939,
+      1875,
+      1909,
       0
     ],
     "type": "StdLibCall",
@@ -486,8 +486,8 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          2036,
-          2107,
+          2001,
+          2067,
           0
         ]
       },
@@ -499,16 +499,16 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          2109,
-          2110,
+          2069,
+          2070,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2031,
-      2111,
+      1996,
+      2071,
       0
     ],
     "type": "StdLibCall",
@@ -531,16 +531,16 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          2134,
-          2151,
+          2094,
+          2111,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2117,
-      2152,
+      2077,
+      2112,
       0
     ],
     "type": "StdLibCall",
@@ -566,16 +566,16 @@ description: Operations executed flange-xy.kcl
           "value": "XY"
         },
         "sourceRange": [
-          2243,
-          2247,
+          2203,
+          2207,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2229,
-      2248,
+      2189,
+      2208,
       0
     ],
     "type": "StdLibCall",
@@ -591,8 +591,8 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          2348,
-          2419,
+          2303,
+          2369,
           0
         ]
       },
@@ -604,16 +604,16 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          2421,
-          2422,
+          2371,
+          2372,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2343,
-      2423,
+      2298,
+      2373,
       0
     ],
     "type": "StdLibCall",
@@ -636,16 +636,16 @@ description: Operations executed flange-xy.kcl
           }
         },
         "sourceRange": [
-          2446,
-          2462,
+          2396,
+          2412,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2429,
-      2463,
+      2379,
+      2413,
       0
     ],
     "type": "StdLibCall",

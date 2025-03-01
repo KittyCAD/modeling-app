@@ -58,8 +58,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2090,
-            2173,
+            2065,
+            2143,
             0
           ],
           "tag": null,
@@ -74,8 +74,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2090,
-                2173,
+                2065,
+                2143,
                 0
               ]
             },
@@ -146,8 +146,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2090,
-              2173,
+              2065,
+              2143,
               0
             ]
           }
@@ -160,8 +160,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "__meta": [
           {
             "sourceRange": [
-              2090,
-              2173,
+              2065,
+              2143,
               0
             ]
           }
@@ -176,8 +176,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "__meta": [
         {
           "sourceRange": [
-            2090,
-            2173,
+            2065,
+            2143,
             0
           ]
         }
@@ -240,7 +240,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
               "id": "[uuid]",
               "sourceRange": [
                 894,
-                1005,
+                1000,
                 0
               ]
             },
@@ -312,7 +312,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "id": "[uuid]",
             "sourceRange": [
               894,
-              1005,
+              1000,
               0
             ]
           }
@@ -326,7 +326,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           {
             "sourceRange": [
               894,
-              1005,
+              1000,
               0
             ]
           }
@@ -341,7 +341,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
               "id": "[uuid]",
               "sourceRange": [
                 894,
-                1005,
+                1000,
                 0
               ]
             },
@@ -413,7 +413,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "id": "[uuid]",
             "sourceRange": [
               894,
-              1005,
+              1000,
               0
             ]
           }
@@ -427,7 +427,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           {
             "sourceRange": [
               894,
-              1005,
+              1000,
               0
             ]
           }
@@ -442,7 +442,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
               "id": "[uuid]",
               "sourceRange": [
                 894,
-                1005,
+                1000,
                 0
               ]
             },
@@ -514,7 +514,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "id": "[uuid]",
             "sourceRange": [
               894,
-              1005,
+              1000,
               0
             ]
           }
@@ -528,7 +528,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           {
             "sourceRange": [
               894,
-              1005,
+              1000,
               0
             ]
           }
@@ -543,7 +543,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
               "id": "[uuid]",
               "sourceRange": [
                 894,
-                1005,
+                1000,
                 0
               ]
             },
@@ -615,7 +615,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "id": "[uuid]",
             "sourceRange": [
               894,
-              1005,
+              1000,
               0
             ]
           }
@@ -629,7 +629,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           {
             "sourceRange": [
               894,
-              1005,
+              1000,
               0
             ]
           }
@@ -648,8 +648,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1243,
-            1314,
+            1238,
+            1304,
             0
           ],
           "tag": null,
@@ -664,8 +664,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1243,
-                1314,
+                1238,
+                1304,
                 0
               ]
             },
@@ -736,8 +736,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1243,
-              1314,
+              1238,
+              1304,
               0
             ]
           }
@@ -750,8 +750,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "__meta": [
           {
             "sourceRange": [
-              1243,
-              1314,
+              1238,
+              1304,
               0
             ]
           }
@@ -766,8 +766,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "__meta": [
         {
           "sourceRange": [
-            1243,
-            1314,
+            1238,
+            1304,
             0
           ]
         }
@@ -924,8 +924,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1781,
-            1861,
+            1766,
+            1841,
             0
           ],
           "tag": null,
@@ -940,8 +940,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1781,
-                1861,
+                1766,
+                1841,
                 0
               ]
             },
@@ -1012,8 +1012,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1781,
-              1861,
+              1766,
+              1841,
               0
             ]
           }
@@ -1026,8 +1026,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "__meta": [
           {
             "sourceRange": [
-              1781,
-              1861,
+              1766,
+              1841,
               0
             ]
           }
@@ -1042,8 +1042,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "__meta": [
         {
           "sourceRange": [
-            1781,
-            1861,
+            1766,
+            1841,
             0
           ]
         }
@@ -1074,8 +1074,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1531,
-                      1532,
+                      1516,
+                      1517,
                       0
                     ]
                   }
@@ -1096,8 +1096,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1538,
-                      1539,
+                      1523,
+                      1524,
                       0
                     ]
                   }
@@ -1129,8 +1129,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  1525,
-                  1560,
+                  1510,
+                  1545,
                   0
                 ]
               }
@@ -1154,8 +1154,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1580,
-                      1581,
+                      1565,
+                      1566,
                       0
                     ]
                   }
@@ -1176,8 +1176,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1587,
-                      1588,
+                      1572,
+                      1573,
                       0
                     ]
                   }
@@ -1198,8 +1198,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1594,
-                      1595,
+                      1579,
+                      1580,
                       0
                     ]
                   }
@@ -1209,8 +1209,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  1574,
-                  1597,
+                  1559,
+                  1582,
                   0
                 ]
               }
@@ -1234,8 +1234,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1617,
-                      1618,
+                      1602,
+                      1603,
                       0
                     ]
                   }
@@ -1256,8 +1256,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1624,
-                      1625,
+                      1609,
+                      1610,
                       0
                     ]
                   }
@@ -1278,8 +1278,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1631,
-                      1632,
+                      1616,
+                      1617,
                       0
                     ]
                   }
@@ -1289,8 +1289,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  1611,
-                  1634,
+                  1596,
+                  1619,
                   0
                 ]
               }
@@ -1314,8 +1314,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1654,
-                      1655,
+                      1639,
+                      1640,
                       0
                     ]
                   }
@@ -1336,8 +1336,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1661,
-                      1662,
+                      1646,
+                      1647,
                       0
                     ]
                   }
@@ -1358,8 +1358,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1668,
-                      1669,
+                      1653,
+                      1654,
                       0
                     ]
                   }
@@ -1369,8 +1369,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  1648,
-                  1671,
+                  1633,
+                  1656,
                   0
                 ]
               }
@@ -1380,8 +1380,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "__meta": [
           {
             "sourceRange": [
-              1510,
-              1675,
+              1495,
+              1660,
               0
             ]
           }
@@ -1391,8 +1391,8 @@ description: Variables in memory after executing flange-with-patterns.kcl
     "__meta": [
       {
         "sourceRange": [
-          1498,
-          1677,
+          1483,
+          1662,
           0
         ]
       }

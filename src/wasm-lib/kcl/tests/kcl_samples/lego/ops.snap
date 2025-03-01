@@ -197,16 +197,16 @@ description: Operations executed lego.kcl
           }
         },
         "sourceRange": [
-          2709,
-          2719,
+          2704,
+          2714,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2692,
-      2720,
+      2687,
+      2715,
       0
     ],
     "type": "StdLibCall",
@@ -452,16 +452,16 @@ description: Operations executed lego.kcl
           }
         },
         "sourceRange": [
-          2795,
-          2803,
+          2790,
+          2798,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2781,
-      2804,
+      2776,
+      2799,
       0
     ],
     "type": "StdLibCall",
@@ -484,16 +484,16 @@ description: Operations executed lego.kcl
           }
         },
         "sourceRange": [
-          3224,
-          3235,
+          3214,
+          3225,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3207,
-      3236,
+      3197,
+      3226,
       0
     ],
     "type": "StdLibCall",

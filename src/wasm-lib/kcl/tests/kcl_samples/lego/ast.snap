@@ -2278,7 +2278,7 @@ description: Result of parsing lego.kcl
       },
       {
         "declaration": {
-          "end": 2766,
+          "end": 2761,
           "id": {
             "end": 2299,
             "name": "peg",
@@ -2319,249 +2319,144 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
-                    "end": 2478,
-                    "properties": [
-                      {
-                        "end": 2441,
-                        "key": {
-                          "end": 2353,
-                          "name": "center",
-                          "start": 2347,
-                          "type": "Identifier"
-                        },
-                        "start": 2347,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "argument": {
-                                "end": 2393,
-                                "left": {
-                                  "end": 2388,
-                                  "left": {
-                                    "end": 2374,
-                                    "name": "pitch",
-                                    "start": 2369,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "operator": "*",
-                                  "right": {
-                                    "end": 2388,
-                                    "left": {
-                                      "end": 2384,
-                                      "name": "wbumps",
-                                      "start": 2378,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "operator": "-",
-                                    "right": {
-                                      "end": 2388,
-                                      "raw": "1",
-                                      "start": 2387,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 1.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 2378,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "start": 2369,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "end": 2393,
-                                  "raw": "2",
-                                  "start": 2392,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 2369,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "end": 2393,
-                              "operator": "-",
-                              "start": 2367,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            },
-                            {
-                              "argument": {
-                                "end": 2431,
-                                "left": {
-                                  "end": 2426,
-                                  "left": {
-                                    "end": 2412,
-                                    "name": "pitch",
-                                    "start": 2407,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "operator": "*",
-                                  "right": {
-                                    "end": 2426,
-                                    "left": {
-                                      "end": 2422,
-                                      "name": "lbumps",
-                                      "start": 2416,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "operator": "-",
-                                    "right": {
-                                      "end": 2426,
-                                      "raw": "1",
-                                      "start": 2425,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 1.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 2416,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "start": 2407,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "end": 2431,
-                                  "raw": "2",
-                                  "start": 2430,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 2407,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "end": 2431,
-                              "operator": "-",
-                              "start": 2405,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            }
-                          ],
-                          "end": 2441,
-                          "start": 2356,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "end": 2471,
-                        "key": {
-                          "end": 2456,
-                          "name": "radius",
-                          "start": 2450,
-                          "type": "Identifier"
-                        },
-                        "start": 2450,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 2471,
-                          "left": {
-                            "end": 2467,
-                            "name": "bumpDiam",
-                            "start": 2459,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "/",
-                          "right": {
-                            "end": 2471,
-                            "raw": "2",
-                            "start": 2470,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 2.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "start": 2459,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      }
-                    ],
-                    "start": 2338,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
-                  },
-                  {
-                    "end": 2481,
-                    "start": 2480,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 2337,
-                  "name": "circle",
-                  "start": 2331,
-                  "type": "Identifier"
-                },
-                "end": 2482,
-                "start": 2331,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
                     "type": "LabeledArg",
                     "label": {
                       "type": "Identifier",
-                      "name": "axis"
+                      "name": "center"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2521,
-                          "raw": "1",
-                          "start": 2520,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
+                          "argument": {
+                            "end": 2392,
+                            "left": {
+                              "end": 2387,
+                              "left": {
+                                "end": 2373,
+                                "name": "pitch",
+                                "start": 2368,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "*",
+                              "right": {
+                                "end": 2387,
+                                "left": {
+                                  "end": 2383,
+                                  "name": "wbumps",
+                                  "start": 2377,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "-",
+                                "right": {
+                                  "end": 2387,
+                                  "raw": "1",
+                                  "start": 2386,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 2377,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 2368,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            "operator": "/",
+                            "right": {
+                              "end": 2392,
+                              "raw": "2",
+                              "start": 2391,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 2.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "start": 2368,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "end": 2392,
+                          "operator": "-",
+                          "start": 2366,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
                         },
                         {
-                          "end": 2524,
-                          "raw": "0",
-                          "start": 2523,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
+                          "argument": {
+                            "end": 2430,
+                            "left": {
+                              "end": 2425,
+                              "left": {
+                                "end": 2411,
+                                "name": "pitch",
+                                "start": 2406,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "*",
+                              "right": {
+                                "end": 2425,
+                                "left": {
+                                  "end": 2421,
+                                  "name": "lbumps",
+                                  "start": 2415,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "-",
+                                "right": {
+                                  "end": 2425,
+                                  "raw": "1",
+                                  "start": 2424,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 2415,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 2406,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            "operator": "/",
+                            "right": {
+                              "end": 2430,
+                              "raw": "2",
+                              "start": 2429,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 2.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "start": 2406,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "end": 2430,
+                          "operator": "-",
+                          "start": 2404,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
                         }
                       ],
-                      "end": 2525,
-                      "start": 2519,
+                      "end": 2440,
+                      "start": 2355,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2570,39 +2465,43 @@ description: Result of parsing lego.kcl
                     "type": "LabeledArg",
                     "label": {
                       "type": "Identifier",
-                      "name": "instances"
+                      "name": "radius"
                     },
                     "arg": {
-                      "end": 2552,
-                      "name": "wbumps",
-                      "start": 2546,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "type": "Identifier",
-                      "name": "distance"
-                    },
-                    "arg": {
-                      "end": 2577,
-                      "name": "pitch",
-                      "start": 2572,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "end": 2470,
+                      "left": {
+                        "end": 2466,
+                        "name": "bumpDiam",
+                        "start": 2458,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 2470,
+                        "raw": "2",
+                        "start": 2469,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 2458,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2503,
-                  "name": "patternLinear2d",
-                  "start": 2488,
+                  "end": 2337,
+                  "name": "circle",
+                  "start": 2331,
                   "type": "Identifier"
                 },
-                "end": 2584,
-                "start": 2488,
+                "end": 2477,
+                "start": 2331,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2618,30 +2517,30 @@ description: Result of parsing lego.kcl
                     "arg": {
                       "elements": [
                         {
-                          "end": 2623,
-                          "raw": "0",
-                          "start": 2622,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 2626,
+                          "end": 2516,
                           "raw": "1",
-                          "start": 2625,
+                          "start": 2515,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
                             "value": 1.0,
                             "suffix": "None"
                           }
+                        },
+                        {
+                          "end": 2519,
+                          "raw": "0",
+                          "start": 2518,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
-                      "end": 2627,
-                      "start": 2621,
+                      "end": 2520,
+                      "start": 2514,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2653,9 +2552,9 @@ description: Result of parsing lego.kcl
                       "name": "instances"
                     },
                     "arg": {
-                      "end": 2654,
-                      "name": "lbumps",
-                      "start": 2648,
+                      "end": 2547,
+                      "name": "wbumps",
+                      "start": 2541,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -2667,22 +2566,102 @@ description: Result of parsing lego.kcl
                       "name": "distance"
                     },
                     "arg": {
-                      "end": 2679,
+                      "end": 2572,
                       "name": "pitch",
-                      "start": 2674,
+                      "start": 2567,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2605,
+                  "end": 2498,
                   "name": "patternLinear2d",
-                  "start": 2590,
+                  "start": 2483,
                   "type": "Identifier"
                 },
-                "end": 2686,
-                "start": 2590,
+                "end": 2579,
+                "start": 2483,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "axis"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 2618,
+                          "raw": "0",
+                          "start": 2617,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 2621,
+                          "raw": "1",
+                          "start": 2620,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 2622,
+                      "start": 2616,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "instances"
+                    },
+                    "arg": {
+                      "end": 2649,
+                      "name": "lbumps",
+                      "start": 2643,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "distance"
+                    },
+                    "arg": {
+                      "end": 2674,
+                      "name": "pitch",
+                      "start": 2669,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2600,
+                  "name": "patternLinear2d",
+                  "start": 2585,
+                  "type": "Identifier"
+                },
+                "end": 2681,
+                "start": 2585,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2696,34 +2675,34 @@ description: Result of parsing lego.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 2719,
+                      "end": 2714,
                       "name": "bumpHeight",
-                      "start": 2709,
+                      "start": 2704,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2699,
+                  "end": 2694,
                   "name": "extrude",
-                  "start": 2692,
+                  "start": 2687,
                   "type": "Identifier"
                 },
-                "end": 2720,
-                "start": 2692,
+                "end": 2715,
+                "start": 2687,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2766,
+            "end": 2761,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "4": [
                   {
-                    "end": 2766,
-                    "start": 2720,
+                    "end": 2761,
+                    "start": 2715,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -2742,7 +2721,7 @@ description: Result of parsing lego.kcl
           "start": 2296,
           "type": "VariableDeclarator"
         },
-        "end": 2766,
+        "end": 2761,
         "kind": "const",
         "start": 2296,
         "type": "VariableDeclaration",
@@ -2750,11 +2729,11 @@ description: Result of parsing lego.kcl
       },
       {
         "declaration": {
-          "end": 3236,
+          "end": 3226,
           "id": {
-            "end": 2778,
+            "end": 2773,
             "name": "tubePattern",
-            "start": 2767,
+            "start": 2762,
             "type": "Identifier"
           },
           "init": {
@@ -2762,296 +2741,21 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
-                    "end": 2803,
+                    "end": 2798,
                     "name": "tubeFace",
-                    "start": 2795,
+                    "start": 2790,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 2794,
+                  "end": 2789,
                   "name": "startSketchOn",
-                  "start": 2781,
+                  "start": 2776,
                   "type": "Identifier"
                 },
-                "end": 2804,
-                "start": 2781,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "end": 2985,
-                    "properties": [
-                      {
-                        "end": 2948,
-                        "key": {
-                          "end": 2832,
-                          "name": "center",
-                          "start": 2826,
-                          "type": "Identifier"
-                        },
-                        "start": 2826,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "elements": [
-                            {
-                              "argument": {
-                                "end": 2885,
-                                "left": {
-                                  "end": 2872,
-                                  "left": {
-                                    "end": 2867,
-                                    "left": {
-                                      "end": 2853,
-                                      "name": "pitch",
-                                      "start": 2848,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "operator": "*",
-                                    "right": {
-                                      "end": 2867,
-                                      "left": {
-                                        "end": 2863,
-                                        "name": "wbumps",
-                                        "start": 2857,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "-",
-                                      "right": {
-                                        "end": 2867,
-                                        "raw": "1",
-                                        "start": 2866,
-                                        "type": "Literal",
-                                        "type": "Literal",
-                                        "value": {
-                                          "value": 1.0,
-                                          "suffix": "None"
-                                        }
-                                      },
-                                      "start": 2857,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    "start": 2848,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "end": 2872,
-                                    "raw": "2",
-                                    "start": 2871,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 2848,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "operator": "-",
-                                "right": {
-                                  "end": 2885,
-                                  "left": {
-                                    "end": 2881,
-                                    "name": "pitch",
-                                    "start": 2876,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "end": 2885,
-                                    "raw": "2",
-                                    "start": 2884,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 2876,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "start": 2848,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "end": 2885,
-                              "operator": "-",
-                              "start": 2846,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            },
-                            {
-                              "argument": {
-                                "end": 2937,
-                                "left": {
-                                  "end": 2924,
-                                  "left": {
-                                    "end": 2919,
-                                    "left": {
-                                      "end": 2905,
-                                      "name": "pitch",
-                                      "start": 2900,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "operator": "*",
-                                    "right": {
-                                      "end": 2919,
-                                      "left": {
-                                        "end": 2915,
-                                        "name": "lbumps",
-                                        "start": 2909,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "-",
-                                      "right": {
-                                        "end": 2919,
-                                        "raw": "1",
-                                        "start": 2918,
-                                        "type": "Literal",
-                                        "type": "Literal",
-                                        "value": {
-                                          "value": 1.0,
-                                          "suffix": "None"
-                                        }
-                                      },
-                                      "start": 2909,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    "start": 2900,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "end": 2924,
-                                    "raw": "2",
-                                    "start": 2923,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 2900,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "operator": "-",
-                                "right": {
-                                  "end": 2937,
-                                  "left": {
-                                    "end": 2933,
-                                    "name": "pitch",
-                                    "start": 2928,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "end": 2937,
-                                    "raw": "2",
-                                    "start": 2936,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 2928,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                "start": 2900,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "end": 2937,
-                              "operator": "-",
-                              "start": 2898,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            }
-                          ],
-                          "end": 2948,
-                          "start": 2835,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "end": 2978,
-                        "key": {
-                          "end": 2963,
-                          "name": "radius",
-                          "start": 2957,
-                          "type": "Identifier"
-                        },
-                        "start": 2957,
-                        "type": "ObjectProperty",
-                        "value": {
-                          "end": 2978,
-                          "left": {
-                            "end": 2974,
-                            "name": "bumpDiam",
-                            "start": 2966,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "operator": "/",
-                          "right": {
-                            "end": 2978,
-                            "raw": "2",
-                            "start": 2977,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 2.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "start": 2966,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      }
-                    ],
-                    "start": 2817,
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression"
-                  },
-                  {
-                    "end": 2988,
-                    "start": 2987,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 2816,
-                  "name": "circle",
-                  "start": 2810,
-                  "type": "Identifier"
-                },
-                "end": 2989,
-                "start": 2810,
+                "end": 2799,
+                "start": 2776,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3061,35 +2765,205 @@ description: Result of parsing lego.kcl
                     "type": "LabeledArg",
                     "label": {
                       "type": "Identifier",
-                      "name": "axis"
+                      "name": "center"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 3028,
-                          "raw": "1",
-                          "start": 3027,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
+                          "argument": {
+                            "end": 2879,
+                            "left": {
+                              "end": 2866,
+                              "left": {
+                                "end": 2861,
+                                "left": {
+                                  "end": 2847,
+                                  "name": "pitch",
+                                  "start": 2842,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 2861,
+                                  "left": {
+                                    "end": 2857,
+                                    "name": "wbumps",
+                                    "start": 2851,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "-",
+                                  "right": {
+                                    "end": 2861,
+                                    "raw": "1",
+                                    "start": 2860,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 2851,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "start": 2842,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "/",
+                              "right": {
+                                "end": 2866,
+                                "raw": "2",
+                                "start": 2865,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              "start": 2842,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            "operator": "-",
+                            "right": {
+                              "end": 2879,
+                              "left": {
+                                "end": 2875,
+                                "name": "pitch",
+                                "start": 2870,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "/",
+                              "right": {
+                                "end": 2879,
+                                "raw": "2",
+                                "start": 2878,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              "start": 2870,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            "start": 2842,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "end": 2879,
+                          "operator": "-",
+                          "start": 2840,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
                         },
                         {
-                          "end": 3031,
-                          "raw": "0",
-                          "start": 3030,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
+                          "argument": {
+                            "end": 2931,
+                            "left": {
+                              "end": 2918,
+                              "left": {
+                                "end": 2913,
+                                "left": {
+                                  "end": 2899,
+                                  "name": "pitch",
+                                  "start": 2894,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 2913,
+                                  "left": {
+                                    "end": 2909,
+                                    "name": "lbumps",
+                                    "start": 2903,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "-",
+                                  "right": {
+                                    "end": 2913,
+                                    "raw": "1",
+                                    "start": 2912,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 2903,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "start": 2894,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "/",
+                              "right": {
+                                "end": 2918,
+                                "raw": "2",
+                                "start": 2917,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              "start": 2894,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            "operator": "-",
+                            "right": {
+                              "end": 2931,
+                              "left": {
+                                "end": 2927,
+                                "name": "pitch",
+                                "start": 2922,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "/",
+                              "right": {
+                                "end": 2931,
+                                "raw": "2",
+                                "start": 2930,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              "start": 2922,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            "start": 2894,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "end": 2931,
+                          "operator": "-",
+                          "start": 2892,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
                         }
                       ],
-                      "end": 3032,
-                      "start": 3026,
+                      "end": 2942,
+                      "start": 2829,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -3098,57 +2972,43 @@ description: Result of parsing lego.kcl
                     "type": "LabeledArg",
                     "label": {
                       "type": "Identifier",
-                      "name": "instances"
+                      "name": "radius"
                     },
                     "arg": {
-                      "end": 3063,
+                      "end": 2972,
                       "left": {
-                        "end": 3059,
-                        "name": "wbumps",
-                        "start": 3053,
+                        "end": 2968,
+                        "name": "bumpDiam",
+                        "start": 2960,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "operator": "-",
+                      "operator": "/",
                       "right": {
-                        "end": 3063,
-                        "raw": "1",
-                        "start": 3062,
+                        "end": 2972,
+                        "raw": "2",
+                        "start": 2971,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
-                          "value": 1.0,
+                          "value": 2.0,
                           "suffix": "None"
                         }
                       },
-                      "start": 3053,
+                      "start": 2960,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "type": "Identifier",
-                      "name": "distance"
-                    },
-                    "arg": {
-                      "end": 3088,
-                      "name": "pitch",
-                      "start": 3083,
-                      "type": "Identifier",
-                      "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3010,
-                  "name": "patternLinear2d",
-                  "start": 2995,
+                  "end": 2811,
+                  "name": "circle",
+                  "start": 2805,
                   "type": "Identifier"
                 },
-                "end": 3095,
-                "start": 2995,
+                "end": 2979,
+                "start": 2805,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -3164,30 +3024,30 @@ description: Result of parsing lego.kcl
                     "arg": {
                       "elements": [
                         {
-                          "end": 3134,
-                          "raw": "0",
-                          "start": 3133,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "end": 3137,
+                          "end": 3018,
                           "raw": "1",
-                          "start": 3136,
+                          "start": 3017,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
                             "value": 1.0,
                             "suffix": "None"
                           }
+                        },
+                        {
+                          "end": 3021,
+                          "raw": "0",
+                          "start": 3020,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
-                      "end": 3138,
-                      "start": 3132,
+                      "end": 3022,
+                      "start": 3016,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -3199,19 +3059,19 @@ description: Result of parsing lego.kcl
                       "name": "instances"
                     },
                     "arg": {
-                      "end": 3169,
+                      "end": 3053,
                       "left": {
-                        "end": 3165,
-                        "name": "lbumps",
-                        "start": 3159,
+                        "end": 3049,
+                        "name": "wbumps",
+                        "start": 3043,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 3169,
+                        "end": 3053,
                         "raw": "1",
-                        "start": 3168,
+                        "start": 3052,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -3219,7 +3079,7 @@ description: Result of parsing lego.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 3159,
+                      "start": 3043,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -3231,22 +3091,120 @@ description: Result of parsing lego.kcl
                       "name": "distance"
                     },
                     "arg": {
-                      "end": 3194,
+                      "end": 3078,
                       "name": "pitch",
-                      "start": 3189,
+                      "start": 3073,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3116,
+                  "end": 3000,
                   "name": "patternLinear2d",
-                  "start": 3101,
+                  "start": 2985,
                   "type": "Identifier"
                 },
-                "end": 3201,
-                "start": 3101,
+                "end": 3085,
+                "start": 2985,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "axis"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 3124,
+                          "raw": "0",
+                          "start": 3123,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 3127,
+                          "raw": "1",
+                          "start": 3126,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 3128,
+                      "start": 3122,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "instances"
+                    },
+                    "arg": {
+                      "end": 3159,
+                      "left": {
+                        "end": 3155,
+                        "name": "lbumps",
+                        "start": 3149,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "end": 3159,
+                        "raw": "1",
+                        "start": 3158,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 3149,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "distance"
+                    },
+                    "arg": {
+                      "end": 3184,
+                      "name": "pitch",
+                      "start": 3179,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 3106,
+                  "name": "patternLinear2d",
+                  "start": 3091,
+                  "type": "Identifier"
+                },
+                "end": 3191,
+                "start": 3091,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -3261,49 +3219,49 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "argument": {
-                        "end": 3235,
+                        "end": 3225,
                         "name": "bumpHeight",
-                        "start": 3225,
+                        "start": 3215,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 3235,
+                      "end": 3225,
                       "operator": "-",
-                      "start": 3224,
+                      "start": 3214,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3214,
+                  "end": 3204,
                   "name": "extrude",
-                  "start": 3207,
+                  "start": 3197,
                   "type": "Identifier"
                 },
-                "end": 3236,
-                "start": 3207,
+                "end": 3226,
+                "start": 3197,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 3236,
-            "start": 2781,
+            "end": 3226,
+            "start": 2776,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2767,
+          "start": 2762,
           "type": "VariableDeclarator"
         },
-        "end": 3236,
+        "end": 3226,
         "kind": "const",
-        "start": 2767,
+        "start": 2762,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 3237,
+    "end": 3227,
     "innerAttrs": [
       {
         "end": 271,

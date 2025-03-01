@@ -8,14 +8,14 @@ description: Operations executed cycloidal-gear.kcl
     "name": "cycloidalGear",
     "functionSourceRange": [
       222,
-      1726,
+      1721,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1728,
-      1762,
+      1723,
+      1757,
       0
     ]
   },
@@ -24,14 +24,14 @@ description: Operations executed cycloidal-gear.kcl
     "name": "gearSketch",
     "functionSourceRange": [
       448,
-      1517,
+      1512,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1627,
-      1640,
+      1622,
+      1635,
       0
     ]
   },
@@ -187,7 +187,7 @@ description: Operations executed cycloidal-gear.kcl
         },
         "sourceRange": [
           1398,
-          1486,
+          1481,
           0
         ]
       },
@@ -199,8 +199,8 @@ description: Operations executed cycloidal-gear.kcl
           }
         },
         "sourceRange": [
-          1488,
-          1489,
+          1483,
+          1484,
           0
         ]
       }
@@ -208,7 +208,7 @@ description: Operations executed cycloidal-gear.kcl
     "name": "hole",
     "sourceRange": [
       1393,
-      1490,
+      1485,
       0
     ],
     "type": "StdLibCall",
@@ -222,14 +222,14 @@ description: Operations executed cycloidal-gear.kcl
     "name": "gearSketch",
     "functionSourceRange": [
       448,
-      1517,
+      1512,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1646,
-      1672,
+      1641,
+      1667,
       0
     ]
   },
@@ -379,7 +379,7 @@ description: Operations executed cycloidal-gear.kcl
         },
         "sourceRange": [
           1398,
-          1486,
+          1481,
           0
         ]
       },
@@ -391,8 +391,8 @@ description: Operations executed cycloidal-gear.kcl
           }
         },
         "sourceRange": [
-          1488,
-          1489,
+          1483,
+          1484,
           0
         ]
       }
@@ -400,7 +400,7 @@ description: Operations executed cycloidal-gear.kcl
     "name": "hole",
     "sourceRange": [
       1393,
-      1490,
+      1485,
       0
     ],
     "type": "StdLibCall",
@@ -414,14 +414,14 @@ description: Operations executed cycloidal-gear.kcl
     "name": "gearSketch",
     "functionSourceRange": [
       448,
-      1517,
+      1512,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1678,
-      1700,
+      1673,
+      1695,
       0
     ]
   },
@@ -577,7 +577,7 @@ description: Operations executed cycloidal-gear.kcl
         },
         "sourceRange": [
           1398,
-          1486,
+          1481,
           0
         ]
       },
@@ -589,8 +589,8 @@ description: Operations executed cycloidal-gear.kcl
           }
         },
         "sourceRange": [
-          1488,
-          1489,
+          1483,
+          1484,
           0
         ]
       }
@@ -598,7 +598,7 @@ description: Operations executed cycloidal-gear.kcl
     "name": "hole",
     "sourceRange": [
       1393,
-      1490,
+      1485,
       0
     ],
     "type": "StdLibCall",
@@ -634,16 +634,16 @@ description: Operations executed cycloidal-gear.kcl
           ]
         },
         "sourceRange": [
-          1621,
-          1704,
+          1616,
+          1699,
           0
         ]
       }
     },
     "name": "loft",
     "sourceRange": [
-      1616,
-      1705,
+      1611,
+      1700,
       0
     ],
     "type": "StdLibCall",

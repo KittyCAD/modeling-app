@@ -170,7 +170,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -186,7 +186,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -491,7 +491,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -505,7 +505,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -521,7 +521,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -537,7 +537,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -553,7 +553,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -858,7 +858,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -872,7 +872,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -888,7 +888,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -904,7 +904,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -920,7 +920,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -1225,7 +1225,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -1239,7 +1239,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -1255,7 +1255,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -1271,7 +1271,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -1287,7 +1287,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -1592,7 +1592,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -1606,7 +1606,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -1622,7 +1622,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -1638,7 +1638,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -1654,7 +1654,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -1959,7 +1959,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -1973,7 +1973,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -1989,7 +1989,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -2005,7 +2005,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -2021,7 +2021,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -2326,7 +2326,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -2340,7 +2340,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -2356,7 +2356,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -2372,7 +2372,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -2388,7 +2388,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -2693,7 +2693,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -2707,7 +2707,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -2723,7 +2723,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -2739,7 +2739,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -2755,7 +2755,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -3060,7 +3060,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -3074,7 +3074,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -3090,7 +3090,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -3106,7 +3106,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -3122,7 +3122,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -3427,7 +3427,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -3441,7 +3441,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -3457,7 +3457,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -3473,7 +3473,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -3489,7 +3489,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -3794,7 +3794,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -3808,7 +3808,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -3824,7 +3824,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -3840,7 +3840,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -3856,7 +3856,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -4161,7 +4161,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -4175,7 +4175,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -4191,7 +4191,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -4207,7 +4207,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -4223,7 +4223,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -4528,7 +4528,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -4542,7 +4542,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -4558,7 +4558,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -4574,7 +4574,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -4590,7 +4590,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -4895,7 +4895,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -4909,7 +4909,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -4925,7 +4925,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -4941,7 +4941,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -4957,7 +4957,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -5262,7 +5262,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -5276,7 +5276,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -5292,7 +5292,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -5308,7 +5308,7 @@ description: Variables in memory after executing lego.kcl
             "id": "[uuid]",
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ],
             "tag": null,
@@ -5324,7 +5324,7 @@ description: Variables in memory after executing lego.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   2331,
-                  2482,
+                  2477,
                   0
                 ]
               },
@@ -5629,7 +5629,7 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -5643,7 +5643,7 @@ description: Variables in memory after executing lego.kcl
             {
               "sourceRange": [
                 2331,
-                2482,
+                2477,
                 0
               ]
             }
@@ -5659,7 +5659,7 @@ description: Variables in memory after executing lego.kcl
           {
             "sourceRange": [
               2331,
-              2482,
+              2477,
               0
             ]
           }
@@ -7294,8 +7294,8 @@ description: Variables in memory after executing lego.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              2810,
-              2989,
+              2805,
+              2979,
               0
             ],
             "tag": null,
@@ -7310,8 +7310,8 @@ description: Variables in memory after executing lego.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2810,
-                  2989,
+                  2805,
+                  2979,
                   0
                 ]
               },
@@ -7382,8 +7382,8 @@ description: Variables in memory after executing lego.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7396,8 +7396,8 @@ description: Variables in memory after executing lego.kcl
           "__meta": [
             {
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7412,8 +7412,8 @@ description: Variables in memory after executing lego.kcl
         "__meta": [
           {
             "sourceRange": [
-              2810,
-              2989,
+              2805,
+              2979,
               0
             ]
           }
@@ -7432,8 +7432,8 @@ description: Variables in memory after executing lego.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2810,
-                  2989,
+                  2805,
+                  2979,
                   0
                 ]
               },
@@ -7504,8 +7504,8 @@ description: Variables in memory after executing lego.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7518,8 +7518,8 @@ description: Variables in memory after executing lego.kcl
           "__meta": [
             {
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7534,8 +7534,8 @@ description: Variables in memory after executing lego.kcl
         "__meta": [
           {
             "sourceRange": [
-              2810,
-              2989,
+              2805,
+              2979,
               0
             ]
           }
@@ -7554,8 +7554,8 @@ description: Variables in memory after executing lego.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2810,
-                  2989,
+                  2805,
+                  2979,
                   0
                 ]
               },
@@ -7626,8 +7626,8 @@ description: Variables in memory after executing lego.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7640,8 +7640,8 @@ description: Variables in memory after executing lego.kcl
           "__meta": [
             {
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7656,8 +7656,8 @@ description: Variables in memory after executing lego.kcl
         "__meta": [
           {
             "sourceRange": [
-              2810,
-              2989,
+              2805,
+              2979,
               0
             ]
           }
@@ -7676,8 +7676,8 @@ description: Variables in memory after executing lego.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2810,
-                  2989,
+                  2805,
+                  2979,
                   0
                 ]
               },
@@ -7748,8 +7748,8 @@ description: Variables in memory after executing lego.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7762,8 +7762,8 @@ description: Variables in memory after executing lego.kcl
           "__meta": [
             {
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7778,8 +7778,8 @@ description: Variables in memory after executing lego.kcl
         "__meta": [
           {
             "sourceRange": [
-              2810,
-              2989,
+              2805,
+              2979,
               0
             ]
           }
@@ -7798,8 +7798,8 @@ description: Variables in memory after executing lego.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2810,
-                  2989,
+                  2805,
+                  2979,
                   0
                 ]
               },
@@ -7870,8 +7870,8 @@ description: Variables in memory after executing lego.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7884,8 +7884,8 @@ description: Variables in memory after executing lego.kcl
           "__meta": [
             {
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -7900,8 +7900,8 @@ description: Variables in memory after executing lego.kcl
         "__meta": [
           {
             "sourceRange": [
-              2810,
-              2989,
+              2805,
+              2979,
               0
             ]
           }
@@ -7920,8 +7920,8 @@ description: Variables in memory after executing lego.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2810,
-                  2989,
+                  2805,
+                  2979,
                   0
                 ]
               },
@@ -7992,8 +7992,8 @@ description: Variables in memory after executing lego.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -8006,8 +8006,8 @@ description: Variables in memory after executing lego.kcl
           "__meta": [
             {
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -8022,8 +8022,8 @@ description: Variables in memory after executing lego.kcl
         "__meta": [
           {
             "sourceRange": [
-              2810,
-              2989,
+              2805,
+              2979,
               0
             ]
           }
@@ -8042,8 +8042,8 @@ description: Variables in memory after executing lego.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2810,
-                  2989,
+                  2805,
+                  2979,
                   0
                 ]
               },
@@ -8114,8 +8114,8 @@ description: Variables in memory after executing lego.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -8128,8 +8128,8 @@ description: Variables in memory after executing lego.kcl
           "__meta": [
             {
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -8144,8 +8144,8 @@ description: Variables in memory after executing lego.kcl
         "__meta": [
           {
             "sourceRange": [
-              2810,
-              2989,
+              2805,
+              2979,
               0
             ]
           }
@@ -8164,8 +8164,8 @@ description: Variables in memory after executing lego.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2810,
-                  2989,
+                  2805,
+                  2979,
                   0
                 ]
               },
@@ -8236,8 +8236,8 @@ description: Variables in memory after executing lego.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -8250,8 +8250,8 @@ description: Variables in memory after executing lego.kcl
           "__meta": [
             {
               "sourceRange": [
-                2810,
-                2989,
+                2805,
+                2979,
                 0
               ]
             }
@@ -8266,8 +8266,8 @@ description: Variables in memory after executing lego.kcl
         "__meta": [
           {
             "sourceRange": [
-              2810,
-              2989,
+              2805,
+              2979,
               0
             ]
           }

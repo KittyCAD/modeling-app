@@ -201,14 +201,14 @@ description: Operations executed enclosure.kcl
     "name": "function001",
     "functionSourceRange": [
       1276,
-      1937,
+      1927,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1983,
-      2060,
+      1973,
+      2050,
       0
     ]
   },
@@ -427,8 +427,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1744,
-          1843,
+          1739,
+          1833,
           0
         ]
       },
@@ -440,16 +440,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1845,
-          1846,
+          1835,
+          1836,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1739,
-      1847,
+      1734,
+      1837,
       0
     ],
     "type": "StdLibCall",
@@ -472,16 +472,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1891,
-          1913,
+          1881,
+          1903,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1863,
-      1914,
+      1853,
+      1904,
       0
     ],
     "type": "StdLibCall",
@@ -493,8 +493,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        1871,
-        1880,
+        1861,
+        1870,
         0
       ]
     }
@@ -507,14 +507,14 @@ description: Operations executed enclosure.kcl
     "name": "function001",
     "functionSourceRange": [
       1276,
-      1937,
+      1927,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2061,
-      2149,
+      2051,
+      2139,
       0
     ]
   },
@@ -733,8 +733,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1744,
-          1843,
+          1739,
+          1833,
           0
         ]
       },
@@ -746,16 +746,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1845,
-          1846,
+          1835,
+          1836,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1739,
-      1847,
+      1734,
+      1837,
       0
     ],
     "type": "StdLibCall",
@@ -778,16 +778,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1891,
-          1913,
+          1881,
+          1903,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1863,
-      1914,
+      1853,
+      1904,
       0
     ],
     "type": "StdLibCall",
@@ -799,8 +799,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        1871,
-        1880,
+        1861,
+        1870,
         0
       ]
     }
@@ -813,14 +813,14 @@ description: Operations executed enclosure.kcl
     "name": "function001",
     "functionSourceRange": [
       1276,
-      1937,
+      1927,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2150,
-      2237,
+      2140,
+      2227,
       0
     ]
   },
@@ -1039,8 +1039,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1744,
-          1843,
+          1739,
+          1833,
           0
         ]
       },
@@ -1052,16 +1052,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1845,
-          1846,
+          1835,
+          1836,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1739,
-      1847,
+      1734,
+      1837,
       0
     ],
     "type": "StdLibCall",
@@ -1084,16 +1084,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1891,
-          1913,
+          1881,
+          1903,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1863,
-      1914,
+      1853,
+      1904,
       0
     ],
     "type": "StdLibCall",
@@ -1105,8 +1105,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        1871,
-        1880,
+        1861,
+        1870,
         0
       ]
     }
@@ -1119,14 +1119,14 @@ description: Operations executed enclosure.kcl
     "name": "function001",
     "functionSourceRange": [
       1276,
-      1937,
+      1927,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2238,
-      2336,
+      2228,
+      2326,
       0
     ]
   },
@@ -1345,8 +1345,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1744,
-          1843,
+          1739,
+          1833,
           0
         ]
       },
@@ -1358,16 +1358,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1845,
-          1846,
+          1835,
+          1836,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1739,
-      1847,
+      1734,
+      1837,
       0
     ],
     "type": "StdLibCall",
@@ -1390,16 +1390,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1891,
-          1913,
+          1881,
+          1903,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1863,
-      1914,
+      1853,
+      1904,
       0
     ],
     "type": "StdLibCall",
@@ -1411,8 +1411,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        1871,
-        1880,
+        1861,
+        1870,
         0
       ]
     }
@@ -1428,16 +1428,16 @@ description: Operations executed enclosure.kcl
           "value": "XY"
         },
         "sourceRange": [
-          2405,
-          2409,
+          2395,
+          2399,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2391,
-      2410,
+      2381,
+      2400,
       0
     ],
     "type": "StdLibCall",
@@ -1453,8 +1453,46 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          2854,
+          2844,
+          2999,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          3001,
+          3002,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      2839,
+      3003,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
           3014,
+          3180,
           0
         ]
       },
@@ -1466,16 +1504,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3016,
-          3017,
+          3182,
+          3183,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2849,
-      3018,
+      3009,
+      3184,
       0
     ],
     "type": "StdLibCall",
@@ -1491,8 +1529,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3029,
-          3200,
+          3195,
+          3352,
           0
         ]
       },
@@ -1504,16 +1542,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3202,
-          3203,
+          3354,
+          3355,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3024,
-      3204,
+      3190,
+      3356,
       0
     ],
     "type": "StdLibCall",
@@ -1529,8 +1567,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3215,
-          3377,
+          3367,
+          3535,
           0
         ]
       },
@@ -1542,54 +1580,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3379,
-          3380,
+          3537,
+          3538,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3210,
-      3381,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          3392,
-          3565,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          3567,
-          3568,
-          0
-        ]
-      }
-    },
-    "name": "hole",
-    "sourceRange": [
-      3387,
-      3569,
+      3362,
+      3539,
       0
     ],
     "type": "StdLibCall",
@@ -1612,16 +1612,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3611,
-          3624,
+          3581,
+          3594,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3583,
-      3625,
+      3553,
+      3595,
       0
     ],
     "type": "StdLibCall",
@@ -1633,8 +1633,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        3591,
-        3600,
+        3561,
+        3570,
         0
       ]
     }
@@ -1650,8 +1650,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3655,
-          3672,
+          3625,
+          3642,
           0
         ]
       },
@@ -1678,16 +1678,16 @@ description: Operations executed enclosure.kcl
           ]
         },
         "sourceRange": [
-          3688,
-          3905,
+          3658,
+          3875,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      3631,
-      3912,
+      3601,
+      3882,
       0
     ],
     "type": "StdLibCall",
@@ -1715,8 +1715,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3981,
-          3991,
+          3951,
+          3961,
           0
         ]
       },
@@ -1726,16 +1726,16 @@ description: Operations executed enclosure.kcl
           "value": "END"
         },
         "sourceRange": [
-          3993,
-          3998,
+          3963,
+          3968,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3967,
-      3999,
+      3937,
+      3969,
       0
     ],
     "type": "StdLibCall",
@@ -1751,8 +1751,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          4536,
-          4712,
+          4506,
+          4677,
           0
         ]
       },
@@ -1764,16 +1764,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          4714,
-          4715,
+          4679,
+          4680,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      4531,
-      4716,
+      4501,
+      4681,
       0
     ],
     "type": "StdLibCall",
@@ -1789,8 +1789,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          4727,
-          4914,
+          4692,
+          4874,
           0
         ]
       },
@@ -1802,16 +1802,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          4916,
-          4917,
+          4876,
+          4877,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      4722,
-      4918,
+      4687,
+      4878,
       0
     ],
     "type": "StdLibCall",
@@ -1827,8 +1827,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          4929,
-          5107,
+          4889,
+          5062,
           0
         ]
       },
@@ -1840,16 +1840,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          5109,
-          5110,
+          5064,
+          5065,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      4924,
-      5111,
+      4884,
+      5066,
       0
     ],
     "type": "StdLibCall",
@@ -1865,8 +1865,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          5122,
-          5311,
+          5077,
+          5261,
           0
         ]
       },
@@ -1878,16 +1878,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          5313,
-          5314,
+          5263,
+          5264,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      5117,
-      5315,
+      5072,
+      5265,
       0
     ],
     "type": "StdLibCall",
@@ -1910,16 +1910,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          5357,
-          5370,
+          5307,
+          5320,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      5329,
-      5371,
+      5279,
+      5321,
       0
     ],
     "type": "StdLibCall",
@@ -1931,8 +1931,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        5337,
-        5346,
+        5287,
+        5296,
         0
       ]
     }
@@ -1948,8 +1948,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          5401,
-          5418,
+          5351,
+          5368,
           0
         ]
       },
@@ -1976,16 +1976,16 @@ description: Operations executed enclosure.kcl
           ]
         },
         "sourceRange": [
-          5434,
-          5651,
+          5384,
+          5601,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      5377,
-      5658,
+      5327,
+      5608,
       0
     ],
     "type": "StdLibCall",

@@ -1051,7 +1051,7 @@ description: Result of parsing mounting-plate.kcl
       },
       {
         "declaration": {
-          "end": 2152,
+          "end": 2127,
           "id": {
             "end": 1090,
             "name": "part",
@@ -1072,140 +1072,118 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "arguments": [
                       {
-                        "end": 1251,
-                        "properties": [
-                          {
-                            "end": 1216,
-                            "key": {
-                              "end": 1128,
-                              "name": "center",
-                              "start": 1122,
-                              "type": "Identifier"
-                            },
-                            "start": 1122,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "end": 1169,
-                                  "left": {
-                                    "end": 1157,
-                                    "left": {
-                                      "argument": {
-                                        "end": 1153,
-                                        "name": "plateWidth",
-                                        "start": 1143,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "end": 1153,
-                                      "operator": "-",
-                                      "start": 1142,
-                                      "type": "UnaryExpression",
-                                      "type": "UnaryExpression"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 1157,
-                                      "raw": "2",
-                                      "start": 1156,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "center"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 1168,
+                              "left": {
+                                "end": 1156,
+                                "left": {
+                                  "argument": {
+                                    "end": 1152,
+                                    "name": "plateWidth",
                                     "start": 1142,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "operator": "+",
-                                  "right": {
-                                    "end": 1169,
-                                    "name": "holeIndex",
-                                    "start": 1160,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "start": 1142,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                {
-                                  "end": 1207,
-                                  "left": {
-                                    "end": 1195,
-                                    "left": {
-                                      "end": 1191,
-                                      "name": "plateLength",
-                                      "start": 1180,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 1195,
-                                      "raw": "2",
-                                      "start": 1194,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 1180,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
+                                  "end": 1152,
                                   "operator": "-",
-                                  "right": {
-                                    "end": 1207,
-                                    "name": "holeIndex",
-                                    "start": 1198,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1180,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              ],
-                              "end": 1216,
-                              "start": 1131,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            }
-                          },
-                          {
-                            "end": 1244,
-                            "key": {
-                              "end": 1231,
-                              "name": "radius",
-                              "start": 1225,
-                              "type": "Identifier"
+                                  "start": 1141,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 1156,
+                                  "raw": "2",
+                                  "start": 1155,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 1141,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 1168,
+                                "name": "holeIndex",
+                                "start": 1159,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 1141,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
                             },
-                            "start": 1225,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 1244,
-                              "name": "holeRadius",
-                              "start": 1234,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                            {
+                              "end": 1206,
+                              "left": {
+                                "end": 1194,
+                                "left": {
+                                  "end": 1190,
+                                  "name": "plateLength",
+                                  "start": 1179,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 1194,
+                                  "raw": "2",
+                                  "start": 1193,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 1179,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 1206,
+                                "name": "holeIndex",
+                                "start": 1197,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 1179,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
                             }
-                          }
-                        ],
-                        "start": 1113,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                          ],
+                          "end": 1215,
+                          "start": 1130,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
                       },
                       {
-                        "end": 1254,
-                        "start": 1253,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "radius"
+                        },
+                        "arg": {
+                          "end": 1243,
+                          "name": "holeRadius",
+                          "start": 1233,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
                       }
                     ],
                     "callee": {
@@ -1214,14 +1192,15 @@ description: Result of parsing mounting-plate.kcl
                       "start": 1106,
                       "type": "Identifier"
                     },
-                    "end": 1255,
+                    "end": 1250,
                     "start": 1106,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
                   },
                   {
-                    "end": 1258,
-                    "start": 1257,
+                    "end": 1253,
+                    "start": 1252,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
@@ -1232,7 +1211,7 @@ description: Result of parsing mounting-plate.kcl
                   "start": 1101,
                   "type": "Identifier"
                 },
-                "end": 1259,
+                "end": 1254,
                 "start": 1101,
                 "type": "CallExpression",
                 "type": "CallExpression"
@@ -1242,161 +1221,140 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "arguments": [
                       {
-                        "end": 1414,
-                        "properties": [
-                          {
-                            "end": 1379,
-                            "key": {
-                              "end": 1292,
-                              "name": "center",
-                              "start": 1286,
-                              "type": "Identifier"
-                            },
-                            "start": 1286,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "end": 1332,
-                                  "left": {
-                                    "end": 1320,
-                                    "left": {
-                                      "end": 1316,
-                                      "name": "plateWidth",
-                                      "start": 1306,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 1320,
-                                      "raw": "2",
-                                      "start": 1319,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 1306,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "operator": "-",
-                                  "right": {
-                                    "end": 1332,
-                                    "name": "holeIndex",
-                                    "start": 1323,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1306,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "center"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 1326,
+                              "left": {
+                                "end": 1314,
+                                "left": {
+                                  "end": 1310,
+                                  "name": "plateWidth",
+                                  "start": 1300,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
                                 },
-                                {
-                                  "end": 1370,
-                                  "left": {
-                                    "end": 1358,
-                                    "left": {
-                                      "end": 1354,
-                                      "name": "plateLength",
-                                      "start": 1343,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 1358,
-                                      "raw": "2",
-                                      "start": 1357,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 1343,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "operator": "-",
-                                  "right": {
-                                    "end": 1370,
-                                    "name": "holeIndex",
-                                    "start": 1361,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1343,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              ],
-                              "end": 1379,
-                              "start": 1295,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            }
-                          },
-                          {
-                            "end": 1407,
-                            "key": {
-                              "end": 1394,
-                              "name": "radius",
-                              "start": 1388,
-                              "type": "Identifier"
+                                "operator": "/",
+                                "right": {
+                                  "end": 1314,
+                                  "raw": "2",
+                                  "start": 1313,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 1300,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 1326,
+                                "name": "holeIndex",
+                                "start": 1317,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 1300,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
                             },
-                            "start": 1388,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 1407,
-                              "name": "holeRadius",
-                              "start": 1397,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                            {
+                              "end": 1364,
+                              "left": {
+                                "end": 1352,
+                                "left": {
+                                  "end": 1348,
+                                  "name": "plateLength",
+                                  "start": 1337,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 1352,
+                                  "raw": "2",
+                                  "start": 1351,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 1337,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 1364,
+                                "name": "holeIndex",
+                                "start": 1355,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 1337,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
                             }
-                          }
-                        ],
-                        "start": 1277,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                          ],
+                          "end": 1373,
+                          "start": 1289,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
                       },
                       {
-                        "end": 1417,
-                        "start": 1416,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "radius"
+                        },
+                        "arg": {
+                          "end": 1401,
+                          "name": "holeRadius",
+                          "start": 1391,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
                       }
                     ],
                     "callee": {
-                      "end": 1276,
+                      "end": 1271,
                       "name": "circle",
-                      "start": 1270,
+                      "start": 1265,
                       "type": "Identifier"
                     },
-                    "end": 1418,
-                    "start": 1270,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
+                    "end": 1408,
+                    "start": 1265,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
                   },
                   {
-                    "end": 1421,
-                    "start": 1420,
+                    "end": 1411,
+                    "start": 1410,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1269,
+                  "end": 1264,
                   "name": "hole",
-                  "start": 1265,
+                  "start": 1260,
                   "type": "Identifier"
                 },
-                "end": 1422,
-                "start": 1265,
+                "end": 1412,
+                "start": 1260,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1405,345 +1363,154 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "arguments": [
                       {
-                        "end": 1579,
-                        "properties": [
-                          {
-                            "end": 1544,
-                            "key": {
-                              "end": 1455,
-                              "name": "center",
-                              "start": 1449,
-                              "type": "Identifier"
-                            },
-                            "start": 1449,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "end": 1496,
-                                  "left": {
-                                    "end": 1484,
-                                    "left": {
-                                      "argument": {
-                                        "end": 1480,
-                                        "name": "plateWidth",
-                                        "start": 1470,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "end": 1480,
-                                      "operator": "-",
-                                      "start": 1469,
-                                      "type": "UnaryExpression",
-                                      "type": "UnaryExpression"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 1484,
-                                      "raw": "2",
-                                      "start": 1483,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 1469,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "operator": "+",
-                                  "right": {
-                                    "end": 1496,
-                                    "name": "holeIndex",
-                                    "start": 1487,
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "center"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 1485,
+                              "left": {
+                                "end": 1473,
+                                "left": {
+                                  "argument": {
+                                    "end": 1469,
+                                    "name": "plateWidth",
+                                    "start": 1459,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "start": 1469,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
+                                  "end": 1469,
+                                  "operator": "-",
+                                  "start": 1458,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
-                                {
-                                  "end": 1535,
-                                  "left": {
-                                    "end": 1523,
-                                    "left": {
-                                      "argument": {
-                                        "end": 1519,
-                                        "name": "plateLength",
-                                        "start": 1508,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "end": 1519,
-                                      "operator": "-",
-                                      "start": 1507,
-                                      "type": "UnaryExpression",
-                                      "type": "UnaryExpression"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 1523,
-                                      "raw": "2",
-                                      "start": 1522,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 1507,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "operator": "+",
-                                  "right": {
-                                    "end": 1535,
-                                    "name": "holeIndex",
-                                    "start": 1526,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1507,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              ],
-                              "end": 1544,
+                                "operator": "/",
+                                "right": {
+                                  "end": 1473,
+                                  "raw": "2",
+                                  "start": 1472,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 1458,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 1485,
+                                "name": "holeIndex",
+                                "start": 1476,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
                               "start": 1458,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            }
-                          },
-                          {
-                            "end": 1572,
-                            "key": {
-                              "end": 1559,
-                              "name": "radius",
-                              "start": 1553,
-                              "type": "Identifier"
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
                             },
-                            "start": 1553,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 1572,
-                              "name": "holeRadius",
-                              "start": 1562,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          }
-                        ],
-                        "start": 1440,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      },
-                      {
-                        "end": 1582,
-                        "start": 1581,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
-                      }
-                    ],
-                    "callee": {
-                      "end": 1439,
-                      "name": "circle",
-                      "start": 1433,
-                      "type": "Identifier"
-                    },
-                    "end": 1583,
-                    "start": 1433,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "end": 1586,
-                    "start": 1585,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 1432,
-                  "name": "hole",
-                  "start": 1428,
-                  "type": "Identifier"
-                },
-                "end": 1587,
-                "start": 1428,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "end": 1743,
-                        "properties": [
-                          {
-                            "end": 1708,
-                            "key": {
-                              "end": 1620,
-                              "name": "center",
-                              "start": 1614,
-                              "type": "Identifier"
-                            },
-                            "start": 1614,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "end": 1660,
-                                  "left": {
-                                    "end": 1648,
-                                    "left": {
-                                      "end": 1644,
-                                      "name": "plateWidth",
-                                      "start": 1634,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 1648,
-                                      "raw": "2",
-                                      "start": 1647,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 1634,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
+                            {
+                              "end": 1524,
+                              "left": {
+                                "end": 1512,
+                                "left": {
+                                  "argument": {
+                                    "end": 1508,
+                                    "name": "plateLength",
+                                    "start": 1497,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
                                   },
+                                  "end": 1508,
                                   "operator": "-",
-                                  "right": {
-                                    "end": 1660,
-                                    "name": "holeIndex",
-                                    "start": 1651,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1634,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
+                                  "start": 1496,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
-                                {
-                                  "end": 1699,
-                                  "left": {
-                                    "end": 1687,
-                                    "left": {
-                                      "argument": {
-                                        "end": 1683,
-                                        "name": "plateLength",
-                                        "start": 1672,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "end": 1683,
-                                      "operator": "-",
-                                      "start": 1671,
-                                      "type": "UnaryExpression",
-                                      "type": "UnaryExpression"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "end": 1687,
-                                      "raw": "2",
-                                      "start": 1686,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 1671,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "operator": "+",
-                                  "right": {
-                                    "end": 1699,
-                                    "name": "holeIndex",
-                                    "start": 1690,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1671,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              ],
-                              "end": 1708,
-                              "start": 1623,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
+                                "operator": "/",
+                                "right": {
+                                  "end": 1512,
+                                  "raw": "2",
+                                  "start": 1511,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 1496,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 1524,
+                                "name": "holeIndex",
+                                "start": 1515,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 1496,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
                             }
-                          },
-                          {
-                            "end": 1736,
-                            "key": {
-                              "end": 1723,
-                              "name": "radius",
-                              "start": 1717,
-                              "type": "Identifier"
-                            },
-                            "start": 1717,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 1736,
-                              "name": "holeRadius",
-                              "start": 1726,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          }
-                        ],
-                        "start": 1605,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                          ],
+                          "end": 1533,
+                          "start": 1447,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
                       },
                       {
-                        "end": 1746,
-                        "start": 1745,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "radius"
+                        },
+                        "arg": {
+                          "end": 1561,
+                          "name": "holeRadius",
+                          "start": 1551,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
                       }
                     ],
                     "callee": {
-                      "end": 1604,
+                      "end": 1429,
                       "name": "circle",
-                      "start": 1598,
+                      "start": 1423,
                       "type": "Identifier"
                     },
-                    "end": 1747,
-                    "start": 1598,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
+                    "end": 1568,
+                    "start": 1423,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
                   },
                   {
-                    "end": 1750,
-                    "start": 1749,
+                    "end": 1571,
+                    "start": 1570,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1597,
+                  "end": 1422,
                   "name": "hole",
-                  "start": 1593,
+                  "start": 1418,
                   "type": "Identifier"
                 },
-                "end": 1751,
-                "start": 1593,
+                "end": 1572,
+                "start": 1418,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1752,105 +1519,233 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "arguments": [
                       {
-                        "end": 1836,
-                        "properties": [
-                          {
-                            "end": 1793,
-                            "key": {
-                              "end": 1784,
-                              "name": "center",
-                              "start": 1778,
-                              "type": "Identifier"
-                            },
-                            "start": 1778,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "elements": [
-                                {
-                                  "end": 1789,
-                                  "raw": "0",
-                                  "start": 1788,
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "center"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 1644,
+                              "left": {
+                                "end": 1632,
+                                "left": {
+                                  "end": 1628,
+                                  "name": "plateWidth",
+                                  "start": 1618,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 1632,
+                                  "raw": "2",
+                                  "start": 1631,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
-                                    "value": 0.0,
+                                    "value": 2.0,
                                     "suffix": "None"
                                   }
                                 },
-                                {
-                                  "end": 1792,
-                                  "raw": "0",
-                                  "start": 1791,
+                                "start": 1618,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 1644,
+                                "name": "holeIndex",
+                                "start": 1635,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 1618,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 1683,
+                              "left": {
+                                "end": 1671,
+                                "left": {
+                                  "argument": {
+                                    "end": 1667,
+                                    "name": "plateLength",
+                                    "start": 1656,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "end": 1667,
+                                  "operator": "-",
+                                  "start": 1655,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 1671,
+                                  "raw": "2",
+                                  "start": 1670,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
-                                    "value": 0.0,
+                                    "value": 2.0,
                                     "suffix": "None"
                                   }
-                                }
-                              ],
-                              "end": 1793,
-                              "start": 1787,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
+                                },
+                                "start": 1655,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 1683,
+                                "name": "holeIndex",
+                                "start": 1674,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 1655,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
                             }
-                          },
-                          {
-                            "end": 1829,
-                            "key": {
-                              "end": 1808,
-                              "name": "radius",
-                              "start": 1802,
-                              "type": "Identifier"
-                            },
-                            "start": 1802,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 1829,
-                              "name": "centerHoleDiameter",
-                              "start": 1811,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          }
-                        ],
-                        "start": 1769,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
+                          ],
+                          "end": 1692,
+                          "start": 1607,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
                       },
                       {
-                        "end": 1839,
-                        "start": 1838,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "radius"
+                        },
+                        "arg": {
+                          "end": 1720,
+                          "name": "holeRadius",
+                          "start": 1710,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
                       }
                     ],
                     "callee": {
-                      "end": 1768,
+                      "end": 1589,
                       "name": "circle",
-                      "start": 1762,
+                      "start": 1583,
                       "type": "Identifier"
                     },
-                    "end": 1840,
-                    "start": 1762,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
+                    "end": 1727,
+                    "start": 1583,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
                   },
                   {
-                    "end": 1843,
-                    "start": 1842,
+                    "end": 1730,
+                    "start": 1729,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1761,
+                  "end": 1582,
                   "name": "hole",
-                  "start": 1757,
+                  "start": 1578,
                   "type": "Identifier"
                 },
-                "end": 1844,
-                "start": 1757,
+                "end": 1731,
+                "start": 1578,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "center"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 1768,
+                              "raw": "0",
+                              "start": 1767,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            },
+                            {
+                              "end": 1771,
+                              "raw": "0",
+                              "start": 1770,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            }
+                          ],
+                          "end": 1772,
+                          "start": 1766,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "radius"
+                        },
+                        "arg": {
+                          "end": 1808,
+                          "name": "centerHoleDiameter",
+                          "start": 1790,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 1748,
+                      "name": "circle",
+                      "start": 1742,
+                      "type": "Identifier"
+                    },
+                    "end": 1815,
+                    "start": 1742,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 1818,
+                    "start": 1817,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 1741,
+                  "name": "hole",
+                  "start": 1737,
+                  "type": "Identifier"
+                },
+                "end": 1819,
+                "start": 1737,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1863,22 +1758,22 @@ description: Result of parsing mounting-plate.kcl
                       "name": "length"
                     },
                     "arg": {
-                      "end": 1881,
+                      "end": 1856,
                       "name": "plateThickness",
-                      "start": 1867,
+                      "start": 1842,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1857,
+                  "end": 1832,
                   "name": "extrude",
-                  "start": 1850,
+                  "start": 1825,
                   "type": "Identifier"
                 },
-                "end": 1882,
-                "start": 1850,
+                "end": 1857,
+                "start": 1825,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1892,9 +1787,9 @@ description: Result of parsing mounting-plate.kcl
                       "name": "radius"
                     },
                     "arg": {
-                      "end": 1924,
+                      "end": 1899,
                       "name": "filletRadius",
-                      "start": 1912,
+                      "start": 1887,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -1911,48 +1806,48 @@ description: Result of parsing mounting-plate.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 1988,
+                              "end": 1963,
                               "object": {
                                 "computed": false,
-                                "end": 1982,
+                                "end": 1957,
                                 "object": {
-                                  "end": 1977,
+                                  "end": 1952,
                                   "name": "rs",
-                                  "start": 1975,
+                                  "start": 1950,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 1982,
+                                  "end": 1957,
                                   "name": "tags",
-                                  "start": 1978,
+                                  "start": 1953,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 1975,
+                                "start": 1950,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 1988,
+                                "end": 1963,
                                 "name": "edge1",
-                                "start": 1983,
+                                "start": 1958,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1975,
+                              "start": 1950,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 1974,
+                            "end": 1949,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 1951,
+                            "start": 1926,
                             "type": "Identifier"
                           },
-                          "end": 1989,
-                          "start": 1951,
+                          "end": 1964,
+                          "start": 1926,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1960,48 +1855,48 @@ description: Result of parsing mounting-plate.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 2037,
+                              "end": 2012,
                               "object": {
                                 "computed": false,
-                                "end": 2031,
+                                "end": 2006,
                                 "object": {
-                                  "end": 2026,
+                                  "end": 2001,
                                   "name": "rs",
-                                  "start": 2024,
+                                  "start": 1999,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 2031,
+                                  "end": 2006,
                                   "name": "tags",
-                                  "start": 2027,
+                                  "start": 2002,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 2024,
+                                "start": 1999,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 2037,
+                                "end": 2012,
                                 "name": "edge2",
-                                "start": 2032,
+                                "start": 2007,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 2024,
+                              "start": 1999,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 2023,
+                            "end": 1998,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 2000,
+                            "start": 1975,
                             "type": "Identifier"
                           },
-                          "end": 2038,
-                          "start": 2000,
+                          "end": 2013,
+                          "start": 1975,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -2009,48 +1904,48 @@ description: Result of parsing mounting-plate.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 2086,
+                              "end": 2061,
                               "object": {
                                 "computed": false,
-                                "end": 2080,
+                                "end": 2055,
                                 "object": {
-                                  "end": 2075,
+                                  "end": 2050,
                                   "name": "rs",
-                                  "start": 2073,
+                                  "start": 2048,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 2080,
+                                  "end": 2055,
                                   "name": "tags",
-                                  "start": 2076,
+                                  "start": 2051,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 2073,
+                                "start": 2048,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 2086,
+                                "end": 2061,
                                 "name": "edge3",
-                                "start": 2081,
+                                "start": 2056,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 2073,
+                              "start": 2048,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 2072,
+                            "end": 2047,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 2049,
+                            "start": 2024,
                             "type": "Identifier"
                           },
-                          "end": 2087,
-                          "start": 2049,
+                          "end": 2062,
+                          "start": 2024,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -2058,73 +1953,73 @@ description: Result of parsing mounting-plate.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 2135,
+                              "end": 2110,
                               "object": {
                                 "computed": false,
-                                "end": 2129,
+                                "end": 2104,
                                 "object": {
-                                  "end": 2124,
+                                  "end": 2099,
                                   "name": "rs",
-                                  "start": 2122,
+                                  "start": 2097,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 2129,
+                                  "end": 2104,
                                   "name": "tags",
-                                  "start": 2125,
+                                  "start": 2100,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 2122,
+                                "start": 2097,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 2135,
+                                "end": 2110,
                                 "name": "edge4",
-                                "start": 2130,
+                                "start": 2105,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 2122,
+                              "start": 2097,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 2121,
+                            "end": 2096,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 2098,
+                            "start": 2073,
                             "type": "Identifier"
                           },
-                          "end": 2136,
-                          "start": 2098,
+                          "end": 2111,
+                          "start": 2073,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 2145,
-                      "start": 1940,
+                      "end": 2120,
+                      "start": 1915,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1894,
+                  "end": 1869,
                   "name": "fillet",
-                  "start": 1888,
+                  "start": 1863,
                   "type": "Identifier"
                 },
-                "end": 2152,
-                "start": 1888,
+                "end": 2127,
+                "start": 1863,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2152,
+            "end": 2127,
             "start": 1093,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2132,14 +2027,14 @@ description: Result of parsing mounting-plate.kcl
           "start": 1086,
           "type": "VariableDeclarator"
         },
-        "end": 2152,
+        "end": 2127,
         "kind": "const",
         "start": 1086,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 2153,
+    "end": 2128,
     "innerAttrs": [
       {
         "end": 240,
