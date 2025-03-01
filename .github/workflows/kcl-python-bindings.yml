@@ -61,6 +61,7 @@ jobs:
       matrix:
         target:
           - x64
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -87,6 +88,7 @@ jobs:
         target:
           - x86_64
           - aarch64
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -95,6 +97,7 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
+          working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
           args: --release --out dist --find-interpreter
           sccache: 'true'
