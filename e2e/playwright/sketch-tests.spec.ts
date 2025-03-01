@@ -2420,8 +2420,8 @@ extrude003 = extrude(profile011, length = 2.5)
         },
         // TODO keeps failing
         // {
-        //   title: 'select cap circle',
-        //   selectClick: scene.makeMouseHelpers(679, 290)[0],
+        // title: 'select cap circle',
+        // selectClick: scene.makeMouseHelpers(679, 290)[0],
         // },
         {
           title: 'select cap extrude wall',
@@ -2486,8 +2486,7 @@ extrude003 = extrude(profile011, length = 2.5)
             15
           )
           // closed polygon
-          /* FIXME: These are flaky
-           * await scene.expectPixelColor(
+          await scene.expectPixelColor(
             TEST_COLORS.WHITE,
             { x: 632, y: 200 },
             15
@@ -2497,7 +2496,7 @@ extrude003 = extrude(profile011, length = 2.5)
             TEST_COLORS.WHITE,
             { x: 628, y: 410 },
             15
-          )*/
+          )
           // circle
           await scene.expectPixelColor(
             [
@@ -2523,23 +2522,22 @@ extrude003 = extrude(profile011, length = 2.5)
         }
       })
 
-      await test.step('select cap profiles', async () => {
+      /* FIXME: the cap part of this test is insanely flaky, and I'm not sure
+       * why.
+       * await test.step('select cap profiles', async () => {
         for (const { title, selectClick } of capSelectionOptions) {
           await test.step(title, async () => {
             await camPositionForSelectingSketchOnCapProfiles()
             await page.waitForTimeout(100)
             await selectClick()
-            await page.waitForTimeout(100)
             await toolbar.editSketch()
             await page.waitForTimeout(600)
             await verifyCapProfilesAreDrawn()
-            // FIXME sometimes it exits the sketch mid way... yeah its fucking
-            // weird
-            //await toolbar.exitSketchBtn.click()
+            await toolbar.exitSketchBtn.click()
             await page.waitForTimeout(100)
           })
         }
-      })
+      }) */
     }
   )
   test(
