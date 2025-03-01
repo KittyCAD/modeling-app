@@ -301,6 +301,20 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     }
 }
 
+impl From<crate::settings::types::project::ProjectModelingSettings> for ExecutorSettings {
+    fn from(modeling: crate::settings::types::project::ProjectModelingSettings) -> Self {
+        Self {
+            units: modeling.base_unit,
+            highlight_edges: modeling.highlight_edges.into(),
+            enable_ssao: modeling.enable_ssao.into(),
+            show_grid: Default::default(),
+            replay: None,
+            project_directory: None,
+            current_file: None,
+        }
+    }
+}
+
 impl ExecutorSettings {
     /// Add the current file path to the executor settings.
     pub fn with_current_file(&mut self, current_file: PathBuf) {
