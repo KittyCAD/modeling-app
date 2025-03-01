@@ -1,12 +1,13 @@
 //! Types specific for modeling-app projects.
 
 use anyhow::Result;
+use indexmap::IndexMap;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    AppColor, AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings,
+    is_default, AppColor, CommandBarSettings, DefaultTrue, FloatOrInt, OnboardingStatus, TextEditorSettings, UnitLength,
 };
 
 /// High level project configuration.
@@ -24,14 +25,6 @@ impl ProjectConfiguration {
     // TODO: remove this when we remove backwards compatibility with the old settings file.
     pub fn backwards_compatible_toml_parse(toml_str: &str) -> Result<Self> {
         let mut settings = toml::from_str::<Self>(toml_str)?;
-        settings.settings.app.project_directory = None;
-
-        if let Some(theme) = &settings.settings.app.theme {
-            if settings.settings.app.appearance.theme == AppTheme::default() {
-                settings.settings.app.appearance.theme = *theme;
-                settings.settings.app.theme = None;
-            }
-        }
 
         if let Some(theme_color) = &settings.settings.app.theme_color {
             if settings.settings.app.appearance.color == AppColor::default() {
@@ -45,6 +38,11 @@ impl ProjectConfiguration {
                 settings.settings.modeling.enable_ssao = enable_ssao.into();
                 settings.settings.app.enable_ssao = None;
             }
+        }
+
+        if settings.settings.modeling.show_debug_panel && !settings.settings.app.show_debug_panel {
+            settings.settings.app.show_debug_panel = settings.settings.modeling.show_debug_panel;
+            settings.settings.modeling.show_debug_panel = Default::default();
         }
 
         settings.validate()?;
@@ -61,11 +59,11 @@ pub struct PerProjectSettings {
     /// The settings for the modeling app.
     #[serde(default)]
     #[validate(nested)]
-    pub app: AppSettings,
+    pub app: ProjectAppSettings,
     /// Settings that affect the behavior while modeling.
     #[serde(default)]
     #[validate(nested)]
-    pub modeling: ModelingSettings,
+    pub modeling: ProjectModelingSettings,
     /// Settings that affect the behavior of the KCL text editor.
     #[serde(default, alias = "textEditor")]
     #[validate(nested)]
@@ -76,15 +74,126 @@ pub struct PerProjectSettings {
     pub command_bar: CommandBarSettings,
 }
 
+/// Project specific application settings.
+// TODO: When we remove backwards compatibility with the old settings file, we can remove the
+// aliases to camelCase (and projects plural) from everywhere.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectAppSettings {
+    /// The settings for the appearance of the app.
+    #[serde(default, skip_serializing_if = "is_default")]
+    #[validate(nested)]
+    pub appearance: ProjectAppearanceSettings,
+    /// The onboarding status of the app.
+    #[serde(default, alias = "onboardingStatus", skip_serializing_if = "is_default")]
+    pub onboarding_status: OnboardingStatus,
+    /// The hue of the primary theme color for the app.
+    #[serde(default, skip_serializing_if = "Option::is_none", alias = "themeColor")]
+    pub theme_color: Option<FloatOrInt>,
+    /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+    #[serde(default, alias = "enableSSAO", skip_serializing_if = "Option::is_none")]
+    pub enable_ssao: Option<bool>,
+    /// Permanently dismiss the banner warning to download the desktop app.
+    /// This setting only applies to the web app. And is temporary until we have Linux support.
+    #[serde(default, alias = "dismissWebBanner", skip_serializing_if = "is_default")]
+    pub dismiss_web_banner: bool,
+    /// When the user is idle, and this is true, the stream will be torn down.
+    #[serde(default, alias = "streamIdleMode", skip_serializing_if = "is_default")]
+    pub stream_idle_mode: bool,
+    /// When the user is idle, and this is true, the stream will be torn down.
+    #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
+    pub allow_orbit_in_sketch_mode: bool,
+    /// Whether to show the debug panel, which lets you see various states
+    /// of the app to aid in development.
+    #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
+    pub show_debug_panel: bool,
+    /// Settings that affect the behavior of the command bar.
+    #[serde(default, alias = "namedViews", skip_serializing_if = "IndexMap::is_empty")]
+    pub named_views: IndexMap<uuid::Uuid, NamedView>,
+}
+
+/// Project specific appearance settings.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectAppearanceSettings {
+    /// The hue of the primary theme color for the app.
+    #[serde(default, skip_serializing_if = "is_default")]
+    #[validate(nested)]
+    pub color: AppColor,
+}
+
+/// Project specific settings that affect the behavior while modeling.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[serde(rename_all = "snake_case")]
+#[ts(export)]
+pub struct ProjectModelingSettings {
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "defaultUnit", skip_serializing_if = "is_default")]
+    pub base_unit: UnitLength,
+    /// Highlight edges of 3D objects?
+    #[serde(default, alias = "highlightEdges", skip_serializing_if = "is_default")]
+    pub highlight_edges: DefaultTrue,
+    /// Whether to show the debug panel, which lets you see various states
+    /// of the app to aid in development.
+    /// Remove this when we remove backwards compatibility with the old settings file.
+    #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
+    pub show_debug_panel: bool,
+    /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_ssao: DefaultTrue,
+}
+
+fn named_view_point_version_one() -> f64 {
+    1.0
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[serde(rename_all = "snake_case")]
+#[ts(export)]
+pub struct NamedView {
+    /// User defined name to identify the named view. A label.
+    #[serde(default, alias = "name", skip_serializing_if = "is_default")]
+    pub name: String,
+    /// Engine camera eye off set
+    #[serde(default, alias = "eyeOffset", skip_serializing_if = "is_default")]
+    pub eye_offset: f64,
+    /// Engine camera vertical FOV
+    #[serde(default, alias = "fovY", skip_serializing_if = "is_default")]
+    pub fov_y: f64,
+    // Engine camera is orthographic or perspective projection
+    #[serde(default, alias = "isOrtho")]
+    pub is_ortho: bool,
+    /// Engine camera is orthographic camera scaling enabled
+    #[serde(default, alias = "orthoScaleEnabled")]
+    pub ortho_scale_enabled: bool,
+    /// Engine camera orthographic scaling factor
+    #[serde(default, alias = "orthoScaleFactor", skip_serializing_if = "is_default")]
+    pub ortho_scale_factor: f64,
+    /// Engine camera position that the camera pivots around
+    #[serde(default, alias = "pivotPosition", skip_serializing_if = "is_default")]
+    pub pivot_position: [f64; 3],
+    /// Engine camera orientation in relation to the pivot position
+    #[serde(default, alias = "pivotRotation", skip_serializing_if = "is_default")]
+    pub pivot_rotation: [f64; 4],
+    /// Engine camera world coordinate system orientation
+    #[serde(default, alias = "worldCoordSystem", skip_serializing_if = "is_default")]
+    pub world_coord_system: String,
+    /// Version number of the view point if the engine camera API changes
+    #[serde(default = "named_view_point_version_one")]
+    pub version: f64,
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
 
     use super::{
-        AppSettings, AppTheme, CommandBarSettings, ModelingSettings, PerProjectSettings, ProjectConfiguration,
-        TextEditorSettings,
+        CommandBarSettings, NamedView, PerProjectSettings, ProjectAppSettings, ProjectAppearanceSettings,
+        ProjectConfiguration, ProjectModelingSettings, TextEditorSettings,
     };
-    use crate::settings::types::{AppearanceSettings, NamedView, UnitLength};
+    use crate::settings::types::UnitLength;
 
     use indexmap::IndexMap;
     use serde_json::Value;
@@ -94,12 +203,14 @@ mod tests {
     // TODO: We can remove this functionality after a few versions.
     fn test_backwards_compatible_project_settings_file() {
         let old_project_file = r#"[settings.app]
-theme = "dark"
 themeColor = "138"
 
 [settings.textEditor]
 textWrapping = false
 blinkingCursor = false
+
+[settings.modeling]
+showDebugPanel = true
 
 [settings.commandBar]
 includeSettings = false
@@ -111,30 +222,22 @@ includeSettings = false
             parsed,
             ProjectConfiguration {
                 settings: PerProjectSettings {
-                    app: AppSettings {
-                        appearance: AppearanceSettings {
-                            theme: AppTheme::Dark,
-                            color: 138.0.into()
-                        },
+                    app: ProjectAppSettings {
+                        appearance: ProjectAppearanceSettings { color: 138.0.into() },
                         onboarding_status: Default::default(),
-                        project_directory: None,
-                        theme: None,
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
                         allow_orbit_in_sketch_mode: false,
+                        show_debug_panel: true,
                         named_views: IndexMap::default()
                     },
-                    modeling: ModelingSettings {
+                    modeling: ProjectModelingSettings {
                         base_unit: UnitLength::Mm,
-                        camera_projection: Default::default(),
-                        camera_orbit: Default::default(),
-                        mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
-                        show_debug_panel: false,
+                        show_debug_panel: Default::default(),
                         enable_ssao: true.into(),
-                        show_scale_grid: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -145,6 +248,27 @@ includeSettings = false
                     },
                 }
             }
+        );
+
+        // Write the file back out.
+        let serialized = toml::to_string(&parsed).unwrap();
+        assert_eq!(
+            serialized,
+            r#"[settings.app]
+show_debug_panel = true
+
+[settings.app.appearance]
+color = 138.0
+
+[settings.modeling]
+
+[settings.text_editor]
+text_wrapping = false
+blinking_cursor = false
+
+[settings.command_bar]
+include_settings = false
+"#
         );
     }
 
@@ -243,19 +367,15 @@ color = 1567.4"#;
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
-                app: AppSettings {
-                    appearance: AppearanceSettings {
-                        theme: AppTheme::Dark,
-                        color: 138.0.into(),
-                    },
+                app: ProjectAppSettings {
+                    appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),
-                    project_directory: None,
-                    theme: None,
                     theme_color: None,
                     dismiss_web_banner: false,
                     enable_ssao: None,
                     stream_idle_mode: false,
                     allow_orbit_in_sketch_mode: false,
+                    show_debug_panel: true,
                     named_views: IndexMap::from([
                         (
                             uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
@@ -289,15 +409,11 @@ color = 1567.4"#;
                         ),
                     ]),
                 },
-                modeling: ModelingSettings {
+                modeling: ProjectModelingSettings {
                     base_unit: UnitLength::Yd,
-                    camera_projection: Default::default(),
-                    camera_orbit: Default::default(),
-                    mouse_controls: Default::default(),
                     highlight_edges: Default::default(),
-                    show_debug_panel: true,
+                    show_debug_panel: Default::default(),
                     enable_ssao: true.into(),
-                    show_scale_grid: false,
                 },
                 text_editor: TextEditorSettings {
                     text_wrapping: false.into(),
@@ -309,8 +425,10 @@ color = 1567.4"#;
             },
         };
         let serialized = toml::to_string(&conf).unwrap();
-        let old_project_file = r#"[settings.app.appearance]
-theme = "dark"
+        let old_project_file = r#"[settings.app]
+show_debug_panel = true
+
+[settings.app.appearance]
 color = 138.0
 
 [settings.app.named_views.323611ea-66e3-43c9-9d0d-1091ba92948c]
@@ -339,7 +457,6 @@ version = 1.0
 
 [settings.modeling]
 base_unit = "yd"
-show_debug_panel = true
 
 [settings.text_editor]
 text_wrapping = false
