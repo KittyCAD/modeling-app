@@ -1,4 +1,4 @@
-const sketch002 = startSketchOn('XZ')
+sketch002 = startSketchOn('XZ')
   |> startProfileAt([-108.83, -57.48], %)
   |> angledLine([0, 105.13], %, $rectangleSegmentA001)
   |> angledLine([
@@ -10,8 +10,5 @@ const sketch002 = startSketchOn('XZ')
        -segLen(rectangleSegmentA001)
      ], %)
   |> close()
-const sketch001 = startSketchOn('XZ')
-  |> circle({
-       center = [318.33, 168.1],
-       radius = 182.8
-     }, %)
+sketch001 = startSketchOn('XZ')
+  |> circle(center = [318.33, 168.1], radius = 182.8)

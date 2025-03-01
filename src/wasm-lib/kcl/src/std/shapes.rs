@@ -18,6 +18,7 @@ use crate::{
     execution::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
     parsing::ast::types::TagNode,
     std::{
+        sketch::NEW_TAG_KW,
         utils::{calculate_circle_center, distance},
         Args,
     },
@@ -32,24 +33,14 @@ pub enum SketchOrSurface {
     Sketch(Box<Sketch>),
 }
 
-/// Data for drawing an circle
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-// TODO: make sure the docs on the args below are correct.
-pub struct CircleData {
-    /// The center of the circle.
-    pub center: [f64; 2],
-    /// The circle radius
-    pub radius: f64,
-}
-
 /// Sketch a circle.
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_surface_or_group, tag): (CircleData, SketchOrSurface, Option<TagNode>) =
-        args.get_circle_args()?;
+    let sketch_or_surface = args.get_unlabeled_kw_arg("sketchOrSurface")?;
+    let center = args.get_kw_arg("center")?;
+    let radius = args.get_kw_arg("radius")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let sketch = inner_circle(data, sketch_surface_or_group, tag, exec_state, args).await?;
+    let sketch = inner_circle(sketch_or_surface, center, radius, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -60,7 +51,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("-XZ")
-///   |> circle({ center = [0, 0], radius = 10 }, %)
+///   |> circle( center = [0, 0], radius = 10 )
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
@@ -72,27 +63,36 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> line(end = [0, 30])
 ///   |> line(end = [-30, 0])
 ///   |> close()
-///   |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
+///   |> hole(circle( center = [0, 15], radius = 5), %)
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 #[stdlib {
     name = "circle",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch_or_surface = {docs = "Plane or surface to sketch on."},
+        center = {docs = "The center of the circle."},
+        radius = {docs = "The radius of the circle."},
+        tag = { docs = "Create a new tag which refers to this circle"},
+    }
 }]
 async fn inner_circle(
-    data: CircleData,
-    sketch_surface_or_group: SketchOrSurface,
+    sketch_or_surface: SketchOrSurface,
+    center: [f64; 2],
+    radius: f64,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let sketch_surface = match sketch_surface_or_group {
+    let sketch_surface = match sketch_or_surface {
         SketchOrSurface::SketchSurface(surface) => surface,
-        SketchOrSurface::Sketch(group) => group.on,
+        SketchOrSurface::Sketch(s) => s.on,
     };
     let units = sketch_surface.units();
     let sketch = crate::std::sketch::inner_start_profile_at(
-        [data.center[0] + data.radius, data.center[1]],
+        [center[0] + radius, center[1]],
         sketch_surface,
         None,
         exec_state,
@@ -100,7 +100,7 @@ async fn inner_circle(
     )
     .await?;
 
-    let from = [data.center[0] + data.radius, data.center[1]];
+    let from = [center[0] + radius, center[1]];
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
 
@@ -113,8 +113,8 @@ async fn inner_circle(
             segment: PathSegment::Arc {
                 start: angle_start,
                 end: angle_end,
-                center: KPoint2d::from(data.center).map(LengthUnit),
-                radius: data.radius.into(),
+                center: KPoint2d::from(center).map(LengthUnit),
+                radius: radius.into(),
                 relative: false,
             },
         }),
@@ -132,8 +132,8 @@ async fn inner_circle(
                 metadata: args.source_range.into(),
             },
         },
-        radius: data.radius,
-        center: data.center,
+        radius,
+        center,
         ccw: angle_start < angle_end,
     };
 

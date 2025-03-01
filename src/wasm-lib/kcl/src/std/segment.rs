@@ -34,7 +34,7 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// fn cylinder(radius, tag) {
 ///   return startSketchOn('XY')
 ///   |> startProfileAt([0, 0], %)
-///   |> circle({ radius = radius, center = segEnd(tag) }, %)
+///   |> circle(radius = radius, center = segEnd(tag) )
 ///   |> extrude(length = radius)
 /// }
 ///
@@ -170,7 +170,7 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// fn cylinder(radius, tag) {
 ///   return startSketchOn('XY')
 ///   |> startProfileAt([0, 0], %)
-///   |> circle({ radius = radius, center = segStart(tag) }, %)
+///   |> circle( radius = radius, center = segStart(tag) )
 ///   |> extrude(length = radius)
 /// }
 ///
@@ -536,7 +536,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// circSketch = startSketchOn("XY")
-///   |> circle({ center: [0, 0], radius: 3 }, %, $circ)
+///   |> circle( center= [0, 0], radius= 3 , tag= $circ)
 ///
 /// triangleSketch = startSketchOn("XY")
 ///   |> startProfileAt([-5, 0], %)

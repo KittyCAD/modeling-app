@@ -43,16 +43,16 @@ description: Operations executed import_whole.kcl
           }
         },
         "sourceRange": [
-          127,
-          129,
+          120,
+          122,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      110,
-      130,
+      103,
+      123,
       3
     ],
     "type": "StdLibCall",

@@ -42,7 +42,7 @@ patternCircular3d(
 
 ```js
 exampleSketch = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> circle(center = [0, 0], radius = 1)
 
 example = extrude(exampleSketch, length = -5)
   |> patternCircular3d(

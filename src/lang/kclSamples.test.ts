@@ -32,7 +32,7 @@ child_process.spawnSync('git', [
   'clone',
   '--single-branch',
   '--branch',
-  'next',
+  'circle-kw-args',
   URL_GIT_KCL_SAMPLES,
   DIR_KCL_SAMPLES,
 ])

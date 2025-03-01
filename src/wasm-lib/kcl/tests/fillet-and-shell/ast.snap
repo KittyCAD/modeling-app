@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing fillet-and-shell.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -1430,7 +1429,7 @@ snapshot_kind: text
       },
       {
         "declaration": {
-          "end": 1525,
+          "end": 1511,
           "id": {
             "end": 1283,
             "name": "m25Screw",
@@ -1442,7 +1441,7 @@ snapshot_kind: text
               "body": [
                 {
                   "declaration": {
-                    "end": 1508,
+                    "end": 1494,
                     "id": {
                       "end": 1307,
                       "name": "screw",
@@ -1526,73 +1525,51 @@ snapshot_kind: text
                         {
                           "arguments": [
                             {
-                              "end": 1410,
-                              "properties": [
-                                {
-                                  "end": 1394,
-                                  "key": {
-                                    "end": 1385,
-                                    "name": "center",
-                                    "start": 1379,
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "center"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "end": 1388,
+                                    "name": "x",
+                                    "start": 1387,
+                                    "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "start": 1379,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "elements": [
-                                      {
-                                        "end": 1390,
-                                        "name": "x",
-                                        "start": 1389,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      {
-                                        "end": 1393,
-                                        "name": "y",
-                                        "start": 1392,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      }
-                                    ],
-                                    "end": 1394,
-                                    "start": 1388,
-                                    "type": "ArrayExpression",
-                                    "type": "ArrayExpression"
-                                  }
-                                },
-                                {
-                                  "end": 1408,
-                                  "key": {
-                                    "end": 1402,
-                                    "name": "radius",
-                                    "start": 1396,
+                                  {
+                                    "end": 1391,
+                                    "name": "y",
+                                    "start": 1390,
+                                    "type": "Identifier",
                                     "type": "Identifier"
-                                  },
-                                  "start": 1396,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "end": 1408,
-                                    "raw": "2.5",
-                                    "start": 1405,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 2.5,
-                                      "suffix": "None"
-                                    }
                                   }
-                                }
-                              ],
-                              "start": 1377,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
+                                ],
+                                "end": 1392,
+                                "start": 1386,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             },
                             {
-                              "end": 1413,
-                              "start": 1412,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "radius"
+                              },
+                              "arg": {
+                                "end": 1406,
+                                "raw": "2.5",
+                                "start": 1403,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.5,
+                                  "suffix": "None"
+                                }
+                              }
                             }
                           ],
                           "callee": {
@@ -1601,111 +1578,91 @@ snapshot_kind: text
                             "start": 1370,
                             "type": "Identifier"
                           },
-                          "end": 1414,
+                          "end": 1407,
                           "start": 1370,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
                               "arguments": [
                                 {
-                                  "end": 1468,
-                                  "properties": [
-                                    {
-                                      "end": 1451,
-                                      "key": {
-                                        "end": 1442,
-                                        "name": "center",
-                                        "start": 1436,
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "type": "Identifier",
+                                    "name": "center"
+                                  },
+                                  "arg": {
+                                    "elements": [
+                                      {
+                                        "end": 1438,
+                                        "name": "x",
+                                        "start": 1437,
+                                        "type": "Identifier",
                                         "type": "Identifier"
                                       },
-                                      "start": 1436,
-                                      "type": "ObjectProperty",
-                                      "value": {
-                                        "elements": [
-                                          {
-                                            "end": 1447,
-                                            "name": "x",
-                                            "start": 1446,
-                                            "type": "Identifier",
-                                            "type": "Identifier"
-                                          },
-                                          {
-                                            "end": 1450,
-                                            "name": "y",
-                                            "start": 1449,
-                                            "type": "Identifier",
-                                            "type": "Identifier"
-                                          }
-                                        ],
-                                        "end": 1451,
-                                        "start": 1445,
-                                        "type": "ArrayExpression",
-                                        "type": "ArrayExpression"
-                                      }
-                                    },
-                                    {
-                                      "end": 1466,
-                                      "key": {
-                                        "end": 1459,
-                                        "name": "radius",
-                                        "start": 1453,
+                                      {
+                                        "end": 1441,
+                                        "name": "y",
+                                        "start": 1440,
+                                        "type": "Identifier",
                                         "type": "Identifier"
-                                      },
-                                      "start": 1453,
-                                      "type": "ObjectProperty",
-                                      "value": {
-                                        "end": 1466,
-                                        "raw": "1.25",
-                                        "start": 1462,
-                                        "type": "Literal",
-                                        "type": "Literal",
-                                        "value": {
-                                          "value": 1.25,
-                                          "suffix": "None"
-                                        }
                                       }
-                                    }
-                                  ],
-                                  "start": 1434,
-                                  "type": "ObjectExpression",
-                                  "type": "ObjectExpression"
+                                    ],
+                                    "end": 1442,
+                                    "start": 1436,
+                                    "type": "ArrayExpression",
+                                    "type": "ArrayExpression"
+                                  }
                                 },
                                 {
-                                  "end": 1471,
-                                  "start": 1470,
-                                  "type": "PipeSubstitution",
-                                  "type": "PipeSubstitution"
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "type": "Identifier",
+                                    "name": "radius"
+                                  },
+                                  "arg": {
+                                    "end": 1457,
+                                    "raw": "1.25",
+                                    "start": 1453,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.25,
+                                      "suffix": "None"
+                                    }
+                                  }
                                 }
                               ],
                               "callee": {
-                                "end": 1433,
+                                "end": 1426,
                                 "name": "circle",
-                                "start": 1427,
+                                "start": 1420,
                                 "type": "Identifier"
                               },
-                              "end": 1472,
-                              "start": 1427,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
+                              "end": 1458,
+                              "start": 1420,
+                              "type": "CallExpressionKw",
+                              "type": "CallExpressionKw",
+                              "unlabeled": null
                             },
                             {
-                              "end": 1475,
-                              "start": 1474,
+                              "end": 1461,
+                              "start": 1460,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1426,
+                            "end": 1419,
                             "name": "hole",
-                            "start": 1422,
+                            "start": 1415,
                             "type": "Identifier"
                           },
-                          "end": 1476,
-                          "start": 1422,
+                          "end": 1462,
+                          "start": 1415,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1718,28 +1675,28 @@ snapshot_kind: text
                                 "name": "length"
                               },
                               "arg": {
-                                "end": 1507,
+                                "end": 1493,
                                 "name": "height",
-                                "start": 1501,
+                                "start": 1487,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1491,
+                            "end": 1477,
                             "name": "extrude",
-                            "start": 1484,
+                            "start": 1470,
                             "type": "Identifier"
                           },
-                          "end": 1508,
-                          "start": 1484,
+                          "end": 1494,
+                          "start": 1470,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 1508,
+                      "end": 1494,
                       "start": 1310,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -1747,7 +1704,7 @@ snapshot_kind: text
                     "start": 1302,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1508,
+                  "end": 1494,
                   "kind": "const",
                   "start": 1302,
                   "type": "VariableDeclaration",
@@ -1755,22 +1712,22 @@ snapshot_kind: text
                 },
                 {
                   "argument": {
-                    "end": 1523,
+                    "end": 1509,
                     "name": "screw",
-                    "start": 1518,
+                    "start": 1504,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1523,
-                  "start": 1511,
+                  "end": 1509,
+                  "start": 1497,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1525,
+              "end": 1511,
               "start": 1298
             },
-            "end": 1525,
+            "end": 1511,
             "params": [
               {
                 "type": "Parameter",
@@ -1807,42 +1764,42 @@ snapshot_kind: text
           "start": 1275,
           "type": "VariableDeclarator"
         },
-        "end": 1525,
+        "end": 1511,
         "kind": "fn",
         "start": 1272,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 1656,
+        "end": 1642,
         "expression": {
           "arguments": [
             {
-              "end": 1584,
+              "end": 1570,
               "left": {
-                "end": 1558,
+                "end": 1544,
                 "left": {
-                  "end": 1542,
+                  "end": 1528,
                   "name": "border",
-                  "start": 1536,
+                  "start": 1522,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1558,
+                  "end": 1544,
                   "left": {
-                    "end": 1554,
+                    "end": 1540,
                     "name": "rpizWidth",
-                    "start": 1545,
+                    "start": 1531,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1558,
+                    "end": 1544,
                     "raw": "2",
-                    "start": 1557,
+                    "start": 1543,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1850,29 +1807,29 @@ snapshot_kind: text
                       "suffix": "None"
                     }
                   },
-                  "start": 1545,
+                  "start": 1531,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1536,
+                "start": 1522,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 1584,
+                "end": 1570,
                 "left": {
-                  "end": 1580,
+                  "end": 1566,
                   "name": "widthBetweenScrews",
-                  "start": 1562,
+                  "start": 1548,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1584,
+                  "end": 1570,
                   "raw": "2",
-                  "start": 1583,
+                  "start": 1569,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1880,58 +1837,156 @@ snapshot_kind: text
                     "suffix": "None"
                   }
                 },
-                "start": 1562,
+                "start": 1548,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1536,
+              "start": 1522,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1627,
+              "left": {
+                "end": 1600,
+                "left": {
+                  "end": 1583,
+                  "left": {
+                    "end": 1574,
+                    "raw": "0",
+                    "start": 1573,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1583,
+                    "name": "border",
+                    "start": 1577,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1573,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1600,
+                  "left": {
+                    "end": 1596,
+                    "name": "rpizLength",
+                    "start": 1586,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1600,
+                    "raw": "2",
+                    "start": 1599,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1586,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1573,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "-",
+              "right": {
+                "end": 1627,
+                "left": {
+                  "end": 1623,
+                  "name": "lengthBetweenScrews",
+                  "start": 1604,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1627,
+                  "raw": "2",
+                  "start": 1626,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1604,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1573,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
               "end": 1641,
+              "name": "screwHeight",
+              "start": 1630,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 1521,
+            "name": "m25Screw",
+            "start": 1513,
+            "type": "Identifier"
+          },
+          "end": 1642,
+          "start": 1513,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1513,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1771,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1701,
               "left": {
-                "end": 1614,
+                "end": 1675,
                 "left": {
-                  "end": 1597,
-                  "left": {
-                    "end": 1588,
-                    "raw": "0",
-                    "start": 1587,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "operator": "+",
-                  "right": {
-                    "end": 1597,
-                    "name": "border",
-                    "start": 1591,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "start": 1587,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
+                  "end": 1659,
+                  "name": "border",
+                  "start": 1653,
+                  "type": "Identifier",
+                  "type": "Identifier"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1614,
+                  "end": 1675,
                   "left": {
-                    "end": 1610,
-                    "name": "rpizLength",
-                    "start": 1600,
+                    "end": 1671,
+                    "name": "rpizWidth",
+                    "start": 1662,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1614,
+                    "end": 1675,
                     "raw": "2",
-                    "start": 1613,
+                    "start": 1674,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1939,29 +1994,29 @@ snapshot_kind: text
                       "suffix": "None"
                     }
                   },
-                  "start": 1600,
+                  "start": 1662,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1587,
+                "start": 1653,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 1641,
+                "end": 1701,
                 "left": {
-                  "end": 1637,
-                  "name": "lengthBetweenScrews",
-                  "start": 1618,
+                  "end": 1697,
+                  "name": "widthBetweenScrews",
+                  "start": 1679,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1641,
+                  "end": 1701,
                   "raw": "2",
-                  "start": 1640,
+                  "start": 1700,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1969,67 +2024,58 @@ snapshot_kind: text
                     "suffix": "None"
                   }
                 },
-                "start": 1618,
+                "start": 1679,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1587,
+              "start": 1653,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1655,
-              "name": "screwHeight",
-              "start": 1644,
-              "type": "Identifier",
-              "type": "Identifier"
-            }
-          ],
-          "callee": {
-            "end": 1535,
-            "name": "m25Screw",
-            "start": 1527,
-            "type": "Identifier"
-          },
-          "end": 1656,
-          "start": 1527,
-          "type": "CallExpression",
-          "type": "CallExpression"
-        },
-        "start": 1527,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "end": 1785,
-        "expression": {
-          "arguments": [
-            {
-              "end": 1715,
+              "end": 1757,
               "left": {
-                "end": 1689,
+                "end": 1731,
                 "left": {
-                  "end": 1673,
-                  "name": "border",
-                  "start": 1667,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "end": 1714,
+                  "left": {
+                    "end": 1705,
+                    "raw": "0",
+                    "start": 1704,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1714,
+                    "name": "border",
+                    "start": 1708,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1704,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1689,
+                  "end": 1731,
                   "left": {
-                    "end": 1685,
-                    "name": "rpizWidth",
-                    "start": 1676,
+                    "end": 1727,
+                    "name": "rpizLength",
+                    "start": 1717,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1689,
+                    "end": 1731,
                     "raw": "2",
-                    "start": 1688,
+                    "start": 1730,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2037,118 +2083,403 @@ snapshot_kind: text
                       "suffix": "None"
                     }
                   },
-                  "start": 1676,
+                  "start": 1717,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1667,
+                "start": 1704,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1757,
+                "left": {
+                  "end": 1753,
+                  "name": "lengthBetweenScrews",
+                  "start": 1734,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1757,
+                  "raw": "2",
+                  "start": 1756,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1734,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1704,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1770,
+              "name": "screwHeight",
+              "start": 1759,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 1652,
+            "name": "m25Screw",
+            "start": 1644,
+            "type": "Identifier"
+          },
+          "end": 1771,
+          "start": 1644,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1644,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1898,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1829,
+              "left": {
+                "end": 1804,
+                "left": {
+                  "end": 1788,
+                  "name": "border",
+                  "start": 1782,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1804,
+                  "left": {
+                    "end": 1800,
+                    "name": "rpizWidth",
+                    "start": 1791,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1804,
+                    "raw": "2",
+                    "start": 1803,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1791,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1782,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1829,
+                "left": {
+                  "end": 1825,
+                  "name": "widthBetweenScrews",
+                  "start": 1807,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1829,
+                  "raw": "2",
+                  "start": 1828,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1807,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1782,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1884,
+              "left": {
+                "end": 1858,
+                "left": {
+                  "end": 1841,
+                  "left": {
+                    "end": 1832,
+                    "raw": "0",
+                    "start": 1831,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1841,
+                    "name": "border",
+                    "start": 1835,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1831,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1858,
+                  "left": {
+                    "end": 1854,
+                    "name": "rpizLength",
+                    "start": 1844,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1858,
+                    "raw": "2",
+                    "start": 1857,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1844,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1831,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1884,
+                "left": {
+                  "end": 1880,
+                  "name": "lengthBetweenScrews",
+                  "start": 1861,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1884,
+                  "raw": "2",
+                  "start": 1883,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1861,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1831,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1897,
+              "name": "screwHeight",
+              "start": 1886,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 1781,
+            "name": "m25Screw",
+            "start": 1773,
+            "type": "Identifier"
+          },
+          "end": 1898,
+          "start": 1773,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1773,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 2027,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1956,
+              "left": {
+                "end": 1931,
+                "left": {
+                  "end": 1915,
+                  "name": "border",
+                  "start": 1909,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1931,
+                  "left": {
+                    "end": 1927,
+                    "name": "rpizWidth",
+                    "start": 1918,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1931,
+                    "raw": "2",
+                    "start": 1930,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1918,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1909,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1956,
+                "left": {
+                  "end": 1952,
+                  "name": "widthBetweenScrews",
+                  "start": 1934,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1956,
+                  "raw": "2",
+                  "start": 1955,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1934,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1909,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 2012,
+              "left": {
+                "end": 1985,
+                "left": {
+                  "end": 1968,
+                  "left": {
+                    "end": 1959,
+                    "raw": "0",
+                    "start": 1958,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1968,
+                    "name": "border",
+                    "start": 1962,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1958,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1985,
+                  "left": {
+                    "end": 1981,
+                    "name": "rpizLength",
+                    "start": 1971,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1985,
+                    "raw": "2",
+                    "start": 1984,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1971,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1958,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 1715,
+                "end": 2012,
                 "left": {
-                  "end": 1711,
-                  "name": "widthBetweenScrews",
-                  "start": 1693,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                },
-                "operator": "/",
-                "right": {
-                  "end": 1715,
-                  "raw": "2",
-                  "start": 1714,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 2.0,
-                    "suffix": "None"
-                  }
-                },
-                "start": 1693,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "start": 1667,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            {
-              "end": 1771,
-              "left": {
-                "end": 1745,
-                "left": {
-                  "end": 1728,
-                  "left": {
-                    "end": 1719,
-                    "raw": "0",
-                    "start": 1718,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "operator": "+",
-                  "right": {
-                    "end": 1728,
-                    "name": "border",
-                    "start": 1722,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "start": 1718,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "operator": "+",
-                "right": {
-                  "end": 1745,
-                  "left": {
-                    "end": 1741,
-                    "name": "rpizLength",
-                    "start": 1731,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "operator": "/",
-                  "right": {
-                    "end": 1745,
-                    "raw": "2",
-                    "start": 1744,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 2.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "start": 1731,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "start": 1718,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "operator": "+",
-              "right": {
-                "end": 1771,
-                "left": {
-                  "end": 1767,
+                  "end": 2008,
                   "name": "lengthBetweenScrews",
-                  "start": 1748,
+                  "start": 1989,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1771,
+                  "end": 2012,
                   "raw": "2",
-                  "start": 1770,
+                  "start": 2011,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2156,413 +2487,39 @@ snapshot_kind: text
                     "suffix": "None"
                   }
                 },
-                "start": 1748,
+                "start": 1989,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1718,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            {
-              "end": 1784,
-              "name": "screwHeight",
-              "start": 1773,
-              "type": "Identifier",
-              "type": "Identifier"
-            }
-          ],
-          "callee": {
-            "end": 1666,
-            "name": "m25Screw",
-            "start": 1658,
-            "type": "Identifier"
-          },
-          "end": 1785,
-          "start": 1658,
-          "type": "CallExpression",
-          "type": "CallExpression"
-        },
-        "start": 1658,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "end": 1912,
-        "expression": {
-          "arguments": [
-            {
-              "end": 1843,
-              "left": {
-                "end": 1818,
-                "left": {
-                  "end": 1802,
-                  "name": "border",
-                  "start": 1796,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                },
-                "operator": "+",
-                "right": {
-                  "end": 1818,
-                  "left": {
-                    "end": 1814,
-                    "name": "rpizWidth",
-                    "start": 1805,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "operator": "/",
-                  "right": {
-                    "end": 1818,
-                    "raw": "2",
-                    "start": 1817,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 2.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "start": 1805,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "start": 1796,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "operator": "+",
-              "right": {
-                "end": 1843,
-                "left": {
-                  "end": 1839,
-                  "name": "widthBetweenScrews",
-                  "start": 1821,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                },
-                "operator": "/",
-                "right": {
-                  "end": 1843,
-                  "raw": "2",
-                  "start": 1842,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 2.0,
-                    "suffix": "None"
-                  }
-                },
-                "start": 1821,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "start": 1796,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            {
-              "end": 1898,
-              "left": {
-                "end": 1872,
-                "left": {
-                  "end": 1855,
-                  "left": {
-                    "end": 1846,
-                    "raw": "0",
-                    "start": 1845,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "operator": "+",
-                  "right": {
-                    "end": 1855,
-                    "name": "border",
-                    "start": 1849,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "start": 1845,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "operator": "+",
-                "right": {
-                  "end": 1872,
-                  "left": {
-                    "end": 1868,
-                    "name": "rpizLength",
-                    "start": 1858,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "operator": "/",
-                  "right": {
-                    "end": 1872,
-                    "raw": "2",
-                    "start": 1871,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 2.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "start": 1858,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "start": 1845,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "operator": "+",
-              "right": {
-                "end": 1898,
-                "left": {
-                  "end": 1894,
-                  "name": "lengthBetweenScrews",
-                  "start": 1875,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                },
-                "operator": "/",
-                "right": {
-                  "end": 1898,
-                  "raw": "2",
-                  "start": 1897,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 2.0,
-                    "suffix": "None"
-                  }
-                },
-                "start": 1875,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "start": 1845,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            {
-              "end": 1911,
-              "name": "screwHeight",
-              "start": 1900,
-              "type": "Identifier",
-              "type": "Identifier"
-            }
-          ],
-          "callee": {
-            "end": 1795,
-            "name": "m25Screw",
-            "start": 1787,
-            "type": "Identifier"
-          },
-          "end": 1912,
-          "start": 1787,
-          "type": "CallExpression",
-          "type": "CallExpression"
-        },
-        "start": 1787,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "end": 2041,
-        "expression": {
-          "arguments": [
-            {
-              "end": 1970,
-              "left": {
-                "end": 1945,
-                "left": {
-                  "end": 1929,
-                  "name": "border",
-                  "start": 1923,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                },
-                "operator": "+",
-                "right": {
-                  "end": 1945,
-                  "left": {
-                    "end": 1941,
-                    "name": "rpizWidth",
-                    "start": 1932,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "operator": "/",
-                  "right": {
-                    "end": 1945,
-                    "raw": "2",
-                    "start": 1944,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 2.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "start": 1932,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "start": 1923,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "operator": "+",
-              "right": {
-                "end": 1970,
-                "left": {
-                  "end": 1966,
-                  "name": "widthBetweenScrews",
-                  "start": 1948,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                },
-                "operator": "/",
-                "right": {
-                  "end": 1970,
-                  "raw": "2",
-                  "start": 1969,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 2.0,
-                    "suffix": "None"
-                  }
-                },
-                "start": 1948,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "start": 1923,
+              "start": 1958,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
               "end": 2026,
-              "left": {
-                "end": 1999,
-                "left": {
-                  "end": 1982,
-                  "left": {
-                    "end": 1973,
-                    "raw": "0",
-                    "start": 1972,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "operator": "+",
-                  "right": {
-                    "end": 1982,
-                    "name": "border",
-                    "start": 1976,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "start": 1972,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "operator": "+",
-                "right": {
-                  "end": 1999,
-                  "left": {
-                    "end": 1995,
-                    "name": "rpizLength",
-                    "start": 1985,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "operator": "/",
-                  "right": {
-                    "end": 1999,
-                    "raw": "2",
-                    "start": 1998,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 2.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "start": 1985,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "start": 1972,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "operator": "-",
-              "right": {
-                "end": 2026,
-                "left": {
-                  "end": 2022,
-                  "name": "lengthBetweenScrews",
-                  "start": 2003,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                },
-                "operator": "/",
-                "right": {
-                  "end": 2026,
-                  "raw": "2",
-                  "start": 2025,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 2.0,
-                    "suffix": "None"
-                  }
-                },
-                "start": 2003,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "start": 1972,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            },
-            {
-              "end": 2040,
               "name": "screwHeight",
-              "start": 2029,
+              "start": 2015,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 1922,
+            "end": 1908,
             "name": "m25Screw",
-            "start": 1914,
+            "start": 1900,
             "type": "Identifier"
           },
-          "end": 2041,
-          "start": 1914,
+          "end": 2027,
+          "start": 1900,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1914,
+        "start": 1900,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 2098,
+        "end": 2084,
         "expression": {
           "arguments": [
             {
@@ -2574,16 +2531,16 @@ snapshot_kind: text
               "arg": {
                 "elements": [
                   {
-                    "end": 2069,
+                    "end": 2055,
                     "raw": "'end'",
-                    "start": 2064,
+                    "start": 2050,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "end"
                   }
                 ],
-                "end": 2070,
-                "start": 2063,
+                "end": 2056,
+                "start": 2049,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
@@ -2595,38 +2552,38 @@ snapshot_kind: text
                 "name": "thickness"
               },
               "arg": {
-                "end": 2097,
+                "end": 2083,
                 "name": "caseThickness",
-                "start": 2084,
+                "start": 2070,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             }
           ],
           "callee": {
-            "end": 2048,
+            "end": 2034,
             "name": "shell",
-            "start": 2043,
+            "start": 2029,
             "type": "Identifier"
           },
-          "end": 2098,
-          "start": 2043,
+          "end": 2084,
+          "start": 2029,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
-            "end": 2053,
+            "end": 2039,
             "name": "case",
-            "start": 2049,
+            "start": 2035,
             "type": "Identifier",
             "type": "Identifier"
           }
         },
-        "start": 2043,
+        "start": 2029,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 2099,
+    "end": 2085,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
@@ -2731,8 +2688,8 @@ snapshot_kind: text
         ],
         "18": [
           {
-            "end": 1527,
-            "start": 1525,
+            "end": 1513,
+            "start": 1511,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2741,8 +2698,8 @@ snapshot_kind: text
         ],
         "19": [
           {
-            "end": 1658,
-            "start": 1656,
+            "end": 1644,
+            "start": 1642,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2751,8 +2708,8 @@ snapshot_kind: text
         ],
         "20": [
           {
-            "end": 1787,
-            "start": 1785,
+            "end": 1773,
+            "start": 1771,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2761,8 +2718,8 @@ snapshot_kind: text
         ],
         "21": [
           {
-            "end": 1914,
-            "start": 1912,
+            "end": 1900,
+            "start": 1898,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2771,8 +2728,8 @@ snapshot_kind: text
         ],
         "22": [
           {
-            "end": 2043,
-            "start": 2041,
+            "end": 2029,
+            "start": 2027,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

@@ -69,10 +69,10 @@ squareSketch = startSketchOn('XY')
   |> close()
 
 circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
-  |> circle({ center = [0, 100], radius = 50 }, %)
+  |> circle(center = [0, 100], radius = 50)
 
 circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
-  |> circle({ center = [0, 100], radius = 20 }, %)
+  |> circle(center = [0, 100], radius = 20)
 
 loft([
   squareSketch,
@@ -94,10 +94,10 @@ squareSketch = startSketchOn('XY')
   |> close()
 
 circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
-  |> circle({ center = [0, 100], radius = 50 }, %)
+  |> circle(center = [0, 100], radius = 50)
 
 circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
-  |> circle({ center = [0, 100], radius = 20 }, %)
+  |> circle(center = [0, 100], radius = 20)
 
 loft(
   [

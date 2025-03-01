@@ -6,7 +6,7 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 113,
+        "end": 106,
         "id": {
           "end": 14,
           "name": "cylinder",
@@ -40,81 +40,59 @@ expression: actual
             {
               "arguments": [
                 {
-                  "end": 81,
-                  "properties": [
-                    {
-                      "end": 67,
-                      "key": {
-                        "end": 59,
-                        "name": "center",
-                        "start": 53,
-                        "type": "Identifier"
-                      },
-                      "start": 53,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "elements": [
-                          {
-                            "end": 63,
-                            "raw": "0",
-                            "start": 62,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          },
-                          {
-                            "end": 66,
-                            "raw": "0",
-                            "start": 65,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 0.0,
-                              "suffix": "None"
-                            }
-                          }
-                        ],
-                        "end": 67,
-                        "start": 61,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    },
-                    {
-                      "end": 79,
-                      "key": {
-                        "end": 75,
-                        "name": "radius",
-                        "start": 69,
-                        "type": "Identifier"
-                      },
-                      "start": 69,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "end": 79,
-                        "raw": "22",
-                        "start": 77,
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "center"
+                  },
+                  "arg": {
+                    "elements": [
+                      {
+                        "end": 61,
+                        "raw": "0",
+                        "start": 60,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
-                          "value": 22.0,
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 64,
+                        "raw": "0",
+                        "start": 63,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
                           "suffix": "None"
                         }
                       }
-                    }
-                  ],
-                  "start": 51,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
+                    ],
+                    "end": 65,
+                    "start": 59,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
                 },
                 {
-                  "end": 84,
-                  "start": 83,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "radius"
+                  },
+                  "arg": {
+                    "end": 77,
+                    "raw": "22",
+                    "start": 75,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 22.0,
+                      "suffix": "None"
+                    }
+                  }
                 }
               ],
               "callee": {
@@ -123,10 +101,11 @@ expression: actual
                 "start": 44,
                 "type": "Identifier"
               },
-              "end": 85,
+              "end": 78,
               "start": 44,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             },
             {
               "arguments": [
@@ -137,9 +116,9 @@ expression: actual
                     "name": "length"
                   },
                   "arg": {
-                    "end": 112,
+                    "end": 105,
                     "raw": "14",
-                    "start": 110,
+                    "start": 103,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -150,19 +129,19 @@ expression: actual
                 }
               ],
               "callee": {
-                "end": 100,
+                "end": 93,
                 "name": "extrude",
-                "start": 93,
+                "start": 86,
                 "type": "Identifier"
               },
-              "end": 113,
-              "start": 93,
+              "end": 106,
+              "start": 86,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 113,
+          "end": 106,
           "start": 17,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -170,13 +149,13 @@ expression: actual
         "start": 6,
         "type": "VariableDeclarator"
       },
-      "end": 113,
+      "end": 106,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 114,
+  "end": 107,
   "start": 0
 }

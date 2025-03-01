@@ -40,10 +40,7 @@ cube = startSketchOn('XY')
 fn cylinder(radius, tag) {
   return startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> circle({
-         radius = radius,
-         center = segEnd(tag)
-       }, %)
+    |> circle(radius = radius, center = segEnd(tag))
     |> extrude(length = radius)
 }
 

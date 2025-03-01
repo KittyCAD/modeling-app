@@ -412,7 +412,7 @@ description: Artifact commands revolve_about_edge.kcl
     "cmdId": "[uuid]",
     "range": [
       145,
-      190,
+      183,
       0
     ],
     "command": {
@@ -432,7 +432,7 @@ description: Artifact commands revolve_about_edge.kcl
     "cmdId": "[uuid]",
     "range": [
       145,
-      190,
+      183,
       0
     ],
     "command": {
@@ -443,7 +443,7 @@ description: Artifact commands revolve_about_edge.kcl
     "cmdId": "[uuid]",
     "range": [
       145,
-      190,
+      183,
       0
     ],
     "command": {
@@ -460,7 +460,7 @@ description: Artifact commands revolve_about_edge.kcl
     "cmdId": "[uuid]",
     "range": [
       145,
-      190,
+      183,
       0
     ],
     "command": {
@@ -489,7 +489,7 @@ description: Artifact commands revolve_about_edge.kcl
     "cmdId": "[uuid]",
     "range": [
       145,
-      190,
+      183,
       0
     ],
     "command": {
@@ -500,8 +500,8 @@ description: Artifact commands revolve_about_edge.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      196,
-      270,
+      189,
+      263,
       0
     ],
     "command": {
@@ -518,8 +518,8 @@ description: Artifact commands revolve_about_edge.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      196,
-      270,
+      189,
+      263,
       0
     ],
     "command": {
@@ -530,8 +530,8 @@ description: Artifact commands revolve_about_edge.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      196,
-      270,
+      189,
+      263,
       0
     ],
     "command": {
@@ -543,8 +543,8 @@ description: Artifact commands revolve_about_edge.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      196,
-      270,
+      189,
+      263,
       0
     ],
     "command": {
@@ -557,8 +557,8 @@ description: Artifact commands revolve_about_edge.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      196,
-      270,
+      189,
+      263,
       0
     ],
     "command": {

@@ -78,10 +78,10 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> close()
 ///
 /// circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
-///     |> circle({ center = [0, 100], radius = 50 }, %)
+///     |> circle( center = [0, 100], radius = 50 )
 ///
 /// circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
-///     |> circle({ center = [0, 100], radius = 20 }, %)
+///     |> circle( center = [0, 100], radius = 20 )
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1])
 /// ```
@@ -97,10 +97,10 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> close()
 ///
 /// circleSketch0 = startSketchOn(offsetPlane('XY', offset = 75))
-///     |> circle({ center = [0, 100], radius = 50 }, %)
+///     |> circle( center = [0, 100], radius = 50 )
 ///
 /// circleSketch1 = startSketchOn(offsetPlane('XY', offset = 150))
-///     |> circle({ center = [0, 100], radius = 20 }, %)
+///     |> circle( center = [0, 100], radius = 20 )
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1],
 ///     baseCurveIndex = 0,

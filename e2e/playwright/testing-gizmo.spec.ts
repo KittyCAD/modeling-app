@@ -269,10 +269,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
              ], %)
           |> close()
         const sketch001 = startSketchOn('XZ')
-          |> circle({
-               center: [818.33, 168.1],
-               radius: 182.8
-             }, %)
+          |> circle(center = [818.33, 168.1], radius = 182.8)
           |> extrude(length = 50)
       `
       )
@@ -295,12 +292,11 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
     await test.step(`Select an edge of this circle`, async () => {
-      const circleSnippet =
-        'circle({ center: [818.33, 168.1], radius: 182.8 }, %)'
+      const circleSnippet = 'circle(center = [818.33, 168.1], radius = 182.8)'
       await moveToCircle()
       await clickCircle()
       await editor.expectState({
-        activeLines: [circleSnippet.slice(-5)],
+        activeLines: ['|>' + circleSnippet],
         highlightedCode: circleSnippet,
         diagnostics: [],
       })

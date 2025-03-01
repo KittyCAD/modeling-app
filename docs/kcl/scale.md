@@ -49,10 +49,10 @@ sweepPath = startSketchOn('XZ')
 
 // Create a hole for the pipe.
 pipeHole = startSketchOn('XY')
-  |> circle({ center = [0, 0], radius = 1.5 }, %)
+  |> circle(center = [0, 0], radius = 1.5)
 
 sweepSketch = startSketchOn('XY')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> hole(pipeHole, %)
   |> sweep(path = sweepPath)
   |> scale(scale = [1.0, 1.0, 2.5])

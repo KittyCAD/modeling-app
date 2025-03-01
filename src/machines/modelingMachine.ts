@@ -3526,15 +3526,10 @@ export function isEditingExistingSketch({
   if (variableDeclaration.node.type !== 'VariableDeclarator') return false
   const maybePipeExpression = variableDeclaration.node.init
   if (
-    maybePipeExpression.type === 'CallExpression' &&
+    (maybePipeExpression.type === 'CallExpression' ||
+      maybePipeExpression.type === 'CallExpressionKw') &&
     (maybePipeExpression.callee.name === 'startProfileAt' ||
       maybePipeExpression.callee.name === 'circle' ||
-      maybePipeExpression.callee.name === 'circleThreePoint')
-  )
-    return true
-  if (
-    maybePipeExpression.type === 'CallExpressionKw' &&
-    (maybePipeExpression.callee.name === 'startProfileAt' ||
       maybePipeExpression.callee.name === 'circleThreePoint')
   )
     return true
@@ -3545,7 +3540,8 @@ export function isEditingExistingSketch({
   )
   const hasCircle =
     maybePipeExpression.body.some(
-      (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+      (item) =>
+        item.type === 'CallExpressionKw' && item.callee.name === 'circle'
     ) ||
     maybePipeExpression.body.some(
       (item) =>
@@ -3570,7 +3566,7 @@ export function pipeHasCircle({
   const pipeExpression = variableDeclaration.node.init
   if (pipeExpression.type !== 'PipeExpression') return false
   const hasCircle = pipeExpression.body.some(
-    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+    (item) => item.type === 'CallExpressionKw' && item.callee.name === 'circle'
   )
   return hasCircle
 }
@@ -3608,7 +3604,7 @@ export function isClosedSketch({
   if (node.node?.declaration?.init?.type !== 'PipeExpression') return false
   return node.node.declaration.init.body.some(
     (node) =>
-      node.type === 'CallExpression' &&
+      (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
       (node.callee.name === 'close' || node.callee.name === 'circle')
   )
 }

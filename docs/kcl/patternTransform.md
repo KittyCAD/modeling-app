@@ -68,7 +68,7 @@ fn transform(id) {
 
 // Sketch 4 cylinders.
 sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> extrude(length = 5)
   |> patternTransform(instances = 4, transform = transform)
 ```
@@ -84,7 +84,7 @@ fn transform(id) {
 }
 
 sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> extrude(length = 5)
   |> patternTransform(instances = 4, transform = transform)
 ```
@@ -184,7 +184,7 @@ fn transform(replicaId) {
 fn layer() {
   return startSketchOn("XY")
     // or some other plane idk
-    |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
+    |> circle(center = [0, 0], radius = 1, tag = $tag1)
     |> extrude(length = h)
 }
 // The vase is 100 layers tall.

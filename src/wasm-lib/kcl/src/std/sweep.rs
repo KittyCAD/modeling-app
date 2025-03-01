@@ -61,16 +61,16 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a hole for the pipe.
 /// pipeHole = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
-///     }, %)
+///     )
 ///
 /// sweepSketch = startSketchOn('XY')
-///     |> circle({
+///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         }, %)              
+///         )              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
 /// ```
@@ -91,7 +91,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('YZ')
-///     |> circle({ center = [0, 0], radius = 1 }, %)
+///     |> circle( center = [0, 0], radius = 1)
 ///     |> sweep(path = helixPath)
 /// ```
 #[stdlib {

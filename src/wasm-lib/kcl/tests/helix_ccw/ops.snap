@@ -43,16 +43,16 @@ description: Operations executed helix_ccw.kcl
           }
         },
         "sourceRange": [
-          101,
-          103,
+          94,
+          96,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      84,
-      104,
+      77,
+      97,
       0
     ],
     "type": "StdLibCall",
@@ -109,8 +109,8 @@ description: Operations executed helix_ccw.kcl
           }
         },
         "sourceRange": [
-          127,
-          201,
+          120,
+          194,
           0
         ]
       },
@@ -122,16 +122,16 @@ description: Operations executed helix_ccw.kcl
           }
         },
         "sourceRange": [
-          203,
-          204,
+          196,
+          197,
           0
         ]
       }
     },
     "name": "helixRevolutions",
     "sourceRange": [
-      110,
-      205,
+      103,
+      198,
       0
     ],
     "type": "StdLibCall",

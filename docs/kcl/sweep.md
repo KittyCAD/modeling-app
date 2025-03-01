@@ -49,10 +49,10 @@ sweepPath = startSketchOn('XZ')
 
 // Create a hole for the pipe.
 pipeHole = startSketchOn('XY')
-  |> circle({ center = [0, 0], radius = 1.5 }, %)
+  |> circle(center = [0, 0], radius = 1.5)
 
 sweepSketch = startSketchOn('XY')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> hole(pipeHole, %)
   |> sweep(path = sweepPath)
 ```
@@ -75,7 +75,7 @@ helixPath = helix(
 
 // Create a spring by sweeping around the helix path.
 springSketch = startSketchOn('YZ')
-  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> circle(center = [0, 0], radius = 1)
   |> sweep(path = helixPath)
 ```
 

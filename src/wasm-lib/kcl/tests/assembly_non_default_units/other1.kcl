@@ -5,4 +5,4 @@ import radius from "globals.kcl"
 
 // Use the same units as in the main importing file.
 startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> circle(center = [0, 0], radius = 1)

@@ -51,6 +51,7 @@ import {
   ARG_END_ABSOLUTE,
   getConstraintInfoKw,
   isAbsoluteLine,
+  getCircle,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
@@ -2154,6 +2155,9 @@ export function getConstraintLevelFromSourceRange(
         case 'CallExpression':
           return getFirstArg(nodeMeta.node)
         case 'CallExpressionKw':
+          if (name === 'circle') {
+            return getCircle(nodeMeta.node)
+          }
           const arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], nodeMeta.node)
           if (arg === undefined) {
             return new Error('unexpected call expression: ' + name)
