@@ -21,10 +21,10 @@ hexChangeAngle = 180 - hexInteriorAngle
 fn capScrew(start, length, dia, capHeadLength) {
   // Create the head of the cap screw
   screwHeadSketch = startSketchOn('XZ')
-    |> circle({
+    |> circle(
          center = [start[0], start[1]],
          radius = dia / capRatio / 2
-       }, %)
+       )
 
   // Extrude the screw head sketch
   screwHead = extrude(screwHeadSketch, length = capHeadLength)
@@ -57,10 +57,10 @@ fn capScrew(start, length, dia, capHeadLength) {
   hexPattern = extrude(hexPatternSketch, length = -headLength * 0.75)
 
   screwBodySketch = startSketchOn(screwHead, "start")
-    |> circle({
+    |> circle(
          center = [start[0], start[1]],
          radius = dia / 2
-       }, %)
+       )
   screwBody = extrude(screwBodySketch, length = length)
   return screwBody
 }

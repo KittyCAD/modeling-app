@@ -11,34 +11,34 @@ import lugCount, lugSpacing, offset, backSpacing, wheelWidth, wheelDiameter, spo
 
 // Create the wheel center
 lugBase = startSketchOn('XZ')
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = (lugSpacing + 1.5) / 2
-     }, %)
-  |> hole(circle({
+     )
+  |> hole(circle(
        center = [0, 0],
        radius = (lugSpacing - 1.5) / 2
-     }, %), %)
+     ), %)
   |> extrude(length = wheelWidth / 20)
 
 // Extend the wheel center and bore holes to accomidate the lug heads
 lugExtrusion = startSketchOn(lugBase, 'END')
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = (lugSpacing + 1.5) / 2
-     }, %)
-  |> hole(circle({
+     )
+  |> hole(circle(
        center = [0, 0],
        radius = (lugSpacing - 1.5) / 2
-     }, %), %)
+     ), %)
   |> extrude(length = wheelWidth / 10)
 
 // Create the circular pattern for the lugs
 lugClearance = startSketchOn(lugExtrusion, 'END')
-  |> circle({
+  |> circle(
        center = [lugSpacing / 2, 0],
        radius = 1.2 / 2
-     }, %)
+     )
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
@@ -49,10 +49,10 @@ lugClearance = startSketchOn(lugExtrusion, 'END')
 
 // Create the circular pattern for the lug holes
 lugHoles = startSketchOn(lugBase, 'END')
-  |> circle({
+  |> circle(
        center = [lugSpacing / 2, 0],
        radius = 16 * mm() / 2
-     }, %)
+     )
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],

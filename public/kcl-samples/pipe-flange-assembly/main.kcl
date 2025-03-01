@@ -55,10 +55,10 @@ fn capScrew(start, length, dia) {
 
   // Create the head of the cap screw
   screwHeadSketch = startSketchOn(screwPlane)
-    |> circle({
+    |> circle(
          center = [0, 0],
          radius = headDia / 2
-       }, %)
+       )
 
   // Extrude the screw head sketch
   screwHead = extrude(screwHeadSketch, length = dia)
@@ -108,14 +108,14 @@ workingPlane = {
 // Washer function
 fn washer(plane, start, thk, innerDia, outerDia) {
   washerSketch = startSketchOn(plane)
-    |> circle({
+    |> circle(
          center = [start[0], start[1]],
          radius = outerDia / 2
-       }, %)
-    |> hole(circle({
+       )
+    |> hole(circle(
          center = [start[0], start[1]],
          radius = innerDia / 2
-       }, %), %)
+       ), %)
     |> extrude(length = thk)
   return washerSketch
 }
@@ -153,20 +153,20 @@ fn hexNut(start, thk, innerDia) {
        }, %)
     |> angledLine({ angle = 0, length = innerDia * .90 }, %)
     |> close()
-    |> hole(circle({
+    |> hole(circle(
          center = [0, 0],
          radius = innerDia / 2
-       }, %), %)
+       ), %)
     |> extrude(length = -thk)
   return hexNutSketch
 }
 
 // Mounting holes pattern
 mountingHolePattern = startSketchOn('XZ')
-  |> circle({
+  |> circle(
        center = [screwStart[0], screwStart[2]],
        radius = screwDia / 2 + tol
-     }, %)
+     )
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
@@ -201,24 +201,24 @@ wall = startSketchOn('XZ')
   |> line(end = [0, -8])
   |> close()
   |> hole(mountingHolePattern, %)
-  |> hole(circle({
+  |> hole(circle(
        center = [0, 0],
        radius = flangePipeDia / 2
-     }, %), %)
+     ), %)
   |> extrude(length = wallThickness)
   |> appearance(color = "#c7aa8f")
 
 // Sketch and revolve the flange
 flangeBase = startSketchOn('XZ')
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = flangeBaseDia
-     }, %)
+     )
   |> hole(mountingHolePattern, %)
-  |> hole(circle({
+  |> hole(circle(
        center = [0, 0],
        radius = flangePipeDia / 2
-     }, %), %)
+     ), %)
   |> extrude(length = -flangeThickness)
   |> appearance(color = "#9b9797")
 
@@ -249,10 +249,10 @@ capScrew([
   |> appearance(color = "#4cd411")
 
 screwBodySketch = startSketchOn(screwPlane)
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = screwDia / 2
-     }, %)
+     )
 screwBody = extrude(screwBodySketch, length = -screwLength)
   |> patternCircular3d(
        axis = [0, 1, 0],

@@ -150,10 +150,10 @@ fn magnetBase(plane) {
 
 // create sketch profile sketch000Profile002
 magnetsSketch = startSketchOn('XY')
-  |> circle({
+  |> circle(
        center = [cornerRadius * 2, cornerRadius * 2],
        radius = magOuterDiam / 2
-     }, %)
+     )
   |> patternCircular2d(
        center = [binLength / 2, binLength / 2],
        instances = 4,

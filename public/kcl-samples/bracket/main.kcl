@@ -30,22 +30,22 @@ bracketLeg1Sketch = startSketchOn('XY')
   |> line(end = [0, width], tag = $fillet2)
   |> line(end = [-shelfMountL + filletRadius, 0])
   |> close()
-  |> hole(circle({
+  |> hole(circle(
        center = [1, 1],
        radius = mountingHoleDiameter / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [shelfMountL - 1.5, width - 1],
        radius = mountingHoleDiameter / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [1, width - 1],
        radius = mountingHoleDiameter / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [shelfMountL - 1.5, 1],
        radius = mountingHoleDiameter / 2
-     }, %), %)
+     ), %)
 
 // Extrude the leg 2 bracket sketch
 bracketLeg1Extrude = extrude(bracketLeg1Sketch, length = thickness)
@@ -93,14 +93,14 @@ bracketLeg2Sketch = startSketchOn(customPlane)
   |> line(end = [0, -wallMountL], tag = $fillet3)
   |> line(end = [-width, 0], tag = $fillet4)
   |> close()
-  |> hole(circle({
+  |> hole(circle(
        center = [1, -1.5],
        radius = mountingHoleDiameter / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [5, -1.5],
        radius = mountingHoleDiameter / 2
-     }, %), %)
+     ), %)
 
 // Extrude the second leg
 bracketLeg2Extrude = extrude(bracketLeg2Sketch, length = -thickness)

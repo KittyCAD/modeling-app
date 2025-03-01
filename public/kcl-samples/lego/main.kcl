@@ -68,13 +68,13 @@ shellExtrude = startSketchOn(s, "start")
 
 // Create the pegs on the top of the base
 peg = startSketchOn(s, 'end')
-  |> circle({
+  |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2),
          -(pitch * (lbumps - 1) / 2)
        ],
        radius = bumpDiam / 2
-     }, %)
+     )
   |> patternLinear2d(
        axis = [1, 0],
        instances = wbumps,
@@ -89,13 +89,13 @@ peg = startSketchOn(s, 'end')
 
 // Create the pegs on the bottom of the base
 tubePattern = startSketchOn(tubeFace)
-  |> circle({
+  |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2 - (pitch / 2)),
          -(pitch * (lbumps - 1) / 2 - (pitch / 2))
        ],
        radius = bumpDiam / 2
-     }, %)
+     )
   |> patternLinear2d(
        axis = [1, 0],
        instances = wbumps - 1,

@@ -21,38 +21,38 @@ block = startSketchOn('XY')
   |> line(endAbsolute = [width / 2, length / 2])
   |> line(endAbsolute = [-width / 2, length / 2])
   |> close()
-  |> hole(circle({
+  |> hole(circle(
        center = [
          -(width / 2 - (padding / 2)),
          -(length / 2 - (padding / 2))
        ],
        radius = holeDia / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [
          -(width / 2 - (padding / 2)),
          length / 2 - (padding / 2)
        ],
        radius = holeDia / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [
          width / 2 - (padding / 2),
          length / 2 - (padding / 2)
        ],
        radius = holeDia / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [
          width / 2 - (padding / 2),
          -(length / 2 - (padding / 2))
        ],
        radius = holeDia / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [0, 0],
        radius = bearingDia / 2
-     }, %), %)
+     ), %)
   |> extrude(length = height - cbDepth)
 
 // Create a second sketch that creates the counterbore diameters and extrude the rest of the way to get the total height. Note: You cannot use startSketchOn(block, 'end'). The extrude lives outside the bounds, and the engine will not execute. This is a known issue.
@@ -69,36 +69,36 @@ secondHalf = startSketchOn({
   |> line(endAbsolute = [width / 2, length / 2])
   |> line(endAbsolute = [-width / 2, length / 2])
   |> close()
-  |> hole(circle({
+  |> hole(circle(
        center = [
          -(width / 2 - (padding / 2)),
          -(length / 2 - (padding / 2))
        ],
        radius = cbDia / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [
          -(width / 2 - (padding / 2)),
          length / 2 - (padding / 2)
        ],
        radius = cbDia / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [
          width / 2 - (padding / 2),
          length / 2 - (padding / 2)
        ],
        radius = cbDia / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [
          width / 2 - (padding / 2),
          -(length / 2 - (padding / 2))
        ],
        radius = cbDia / 2
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [0, 0],
        radius = bearingDia / 2
-     }, %), %)
+     ), %)
   |> extrude(length = cbDepth)

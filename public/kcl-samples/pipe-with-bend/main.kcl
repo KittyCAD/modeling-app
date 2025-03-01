@@ -14,16 +14,18 @@ bendAngle = 90
 sketch000 = startSketchOn("XZ")
 
 // create a profile for the outer diameter
-outerProfile = circle({
+outerProfile = circle(
+  sketch000,
   center = [bendRadius, 0],
   radius = outerDiameter / 2
-}, sketch000)
+)
 
 // create a profile for the inner diameter
-innerProfile = circle({
+innerProfile = circle(
+  sketch000,
   center = [bendRadius, 0],
   radius = innerDiameter / 2
-}, sketch000)
+)
 
 // create the profile of the pipe
 pipeProfile = outerProfile

@@ -18,10 +18,11 @@ rotorPlane = {
   }
 }
 fn lugPattern(plane) {
-  lugHolePattern = circle({
+  lugHolePattern = circle(
+         plane,
          center = [-lugSpacing / 2, 0],
          radius = 0.315
-       }, plane)
+       )
     |> patternCircular2d(
          arcDegrees = 360,
          center = [0, 0],
@@ -31,18 +32,18 @@ fn lugPattern(plane) {
   return lugHolePattern
 }
 rotorSketch = startSketchOn(rotorPlane)
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = rotorDiameter / 2
-     }, %)
+     )
   |> hole(lugPattern(%), %)
 rotor = extrude(rotorSketch, length = rotorSinglePlateThickness)
   |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
 rotorBumpSketch = startSketchOn(rotorPlane)
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = rotorInnerDiameter / 2
-     }, %)
+     )
   |> hole(lugPattern(%), %)
 rotorBump = extrude(rotorBumpSketch, length = -rotorInnerDiameterThickness)
   |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
@@ -59,17 +60,17 @@ rotorSecondaryPlatePlane = {
   }
 }
 secondaryRotorSketch = startSketchOn(rotorSecondaryPlatePlane)
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = rotorDiameter / 2
-     }, %)
+     )
   |> hole(lugPattern(%), %)
 secondRotor = extrude(secondaryRotorSketch, length = rotorSinglePlateThickness)
 spacerSketch = startSketchOn(rotorSecondaryPlatePlane)
-  |> circle({
+  |> circle(
        center = [spacerPatternDiameter / 2, 0],
        radius = spacerDiameter
-     }, %)
+     )
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],

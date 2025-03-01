@@ -42,10 +42,10 @@ ys = map([0..cmo], fn (i) {
 
 // Extrude the gear body
 body = startSketchOn('XY')
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = baseDiameter / 2
-     }, %)
+     )
   |> extrude(length = gearHeight)
 
 toothAngle = 360 / nTeeth / 1.5

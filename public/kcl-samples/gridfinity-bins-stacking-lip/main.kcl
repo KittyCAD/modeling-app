@@ -112,13 +112,13 @@ singleBinFill = startSketchOn("XY")
      )
 
 magCutout000 = startSketchOn(singleBinFill, "start")
-  |> circle({
+  |> circle(
        center = [
          -magOffset - binBaseLength - binTol,
          magOffset + binBaseLength + binTol
        ],
        radius = magOuterDiam / 2
-     }, %)
+     )
   |> patternCircular2d(
        arcDegrees = 360,
        center = [

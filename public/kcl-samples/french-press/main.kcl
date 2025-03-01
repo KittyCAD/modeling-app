@@ -96,10 +96,10 @@ sketch002 = startSketchOn(plane001)
 
 // Cross plate
 sketch003 = startSketchOn(offsetPlane('XY', offset = 1))
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = carafeDiameter / 2 - 0.15
-     }, %)
+     )
 
 extrude001 = extrude(sketch003, length = 0.050)
 
@@ -152,17 +152,17 @@ sketch006 = startSketchOn('XZ')
 
 // Spiral plate
 sketch007 = startSketchOn(offsetPlane('XY', offset = 1.12))
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = carafeDiameter / 2 - 0.24
-     }, %)
-  |> hole(circle({ center = [0, 0], radius = .15 }, %), %)
+     )
+  |> hole(circle(center = [0, 0], radius = .15), %)
 
 extrude003 = extrude(sketch007, length = 0.050)
 
 // Pattern holes in the spiral plate
 sketch008 = startSketchOn(extrude003, 'END')
-  |> circle({ center = [1.4, 0], radius = .3 }, %)
+  |> circle(center = [1.4, 0], radius = .3)
   |> patternCircular2d(
        center = [0, 0],
        instances = 8,
@@ -174,7 +174,7 @@ extrude004 = extrude(sketch008, length = -0.050)
 
 // Pattern holes in the spiral plate
 sketch009 = startSketchOn(extrude003, 'END')
-  |> circle({ center = [0.6, 0], radius = .2 }, %)
+  |> circle(center = [0.6, 0], radius = .2)
   |> patternCircular2d(
        center = [0, 0],
        instances = 4,
@@ -186,10 +186,10 @@ extrude005 = extrude(sketch009, length = -0.050)
 
 // Extrude a glass carafe body
 sketch010 = startSketchOn("XY")
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = carafeDiameter / 2
-     }, %)
+     )
 
 // Perform a shell operation to hollow the carafe body with the top face removed
 extrude006 = extrude(sketch010, length = carafeHeight)

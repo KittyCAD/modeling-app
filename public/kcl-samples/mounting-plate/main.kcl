@@ -29,38 +29,38 @@ holeIndex = .75
 // Create the mounting plate extrusion, holes, and fillets
 rs = rectShape([0, 0], plateWidth, plateLength)
 part = rs
-  |> hole(circle({
+  |> hole(circle(
        center = [
          -plateWidth / 2 + holeIndex,
          plateLength / 2 - holeIndex
        ],
        radius = holeRadius
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [
          plateWidth / 2 - holeIndex,
          plateLength / 2 - holeIndex
        ],
        radius = holeRadius
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [
          -plateWidth / 2 + holeIndex,
          -plateLength / 2 + holeIndex
        ],
        radius = holeRadius
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [
          plateWidth / 2 - holeIndex,
          -plateLength / 2 + holeIndex
        ],
        radius = holeRadius
-     }, %), %)
-  |> hole(circle({
+     ), %)
+  |> hole(circle(
        center = [0, 0],
        radius = centerHoleDiameter
-     }, %), %)
+     ), %)
   |> extrude(length = plateThickness)
   |> fillet(
        radius = filletRadius,
