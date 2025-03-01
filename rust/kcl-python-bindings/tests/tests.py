@@ -5,15 +5,20 @@ import kcl
 import pytest
 
 # Get the path to this script's parent directory.
-kcl_dir_file_path = os.path.join(
+files_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "..", "files"
 )
+kcl_dir = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "..", "..", "kcl-lib"
+)
+lego_file = os.path.join(kcl_dir,  "e2e", "executor", "inputs", "lego.kcl"
+walkie_talkie_dir = os.path.join(files_dir, "walkie-talkie")
 
 @pytest.mark.asyncio
 async def test_kcl_execute_with_exception():
     # Read from a file.
     try:
-        await kcl.execute(os.path.join(kcl_dir_file_path, "parse_file_error"))
+        await kcl.execute(os.path.join(files_dir, "parse_file_error"))
     except Exception as e:
         assert e is not None
         assert len(str(e)) > 0
@@ -23,12 +28,12 @@ async def test_kcl_execute_with_exception():
 @pytest.mark.asyncio
 async def test_kcl_execute():
     # Read from a file.
-    await kcl.execute(os.path.join(kcl_dir_file_path, "lego.kcl"))
+    await kcl.execute(lego_file)
 
 @pytest.mark.asyncio
 async def test_kcl_execute_code():
     # Read from a file.
-    with open(os.path.join(kcl_dir_file_path, "lego.kcl"), "r") as f:
+    with open(lego_file, "r") as f:
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
@@ -37,7 +42,7 @@ async def test_kcl_execute_code():
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_snapshot():
     # Read from a file.
-    with open(os.path.join(kcl_dir_file_path, "lego.kcl"), "r") as f:
+    with open(lego_file, "r") as f:
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
@@ -51,7 +56,7 @@ async def test_kcl_execute_code_and_snapshot():
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export():
     # Read from a file.
-    with open(os.path.join(kcl_dir_file_path, "lego.kcl"), "r") as f:
+    with open(lego_file, "r") as f:
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
@@ -72,13 +77,13 @@ async def test_kcl_execute_code_and_export():
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
-    await kcl.execute(os.path.join(kcl_dir_file_path, "walkie-talkie"))
+    await kcl.execute(walkie_talkie_dir)
 
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot():
     # Read from a file.
     image_bytes = await kcl.execute_and_snapshot(
-        os.path.join(kcl_dir_file_path, "lego.kcl"), kcl.ImageFormat.Jpeg
+        lego_file, kcl.ImageFormat.Jpeg
     )
     assert image_bytes is not None
     assert len(image_bytes) > 0
@@ -87,7 +92,7 @@ async def test_kcl_execute_and_snapshot():
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
     image_bytes = await kcl.execute_and_snapshot(
-        os.path.join(kcl_dir_file_path, "walkie-talkie"), kcl.ImageFormat.Jpeg
+        walkie_talkie_dir, kcl.ImageFormat.Jpeg
     )
     assert image_bytes is not None
     assert len(image_bytes) > 0
@@ -97,7 +102,7 @@ async def test_kcl_execute_and_snapshot_dir():
 async def test_kcl_execute_and_export():
     # Read from a file.
     files = await kcl.execute_and_export(
-        os.path.join(kcl_dir_file_path, "lego.kcl"), kcl.FileExportFormat.Step
+        lego_file, kcl.FileExportFormat.Step
     )
     assert files is not None
     assert len(files) > 0
@@ -112,7 +117,7 @@ async def test_kcl_execute_and_export():
 
 def test_kcl_format():
     # Read from a file.
-    with open(os.path.join(kcl_dir_file_path, "lego.kcl"), "r") as f:
+    with open(lego_file, "r") as f:
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
@@ -123,7 +128,7 @@ def test_kcl_format():
 
 def test_kcl_lint():
     # Read from a file.
-    with open(os.path.join(kcl_dir_file_path, "box_with_linter_errors.kcl"), "r") as f:
+    with open(os.path.join(files_dir, "box_with_linter_errors.kcl"), "r") as f:
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
