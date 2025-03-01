@@ -126,12 +126,7 @@ export function createFirstArg(
         intersectTag: val[2],
       })
   } else {
-    if (
-      ['xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(
-        sketchFn
-      )
-    )
-      return val
+    if (['xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(sketchFn)) return val
   }
   return new Error('Missing sketch line type')
 }

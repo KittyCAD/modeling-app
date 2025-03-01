@@ -89,7 +89,7 @@ log(5, myVar)
   })
   it('sketch piped into callExpression', () => {
     const code = [
-      'mySk1 = startSketchOn(\'XY\')',
+      "mySk1 = startSketchOn('XY')",
       '  |> startProfileAt([0, 0], %)',
       '  |> line(endAbsolute = [1, 1])',
       '  |> line(endAbsolute = [0, 1], tag = $myTag)',
@@ -264,7 +264,7 @@ key = 'c'
   })
   it('comments in a pipe expression', () => {
     const code = [
-      'mySk1 = startSketchOn(\'XY\')',
+      "mySk1 = startSketchOn('XY')",
       '  |> startProfileAt([0, 0], %)',
       '  |> line(endAbsolute = [1, 1])',
       '  |> line(endAbsolute = [0, 1], tag = $myTag)',
@@ -346,7 +346,7 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
   })
   it('with unaryExpression in sketch situation', () => {
     const code = [
-      'part001 = startSketchOn(\'XY\')',
+      "part001 = startSketchOn('XY')",
       '  |> startProfileAt([0, 0])',
       '  |> line(end = [-2.21, -legLen(5, min(3, 999))])',
     ].join('\n')

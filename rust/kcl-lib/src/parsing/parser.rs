@@ -4773,14 +4773,13 @@ mod snapshot_tests {
     snapshot_test!(v, r#"pt1 = b1[0]"#);
     snapshot_test!(w, r#"pt1 = b1['zero']"#);
     snapshot_test!(x, r#"pt1 = b1.zero"#);
+    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfileAt(pos, %)"#);
     snapshot_test!(
-        y,
-        r#"sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)");
-    snapshot_test!(z, "sg = startSketchOn(XY)
-    |> startProfileAt(pos) |> line([0, -scale], %)");
-    snapshot_test!(aa, r#"sg = -scale"#
+        z,
+        "sg = startSketchOn(XY)
+    |> startProfileAt(pos) |> line([0, -scale], %)"
     );
+    snapshot_test!(aa, r#"sg = -scale"#);
     snapshot_test!(ab, "line(endAbsolute = [0, -1])");
     snapshot_test!(ac, "myArray = [0..10]");
     snapshot_test!(
