@@ -105,7 +105,7 @@ const b1 = cube([0,0], 10)`
       ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['body', 'PipeExpression'],
-      [2, 'index'],
+      [3, 'index'],
       ['arguments', 'CallExpressionKw'],
       [0, ARG_INDEX_FIELD],
       ['arg', LABELED_ARG_FIELD],
