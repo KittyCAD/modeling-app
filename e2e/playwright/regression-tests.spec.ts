@@ -636,7 +636,7 @@ extrude001 = extrude(sketch001, length = 50)
     })
 
     const toolBarMode = () =>
-      page.locator('[data-currentMode]').getAttribute('data-currentMode')
+      page.locator('[data-current-mode]').getAttribute('data-current-mode')
 
     await test.step('Start sketch and select a plane', async () => {
       await expect.poll(toolBarMode).toEqual('modeling')
