@@ -1,0 +1,50 @@
+// Walkie Talkie
+// A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import parts and constants
+import 'body.kcl'
+import 'antenna.kcl'
+import 'case.kcl'
+import 'talk-button.kcl' as talkButton
+import 'knob.kcl'
+import button from "button.kcl"
+import width, height, thickness, screenWidth, screenHeight, screenYPosition, tolerance from "globals.kcl"
+
+// Import the body
+body
+
+// Import the case
+case
+
+// Import the antenna
+antenna
+
+// Import the buttons
+button([
+  -(screenWidth / 2 + tolerance),
+  screenYPosition
+], 0, offsetPlane("XZ", offset = thickness))
+button([
+  -(screenWidth / 2 + tolerance),
+  screenYPosition - (screenHeight / 2)
+], 0, offsetPlane("XZ", offset = thickness))
+button([
+  screenWidth / 2 + tolerance,
+  screenYPosition - screenHeight
+], 180, offsetPlane("XZ", offset = thickness))
+button([
+  screenWidth / 2 + tolerance,
+  screenYPosition - (screenHeight / 2)
+], 180, offsetPlane("XZ", offset = thickness))
+
+// Import the talk button
+talkButton
+  
+// Import the frequency knob
+knob
+  
+
+

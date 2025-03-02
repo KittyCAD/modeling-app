@@ -1,0 +1,63 @@
+// 100mm Gear Rack
+// A flat bar or rail that is engraved with teeth along its length. These teeth are designed to mesh with the teeth of a gear, known as a pinion. When the pinion, a small cylindrical gear, rotates, its teeth engage with the teeth on the rack, causing the rack to move linearly. Conversely, linear motion applied to the rack will cause the pinion to rotate.
+
+// Set Units
+@settings(defaultLengthUnit = mm)
+
+// Define constants
+length = 100
+pitchHeight = 11.5
+width = 5
+height = 12
+minHeight = 10.875
+
+// Create the body of the rack
+rackBody = startSketchOn('XY')
+  |> startProfileAt([-length / 2, 0], %)
+  |> line(end = [length, 0])
+  |> line(end = [0, minHeight])
+  |> line(end = [-length, 0])
+  |> close()
+  |> extrude(length = width)
+
+// Create a function for sketch of a single tooth
+fn tooth() {
+  toothSketch = startSketchOn('XY')
+    |> startProfileAt([-length / 2 + 0.567672, minHeight], %)
+    |> tangentialArcToRelative([0.157636, 0.110378], %)
+    |> line(end = [0.329118, 0.904244])
+    |> tangentialArcToRelative([0.157636, 0.110378], %)
+    |> line(end = [0.186505, 0])
+    |> tangentialArcToRelative([0.157636, -0.110378], %)
+    |> line(end = [0.329118, -0.904244])
+    |> tangentialArcToRelative([0.157636, -0.110378], %)
+    |> close()
+    |> extrude(length = width)
+  return toothSketch
+}
+
+// Pattern the single tooth over the length of the rack body
+teeth = tooth()
+  |> patternLinear3d(
+       axis = [10, 0, 0],
+       distance = 1.570796,
+       instances = 63
+     )
+
+// Sketch and extrude the first end cap. This is a partial tooth
+endCapTooth = startSketchOn('XY')
+  |> startProfileAt([-length / 2, 11.849525], %)
+  |> line(end = [0.314524, -0.864147])
+  |> tangentialArcToRelative([0.157636, -0.110378], %)
+  |> line(endAbsolute = [-length / 2, minHeight])
+  |> close()
+  |> extrude(length = width)
+
+// Sketch and extrude the second end cap. This is a partial tooth
+endCapTooth2 = startSketchOn('XY')
+  |> startProfileAt([length / 2, 11.849525], %)
+  |> line(end = [-0.314524, -0.864147])
+  |> tangentialArcToRelative([-0.157636, -0.110378], %)
+  |> line(endAbsolute = [length / 2, minHeight])
+  |> close()
+  |> extrude(length = width)

@@ -1,0 +1,38 @@
+// Walkie Talkie button
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import constants
+import screenHeight, buttonWidth, tolerance, buttonHeight, buttonThickness from 'globals.kcl'
+
+
+// Create a function for the button
+export fn button(origin, rotation, plane) {
+  buttonSketch = startSketchOn(plane)
+    |> startProfileAt([origin[0], origin[1]], %)
+    |> angledLine({
+         angle = 180 + rotation,
+         length = buttonWidth
+       }, %, $tag1)
+    |> angledLine({
+         angle = 270 + rotation,
+         length = buttonHeight
+       }, %, $tag2)
+    |> angledLine({
+         angle = 0 + rotation,
+         length = buttonWidth
+       }, %)
+    |> close()
+  buttonExtrude = extrude(buttonSketch, length = buttonThickness)
+    |> chamfer(
+         length = .050,
+         tags = [
+           getNextAdjacentEdge(tag1),
+           getNextAdjacentEdge(tag2)
+         ]
+       )
+     |> appearance(color = "#ff0000")
+
+  return buttonExtrude
+}

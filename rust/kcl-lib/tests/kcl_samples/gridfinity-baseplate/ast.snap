@@ -1,0 +1,2103 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing gridfinity-baseplate.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 382,
+          "id": {
+            "end": 375,
+            "name": "binLength",
+            "start": 366,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 382,
+            "raw": "42.0",
+            "start": 378,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 42.0,
+              "suffix": "None"
+            }
+          },
+          "start": 366,
+          "type": "VariableDeclarator"
+        },
+        "end": 382,
+        "kind": "const",
+        "start": 366,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 401,
+          "id": {
+            "end": 395,
+            "name": "cornerRadius",
+            "start": 383,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 401,
+            "raw": "4.0",
+            "start": 398,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
+          },
+          "start": 383,
+          "type": "VariableDeclarator"
+        },
+        "end": 401,
+        "kind": "const",
+        "start": 383,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 417,
+          "id": {
+            "end": 411,
+            "name": "firstStep",
+            "start": 402,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 417,
+            "raw": "0.7",
+            "start": 414,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.7,
+              "suffix": "None"
+            }
+          },
+          "start": 402,
+          "type": "VariableDeclarator"
+        },
+        "end": 417,
+        "kind": "const",
+        "start": 402,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 434,
+          "id": {
+            "end": 428,
+            "name": "secondStep",
+            "start": 418,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 434,
+            "raw": "1.8",
+            "start": 431,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 1.8,
+              "suffix": "None"
+            }
+          },
+          "start": 418,
+          "type": "VariableDeclarator"
+        },
+        "end": 434,
+        "kind": "const",
+        "start": 418,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 451,
+          "id": {
+            "end": 444,
+            "name": "thirdStep",
+            "start": 435,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 451,
+            "raw": "2.15",
+            "start": 447,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 2.15,
+              "suffix": "None"
+            }
+          },
+          "start": 435,
+          "type": "VariableDeclarator"
+        },
+        "end": 451,
+        "kind": "const",
+        "start": 435,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 506,
+          "id": {
+            "end": 502,
+            "name": "countBinWidth",
+            "start": 489,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 506,
+            "raw": "2",
+            "start": 505,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 2.0,
+              "suffix": "None"
+            }
+          },
+          "start": 489,
+          "type": "VariableDeclarator"
+        },
+        "end": 506,
+        "kind": "const",
+        "start": 489,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 525,
+          "id": {
+            "end": 521,
+            "name": "countBinLength",
+            "start": 507,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 525,
+            "raw": "3",
+            "start": 524,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 3.0,
+              "suffix": "None"
+            }
+          },
+          "start": 507,
+          "type": "VariableDeclarator"
+        },
+        "end": 525,
+        "kind": "const",
+        "start": 507,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 669,
+          "id": {
+            "end": 632,
+            "name": "height",
+            "start": 626,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 669,
+            "left": {
+              "end": 657,
+              "left": {
+                "end": 644,
+                "name": "firstStep",
+                "start": 635,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "+",
+              "right": {
+                "end": 657,
+                "name": "secondStep",
+                "start": 647,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 635,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "operator": "+",
+            "right": {
+              "end": 669,
+              "name": "thirdStep",
+              "start": 660,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "start": 635,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 626,
+          "type": "VariableDeclarator"
+        },
+        "end": 669,
+        "kind": "const",
+        "start": 626,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1047,
+          "id": {
+            "end": 745,
+            "name": "face",
+            "start": 741,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "declaration": {
+                    "end": 1025,
+                    "id": {
+                      "end": 767,
+                      "name": "faceSketch",
+                      "start": 757,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 789,
+                              "name": "plane",
+                              "start": 784,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 783,
+                            "name": "startSketchOn",
+                            "start": 770,
+                            "type": "Identifier"
+                          },
+                          "end": 790,
+                          "start": 770,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "elements": [
+                                {
+                                  "end": 815,
+                                  "raw": "0",
+                                  "start": 814,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                {
+                                  "end": 818,
+                                  "raw": "0",
+                                  "start": 817,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                }
+                              ],
+                              "end": 819,
+                              "start": 813,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            },
+                            {
+                              "end": 822,
+                              "start": 821,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 812,
+                            "name": "startProfileAt",
+                            "start": 798,
+                            "type": "Identifier"
+                          },
+                          "end": 823,
+                          "start": 798,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 843,
+                              "name": "height",
+                              "start": 837,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            {
+                              "end": 846,
+                              "start": 845,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 836,
+                            "name": "yLine",
+                            "start": 831,
+                            "type": "Identifier"
+                          },
+                          "end": 847,
+                          "start": 831,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 910,
+                              "properties": [
+                                {
+                                  "end": 888,
+                                  "key": {
+                                    "end": 882,
+                                    "name": "angle",
+                                    "start": 877,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 877,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "argument": {
+                                      "end": 888,
+                                      "raw": "45",
+                                      "start": 886,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 45.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "end": 888,
+                                    "operator": "-",
+                                    "start": 885,
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
+                                  }
+                                },
+                                {
+                                  "end": 908,
+                                  "key": {
+                                    "end": 896,
+                                    "name": "length",
+                                    "start": 890,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 890,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 908,
+                                    "name": "thirdStep",
+                                    "start": 899,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 875,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 913,
+                              "start": 912,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 874,
+                            "name": "angledLineOfYLength",
+                            "start": 855,
+                            "type": "Identifier"
+                          },
+                          "end": 914,
+                          "start": 855,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "argument": {
+                                "end": 939,
+                                "name": "secondStep",
+                                "start": 929,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "end": 939,
+                              "operator": "-",
+                              "start": 928,
+                              "type": "UnaryExpression",
+                              "type": "UnaryExpression"
+                            },
+                            {
+                              "end": 942,
+                              "start": 941,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 927,
+                            "name": "yLine",
+                            "start": 922,
+                            "type": "Identifier"
+                          },
+                          "end": 943,
+                          "start": 922,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1006,
+                              "properties": [
+                                {
+                                  "end": 984,
+                                  "key": {
+                                    "end": 978,
+                                    "name": "angle",
+                                    "start": 973,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 973,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "argument": {
+                                      "end": 984,
+                                      "raw": "45",
+                                      "start": 982,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 45.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "end": 984,
+                                    "operator": "-",
+                                    "start": 981,
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
+                                  }
+                                },
+                                {
+                                  "end": 1004,
+                                  "key": {
+                                    "end": 992,
+                                    "name": "length",
+                                    "start": 986,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 986,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 1004,
+                                    "name": "firstStep",
+                                    "start": 995,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 971,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 1009,
+                              "start": 1008,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 970,
+                            "name": "angledLineOfYLength",
+                            "start": 951,
+                            "type": "Identifier"
+                          },
+                          "end": 1010,
+                          "start": 951,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [],
+                          "callee": {
+                            "end": 1023,
+                            "name": "close",
+                            "start": 1018,
+                            "type": "Identifier"
+                          },
+                          "end": 1025,
+                          "start": 1018,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1025,
+                      "start": 770,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "start": 757,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1025,
+                  "kind": "const",
+                  "start": 757,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "end": 1045,
+                    "name": "faceSketch",
+                    "start": 1035,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "end": 1045,
+                  "start": 1028,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 1047,
+              "start": 753
+            },
+            "end": 1047,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 751,
+                  "name": "plane",
+                  "start": 746,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 745,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 741,
+          "type": "VariableDeclarator"
+        },
+        "end": 1047,
+        "kind": "fn",
+        "start": 738,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1194,
+          "id": {
+            "end": 1095,
+            "name": "singleSide",
+            "start": 1085,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "length"
+                },
+                "arg": {
+                  "end": 1192,
+                  "left": {
+                    "end": 1172,
+                    "name": "binLength",
+                    "start": 1163,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "-",
+                  "right": {
+                    "end": 1192,
+                    "left": {
+                      "end": 1188,
+                      "name": "cornerRadius",
+                      "start": 1176,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "end": 1192,
+                      "raw": "2",
+                      "start": 1191,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 1176,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "start": 1163,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              }
+            ],
+            "callee": {
+              "end": 1105,
+              "name": "extrude",
+              "start": 1098,
+              "type": "Identifier"
+            },
+            "end": 1194,
+            "start": 1098,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "arguments": [
+                {
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "type": "Identifier",
+                        "name": "offset"
+                      },
+                      "arg": {
+                        "end": 1150,
+                        "name": "cornerRadius",
+                        "start": 1138,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "end": 1122,
+                    "name": "offsetPlane",
+                    "start": 1111,
+                    "type": "Identifier"
+                  },
+                  "end": 1151,
+                  "start": 1111,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": {
+                    "end": 1127,
+                    "raw": "\"YZ\"",
+                    "start": 1123,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "YZ"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 1110,
+                "name": "face",
+                "start": 1106,
+                "type": "Identifier"
+              },
+              "end": 1152,
+              "start": 1106,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            }
+          },
+          "start": 1085,
+          "type": "VariableDeclarator"
+        },
+        "end": 1194,
+        "kind": "const",
+        "start": 1085,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1432,
+          "id": {
+            "end": 1266,
+            "name": "sides",
+            "start": 1261,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "arcDegrees"
+                },
+                "arg": {
+                  "end": 1320,
+                  "raw": "360",
+                  "start": 1317,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 360.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "axis"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 1333,
+                      "raw": "0",
+                      "start": 1332,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 1336,
+                      "raw": "0",
+                      "start": 1335,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 1339,
+                      "raw": "1",
+                      "start": 1338,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 1340,
+                  "start": 1331,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "center"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 1367,
+                      "left": {
+                        "end": 1363,
+                        "name": "binLength",
+                        "start": 1354,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1367,
+                        "raw": "2",
+                        "start": 1366,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1354,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    {
+                      "end": 1382,
+                      "left": {
+                        "end": 1378,
+                        "name": "binLength",
+                        "start": 1369,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1382,
+                        "raw": "2",
+                        "start": 1381,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1369,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    {
+                      "end": 1385,
+                      "raw": "0",
+                      "start": 1384,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 1386,
+                  "start": 1353,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "instances"
+                },
+                "arg": {
+                  "end": 1403,
+                  "raw": "4",
+                  "start": 1402,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 4.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "rotateDuplicates"
+                },
+                "arg": {
+                  "end": 1430,
+                  "raw": "true",
+                  "start": 1426,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": true
+                }
+              }
+            ],
+            "callee": {
+              "end": 1286,
+              "name": "patternCircular3d",
+              "start": 1269,
+              "type": "Identifier"
+            },
+            "end": 1432,
+            "start": 1269,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 1300,
+              "name": "singleSide",
+              "start": 1290,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 1261,
+          "type": "VariableDeclarator"
+        },
+        "end": 1432,
+        "kind": "const",
+        "start": 1261,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1555,
+          "id": {
+            "end": 1467,
+            "name": "axis000",
+            "start": 1460,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 1555,
+            "properties": [
+              {
+                "end": 1553,
+                "key": {
+                  "end": 1480,
+                  "name": "custom",
+                  "start": 1474,
+                  "type": "Identifier"
+                },
+                "start": 1474,
+                "type": "ObjectProperty",
+                "value": {
+                  "end": 1553,
+                  "properties": [
+                    {
+                      "end": 1506,
+                      "key": {
+                        "end": 1493,
+                        "name": "axis",
+                        "start": 1489,
+                        "type": "Identifier"
+                      },
+                      "start": 1489,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "elements": [
+                          {
+                            "end": 1500,
+                            "raw": "0.0",
+                            "start": 1497,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 0.0,
+                              "suffix": "None"
+                            }
+                          },
+                          {
+                            "end": 1505,
+                            "raw": "1.0",
+                            "start": 1502,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 1.0,
+                              "suffix": "None"
+                            }
+                          }
+                        ],
+                        "end": 1506,
+                        "start": 1496,
+                        "type": "ArrayExpression",
+                        "type": "ArrayExpression"
+                      }
+                    },
+                    {
+                      "end": 1549,
+                      "key": {
+                        "end": 1518,
+                        "name": "origin",
+                        "start": 1512,
+                        "type": "Identifier"
+                      },
+                      "start": 1512,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "elements": [
+                          {
+                            "end": 1534,
+                            "name": "cornerRadius",
+                            "start": 1522,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          {
+                            "end": 1548,
+                            "name": "cornerRadius",
+                            "start": 1536,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "end": 1549,
+                        "start": 1521,
+                        "type": "ArrayExpression",
+                        "type": "ArrayExpression"
+                      }
+                    }
+                  ],
+                  "start": 1483,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
+              }
+            ],
+            "start": 1470,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 1460,
+          "type": "VariableDeclarator"
+        },
+        "end": 1555,
+        "kind": "const",
+        "start": 1460,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1697,
+          "id": {
+            "end": 1606,
+            "name": "singleCorner",
+            "start": 1594,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 1648,
+                "properties": [
+                  {
+                    "end": 1630,
+                    "key": {
+                      "end": 1624,
+                      "name": "angle",
+                      "start": 1619,
+                      "type": "Identifier"
+                    },
+                    "start": 1619,
+                    "type": "ObjectProperty",
+                    "value": {
+                      "argument": {
+                        "end": 1630,
+                        "raw": "90",
+                        "start": 1628,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 90.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "end": 1630,
+                      "operator": "-",
+                      "start": 1627,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  },
+                  {
+                    "end": 1646,
+                    "key": {
+                      "end": 1636,
+                      "name": "axis",
+                      "start": 1632,
+                      "type": "Identifier"
+                    },
+                    "start": 1632,
+                    "type": "ObjectProperty",
+                    "value": {
+                      "end": 1646,
+                      "name": "axis000",
+                      "start": 1639,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "start": 1617,
+                "type": "ObjectExpression",
+                "type": "ObjectExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "type": "Identifier",
+                          "name": "offset"
+                        },
+                        "arg": {
+                          "end": 1694,
+                          "name": "cornerRadius",
+                          "start": 1682,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 1666,
+                      "name": "offsetPlane",
+                      "start": 1655,
+                      "type": "Identifier"
+                    },
+                    "end": 1695,
+                    "start": 1655,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "end": 1671,
+                      "raw": "\"YZ\"",
+                      "start": 1667,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "YZ"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1654,
+                  "name": "face",
+                  "start": 1650,
+                  "type": "Identifier"
+                },
+                "end": 1696,
+                "start": 1650,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "callee": {
+              "end": 1616,
+              "name": "revolve",
+              "start": 1609,
+              "type": "Identifier"
+            },
+            "end": 1697,
+            "start": 1609,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 1594,
+          "type": "VariableDeclarator"
+        },
+        "end": 1697,
+        "kind": "const",
+        "start": 1594,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1907,
+          "id": {
+            "end": 1739,
+            "name": "corners",
+            "start": 1732,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "arcDegrees"
+                },
+                "arg": {
+                  "end": 1795,
+                  "raw": "360",
+                  "start": 1792,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 360.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "axis"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 1808,
+                      "raw": "0",
+                      "start": 1807,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 1811,
+                      "raw": "0",
+                      "start": 1810,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 1814,
+                      "raw": "1",
+                      "start": 1813,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 1815,
+                  "start": 1806,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "center"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 1842,
+                      "left": {
+                        "end": 1838,
+                        "name": "binLength",
+                        "start": 1829,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1842,
+                        "raw": "2",
+                        "start": 1841,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1829,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    {
+                      "end": 1857,
+                      "left": {
+                        "end": 1853,
+                        "name": "binLength",
+                        "start": 1844,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1857,
+                        "raw": "2",
+                        "start": 1856,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1844,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    {
+                      "end": 1860,
+                      "raw": "0",
+                      "start": 1859,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 1861,
+                  "start": 1828,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "instances"
+                },
+                "arg": {
+                  "end": 1878,
+                  "raw": "4",
+                  "start": 1877,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 4.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "rotateDuplicates"
+                },
+                "arg": {
+                  "end": 1905,
+                  "raw": "true",
+                  "start": 1901,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": true
+                }
+              }
+            ],
+            "callee": {
+              "end": 1759,
+              "name": "patternCircular3d",
+              "start": 1742,
+              "type": "Identifier"
+            },
+            "end": 1907,
+            "start": 1742,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 1775,
+              "name": "singleCorner",
+              "start": 1763,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 1732,
+          "type": "VariableDeclarator"
+        },
+        "end": 1907,
+        "kind": "const",
+        "start": 1732,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 2289,
+          "id": {
+            "end": 1967,
+            "name": "basePlateSides",
+            "start": 1953,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "axis"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 2019,
+                          "raw": "1.0",
+                          "start": 2016,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 2024,
+                          "raw": "0.0",
+                          "start": 2021,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 2029,
+                          "raw": "0.0",
+                          "start": 2026,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 2030,
+                      "start": 2015,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "instances"
+                    },
+                    "arg": {
+                      "end": 2064,
+                      "name": "countBinWidth",
+                      "start": 2051,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "distance"
+                    },
+                    "arg": {
+                      "end": 2093,
+                      "name": "binLength",
+                      "start": 2084,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1985,
+                  "name": "patternLinear3d",
+                  "start": 1970,
+                  "type": "Identifier"
+                },
+                "end": 2100,
+                "start": 1970,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "end": 1999,
+                  "name": "sides",
+                  "start": 1994,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "axis"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 2141,
+                          "raw": "0.0",
+                          "start": 2138,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 2146,
+                          "raw": "1.0",
+                          "start": 2143,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 2151,
+                          "raw": "0.0",
+                          "start": 2148,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 2152,
+                      "start": 2137,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "instances"
+                    },
+                    "arg": {
+                      "end": 2187,
+                      "name": "countBinLength",
+                      "start": 2173,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "distance"
+                    },
+                    "arg": {
+                      "end": 2216,
+                      "name": "binLength",
+                      "start": 2207,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2121,
+                  "name": "patternLinear3d",
+                  "start": 2106,
+                  "type": "Identifier"
+                },
+                "end": 2223,
+                "start": 2106,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 2289,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "end": 2289,
+                    "start": 2223,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "create the corners of the baseplate by patterning the corners",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "start": 1970,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 1953,
+          "type": "VariableDeclarator"
+        },
+        "end": 2289,
+        "kind": "const",
+        "start": 1953,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 2564,
+          "id": {
+            "end": 2306,
+            "name": "basePlateCorners",
+            "start": 2290,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "axis"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 2360,
+                          "raw": "1.0",
+                          "start": 2357,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 2365,
+                          "raw": "0.0",
+                          "start": 2362,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 2370,
+                          "raw": "0.0",
+                          "start": 2367,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 2371,
+                      "start": 2356,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "instances"
+                    },
+                    "arg": {
+                      "end": 2405,
+                      "name": "countBinWidth",
+                      "start": 2392,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "distance"
+                    },
+                    "arg": {
+                      "end": 2434,
+                      "name": "binLength",
+                      "start": 2425,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2324,
+                  "name": "patternLinear3d",
+                  "start": 2309,
+                  "type": "Identifier"
+                },
+                "end": 2441,
+                "start": 2309,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "end": 2340,
+                  "name": "corners",
+                  "start": 2333,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "axis"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 2482,
+                          "raw": "0.0",
+                          "start": 2479,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 2487,
+                          "raw": "1.0",
+                          "start": 2484,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 2492,
+                          "raw": "0.0",
+                          "start": 2489,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 2493,
+                      "start": 2478,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "instances"
+                    },
+                    "arg": {
+                      "end": 2528,
+                      "name": "countBinLength",
+                      "start": 2514,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "distance"
+                    },
+                    "arg": {
+                      "end": 2557,
+                      "name": "binLength",
+                      "start": 2548,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2462,
+                  "name": "patternLinear3d",
+                  "start": 2447,
+                  "type": "Identifier"
+                },
+                "end": 2564,
+                "start": 2447,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 2564,
+            "start": 2309,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 2290,
+          "type": "VariableDeclarator"
+        },
+        "end": 2564,
+        "kind": "const",
+        "start": 2290,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 2565,
+    "innerAttrs": [
+      {
+        "end": 344,
+        "name": {
+          "end": 320,
+          "name": "settings",
+          "start": 312,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 343,
+            "key": {
+              "end": 338,
+              "name": "defaultLengthUnit",
+              "start": 321,
+              "type": "Identifier"
+            },
+            "start": 321,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 343,
+              "name": "mm",
+              "start": 341,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 311,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "4": [
+          {
+            "end": 488,
+            "start": 451,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Number of bins in each direction",
+              "style": "line"
+            }
+          }
+        ],
+        "6": [
+          {
+            "end": 625,
+            "start": 525,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "The total height of the baseplate is a summation of the vertical heights of the baseplate steps",
+              "style": "line"
+            }
+          }
+        ],
+        "7": [
+          {
+            "end": 737,
+            "start": 669,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "define a function which builds the profile of the baseplate bin",
+              "style": "line"
+            }
+          }
+        ],
+        "8": [
+          {
+            "end": 1084,
+            "start": 1047,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "extrude a single side of the bin",
+              "style": "line"
+            }
+          }
+        ],
+        "9": [
+          {
+            "end": 1260,
+            "start": 1194,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create the other sides of the bin by using a circular pattern",
+              "style": "line"
+            }
+          }
+        ],
+        "10": [
+          {
+            "end": 1459,
+            "start": 1432,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "define an axis axis000",
+              "style": "line"
+            }
+          }
+        ],
+        "11": [
+          {
+            "end": 1593,
+            "start": 1555,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create a single corner of the bin",
+              "style": "line"
+            }
+          }
+        ],
+        "12": [
+          {
+            "end": 1731,
+            "start": 1697,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create the corners of the bin",
+              "style": "line"
+            }
+          }
+        ],
+        "13": [
+          {
+            "end": 1952,
+            "start": 1907,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create the baseplate by patterning sides",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 23,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Gridfinity Baseplate",
+            "style": "line"
+          }
+        },
+        {
+          "end": 276,
+          "start": 24,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion",
+            "style": "line"
+          }
+        },
+        {
+          "end": 278,
+          "start": 276,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 310,
+          "start": 278,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set units in millimeters (mm)",
+            "style": "line"
+          }
+        },
+        {
+          "end": 346,
+          "start": 344,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 365,
+          "start": 346,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Define constants",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}
