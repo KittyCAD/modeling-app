@@ -41,7 +41,7 @@ jobs:
           workspaces: './rust'
 
       # TODO: see if we can fetch from main instead if no diff at rust
-      - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+      - uses: taiki-e/install-action@0b63bc859f7224657cf7e39426848cabaa36f456
         with:
           tool: wasm-pack
 
