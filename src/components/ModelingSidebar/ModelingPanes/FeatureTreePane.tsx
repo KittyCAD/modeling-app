@@ -15,7 +15,7 @@ import {
 } from 'lib/operations'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { Actor, Prop } from 'xstate'
 import { featureTreeMachine } from 'machines/featureTreeMachine'
 import {

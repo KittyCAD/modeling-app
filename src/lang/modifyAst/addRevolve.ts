@@ -10,7 +10,7 @@ import {
   ArtifactGraph,
 } from 'lang/wasm'
 import { Selections } from 'lib/selections'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createLiteral,
   createCallExpressionStdLib,

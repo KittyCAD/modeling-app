@@ -18,7 +18,8 @@ describe('testing getNodePathFromSourceRange', () => {
   it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {
     const code = `
 const myVar = 5
-const sk3 = startSketchAt([0, 0])
+const sk3 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 2])
   |> line(endAbsolute = [3, 4], tag = $yo)
   |> close()
@@ -41,7 +42,8 @@ const sk3 = startSketchAt([0, 0])
   })
   it('gets path right for function definition params', () => {
     const code = `fn cube = (pos, scale) => {
-  const sg = startSketchAt(pos)
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -73,7 +75,8 @@ const b1 = cube([0,0], 10)`
   })
   it('gets path right for deep within function definition body', () => {
     const code = `fn cube = (pos, scale) => {
-  const sg = startSketchAt(pos)
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -102,7 +105,7 @@ const b1 = cube([0,0], 10)`
       ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['body', 'PipeExpression'],
-      [2, 'index'],
+      [3, 'index'],
       ['arguments', 'CallExpressionKw'],
       [0, ARG_INDEX_FIELD],
       ['arg', LABELED_ARG_FIELD],

@@ -30,9 +30,9 @@ import {
   get_kcl_version as GetKclVersion,
   serialize_configuration as SerializeConfiguration,
   serialize_project_configuration as SerializeProjectConfiguration,
-} from '../wasm-lib/pkg/wasm_lib'
+} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
-type ModuleType = typeof import('../wasm-lib/pkg/wasm_lib')
+type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
 
 // Stores the result of the import of the wasm_lib file
 let data: ModuleType
@@ -40,7 +40,7 @@ let data: ModuleType
 // Imports the .js file again which will clear the old import
 // This allows us to reinitialize the wasm instance
 export async function reloadModule() {
-  data = await import(`../wasm-lib/pkg/wasm_lib`)
+  data = await import(`@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`)
 }
 
 export function getModule(): ModuleType {

@@ -384,7 +384,8 @@ describe('testing getNodePathFromSourceRange', () => {
 describe('testing hasExtrudeSketch', () => {
   it('find sketch', async () => {
     const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
+part001 = startSketchOn('XY')
+  |> startProfileAt([-1.41, 3.46], %)
   |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine([-35, length001], %)
   |> line(end = [-3.22, -7.36])
@@ -403,7 +404,8 @@ part001 = startSketchAt([-1.41, 3.46])
   })
   it('find solid', async () => {
     const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
+part001 = startSketchOn('XY')
+  |> startProfileAt([-1.41, 3.46], %)
   |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine([-35, length001], %)
   |> line(end = [-3.22, -7.36])

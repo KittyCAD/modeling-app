@@ -1,0 +1,131 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "declaration": {
+        "end": 73,
+        "id": {
+          "end": 2,
+          "name": "sg",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": [
+            {
+              "arguments": [
+                {
+                  "end": 21,
+                  "name": "XY",
+                  "start": 19,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "callee": {
+                "end": 18,
+                "name": "startSketchOn",
+                "start": 5,
+                "type": "Identifier"
+              },
+              "end": 22,
+              "start": 5,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "end": 48,
+                  "name": "pos",
+                  "start": 45,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "callee": {
+                "end": 44,
+                "name": "startProfileAt",
+                "start": 30,
+                "type": "Identifier"
+              },
+              "end": 49,
+              "start": 30,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "elements": [
+                    {
+                      "end": 60,
+                      "raw": "0",
+                      "start": 59,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "argument": {
+                        "end": 68,
+                        "name": "scale",
+                        "start": 63,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "end": 68,
+                      "operator": "-",
+                      "start": 62,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  ],
+                  "end": 69,
+                  "start": 58,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                },
+                {
+                  "end": 72,
+                  "start": 71,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "end": 57,
+                "name": "line",
+                "start": 53,
+                "type": "Identifier"
+              },
+              "end": 73,
+              "start": 53,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            }
+          ],
+          "end": 73,
+          "start": 5,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 73,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 73,
+  "start": 0
+}

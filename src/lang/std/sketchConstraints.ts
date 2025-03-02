@@ -1,6 +1,6 @@
 import { getNodeFromPath } from 'lang/queryAst'
 import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   Program,
   VariableDeclarator,
@@ -93,7 +93,8 @@ export function isSketchVariablesLinked(
   and will keep checking the second arguments recursively until it runs out of variable declarations
   to check or it finds a match.
   that way it can find fn calls that are linked to each other through variables eg:
-  const part001 = startSketchAt([0, 0])
+  const part001 = startSketchOn('XY')
+    |> startProfileAt([0, 0],%)
     |> xLineTo(1.69, %)
     |> line(end = [myVar, 0.38]) // ❗️ <- cursor in this fn call (the primary)
     |> line(end = [0.41, baz])

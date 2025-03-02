@@ -35,7 +35,7 @@ import {
   saveSettings,
   setSettingsAtLevel,
 } from 'lib/settings/settingsUtils'
-import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import {
   codeManager,
   engineCommandManager,

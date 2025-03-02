@@ -1,0 +1,2225 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing i_shape.kcl
+---
+{
+  "brace_base": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              465,
+              505,
+              0
+            ]
+          },
+          "from": [
+            5.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            68.4,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              511,
+              569,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            68.4,
+            5.0
+          ],
+          "from": [
+            68.4,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            73.4,
+            5.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              575,
+              605,
+              0
+            ]
+          },
+          "from": [
+            73.4,
+            5.0
+          ],
+          "tag": null,
+          "to": [
+            73.4,
+            25.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              611,
+              670,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            68.4,
+            25.0
+          ],
+          "from": [
+            73.4,
+            25.0
+          ],
+          "tag": null,
+          "to": [
+            68.4,
+            30.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              676,
+              735,
+              0
+            ]
+          },
+          "from": [
+            68.4,
+            30.0
+          ],
+          "tag": null,
+          "to": [
+            55.6,
+            30.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              741,
+              800,
+              0
+            ]
+          },
+          "ccw": false,
+          "center": [
+            55.6,
+            35.0
+          ],
+          "from": [
+            55.6,
+            30.0
+          ],
+          "tag": null,
+          "to": [
+            50.6,
+            35.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              806,
+              858,
+              0
+            ]
+          },
+          "from": [
+            50.6,
+            35.0
+          ],
+          "tag": null,
+          "to": [
+            50.6,
+            97.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              864,
+              922,
+              0
+            ]
+          },
+          "ccw": false,
+          "center": [
+            55.6,
+            97.0
+          ],
+          "from": [
+            50.6,
+            97.0
+          ],
+          "tag": null,
+          "to": [
+            55.6,
+            102.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              928,
+              964,
+              0
+            ]
+          },
+          "from": [
+            55.6,
+            102.0
+          ],
+          "tag": null,
+          "to": [
+            60.6,
+            102.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              970,
+              1028,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            60.6,
+            107.0
+          ],
+          "from": [
+            60.6,
+            102.0
+          ],
+          "tag": null,
+          "to": [
+            65.6,
+            107.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1034,
+              1064,
+              0
+            ]
+          },
+          "from": [
+            65.6,
+            107.0
+          ],
+          "tag": null,
+          "to": [
+            65.6,
+            125.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1070,
+              1129,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            60.6,
+            125.0
+          ],
+          "from": [
+            65.6,
+            125.0
+          ],
+          "tag": null,
+          "to": [
+            60.6,
+            130.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1135,
+              1198,
+              0
+            ]
+          },
+          "from": [
+            60.6,
+            130.0
+          ],
+          "tag": null,
+          "to": [
+            16.6,
+            130.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1204,
+              1264,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            16.6,
+            125.0
+          ],
+          "from": [
+            16.6,
+            130.0
+          ],
+          "tag": null,
+          "to": [
+            11.6,
+            125.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1270,
+              1303,
+              0
+            ]
+          },
+          "from": [
+            11.6,
+            125.0
+          ],
+          "tag": null,
+          "to": [
+            11.6,
+            107.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1309,
+              1368,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            16.6,
+            107.0
+          ],
+          "from": [
+            11.6,
+            107.0
+          ],
+          "tag": null,
+          "to": [
+            16.6,
+            102.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1374,
+              1410,
+              0
+            ]
+          },
+          "from": [
+            16.6,
+            102.0
+          ],
+          "tag": null,
+          "to": [
+            21.6,
+            102.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1416,
+              1475,
+              0
+            ]
+          },
+          "ccw": false,
+          "center": [
+            21.6,
+            97.0
+          ],
+          "from": [
+            21.6,
+            102.0
+          ],
+          "tag": null,
+          "to": [
+            26.6,
+            97.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1481,
+              1536,
+              0
+            ]
+          },
+          "from": [
+            26.6,
+            97.0
+          ],
+          "tag": null,
+          "to": [
+            26.6,
+            35.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1542,
+              1602,
+              0
+            ]
+          },
+          "ccw": false,
+          "center": [
+            21.6,
+            35.0
+          ],
+          "from": [
+            26.6,
+            35.0
+          ],
+          "tag": null,
+          "to": [
+            21.6,
+            30.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1608,
+              1732,
+              0
+            ]
+          },
+          "from": [
+            21.6,
+            30.0
+          ],
+          "tag": null,
+          "to": [
+            5.0,
+            30.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1738,
+              1798,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            5.0,
+            25.0
+          ],
+          "from": [
+            5.0,
+            30.0
+          ],
+          "tag": null,
+          "to": [
+            0.0,
+            25.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1804,
+              1837,
+              0
+            ]
+          },
+          "from": [
+            0.0,
+            25.0
+          ],
+          "tag": null,
+          "to": [
+            0.0,
+            5.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1843,
+              1902,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            5.0,
+            5.0
+          ],
+          "from": [
+            0.0,
+            5.0
+          ],
+          "tag": null,
+          "to": [
+            5.0,
+            0.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1908,
+              1916,
+              0
+            ]
+          },
+          "from": [
+            5.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            5.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "on": {
+        "type": "plane",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "XY",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "units": {
+          "type": "Mm"
+        },
+        "__meta": []
+      },
+      "start": {
+        "from": [
+          5.0,
+          0.0
+        ],
+        "to": [
+          5.0,
+          0.0
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            422,
+            459,
+            0
+          ]
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            422,
+            459,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "corner_radius": {
+    "type": "Number",
+    "value": 5.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          216,
+          219,
+          0
+        ]
+      }
+    ]
+  },
+  "d_wrist_circumference": {
+    "type": "Array",
+    "value": [
+      {
+        "type": "Number",
+        "value": 22.8,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              25,
+              29,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 10.7,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              31,
+              35,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 16.4,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              37,
+              41,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Number",
+        "value": 18.5,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              43,
+              47,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "__meta": [
+      {
+        "sourceRange": [
+          24,
+          48,
+          0
+        ]
+      }
+    ]
+  },
+  "final": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            465,
+            505,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            511,
+            569,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            575,
+            605,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            611,
+            670,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            676,
+            735,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            741,
+            800,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            806,
+            858,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            864,
+            922,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            928,
+            964,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            970,
+            1028,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1034,
+            1064,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1070,
+            1129,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1135,
+            1198,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1204,
+            1264,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1270,
+            1303,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1309,
+            1368,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1374,
+            1410,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1416,
+            1475,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1481,
+            1536,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1542,
+            1602,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1608,
+            1732,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1738,
+            1798,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1804,
+            1837,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1843,
+            1902,
+            0
+          ],
+          "tag": null,
+          "type": "extrudeArc"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                465,
+                505,
+                0
+              ]
+            },
+            "from": [
+              5.0,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              68.4,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                511,
+                569,
+                0
+              ]
+            },
+            "ccw": true,
+            "center": [
+              68.4,
+              5.0
+            ],
+            "from": [
+              68.4,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              73.4,
+              5.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                575,
+                605,
+                0
+              ]
+            },
+            "from": [
+              73.4,
+              5.0
+            ],
+            "tag": null,
+            "to": [
+              73.4,
+              25.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                611,
+                670,
+                0
+              ]
+            },
+            "ccw": true,
+            "center": [
+              68.4,
+              25.0
+            ],
+            "from": [
+              73.4,
+              25.0
+            ],
+            "tag": null,
+            "to": [
+              68.4,
+              30.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                676,
+                735,
+                0
+              ]
+            },
+            "from": [
+              68.4,
+              30.0
+            ],
+            "tag": null,
+            "to": [
+              55.6,
+              30.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                741,
+                800,
+                0
+              ]
+            },
+            "ccw": false,
+            "center": [
+              55.6,
+              35.0
+            ],
+            "from": [
+              55.6,
+              30.0
+            ],
+            "tag": null,
+            "to": [
+              50.6,
+              35.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                806,
+                858,
+                0
+              ]
+            },
+            "from": [
+              50.6,
+              35.0
+            ],
+            "tag": null,
+            "to": [
+              50.6,
+              97.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                864,
+                922,
+                0
+              ]
+            },
+            "ccw": false,
+            "center": [
+              55.6,
+              97.0
+            ],
+            "from": [
+              50.6,
+              97.0
+            ],
+            "tag": null,
+            "to": [
+              55.6,
+              102.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                928,
+                964,
+                0
+              ]
+            },
+            "from": [
+              55.6,
+              102.0
+            ],
+            "tag": null,
+            "to": [
+              60.6,
+              102.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                970,
+                1028,
+                0
+              ]
+            },
+            "ccw": true,
+            "center": [
+              60.6,
+              107.0
+            ],
+            "from": [
+              60.6,
+              102.0
+            ],
+            "tag": null,
+            "to": [
+              65.6,
+              107.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1034,
+                1064,
+                0
+              ]
+            },
+            "from": [
+              65.6,
+              107.0
+            ],
+            "tag": null,
+            "to": [
+              65.6,
+              125.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1070,
+                1129,
+                0
+              ]
+            },
+            "ccw": true,
+            "center": [
+              60.6,
+              125.0
+            ],
+            "from": [
+              65.6,
+              125.0
+            ],
+            "tag": null,
+            "to": [
+              60.6,
+              130.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1135,
+                1198,
+                0
+              ]
+            },
+            "from": [
+              60.6,
+              130.0
+            ],
+            "tag": null,
+            "to": [
+              16.6,
+              130.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1204,
+                1264,
+                0
+              ]
+            },
+            "ccw": true,
+            "center": [
+              16.6,
+              125.0
+            ],
+            "from": [
+              16.6,
+              130.0
+            ],
+            "tag": null,
+            "to": [
+              11.6,
+              125.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1270,
+                1303,
+                0
+              ]
+            },
+            "from": [
+              11.6,
+              125.0
+            ],
+            "tag": null,
+            "to": [
+              11.6,
+              107.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1309,
+                1368,
+                0
+              ]
+            },
+            "ccw": true,
+            "center": [
+              16.6,
+              107.0
+            ],
+            "from": [
+              11.6,
+              107.0
+            ],
+            "tag": null,
+            "to": [
+              16.6,
+              102.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1374,
+                1410,
+                0
+              ]
+            },
+            "from": [
+              16.6,
+              102.0
+            ],
+            "tag": null,
+            "to": [
+              21.6,
+              102.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1416,
+                1475,
+                0
+              ]
+            },
+            "ccw": false,
+            "center": [
+              21.6,
+              97.0
+            ],
+            "from": [
+              21.6,
+              102.0
+            ],
+            "tag": null,
+            "to": [
+              26.6,
+              97.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1481,
+                1536,
+                0
+              ]
+            },
+            "from": [
+              26.6,
+              97.0
+            ],
+            "tag": null,
+            "to": [
+              26.6,
+              35.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1542,
+                1602,
+                0
+              ]
+            },
+            "ccw": false,
+            "center": [
+              21.6,
+              35.0
+            ],
+            "from": [
+              26.6,
+              35.0
+            ],
+            "tag": null,
+            "to": [
+              21.6,
+              30.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1608,
+                1732,
+                0
+              ]
+            },
+            "from": [
+              21.6,
+              30.0
+            ],
+            "tag": null,
+            "to": [
+              5.0,
+              30.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1738,
+                1798,
+                0
+              ]
+            },
+            "ccw": true,
+            "center": [
+              5.0,
+              25.0
+            ],
+            "from": [
+              5.0,
+              30.0
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              25.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1804,
+                1837,
+                0
+              ]
+            },
+            "from": [
+              0.0,
+              25.0
+            ],
+            "tag": null,
+            "to": [
+              0.0,
+              5.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1843,
+                1902,
+                0
+              ]
+            },
+            "ccw": true,
+            "center": [
+              5.0,
+              5.0
+            ],
+            "from": [
+              0.0,
+              5.0
+            ],
+            "tag": null,
+            "to": [
+              5.0,
+              0.0
+            ],
+            "type": "TangentialArcTo",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                1908,
+                1916,
+                0
+              ]
+            },
+            "from": [
+              5.0,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              5.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "on": {
+          "type": "plane",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": "XY",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0
+          },
+          "units": {
+            "type": "Mm"
+          },
+          "__meta": []
+        },
+        "start": {
+          "from": [
+            5.0,
+            0.0
+          ],
+          "to": [
+            5.0,
+            0.0
+          ],
+          "units": {
+            "type": "Mm"
+          },
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              422,
+              459,
+              0
+            ]
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
+        },
+        "__meta": [
+          {
+            "sourceRange": [
+              422,
+              459,
+              0
+            ]
+          }
+        ]
+      },
+      "height": 3.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            422,
+            459,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "hand_thickness": {
+    "type": "Number",
+    "value": 24.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          195,
+          199,
+          0
+        ]
+      }
+    ]
+  },
+  "inner": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1980,
+              1993,
+              0
+            ]
+          },
+          "from": [
+            0.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            1.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              1999,
+              2057,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            1.0,
+            5.0
+          ],
+          "from": [
+            1.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            6.0,
+            5.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              2063,
+              2099,
+              0
+            ]
+          },
+          "from": [
+            6.0,
+            5.0
+          ],
+          "tag": null,
+          "to": [
+            6.0,
+            20.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              2105,
+              2164,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            1.0,
+            20.0
+          ],
+          "from": [
+            6.0,
+            20.0
+          ],
+          "tag": null,
+          "to": [
+            1.0,
+            25.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              2170,
+              2184,
+              0
+            ]
+          },
+          "from": [
+            1.0,
+            25.0
+          ],
+          "tag": null,
+          "to": [
+            0.0,
+            25.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              2190,
+              2250,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            20.0
+          ],
+          "from": [
+            0.0,
+            25.0
+          ],
+          "tag": null,
+          "to": [
+            -5.0,
+            20.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              2256,
+              2295,
+              0
+            ]
+          },
+          "from": [
+            -5.0,
+            20.0
+          ],
+          "tag": null,
+          "to": [
+            -5.0,
+            5.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              2301,
+              2360,
+              0
+            ]
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            5.0
+          ],
+          "from": [
+            -5.0,
+            5.0
+          ],
+          "tag": null,
+          "to": [
+            0.0,
+            0.0
+          ],
+          "type": "TangentialArcTo",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              2366,
+              2374,
+              0
+            ]
+          },
+          "from": [
+            0.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            0.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "on": {
+        "type": "plane",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "XY",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "units": {
+          "type": "Mm"
+        },
+        "__meta": []
+      },
+      "start": {
+        "from": [
+          0.0,
+          0.0
+        ],
+        "to": [
+          0.0,
+          0.0
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            1949,
+            1974,
+            0
+          ]
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            1949,
+            1974,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "length": {
+    "type": "Number",
+    "value": 120.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          172,
+          177,
+          0
+        ]
+      }
+    ]
+  },
+  "width": {
+    "type": "Number",
+    "value": 68.4,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          25,
+          29,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          31,
+          35,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          37,
+          41,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          43,
+          47,
+          0
+        ]
+      }
+    ]
+  }
+}

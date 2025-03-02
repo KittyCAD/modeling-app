@@ -65,9 +65,9 @@ import {
 import { roundOff, getLength, getAngle, isArray } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
-import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
+import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 import { EdgeCutInfo } from 'machines/modelingMachine'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   findKwArg,
   findKwArgWithIndex,
@@ -126,12 +126,7 @@ export function createFirstArg(
         intersectTag: val[2],
       })
   } else {
-    if (
-      ['startSketchAt', 'xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(
-        sketchFn
-      )
-    )
-      return val
+    if (['xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(sketchFn)) return val
   }
   return new Error('Missing sketch line type')
 }
@@ -2942,7 +2937,7 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
     return { val: firstArg }
   }
   const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-  const secondArgName = ['xLineTo', 'yLineTo', 'startSketchAt'].includes(
+  const secondArgName = ['xLineTo', 'yLineTo'].includes(
     // const secondArgName = ['xLineTo', 'yLineTo', 'angledLineToX', 'angledLineToY'].includes(
     callExpression?.callee?.name
   )
@@ -3080,9 +3075,6 @@ export function getFirstArg(callExp: CallExpression):
     return getFirstArgValuesForAngleFns(callExp)
   }
   if (['xLine', 'yLine', 'xLineTo', 'yLineTo'].includes(name)) {
-    return getFirstArgValuesForXYLineFns(callExp)
-  }
-  if (['startSketchAt'].includes(name)) {
     return getFirstArgValuesForXYLineFns(callExp)
   }
   if (['angledLineThatIntersects'].includes(name)) {

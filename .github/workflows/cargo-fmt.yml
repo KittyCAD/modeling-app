@@ -26,9 +26,6 @@ jobs:
   cargofmt:
     name: cargo fmt
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dir: ['src/wasm-lib']
     steps:
       - uses: actions/checkout@v4
       - name: Install latest rust
@@ -43,6 +40,6 @@ jobs:
 
       - name: Run cargo fmt
         run: |
-          cd "${{ matrix.dir }}"
+          cd rust
           cargo fmt -- --check
         shell: bash

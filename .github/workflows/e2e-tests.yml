@@ -70,7 +70,7 @@ jobs:
       with:
         filters: |
           rust:
-            - 'src/wasm-lib/**'
+            - 'rust/**'
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
@@ -97,11 +97,11 @@ jobs:
         name: wasm-bundle
         workflow: build-and-store-wasm.yml
         branch: main
-        path: src/wasm-lib/pkg
+        path: rust/kcl-wasm-lib/pkg
     - name: copy wasm blob
       if: github.event_name != 'schedule' && steps.filter.outputs.rust == 'false'
       shell: bash
-      run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+      run: cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
       continue-on-error: true
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
@@ -112,12 +112,12 @@ jobs:
       if: github.event_name == 'schedule' || steps.filter.outputs.rust == 'true'
       uses: Swatinem/rust-cache@v2
       with:
-        workspaces: './src/wasm-lib'
+        workspaces: './rust'
     - name: OR Cache Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
       uses: Swatinem/rust-cache@v2
       with:
-        workspaces: './src/wasm-lib'
+        workspaces: './rust'
     - name: install good sed
       if:  ${{ startsWith(matrix.os, 'macos') }}
       shell: bash

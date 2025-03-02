@@ -1113,7 +1113,7 @@ export async function createProject({
 }
 
 export function executorInputPath(fileName: string): string {
-  return path.join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
+  return path.join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName)
 }
 
 export async function doAndWaitForImageDiff(

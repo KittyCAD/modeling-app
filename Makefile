@@ -1,6 +1,6 @@
 .PHONY: dev
 
-WASM_LIB_FILES := $(wildcard src/wasm-lib/**/*.rs)
+KCL_WASM_LIB_FILES := $(wildcard rust/**/*.rs)
 TS_SRC := $(wildcard src/**/*.tsx) $(wildcard src/**/*.ts)
 XSTATE_TYPEGENS := $(wildcard src/machines/*.typegen.ts)
 
@@ -18,7 +18,7 @@ lee-electron-test:
 $(XSTATE_TYPEGENS): $(TS_SRC)
 	yarn xstate typegen 'src/**/*.ts?(x)'
 
-public/wasm_lib_bg.wasm: $(WASM_LIB_FILES)
+public/kcl_wasm_lib_bg.wasm: $(KCL_WASM_LIB_FILES)
 	yarn build:wasm
 
 node_modules: package.json yarn.lock

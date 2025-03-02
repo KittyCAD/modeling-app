@@ -9,7 +9,7 @@ permissions: read-all
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-name: cargo test of wasm-lib
+name: cargo test
 jobs:
   path-changes:
     runs-on: ubuntu-latest
@@ -34,9 +34,6 @@ jobs:
   cargotest:
     name: cargo test
     runs-on: ubuntu-latest-8-cores
-    strategy:
-      matrix:
-        dir: ['src/wasm-lib']
     needs: path-changes
     steps:
       - uses: actions/checkout@v4
@@ -77,7 +74,7 @@ jobs:
         if: needs.path-changes.outputs.outside-kcl-samples == 'true'
         shell: bash
         run: |-
-          cd "${{ matrix.dir }}"
+          cd rust
           cargo llvm-cov nextest --workspace --lcov --output-path lcov.info --retries=2 --no-fail-fast -P ci 2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
@@ -88,7 +85,7 @@ jobs:
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: true
-          flags: wasm-lib
+          flags: rust
           verbose: true
           files: lcov.info
 

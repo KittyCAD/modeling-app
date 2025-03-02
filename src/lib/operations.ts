@@ -1,6 +1,6 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'

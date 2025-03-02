@@ -1243,7 +1243,7 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
         path.resolve(
           __dirname,
           '../../',
-          './src/wasm-lib/tests/executor/inputs/e2e-can-sketch-on-chamfer.kcl'
+          './rust/kcl-lib/e2e/executor/inputs/e2e-can-sketch-on-chamfer.kcl'
         ),
         'utf-8'
       )

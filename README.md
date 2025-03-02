@@ -228,7 +228,7 @@ $ cargo install cargo-fuzz
 ```
 
 ```bash
-$ cd src/wasm-lib/kcl
+$ cd rust/kcl-lib
 
 # list the fuzz targets
 $ cargo fuzz list
@@ -385,7 +385,7 @@ Use the production zoo.dev token, set this environment variable before running t
 #### Installing cargonextest
 
 ```
-cd src/wasm-lib
+cd rust 
 cargo search cargo-nextest
 cargo install cargo-nextest
 ```
@@ -401,7 +401,7 @@ install [`just`](https://github.com/casey/just?tab=readme-ov-file#pre-built-bina
 # Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
 # Make sure you installed cargo-nextest
 # Make sure you installed just
-cd src/wasm-lib
+cd rust 
 just test
 ```
 
@@ -409,7 +409,7 @@ just test
 # Without just
 # Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
 # Make sure you installed cargo-nextest
-cd src/wasm-lib
+cd rust 
 export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
 ```
 
@@ -418,7 +418,7 @@ Where `XXX` is an API token from the production engine (NOT the dev environment)
 We recommend using [nextest](https://nexte.st/) to run the Rust tests (its faster and is used in CI). Once installed, run the tests using
 
 ```
-cd src/wasm-lib
+cd rust 
 KITTYCAD_API_TOKEN=XXX cargo run nextest
 ```
 
@@ -499,7 +499,7 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 
 ## KCL
 
-For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/src/wasm-lib/kcl).
+For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/rust/kcl-lib).
 
 ### Logging
 

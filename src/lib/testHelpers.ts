@@ -9,9 +9,9 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 

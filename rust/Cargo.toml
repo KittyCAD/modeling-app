@@ -1,0 +1,50 @@
+[workspace]
+resolver = "2"
+members = [
+	"kcl-derive-docs",
+	"kcl-lib",
+	"kcl-python-bindings",
+	"kcl-test-server",
+	"kcl-to-core",
+	"kcl-wasm-lib"
+]
+
+[profile.release]
+panic = "abort"
+debug = true
+
+[profile.dev]
+debug = 0
+
+[profile.dev.package]
+insta = { opt-level = 3 }
+similar = { opt-level = 3 }
+
+[profile.test]
+debug = "line-tables-only"
+
+[workspace.dependencies]
+async-trait = "0.1.85"
+anyhow = { version = "1" }
+http = "1"
+indexmap = "2.7.0"
+kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }
+kittycad-modeling-cmds = { version = "0.2.100", features = ["ts-rs", "websocket"] }
+miette = "7.5.0"
+pyo3 = { version = "0.22.6" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+tokio = { version = "1" }
+tower-lsp = { version = "0.20.0", default-features = false }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[workspace.lints.clippy]
+assertions_on_result_states = "warn"
+dbg_macro = "warn"
+iter_over_hash_type = "warn"
+lossy_float_literal = "warn"
+
+# Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
+#[patch.crates-io]
+#kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
+#kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }

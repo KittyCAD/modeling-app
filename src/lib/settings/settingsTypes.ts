@@ -3,12 +3,12 @@ import { Setting, settings } from './initialSettings'
 import { AtLeast, PathValue, Paths } from 'lib/types'
 import { CommandArgumentConfig } from 'lib/commandTypes'
 import { Themes } from 'lib/theme'
-import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
+import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import {
   UnitAngle_type,
   UnitLength_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
+import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 export interface SettingsViaQueryString {
   pool: string | null
