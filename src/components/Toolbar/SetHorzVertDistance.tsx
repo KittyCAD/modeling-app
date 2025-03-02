@@ -62,10 +62,7 @@ export function horzVertDistanceInfo({
   const isAllTooltips = nodes.every(
     (node) =>
       (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
-      [
-        ...toolTips,
-        'startSketchAt', // TODO probably a better place for this to live
-      ].includes(node.callee.name as any)
+      [...toolTips].includes(node.callee.name as any)
   )
 
   const theTransforms = getTransformInfos(

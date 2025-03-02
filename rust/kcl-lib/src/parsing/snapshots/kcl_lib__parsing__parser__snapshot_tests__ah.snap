@@ -1,12 +1,12 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
       "declaration": {
-        "end": 24,
+        "end": 49,
         "id": {
           "end": 5,
           "name": "myBox",
@@ -14,36 +14,71 @@ expression: actual
           "type": "Identifier"
         },
         "init": {
-          "arguments": [
+          "body": [
             {
-              "end": 23,
-              "name": "p",
-              "start": 22,
-              "type": "Identifier",
-              "type": "Identifier"
+              "arguments": [
+                {
+                  "end": 24,
+                  "name": "XY",
+                  "start": 22,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "callee": {
+                "end": 21,
+                "name": "startSketchOn",
+                "start": 8,
+                "type": "Identifier"
+              },
+              "end": 25,
+              "start": 8,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "end": 45,
+                  "name": "p",
+                  "start": 44,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                {
+                  "end": 48,
+                  "start": 47,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "end": 43,
+                "name": "startProfileAt",
+                "start": 29,
+                "type": "Identifier"
+              },
+              "end": 49,
+              "start": 29,
+              "type": "CallExpression",
+              "type": "CallExpression"
             }
           ],
-          "callee": {
-            "end": 21,
-            "name": "startSketchAt",
-            "start": 8,
-            "type": "Identifier"
-          },
-          "end": 24,
+          "end": 49,
           "start": 8,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "PipeExpression",
+          "type": "PipeExpression"
         },
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 24,
+      "end": 49,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 24,
+  "end": 49,
   "start": 0
 }

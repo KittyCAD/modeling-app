@@ -153,7 +153,8 @@ async fn kcl_test_negative_args() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_tangential_arc_with_point() {
-    let code = r#"boxSketch = startSketchAt([0, 0])
+    let code = r#"boxSketch = startSketchOn(XY)
+    |> startProfileAt([0, 0], %)
     |> line(end = [0, 10])
     |> tangentialArcToRelative([-5, 5], %)
     |> line(end = [5, -15])
@@ -166,7 +167,8 @@ async fn kcl_test_basic_tangential_arc_with_point() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_tangential_arc_to() {
-    let code = r#"boxSketch = startSketchAt([0, 0])
+    let code = r#"boxSketch = startSketchOn(XY)
+    |> startProfileAt([0, 0], %)
     |> line(end = [0, 10])
     |> tangentialArcTo([-5, 15], %)
     |> line(end = [5, -15])

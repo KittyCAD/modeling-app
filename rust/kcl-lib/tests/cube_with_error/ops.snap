@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed cube_with_error.kcl
 ---
 [
@@ -8,16 +8,39 @@ description: Operations executed cube_with_error.kcl
     "name": "cube",
     "functionSourceRange": [
       7,
-      363,
+      392,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      374,
-      390,
+      403,
+      419,
       0
     ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          191,
+          193,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      177,
+      194,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -36,16 +59,16 @@ description: Operations executed cube_with_error.kcl
           }
         },
         "sourceRange": [
-          354,
-          360,
+          383,
+          389,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      337,
-      361,
+      366,
+      390,
       0
     ],
     "type": "StdLibCall",

@@ -22,10 +22,11 @@ miniHdmiWidth = 11.2
 microUsbWidth = 7.4
 connectorPadding = 4
 
-miniHdmiHole = startSketchAt([
+miniHdmiHole = startSketchOn(XY)
+  |> startProfileAt([
        0,
        border + miniHdmiDistance - (miniHdmiWidth / 2)
-     ])
+     ], %)
   |> line(endAbsolute = [
        0,
        border + miniHdmiDistance + miniHdmiWidth / 2

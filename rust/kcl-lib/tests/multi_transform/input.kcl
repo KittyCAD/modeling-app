@@ -4,7 +4,8 @@ fn transform = (i) => {
     { rotation: { angle: 45 * i } }
   ]
 }
-startSketchAt([0, 0])
+startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
   |> polygon({
        radius: 10,
        numSides: 4,

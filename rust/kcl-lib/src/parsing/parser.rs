@@ -2979,7 +2979,8 @@ comment */
         let test_program = r#"
 /* comment at start */
 
-mySk1 = startSketchAt([0, 0])"#;
+mySk1 = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let program = program.parse(tokens.as_slice()).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;
@@ -3571,7 +3572,8 @@ mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn pipes_on_pipes_minimal() {
-        let test_program = r#"startSketchAt([0, 0])
+        let test_program = r#"startSketchOn(XY)
+        |> startProfileAt([0, 0], %)
         |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
@@ -4704,7 +4706,8 @@ mod snapshot_tests {
 
     snapshot_test!(
         a,
-        r#"boxSketch = startSketchAt([0, 0])
+        r#"boxSketch = startSketchOn(XY)
+    |> startProfileAt([0, 0], %)
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
@@ -4770,8 +4773,12 @@ mod snapshot_tests {
     snapshot_test!(v, r#"pt1 = b1[0]"#);
     snapshot_test!(w, r#"pt1 = b1['zero']"#);
     snapshot_test!(x, r#"pt1 = b1.zero"#);
-    snapshot_test!(y, "sg = startSketchAt(pos)");
-    snapshot_test!(z, "sg = startSketchAt(pos) |> line([0, -scale], %)");
+    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfileAt(pos, %)"#);
+    snapshot_test!(
+        z,
+        "sg = startSketchOn(XY)
+    |> startProfileAt(pos) |> line([0, -scale], %)"
+    );
     snapshot_test!(aa, r#"sg = -scale"#);
     snapshot_test!(ab, "line(endAbsolute = [0, -1])");
     snapshot_test!(ac, "myArray = [0..10]");
@@ -4792,7 +4799,8 @@ mod snapshot_tests {
     );
     snapshot_test!(
         af,
-        r#"mySketch = startSketchAt([0,0])
+        r#"mySketch = startSketchOn(XY)
+        |> startProfileAt([0,0], %)
         |> line(endAbsolute = [0, 1], tag = $myPath)
         |> line(endAbsolute = [1, 1])
         |> line(endAbsolute = [1, 0], tag = $rightPath)
@@ -4800,13 +4808,16 @@ mod snapshot_tests {
     );
     snapshot_test!(
         ag,
-        "mySketch = startSketchAt([0,0]) |> line(endAbsolute = [1, 1]) |> close()"
+        "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %) |> line(endAbsolute = [1, 1]) |> close()"
     );
-    snapshot_test!(ah, "myBox = startSketchAt(p)");
+    snapshot_test!(ah, "myBox = startSketchOn(XY) |> startProfileAt(p, %)");
     snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
-    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line(end = [0, l])"#);
+    snapshot_test!(
+        aj,
+        r#"myBox = startSketchOn(XY) |> startProfileAt(p, %) |> line(end = [0, l])"#
+    );
     snapshot_test!(ak, "line(endAbsolute = [0, 1])");
-    snapshot_test!(ap, "mySketch = startSketchAt([0,0])");
+    snapshot_test!(ap, "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %)");
     snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);
     snapshot_test!(at, "line([0, l], %)");

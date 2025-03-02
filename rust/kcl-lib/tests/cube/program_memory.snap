@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing cube.kcl
 ---
 {
@@ -9,7 +9,7 @@ description: Variables in memory after executing cube.kcl
       {
         "sourceRange": [
           7,
-          375,
+          404,
           0
         ]
       }
@@ -26,8 +26,8 @@ description: Variables in memory after executing cube.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            210,
-            232,
+            239,
+            261,
             0
           ],
           "tag": null,
@@ -37,8 +37,8 @@ description: Variables in memory after executing cube.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            240,
-            262,
+            269,
+            291,
             0
           ],
           "tag": null,
@@ -48,8 +48,8 @@ description: Variables in memory after executing cube.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            270,
-            292,
+            299,
+            321,
             0
           ],
           "tag": null,
@@ -59,8 +59,8 @@ description: Variables in memory after executing cube.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            300,
-            322,
+            329,
+            351,
             0
           ],
           "tag": null,
@@ -75,8 +75,8 @@ description: Variables in memory after executing cube.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                210,
-                232,
+                239,
+                261,
                 0
               ]
             },
@@ -98,8 +98,8 @@ description: Variables in memory after executing cube.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                240,
-                262,
+                269,
+                291,
                 0
               ]
             },
@@ -121,8 +121,8 @@ description: Variables in memory after executing cube.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                270,
-                292,
+                299,
+                321,
                 0
               ]
             },
@@ -144,8 +144,8 @@ description: Variables in memory after executing cube.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                300,
-                322,
+                329,
+                351,
                 0
               ]
             },
@@ -167,8 +167,8 @@ description: Variables in memory after executing cube.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                330,
-                337,
+                359,
+                366,
                 0
               ]
             },
@@ -233,8 +233,8 @@ description: Variables in memory after executing cube.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              185,
-              202,
+              210,
+              231,
               0
             ]
           }
@@ -247,8 +247,8 @@ description: Variables in memory after executing cube.kcl
         "__meta": [
           {
             "sourceRange": [
-              185,
-              202,
+              210,
+              231,
               0
             ]
           }
@@ -263,8 +263,8 @@ description: Variables in memory after executing cube.kcl
       "__meta": [
         {
           "sourceRange": [
-            185,
-            202,
+            210,
+            231,
             0
           ]
         }

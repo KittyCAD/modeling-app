@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands cube.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -314,8 +313,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      185,
-      202,
+      210,
+      231,
       0
     ],
     "command": {
@@ -334,8 +333,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      185,
-      202,
+      210,
+      231,
       0
     ],
     "command": {
@@ -345,8 +344,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      185,
-      202,
+      210,
+      231,
       0
     ],
     "command": {
@@ -362,8 +361,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      210,
-      232,
+      239,
+      261,
       0
     ],
     "command": {
@@ -383,8 +382,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      240,
-      262,
+      269,
+      291,
       0
     ],
     "command": {
@@ -404,8 +403,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      292,
+      299,
+      321,
       0
     ],
     "command": {
@@ -425,8 +424,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      300,
-      322,
+      329,
+      351,
       0
     ],
     "command": {
@@ -446,8 +445,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      330,
-      337,
+      359,
+      366,
       0
     ],
     "command": {
@@ -458,8 +457,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      330,
-      337,
+      359,
+      366,
       0
     ],
     "command": {
@@ -469,8 +468,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -489,8 +488,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -503,8 +502,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -514,8 +513,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -526,8 +525,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -539,8 +538,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -553,8 +552,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -567,8 +566,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -581,8 +580,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -595,8 +594,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -609,8 +608,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -623,8 +622,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {
@@ -637,8 +636,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      345,
-      373,
+      374,
+      402,
       0
     ],
     "command": {

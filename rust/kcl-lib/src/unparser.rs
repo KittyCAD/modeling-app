@@ -997,7 +997,7 @@ fn o(c_x, c_y) {
   o_x2 = c_x + o_r * cos((225 + a) / 360 * tau())
   o_y2 = c_y + o_r * sin((225 + a) / 360 * tau())
 
-  // End point for the bottom startSketchAt
+  // End point for the bottom startSketch
   o_x3 = c_x + o_r * cos((45 - a) / 360 * tau())
   o_y3 = c_y + o_r * sin((45 - a) / 360 * tau())
 
@@ -1875,7 +1875,8 @@ thing = 'foo'
         let test_program = r#"
 /* comment at start */
 
-mySk1 = startSketchAt([0, 0])"#;
+mySk1 = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)"#;
         let program = crate::parsing::top_level_parse(test_program).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -1883,7 +1884,8 @@ mySk1 = startSketchAt([0, 0])"#;
             recasted,
             r#"/* comment at start */
 
-mySk1 = startSketchAt([0, 0])
+mySk1 = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
 "#
         );
     }

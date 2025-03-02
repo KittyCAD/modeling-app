@@ -8,7 +8,8 @@ filletR = thickness * 2
 shelfMountL = 9
 wallMountL = 8
 
-bracket = startSketchAt([0, 0])
+bracket = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
   |> line(end = [0, wallMountL])
   |> tangentialArc({ radius = filletR, offset = 90 }, %)
   |> line(end = [-shelfMountL, 0])

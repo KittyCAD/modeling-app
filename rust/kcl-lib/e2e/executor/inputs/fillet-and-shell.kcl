@@ -1,31 +1,32 @@
-const rpizWidth = 30
-const rpizLength = 65
+rpizWidth = 30
+rpizLength = 65
 
-const caseThickness = 1
+caseThickness = 1
 
-const border = 4
+border = 4
 
-const screwHeight = 4
+screwHeight = 4
 
-const caseWidth = rpizWidth + border * 2
-const caseLength = rpizLength + border * 2
-const caseHeight = 8
+caseWidth = rpizWidth + border * 2
+caseLength = rpizLength + border * 2
+caseHeight = 8
 
-const widthBetweenScrews = 23
-const lengthBetweenScrews = 29 * 2
+widthBetweenScrews = 23
+lengthBetweenScrews = 29 * 2
 
-const miniHdmiDistance = 12.4
-const microUsb1Distance = 41.4
-const microUsb2Distance = 54
+miniHdmiDistance = 12.4
+microUsb1Distance = 41.4
+microUsb2Distance = 54
 
-const miniHdmiWidth = 11.2
-const microUsbWidth = 7.4
-const connectorPadding = 4
+miniHdmiWidth = 11.2
+microUsbWidth = 7.4
+connectorPadding = 4
 
-const miniHdmiHole = startSketchAt([
+miniHdmiHole = startSketchOn(XY)
+  |> startProfileAt([
        0,
        border + miniHdmiDistance - (miniHdmiWidth / 2)
-     ])
+     ], %)
   |> lineTo([
        0,
        border + miniHdmiDistance + miniHdmiWidth / 2
@@ -40,7 +41,7 @@ const miniHdmiHole = startSketchAt([
      ], %)
   |> close()
 
-const case = startSketchOn('XY')
+case = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [caseWidth, 0], $edge1)
   |> line(endAbsolute = [caseWidth, caseLength], $edge2)
@@ -59,7 +60,7 @@ const case = startSketchOn('XY')
 
 
 fn m25Screw = (x, y, height) => {
-  const screw = startSketchOn("XY")
+  screw = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> circle(center= [x, y], radius=2.5)
     |> hole(circle(center= [x, y], radius = 1.25), %)

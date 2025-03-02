@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands fillet-and-shell.kcl
 ---
 [
@@ -285,7 +285,7 @@ description: Artifact commands fillet-and-shell.kcl
     "cmdId": "[uuid]",
     "range": [
       373,
-      461,
+      390,
       0
     ],
     "command": {
@@ -313,8 +313,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      373,
-      461,
+      396,
+      488,
       0
     ],
     "command": {
@@ -333,8 +333,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      373,
-      461,
+      396,
+      488,
       0
     ],
     "command": {
@@ -344,8 +344,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      373,
-      461,
+      396,
+      488,
       0
     ],
     "command": {
@@ -361,8 +361,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      467,
-      558,
+      494,
+      585,
       0
     ],
     "command": {
@@ -382,8 +382,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      564,
-      655,
+      591,
+      682,
       0
     ],
     "command": {
@@ -403,8 +403,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      661,
-      754,
+      688,
+      781,
       0
     ],
     "command": {
@@ -424,8 +424,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      760,
-      768,
+      787,
+      795,
       0
     ],
     "command": {
@@ -436,8 +436,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      760,
-      768,
+      787,
+      795,
       0
     ],
     "command": {
@@ -447,8 +447,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      777,
-      796,
+      804,
+      823,
       0
     ],
     "command": {
@@ -476,8 +476,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      802,
-      827,
+      829,
+      854,
       0
     ],
     "command": {
@@ -496,8 +496,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      802,
-      827,
+      829,
+      854,
       0
     ],
     "command": {
@@ -507,8 +507,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      802,
-      827,
+      829,
+      854,
       0
     ],
     "command": {
@@ -524,8 +524,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      833,
-      881,
+      860,
+      908,
       0
     ],
     "command": {
@@ -545,8 +545,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      887,
-      944,
+      914,
+      971,
       0
     ],
     "command": {
@@ -566,8 +566,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      950,
-      999,
+      977,
+      1026,
       0
     ],
     "command": {
@@ -587,8 +587,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1005,
-      1024,
+      1032,
+      1051,
       0
     ],
     "command": {
@@ -599,8 +599,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1005,
-      1024,
+      1032,
+      1051,
       0
     ],
     "command": {
@@ -610,8 +610,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -630,8 +630,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -644,8 +644,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -655,8 +655,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -667,8 +667,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -680,8 +680,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -694,8 +694,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -708,8 +708,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -722,8 +722,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -736,8 +736,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -750,8 +750,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -764,8 +764,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -778,8 +778,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1030,
-      1058,
+      1057,
+      1085,
       0
     ],
     "command": {
@@ -792,8 +792,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1116,
-      1142,
+      1143,
+      1169,
       0
     ],
     "command": {
@@ -806,8 +806,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1153,
-      1179,
+      1180,
+      1206,
       0
     ],
     "command": {
@@ -820,8 +820,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1190,
-      1216,
+      1217,
+      1243,
       0
     ],
     "command": {
@@ -834,8 +834,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1227,
-      1253,
+      1254,
+      1280,
       0
     ],
     "command": {
@@ -848,8 +848,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1310,
-      1329,
+      1337,
+      1356,
       0
     ],
     "command": {
@@ -877,8 +877,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -897,8 +897,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -908,8 +908,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -925,8 +925,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -945,8 +945,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -956,8 +956,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -973,8 +973,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1002,8 +1002,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1014,8 +1014,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1034,8 +1034,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1045,8 +1045,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1062,8 +1062,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1091,8 +1091,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1103,8 +1103,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "command": {
@@ -1116,8 +1116,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "command": {
@@ -1129,8 +1129,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1149,8 +1149,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1163,8 +1163,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1174,8 +1174,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1186,8 +1186,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1199,8 +1199,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1213,8 +1213,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1227,8 +1227,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1241,8 +1241,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1255,8 +1255,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1310,
-      1329,
+      1337,
+      1356,
       0
     ],
     "command": {
@@ -1284,8 +1284,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -1304,8 +1304,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -1315,8 +1315,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -1332,8 +1332,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1352,8 +1352,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1363,8 +1363,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1380,8 +1380,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1409,8 +1409,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1421,8 +1421,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1441,8 +1441,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1452,8 +1452,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1469,8 +1469,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1498,8 +1498,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1510,8 +1510,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "command": {
@@ -1523,8 +1523,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "command": {
@@ -1536,8 +1536,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1556,8 +1556,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1570,8 +1570,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1581,8 +1581,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1593,8 +1593,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1606,8 +1606,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1620,8 +1620,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1634,8 +1634,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1648,8 +1648,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1662,8 +1662,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1310,
-      1329,
+      1337,
+      1356,
       0
     ],
     "command": {
@@ -1691,8 +1691,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -1711,8 +1711,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -1722,8 +1722,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -1739,8 +1739,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1759,8 +1759,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1770,8 +1770,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1787,8 +1787,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1816,8 +1816,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -1828,8 +1828,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1848,8 +1848,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1859,8 +1859,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1876,8 +1876,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1905,8 +1905,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -1917,8 +1917,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "command": {
@@ -1930,8 +1930,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "command": {
@@ -1943,8 +1943,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1963,8 +1963,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1977,8 +1977,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -1988,8 +1988,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2000,8 +2000,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2013,8 +2013,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2027,8 +2027,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2041,8 +2041,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2055,8 +2055,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2069,8 +2069,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1310,
-      1329,
+      1337,
+      1356,
       0
     ],
     "command": {
@@ -2098,8 +2098,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -2118,8 +2118,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -2129,8 +2129,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1364,
+      1389,
       0
     ],
     "command": {
@@ -2146,8 +2146,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -2166,8 +2166,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -2177,8 +2177,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -2194,8 +2194,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -2223,8 +2223,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1370,
-      1407,
+      1397,
+      1434,
       0
     ],
     "command": {
@@ -2235,8 +2235,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -2255,8 +2255,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -2266,8 +2266,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -2283,8 +2283,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -2312,8 +2312,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1458,
+      1447,
+      1485,
       0
     ],
     "command": {
@@ -2324,8 +2324,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "command": {
@@ -2337,8 +2337,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1415,
-      1462,
+      1442,
+      1489,
       0
     ],
     "command": {
@@ -2350,8 +2350,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2370,8 +2370,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2384,8 +2384,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2395,8 +2395,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2407,8 +2407,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2420,8 +2420,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2434,8 +2434,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2448,8 +2448,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2462,8 +2462,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1470,
-      1494,
+      1497,
+      1521,
       0
     ],
     "command": {
@@ -2476,8 +2476,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1064,
-      1270,
+      1091,
+      1297,
       0
     ],
     "command": {
@@ -2492,8 +2492,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1064,
-      1270,
+      1091,
+      1297,
       0
     ],
     "command": {
@@ -2508,8 +2508,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1064,
-      1270,
+      1091,
+      1297,
       0
     ],
     "command": {
@@ -2524,8 +2524,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1064,
-      1270,
+      1091,
+      1297,
       0
     ],
     "command": {
@@ -2540,8 +2540,8 @@ description: Artifact commands fillet-and-shell.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2029,
-      2084,
+      2056,
+      2111,
       0
     ],
     "command": {

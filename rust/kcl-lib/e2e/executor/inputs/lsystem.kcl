@@ -21,7 +21,7 @@ Gt = cond([false, false, true])
 fn Lte = (a, b) => { return Not(Gt(a, b)) }
 fn Gte = (a, b) => { return Not(Lt(a, b)) }
 
-// L-system 
+// L-system
 // Note: it was most concise to encode productions directly in axioms.
 // Change them as you need.
 
@@ -100,6 +100,8 @@ fn F = (state, F) => {
 }
 
 fn LSystem = (args, axioms) => {
+    myThing = startSketchOn(XY)
+    |> startProfileAt([0, 0], %)
   return axioms({
     depthMax: args.iterations,
     depth: 0,
@@ -107,7 +109,7 @@ fn LSystem = (args, axioms) => {
     factor: args.factor,
     currentAngle: 0,
     angle: args.angle,
-    q: startSketchAt([0, 0]),
+    q = myThing,
   })
 }
 
@@ -116,6 +118,6 @@ LSystem({
   factor: 1.36,
   angle: 60,
 }, (q) => {
-  result = q |> F(%, F) |> Add(%) |> Add(%) |> F(%, F) |> Add(%) |> Add(%) |> F(%, F) 
+  result = q |> F(%, F) |> Add(%) |> Add(%) |> F(%, F) |> Add(%) |> Add(%) |> F(%, F)
   return result.q
 })
