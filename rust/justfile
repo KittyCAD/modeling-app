@@ -46,7 +46,9 @@ test:
 
 publish-kcl version:
     git tag kcl-{{version}}
-    git push origin kcl-{{version}}
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-lib
     cargo publish -p kcl-test-server
+    # We push the tag at the end of publish since pushing the tag
+    # will trigger CI to release the kcl python bindings.
+    git push origin kcl-{{version}}

@@ -1,0 +1,83 @@
+// Zoo logo
+
+// Define a function to draw the ZOO "Z"
+export fn zLogo(surface, origin, scale) {
+  zSketch = surface
+    |> startProfileAt([
+         0 + origin[0],
+         0.15 * scale + origin[1]
+       ], %)
+    |> yLine(-0.15 * scale, %)
+    |> xLine(0.15 * scale, %)
+    |> angledLineToX({
+         angle = 47.15,
+         to = 0.3 * scale + origin[0]
+       }, %, $seg1)
+    |> yLineTo(0 + origin[1], %, $seg3)
+    |> xLine(0.63 * scale, %)
+    |> yLine(0.225 * scale, %)
+    |> xLine(-0.57 * scale, %)
+    |> angledLineToX({
+         angle = 47.15,
+         to = 0.93 * scale + origin[0]
+       }, %)
+    |> yLine(0.15 * scale, %)
+    |> xLine(-0.15 * scale, %)
+    |> angledLine({
+         angle = 47.15,
+         length = -segLen(seg1)
+       }, %, $seg2)
+    |> yLine(segLen(seg3), %)
+    |> xLineTo(0 + origin[0], %)
+    |> yLine(-0.225 * scale, %)
+    |> angledLineThatIntersects({
+         angle = 0,
+         intersectTag = seg2,
+         offset = 0
+       }, %)
+    |> close()
+  return zSketch
+}
+
+// Define a function to draw the ZOO "O"
+export fn oLogo(surface, origin, scale) {
+  oSketch001 = surface
+    |> startProfileAt([
+         .788 * scale + origin[0],
+         .921 * scale + origin[1]
+       ], %)
+    |> arc({
+         angleStart = 47.15 + 6,
+         angleEnd = 47.15 - 6 + 180,
+         radius = .525 * scale
+       }, %)
+    |> angledLine({ angle = 47.15, length = .24 * scale }, %)
+    |> arc({
+         angleStart = 47.15 - 11 + 180,
+         angleEnd = 47.15 + 11,
+         radius = .288 * scale
+       }, %)
+    |> close()
+  return oSketch001
+}
+
+export fn oLogo2(surface, origin, scale) {
+  oSketch002 = surface
+    |> startProfileAt([
+         .16 * scale + origin[0],
+         .079 * scale + origin[1]
+       ], %)
+    |> arc({
+         angleStart = 47.15 + 6 - 180,
+         angleEnd = 47.15 - 6,
+         radius = .525 * scale
+       }, %)
+    |> angledLine({ angle = 47.15, length = -.24 * scale }, %)
+    |> arc({
+         angleStart = 47.15 - 11,
+         angleEnd = 47.15 + 11 - 180,
+         radius = .288 * scale
+       }, %)
+    |> close()
+  return oSketch002
+}

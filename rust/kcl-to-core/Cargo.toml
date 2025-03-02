@@ -13,8 +13,8 @@ name = "kcl-to-core"
 path = "src/tool.rs"
 
 [dependencies]
-anyhow = "1"
-async-trait = "0.1.85"
+anyhow = { workspace = true }
+async-trait = { workspace = true }
 indexmap = { workspace = true }
 kcl-lib = { path = "../kcl-lib" }
 kittycad = { workspace = true, features = ["clap"] }

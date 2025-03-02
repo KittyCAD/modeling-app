@@ -3,6 +3,7 @@ resolver = "2"
 members = [
 	"kcl-derive-docs",
 	"kcl-lib",
+	"kcl-python-bindings",
 	"kcl-test-server",
 	"kcl-to-core",
 	"kcl-wasm-lib"
@@ -23,10 +24,14 @@ similar = { opt-level = 3 }
 debug = "line-tables-only"
 
 [workspace.dependencies]
+async-trait = "0.1.85"
+anyhow = { version = "1" }
 http = "1"
 indexmap = "2.7.0"
 kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.99", features = ["ts-rs", "websocket"] }
+kittycad-modeling-cmds = { version = "0.2.100", features = ["ts-rs", "websocket"] }
+miette = "7.5.0"
+pyo3 = { version = "0.22.6" }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 tokio = { version = "1" }

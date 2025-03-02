@@ -63,8 +63,13 @@ Mac_App_Distribution.provisionprofile
 *.tsbuildinfo
 
 .eslintcache
-venv
 .vite/
 
 # electron
 out/
+
+# python
+__pycache__/
+uv.lock
+rust/kcl-python-bindings/dist
+venv

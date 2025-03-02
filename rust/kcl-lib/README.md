@@ -1,4 +1,4 @@
-# KCL
+# kcl-lib
 
 Our language for defining geometry and working with our Geometry Engine efficiently. Short for KittyCAD Language, named after our Design API.
 

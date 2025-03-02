@@ -11,9 +11,9 @@ keywords = ["kcl", "KittyCAD", "CAD"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = { version = "1.0.95", features = ["backtrace"] }
+anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
-async-trait = "0.1.85"
+async-trait = {workspace = true}
 base64 = "0.22.1"
 chrono = "0.4.38"
 clap = { version = "4.5.27", default-features = false, optional = true, features = [
@@ -37,10 +37,10 @@ kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = "1.5.0"
 measurements = "0.11.0"
-miette = "7.5.0"
+miette = { workspace = true }
 mime_guess = "2.0.5"
 parse-display = "0.9.1"
-pyo3 = { version = "0.22.6", optional = true }
+pyo3 = { workspace = true, optional = true }
 regex = "1.11.1"
 reqwest = { version = "0.12", default-features = false, features = [
     "stream",
