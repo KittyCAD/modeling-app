@@ -1229,13 +1229,141 @@ export const circle: SketchLineHelperKw = {
 }
 
 export const arc: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+  add: ({
+    node,
+    variables,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    spliceBetween,
+  }) => {
     if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
-    return new Error('arc not implemented')
+    const { center, radius, from, to } = segmentInput
+    const _node = { ...node }
+
+    const nodeMeta = getNodeFromPath<PipeExpression | CallExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
+    const { node: pipe } = nodeMeta
+
+    const nodeMeta2 = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
+    if (err(nodeMeta2)) return nodeMeta2
+    const { node: varDec } = nodeMeta2
+
+    // Calculate start angle (from center to 'from' point)
+    const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
+
+    // Calculate end angle (from center to 'to' point)
+    const endAngle = Math.atan2(to[1] - center[1], to[0] - center[0])
+
+    // Create literals for the angles (convert to degrees)
+    const startAngleDegrees = (startAngle * 180) / Math.PI
+    const endAngleDegrees = (endAngle * 180) / Math.PI
+
+    // Create the arc call expression
+    const arcObj = createObjectExpression({
+      radius: createLiteral(roundOff(radius)),
+      angleStart: createLiteral(roundOff(startAngleDegrees)),
+      angleEnd: createLiteral(roundOff(endAngleDegrees)),
+    })
+
+    const newArc = createCallExpression('arc', [arcObj])
+
+    if (
+      spliceBetween &&
+      !replaceExistingCallback &&
+      pipe.type === 'PipeExpression'
+    ) {
+      const pathToNodeIndex = pathToNode.findIndex(
+        (x) => x[1] === 'PipeExpression'
+      )
+      const pipeIndex = pathToNode[pathToNodeIndex + 1][0]
+      if (typeof pipeIndex === 'undefined' || typeof pipeIndex === 'string') {
+        return new Error('pipeIndex is undefined')
+      }
+      pipe.body = [
+        ...pipe.body.slice(0, pipeIndex),
+        newArc,
+        ...pipe.body.slice(pipeIndex),
+      ]
+      return {
+        modifiedAst: _node,
+        pathToNode,
+      }
+    }
+
+    if (replaceExistingCallback && pipe.type !== 'CallExpression') {
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      const result = replaceExistingCallback([
+        {
+          type: 'objectProperty',
+          key: 'center',
+          argType: 'xRelative',
+          expr: createLiteral(roundOff(center[0])),
+        },
+        {
+          type: 'objectProperty',
+          key: 'center',
+          argType: 'yRelative',
+          expr: createLiteral(roundOff(center[1])),
+        },
+        {
+          type: 'objectProperty',
+          key: 'radius',
+          argType: 'radius',
+          expr: createLiteral(roundOff(radius)),
+        },
+        {
+          type: 'objectProperty',
+          key: 'angle',
+          argType: 'angle',
+          expr: createLiteral(roundOff(startAngleDegrees)),
+        },
+        {
+          type: 'objectProperty',
+          key: 'angle',
+          argType: 'angle',
+          expr: createLiteral(roundOff(endAngleDegrees)),
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode: [...pathToNode],
+        valueUsedInTransform,
+      }
+    }
+
+    if (pipe.type === 'PipeExpression') {
+      pipe.body = [...pipe.body, newArc]
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode,
+          ['body', 'PipeExpression'],
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
+      }
+    } else {
+      varDec.init = createPipeExpression([varDec.init, newArc])
+    }
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
   },
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
-
     const { center, radius, from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
