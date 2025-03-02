@@ -1625,6 +1625,232 @@ export class SceneEntities {
       expressionIndexToDelete: insertIndex,
     }
   }
+  setupDraftArc = async (
+    sketchEntryNodePath: PathToNode,
+    sketchNodePaths: PathToNode[],
+    planeNodePath: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchOrigin: [number, number, number],
+    point1: [x: number, y: number]
+  ): Promise<SketchDetailsUpdate | Error> => {
+    let _ast = structuredClone(kclManager.ast)
+
+    const _node1 = getNodeFromPath<VariableDeclaration>(
+      _ast,
+      sketchEntryNodePath || [],
+      'VariableDeclaration'
+    )
+    if (trap(_node1)) return Promise.reject(_node1)
+    const variableDeclarationName = _node1.node?.declaration.id?.name || ''
+
+    const sg = sketchFromKclValue(
+      kclManager.variables[variableDeclarationName],
+      variableDeclarationName
+    )
+    if (err(sg)) return Promise.reject(sg)
+    const lastSeg = sg?.paths?.slice(-1)[0] || sg.start
+
+    // Calculate a default center point and radius based on the last segment's endpoint
+    const center: [number, number] = [lastSeg.to[0], lastSeg.to[1]]
+    const radius = 10 // Default radius
+
+    // Use addNewSketchLn to append an arc to the existing sketch
+    const mod = addNewSketchLn({
+      node: _ast,
+      variables: kclManager.variables,
+      input: {
+        type: 'arc-segment',
+        from: lastSeg.to,
+        to: [lastSeg.to[0] + radius, lastSeg.to[1]] as [number, number], // Default end point
+        center: center,
+        radius: radius,
+        ccw: true,
+      },
+      fnName: 'arc' as ToolTip,
+      pathToNode: sketchEntryNodePath,
+    })
+    console.log('mod', mod)
+
+    if (trap(mod)) return Promise.reject(mod)
+    const pResult = parse(recast(mod.modifiedAst))
+    if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+    _ast = pResult.program
+
+    // do a quick mock execution to get the program memory up-to-date
+    await kclManager.executeAstMock(_ast)
+
+    const index = sg.paths.length // because we've added a new segment that's not in the memory yet
+    const draftExpressionsIndices = { start: index, end: index }
+
+    this.tearDownSketch({ removeAxis: false })
+    sceneInfra.resetMouseListeners()
+
+    const { truncatedAst } = await this.setupSketch({
+      sketchEntryNodePath,
+      sketchNodePaths,
+      forward,
+      up,
+      position: sketchOrigin,
+      maybeModdedAst: _ast,
+      draftExpressionsIndices,
+    })
+
+    sceneInfra.setCallbacks({
+      onMove: async (args) => {
+        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          structuredClone(sketchEntryNodePath)
+
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          firstProfileIndex
+        const _node = getNodeFromPath<VariableDeclaration>(
+          truncatedAst,
+          nodePathWithCorrectedIndexForTruncatedAst,
+          'VariableDeclaration'
+        )
+        let modded = structuredClone(truncatedAst)
+        if (trap(_node)) return
+        const sketchInit = _node.node.declaration.init
+
+        if (sketchInit.type === 'CallExpressionKw') {
+          // Calculate new arc parameters based on mouse position
+          const mousePoint: [number, number] = [
+            args.intersectionPoint.twoD.x,
+            args.intersectionPoint.twoD.y,
+          ]
+
+          // Calculate radius based on distance from center to mouse point
+          const newRadius = Math.sqrt(
+            Math.pow(mousePoint[0] - center[0], 2) +
+              Math.pow(mousePoint[1] - center[1], 2)
+          )
+
+          // Calculate end angle based on mouse position
+          const endAngle =
+            (Math.atan2(mousePoint[1] - center[1], mousePoint[0] - center[0]) *
+              180) /
+            Math.PI
+
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.variables,
+            {
+              type: 'path',
+              pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
+            },
+            {
+              type: 'arc-segment',
+              from: lastSeg.to,
+              to: mousePoint,
+              center: center,
+              radius: newRadius,
+              ccw: true,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+        }
+
+        const { execState } = await executeAst({
+          ast: modded,
+          engineCommandManager: this.engineCommandManager,
+          isMock: true,
+        })
+        const sketch = sketchFromKclValue(
+          execState.variables[variableDeclarationName],
+          variableDeclarationName
+        )
+        if (err(sketch)) return
+        const sgPaths = sketch.paths
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+        const varDecIndex = Number(sketchEntryNodePath[1][0])
+
+        this.updateSegment(
+          sketch.start,
+          0,
+          varDecIndex,
+          _ast,
+          orthoFactor,
+          sketch
+        )
+        sgPaths.forEach((seg, index) =>
+          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+        )
+      },
+      onClick: async (args) => {
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
+        // Commit the arc to the full AST/code and return to sketch.idle
+        const mousePoint = args.intersectionPoint?.twoD
+        if (!mousePoint || args.mouseEvent.button !== 0) return
+
+        const _node = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          sketchEntryNodePath || [],
+          'VariableDeclaration'
+        )
+        if (trap(_node)) return
+        const sketchInit = _node.node?.declaration.init
+
+        let modded = structuredClone(_ast)
+        if (sketchInit.type === 'CallExpressionKw') {
+          // Calculate new arc parameters based on final mouse position
+          const finalPoint: [number, number] = [
+            mousePoint.x || 0,
+            mousePoint.y || 0,
+          ]
+
+          // Calculate radius based on distance from center to final point
+          const finalRadius = Math.sqrt(
+            Math.pow(finalPoint[0] - center[0], 2) +
+              Math.pow(finalPoint[1] - center[1], 2)
+          )
+
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.variables,
+            {
+              type: 'path',
+              pathToNode: sketchEntryNodePath,
+            },
+            {
+              type: 'arc-segment',
+              from: lastSeg.to,
+              to: finalPoint,
+              center: center,
+              radius: finalRadius,
+              ccw: true,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+
+          const newCode = recast(modded)
+          if (err(newCode)) return
+          const pResult = parse(newCode)
+          if (trap(pResult) || !resultIsOk(pResult))
+            return Promise.reject(pResult)
+          _ast = pResult.program
+
+          // Update the primary AST and unequip the arc tool
+          await kclManager.executeAstMock(_ast)
+          sceneInfra.modelingSend({ type: 'Finish arc' })
+          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+        }
+      },
+    })
+    return {
+      updatedEntryNodePath: sketchEntryNodePath,
+      updatedSketchNodePaths: sketchNodePaths,
+      expressionIndexToDelete: -1, // No need to delete any expression
+    }
+  }
   setupDraftCircle = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],

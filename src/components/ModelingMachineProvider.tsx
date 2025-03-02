@@ -1499,8 +1499,22 @@ export const ModelingMachineProvider = ({
         ),
         'set-up-draft-arc': fromPromise(
           async ({ input: { sketchDetails, data } }) => {
-            return reject('No sketch details or data')
-            // TODO implement
+            if (!sketchDetails || !data)
+              return reject('No sketch details or data')
+            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+            const result = await sceneEntitiesManager.setupDraftArc(
+              sketchDetails.sketchEntryNodePath,
+              sketchDetails.sketchNodePaths,
+              sketchDetails.planeNodePath,
+              sketchDetails.zAxis,
+              sketchDetails.yAxis,
+              sketchDetails.origin,
+              data
+            )
+            if (err(result)) return reject(result)
+            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+
+            return result
           }
         ),
         'setup-client-side-sketch-segments': fromPromise(
