@@ -2276,10 +2276,10 @@
   dependencies:
     "@types/ms" "*"
 
-"@types/diff@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@types/diff/-/diff-6.0.0.tgz#031f27cf57564f3cce825f38fb19fdd4349ad07a"
-  integrity sha512-dhVCYGv3ZSbzmQaBSagrv1WJ6rXCdkyTcDyoNu1MD8JohI7pR7k8wdZEm+mvdxRKXyHVwckFzWU1vJc+Z29MlA==
+"@types/diff@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@types/diff/-/diff-7.0.1.tgz#acc505eb2e8337ca400503283a6ab44a59906d9f"
+  integrity sha512-R/BHQFripuhW6XPXy05hIvXJQdQ4540KnTvEFHSLjXfHYM41liOLKgIJEyYYiQe796xpaMHfe4Uj/p7Uvng2vA==
 
 "@types/electron@^1.6.10":
   version "1.6.10"
