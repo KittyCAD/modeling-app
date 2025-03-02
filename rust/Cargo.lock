@@ -1714,7 +1714,7 @@ dependencies = [
  "measurements",
  "miette",
  "mime_guess",
- "parse-display 0.9.1",
+ "parse-display 0.10.0",
  "pretty_assertions",
  "pyo3",
  "regex",
