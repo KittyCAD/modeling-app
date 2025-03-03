@@ -1782,6 +1782,14 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
+        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
+        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
+          mod.pathToNode
+        )
+
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          firstProfileIndex
         // If there is a valid camera interaction that matches, do that instead
         const interaction = sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -1800,7 +1808,7 @@ export class SceneEntities {
         const sketchInit = _node.node?.declaration.init
 
         let modded = structuredClone(_ast)
-        if (sketchInit.type === 'CallExpressionKw') {
+        if (sketchInit.type === 'PipeExpression') {
           // Calculate end angle based on final mouse position
           const endAngle = Math.atan2(
             mousePoint.y - center[1],
@@ -1818,7 +1826,7 @@ export class SceneEntities {
             kclManager.variables,
             {
               type: 'path',
-              pathToNode: sketchEntryNodePath,
+              pathToNode: mod.pathToNode,
             },
             {
               type: 'arc-segment',

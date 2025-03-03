@@ -1100,21 +1100,18 @@ export const modelingMachine = setup({
     'setup noPoints onClick listener': ({
       context: { sketchDetails, currentTool },
     }) => {
-      console.log('setup noPoints onClick listener')
       if (!sketchDetails) return
       sceneEntitiesManager.setupNoPointsListener({
         sketchDetails,
         currentTool,
-        afterClick: (_, data) => {
-          console.log('afterClick', data)
-          return sceneInfra.modelingSend(
+        afterClick: (_, data) => 
+          sceneInfra.modelingSend(
             currentTool === 'tangentialArc'
               ? { type: 'Continue existing profile', data }
               : currentTool === 'arc'
               ? { type: 'Add start point', data }
               : { type: 'Add start point', data }
-          )
-        },
+          ),
       })
     },
     'add axis n grid': ({ context: { sketchDetails } }) => {

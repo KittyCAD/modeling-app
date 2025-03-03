@@ -2467,7 +2467,6 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToY,
   angledLineThatIntersects,
   tangentialArcTo,
-  circle,
   arc,
 } as const
 
@@ -2496,7 +2495,7 @@ export function changeSketchArguments(
       },
   input: SegmentInputs
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
-  const _node = { ...node }
+  const _node = structuredClone(node)
   const thePath =
     sourceRangeOrPath.type === 'sourceRange'
       ? getNodePathFromSourceRange(_node, sourceRangeOrPath.sourceRange)
