@@ -1632,7 +1632,7 @@ export class SceneEntities {
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
-    point1: [x: number, y: number]
+    center: [x: number, y: number]
   ): Promise<SketchDetailsUpdate | Error> => {
     let _ast = structuredClone(kclManager.ast)
 
@@ -1652,8 +1652,16 @@ export class SceneEntities {
     const lastSeg = sg?.paths?.slice(-1)[0] || sg.start
 
     // Calculate a default center point and radius based on the last segment's endpoint
-    const center: [number, number] = [lastSeg.to[0], lastSeg.to[1]]
-    const radius = 10 // Default radius
+    const from: [number, number] = [lastSeg.to[0], lastSeg.to[1]]
+    const radius = Math.sqrt(
+      Math.pow(center[0] - from[0], 2) + Math.pow(center[1] - from[1], 2)
+    )
+    const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
+    const endAngle = startAngle + Math.PI / 180 // arbitrary 1 degree arc as starting default
+    const to: [number, number] = [
+      center[0] + radius * Math.cos(endAngle),
+      center[1] + radius * Math.sin(endAngle),
+    ]
 
     // Use addNewSketchLn to append an arc to the existing sketch
     const mod = addNewSketchLn({
@@ -1661,16 +1669,15 @@ export class SceneEntities {
       variables: kclManager.variables,
       input: {
         type: 'arc-segment',
-        from: lastSeg.to,
-        to: [lastSeg.to[0] + radius, lastSeg.to[1]] as [number, number], // Default end point
-        center: center,
-        radius: radius,
+        from,
+        to,
+        center,
+        radius,
         ccw: true,
       },
       fnName: 'arc' as ToolTip,
       pathToNode: sketchEntryNodePath,
     })
-    console.log('mod', mod)
 
     if (trap(mod)) return Promise.reject(mod)
     const pResult = parse(recast(mod.modifiedAst))
@@ -1699,8 +1706,9 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onMove: async (args) => {
         const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(sketchEntryNodePath)
+        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
+          mod.pathToNode
+        )
 
         nodePathWithCorrectedIndexForTruncatedAst[1][0] =
           Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
@@ -1714,24 +1722,18 @@ export class SceneEntities {
         if (trap(_node)) return
         const sketchInit = _node.node.declaration.init
 
-        if (sketchInit.type === 'CallExpressionKw') {
-          // Calculate new arc parameters based on mouse position
-          const mousePoint: [number, number] = [
-            args.intersectionPoint.twoD.x,
-            args.intersectionPoint.twoD.y,
-          ]
-
-          // Calculate radius based on distance from center to mouse point
-          const newRadius = Math.sqrt(
-            Math.pow(mousePoint[0] - center[0], 2) +
-              Math.pow(mousePoint[1] - center[1], 2)
+        if (sketchInit.type === 'PipeExpression') {
+          // Calculate end angle based on mouse position
+          const endAngle = Math.atan2(
+            args.intersectionPoint.twoD.y - center[1],
+            args.intersectionPoint.twoD.x - center[0]
           )
 
-          // Calculate end angle based on mouse position
-          const endAngle =
-            (Math.atan2(mousePoint[1] - center[1], mousePoint[0] - center[0]) *
-              180) /
-            Math.PI
+          // Calculate the new 'to' point using the existing radius and the new end angle
+          const newTo: [number, number] = [
+            center[0] + radius * Math.cos(endAngle),
+            center[1] + radius * Math.sin(endAngle),
+          ]
 
           const moddedResult = changeSketchArguments(
             modded,
@@ -1743,16 +1745,15 @@ export class SceneEntities {
             {
               type: 'arc-segment',
               from: lastSeg.to,
-              to: mousePoint,
+              to: newTo,
               center: center,
-              radius: newRadius,
+              radius: radius,
               ccw: true,
             }
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
         }
-
         const { execState } = await executeAst({
           ast: modded,
           engineCommandManager: this.engineCommandManager,
@@ -1800,17 +1801,17 @@ export class SceneEntities {
 
         let modded = structuredClone(_ast)
         if (sketchInit.type === 'CallExpressionKw') {
-          // Calculate new arc parameters based on final mouse position
-          const finalPoint: [number, number] = [
-            mousePoint.x || 0,
-            mousePoint.y || 0,
-          ]
-
-          // Calculate radius based on distance from center to final point
-          const finalRadius = Math.sqrt(
-            Math.pow(finalPoint[0] - center[0], 2) +
-              Math.pow(finalPoint[1] - center[1], 2)
+          // Calculate end angle based on final mouse position
+          const endAngle = Math.atan2(
+            mousePoint.y - center[1],
+            mousePoint.x - center[0]
           )
+
+          // Calculate the final 'to' point using the existing radius and the final end angle
+          const finalTo: [number, number] = [
+            center[0] + radius * Math.cos(endAngle),
+            center[1] + radius * Math.sin(endAngle),
+          ]
 
           const moddedResult = changeSketchArguments(
             modded,
@@ -1822,9 +1823,9 @@ export class SceneEntities {
             {
               type: 'arc-segment',
               from: lastSeg.to,
-              to: finalPoint,
+              to: finalTo,
               center: center,
-              radius: finalRadius,
+              radius: radius,
               ccw: true,
             }
           )
