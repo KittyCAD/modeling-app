@@ -31,8 +31,9 @@ jobs:
       - name: Install latest rust
         uses: actions-rs/toolchain@v1
         with:
-            toolchain: stable
+            toolchain: 1.85
             override: true
+            default: true
             components: rustfmt
 
       - name: Rust Cache

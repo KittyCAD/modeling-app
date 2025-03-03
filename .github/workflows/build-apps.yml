@@ -41,7 +41,7 @@ jobs:
           workspaces: './rust'
 
       # TODO: see if we can fetch from main instead if no diff at rust
-      - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+      - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
         with:
           tool: wasm-pack
 
@@ -132,7 +132,7 @@ jobs:
 
       - name: yarn install
         # Windows is picky sometimes and fails on fetch. Step takes about ~30s
-        uses: nick-fields/retry@v3.0.1
+        uses: nick-fields/retry@v3.0.2
         with:
           timeout_minutes: 2
           max_attempts: 3
@@ -183,7 +183,7 @@ jobs:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
-        uses: nick-fields/retry@v3.0.1
+        uses: nick-fields/retry@v3.0.2
         with:
           timeout_minutes: 10
           max_attempts: 3
@@ -244,7 +244,7 @@ jobs:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
-        uses: nick-fields/retry@v3.0.1
+        uses: nick-fields/retry@v3.0.2
         with:
           timeout_minutes: 10
           max_attempts: 3

@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+	"kcl-bumper",
 	"kcl-derive-docs",
 	"kcl-lib",
 	"kcl-python-bindings",

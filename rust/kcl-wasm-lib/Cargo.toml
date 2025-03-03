@@ -1,9 +1,10 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.0"
+version = "0.1.45"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
+publish = false
 
 [lib]
 crate-type = ["cdylib"]

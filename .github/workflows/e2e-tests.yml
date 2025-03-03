@@ -105,7 +105,7 @@ jobs:
       continue-on-error: true
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
-    - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+    - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
       with:
         tool: wasm-pack
     - name: Cache Wasm (because rust diff)
@@ -219,7 +219,7 @@ jobs:
     - name: Run playwright/electron flow (with retries)
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
-      uses: nick-fields/retry@v3.0.1
+      uses: nick-fields/retry@v3.0.2
       with:
         command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
         timeout_minutes: 30

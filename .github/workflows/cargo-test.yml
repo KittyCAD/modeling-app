@@ -42,8 +42,9 @@ jobs:
       - name: Install latest rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: 1.85
           override: true
+          default: true
       - name: Install vector
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
