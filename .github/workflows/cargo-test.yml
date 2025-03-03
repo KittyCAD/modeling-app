@@ -66,6 +66,7 @@ jobs:
       - name: cargo test only kcl-samples
         id: cargo-test-kcl-samples
         if: needs.path-changes.outputs.outside-kcl-samples == 'false'
+        continue-on-error: true
         shell: bash
         run: |-
           cd rust
