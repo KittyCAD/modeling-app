@@ -5,7 +5,9 @@ on:
 
   pull_request:
   workflow_dispatch:
-permissions: read-all
+permissions:
+  contents: read
+  pull-requests: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -61,6 +63,7 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
       - name: cargo test only kcl-samples
+        id: cargo-test-kcl-samples
         if: needs.path-changes.outputs.outside-kcl-samples == 'false'
         shell: bash
         run: |-
@@ -70,6 +73,20 @@ jobs:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_BACKTRACE: full
           RUST_MIN_STACK: 10485760000
+      - name: Commit differences
+        if: needs.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
+        shell: bash
+        run: |
+          just overwrite-sim-test kcl-samples
+          git add rust/kcl-lib/tests
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin
+          echo ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          git commit -m "Update kcl-samples simulation test output" || true
+          git push origin ${{ github.head_ref }}
       - name: cargo test
         if: needs.path-changes.outputs.outside-kcl-samples == 'true'
         shell: bash
