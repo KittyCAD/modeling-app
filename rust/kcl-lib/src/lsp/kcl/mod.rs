@@ -44,6 +44,11 @@ use tower_lsp::{
 use crate::{
     docs::kcl_doc::DocData,
     errors::Suggestion,
+    exec::KclValue,
+    execution::{
+        cache::{self, OldAstState},
+        kcl_value::FunctionSource,
+    },
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
         ast::types::{Expr, VariableKind},
@@ -1027,46 +1032,98 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = ast.ast.get_hover_value_for_position(pos, current_code) else {
+        let Some(hover) = ast.ast.get_hover_value_for_position(pos, current_code, None) else {
             return Ok(None);
         };
 
         match hover {
             crate::parsing::ast::types::Hover::Function { name, range } => {
-                // Get the docs for this function.
-                let Some(completion) = self.stdlib_completions.get(&name) else {
-                    return Ok(None);
-                };
-                let Some(docs) = &completion.documentation else {
-                    return Ok(None);
-                };
+                let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
+                    match value {
+                        // User-defined or KCL std function
+                        KclValue::Function {
+                            value: FunctionSource::User { ast, .. },
+                            ..
+                        } => {
+                            // TODO get docs from comments
+                            Some((ast.signature(), ""))
+                        }
+                        _ => None,
+                    }
+                })
+                .await
+                {
+                    result
+                } else {
+                    // Get the docs for this function.
+                    let Some(completion) = self.stdlib_completions.get(&name) else {
+                        return Ok(None);
+                    };
+                    let Some(docs) = &completion.documentation else {
+                        return Ok(None);
+                    };
 
-                let docs = match docs {
-                    Documentation::String(docs) => docs,
-                    Documentation::MarkupContent(MarkupContent { value, .. }) => value,
-                };
+                    let docs = match docs {
+                        Documentation::String(docs) => docs,
+                        Documentation::MarkupContent(MarkupContent { value, .. }) => value,
+                    };
 
-                let Some(label_details) = &completion.label_details else {
-                    return Ok(None);
+                    // TODO trim docs
+
+                    let Some(label_details) = &completion.label_details else {
+                        return Ok(None);
+                    };
+
+                    let sig = if let Some(detail) = &label_details.detail {
+                        detail.clone()
+                    } else {
+                        String::new()
+                    };
+
+                    (sig, &**docs)
                 };
 
                 Ok(Some(Hover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: format!(
-                            "```\n{}{}\n```\n\n{}",
-                            name,
-                            if let Some(detail) = &label_details.detail {
-                                detail
-                            } else {
-                                ""
-                            },
-                            docs
-                        ),
+                        value: format!("```\n{}{}\n```\n\n{}", name, sig, docs),
                     }),
                     range: Some(range),
                 }))
             }
+            crate::parsing::ast::types::Hover::Variable {
+                name,
+                ty: Some(ty),
+                range,
+            } => Ok(Some(Hover {
+                contents: HoverContents::Markup(MarkupContent {
+                    kind: MarkupKind::Markdown,
+                    value: format!("```\n{}: {}\n```", name, ty),
+                }),
+                range: Some(range),
+            })),
+            crate::parsing::ast::types::Hover::Variable { name, ty: None, range } => {
+                Ok(with_cached_var(&name, |value| {
+                    let mut text: String = format!("```\n{}", name);
+                    if let Some(ty) = value.principal_type() {
+                        text.push_str(&format!(": {}", ty));
+                    }
+                    if let Some(v) = value.value_str() {
+                        text.push_str(&format!(" = {}", v));
+                    }
+                    text.push_str("\n```");
+
+                    Hover {
+                        contents: HoverContents::Markup(MarkupContent {
+                            kind: MarkupKind::Markdown,
+                            value: text,
+                        }),
+                        range: Some(range),
+                    }
+                })
+                .await)
+            }
+            // TODO we're getting the signature help rather than carrying on to the variables in nested exprs
             crate::parsing::ast::types::Hover::Signature { .. } => Ok(None),
             crate::parsing::ast::types::Hover::Comment { value, range } => Ok(Some(Hover {
                 contents: HoverContents::Markup(MarkupContent {
@@ -1221,7 +1278,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = value.get_hover_value_for_position(pos, current_code) else {
+        let Some(hover) = value.get_hover_value_for_position(pos, current_code, None) else {
             return Ok(None);
         };
 
@@ -1249,7 +1306,7 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature))
             }
-            crate::parsing::ast::types::Hover::Comment { value: _, range: _ } => {
+            _ => {
                 return Ok(None);
             }
         }
@@ -1466,4 +1523,21 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
     }
 
     char_position
+}
+
+async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
+    let Some(OldAstState { result_env, .. }) = cache::read_old_ast().await else {
+        crate::log::log("no cache");
+        return None;
+    };
+    let Some(mem) = cache::read_old_memory().await else {
+        crate::log::log("no mem");
+        return None;
+    };
+    let Ok(value) = mem.get_from(&name, result_env, SourceRange::default()) else {
+        crate::log::log(format!("no value {name} {result_env:?} {mem}"));
+        return None;
+    };
+
+    Some(f(value))
 }

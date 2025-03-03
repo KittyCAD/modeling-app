@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt};
 
 use anyhow::Result;
 use schemars::JsonSchema;
@@ -565,14 +565,14 @@ impl KclValue {
 
     /// True if `self` has a type which is a subtype of `ty` without coercion.
     pub fn has_type(&self, ty: &RuntimeType) -> bool {
-        let Some(self_ty) = self.ty() else {
+        let Some(self_ty) = self.principal_type() else {
             return false;
         };
 
         self_ty.subtype(ty)
     }
 
-    fn ty(&self) -> Option<RuntimeType> {
+    pub fn principal_type(&self) -> Option<RuntimeType> {
         match self {
             KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
             KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(ty.clone()))),
@@ -580,7 +580,7 @@ impl KclValue {
             KclValue::Object { value, .. } => {
                 let properties = value
                     .iter()
-                    .map(|(k, v)| v.ty().map(|t| (k.clone(), t)))
+                    .map(|(k, v)| v.principal_type().map(|t| (k.clone(), t)))
                     .collect::<Option<Vec<_>>>()?;
                 Some(RuntimeType::Object(properties))
             }
@@ -592,7 +592,7 @@ impl KclValue {
             KclValue::Array { value, .. } => Some(RuntimeType::Tuple(
                 value
                     .iter()
-                    .map(|v| v.ty().and_then(RuntimeType::primitive))
+                    .map(|v| v.principal_type().and_then(RuntimeType::primitive))
                     .collect::<Option<Vec<_>>>()?,
             )),
             KclValue::Face { .. } => None,
@@ -691,6 +691,32 @@ impl KclValue {
             })),
         }
     }
+
+    pub fn value_str(&self) -> Option<String> {
+        match self {
+            KclValue::Bool { value, .. } => Some(format!("{value}")),
+            KclValue::Number { value, .. } => Some(format!("{value}")),
+            KclValue::String { value, .. } => Some(format!("'{value}'")),
+            KclValue::Uuid { value, .. } => Some(format!("{value}")),
+            KclValue::TagDeclarator(tag) => Some(format!("${}", tag.name)),
+            KclValue::TagIdentifier(tag) => Some(format!("${}", tag.value)),
+            // TODO better Array and Object stringification
+            KclValue::Array { .. } => Some(format!("[...]")),
+            KclValue::Object { .. } => Some(format!("{{ ... }}")),
+            KclValue::Module { .. }
+            | KclValue::Solid { .. }
+            | KclValue::Solids { .. }
+            | KclValue::Sketch { .. }
+            | KclValue::Sketches { .. }
+            | KclValue::Helix { .. }
+            | KclValue::ImportedGeometry(_)
+            | KclValue::Function { .. }
+            | KclValue::Plane { .. }
+            | KclValue::Face { .. }
+            | KclValue::KclNone { .. }
+            | KclValue::Tombstone { .. } => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -742,6 +768,29 @@ impl RuntimeType {
     }
 }
 
+impl fmt::Display for RuntimeType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            RuntimeType::Primitive(t) => t.fmt(f),
+            RuntimeType::Array(t) => write!(f, "[{t}]"),
+            RuntimeType::Tuple(ts) => write!(
+                f,
+                "[{}]",
+                ts.iter().map(|t| t.to_string()).collect::<Vec<_>>().join(", ")
+            ),
+            RuntimeType::Object(items) => write!(
+                f,
+                "{{ {} }}",
+                items
+                    .iter()
+                    .map(|(n, t)| format!("{n}: {t}"))
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveType {
     Number(NumericType),
@@ -762,6 +811,20 @@ impl PrimitiveType {
             AstPrimitiveType::Solid => Some(PrimitiveType::Solid),
             AstPrimitiveType::Plane => Some(PrimitiveType::Plane),
             _ => None,
+        }
+    }
+}
+
+impl fmt::Display for PrimitiveType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
+            PrimitiveType::Number(_) => write!(f, "number"),
+            PrimitiveType::String => write!(f, "string"),
+            PrimitiveType::Boolean => write!(f, "bool"),
+            PrimitiveType::Sketch => write!(f, "Sketch"),
+            PrimitiveType::Solid => write!(f, "Solid"),
+            PrimitiveType::Plane => write!(f, "Plane"),
         }
     }
 }
@@ -872,6 +935,16 @@ pub enum UnitType {
     Count,
     Length(UnitLen),
     Angle(UnitAngle),
+}
+
+impl std::fmt::Display for UnitType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UnitType::Count => write!(f, "_"),
+            UnitType::Length(l) => l.fmt(f),
+            UnitType::Angle(a) => a.fmt(f),
+        }
+    }
 }
 
 // TODO called UnitLen so as not to clash with UnitLength in settings)

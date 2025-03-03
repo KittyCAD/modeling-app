@@ -1,7 +1,7 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::{BoxNode, ConstraintLevel, Digest, Expr, Hover, Node, NodeList};
+use super::{BoxNode, ConstraintLevel, Digest, Expr, Hover, Node, NodeList, Scope};
 use crate::SourceRange;
 
 // TODO: This should be its own type, similar to Program,
@@ -58,16 +58,16 @@ impl Node<IfExpression> {
 }
 
 impl IfExpression {
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+    pub(super) fn get_hover_value_for_position(&self, pos: usize, code: &str, scope: Option<Scope>) -> Option<Hover> {
         self.cond
-            .get_hover_value_for_position(pos, code)
-            .or_else(|| self.then_val.get_hover_value_for_position(pos, code))
+            .get_hover_value_for_position(pos, code, scope.clone())
+            .or_else(|| self.then_val.get_hover_value_for_position(pos, code, scope.clone()))
             .or_else(|| {
                 self.else_ifs
                     .iter()
-                    .find_map(|else_if| else_if.get_hover_value_for_position(pos, code))
+                    .find_map(|else_if| else_if.get_hover_value_for_position(pos, code, scope.clone()))
             })
-            .or_else(|| self.final_else.get_hover_value_for_position(pos, code))
+            .or_else(|| self.final_else.get_hover_value_for_position(pos, code, scope))
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -89,10 +89,10 @@ impl IfExpression {
 }
 
 impl ElseIf {
-    fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+    fn get_hover_value_for_position(&self, pos: usize, code: &str, scope: Option<Scope>) -> Option<Hover> {
         self.cond
-            .get_hover_value_for_position(pos, code)
-            .or_else(|| self.then_val.get_hover_value_for_position(pos, code))
+            .get_hover_value_for_position(pos, code, scope.clone())
+            .or_else(|| self.then_val.get_hover_value_for_position(pos, code, scope))
     }
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
