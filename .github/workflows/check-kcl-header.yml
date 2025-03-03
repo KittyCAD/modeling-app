@@ -1,0 +1,45 @@
+name: Check kcl-samples files for proper header structure
+
+on:
+  pull_request:
+    paths:
+      - 'public/kcl-samples/**/*.kcl'
+      - .github/workflows/check-kcl-header.yml
+    branches:
+      - main
+  push:
+    paths:
+      - 'public/kcl-samples/**/*.kcl'
+      - .github/workflows/check-kcl-header.yml
+    branches:
+      - main
+
+jobs:
+  check-kcl-header:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check KCL files for header comment block and blank line
+        run: |
+          files=$(find public/kcl-samples -type f -name '*.kcl')
+          failed_files=()
+
+          for file in $files; do
+            if ! awk '
+              NR == 1 && $0 !~ /^\/\// { exit 1 }
+              BEGIN { in_comment = 1 }
+              NF == 0 && in_comment == 1 { in_comment = 0; next }
+              $1 !~ /^\/\// && in_comment == 1 { exit 1 }
+              in_comment == 0 && NF > 0 { exit 0 }
+              END { if (in_comment == 1) exit 1 }
+              ' "$file"; then
+              failed_files+=("$file")
+            fi
+          done
+
+          if [ ${#failed_files[@]} -ne 0 ]; then
+            echo "One or more KCL files do not begin with a header comment block followed by a blank line:"
+            printf '%s\n' "${failed_files[@]}"
+            exit 1
+          fi
