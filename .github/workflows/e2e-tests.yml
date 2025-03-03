@@ -194,7 +194,7 @@ jobs:
         path: test-results/
     - name: Run playwright/electron flow (with retries)
       id: retry
-      if: ${{ !cancelled() && steps.deps-install.outcome == "success" }}
+      if: ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
       uses: nick-fields/retry@v3.0.2
       with:
         shell: bash
