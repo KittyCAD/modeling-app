@@ -9,6 +9,11 @@ fn main() -> Result<()> {
     let mut dirs = std::fs::read_dir(".").context("Could not read current directory")?;
     for dir in dirs.by_ref() {
         let dir = dir.context("Could not read directory")?;
+        if !(dir.path().display().to_string().starts_with("./kcl-") && dir.path().is_dir()) {
+            // We only care about the kcl-* directories.
+            continue;
+        }
+        println!("Found directory: {}", dir.path().display());
         run_on_manifest(dir.path().join("Cargo.toml"), &args)?;
         eprintln!("Bumped version in {}", dir.path().display());
     }
