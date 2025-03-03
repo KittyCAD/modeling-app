@@ -20,7 +20,7 @@ clap = { version = "4.5.27", default-features = false, optional = true, features
     "std",
     "derive",
 ] }
-convert_case = "0.6.0"
+convert_case = "0.8.0"
 dashmap = "6.1.0"
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
