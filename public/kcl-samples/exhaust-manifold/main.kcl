@@ -1,0 +1,152 @@
+// Exhaust Manifold
+// A welded exhaust header for an inline 4-cylinder engine
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+// Define Constants
+primaryTubeDiameter = 1.625
+wallThickness = 0.080
+plateHeight = 0.125
+bendRadius = 3
+
+// Create a function to draw each primary tube with specified lengths and angles
+fn primaryTube(n, angle001, length001, length002, length003) {
+  // Create an index for the function
+  pos001 = n * 2
+
+  // Define a plane for each sweep path defined by an angle
+  sweepPlane = {
+    plane = {
+      origin = [pos001, 0.0, 0],
+      xAxis = [
+        sin(toRadians(-angle001)),
+        cos(toRadians(-angle001)),
+        0.0
+      ],
+      yAxis = [0.0, 0.0, 1.0],
+      zAxis = [1.0, 0.0, 0.0]
+    }
+  }
+
+  // Draw a path for each sweep
+  sweepPath = startSketchOn(sweepPlane)
+    |> startProfileAt([0, plateHeight], %)
+    |> line(end = [0, length001])
+    |> tangentialArc({ offset = -80, radius = bendRadius }, %, $arc01)
+    |> angledLine({
+         angle = tangentToEnd(arc01),
+         length = length002
+       }, %)
+    |> tangentialArc({ offset = 85, radius = bendRadius }, %, $arc02)
+    |> angledLine({
+         angle = tangentToEnd(arc02),
+         length = length003
+       }, %)
+
+  // Create the cross section of each tube and sweep them
+  sweepProfile = startSketchOn('XY')
+    |> circle(
+         center = [pos001, 0],
+         radius = primaryTubeDiameter / 2
+       )
+    |> hole(circle(
+         center = [pos001, 0],
+         radius = primaryTubeDiameter / 2 - wallThickness
+       ), %)
+    |> sweep(path = sweepPath)
+
+  return {  }
+}
+
+// Draw a primary tube for each cylinder with specified lengths and angles
+primaryTube(0, 0, 3, 6, 5)
+primaryTube(1, 1, 3, 6, 5)
+primaryTube(2, 24.3, 5, 5, 3)
+primaryTube(3, 25.2, 5, 5, 3)
+
+// Create the mounting flange for the header
+flangeSketch = startSketchOn('XY')
+  |> startProfileAt([3 + 1.3, -1.25], %)
+  |> xLine(-2.6, %, $seg01)
+  |> tangentialArc({ radius = .3, offset = -40 }, %)
+  |> tangentialArc({ radius = .9, offset = 80 }, %)
+  |> tangentialArc({ radius = .3, offset = -40 }, %)
+  |> xLine(-1.4, %, $seg03)
+  |> yLine(segLen(seg01), %, $seg04)
+  |> xLine(3.1, %, $seg05)
+  |> tangentialArc({ radius = .3, offset = -40 }, %)
+  |> tangentialArc({ radius = 1.5, offset = 80 }, %)
+  |> tangentialArc({ radius = .3, offset = -40 }, %)
+  |> xLine(segLen(seg05), %, $seg07)
+  |> yLineTo(profileStartY(%), %, $seg08)
+  |> xLine(-segLen(seg03), %, $seg09)
+  |> tangentialArc({ radius = .3, offset = -40 }, %)
+  |> tangentialArc({ radius = .9, offset = 80 }, %)
+  |> tangentialArcTo([profileStartX(%), profileStartY(%)], %)
+  |> close()
+
+  // Create openings in the flange to accommodate each tube
+  |> hole(circle(
+       center = [0, 0],
+       radius = primaryTubeDiameter / 2 - wallThickness
+     ), %)
+  |> hole(circle(
+       center = [2, 0],
+       radius = primaryTubeDiameter / 2 - wallThickness
+     ), %)
+  |> hole(circle(
+       center = [4, 0],
+       radius = primaryTubeDiameter / 2 - wallThickness
+     ), %)
+  |> hole(circle(
+       center = [6, 0],
+       radius = primaryTubeDiameter / 2 - wallThickness
+     ), %)
+
+  // Add mounting holes to the flange
+  |> hole(circle(
+       center = [
+         -primaryTubeDiameter * .6,
+         -primaryTubeDiameter * .6
+       ],
+       radius = 0.25 / 2
+     ), %)
+  |> hole(circle(
+       center = [
+         primaryTubeDiameter * .6,
+         primaryTubeDiameter * .6
+       ],
+       radius = 0.25 / 2
+     ), %)
+  |> hole(circle(
+       center = [
+         3 * 2 - (primaryTubeDiameter * .6),
+         primaryTubeDiameter * .6
+       ],
+       radius = 0.25 / 2
+     ), %)
+  |> hole(circle(
+       center = [
+         3 * 2 + primaryTubeDiameter * .6,
+         -primaryTubeDiameter * .6
+       ],
+       radius = 0.25 / 2
+     ), %)
+
+  // Extrude the flange and fillet the edges
+  |> extrude(length = plateHeight)
+  |> fillet(
+       radius = 1.5,
+       tags = [
+         getNextAdjacentEdge(seg04),
+         getNextAdjacentEdge(seg07)
+       ]
+     )
+  |> fillet(
+       radius = .25,
+       tags = [
+         getNextAdjacentEdge(seg03),
+         getNextAdjacentEdge(seg08)
+       ]
+     )

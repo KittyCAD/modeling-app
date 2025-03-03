@@ -1,0 +1,159 @@
+// A mounting bracket for the Focusrite Scarlett Solo audio interface
+// This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// define constants in mm
+radius = 6.0
+width = 144.0
+length = 80.0
+depth = 45.0
+thk = 4
+holeDiam = 5
+tabLength = 25
+tabWidth = 12
+tabThk = 4
+
+// define a rectangular shape func
+fn rectShape(pos, w, l) {
+  rr = startSketchOn('xy')
+    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge01)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge02)
+    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge03)
+    |> close(tag = $edge04)
+  return rr
+}
+
+// define the bracket plane
+bracketPlane = {
+  plane = {
+    origin = { x = 0, y = length / 2 + thk, z = 0 },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 0, y = -1, z = 0 }
+  }
+}
+
+// build the bracket sketch around the body
+fn bracketSketch(w, d, t) {
+  s = startSketchOn(bracketPlane)
+    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
+    |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
+    |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
+    |> line(endAbsolute = [w / 2, d + t], tag = $edge4)
+    |> line(endAbsolute = [w / 2, 0], tag = $edge5)
+    |> line(endAbsolute = [-w / 2, 0], tag = $edge6)
+    |> line(endAbsolute = [-w / 2, d + t], tag = $edge7)
+    |> close(tag = $edge8)
+  return s
+}
+
+// build the body of the bracket
+bs = bracketSketch(width, depth, thk)
+bracketBody = bs
+  |> extrude(length = length + 2 * thk)
+  |> fillet(
+       radius = radius,
+       tags = [
+         getPreviousAdjacentEdge(bs.tags.edge7),
+         getPreviousAdjacentEdge(bs.tags.edge2),
+         getPreviousAdjacentEdge(bs.tags.edge3),
+         getPreviousAdjacentEdge(bs.tags.edge6)
+       ]
+     )
+
+// define the tab plane
+tabPlane = {
+  plane = {
+    origin = { x = 0, y = 0, z = depth + thk },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 1, z = 0 },
+    zAxis = { x = 0, y = 0, z = 1 }
+  }
+}
+
+// build the tabs of the mounting bracket (right side)
+tabsR = startSketchOn(tabPlane)
+  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
+  |> line(end = [tabWidth, -tabLength / 3], tag = $edge11)
+  |> line(end = [0, -tabLength / 3 * 2], tag = $edge12)
+  |> line(end = [-tabWidth, -tabLength / 3], tag = $edge13)
+  |> close(tag = $edge14)
+  |> hole(circle(
+       center = [
+         width / 2 + thk + tabWidth / 2,
+         length / 2 + thk - (tabLength / (3 / 2))
+       ],
+       radius = holeDiam / 2
+     ), %)
+  |> extrude(length = -tabThk)
+  |> fillet(
+       radius = holeDiam / 2,
+       tags = [
+         getNextAdjacentEdge(edge11),
+         getNextAdjacentEdge(edge12)
+       ]
+     )
+  |> patternLinear3d(
+       axis = [0, -1, 0],
+       instances = 2,
+       distance = length + 2 * thk - (tabLength * 4 / 3)
+     )
+
+// build the tabs of the mounting bracket (left side)
+tabsL = startSketchOn(tabPlane)
+  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
+  |> line(end = [-tabWidth, -tabLength / 3], tag = $edge21)
+  |> line(end = [0, -tabLength / 3 * 2], tag = $edge22)
+  |> line(end = [tabWidth, -tabLength / 3], tag = $edge23)
+  |> close(tag = $edge24)
+  |> hole(circle(
+       center = [
+         -width / 2 - thk - (tabWidth / 2),
+         length / 2 + thk - (tabLength / (3 / 2))
+       ],
+       radius = holeDiam / 2
+     ), %)
+  |> extrude(length = -tabThk)
+  |> fillet(
+       radius = holeDiam / 2,
+       tags = [
+         getNextAdjacentEdge(edge21),
+         getNextAdjacentEdge(edge22)
+       ]
+     )
+  |> patternLinear3d(
+       axis = [0, -1, 0],
+       instances = 2,
+       distance = length + 2 * thk - (tabLength * 4 / 3)
+     )
+
+// define a plane for retention bumps
+retPlane = {
+  plane = {
+    origin = { x = -width / 2 + 20, y = 0, z = 0 },
+    xAxis = { x = 0, y = 1, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 1, y = 0, z = 0 }
+  }
+}
+
+// build the retention bump in the front
+retFront = startSketchOn(retPlane)
+  |> startProfileAt([-length / 2 - thk, 0], %)
+  |> line(end = [0, thk])
+  |> line(end = [thk, -thk])
+  |> close()
+  |> extrude(length = width - 40)
+
+// build the retention bump in the back
+retBack = startSketchOn(retPlane)
+  |> startProfileAt([length / 2 + thk, 0], %)
+  |> line(end = [0, thk])
+  |> line(end = [-thk, 0])
+  |> line(end = [0, -thk])
+  |> close()
+  |> extrude(length = width - 40)

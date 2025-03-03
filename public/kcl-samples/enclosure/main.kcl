@@ -1,0 +1,196 @@
+// Enclosure
+// An enclosure body and sealing lid for storing items
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+length = 175
+width = 125
+height = 70
+wallThickness = 3
+holeDia = 4
+
+// Model a box with base enclosure dimensions
+sketch001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> angledLine([0, width], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) + 90,
+       length
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+extrude001 = extrude(sketch001, length = height)
+  |> fillet(
+       radius = wallThickness * 4,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ]
+     )
+
+  // Apply a shell to the enclosure base to create the internal storage
+  |> shell(
+       faces = ["end"],
+       thickness = wallThickness
+     )
+
+// Define a function to create the internal structure to secure a fastener at each corner
+fn function001(originStart) {
+  // Create a plane to sketch on shell interior
+  plane001 = {
+    plane = {
+      origin = [0.0, 0.0, wallThickness],
+      xAxis = [1.0, 0.0, 0.0],
+      yAxis = [0.0, 1.0, 0.0],
+      zAxis = [0.0, 0.0, 1.0]
+    }
+  }
+
+  // Create a pillar with a fasterner hole at the center
+  sketch002 = startSketchOn(plane001)
+    |> circle(
+         center = [originStart[0], originStart[1]],
+         radius = holeDia + wallThickness
+       )
+    |> hole(circle(
+         center = [originStart[0], originStart[1]],
+         radius = holeDia
+       ), %)
+  extrude002 = extrude(sketch002, length = height - wallThickness)
+
+  return extrude002
+}
+
+// Place the internal pillar at each corner
+function001([
+  wallThickness * 3 + holeDia,
+  wallThickness * 3 + holeDia
+])
+function001([
+  wallThickness * 3 + holeDia,
+  length - (wallThickness * 3 + holeDia)
+])
+function001([
+  width - (wallThickness * 3 + holeDia),
+  wallThickness * 3 + holeDia
+])
+function001([
+  width - (wallThickness * 3 + holeDia),
+  length - (wallThickness * 3 + holeDia)
+])
+
+// Define lid position and outer surface
+sketch003 = startSketchOn('XY')
+  |> startProfileAt([width * 1.2, 0], %)
+  |> angledLine([0, width], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA001) + 90,
+       length
+     ], %, $rectangleSegmentB002)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC002)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
+  |> close()
+  |> hole(circle(
+       center = [
+         width * 1.2 + wallThickness * 3 + holeDia,
+         wallThickness * 3 + holeDia
+       ],
+       radius = holeDia
+     ), %)
+  |> hole(circle(
+       center = [
+         width * 1.2 + wallThickness * 3 + holeDia,
+         length - (wallThickness * 3 + holeDia)
+       ],
+       radius = holeDia
+     ), %)
+  |> hole(circle(
+       center = [
+         width * 2.2 - (wallThickness * 3 + holeDia),
+         wallThickness * 3 + holeDia
+       ],
+       radius = holeDia
+     ), %)
+  |> hole(circle(
+       center = [
+         width * 2.2 - (wallThickness * 3 + holeDia),
+         length - (wallThickness * 3 + holeDia)
+       ],
+       radius = holeDia
+     ), %)
+extrude003 = extrude(sketch003, length = wallThickness)
+  |> fillet(
+       radius = wallThickness * 4,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentA002),
+         getNextAdjacentEdge(rectangleSegmentB002),
+         getNextAdjacentEdge(rectangleSegmentC002),
+         getNextAdjacentEdge(rectangleSegmentD002)
+       ]
+     )
+
+// Define lid inner and sealing surfaces
+sketch004 = startSketchOn(extrude003, 'END')
+  |> startProfileAt([
+       width * 1.2 + wallThickness,
+       wallThickness
+     ], %)
+  |> angledLine([0, width - (2 * wallThickness)], %, $rectangleSegmentA003)
+  |> angledLine([
+       segAng(rectangleSegmentA003) + 90,
+       length - (2 * wallThickness)
+     ], %, $rectangleSegmentB003)
+  |> angledLine([
+       segAng(rectangleSegmentA003),
+       -segLen(rectangleSegmentA003)
+     ], %, $rectangleSegmentC003)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD003)
+  |> close()
+  |> hole(circle(
+       center = [
+         width * 1.2 + wallThickness * 3 + holeDia,
+         wallThickness * 3 + holeDia
+       ],
+       radius = holeDia + wallThickness
+     ), %)
+  |> hole(circle(
+       center = [
+         width * 1.2 + wallThickness * 3 + holeDia,
+         length - (wallThickness * 3 + holeDia)
+       ],
+       radius = holeDia + wallThickness
+     ), %)
+  |> hole(circle(
+       center = [
+         width * 2.2 - (wallThickness * 3 + holeDia),
+         wallThickness * 3 + holeDia
+       ],
+       radius = holeDia + wallThickness
+     ), %)
+  |> hole(circle(
+       center = [
+         width * 2.2 - (wallThickness * 3 + holeDia),
+         length - (wallThickness * 3 + holeDia)
+       ],
+       radius = holeDia + wallThickness
+     ), %)
+extrude004 = extrude(sketch004, length = wallThickness)
+  |> fillet(
+       radius = wallThickness * 3,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentA003),
+         getNextAdjacentEdge(rectangleSegmentB003),
+         getNextAdjacentEdge(rectangleSegmentC003),
+         getNextAdjacentEdge(rectangleSegmentD003)
+       ]
+     )

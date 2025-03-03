@@ -1,0 +1,197 @@
+// Car Wheel
+// A sports car wheel with a circular lug pattern and spokes.
+
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+
+// Import Constants
+import lugCount, lugSpacing, offset, backSpacing, wheelWidth, wheelDiameter, spokeCount, spokeGap, spokeAngle, spokeThickness from "globals.kcl"
+
+// Create the wheel center
+lugBase = startSketchOn('XZ')
+  |> circle(
+       center = [0, 0],
+       radius = (lugSpacing + 1.5) / 2
+     )
+  |> hole(circle(
+       center = [0, 0],
+       radius = (lugSpacing - 1.5) / 2
+     ), %)
+  |> extrude(length = wheelWidth / 20)
+
+// Extend the wheel center and bore holes to accomidate the lug heads
+lugExtrusion = startSketchOn(lugBase, 'END')
+  |> circle(
+       center = [0, 0],
+       radius = (lugSpacing + 1.5) / 2
+     )
+  |> hole(circle(
+       center = [0, 0],
+       radius = (lugSpacing - 1.5) / 2
+     ), %)
+  |> extrude(length = wheelWidth / 10)
+
+// Create the circular pattern for the lugs
+lugClearance = startSketchOn(lugExtrusion, 'END')
+  |> circle(
+       center = [lugSpacing / 2, 0],
+       radius = 1.2 / 2
+     )
+  |> patternCircular2d(
+       arcDegrees = 360,
+       center = [0, 0],
+       instances = lugCount,
+       rotateDuplicates = true
+     )
+  |> extrude(length = -wheelWidth / 10)
+
+// Create the circular pattern for the lug holes
+lugHoles = startSketchOn(lugBase, 'END')
+  |> circle(
+       center = [lugSpacing / 2, 0],
+       radius = 16 * mm() / 2
+     )
+  |> patternCircular2d(
+       arcDegrees = 360,
+       center = [0, 0],
+       instances = lugCount,
+       rotateDuplicates = true
+     )
+  |> extrude(length = -wheelWidth / 20)
+  |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
+
+// Add detail to the wheel center by revolving curved edge profiles
+wheelCenterInner = startSketchOn('XY')
+  |> startProfileAt([(lugSpacing - 1.5) / 2, 0], %)
+  |> yLine(-wheelWidth / 10 - (wheelWidth / 20), %)
+  |> bezierCurve({
+       to = [-0.4, 0.3],
+       control1 = [-0.3, 0],
+       control2 = [0, 0.3]
+     }, %)
+  |> yLineTo(0, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve({ axis = 'y' }, %)
+  |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
+
+wheelCenterOuter = startSketchOn('XY')
+  |> startProfileAt([(lugSpacing + 1.5) / 2, 0], %)
+  |> yLine(-wheelWidth / 10 - (wheelWidth / 20), %)
+  |> bezierCurve({
+       to = [0.4, -0.1],
+       control1 = [0.3, 0],
+       control2 = [0.2, -0.3]
+     }, %)
+  |> yLineTo(-wheelWidth / 20, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve({ axis = 'y' }, %)
+  |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
+
+// Write a function that defines the spoke geometry, patterns and extrudes it
+fn spoke(spokeGap, spokeAngle, spokeThickness) {
+  // Seperating the spoke base planes
+  plane001 = {
+    plane = {
+      origin = [0.0, 0.0, spokeGap / 2],
+      xAxis = [1.0, 0.0, spokeAngle],
+      yAxis = [0.0, 1.0, 0.0],
+      zAxis = [0.0, 0.0, 1.0]
+    }
+  }
+
+  // Spoke cross sections
+  spokeProfile = startSketchOn(plane001)
+    |> startProfileAt([(lugSpacing + 2) / 2, -0.7], %)
+    |> bezierCurve({
+         to = [
+           (wheelDiameter - lugSpacing - 2.9) / 2,
+           offset
+         ],
+         control1 = [
+           (wheelDiameter - lugSpacing - 2.9) / 3.5,
+           offset / 7
+         ],
+         control2 = [
+           (wheelDiameter - lugSpacing - 2.9) / 4,
+           offset / 1.5
+         ]
+       }, %)
+    |> yLine(-wheelWidth / 15, %)
+    |> bezierCurve({
+         to = [
+           -(wheelDiameter - lugSpacing - 2.9) / 2,
+           -offset
+         ],
+         control1 = [
+           -(wheelDiameter - lugSpacing - 2.9) / 5,
+           -offset / 7
+         ],
+         control2 = [
+           -(wheelDiameter - lugSpacing - 2.9) / 5,
+           -offset / 1.5
+         ]
+       }, %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+
+  // Circular pattern spokes
+  spokePattern = extrude(spokeProfile, length = spokeThickness)
+    |> patternCircular3d(
+         axis = [0, 1, 0],
+         center = [0, -2000, 0],
+         instances = spokeCount,
+         arcDegrees = 360,
+         rotateDuplicates = true
+       )
+    |> appearance(color = "#ffffff", metalness = 0, roughness = 0)
+  return spokePattern
+}
+
+spoke(spokeGap, spokeAngle, spokeThickness)
+spoke(-spokeGap, -spokeAngle, -spokeThickness)
+
+// Define and revolve wheel exterior
+startSketchOn('XY')
+  |> startProfileAt([
+       wheelDiameter / 2,
+       -wheelWidth + backSpacing + offset
+     ], %)
+  |> yLine(wheelWidth * 0.25, %)
+  |> line(end = [-wheelWidth * 0.02, wheelWidth * 0.02])
+  |> yLine(wheelWidth * 0.25, %)
+  |> line(end = [wheelWidth * 0.02, wheelWidth * 0.02])
+  |> yLineTo(backSpacing + offset, %)
+  |> line(end = [wheelWidth * 0.05, wheelWidth * .01])
+  |> yLine(wheelWidth * 0.05, %)
+  |> xLine(-wheelWidth * 0.03, %)
+  |> yLine(-wheelWidth * 0.02, %)
+  |> line(end = [-wheelWidth * 0.05, -wheelWidth * 0.01])
+  |> yLine(-backSpacing * 0.7, %)
+  |> line(end = [
+       -wheelDiameter * 0.01,
+       -wheelWidth * 0.02
+     ])
+  |> yLineTo(offset - 0.2, %)
+  |> line(end = [
+       -wheelDiameter * 0.03,
+       -wheelWidth * 0.02
+     ])
+  |> yLine(-wheelWidth * 0.02, %)
+  |> line(end = [
+       wheelDiameter * 0.03,
+       -wheelWidth * 0.1
+     ])
+  |> yLine(-wheelWidth * 0.05, %)
+  |> line(end = [wheelWidth * 0.02, -wheelWidth * 0.02])
+  |> yLineTo(-wheelWidth + backSpacing + offset - 0.28, %)
+  |> line(end = [wheelWidth * 0.05, -wheelWidth * 0.01])
+  |> yLine(-wheelWidth * 0.02, %)
+  |> xLine(wheelWidth * 0.03, %)
+  |> yLine(wheelWidth * 0.05, %)
+  |> close()
+  |> revolve({ axis = 'y' }, %)
+  |> appearance(color = "#ffffff", metalness = 0, roughness = 0)

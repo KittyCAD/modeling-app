@@ -1,0 +1,245 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Variables in memory after executing walkie-talkie.kcl
+---
+{
+  "antenna": {
+    "type": "Module",
+    "value": 4,
+    "__meta": [
+      {
+        "sourceRange": [
+          433,
+          453,
+          0
+        ]
+      }
+    ]
+  },
+  "body": {
+    "type": "Module",
+    "value": 3,
+    "__meta": [
+      {
+        "sourceRange": [
+          415,
+          432,
+          0
+        ]
+      }
+    ]
+  },
+  "button": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          241,
+          954,
+          8
+        ]
+      }
+    ]
+  },
+  "case": {
+    "type": "Module",
+    "value": 5,
+    "__meta": [
+      {
+        "sourceRange": [
+          454,
+          471,
+          0
+        ]
+      }
+    ]
+  },
+  "height": {
+    "type": "Number",
+    "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          115,
+          116,
+          9
+        ]
+      }
+    ]
+  },
+  "knob": {
+    "type": "Module",
+    "value": 7,
+    "__meta": [
+      {
+        "sourceRange": [
+          511,
+          528,
+          0
+        ]
+      }
+    ]
+  },
+  "screenHeight": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          254,
+          255,
+          9
+        ]
+      }
+    ]
+  },
+  "screenWidth": {
+    "type": "Number",
+    "value": 1.75,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          227,
+          231,
+          9
+        ]
+      }
+    ]
+  },
+  "screenYPosition": {
+    "type": "Number",
+    "value": 1.25,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          115,
+          116,
+          9
+        ]
+      },
+      {
+        "sourceRange": [
+          290,
+          291,
+          9
+        ]
+      },
+      {
+        "sourceRange": [
+          294,
+          298,
+          9
+        ]
+      }
+    ]
+  },
+  "talkButton": {
+    "type": "Module",
+    "value": 6,
+    "__meta": [
+      {
+        "sourceRange": [
+          472,
+          510,
+          0
+        ]
+      }
+    ]
+  },
+  "thickness": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          155,
+          156,
+          9
+        ]
+      }
+    ]
+  },
+  "tolerance": {
+    "type": "Number",
+    "value": 0.02,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          574,
+          579,
+          9
+        ]
+      }
+    ]
+  },
+  "width": {
+    "type": "Number",
+    "value": 2.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          132,
+          135,
+          9
+        ]
+      }
+    ]
+  }
+}

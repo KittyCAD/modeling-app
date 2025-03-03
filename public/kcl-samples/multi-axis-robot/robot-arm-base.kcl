@@ -1,0 +1,82 @@
+// Robot Arm Base
+
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+
+// Import Constants
+import basePlateRadius, basePlateThickness, baseChamfer, baseHeight from "globals.kcl"
+
+// Base Plate
+sketch001 = startSketchOn('XY')
+  |> startProfileAt([-basePlateRadius, -basePlateRadius], %)
+  |> angledLine([0, 2 * basePlateRadius], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) + 90,
+       2 * basePlateRadius
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+extrude001 = extrude(sketch001, length = basePlateThickness)
+  |> chamfer(
+       length = baseChamfer,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ]
+     )
+
+// Base Motor for actuating first joint
+sketch002 = startSketchOn(extrude001, 'END')
+  |> circle(center = [0, 0], radius = 4, tag = $referenceEdge)
+extrude002 = extrude(sketch002, length = baseHeight - basePlateThickness - 1.5)
+  |> fillet(
+       radius = 0.1,
+       tags = [getOppositeEdge(referenceEdge)]
+     )
+sketch003 = startSketchOn(extrude002, 'END')
+  |> circle(center = [0, 0], radius = 0.5)
+extrude003 = extrude(sketch003, length = 1)
+
+// Pattern M8 mounting bolts in base
+sketch4A = startSketchOn(extrude001, 'END')
+  |> circle(
+       center = [
+         -basePlateRadius + 1,
+         -basePlateRadius + baseChamfer + 0.5
+       ],
+       radius = 0.4
+     )
+  |> patternCircular2d(
+       arcDegrees = 360,
+       center = [0, 0],
+       instances = 4,
+       rotateDuplicates = true
+     )
+
+extrude4A = extrude(sketch4A, length = -basePlateThickness)
+
+sketch4B = startSketchOn(extrude001, 'END')
+  |> circle(
+       center = [
+         -basePlateRadius + 0.5 + baseChamfer,
+         -basePlateRadius + 1
+       ],
+       radius = 0.4
+     )
+  |> patternCircular2d(
+       arcDegrees = 360,
+       center = [0, 0],
+       instances = 4,
+       rotateDuplicates = true
+     )
+
+extrude(sketch4B, length = -basePlateThickness)
+  |> appearance(color = "#754110", roughness = 90, metalness = 90)
