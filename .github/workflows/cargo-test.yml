@@ -16,12 +16,12 @@ jobs:
     runs-on: ubuntu-latest-8-cores
     steps:
       - uses: actions/checkout@v4
-      - name: Install latest rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.85
-          override: true
-          default: true
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          cp -n rust/rust-toolchain.toml ./ || true
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install vector
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
