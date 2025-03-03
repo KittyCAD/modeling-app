@@ -1,0 +1,68 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'public/kcl-samples/**'
+  pull_request:
+    paths:
+      - .github/workflows/pr-kcl-samples-repo.yml
+  workflow_dispatch:
+name: Create PR in kcl-samples repo
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  pr-kcl-samples-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          # required
+          app-id: ${{ secrets.GH_ORG_APP_ID }}
+          private-key: ${{ secrets.GH_ORG_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - uses: actions/checkout@v4
+      # Checkout the other repo since we want to update the files there.
+      - uses: actions/checkout@v4
+        with:
+          repository: 'KittyCAD/kcl-samples'
+          path: kcl-samples-repo
+          token: ${{ steps.app-token.outputs.token }}
+      - name: Move files to repo work tree
+        shell: bash
+        run: |
+          find kcl-samples-repo -type f \
+            ! -path "./.github/*" \
+            ! -path "./screenshots/*" \
+            ! -path "./step/*" \
+            -delete
+          # Copy files, including dotfiles, but excluding the .github directory.
+          rsync -av \
+            --exclude='.github' \
+            --exclude='screenshots' \
+            --exclude='step' \
+            public/kcl-samples/ kcl-samples-repo/
+      - name: Commit the changes in the repo
+        shell: bash
+        run: |
+          cd kcl-samples-repo
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add --all .
+          git commit -m "Updates from modeling-app repo" || exit 0
+          git fetch origin
+          git rebase origin/main || exit 0
+          export NEW_BRANCH="update-from-modeling-app"
+          git switch -c "$NEW_BRANCH"
+          git push -f origin "$NEW_BRANCH"
+          gh pr create --title "Update from modeling-app" \
+              --body "Updating files from the modeling-app repo" \
+              --head "$NEW_BRANCH" \
+              --reviewer jessfraz \
+              --base main || true
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+
