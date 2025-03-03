@@ -51,7 +51,7 @@ objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
 part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> yLineTo(1, %)
+  |> yLine(endAbsolute = 1)
   |> xLine(3.84, %) // selection-range-7ish-before-this
 
 variableBelowShouldNotBeIncluded = 3

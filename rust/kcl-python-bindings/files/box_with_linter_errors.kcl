@@ -6,9 +6,9 @@ const box_height = 50
 
 const box_sketch = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> xLine(box_width, %, $line1)
-  |> yLine(box_depth, %, $line2)
-  |> xLineTo(profileStartX(%), %, $line3)
+  |> xLine(length = box_width, tag = $line1)
+  |> yLine(length = box_depth, tag = $line2)
+  |> xLine(endAbsolute = profileStartX(%), tag = $line3)
   |> close(%, $line4)
 
 const box3D = extrude(box_sketch, length = box_height)

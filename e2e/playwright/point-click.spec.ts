@@ -2381,7 +2381,7 @@ extrude001 = extrude(sketch001, length = 40)
     const testPoint = { x: 580, y: 180 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 70)
-    const mutatedCode = 'xLine(-40, %, $seg01)'
+    const mutatedCode = 'xLine(length = -40, tag = $seg01)'
     const shellDeclaration =
       "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 5)"
 

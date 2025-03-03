@@ -22,4 +22,4 @@ startSketchOn('XY')
   offset: -angleOffset,
   radius: 0.5*r,
 }, %, $arc3)
-  |> xLineTo(1, %)
+  |> xLine(endAbsolute = 1)
