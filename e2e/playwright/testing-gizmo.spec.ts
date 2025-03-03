@@ -243,7 +243,7 @@ test.describe('Testing Gizmo', { tag: ['@skipWin'] }, () => {
 })
 
 test.describe(`Testing gizmo, fixture-based`, () => {
-  test('Center on selection from menu', async ({
+  test('Center on selection from menu, disable interaction in sketch mode', async ({
     context,
     page,
     homePage,
@@ -269,10 +269,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
              ], %)
           |> close()
         const sketch001 = startSketchOn('XZ')
-          |> circle({
-               center: [818.33, 168.1],
-               radius: 182.8
-             }, %)
+          |> circle(center = [818.33, 168.1], radius = 182.8)
           |> extrude(length = 50)
       `
       )
@@ -295,12 +292,11 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
     await test.step(`Select an edge of this circle`, async () => {
-      const circleSnippet =
-        'circle({ center: [818.33, 168.1], radius: 182.8 }, %)'
+      const circleSnippet = 'circle(center = [818.33, 168.1], radius = 182.8)'
       await moveToCircle()
       await clickCircle()
       await editor.expectState({
-        activeLines: [circleSnippet.slice(-5)],
+        activeLines: ['|>' + circleSnippet],
         highlightedCode: circleSnippet,
         diagnostics: [],
       })
@@ -317,6 +313,27 @@ test.describe(`Testing gizmo, fixture-based`, () => {
           target: [20785.58, -1270, 4269.74],
         },
       })
+    })
+
+    await test.step(`Gizmo should be disabled when in sketch mode`, async () => {
+      const sketchModeButton = page.getByRole('button', {
+        name: 'Edit sketch',
+      })
+      const exitSketchButton = page.getByRole('button', {
+        name: 'Exit sketch',
+      })
+
+      await sketchModeButton.click()
+      await expect(exitSketchButton).toBeVisible()
+      const gizmoPopoverButton = page.getByRole('button', {
+        name: 'view settings',
+      })
+      await gizmoPopoverButton.click()
+      const buttonToTest = page.getByRole('button', {
+        name: 'right view',
+      })
+      await expect(buttonToTest).toBeVisible()
+      await expect(buttonToTest).toBeDisabled()
     })
   })
 })

@@ -57,10 +57,10 @@ import { DefaultPlaneStr } from 'lib/planes'
 import { isArray, isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { SimplifiedArgDetails } from './std/stdTypes'
-import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
+import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { KclExpressionWithVariable } from 'lib/commandTypes'
 import {
   Artifact,
@@ -72,7 +72,7 @@ import {
   getFaceCodeRef,
   getPathsFromArtifact,
 } from './std/artifactGraph'
-import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
+import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
 

@@ -20,7 +20,8 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
       localStorage.setItem(
         'persistCode',
         `sketch2 = startSketchOn("XY")
-  sketch001 = startSketchAt([-0, -0])
+  sketch001 = startSketchOn("XY")
+    |> startProfileAt([-0, -0], %)
     |> line(end = [0, 0])
     |> line(end = [-4.84, -5.29])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -627,6 +628,39 @@ extrude001 = extrude(sketch001, length = 50)
         { x: (viewport?.width ?? 1200) / 2, y: (viewport?.height ?? 500) / 2 },
         15
       )
+    })
+  })
+
+  test(`Toolbar doesn't show modeling tools during sketch plane selection animation`, async ({
+    page,
+    homePage,
+    toolbar,
+  }) => {
+    await test.step('Load an empty file', async () => {
+      await page.addInitScript(async () => {
+        localStorage.setItem('persistCode', '')
+      })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+    })
+
+    const toolBarMode = () =>
+      page.locator('[data-currentMode]').getAttribute('data-currentMode')
+
+    await test.step('Start sketch and select a plane', async () => {
+      await expect.poll(toolBarMode).toEqual('modeling')
+      // Click the start sketch button
+      await toolbar.startSketchPlaneSelection()
+
+      // Click on a default plane at position [700, 200]
+      await page.mouse.click(700, 200)
+
+      // Check that the modeling toolbar doesn't appear during the animation
+      // The animation typically takes around 500ms, so we'll check for a second
+      await expect.poll(toolBarMode, { timeout: 1000 }).not.toEqual('modeling')
+
+      // After animation completes, we should see the sketching toolbar
+      await expect.poll(toolBarMode).toEqual('sketching')
     })
   })
 })

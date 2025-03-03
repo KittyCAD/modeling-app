@@ -12,7 +12,7 @@ import {
   VariableMap,
 } from '../wasm'
 import { LineInputsType } from './sketchcombos'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 export interface ModifyAstBase {
   node: Node<Program>

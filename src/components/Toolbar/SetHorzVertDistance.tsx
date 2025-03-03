@@ -15,7 +15,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -62,10 +62,7 @@ export function horzVertDistanceInfo({
   const isAllTooltips = nodes.every(
     (node) =>
       (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
-      [
-        ...toolTips,
-        'startSketchAt', // TODO probably a better place for this to live
-      ].includes(node.callee.name as any)
+      [...toolTips].includes(node.callee.name as any)
   )
 
   const theTransforms = getTransformInfos(

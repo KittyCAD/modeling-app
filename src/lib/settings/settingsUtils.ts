@@ -21,8 +21,9 @@ import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { appThemeToTheme } from 'lib/theme'
 import { err } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 
 /**
@@ -45,7 +46,7 @@ export function configurationToSettingsPayload(
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
-      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      showDebugPanel: configuration?.settings?.app?.show_debug_panel,
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
@@ -55,7 +56,7 @@ export function configurationToSettingsPayload(
         configuration?.settings?.modeling?.mouse_controls
       ),
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
-      showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
+      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
     },
     textEditor: {
@@ -72,6 +73,43 @@ export function configurationToSettingsPayload(
   }
 }
 
+export function isNamedView(
+  namedView: DeepPartial<NamedView> | undefined
+): namedView is NamedView {
+  const namedViewKeys = [
+    'name',
+    'eye_offset',
+    'fov_y',
+    'ortho_scale_enabled',
+    'ortho_scale_factor',
+    'pivot_position',
+    'pivot_rotation',
+    'world_coord_system',
+    'version',
+  ] as const
+
+  return namedViewKeys.every((key) => {
+    return namedView && namedView[key]
+  })
+}
+
+function deepPartialNamedViewsToNamedViews(
+  maybeViews: { [key: string]: NamedView | undefined } | undefined
+): { [key: string]: NamedView } {
+  const namedViews: { [key: string]: NamedView } = {}
+
+  if (!maybeViews) {
+    return namedViews
+  }
+
+  Object.entries(maybeViews)?.forEach(([key, maybeView]) => {
+    if (isNamedView(maybeView)) {
+      namedViews[key] = maybeView
+    }
+  })
+  return namedViews
+}
+
 export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
@@ -86,15 +124,15 @@ export function projectConfigurationToSettingsPayload(
       streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
-      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      namedViews: deepPartialNamedViewsToNamedViews(
+        configuration?.settings?.app?.named_views
+      ),
+      showDebugPanel: configuration?.settings?.app?.show_debug_panel,
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
-      mouseControls: mouseControlsToCameraSystem(
-        configuration?.settings?.modeling?.mouse_controls
-      ),
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
-      showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
+      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,

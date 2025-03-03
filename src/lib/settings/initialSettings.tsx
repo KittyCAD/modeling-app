@@ -18,9 +18,10 @@ import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { isArray, toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
-import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
-import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
+import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 /**
  * A setting that can be set at the user or project level
@@ -173,12 +174,17 @@ export function createSettings() {
           </div>
         ),
       }),
-      enableSSAO: new Setting<boolean>({
-        defaultValue: true,
-        description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+      /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showDebugPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool',
         validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
       /**
        * Stream resource saving behavior toggle
@@ -263,6 +269,11 @@ export function createSettings() {
           )
         },
       }),
+      namedViews: new Setting<{ [key in string]: NamedView }>({
+        defaultValue: {},
+        validate: (v) => true,
+        hideOnLevel: 'user',
+      }),
     },
     /**
      * Settings that affect the behavior while modeling.
@@ -290,6 +301,13 @@ export function createSettings() {
                 ],
             })),
         },
+      }),
+      enableSSAO: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'both', //for now
       }),
       /**
        * The controls for how to navigate the 3D view
@@ -428,18 +446,6 @@ export function createSettings() {
           inputType: 'boolean',
         },
         hideOnLevel: 'project',
-      }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       /**
        * TODO: This setting is not yet implemented.

@@ -107,7 +107,7 @@ test.describe('when using the file tree to', () => {
 
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclCube)
@@ -245,7 +245,7 @@ test.describe('when using the file tree to', () => {
       await createProject({ name: 'project-000', page })
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclCube)
@@ -283,7 +283,7 @@ test.describe('when using the file tree to', () => {
 
       // Create a small file
       const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
       // pasted into main.kcl
@@ -297,7 +297,7 @@ test.describe('when using the file tree to', () => {
       await expect(legoFile).toBeVisible({ timeout: 60_000 })
       await legoFile.click()
       const kclLego = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/lego.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/lego.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclLego)

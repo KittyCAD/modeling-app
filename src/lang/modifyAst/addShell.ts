@@ -1,7 +1,7 @@
 import { Selections } from 'lib/selections'
-import { Expr } from 'wasm-lib/kcl/bindings/Expr'
-import { Program } from 'wasm-lib/kcl/bindings/Program'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Expr } from '@rust/kcl-lib/bindings/Expr'
+import { Program } from '@rust/kcl-lib/bindings/Program'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { ArtifactGraph, PathToNode, VariableDeclarator } from 'lang/wasm'
 import {
   getPathToExtrudeForSegmentSelection,

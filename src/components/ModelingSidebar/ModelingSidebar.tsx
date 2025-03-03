@@ -48,7 +48,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
-  const showDebugPanel = settings.modeling.showDebugPanel
+  const showDebugPanel = settings.app.showDebugPanel
 
   const paneCallbackProps = useMemo(
     () => ({
@@ -149,7 +149,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         },
       })
     }
-  }, [settings.modeling.showDebugPanel])
+  }, [settings.app.showDebugPanel])
 
   const togglePane = useCallback(
     (newPane: SidebarType) => {

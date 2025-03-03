@@ -72,6 +72,7 @@ import {
   addCallExpressionsToPipe,
   addCloseToPipe,
   addNewSketchLn,
+  ARG_END_ABSOLUTE,
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
@@ -112,9 +113,9 @@ import {
 import { getThemeColorForThreeJs, Themes } from 'lib/theme'
 import { err, reportRejection, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
+import { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { radToDeg } from 'three/src/math/MathUtils'
 import toast from 'react-hot-toast'
 import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
@@ -904,7 +905,7 @@ export class SceneEntities {
                     createPipeSubstitution(),
                   ])
                 : createCallExpressionStdLibKw('line', null, [
-                    createLabeledArg('endAbsolute', originCoords),
+                    createLabeledArg(ARG_END_ABSOLUTE, originCoords),
                   ]),
             ],
           })
@@ -1606,15 +1607,15 @@ export class SceneEntities {
     const varName = findUniqueName(_ast, 'profile')
     const newExpression = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('circle', [
-        createObjectExpression({
-          center: createArrayExpression([
+      createCallExpressionStdLibKw('circle', varDec.node.id, [
+        createLabeledArg(
+          'center',
+          createArrayExpression([
             createLiteral(roundOff(circleCenter[0])),
             createLiteral(roundOff(circleCenter[1])),
-          ]),
-          radius: createLiteral(1),
-        }),
-        createIdentifier(varDec.node.id.name),
+          ])
+        ),
+        createLabeledArg('radius', createLiteral(1)),
       ])
     )
 
@@ -1665,7 +1666,7 @@ export class SceneEntities {
         const x = (args.intersectionPoint.twoD.x || 0) - circleCenter[0]
         const y = (args.intersectionPoint.twoD.y || 0) - circleCenter[1]
 
-        if (sketchInit.type === 'CallExpression') {
+        if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
             kclManager.variables,
@@ -1730,7 +1731,7 @@ export class SceneEntities {
         const sketchInit = _node.node?.declaration.init
 
         let modded = structuredClone(_ast)
-        if (sketchInit.type === 'CallExpression') {
+        if (sketchInit.type === 'CallExpressionKw') {
           const moddedResult = changeSketchArguments(
             modded,
             kclManager.variables,

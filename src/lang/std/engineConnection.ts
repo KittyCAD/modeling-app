@@ -14,7 +14,7 @@ import {
   getOppositeTheme,
   darkModeMatcher,
 } from 'lib/theme'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'

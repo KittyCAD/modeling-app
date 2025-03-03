@@ -23,9 +23,6 @@ jobs:
   cargoclippy:
     name: cargo clippy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dir: ['src/wasm-lib']
     steps:
       - uses: actions/checkout@v4
       - uses: taiki-e/install-action@just
@@ -41,7 +38,7 @@ jobs:
 
       - name: Run clippy
         run: |
-          cd "${{ matrix.dir }}"
+          cd rust
           just lint
       # If this fails, run "cargo check" to update Cargo.lock,
       # then add Cargo.lock to the PR.

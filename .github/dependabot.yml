@@ -25,7 +25,7 @@ updates:
       - adamchalmers
       - jessfraz
   - package-ecosystem: 'cargo' # See documentation for possible values
-    directory: '/src/wasm-lib/' # Location of package manifests
+    directory: '/rust/' # Location of package manifests
     schedule:
       interval: weekly
       day: monday
@@ -39,3 +39,11 @@ updates:
       wasm-bindgen-deps:
         patterns:
           - "wasm-bindgen*"
+  - package-ecosystem: "pip" # See documentation for possible values
+    directory: "/rust/kcl-python-bindings/" # Location of package manifests
+    schedule:
+      interval: weekly
+      day: monday
+    reviewers:
+      - adamchalmers
+      - jessfraz

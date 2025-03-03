@@ -1,0 +1,2771 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing fillet-and-shell.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 14,
+          "id": {
+            "end": 9,
+            "name": "rpizWidth",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 14,
+            "raw": "30",
+            "start": 12,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 30.0,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 14,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 30,
+          "id": {
+            "end": 25,
+            "name": "rpizLength",
+            "start": 15,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 30,
+            "raw": "65",
+            "start": 28,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 65.0,
+              "suffix": "None"
+            }
+          },
+          "start": 15,
+          "type": "VariableDeclarator"
+        },
+        "end": 30,
+        "kind": "const",
+        "start": 15,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 49,
+          "id": {
+            "end": 45,
+            "name": "caseThickness",
+            "start": 32,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 49,
+            "raw": "1",
+            "start": 48,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 1.0,
+              "suffix": "None"
+            }
+          },
+          "start": 32,
+          "type": "VariableDeclarator"
+        },
+        "end": 49,
+        "kind": "const",
+        "start": 32,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 61,
+          "id": {
+            "end": 57,
+            "name": "border",
+            "start": 51,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 61,
+            "raw": "4",
+            "start": 60,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
+          },
+          "start": 51,
+          "type": "VariableDeclarator"
+        },
+        "end": 61,
+        "kind": "const",
+        "start": 51,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 78,
+          "id": {
+            "end": 74,
+            "name": "screwHeight",
+            "start": 63,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 78,
+            "raw": "4",
+            "start": 77,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
+          },
+          "start": 63,
+          "type": "VariableDeclarator"
+        },
+        "end": 78,
+        "kind": "const",
+        "start": 63,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 114,
+          "id": {
+            "end": 89,
+            "name": "caseWidth",
+            "start": 80,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 114,
+            "left": {
+              "end": 101,
+              "name": "rpizWidth",
+              "start": 92,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "operator": "+",
+            "right": {
+              "end": 114,
+              "left": {
+                "end": 110,
+                "name": "border",
+                "start": 104,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "*",
+              "right": {
+                "end": 114,
+                "raw": "2",
+                "start": 113,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 104,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "start": 92,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 80,
+          "type": "VariableDeclarator"
+        },
+        "end": 114,
+        "kind": "const",
+        "start": 80,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 151,
+          "id": {
+            "end": 125,
+            "name": "caseLength",
+            "start": 115,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 151,
+            "left": {
+              "end": 138,
+              "name": "rpizLength",
+              "start": 128,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "operator": "+",
+            "right": {
+              "end": 151,
+              "left": {
+                "end": 147,
+                "name": "border",
+                "start": 141,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "*",
+              "right": {
+                "end": 151,
+                "raw": "2",
+                "start": 150,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 141,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "start": 128,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 115,
+          "type": "VariableDeclarator"
+        },
+        "end": 151,
+        "kind": "const",
+        "start": 115,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 166,
+          "id": {
+            "end": 162,
+            "name": "caseHeight",
+            "start": 152,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 166,
+            "raw": "8",
+            "start": 165,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 8.0,
+              "suffix": "None"
+            }
+          },
+          "start": 152,
+          "type": "VariableDeclarator"
+        },
+        "end": 166,
+        "kind": "const",
+        "start": 152,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 191,
+          "id": {
+            "end": 186,
+            "name": "widthBetweenScrews",
+            "start": 168,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 191,
+            "raw": "23",
+            "start": 189,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 23.0,
+              "suffix": "None"
+            }
+          },
+          "start": 168,
+          "type": "VariableDeclarator"
+        },
+        "end": 191,
+        "kind": "const",
+        "start": 168,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 220,
+          "id": {
+            "end": 211,
+            "name": "lengthBetweenScrews",
+            "start": 192,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 220,
+            "left": {
+              "end": 216,
+              "raw": "29",
+              "start": 214,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 29.0,
+                "suffix": "None"
+              }
+            },
+            "operator": "*",
+            "right": {
+              "end": 220,
+              "raw": "2",
+              "start": 219,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            },
+            "start": 214,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 192,
+          "type": "VariableDeclarator"
+        },
+        "end": 220,
+        "kind": "const",
+        "start": 192,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 245,
+          "id": {
+            "end": 238,
+            "name": "miniHdmiDistance",
+            "start": 222,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 245,
+            "raw": "12.4",
+            "start": 241,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 12.4,
+              "suffix": "None"
+            }
+          },
+          "start": 222,
+          "type": "VariableDeclarator"
+        },
+        "end": 245,
+        "kind": "const",
+        "start": 222,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 270,
+          "id": {
+            "end": 263,
+            "name": "microUsb1Distance",
+            "start": 246,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 270,
+            "raw": "41.4",
+            "start": 266,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 41.4,
+              "suffix": "None"
+            }
+          },
+          "start": 246,
+          "type": "VariableDeclarator"
+        },
+        "end": 270,
+        "kind": "const",
+        "start": 246,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 293,
+          "id": {
+            "end": 288,
+            "name": "microUsb2Distance",
+            "start": 271,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 293,
+            "raw": "54",
+            "start": 291,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 54.0,
+              "suffix": "None"
+            }
+          },
+          "start": 271,
+          "type": "VariableDeclarator"
+        },
+        "end": 293,
+        "kind": "const",
+        "start": 271,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 315,
+          "id": {
+            "end": 308,
+            "name": "miniHdmiWidth",
+            "start": 295,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 315,
+            "raw": "11.2",
+            "start": 311,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 11.2,
+              "suffix": "None"
+            }
+          },
+          "start": 295,
+          "type": "VariableDeclarator"
+        },
+        "end": 315,
+        "kind": "const",
+        "start": 295,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 335,
+          "id": {
+            "end": 329,
+            "name": "microUsbWidth",
+            "start": 316,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 335,
+            "raw": "7.4",
+            "start": 332,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 7.4,
+              "suffix": "None"
+            }
+          },
+          "start": 316,
+          "type": "VariableDeclarator"
+        },
+        "end": 335,
+        "kind": "const",
+        "start": 316,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 356,
+          "id": {
+            "end": 352,
+            "name": "connectorPadding",
+            "start": 336,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 356,
+            "raw": "4",
+            "start": 355,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
+          },
+          "start": 336,
+          "type": "VariableDeclarator"
+        },
+        "end": 356,
+        "kind": "const",
+        "start": 336,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 795,
+          "id": {
+            "end": 370,
+            "name": "miniHdmiHole",
+            "start": 358,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 389,
+                    "name": "XY",
+                    "start": 387,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 386,
+                  "name": "startSketchOn",
+                  "start": 373,
+                  "type": "Identifier"
+                },
+                "end": 390,
+                "start": 373,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 421,
+                        "raw": "0",
+                        "start": 420,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 476,
+                        "left": {
+                          "end": 455,
+                          "left": {
+                            "end": 436,
+                            "name": "border",
+                            "start": 430,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 455,
+                            "name": "miniHdmiDistance",
+                            "start": 439,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 430,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "operator": "-",
+                        "right": {
+                          "end": 476,
+                          "left": {
+                            "end": 472,
+                            "name": "miniHdmiWidth",
+                            "start": 459,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "/",
+                          "right": {
+                            "end": 476,
+                            "raw": "2",
+                            "start": 475,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 459,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "start": 430,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      }
+                    ],
+                    "end": 484,
+                    "start": 411,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 487,
+                    "start": 486,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 410,
+                  "name": "startProfileAt",
+                  "start": 396,
+                  "type": "Identifier"
+                },
+                "end": 488,
+                "start": 396,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 523,
+                          "raw": "0",
+                          "start": 522,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 577,
+                          "left": {
+                            "end": 557,
+                            "left": {
+                              "end": 538,
+                              "name": "border",
+                              "start": 532,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "operator": "+",
+                            "right": {
+                              "end": 557,
+                              "name": "miniHdmiDistance",
+                              "start": 541,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "start": 532,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 577,
+                            "left": {
+                              "end": 573,
+                              "name": "miniHdmiWidth",
+                              "start": 560,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "operator": "/",
+                            "right": {
+                              "end": 577,
+                              "raw": "2",
+                              "start": 576,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 2.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "start": 560,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "start": 532,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      ],
+                      "end": 584,
+                      "start": 513,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 498,
+                  "name": "line",
+                  "start": 494,
+                  "type": "Identifier"
+                },
+                "end": 585,
+                "start": 494,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 620,
+                          "raw": "1",
+                          "start": 619,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 674,
+                          "left": {
+                            "end": 654,
+                            "left": {
+                              "end": 635,
+                              "name": "border",
+                              "start": 629,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "operator": "+",
+                            "right": {
+                              "end": 654,
+                              "name": "miniHdmiDistance",
+                              "start": 638,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "start": 629,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 674,
+                            "left": {
+                              "end": 670,
+                              "name": "miniHdmiWidth",
+                              "start": 657,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "operator": "/",
+                            "right": {
+                              "end": 674,
+                              "raw": "2",
+                              "start": 673,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 2.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "start": 657,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "start": 629,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      ],
+                      "end": 681,
+                      "start": 610,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 595,
+                  "name": "line",
+                  "start": 591,
+                  "type": "Identifier"
+                },
+                "end": 682,
+                "start": 591,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 717,
+                          "raw": "1",
+                          "start": 716,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 772,
+                          "left": {
+                            "end": 751,
+                            "left": {
+                              "end": 732,
+                              "name": "border",
+                              "start": 726,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "operator": "+",
+                            "right": {
+                              "end": 751,
+                              "name": "miniHdmiDistance",
+                              "start": 735,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "start": 726,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "operator": "-",
+                          "right": {
+                            "end": 772,
+                            "left": {
+                              "end": 768,
+                              "name": "miniHdmiWidth",
+                              "start": 755,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "operator": "/",
+                            "right": {
+                              "end": 772,
+                              "raw": "2",
+                              "start": 771,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 2.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "start": 755,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "start": 726,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      ],
+                      "end": 780,
+                      "start": 707,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 692,
+                  "name": "line",
+                  "start": 688,
+                  "type": "Identifier"
+                },
+                "end": 781,
+                "start": 688,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 794,
+                    "start": 793,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 792,
+                  "name": "close",
+                  "start": 787,
+                  "type": "Identifier"
+                },
+                "end": 795,
+                "start": 787,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 795,
+            "start": 373,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 358,
+          "type": "VariableDeclarator"
+        },
+        "end": 795,
+        "kind": "const",
+        "start": 358,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1297,
+          "id": {
+            "end": 801,
+            "name": "case",
+            "start": 797,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 822,
+                    "raw": "'XY'",
+                    "start": 818,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "XY"
+                  }
+                ],
+                "callee": {
+                  "end": 817,
+                  "name": "startSketchOn",
+                  "start": 804,
+                  "type": "Identifier"
+                },
+                "end": 823,
+                "start": 804,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 846,
+                        "raw": "0",
+                        "start": 845,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 849,
+                        "raw": "0",
+                        "start": 848,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 850,
+                    "start": 844,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 853,
+                    "start": 852,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 843,
+                  "name": "startProfileAt",
+                  "start": 829,
+                  "type": "Identifier"
+                },
+                "end": 854,
+                "start": 829,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 889,
+                          "name": "caseWidth",
+                          "start": 880,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        {
+                          "end": 892,
+                          "raw": "0",
+                          "start": 891,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 893,
+                      "start": 879,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tag"
+                    },
+                    "arg": {
+                      "end": 907,
+                      "start": 901,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "edge1"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 864,
+                  "name": "line",
+                  "start": 860,
+                  "type": "Identifier"
+                },
+                "end": 908,
+                "start": 860,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 943,
+                          "name": "caseWidth",
+                          "start": 934,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        {
+                          "end": 955,
+                          "name": "caseLength",
+                          "start": 945,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "end": 956,
+                      "start": 933,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tag"
+                    },
+                    "arg": {
+                      "end": 970,
+                      "start": 964,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "edge2"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 918,
+                  "name": "line",
+                  "start": 914,
+                  "type": "Identifier"
+                },
+                "end": 971,
+                "start": 914,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "endAbsolute"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 998,
+                          "raw": "0",
+                          "start": 997,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 1010,
+                          "name": "caseLength",
+                          "start": 1000,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "end": 1011,
+                      "start": 996,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tag"
+                    },
+                    "arg": {
+                      "end": 1025,
+                      "start": 1019,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "edge3"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 981,
+                  "name": "line",
+                  "start": 977,
+                  "type": "Identifier"
+                },
+                "end": 1026,
+                "start": 977,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tag"
+                    },
+                    "arg": {
+                      "end": 1050,
+                      "start": 1044,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "edge4"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1037,
+                  "name": "close",
+                  "start": 1032,
+                  "type": "Identifier"
+                },
+                "end": 1051,
+                "start": 1032,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
+                    },
+                    "arg": {
+                      "end": 1084,
+                      "name": "caseHeight",
+                      "start": 1074,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1064,
+                  "name": "extrude",
+                  "start": 1057,
+                  "type": "Identifier"
+                },
+                "end": 1085,
+                "start": 1057,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "radius"
+                    },
+                    "arg": {
+                      "end": 1116,
+                      "raw": "1",
+                      "start": 1115,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tags"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 1168,
+                              "name": "edge1",
+                              "start": 1163,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1162,
+                            "name": "getNextAdjacentEdge",
+                            "start": 1143,
+                            "type": "Identifier"
+                          },
+                          "end": 1169,
+                          "start": 1143,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1205,
+                              "name": "edge2",
+                              "start": 1200,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1199,
+                            "name": "getNextAdjacentEdge",
+                            "start": 1180,
+                            "type": "Identifier"
+                          },
+                          "end": 1206,
+                          "start": 1180,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1242,
+                              "name": "edge3",
+                              "start": 1237,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1236,
+                            "name": "getNextAdjacentEdge",
+                            "start": 1217,
+                            "type": "Identifier"
+                          },
+                          "end": 1243,
+                          "start": 1217,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1279,
+                              "name": "edge4",
+                              "start": 1274,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1273,
+                            "name": "getNextAdjacentEdge",
+                            "start": 1254,
+                            "type": "Identifier"
+                          },
+                          "end": 1280,
+                          "start": 1254,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1289,
+                      "start": 1132,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1097,
+                  "name": "fillet",
+                  "start": 1091,
+                  "type": "Identifier"
+                },
+                "end": 1297,
+                "start": 1091,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 1297,
+            "start": 804,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 797,
+          "type": "VariableDeclarator"
+        },
+        "end": 1297,
+        "kind": "const",
+        "start": 797,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1538,
+          "id": {
+            "end": 1310,
+            "name": "m25Screw",
+            "start": 1302,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "declaration": {
+                    "end": 1521,
+                    "id": {
+                      "end": 1334,
+                      "name": "screw",
+                      "start": 1329,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 1355,
+                              "raw": "\"XY\"",
+                              "start": 1351,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": "XY"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1350,
+                            "name": "startSketchOn",
+                            "start": 1337,
+                            "type": "Identifier"
+                          },
+                          "end": 1356,
+                          "start": 1337,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "elements": [
+                                {
+                                  "end": 1381,
+                                  "raw": "0",
+                                  "start": 1380,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                {
+                                  "end": 1384,
+                                  "raw": "0",
+                                  "start": 1383,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                }
+                              ],
+                              "end": 1385,
+                              "start": 1379,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            },
+                            {
+                              "end": 1388,
+                              "start": 1387,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1378,
+                            "name": "startProfileAt",
+                            "start": 1364,
+                            "type": "Identifier"
+                          },
+                          "end": 1389,
+                          "start": 1364,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "center"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "end": 1415,
+                                    "name": "x",
+                                    "start": 1414,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  {
+                                    "end": 1418,
+                                    "name": "y",
+                                    "start": 1417,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                ],
+                                "end": 1419,
+                                "start": 1413,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "radius"
+                              },
+                              "arg": {
+                                "end": 1433,
+                                "raw": "2.5",
+                                "start": 1430,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.5,
+                                  "suffix": "None"
+                                }
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1403,
+                            "name": "circle",
+                            "start": 1397,
+                            "type": "Identifier"
+                          },
+                          "end": 1434,
+                          "start": 1397,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "arguments": [
+                                {
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "type": "Identifier",
+                                    "name": "center"
+                                  },
+                                  "arg": {
+                                    "elements": [
+                                      {
+                                        "end": 1465,
+                                        "name": "x",
+                                        "start": 1464,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      {
+                                        "end": 1468,
+                                        "name": "y",
+                                        "start": 1467,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
+                                    ],
+                                    "end": 1469,
+                                    "start": 1463,
+                                    "type": "ArrayExpression",
+                                    "type": "ArrayExpression"
+                                  }
+                                },
+                                {
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "type": "Identifier",
+                                    "name": "radius"
+                                  },
+                                  "arg": {
+                                    "end": 1484,
+                                    "raw": "1.25",
+                                    "start": 1480,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.25,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                }
+                              ],
+                              "callee": {
+                                "end": 1453,
+                                "name": "circle",
+                                "start": 1447,
+                                "type": "Identifier"
+                              },
+                              "end": 1485,
+                              "start": 1447,
+                              "type": "CallExpressionKw",
+                              "type": "CallExpressionKw",
+                              "unlabeled": null
+                            },
+                            {
+                              "end": 1488,
+                              "start": 1487,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1446,
+                            "name": "hole",
+                            "start": 1442,
+                            "type": "Identifier"
+                          },
+                          "end": 1489,
+                          "start": 1442,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "length"
+                              },
+                              "arg": {
+                                "end": 1520,
+                                "name": "height",
+                                "start": 1514,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1504,
+                            "name": "extrude",
+                            "start": 1497,
+                            "type": "Identifier"
+                          },
+                          "end": 1521,
+                          "start": 1497,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        }
+                      ],
+                      "end": 1521,
+                      "start": 1337,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "start": 1329,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1521,
+                  "kind": "const",
+                  "start": 1329,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "end": 1536,
+                    "name": "screw",
+                    "start": 1531,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "end": 1536,
+                  "start": 1524,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 1538,
+              "start": 1325
+            },
+            "end": 1538,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 1312,
+                  "name": "x",
+                  "start": 1311,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 1315,
+                  "name": "y",
+                  "start": 1314,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 1323,
+                  "name": "height",
+                  "start": 1317,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 1310,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 1302,
+          "type": "VariableDeclarator"
+        },
+        "end": 1538,
+        "kind": "fn",
+        "start": 1299,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 1669,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1597,
+              "left": {
+                "end": 1571,
+                "left": {
+                  "end": 1555,
+                  "name": "border",
+                  "start": 1549,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1571,
+                  "left": {
+                    "end": 1567,
+                    "name": "rpizWidth",
+                    "start": 1558,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1571,
+                    "raw": "2",
+                    "start": 1570,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1558,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1549,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "-",
+              "right": {
+                "end": 1597,
+                "left": {
+                  "end": 1593,
+                  "name": "widthBetweenScrews",
+                  "start": 1575,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1597,
+                  "raw": "2",
+                  "start": 1596,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1575,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1549,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1654,
+              "left": {
+                "end": 1627,
+                "left": {
+                  "end": 1610,
+                  "left": {
+                    "end": 1601,
+                    "raw": "0",
+                    "start": 1600,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1610,
+                    "name": "border",
+                    "start": 1604,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1600,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1627,
+                  "left": {
+                    "end": 1623,
+                    "name": "rpizLength",
+                    "start": 1613,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1627,
+                    "raw": "2",
+                    "start": 1626,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1613,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1600,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "-",
+              "right": {
+                "end": 1654,
+                "left": {
+                  "end": 1650,
+                  "name": "lengthBetweenScrews",
+                  "start": 1631,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1654,
+                  "raw": "2",
+                  "start": 1653,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1631,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1600,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1668,
+              "name": "screwHeight",
+              "start": 1657,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 1548,
+            "name": "m25Screw",
+            "start": 1540,
+            "type": "Identifier"
+          },
+          "end": 1669,
+          "start": 1540,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1540,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1798,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1728,
+              "left": {
+                "end": 1702,
+                "left": {
+                  "end": 1686,
+                  "name": "border",
+                  "start": 1680,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1702,
+                  "left": {
+                    "end": 1698,
+                    "name": "rpizWidth",
+                    "start": 1689,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1702,
+                    "raw": "2",
+                    "start": 1701,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1689,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1680,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "-",
+              "right": {
+                "end": 1728,
+                "left": {
+                  "end": 1724,
+                  "name": "widthBetweenScrews",
+                  "start": 1706,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1728,
+                  "raw": "2",
+                  "start": 1727,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1706,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1680,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1784,
+              "left": {
+                "end": 1758,
+                "left": {
+                  "end": 1741,
+                  "left": {
+                    "end": 1732,
+                    "raw": "0",
+                    "start": 1731,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1741,
+                    "name": "border",
+                    "start": 1735,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1731,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1758,
+                  "left": {
+                    "end": 1754,
+                    "name": "rpizLength",
+                    "start": 1744,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1758,
+                    "raw": "2",
+                    "start": 1757,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1744,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1731,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1784,
+                "left": {
+                  "end": 1780,
+                  "name": "lengthBetweenScrews",
+                  "start": 1761,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1784,
+                  "raw": "2",
+                  "start": 1783,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1761,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1731,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1797,
+              "name": "screwHeight",
+              "start": 1786,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 1679,
+            "name": "m25Screw",
+            "start": 1671,
+            "type": "Identifier"
+          },
+          "end": 1798,
+          "start": 1671,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1671,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1925,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1856,
+              "left": {
+                "end": 1831,
+                "left": {
+                  "end": 1815,
+                  "name": "border",
+                  "start": 1809,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1831,
+                  "left": {
+                    "end": 1827,
+                    "name": "rpizWidth",
+                    "start": 1818,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1831,
+                    "raw": "2",
+                    "start": 1830,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1818,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1809,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1856,
+                "left": {
+                  "end": 1852,
+                  "name": "widthBetweenScrews",
+                  "start": 1834,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1856,
+                  "raw": "2",
+                  "start": 1855,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1834,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1809,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1911,
+              "left": {
+                "end": 1885,
+                "left": {
+                  "end": 1868,
+                  "left": {
+                    "end": 1859,
+                    "raw": "0",
+                    "start": 1858,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1868,
+                    "name": "border",
+                    "start": 1862,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1858,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1885,
+                  "left": {
+                    "end": 1881,
+                    "name": "rpizLength",
+                    "start": 1871,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1885,
+                    "raw": "2",
+                    "start": 1884,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1871,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1858,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1911,
+                "left": {
+                  "end": 1907,
+                  "name": "lengthBetweenScrews",
+                  "start": 1888,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1911,
+                  "raw": "2",
+                  "start": 1910,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1888,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1858,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 1924,
+              "name": "screwHeight",
+              "start": 1913,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 1808,
+            "name": "m25Screw",
+            "start": 1800,
+            "type": "Identifier"
+          },
+          "end": 1925,
+          "start": 1800,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1800,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 2054,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1983,
+              "left": {
+                "end": 1958,
+                "left": {
+                  "end": 1942,
+                  "name": "border",
+                  "start": 1936,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 1958,
+                  "left": {
+                    "end": 1954,
+                    "name": "rpizWidth",
+                    "start": 1945,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 1958,
+                    "raw": "2",
+                    "start": 1957,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1945,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1936,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1983,
+                "left": {
+                  "end": 1979,
+                  "name": "widthBetweenScrews",
+                  "start": 1961,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 1983,
+                  "raw": "2",
+                  "start": 1982,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 1961,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1936,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 2039,
+              "left": {
+                "end": 2012,
+                "left": {
+                  "end": 1995,
+                  "left": {
+                    "end": 1986,
+                    "raw": "0",
+                    "start": 1985,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1995,
+                    "name": "border",
+                    "start": 1989,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1985,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "operator": "+",
+                "right": {
+                  "end": 2012,
+                  "left": {
+                    "end": 2008,
+                    "name": "rpizLength",
+                    "start": 1998,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 2012,
+                    "raw": "2",
+                    "start": 2011,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 1998,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "start": 1985,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "operator": "-",
+              "right": {
+                "end": 2039,
+                "left": {
+                  "end": 2035,
+                  "name": "lengthBetweenScrews",
+                  "start": 2016,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "operator": "/",
+                "right": {
+                  "end": 2039,
+                  "raw": "2",
+                  "start": 2038,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 2016,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 1985,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            {
+              "end": 2053,
+              "name": "screwHeight",
+              "start": 2042,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 1935,
+            "name": "m25Screw",
+            "start": 1927,
+            "type": "Identifier"
+          },
+          "end": 2054,
+          "start": 1927,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1927,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 2111,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "faces"
+              },
+              "arg": {
+                "elements": [
+                  {
+                    "end": 2082,
+                    "raw": "'end'",
+                    "start": 2077,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "end"
+                  }
+                ],
+                "end": 2083,
+                "start": 2076,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "thickness"
+              },
+              "arg": {
+                "end": 2110,
+                "name": "caseThickness",
+                "start": 2097,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            }
+          ],
+          "callee": {
+            "end": 2061,
+            "name": "shell",
+            "start": 2056,
+            "type": "Identifier"
+          },
+          "end": 2111,
+          "start": 2056,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "end": 2066,
+            "name": "case",
+            "start": 2062,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
+        },
+        "start": 2056,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 2112,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "1": [
+          {
+            "end": 32,
+            "start": 30,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "end": 51,
+            "start": 49,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "end": 63,
+            "start": 61,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
+          {
+            "end": 80,
+            "start": 78,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "end": 168,
+            "start": 166,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "9": [
+          {
+            "end": 222,
+            "start": 220,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "12": [
+          {
+            "end": 295,
+            "start": 293,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "15": [
+          {
+            "end": 358,
+            "start": 356,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "16": [
+          {
+            "end": 797,
+            "start": 795,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "17": [
+          {
+            "end": 1299,
+            "start": 1297,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "18": [
+          {
+            "end": 1540,
+            "start": 1538,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "19": [
+          {
+            "end": 1671,
+            "start": 1669,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "20": [
+          {
+            "end": 1800,
+            "start": 1798,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "21": [
+          {
+            "end": 1927,
+            "start": 1925,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "22": [
+          {
+            "end": 2056,
+            "start": 2054,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

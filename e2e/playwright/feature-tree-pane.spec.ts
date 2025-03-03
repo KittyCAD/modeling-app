@@ -50,13 +50,13 @@ const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn('XZ')
   |> close(%)
 extrude001 = extrude(sketch001, length = 10)
 sketch002 = startSketchOn(extrude001, rectangleSegmentB001)
-  |> circle({
+  |> circle(
        center = [-1, 2],
        radius = .5
-     }, %)
+     )
 plane001 = offsetPlane('XZ', offset = -5)
 sketch003 = startSketchOn(plane001)
-  |> circle({ center = [0, 0], radius = 5 }, %)
+  |> circle(center = [0, 0], radius = 5)
 `
 
 test.describe('Feature Tree pane', () => {
@@ -201,7 +201,7 @@ test.describe('Feature Tree pane', () => {
         await toolbar.exitSketchBtn.click()
       })
 
-      await test.step('On an offset plane should *not* work', async () => {
+      await test.step('On an offset plane should work', async () => {
         // Tooltip is getting in the way of clicking, so I'm first closing the pane
         await toolbar.closeFeatureTreePane()
         await (await toolbar.getFeatureTreeOperation('Sketch', 2)).dblclick()
@@ -212,13 +212,7 @@ test.describe('Feature Tree pane', () => {
         })
         await expect(
           toolbar.exitSketchBtn,
-          'We should not be in sketch mode now'
-        ).not.toBeVisible()
-        await expect(
-          page.getByText(
-            'Editing sketches on faces or offset planes through the feature tree is not yet supported'
-          ),
-          'We should see a toast message about this'
+          'We should be in sketch mode now'
         ).toBeVisible()
       })
     }
@@ -234,11 +228,11 @@ test.describe('Feature Tree pane', () => {
   }) => {
     const initialInput = '23'
     const initialCode = `sketch001 = startSketchOn('XZ')
-      |> circle({ center = [0, 0], radius = 5 }, %)
+      |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
     const newConstantName = 'distance001'
     const expectedCode = `sketch001 = startSketchOn('XZ')
-      |> circle({ center = [0, 0], radius = 5 }, %)
+      |> circle(center = [0, 0], radius = 5)
       ${newConstantName} = 23
       renamedExtrude = extrude(sketch001, length = ${newConstantName})`
 

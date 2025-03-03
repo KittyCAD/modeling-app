@@ -59,6 +59,7 @@ const config = defineConfig({
     alias: {
       '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
       '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
+      '@rust': '/rust',
     },
   },
   plugins: [react(), viteTsconfigPaths(), eslint(), version(), lezer()],

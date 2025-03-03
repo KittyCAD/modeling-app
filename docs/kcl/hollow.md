@@ -70,17 +70,11 @@ case = startSketchOn('-XZ')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 hollow(0.5, case)

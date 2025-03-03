@@ -1,0 +1,53 @@
+let d_wrist_circumference = [22.8, 10.7, 16.4, 18.5]
+let width = d_wrist_circumference[0] + d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3]
+let length = 120.0
+let hand_thickness = 24.0
+let corner_radius = 5.0
+
+// At first I thought this was going to be symmetric,
+// but I measured intentionally to not be symmetric,
+// because your wrist isn't a perfect cylindrical surface
+let brace_base = startSketchOn(XY)
+  |> startProfileAt([corner_radius, 0], %)
+  |> line(end = [width - corner_radius, 0.0])
+  |> tangentialArcToRelative([corner_radius, corner_radius], %)
+  |> yLine(25.0 - corner_radius, %)
+  |> tangentialArcToRelative([-corner_radius, corner_radius], %)
+  |> xLine(-(d_wrist_circumference[0] - (corner_radius * 2)), %)
+  |> tangentialArcToRelative([-corner_radius, corner_radius], %)
+  |> yLine(length - 25.0 - 23.0 - (corner_radius * 2), %)
+  |> tangentialArcToRelative([corner_radius, corner_radius], %)
+  |> xLine(15.0 - (corner_radius * 2), %)
+  |> tangentialArcToRelative([corner_radius, corner_radius], %)
+  |> yLine(23.0 - corner_radius, %)
+  |> tangentialArcToRelative([-corner_radius, corner_radius], %)
+  |> xLine(-(hand_thickness + 15.0 + 15.0 - (corner_radius * 2)), %)
+  |> tangentialArcToRelative([-corner_radius, -corner_radius], %)
+  |> yLine(-(23.0 - corner_radius), %)
+  |> tangentialArcToRelative([corner_radius, -corner_radius], %)
+  |> xLine(15.0 - (corner_radius * 2), %)
+  |> tangentialArcToRelative([corner_radius, -corner_radius], %)
+  |> yLine(-(length - 25.0 - 23.0 - (corner_radius * 2)), %)
+  |> tangentialArcToRelative([-corner_radius, -corner_radius], %)
+  |> xLine(-(d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3] - hand_thickness - corner_radius), %)
+  |> tangentialArcToRelative([-corner_radius, -corner_radius], %)
+  |> yLine(-(25.0 - corner_radius), %)
+  |> tangentialArcToRelative([corner_radius, -corner_radius], %)
+  |> close()
+
+let inner = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> xLine(1.0, %)
+  |> tangentialArcToRelative([corner_radius, corner_radius], %)
+  |> yLine(25.0 - (corner_radius * 2), %)
+  |> tangentialArcToRelative([-corner_radius, corner_radius], %)
+  |> xLine(-1.0, %)
+  |> tangentialArcToRelative([-corner_radius, -corner_radius], %)
+  |> yLine(-(25.0 - (corner_radius * 2)), %)
+  |> tangentialArcToRelative([corner_radius, -corner_radius], %)
+  |> close()
+
+let final = brace_base
+  |> hole(inner, %)
+  |> extrude(length = 3.0)
+

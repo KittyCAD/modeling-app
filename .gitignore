@@ -26,16 +26,15 @@ yarn-error.log*
 .idea
 .vscode
 .helix
-src/wasm-lib/.idea
-src/wasm-lib/.vscode
 
 # rust
-src/wasm-lib/target
-src/wasm-lib/bindings
-src/wasm-lib/kcl/bindings
-public/wasm_lib_bg.wasm
-src/wasm-lib/lcov.info
-src/wasm-lib/grackle/test_json_output
+rust/target
+rust/kcl-lib/bindings
+public/kcl_wasm_lib_bg.wasm
+rust/lcov.info
+rust/kcl-wasm-lib/pkg
+*.snap.new
+rust/kcl-lib/fuzz/Cargo.lock
 
 e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
@@ -59,16 +58,18 @@ e2e/playwright/export-snapshots/*
 ## generated files
 src/**/*.typegen.ts
 
-src/wasm-lib/grackle/stdlib_cube_partial.json
 Mac_App_Distribution.provisionprofile
 
 *.tsbuildinfo
-src/wasm-lib/pkg
 
 .eslintcache
-venv
 .vite/
 
 # electron
 out/
-*.snap.new
+
+# python
+__pycache__/
+uv.lock
+rust/kcl-python-bindings/dist
+venv

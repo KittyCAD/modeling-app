@@ -1,5 +1,5 @@
 import { PathToNode, Program } from 'lang/wasm'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { locateExtrudeDeclarator } from './addEdgeTreatment'
 import { err } from 'lib/trap'
 import {

@@ -1,0 +1,682 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing flush_batch_on_end.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 105,
+          "id": {
+            "end": 97,
+            "name": "innerDiameter",
+            "start": 84,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 105,
+            "raw": "0.364",
+            "start": 100,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.364,
+              "suffix": "None"
+            }
+          },
+          "start": 84,
+          "type": "VariableDeclarator"
+        },
+        "end": 105,
+        "kind": "const",
+        "start": 84,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 129,
+          "id": {
+            "end": 119,
+            "name": "outerDiameter",
+            "start": 106,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 129,
+            "left": {
+              "end": 124,
+              "raw": "35",
+              "start": 122,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 35.0,
+                "suffix": "None"
+              }
+            },
+            "operator": "/",
+            "right": {
+              "end": 129,
+              "raw": "64",
+              "start": 127,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 64.0,
+                "suffix": "None"
+              }
+            },
+            "start": 122,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 106,
+          "type": "VariableDeclarator"
+        },
+        "end": 129,
+        "kind": "const",
+        "start": 106,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 148,
+          "id": {
+            "end": 136,
+            "name": "length",
+            "start": 130,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 148,
+            "left": {
+              "end": 140,
+              "raw": "1",
+              "start": 139,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            "operator": "+",
+            "right": {
+              "end": 148,
+              "left": {
+                "end": 144,
+                "raw": "1",
+                "start": 143,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
+              "operator": "/",
+              "right": {
+                "end": 148,
+                "raw": "2",
+                "start": 147,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 143,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "start": 139,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 130,
+          "type": "VariableDeclarator"
+        },
+        "end": 148,
+        "kind": "const",
+        "start": 130,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 218,
+          "id": {
+            "end": 196,
+            "name": "sketch000",
+            "start": 187,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 217,
+                "raw": "'XY'",
+                "start": 213,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "XY"
+              }
+            ],
+            "callee": {
+              "end": 212,
+              "name": "startSketchOn",
+              "start": 199,
+              "type": "Identifier"
+            },
+            "end": 218,
+            "start": 199,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 187,
+          "type": "VariableDeclarator"
+        },
+        "end": 218,
+        "kind": "const",
+        "start": 187,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 374,
+          "id": {
+            "end": 279,
+            "name": "outerProfile",
+            "start": 267,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "center"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 318,
+                      "raw": "0.0",
+                      "start": 315,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 323,
+                      "raw": "0.0",
+                      "start": 320,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 324,
+                  "start": 314,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "radius"
+                },
+                "arg": {
+                  "end": 354,
+                  "left": {
+                    "end": 350,
+                    "name": "outerDiameter",
+                    "start": 337,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 354,
+                    "raw": "2",
+                    "start": 353,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 337,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "tag"
+                },
+                "arg": {
+                  "end": 371,
+                  "start": 364,
+                  "type": "TagDeclarator",
+                  "type": "TagDeclarator",
+                  "value": "arc000"
+                }
+              }
+            ],
+            "callee": {
+              "end": 288,
+              "name": "circle",
+              "start": 282,
+              "type": "Identifier"
+            },
+            "end": 374,
+            "start": 282,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 301,
+              "name": "sketch000",
+              "start": 292,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 267,
+          "type": "VariableDeclarator"
+        },
+        "end": 374,
+        "kind": "const",
+        "start": 267,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 529,
+          "id": {
+            "end": 434,
+            "name": "innerProfile",
+            "start": 422,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "center"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 473,
+                      "raw": "0.0",
+                      "start": 470,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 478,
+                      "raw": "0.0",
+                      "start": 475,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 479,
+                  "start": 469,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "radius"
+                },
+                "arg": {
+                  "end": 509,
+                  "left": {
+                    "end": 505,
+                    "name": "innerDiameter",
+                    "start": 492,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 509,
+                    "raw": "2",
+                    "start": 508,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 492,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "tag"
+                },
+                "arg": {
+                  "end": 526,
+                  "start": 519,
+                  "type": "TagDeclarator",
+                  "type": "TagDeclarator",
+                  "value": "arc001"
+                }
+              }
+            ],
+            "callee": {
+              "end": 443,
+              "name": "circle",
+              "start": 437,
+              "type": "Identifier"
+            },
+            "end": 529,
+            "start": 437,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 456,
+              "name": "sketch000",
+              "start": 447,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 422,
+          "type": "VariableDeclarator"
+        },
+        "end": 529,
+        "kind": "const",
+        "start": 422,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 688,
+          "id": {
+            "end": 598,
+            "name": "pipeProfile",
+            "start": 587,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "end": 613,
+                "name": "outerProfile",
+                "start": 601,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 636,
+                    "name": "innerProfile",
+                    "start": 624,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  {
+                    "end": 639,
+                    "start": 638,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 623,
+                  "name": "hole",
+                  "start": 619,
+                  "type": "Identifier"
+                },
+                "end": 640,
+                "start": 619,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 688,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "end": 688,
+                    "start": 640,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "extrude the pipe profile to create the pipe",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "start": 601,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 587,
+          "type": "VariableDeclarator"
+        },
+        "end": 688,
+        "kind": "const",
+        "start": 587,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 733,
+          "id": {
+            "end": 693,
+            "name": "pipe",
+            "start": 689,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "length"
+                },
+                "arg": {
+                  "end": 732,
+                  "name": "length",
+                  "start": 726,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "callee": {
+              "end": 703,
+              "name": "extrude",
+              "start": 696,
+              "type": "Identifier"
+            },
+            "end": 733,
+            "start": 696,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 715,
+              "name": "pipeProfile",
+              "start": 704,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 689,
+          "type": "VariableDeclarator"
+        },
+        "end": 733,
+        "kind": "const",
+        "start": 689,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 734,
+    "innerAttrs": [
+      {
+        "end": 33,
+        "name": {
+          "end": 9,
+          "name": "settings",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 32,
+            "key": {
+              "end": 27,
+              "name": "defaultLengthUnit",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "start": 10,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 32,
+              "name": "in",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "2": [
+          {
+            "end": 186,
+            "start": 148,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create a sketch on the 'XY' plane",
+              "style": "line"
+            }
+          }
+        ],
+        "3": [
+          {
+            "end": 266,
+            "start": 218,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create a profile of the outside of the pipe",
+              "style": "line"
+            }
+          }
+        ],
+        "4": [
+          {
+            "end": 421,
+            "start": 374,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create a profile of the inside of the pipe",
+              "style": "line"
+            }
+          }
+        ],
+        "5": [
+          {
+            "end": 586,
+            "start": 529,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create a profile with holes sketch000Profile000Holes",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 61,
+          "start": 34,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set units in inches (in)",
+            "style": "line"
+          }
+        },
+        {
+          "end": 64,
+          "start": 61,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 83,
+          "start": 64,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Define constants",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

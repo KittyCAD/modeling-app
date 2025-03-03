@@ -18,7 +18,7 @@ import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
 import { settingsActor } from 'machines/appMachine'
 import makeUrlPathRelative from 'lib/makeUrlPathRelative'
-import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { SnapshotFrom } from 'xstate'
 
 export const RouteProviderContext = createContext({})

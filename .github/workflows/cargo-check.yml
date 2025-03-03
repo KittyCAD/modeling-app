@@ -17,9 +17,6 @@ jobs:
   cargocheck:
     name: cargo check
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dir: ['src/wasm-lib']
     steps:
       - uses: actions/checkout@v4
       - name: Install latest rust
@@ -33,7 +30,7 @@ jobs:
 
       - name: Run check
         run: |
-          cd "${{ matrix.dir }}"
+          cd rust
           # We specifically want to test the disable-println feature
           # Since it is not enabled by default, we need to specify it
           # This is used in kcl-lsp

@@ -61,7 +61,7 @@ export class ToolbarFixture {
     this.rectangleBtn = page.getByTestId('corner-rectangle')
     this.lengthConstraintBtn = page.getByTestId('constraint-length')
     this.exitSketchBtn = page.getByTestId('sketch-exit')
-    this.editSketchBtn = page.getByText('Edit Sketch')
+    this.editSketchBtn = page.locator('[name="Edit Sketch"]')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
     this.treeInputField = page.getByTestId('tree-input-field')

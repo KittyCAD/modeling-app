@@ -108,17 +108,11 @@ case = startSketchOn('-XZ')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 // We put "case" in the shell function to shell the entire object.
@@ -139,17 +133,11 @@ case = startSketchOn('XY')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 // We put "thing1" in the shell function to shell the end face of the object.
@@ -173,17 +161,11 @@ case = startSketchOn('XY')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 // We put "thing1" and "thing2" in the shell function to shell the end face of the object.

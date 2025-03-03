@@ -47,6 +47,8 @@ export class CmdBarFixture {
   private _serialiseCmdBar = async (): Promise<CmdBarSerialised> => {
     if (!(await this.page.getByTestId('command-bar-wrapper').isVisible())) {
       return { stage: 'commandBarClosed' }
+    } else if (await this.page.getByTestId('cmd-bar-search').isVisible()) {
+      return { stage: 'pickCommand' }
     }
     const reviewForm = this.page.locator('#review-form')
     const getHeaderArgs = async () => {

@@ -384,7 +384,8 @@ describe('testing getNodePathFromSourceRange', () => {
 describe('testing hasExtrudeSketch', () => {
   it('find sketch', async () => {
     const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
+part001 = startSketchOn('XY')
+  |> startProfileAt([-1.41, 3.46], %)
   |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine([-35, length001], %)
   |> line(end = [-3.22, -7.36])
@@ -403,7 +404,8 @@ part001 = startSketchAt([-1.41, 3.46])
   })
   it('find solid', async () => {
     const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
+part001 = startSketchOn('XY')
+  |> startProfileAt([-1.41, 3.46], %)
   |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine([-35, length001], %)
   |> line(end = [-3.22, -7.36])
@@ -581,10 +583,10 @@ sketch002 = startSketchOn(extrude001, $seg01)
   })
   it('finds sketch001 and sketch002 pipes to be lofted', async () => {
     const exampleCode = `sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> circle(center = [0, 0], radius = 1)
 plane001 = offsetPlane('XZ', offset = 2)
 sketch002 = startSketchOn(plane001)
-  |> circle({ center = [0, 0], radius = 3 }, %)
+  |> circle(center = [0, 0], radius = 3)
 `
     const ast = assertParse(exampleCode)
     const extrudable = doesSceneHaveSweepableSketch(ast, 2)
@@ -608,7 +610,7 @@ extrude001 = extrude(sketch001, length = 10)
 describe('Testing doesSceneHaveExtrudedSketch', () => {
   it('finds extruded sketch as variable', async () => {
     const exampleCode = `sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> circle(center = [0, 0], radius = 1)
 extrude001 = extrude(sketch001, length = 1)
 `
     const ast = assertParse(exampleCode)
@@ -618,7 +620,7 @@ extrude001 = extrude(sketch001, length = 1)
   })
   it('finds extruded sketch in pipe', async () => {
     const exampleCode = `extrude001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
 `
     const ast = assertParse(exampleCode)
@@ -628,7 +630,7 @@ extrude001 = extrude(sketch001, length = 1)
   })
   it('finds no extrusion with sketch only', async () => {
     const exampleCode = `extrude001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> circle(center = [0, 0], radius = 1)
 `
     const ast = assertParse(exampleCode)
     if (err(ast)) throw ast

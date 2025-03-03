@@ -51,13 +51,14 @@ import {
   ARG_END_ABSOLUTE,
   getConstraintInfoKw,
   isAbsoluteLine,
+  getCircle,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
   getSketchSegmentFromSourceRange,
 } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle, isArray } from '../../lib/utils'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { findKwArg, findKwArgAny } from 'lang/util'
 
 export type LineInputsType =
@@ -138,7 +139,7 @@ function createCallWrapper(
     }
     if (tooltip === 'lineTo') {
       const labeledArgs = [
-        createLabeledArg('endAbsolute', createArrayExpression(val)),
+        createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(val)),
       ]
       if (tag) {
         labeledArgs.push(createLabeledArg(ARG_TAG, tag))
@@ -2154,6 +2155,9 @@ export function getConstraintLevelFromSourceRange(
         case 'CallExpression':
           return getFirstArg(nodeMeta.node)
         case 'CallExpressionKw':
+          if (name === 'circle') {
+            return getCircle(nodeMeta.node)
+          }
           const arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], nodeMeta.node)
           if (arg === undefined) {
             return new Error('unexpected call expression: ' + name)

@@ -20,8 +20,14 @@ import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { Selection } from 'lib/selections'
 import { err } from 'lib/trap'
-import { Cap, Plane, Wall } from 'wasm-lib/kcl/bindings/Artifact'
-import { CapSubType } from 'wasm-lib/kcl/bindings/Artifact'
+import {
+  Cap,
+  Plane,
+  StartSketchOnFace,
+  StartSketchOnPlane,
+  Wall,
+} from '@rust/kcl-lib/bindings/Artifact'
+import { CapSubType } from '@rust/kcl-lib/bindings/Artifact'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from 'lang/wasm'
 
@@ -610,6 +616,26 @@ function getPlaneFromSweepEdge(edge: SweepEdge, graph: ArtifactGraph) {
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
 }
+function getPlaneFromStartSketchOnFace(
+  sketch: StartSketchOnFace,
+  graph: ArtifactGraph
+) {
+  const plane = getArtifactOfTypes(
+    { key: sketch.faceId, types: ['plane'] },
+    graph
+  )
+  return plane
+}
+function getPlaneFromStartSketchOnPlane(
+  sketch: StartSketchOnPlane,
+  graph: ArtifactGraph
+) {
+  const plane = getArtifactOfTypes(
+    { key: sketch.planeId, types: ['plane'] },
+    graph
+  )
+  return plane
+}
 
 export function getPlaneFromArtifact(
   artifact: Artifact | undefined,
@@ -631,6 +657,10 @@ export function getPlaneFromArtifact(
   if (artifact.type === 'wall') return getPlaneFromWall(artifact, graph)
   if (artifact.type === 'sweepEdge')
     return getPlaneFromSweepEdge(artifact, graph)
+  if (artifact.type === 'startSketchOnFace')
+    return getPlaneFromStartSketchOnFace(artifact, graph)
+  if (artifact.type === 'startSketchOnPlane')
+    return getPlaneFromStartSketchOnPlane(artifact, graph)
   return new Error(`Artifact type ${artifact.type} does not have a plane`)
 }
 

@@ -36,7 +36,7 @@ import {
   getCodeRefsByArtifactId,
   ArtifactId,
 } from 'lang/std/artifactGraph'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { DefaultPlaneStr } from './planes'
 import { ArtifactEntry, ArtifactIndex } from './artifactIndex'
 

@@ -22,7 +22,7 @@ test.describe('Point-and-click tests', () => {
       path.resolve(
         __dirname,
         '../../',
-        './src/wasm-lib/tests/executor/inputs/test-circle-extrude.kcl'
+        './rust/kcl-lib/e2e/executor/inputs/test-circle-extrude.kcl'
       ),
       'utf-8'
     )
@@ -42,27 +42,25 @@ test.describe('Point-and-click tests', () => {
 
     await test.step('check code model connection works and that button is still enable once circle is selected ', async () => {
       await moveToCircle()
-      const circleSnippet =
-        'circle({ center = [318.33, 168.1], radius = 182.8 }, %)'
+      const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
       await editor.expectState({
-        activeLines: ["constsketch002=startSketchOn('XZ')"],
+        activeLines: ["sketch002=startSketchOn('XZ')"],
         highlightedCode: circleSnippet,
         diagnostics: [],
       })
 
       await test.step('check code model connection works and that button is still enable once circle is selected ', async () => {
         await moveToCircle()
-        const circleSnippet =
-          'circle({ center = [318.33, 168.1], radius = 182.8 }, %)'
+        const circleSnippet = 'circle(center = [318.33, 168.1], radius = 182.8)'
         await editor.expectState({
-          activeLines: ["constsketch002=startSketchOn('XZ')"],
+          activeLines: ["sketch002=startSketchOn('XZ')"],
           highlightedCode: circleSnippet,
           diagnostics: [],
         })
 
         await clickCircle()
         await editor.expectState({
-          activeLines: [circleSnippet.slice(-5)],
+          activeLines: ['|>' + circleSnippet],
           highlightedCode: circleSnippet,
           diagnostics: [],
         })
@@ -192,7 +190,7 @@ test.describe('Point-and-click tests', () => {
         path.resolve(
           __dirname,
           '../../',
-          './src/wasm-lib/tests/executor/inputs/e2e-can-sketch-on-chamfer.kcl'
+          './rust/kcl-lib/e2e/executor/inputs/e2e-can-sketch-on-chamfer.kcl'
         ),
         'utf-8'
       )
@@ -382,7 +380,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         path.resolve(
           __dirname,
           '../../',
-          './src/wasm-lib/tests/executor/inputs/e2e-can-sketch-on-chamfer-no-pipeExpr.kcl'
+          './rust/kcl-lib/e2e/executor/inputs/e2e-can-sketch-on-chamfer-no-pipeExpr.kcl'
         ),
         'utf-8'
       )
@@ -583,7 +581,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     const u = await getUtils(page)
 
     const initialCode = `closedSketch = startSketchOn('XZ')
-  |> circle({ center = [8, 5], radius = 2 }, %)
+  |> circle(center = [8, 5], radius = 2)
 openSketch = startSketchOn('XY')
   |> startProfileAt([-5, 0], %)
   |> line(endAbsolute = [0, 5])
@@ -635,8 +633,8 @@ openSketch = startSketchOn('XY')
       await expect(toolbar.startSketchBtn).not.toBeVisible()
       await expect(toolbar.exitSketchBtn).toBeVisible()
       await editor.expectState({
-        activeLines: [`|>circle({center=[8,5],radius=2},%)`],
-        highlightedCode: 'circle({center=[8,5],radius=2},%)',
+        activeLines: [`|>circle(center=[8,5],radius=2)`],
+        highlightedCode: 'circle(center=[8,5],radius=2)',
         diagnostics: [],
       })
     })
@@ -1194,10 +1192,10 @@ openSketch = startSketchOn('XY')
       cmdBar,
     }) => {
       const initialCode = `sketch001 = startSketchOn('XZ')
-    |> circle({ center = [0, 0], radius = 30 }, %)
+    |> circle(center = [0, 0], radius = 30)
     plane001 = offsetPlane('XZ', offset = 50)
     sketch002 = startSketchOn(plane001)
-    |> circle({ center = [0, 0], radius = 20 }, %)
+    |> circle(center = [0, 0], radius = 20)
 `
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -1280,10 +1278,10 @@ openSketch = startSketchOn('XY')
     scene,
   }) => {
     const initialCode = `sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 30 }, %)
+  |> circle(center = [0, 0], radius = 30)
   plane001 = offsetPlane('XZ', offset = 50)
   sketch002 = startSketchOn(plane001)
-  |> circle({ center = [0, 0], radius = 20 }, %)
+  |> circle(center = [0, 0], radius = 20)
 loft001 = loft([sketch001, sketch002])
 `
     await context.addInitScript((initialCode) => {
@@ -1306,7 +1304,7 @@ loft001 = loft([sketch001, sketch002])
       await scene.expectPixelColor([89, 89, 89], testPoint, 15)
       await clickOnSketch1()
       await expect(page.locator('.cm-activeLine')).toHaveText(`
-      |> circle({ center = [0, 0], radius = 30 }, %)
+      |> circle(center = [0, 0], radius = 30)
     `)
       await page.keyboard.press('Delete')
       // Check for sketch 1
@@ -1317,7 +1315,7 @@ loft001 = loft([sketch001, sketch002])
       await page.waitForTimeout(1000)
       await clickOnSketch2()
       await expect(page.locator('.cm-activeLine')).toHaveText(`
-      |> circle({ center = [0, 0], radius = 20 }, %)
+      |> circle(center = [0, 0], radius = 20)
     `)
       await page.keyboard.press('Delete')
       // Check for plane001
@@ -1346,10 +1344,10 @@ loft001 = loft([sketch001, sketch002])
     cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn('YZ')
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = 500
-     }, %)
+     )
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> xLine(-500, %)
@@ -1440,10 +1438,10 @@ sketch002 = startSketchOn('XZ')
     cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn('YZ')
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = 500
-     }, %)
+     )
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> xLine(-500, %)
@@ -2272,7 +2270,7 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       cmdBar,
     }) => {
       const initialCode = `sketch001 = startSketchOn('XZ')
-    |> circle({ center = [0, 0], radius = 30 }, %)
+    |> circle(center = [0, 0], radius = 30)
     extrude001 = extrude(sketch001, length = 30)
     `
       await context.addInitScript((initialCode) => {
@@ -2447,19 +2445,19 @@ extrude001 = extrude(sketch001, length = 40)
 
   const shellSketchOnFacesCases = [
     `sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 100 }, %)
+  |> circle(center = [0, 0], radius = 100)
   |> extrude(length = 100)
 
 sketch002 = startSketchOn(sketch001, 'END')
-  |> circle({ center = [0, 0], radius = 50 }, %)
+  |> circle(center = [0, 0], radius = 50)
   |> extrude(length = 50)
   `,
     `sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 100 }, %)
+  |> circle(center = [0, 0], radius = 100)
 extrude001 = extrude(sketch001, length = 100)
 
 sketch002 = startSketchOn(extrude001, 'END')
-  |> circle({ center = [0, 0], radius = 50 }, %)
+  |> circle(center = [0, 0], radius = 50)
 extrude002 = extrude(sketch002, length = 50)
   `,
   ]
@@ -2633,10 +2631,10 @@ profile001 = startProfileAt([-20, 20], sketch001)
     cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn('YZ')
-  |> circle({
+  |> circle(
        center = [0, 0],
        radius = 500
-     }, %)
+     )
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> xLine(-2000, %)
@@ -2763,10 +2761,10 @@ segAng(rectangleSegmentA001),
 |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
-|> circle({
+|> circle(
 center = [-11.34, 10.0],
 radius = 8.69
-}, %)
+)
 `
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -2813,10 +2811,10 @@ radius = 8.69
       |> close()
     extrude001 = extrude(sketch001, length = 5)
     sketch003 = startSketchOn(extrude001, 'START')
-      |> circle({
+      |> circle(
         center = [-0.69, 0.56],
         radius = 0.28
-      }, %)
+      )
 `
 
       await context.addInitScript((initialCode) => {
@@ -2851,10 +2849,11 @@ radius = 8.69
     cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn('XZ')
-profile001 = circle({
+profile001 = circle(
+  sketch001,
   center = [0, 0],
   radius = 100
-}, sketch001)
+)
 extrude001 = extrude(profile001, length = 100)
 `
     await context.addInitScript((initialCode) => {
@@ -2866,7 +2865,7 @@ extrude001 = extrude(profile001, length = 100)
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 500, y: 250 }
-    const initialColor: [number, number, number] = [135, 135, 135]
+    const initialColor: [number, number, number] = [123, 123, 123]
 
     await test.step(`Confirm extrude exists with default appearance`, async () => {
       await toolbar.closePane('code')
@@ -2879,23 +2878,41 @@ extrude001 = extrude(profile001, length = 100)
       shapeColor: [number, number, number]
     ) {
       await toolbar.openPane('feature-tree')
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'Extrude',
-        0
-      )
-      await operationButton.click({ button: 'right' })
-      const menuButton = page.getByTestId('context-menu-set-appearance')
-      await menuButton.click()
-      await cmdBar.expectState({
-        commandName: 'Appearance',
-        currentArgKey: 'color',
-        currentArgValue: '',
-        headerArguments: {
-          Color: '',
-        },
-        highlightedHeaderArg: 'color',
-        stage: 'arguments',
+      const enterAppearanceFlow = async (stepName: string) =>
+        test.step(stepName, async () => {
+          const operationButton = await toolbar.getFeatureTreeOperation(
+            'Extrude',
+            0
+          )
+          await operationButton.click({ button: 'right' })
+          const menuButton = page.getByTestId('context-menu-set-appearance')
+          await menuButton.click()
+          await cmdBar.expectState({
+            commandName: 'Appearance',
+            currentArgKey: 'color',
+            currentArgValue: '',
+            headerArguments: {
+              Color: '',
+            },
+            highlightedHeaderArg: 'color',
+            stage: 'arguments',
+          })
+        })
+
+      await enterAppearanceFlow(`Open Set Appearance flow`)
+
+      await test.step(`Validate hidden argument "nodeToEdit" can't be reached with Backspace`, async () => {
+        await page.keyboard.press('Backspace')
+        await cmdBar.expectState({
+          stage: 'pickCommand',
+        })
+        await page.keyboard.press('Escape')
+        await cmdBar.expectState({
+          stage: 'commandBarClosed',
+        })
       })
+
+      await enterAppearanceFlow(`Restart Appearance flow`)
       const item = page.getByText(option, { exact: true })
       await item.click()
       await cmdBar.expectState({
@@ -2907,7 +2924,7 @@ extrude001 = extrude(profile001, length = 100)
       })
       await cmdBar.progressCmdBar()
       await toolbar.closePane('feature-tree')
-      await scene.expectPixelColor(shapeColor, testPoint, 40)
+      await scene.expectPixelColor(shapeColor, testPoint, 10)
       await toolbar.openPane('code')
       if (hex === 'default') {
         const anyAppearanceDeclaration = `|> appearance(`
@@ -2933,9 +2950,9 @@ extrude001 = extrude(profile001, length = 100)
       await setApperanceAndCheck('Purple', '#FF00FF', [180, 0, 180])
       await setApperanceAndCheck('Yellow', '#FFFF00', [180, 180, 0])
       await setApperanceAndCheck('Black', '#000000', [0, 0, 0])
-      await setApperanceAndCheck('Dark Grey', '#080808', [10, 10, 10])
-      await setApperanceAndCheck('Light Grey', '#D3D3D3', [190, 190, 190])
-      await setApperanceAndCheck('White', '#FFFFFF', [200, 200, 200])
+      await setApperanceAndCheck('Dark Grey', '#080808', [0x33, 0x33, 0x33])
+      await setApperanceAndCheck('Light Grey', '#D3D3D3', [176, 176, 176])
+      await setApperanceAndCheck('White', '#FFFFFF', [184, 184, 184])
       await setApperanceAndCheck(
         'Default (clear appearance)',
         'default',
