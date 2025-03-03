@@ -182,12 +182,33 @@ pub async fn execute_and_export_step(
         .await
         .map_err(|err| ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone()))?;
 
-    let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
+    let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { mut files } = resp else {
         return Err(ExecErrorWithState::new(
             ExecError::BadExport(format!("Expected export response, got: {:?}", resp)),
             exec_state.clone(),
         ));
     };
+
+    for kittycad_modeling_cmds::websocket::RawFile { contents, .. } in &mut files {
+        use std::fmt::Write;
+        let utf8 = std::str::from_utf8(&contents).unwrap();
+        let mut postprocessed = String::new();
+        for line in utf8.lines() {
+            if line.starts_with("FILE_NAME") {
+                let name = "test.step";
+                let time = "2021-01-01T00:00:00Z";
+                let author = "Test";
+                let org = "Zoo";
+                let version = "zoo.dev beta";
+                let system = "zoo.dev";
+                let authorization = "Test";
+                writeln!(&mut postprocessed, "FILE_NAME('{name}', '{time}', ('{author}'), ('{org}'), '{version}', '{system}', '{authorization}');").unwrap();
+            } else {
+                writeln!(&mut postprocessed, "{line}").unwrap();
+            }
+        }
+        *contents = postprocessed.into_bytes();
+    }
 
     ctx.close().await;
 
