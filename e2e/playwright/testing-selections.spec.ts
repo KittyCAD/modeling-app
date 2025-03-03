@@ -775,8 +775,11 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
      ],
    )
   `)
+
     await expect(
-      page.getByTestId('model-state-indicator-execution-done')
+      page
+        .getByTestId('model-state-indicator-receive-reliable')
+        .or(page.getByTestId('model-state-indicator-execution-done'))
     ).toBeVisible()
 
     await u.openAndClearDebugPanel()

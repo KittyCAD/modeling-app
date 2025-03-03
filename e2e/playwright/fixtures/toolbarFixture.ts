@@ -82,6 +82,16 @@ export class ToolbarFixture {
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
 
+  exitSketch = async () => {
+    await this.exitSketchBtn.click()
+    await expect(
+      this.page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+    await expect(
+      this.page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+  }
+
   editSketch = async () => {
     await this.editSketchBtn.first().click()
     // One of the rare times we want to allow a arbitrary wait
