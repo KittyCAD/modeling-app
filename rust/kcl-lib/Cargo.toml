@@ -5,7 +5,7 @@ version = "0.2.45"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
-rust-version = "1.73"
+rust-version = "1.83"
 authors = ["Jess Frazelle", "Adam Chalmers", "KittyCAD, Inc"]
 keywords = ["kcl", "KittyCAD", "CAD"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
