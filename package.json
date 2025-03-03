@@ -16,7 +16,7 @@
     "@codemirror/commands": "^6.8.0",
     "@codemirror/language": "^6.10.8",
     "@codemirror/lint": "^6.8.4",
-    "@codemirror/search": "^6.5.6",
+    "@codemirror/search": "^6.5.10",
     "@codemirror/state": "^6.4.1",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@csstools/postcss-oklab-function": "^4.0.7",
