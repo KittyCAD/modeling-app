@@ -55,7 +55,11 @@ function CommandBarBasicInput({
               | undefined) || (arg.defaultValue as string)
           }
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && !event.currentTarget.value) {
+            if (
+              event.key === 'Backspace' &&
+              event.shiftKey &&
+              !event.currentTarget.value
+            ) {
               stepBack()
             }
           }}
