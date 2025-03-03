@@ -466,7 +466,10 @@ export class SceneEntities {
             sceneObject.object.name === Y_AXIS
         )
 
-        const arrowHead = getParentGroup(args.intersects[0].object, [ARROWHEAD])
+        const arrowHead = getParentGroup(args.intersects[0].object, [
+          ARROWHEAD,
+          ARC_ANGLE_END,
+        ])
         const parent = getParentGroup(
           args.intersects[0].object,
           SEGMENT_BODIES_PLUS_PROFILE_START
