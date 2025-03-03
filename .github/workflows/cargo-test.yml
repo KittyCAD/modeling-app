@@ -75,8 +75,14 @@ jobs:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_BACKTRACE: full
           RUST_MIN_STACK: 10485760000
-      - uses: taiki-e/install-action@just
+      - name: Install just
+        uses: taiki-e/install-action@just
         if: needs.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
+      - name: Install cargo-insta
+        if: needs.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
+        shell: bash
+        run: |
+          cargo install cargo-insta
       - name: Commit differences
         if: needs.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
         shell: bash
