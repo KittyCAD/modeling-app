@@ -81,7 +81,9 @@ jobs:
         if: needs.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
         shell: bash
         run: |
+          pushd rust/
           just overwrite-sim-test kcl-samples
+          popd
           git add rust/kcl-lib/tests
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
