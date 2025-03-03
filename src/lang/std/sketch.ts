@@ -2495,7 +2495,8 @@ export function changeSketchArguments(
       },
   input: SegmentInputs
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
-  const _node = structuredClone(node)
+  // TODO/less-than-ideal, this obvious relies on node getting mutated, as changing the following with `_node = structuredClone(node)` breaks the draft line animation.
+  const _node = { ...node }
   const thePath =
     sourceRangeOrPath.type === 'sourceRange'
       ? getNodePathFromSourceRange(_node, sourceRangeOrPath.sourceRange)
