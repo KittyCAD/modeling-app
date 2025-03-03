@@ -276,6 +276,21 @@ export function mutateKwArg(
   return false
 }
 
+/**
+Set the keyword argument to the given value.
+Returns true if it overwrote an existing argument.
+Returns false if no argument with the label existed before.
+*/
+export function removeKwArgs(labels: string[], node: CallExpressionKw) {
+  for (const label of labels) {
+    const i = node.arguments.findIndex((la) => la.label.name === label)
+    if (i == -1) {
+      continue
+    }
+    node.arguments.splice(i, 1)
+  }
+}
+
 export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((element, i) => {
