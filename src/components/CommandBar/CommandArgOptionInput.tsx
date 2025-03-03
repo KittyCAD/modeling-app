@@ -144,7 +144,7 @@ function CommandArgOptionInput({
             onKeyDown={(event) => {
               if (event.metaKey && event.key === 'k')
                 commandBarActor.send({ type: 'Close' })
-              if (event.key === 'Backspace' && !event.currentTarget.value) {
+              if (event.key === 'Backspace' && event.shiftKey) {
                 stepBack()
               }
 

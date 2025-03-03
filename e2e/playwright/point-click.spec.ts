@@ -2900,7 +2900,7 @@ extrude001 = extrude(profile001, length = 100)
       await enterAppearanceFlow(`Open Set Appearance flow`)
 
       await test.step(`Validate hidden argument "nodeToEdit" can't be reached with Backspace`, async () => {
-        await page.keyboard.press('Backspace')
+        await page.keyboard.press('Shift+Backspace')
         await cmdBar.expectState({
           stage: 'pickCommand',
         })
