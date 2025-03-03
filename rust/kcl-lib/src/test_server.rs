@@ -191,7 +191,7 @@ pub async fn execute_and_export_step(
 
     for kittycad_modeling_cmds::websocket::RawFile { contents, .. } in &mut files {
         use std::fmt::Write;
-        let utf8 = std::str::from_utf8(&contents).unwrap();
+        let utf8 = std::str::from_utf8(contents).unwrap();
         let mut postprocessed = String::new();
         for line in utf8.lines() {
             if line.starts_with("FILE_NAME") {

@@ -2090,7 +2090,7 @@ async fn kcl_test_exporting_step_file() {
     let (_, _, files) = execute_and_export_step(code, UnitLength::Mm, None).await.unwrap();
     for file in files {
         expectorate::assert_contents(
-            format!("tests/executor/outputs/helix_defaults_negative_extrude_{}", file.name),
+            format!("e2e/executor/outputs/helix_defaults_negative_extrude_{}", file.name),
             std::str::from_utf8(&file.contents).unwrap(),
         );
     }
