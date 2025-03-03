@@ -24,6 +24,7 @@ jobs:
         with:
             toolchain: stable
             override: true
+            default: true
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1

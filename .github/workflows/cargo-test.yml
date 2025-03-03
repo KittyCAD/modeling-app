@@ -21,6 +21,7 @@ jobs:
         with:
           toolchain: stable
           override: true
+          default: true
       - name: Install vector
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
