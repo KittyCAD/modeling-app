@@ -984,7 +984,10 @@ export const tangentialArcTo: SketchLineHelper = {
       return {
         modifiedAst: _node,
         pathToNode: [
-          ...pathToNode,
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          ),
           ['body', 'PipeExpression'],
           [pipe.body.length - 1, 'CallExpression'],
         ],
@@ -1274,7 +1277,10 @@ export const arc: SketchLineHelper = {
       angleEnd: createLiteral(roundOff(endAngleDegrees)),
     })
 
-    const newArc = createCallExpression('arc', [arcObj])
+    const newArc = createCallExpression('arc', [
+      arcObj,
+      createPipeSubstitution(),
+    ])
 
     if (
       spliceBetween &&
@@ -1338,7 +1344,13 @@ export const arc: SketchLineHelper = {
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
-        pathToNode: [...pathToNode],
+        pathToNode: [
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          ),
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
         valueUsedInTransform,
       }
     }
@@ -1348,8 +1360,10 @@ export const arc: SketchLineHelper = {
       return {
         modifiedAst: _node,
         pathToNode: [
-          ...pathToNode,
-          ['body', 'PipeExpression'],
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          ),
           [pipe.body.length - 1, 'CallExpression'],
         ],
       }
