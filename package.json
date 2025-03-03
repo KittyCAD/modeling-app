@@ -69,7 +69,7 @@
     "yargs": "^17.7.2"
   },
   "scripts": {
-    "install:rust": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none && (cd rust && (rustup show active-toolchain || rustup toolchain install))",
+    "install:rust": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none && source \"$HOME/.cargo/env\" && (cd rust && (rustup show active-toolchain || rustup toolchain install))",
     "install:rust:windows": "winget install Microsoft.VisualStudio.2022.Community --silent --override \"--wait --quiet --add ProductLang En-us --add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended\" && winget install Rustlang.Rustup",
     "install:wasm-pack:sh": ". $HOME/.cargo/env && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y",
     "install:wasm-pack:cargo": "cargo install wasm-pack",
