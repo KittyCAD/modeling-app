@@ -8,15 +8,12 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use tokio::sync::RwLock;
-
-pub mod custom_notifications;
-
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
 use sha2::Digest;
+use tokio::sync::RwLock;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
@@ -28,7 +25,7 @@ use tower_lsp::{
         DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportResult,
         DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse,
         Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability, FullDocumentDiagnosticReport,
-        Hover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
+        Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
         InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
         Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken,
         SemanticTokenModifier, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend,
@@ -49,7 +46,7 @@ use crate::{
         cache::{self, OldAstState},
         kcl_value::FunctionSource,
     },
-    lsp::{backend::Backend as _, util::IntoDiagnostic},
+    lsp::{backend::Backend as _, kcl::hover::Hover, util::IntoDiagnostic},
     parsing::{
         ast::types::{Expr, VariableKind},
         token::TokenStream,
@@ -57,6 +54,10 @@ use crate::{
     },
     ModuleId, Program, SourceRange,
 };
+
+pub mod custom_notifications;
+mod hover;
+
 const SEMANTIC_TOKEN_TYPES: [SemanticTokenType; 10] = [
     SemanticTokenType::NUMBER,
     SemanticTokenType::VARIABLE,
@@ -1015,7 +1016,7 @@ impl LanguageServer for Backend {
         }
     }
 
-    async fn hover(&self, params: HoverParams) -> RpcResult<Option<Hover>> {
+    async fn hover(&self, params: HoverParams) -> RpcResult<Option<LspHover>> {
         let filename = params.text_document_position_params.text_document.uri.to_string();
 
         let Some(current_code) = self.code_map.get(&filename) else {
@@ -1037,7 +1038,7 @@ impl LanguageServer for Backend {
         };
 
         match hover {
-            crate::parsing::ast::types::Hover::Function { name, range } => {
+            Hover::Function { name, range } => {
                 let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
                     match value {
                         // User-defined or KCL std function
@@ -1083,7 +1084,7 @@ impl LanguageServer for Backend {
                     (sig, &**docs)
                 };
 
-                Ok(Some(Hover {
+                Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
                         value: format!("```\n{}{}\n```\n\n{}", name, sig, docs),
@@ -1091,41 +1092,39 @@ impl LanguageServer for Backend {
                     range: Some(range),
                 }))
             }
-            crate::parsing::ast::types::Hover::Variable {
+            Hover::Variable {
                 name,
                 ty: Some(ty),
                 range,
-            } => Ok(Some(Hover {
+            } => Ok(Some(LspHover {
                 contents: HoverContents::Markup(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value: format!("```\n{}: {}\n```", name, ty),
                 }),
                 range: Some(range),
             })),
-            crate::parsing::ast::types::Hover::Variable { name, ty: None, range } => {
-                Ok(with_cached_var(&name, |value| {
-                    let mut text: String = format!("```\n{}", name);
-                    if let Some(ty) = value.principal_type() {
-                        text.push_str(&format!(": {}", ty));
-                    }
-                    if let Some(v) = value.value_str() {
-                        text.push_str(&format!(" = {}", v));
-                    }
-                    text.push_str("\n```");
+            Hover::Variable { name, ty: None, range } => Ok(with_cached_var(&name, |value| {
+                let mut text: String = format!("```\n{}", name);
+                if let Some(ty) = value.principal_type() {
+                    text.push_str(&format!(": {}", ty));
+                }
+                if let Some(v) = value.value_str() {
+                    text.push_str(&format!(" = {}", v));
+                }
+                text.push_str("\n```");
 
-                    Hover {
-                        contents: HoverContents::Markup(MarkupContent {
-                            kind: MarkupKind::Markdown,
-                            value: text,
-                        }),
-                        range: Some(range),
-                    }
-                })
-                .await)
-            }
+                LspHover {
+                    contents: HoverContents::Markup(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: text,
+                    }),
+                    range: Some(range),
+                }
+            })
+            .await),
             // TODO we're getting the signature help rather than carrying on to the variables in nested exprs
-            crate::parsing::ast::types::Hover::Signature { .. } => Ok(None),
-            crate::parsing::ast::types::Hover::Comment { value, range } => Ok(Some(Hover {
+            Hover::Signature { .. } => Ok(None),
+            Hover::Comment { value, range } => Ok(Some(LspHover {
                 contents: HoverContents::Markup(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value,
@@ -1283,7 +1282,7 @@ impl LanguageServer for Backend {
         };
 
         match hover {
-            crate::parsing::ast::types::Hover::Function { name, range: _ } => {
+            Hover::Function { name, range: _ } => {
                 // Get the docs for this function.
                 let Some(signature) = self.stdlib_signatures.get(&name) else {
                     return Ok(None);
@@ -1291,7 +1290,7 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature.clone()))
             }
-            crate::parsing::ast::types::Hover::Signature {
+            Hover::Signature {
                 name,
                 parameter_index,
                 range: _,
