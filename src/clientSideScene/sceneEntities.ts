@@ -167,6 +167,15 @@ export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   PROFILE_START,
 ]
 
+export const THREE_POINT_ARC_SEGMENT = 'three-point-arc-segment'
+export const THREE_POINT_ARC_SEGMENT_BODY = 'three-point-arc-segment-body'
+export const THREE_POINT_ARC_SEGMENT_DASH = 'three-point-arc-segment-dash'
+export const THREE_POINT_ARC_ANGLE_END = 'three-point-arc-angle-end'
+export const THREE_POINT_ARC_CENTER_TO_FROM = 'three-point-arc-center-to-from'
+export const THREE_POINT_ARC_CENTER_TO_TO = 'three-point-arc-center-to-to'
+export const THREE_POINT_ARC_ANGLE_REFERENCE_LINE =
+  'three-point-arc-angle-reference-line'
+
 type Vec3Array = [number, number, number]
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
@@ -268,6 +277,24 @@ export class SceneEntities {
           p1: segment.userData.p1,
           p2: segment.userData.p2,
           p3: segment.userData.p3,
+        }
+      }
+      if (
+        segment.userData &&
+        segment.userData.from &&
+        segment.userData.center &&
+        segment.userData.radius &&
+        segment.userData.to &&
+        segment.userData.type === THREE_POINT_ARC_SEGMENT
+      ) {
+        update = segmentUtils.arc.update
+        input = {
+          type: 'three-point-arc-segment',
+          from: segment.userData.from,
+          to: segment.userData.to,
+          center: segment.userData.center,
+          radius: segment.userData.radius,
+          ccw: segment.userData.ccw,
         }
       }
 

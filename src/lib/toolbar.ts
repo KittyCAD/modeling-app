@@ -439,9 +439,17 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'three-point-arc',
-          onClick: () => console.error('Three-point arc not yet implemented'),
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Arc three point tool' })
+                  ? 'arcThreePoint'
+                  : 'none',
+              },
+            }),
           icon: 'arc',
-          status: 'unavailable',
+          status: 'available',
           title: 'Three-point Arc',
           showTitle: false,
           description: 'Draw a circular arc defined by three points',
@@ -451,6 +459,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               url: 'https://github.com/KittyCAD/modeling-app/issues/1659',
             },
           ],
+          isActive: (state) =>
+            state.matches({ Sketch: 'Arc three point tool' }),
         },
       ],
       {
