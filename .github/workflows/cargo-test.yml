@@ -64,7 +64,7 @@ jobs:
         if: needs.path-changes.outputs.outside-kcl-samples == 'false'
         shell: bash
         run: |-
-          cd "${{ matrix.dir }}"
+          cd rust
           cargo nextest run --workspace --retries=2 --no-fail-fast -P ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
