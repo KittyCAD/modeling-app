@@ -44,6 +44,11 @@ overwrite-sim-test test_name:
 test:
     export RUST_BRACKTRACE="full" && cargo nextest run --workspace --no-fail-fast
 
+bump-kcl-crate-versions bump='patch':
+    # First build the kcl-bumper tool.
+    cargo build -p kcl-bumper
+    ./target/debug/kcl-bumper --bump {{bump}}
+
 publish-kcl version:
     git tag kcl-{{version}}
     cargo publish -p kcl-derive-docs
