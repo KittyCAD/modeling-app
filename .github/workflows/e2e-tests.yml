@@ -51,6 +51,7 @@ jobs:
         node-version-file: '.nvmrc'
         cache: 'yarn'
     - name: Install dependencies
+      id: install-deps
       shell: bash
       run: yarn
     - name: Cache Playwright Browsers
@@ -193,7 +194,7 @@ jobs:
         path: test-results/
     - name: Run playwright/electron flow (with retries)
       id: retry
-      if: ${{ !cancelled() && (success() || failure()) }}
+      if: ${{ !cancelled() && steps.deps-install.outcome == "success" }}
       uses: nick-fields/retry@v3.0.2
       with:
         shell: bash
