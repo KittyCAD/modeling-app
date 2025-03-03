@@ -38,6 +38,7 @@ const onUpdateDownloadStart = (
 const onUpdateError = (callback: (value: Error) => void) =>
   ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
+const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
 
@@ -207,6 +208,7 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateDownloaded,
   onUpdateError,
   appRestart,
+  appCheckForUpdates,
   getArgvParsed,
   resizeWindow,
 })

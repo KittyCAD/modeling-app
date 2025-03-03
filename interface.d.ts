@@ -88,6 +88,7 @@ export interface IElectronAPI {
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
+  appCheckForUpdates: () => Promise<unknown>
   getArgvParsed: () => any
   getAppTestProperty: (propertyName: string) => any
 }
