@@ -147,13 +147,9 @@ function CommandBarKclInput({
         },
         {
           key: 'Shift-Backspace',
-          run: (editor) => {
-            // Only step back if the editor is empty
-            if (editor.state.doc.toString() === '') {
-              stepBack()
-              return true
-            }
-            return false
+          run: () => {
+            stepBack()
+            return true
           },
         },
       ]),
