@@ -1104,7 +1104,7 @@ export const modelingMachine = setup({
       sceneEntitiesManager.setupNoPointsListener({
         sketchDetails,
         currentTool,
-        afterClick: (_, data) => 
+        afterClick: (_, data) =>
           sceneInfra.modelingSend(
             currentTool === 'tangentialArc'
               ? { type: 'Continue existing profile', data }
