@@ -279,18 +279,18 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> xLine(15, %)
+///   |> xLine(length = 15)
 ///   |> angledLine({
 ///     angle = 80,
 ///     length = 15,
 ///   }, %)
 ///   |> line(end = [8, -10])
-///   |> xLine(10, %)
+///   |> xLine(length = 10)
 ///   |> angledLine({
 ///     angle = 120,
 ///     length = 30,
 ///   }, %)
-///   |> xLine(-15, %)
+///   |> xLine(length = -15)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 10)
@@ -347,13 +347,13 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> yLine(15, %)
+///   |> yLine(length = 15)
 ///   |> angledLine({
 ///     angle = 30,
 ///     length = 15,
 ///   }, %)
 ///   |> line(end = [8, -10])
-///   |> yLine(-5, %)
+///   |> yLine(length = -5)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 10)
@@ -423,13 +423,13 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> yLineTo(15, %)
+///   |> yLine(endAbsolute = 15)
 ///   |> angledLine({
 ///     angle = 30,
 ///     length = 15,
 ///   }, %)
 ///   |> line(end = [8, -10])
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 10)
@@ -1003,9 +1003,9 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///     })
 ///  |> startProfileAt([0, 0], %)
 ///  |> line(end = [100.0, 0])
-///  |> yLine(-100.0, %)
-///  |> xLine(-100.0, %)
-///  |> yLine(100.0, %)
+///  |> yLine(length = -100.0)
+///  |> xLine(length = -100.0)
+///  |> yLine(length = 100.0)
 ///  |> close()
 ///  |> extrude(length = 3.14)
 /// ```

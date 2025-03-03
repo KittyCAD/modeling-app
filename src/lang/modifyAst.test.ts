@@ -592,10 +592,10 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
         'line(endAbsolute = [306.21, 198.85], tag = $a)',
         ['110.48', '119.73'],
       ],
-      ['yLine', 'yLine(198.85, %, $a)', ['198.85', '90']],
-      ['xLine', 'xLine(198.85, %, $a)', ['198.85', '0']],
-      ['yLineTo', 'yLineTo(198.85, %, $a)', ['95.94', '90']],
-      ['xLineTo', 'xLineTo(198.85, %, $a)', ['162.14', '180']],
+      ['yLine', 'yLine(length = 198.85, tag = $a)', ['198.85', '90']],
+      ['xLine', 'xLine(length = 198.85, tag = $a)', ['198.85', '0']],
+      ['yLineTo', 'yLine(endAbsolute = 198.85, tag = $a)', ['95.94', '90']],
+      ['xLineTo', 'xLine(endAbsolute = 198.85, tag = $a)', ['162.14', '180']],
       [
         'angledLine',
         'angledLine({ angle: 45.5, length: 198.85 }, %, $a)',
@@ -658,10 +658,10 @@ describe('Testing removeSingleConstraintInfo', () => {
   |> line(end = [3 + 0, 4 + 0])
   |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
   |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
-  |> xLineTo(8 + 0, %)
-  |> yLineTo(5 + 0, %)
-  |> yLine(3.14 + 0, %, $a)
-  |> xLine(3.14 + 0, %)
+  |> xLine(endAbsolute = 8 + 0)
+  |> yLine(endAbsolute = 5 + 0)
+  |> yLine(length = 3.14 + 0, tag = $a)
+  |> xLine(length = 3.14 + 0)
   |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 + 0 }, %)
   |> angledLineOfYLength({ angle = 30 + 0, length = 3 + 0 }, %)
   |> angledLineToX({ angle = 12.14 + 0, to = 12 + 0 }, %)
@@ -680,10 +680,10 @@ describe('Testing removeSingleConstraintInfo', () => {
         'angle',
       ],
       ['line(endAbsolute = [6.14 + 0, 3.14 + 0])', 'arrayIndex', 0],
-      ['xLineTo(8, %)', '', ''],
-      ['yLineTo(5, %)', '', ''],
-      ['yLine(3.14, %, $a)', '', ''],
-      ['xLine(3.14, %)', '', ''],
+      ['xLine(endAbsolute = 8)', '', ''],
+      ['yLine(endAbsolute = 5)', '', ''],
+      ['yLine(length = 3.14, tag = $a)', '', ''],
+      ['xLine(length = 3.14)', '', ''],
       [
         'angledLineOfXLength({ angle = 3, length = 3.14 + 0 }, %)',
         'objectProperty',

@@ -1034,8 +1034,8 @@ const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
 const part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
-  |> yLineTo(1, %)
-  |> xLine(3.84, %) // selection-range-7ish-before-this
+  |> yLine(endAbsolute = 1)
+  |> xLine(length = 3.84) // selection-range-7ish-before-this
 
 const variableBelowShouldNotBeIncluded = 3
 "#;
@@ -1763,9 +1763,9 @@ let w = f() + f()
     async fn kcl_test_ids_stable_between_executions() {
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfileAt([61.74, 206.13], %)
-|> xLine(305.11, %, $seg01)
-|> yLine(-291.85, %)
-|> xLine(-segLen(seg01), %)
+|> xLine(length = 305.11, tag = $seg01)
+|> yLine(length = -291.85)
+|> xLine(length = -segLen(seg01))
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
@@ -1788,9 +1788,9 @@ let w = f() + f()
 
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfileAt([62.74, 206.13], %)
-|> xLine(305.11, %, $seg01)
-|> yLine(-291.85, %)
-|> xLine(-segLen(seg01), %)
+|> xLine(length = 305.11, tag = $seg01)
+|> yLine(length = -291.85)
+|> xLine(length = -segLen(seg01))
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
@@ -1814,9 +1814,9 @@ let w = f() + f()
     async fn kcl_test_changing_a_setting_updates_the_cached_state() {
         let code = r#"sketch001 = startSketchOn('XZ')
 |> startProfileAt([61.74, 206.13], %)
-|> xLine(305.11, %, $seg01)
-|> yLine(-291.85, %)
-|> xLine(-segLen(seg01), %)
+|> xLine(length = 305.11, tag = $seg01)
+|> yLine(length = -291.85)
+|> xLine(length = -segLen(seg01))
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
