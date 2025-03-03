@@ -54,6 +54,9 @@ import {
   ARC_SEGMENT_DASH,
   ARC_ANGLE_END,
   getParentGroup,
+  ARC_CENTER_TO_FROM,
+  ARC_CENTER_TO_TO,
+  ARC_ANGLE_REFERENCE_LINE,
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
@@ -595,7 +598,6 @@ class CircleSegment implements SegmentUtils {
     }
     const { from, center, radius } = input
     group.userData.from = from
-    // group.userData.to = to
     group.userData.center = center
     group.userData.radius = radius
     group.userData.prevSegment = prevSegment
@@ -988,6 +990,63 @@ class ArcSegment implements SegmentUtils {
       scale,
     })
 
+    // Create a line from the center to the 'to' point
+    const centerToFromLine = createLine({
+      from: center,
+      to: from,
+      scale,
+      color: 0xaaaaaa, // Light gray color for the line
+    })
+    centerToFromLine.name = ARC_CENTER_TO_FROM
+    const centerToToLine = createLine({
+      from: center,
+      to,
+      scale,
+      color: 0xaaaaaa, // Light gray color for the line
+    })
+    centerToToLine.name = ARC_CENTER_TO_TO
+    const angleReferenceLine = createLine({
+      // from: center,
+      from: [center[0] + 28 * scale, center[1]],
+      to: [center[0] + 32 * scale, center[1]],
+      scale,
+      color: 0xaaaaaa, // Light gray color for the line
+    })
+    angleReferenceLine.name = ARC_ANGLE_REFERENCE_LINE
+
+    // Create a curved line with an arrow to indicate the angle
+    const angleIndicator = createAngleIndicator({
+      center,
+      radius: radius / 2, // Half the radius for the indicator
+      startAngle: 0,
+      endAngle,
+      scale,
+      color: 0xaaaaaa, // Red color for the angle indicator
+    }) as Line
+    angleIndicator.name = 'angleIndicator'
+
+    // Create a new angle indicator for the end angle
+    const endAngleIndicator = createAngleIndicator({
+      center,
+      radius: radius / 2, // Half the radius for the indicator
+      startAngle: 0,
+      endAngle: (endAngle * Math.PI) / 180,
+      scale,
+      color: 0xaaaaaa, // Green color for the end angle indicator
+    }) as Line
+    endAngleIndicator.name = 'endAngleIndicator'
+
+    // Create a length indicator for the end angle
+    const endAngleLengthIndicator = createLengthIndicator({
+      from: center,
+      to: [
+        center[0] + Math.cos(endAngle) * radius,
+        center[1] + Math.sin(endAngle) * radius,
+      ],
+      scale,
+    })
+    endAngleLengthIndicator.name = 'endAngleLengthIndicator'
+
     arcMesh.userData.type = meshType
     arcMesh.name = meshType
     group.userData = {
@@ -1006,7 +1065,18 @@ class ArcSegment implements SegmentUtils {
     }
     group.name = ARC_SEGMENT
 
-    group.add(arcMesh, endAngleHandle, circleCenterGroup, radiusIndicatorGroup)
+    group.add(
+      arcMesh,
+      endAngleHandle,
+      circleCenterGroup,
+      radiusIndicatorGroup,
+      centerToFromLine,
+      centerToToLine,
+      angleReferenceLine,
+      angleIndicator,
+      endAngleIndicator,
+      endAngleLengthIndicator
+    )
     const updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -1043,6 +1113,11 @@ class ArcSegment implements SegmentUtils {
     // Calculate start and end angles
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
     const endAngle = Math.atan2(to[1] - center[1], to[0] - center[0])
+
+    // Normalize the angle to -180 to 180 degrees
+    // const normalizedStartAngle = ((startAngle * 180 / Math.PI) + 180) % 360 - 180
+    const normalizedStartAngle = normaliseAngle((startAngle * 180) / Math.PI)
+    const normalizedEndAngle = (((endAngle * 180) / Math.PI + 180) % 360) - 180
 
     const endAngleHandle = group.getObjectByName(ARC_ANGLE_END) as Group
     const radiusLengthIndicator = group.getObjectByName(
@@ -1093,12 +1168,13 @@ class ArcSegment implements SegmentUtils {
       ) as CSS2DObject
       const labelWrapperElem = labelWrapper.element as HTMLDivElement
       const label = labelWrapperElem.children[0] as HTMLParagraphElement
-      label.innerText = `${roundOff(radius)}`
+      label.innerText = `R:${roundOff(radius)}${'\n'}A:${roundOff(
+        roundOff((startAngle * 180) / Math.PI)
+      )}`
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
 
       // Calculate the angle for the label
-      const labelAngle = (startAngle * 180) / Math.PI
-      label.style.setProperty('--degree', `${labelAngle}deg`)
+      label.style.setProperty('--degree', `-${startAngle}rad`)
       label.style.setProperty('--x', `0px`)
       label.style.setProperty('--y', `0px`)
       labelWrapper.position.set(indicatorPoint.x, indicatorPoint.y, 0)
@@ -1138,6 +1214,73 @@ class ArcSegment implements SegmentUtils {
         isDashed: true,
         scale,
       })
+    }
+
+    const centerToFromLine = group.getObjectByName(ARC_CENTER_TO_FROM) as Line
+    if (centerToFromLine) {
+      updateLine(centerToFromLine, { from: center, to: from, scale })
+      centerToFromLine.visible = isHandlesVisible
+    }
+    const centerToToLine = group.getObjectByName(ARC_CENTER_TO_TO) as Line
+    if (centerToToLine) {
+      updateLine(centerToToLine, { from: center, to, scale })
+      centerToToLine.visible = isHandlesVisible
+    }
+    const angleReferenceLine = group.getObjectByName(
+      ARC_ANGLE_REFERENCE_LINE
+    ) as Line
+    if (angleReferenceLine) {
+      updateLine(angleReferenceLine, {
+        from: center,
+        to: [center[0] + 34 * scale, center[1]],
+        scale,
+      })
+      angleReferenceLine.visible = isHandlesVisible
+    }
+
+    const angleIndicator = group.getObjectByName('angleIndicator') as Line
+    if (angleIndicator) {
+      updateAngleIndicator(angleIndicator, {
+        center,
+        radiusPx: 20,
+        startAngle: 0,
+        endAngle: (normalizedStartAngle * Math.PI) / 180,
+        scale,
+      })
+      angleIndicator.visible = isHandlesVisible
+    }
+
+    const endAngleIndicator = group.getObjectByName('endAngleIndicator') as Line
+    if (endAngleIndicator) {
+      updateAngleIndicator(endAngleIndicator, {
+        center,
+        radiusPx: 30,
+        startAngle: 0,
+        endAngle: (normalizedEndAngle * Math.PI) / 180,
+        scale,
+      })
+      endAngleIndicator.visible = isHandlesVisible
+    }
+
+    const endAngleLengthIndicator = group.getObjectByName(
+      'endAngleLengthIndicator'
+    ) as Group
+    if (endAngleLengthIndicator) {
+      const labelWrapper = endAngleLengthIndicator.getObjectByName(
+        SEGMENT_LENGTH_LABEL_TEXT
+      ) as CSS2DObject
+      const labelWrapperElem = labelWrapper.element as HTMLDivElement
+      const label = labelWrapperElem.children[0] as HTMLParagraphElement
+      label.innerText = `A:${roundOff(normalizedEndAngle)}`
+      label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
+
+      // Position the label
+      const indicatorPoint = {
+        x: center[0] + (Math.cos(endAngle) * radius) / 2,
+        y: center[1] + (Math.sin(endAngle) * radius) / 2,
+      }
+      labelWrapper.position.set(indicatorPoint.x, indicatorPoint.y, 0)
+      endAngleLengthIndicator.visible = isHandlesVisible
     }
 
     return () =>
@@ -1477,9 +1620,11 @@ export function createArcGeometry({
       )
     )
     const remainingArcGeometry = new ExtrudeGeometry(shape, {
-      steps: 50,
+      steps: 1,
       bevelEnabled: false,
-      extrudePath: remainingArcPath,
+      extrudePath: new CatmullRomCurve3(
+        remainingArcPoints.map((p) => new Vector3(p.x, p.y, 0))
+      ),
     })
     dashGeometries.push(remainingArcGeometry)
   }
@@ -1578,6 +1723,105 @@ export function dashedStraight(
     : new BufferGeometry()
   geo.userData.type = 'dashed'
   return geo
+}
+function createLine({
+  from,
+  to,
+  scale,
+  color,
+}: {
+  from: [number, number]
+  to: [number, number]
+  scale: number
+  color: number
+}): Line {
+  // Implementation for creating a line
+  const lineGeometry = new BufferGeometry().setFromPoints([
+    new Vector3(from[0], from[1], 0),
+    new Vector3(to[0], to[1], 0),
+  ])
+  const lineMaterial = new LineBasicMaterial({ color })
+  return new Line(lineGeometry, lineMaterial)
+}
+
+function updateLine(
+  line: Line,
+  {
+    from,
+    to,
+    scale,
+  }: { from: [number, number]; to: [number, number]; scale: number }
+) {
+  // Implementation for updating a line
+  const points = [
+    new Vector3(from[0], from[1], 0),
+    new Vector3(to[0], to[1], 0),
+  ]
+  line.geometry.setFromPoints(points)
+}
+
+function createAngleIndicator({
+  center,
+  radius,
+  startAngle,
+  endAngle,
+  scale,
+  color,
+}: {
+  center: [number, number]
+  radius: number
+  startAngle: number
+  endAngle: number
+  scale: number
+  color: number
+}): Line {
+  // Implementation for creating an angle indicator
+  const curve = new EllipseCurve(
+    center[0],
+    center[1],
+    radius,
+    radius,
+    startAngle,
+    endAngle,
+    false,
+    0
+  )
+  const points = curve.getPoints(50)
+  const geometry = new BufferGeometry().setFromPoints(points)
+  const material = new LineBasicMaterial({ color })
+  return new Line(geometry, material)
+}
+
+function updateAngleIndicator(
+  angleIndicator: Line,
+  {
+    center,
+    radiusPx,
+    startAngle,
+    endAngle,
+    scale,
+  }: {
+    center: [number, number]
+    radiusPx: number
+    startAngle: number
+    endAngle: number
+    scale: number
+  }
+) {
+  // Implementation for updating an angle indicator
+
+  const curve = new EllipseCurve(
+    center[0],
+    center[1],
+    radiusPx * scale,
+    radiusPx * scale,
+    startAngle,
+    endAngle,
+    endAngle < startAngle,
+    0
+  )
+  const points = curve.getPoints(50)
+  angleIndicator.geometry.setFromPoints(points)
 }
 
 export const segmentUtils = {
