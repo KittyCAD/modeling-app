@@ -9,6 +9,9 @@ on:
       - .github/workflows/pr-kcl-samples-repo.yml
   workflow_dispatch:
 name: Create PR in kcl-samples repo
+permissions:
+  contents: read
+  pull-requests: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
