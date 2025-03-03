@@ -196,6 +196,7 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       uses: nick-fields/retry@v3.0.2
       with:
+        shell: bash
         command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
         timeout_minutes: 30
         max_attempts: 25
