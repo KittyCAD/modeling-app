@@ -51,7 +51,7 @@ jobs:
         node-version-file: '.nvmrc'
         cache: 'yarn'
     - name: Install dependencies
-      id: install-deps
+      id: deps-install
       shell: bash
       run: yarn
     - name: Cache Playwright Browsers
