@@ -3282,7 +3282,7 @@ export const modelingMachine = setup({
                   actions: 'update sketchDetails',
                 },
                 input: ({ context: { sketchDetails }, event }) => {
-                  if (event.type !== 'Add circle center')
+                  if (event.type !== 'Add rectangle origin')
                     return {
                       sketchDetails,
                       data: [0, 0],
