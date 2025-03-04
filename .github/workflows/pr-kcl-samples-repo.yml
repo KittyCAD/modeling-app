@@ -58,7 +58,7 @@ jobs:
           gh pr create --title "Update from modeling-app" \
               --body "Updating files from the modeling-app repo" \
               --head "$NEW_BRANCH" \
-              --reviewer jessfraz \
+              --reviewer jtran \
               --base main || true
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
