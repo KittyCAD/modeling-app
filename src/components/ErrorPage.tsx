@@ -19,11 +19,15 @@ export const ErrorPage = () => {
         <h1 className="text-4xl mb-8 font-bold" data-testid="unexpected-error">
           An unexpected error occurred
         </h1>
-        {isRouteErrorResponse(error) && (
-          <p className="mb-8">
-            {error.status}: {error.data}
-          </p>
-        )}
+        <p className="mb-8">
+          {isRouteErrorResponse(error) ? (
+            <>
+              {error.status}: {error.data}
+            </>
+          ) : (
+            <>JSON.stringify(error)</>
+          )}
+        </p>
         <div className="flex justify-between gap-2 mt-6">
           {isDesktop() && (
             <ActionButton
